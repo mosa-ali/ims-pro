@@ -21,7 +21,7 @@
     "setup:windows": "powershell -ExecutionPolicy Bypass -File scripts/setup-windows.ps1",
     "setup:unix": "bash scripts/setup-unix.sh",
     "lint:translations": "node scripts/lint-translations.mjs",
-    "prepare": "husky install",
+    "prepare": "if [ \"$CI\" != \"true\" ]; then husky install; fi",
     "lint:translations:ci": "node scripts/lint-translations.mjs --ci"
   },
   "dependencies": {
