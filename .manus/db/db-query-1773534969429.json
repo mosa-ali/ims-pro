@@ -1,0 +1,20 @@
+{
+  "query": "SELECT id, organizationId, recipientEmail, subject, status, retryCount, lastError, sentAt FROM email_outbox ORDER BY createdAt DESC LIMIT 10;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway03.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3DLEw35gkkimUcv.eeb1f1cd43d3 --database 6e38zfddYazj4vVoRnY5Mj --execute SELECT id, organizationId, recipientEmail, subject, status, retryCount, lastError, sentAt FROM email_outbox ORDER BY createdAt DESC LIMIT 10;",
+  "rows": [
+    {
+      "id": "1",
+      "organizationId": "210002",
+      "recipientEmail": "Info@ydhorg.onmicrosoft.com",
+      "subject": "Connect Microsoft 365 to Integrated Management System",
+      "status": "pending",
+      "retryCount": "4",
+      "lastError": "Request failed with status code 404",
+      "sentAt": "NULL"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\torganizationId\trecipientEmail\tsubject\tstatus\tretryCount\tlastError\tsentAt\n1\t210002\tInfo@ydhorg.onmicrosoft.com\tConnect Microsoft 365 to Integrated Management System\tpending\t4\tRequest failed with status code 404\tNULL\n",
+  "stderr": "",
+  "execution_time_ms": 52
+}

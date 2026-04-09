@@ -1,0 +1,3 @@
+id,organizationId,providerType,tenantId,clientId,authType,secretRef,certificateRef,senderMode,smtpHost,smtpPort,smtpUsername,smtpPassword,smtpEncryption,fromEmail,fromName,replyToEmail,defaultCc,defaultBcc,allowedDomains,isConnected,lastSuccessfulSend,lastError,lastTestedAt,isActive,createdBy,updatedBy,createdAt,updatedAt
+1,30001,smtp,tenant-test,client-test,secret,secret-test,,shared_mailbox,smtp.test.org,587,user@testdomain.org,smtp-password,tls,test@test.org,IMS System,support@testdomain.org,cc@testdomain.org,audit@testdomain.org,"testdomain.org, partner.org",0,,getaddrinfo ENOTFOUND smtp.test.org,2026-02-07 17:58:47,1,1,1,2026-02-07 14:42:19,2026-02-07 17:58:47
+2,40001,disabled,,,,,,,,,,,tls,,,,,,,0,,,,1,1,1,2026-02-07 14:54:20,2026-02-07 14:54:20

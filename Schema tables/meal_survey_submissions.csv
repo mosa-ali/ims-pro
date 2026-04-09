@@ -1,0 +1,7 @@
+id,surveyId,organizationId,operatingUnitId,projectId,submissionCode,respondentName,respondentEmail,respondentPhone,responses,submittedAt,submittedBy,validationStatus,validatedAt,validatedBy,validationNotes,latitude,longitude,locationName,deviceInfo,isDeleted,deletedAt,deletedBy,createdAt,updatedAt
+1,1,30001,30001,,SUB-YDH-HQ-001,Ahmed Ali,,,"{""Food Security Level"": ""Severe"", ""Name"": ""Ahmed Ali""}",2026-02-06 13:02:49,,approved,,,,,,,,0,,,2026-02-06 13:02:49,2026-02-06 13:02:49
+2,1,30001,30001,,SUB-YDH-HQ-002,Fatima Hassan,,,"{""Food Security Level"": ""Moderate"", ""Name"": ""Fatima Hassan""}",2026-02-06 13:02:49,,pending,,,,,,,,0,,,2026-02-06 13:02:49,2026-02-06 13:02:49
+3,4,30001,60005,,SUB-YDH-JO-001,Mohammad Khalil,,,"{""Family Size"": 5, ""Household Head"": ""Mohammad Khalil"", ""Primary Need"": ""Shelter""}",2026-02-06 13:02:49,,approved,,,,,,,,0,,,2026-02-06 13:02:49,2026-02-06 13:02:49
+4,4,30001,60005,,SUB-YDH-JO-002,Sara Nasser,,,"{""Family Size"": 3, ""Household Head"": ""Sara Nasser"", ""Primary Need"": ""Health""}",2026-02-06 13:02:49,,pending,,,,,,,,0,,,2026-02-06 13:02:49,2026-02-06 13:02:49
+5,7,30002,30002,,SUB-EFD-HQ-001,Khaled Omar,,,"{""Employment Status"": ""Self-Employed"", ""Participant"": ""Khaled Omar""}",2026-02-06 13:02:49,,approved,,,,,,,,0,,,2026-02-06 13:02:49,2026-02-06 13:02:49
+6,7,30002,30002,,SUB-EFD-HQ-002,Noor Saleh,,,"{""Employment Status"": ""Employed"", ""Participant"": ""Noor Saleh""}",2026-02-06 13:02:49,,pending,,,,,,,,0,,,2026-02-06 13:02:49,2026-02-06 13:02:49

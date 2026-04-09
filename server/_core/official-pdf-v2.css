@@ -1,0 +1,301 @@
+/* ============================================================================
+   IMS — OFFICIAL PDF CSS (SYSTEM-WIDE)
+   Locked Guideline Compliant: dir set on <html>, inherited everywhere.
+   Applies to ALL modules and ALL official documents.
+   ============================================================================ */
+
+/* ----------------------------
+   0) Reset / Base
+---------------------------- */
+* { box-sizing: border-box; }
+html, body { height: 100%; }
+
+:root{
+  --ink: #111827;            /* gray-900 */
+  --muted: #4b5563;          /* gray-600 */
+  --line: #e5e7eb;           /* gray-200 */
+  --line-strong: #111827;    /* gray-900 */
+  --accent: #1d4ed8;         /* blue-700 */
+  --accent-soft: #dbeafe;    /* blue-100 */
+  --warn-soft: #fef9c3;      /* yellow-100 */
+  --paper-pad: 14mm;         /* internal padding; puppeteer margins are set separately */
+}
+
+html{
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+
+body{
+  margin: 0;
+  padding: 0;
+  font-family: "Segoe UI", Arial, "Noto Naskh Arabic", "Amiri", "Tahoma", sans-serif;
+  font-size: 11pt;
+  line-height: 1.45;
+  color: var(--ink);
+  background: #fff;
+}
+
+/* ----------------------------
+   1) Locked Guideline Direction Rules
+---------------------------- */
+html[dir="rtl"] body { direction: rtl; }
+html[dir="ltr"] body { direction: ltr; }
+
+input, textarea, select, button { direction: inherit; text-align: inherit; }
+label, th, td, p, span, div, h1, h2, h3, h4, h5 { direction: inherit; }
+
+/* Use ONLY for IDs/codes/emails/URLs/amounts/reference numbers */
+.ltr-safe{
+  direction: ltr !important;
+  unicode-bidi: isolate !important;
+  text-align: left !important;
+  font-variant-numeric: tabular-nums;
+}
+.rtl-safe{
+  direction: rtl !important;
+  unicode-bidi: isolate !important;
+  text-align: right !important;
+}
+.num{
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+/* ----------------------------
+   2) Page Container
+---------------------------- */
+.pdf-page{
+  padding: 0 var(--paper-pad);
+}
+.pdf-content{
+  margin-top: 8mm;
+}
+
+/* ----------------------------
+   3) OFFICIAL HEADER (QA/BOM baseline)
+---------------------------- */
+.pdf-header{
+  display: grid;
+  grid-template-columns: 1fr 1.3fr 1fr;
+  gap: 12px;
+  align-items: start;
+  margin-top: 2mm;
+}
+html[dir="ltr"] .pdf-header{ grid-template-areas: "left center right"; }
+html[dir="rtl"] .pdf-header{ grid-template-areas: "right center left"; }
+
+.header-left{ grid-area: left; }
+.header-center{ grid-area: center; }
+.header-right{ grid-area: right; }
+
+.header-left{ text-align: left; }
+html[dir="rtl"] .header-left{ text-align: right; }
+
+.org-name{
+  font-weight: 800;
+  font-size: 11.5pt;
+  margin: 0 0 2px 0;
+}
+.ou-name,
+.department{
+  font-size: 9.5pt;
+  color: var(--muted);
+  margin: 0;
+}
+
+.header-center{
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}
+.document-title{
+  margin: 0;
+  font-size: 17pt;
+  font-weight: 900;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+}
+
+.header-right{
+  display: flex;
+  flex-direction: column;
+  align-items: center;   /* Logo MUST be centered in this column */
+  justify-content: flex-start;
+  gap: 6px;
+  text-align: center;
+}
+.org-logo{
+  width: 56px;
+  height: 56px;
+  object-fit: contain;
+  display: block;
+  margin: 0 auto;
+}
+
+.header-meta{
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 10pt;
+  line-height: 1.25;
+  color: var(--ink);
+}
+.header-meta .meta-ref{ font-weight: 800; }
+.header-meta .meta-date{ font-weight: 600; color: var(--muted); }
+
+.pdf-header-divider{
+  border: none;
+  border-top: 3px solid var(--line-strong);
+  margin: 8mm 0 6mm 0;
+}
+
+/* ----------------------------
+   4) Metadata Blocks
+---------------------------- */
+.meta-grid{
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10mm;
+  padding: 8mm;
+  background: #f8fafc;
+  border-radius: 6px;
+}
+.meta-item{
+  display: grid;
+  grid-template-columns: 160px 1fr;
+  gap: 10px;
+  padding: 2mm 0;
+}
+html[dir="rtl"] .meta-item{ grid-template-columns: 1fr 160px; }
+
+.meta-label{
+  font-weight: 800;
+  color: #374151;
+  text-transform: uppercase;
+  font-size: 9.5pt;
+}
+.meta-value{
+  font-weight: 650;
+  color: var(--ink);
+}
+
+.badge{
+  display: inline-block;
+  padding: 2mm 4mm;
+  border-radius: 6px;
+  font-size: 9.5pt;
+  font-weight: 800;
+  background: var(--accent-soft);
+  color: #1e40af;
+  width: fit-content;
+}
+.badge.warn{ background: var(--warn-soft); color: #854d0e; }
+
+/* ----------------------------
+   5) Section Titles
+---------------------------- */
+.section-title{
+  margin: 8mm 0 3mm 0;
+  font-size: 12pt;
+  font-weight: 900;
+  color: var(--ink);
+}
+
+/* ----------------------------
+   6) Tables
+---------------------------- */
+table{
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 3mm;
+  font-size: 10pt;
+}
+th, td{
+  border: 1px solid var(--line);
+  padding: 3mm 3.5mm;
+  vertical-align: top;
+}
+th{
+  background: #f3f4f6;
+  font-weight: 900;
+  color: var(--ink);
+}
+tbody tr:nth-child(even){ background: #fbfdff; }
+
+td.total, th.total{ font-weight: 900; }
+
+td.num, th.num{ text-align: right; }
+html[dir="rtl"] td.num, html[dir="rtl"] th.num{ text-align: left; }
+
+/* ----------------------------
+   7) Notes / Callouts
+---------------------------- */
+.note-box{
+  margin: 5mm 0 0 0;
+  padding: 4mm 5mm;
+  border-left: 4px solid var(--accent);
+  background: #f8fafc;
+}
+html[dir="rtl"] .note-box{
+  border-left: none;
+  border-right: 4px solid var(--accent);
+}
+
+.warn-box{
+  margin: 4mm 0 0 0;
+  padding: 4mm 5mm;
+  border-left: 4px solid #f59e0b;
+  background: var(--warn-soft);
+}
+html[dir="rtl"] .warn-box{
+  border-left: none;
+  border-right: 4px solid #f59e0b;
+}
+
+/* ----------------------------
+   8) Signatures
+---------------------------- */
+.signature-row{
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 10mm;
+  margin-top: 12mm;
+}
+.signature-block{ min-height: 28mm; }
+.signature-title{ font-weight: 900; margin-bottom: 3mm; }
+.sig-line{
+  border-bottom: 1px solid #6b7280;
+  height: 10mm;
+  margin: 2mm 0 3mm 0;
+}
+.sig-label{ font-size: 9pt; color: var(--muted); margin-top: 2mm; }
+
+/* ----------------------------
+   9) Footer (fallback)
+---------------------------- */
+.pdf-footer{
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 8mm;
+  padding: 0 var(--paper-pad);
+  font-size: 9pt;
+  color: var(--muted);
+}
+.footer-inner{ display: flex; justify-content: flex-end; }
+html[dir="rtl"] .footer-inner{ justify-content: flex-start; }
+
+/* ----------------------------
+   10) Page Break Helpers
+---------------------------- */
+.page-break{ page-break-before: always; break-before: page; }
+.avoid-break{ page-break-inside: avoid; break-inside: avoid; }
+
+/* ----------------------------
+   11) Print Media
+---------------------------- */
+@media print{
+  body{ -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+}

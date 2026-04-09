@@ -1,0 +1,2 @@
+ALTER TABLE `organizations` ADD `secondaryAdminId` int;--> statement-breakpoint
+ALTER TABLE `organizations` ADD CONSTRAINT `organizations_secondaryAdminId_users_id_fk` FOREIGN KEY (`secondaryAdminId`) REFERENCES `users`(`id`) ON DELETE set null ON UPDATE no action;

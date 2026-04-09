@@ -1,0 +1,18 @@
+{
+  "query": "SELECT id, COUNT(*) as count FROM organizations GROUP BY id HAVING count > 1;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway03.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3DLEw35gkkimUcv.eeb1f1cd43d3 --database 6e38zfddYazj4vVoRnY5Mj --execute SELECT id, COUNT(*) as count FROM organizations GROUP BY id HAVING count > 1;",
+  "rows": [
+    {
+      "id": "30001",
+      "count": "2"
+    },
+    {
+      "id": "30002",
+      "count": "2"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tcount\n30001\t2\n30002\t2\n",
+  "stderr": "",
+  "execution_time_ms": 56
+}

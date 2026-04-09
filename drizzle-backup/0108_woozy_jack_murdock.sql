@@ -1,0 +1,1 @@
+ALTER TABLE `procurement_payables` MODIFY COLUMN `status` enum('draft','pending_grn','pending_invoice','pending_approval','pending_payment','partially_paid','fully_paid','rejected','cancelled') DEFAULT 'pending_invoice';

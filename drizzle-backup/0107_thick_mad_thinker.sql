@@ -1,0 +1,1 @@
+ALTER TABLE `procurement_payables` ADD CONSTRAINT `procurement_payables_grnId_unique` UNIQUE(`grnId`);

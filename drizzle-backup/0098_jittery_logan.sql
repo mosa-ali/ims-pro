@@ -1,0 +1,1 @@
+ALTER TABLE `purchase_orders` MODIFY COLUMN `status` enum('draft','approved','sent','acknowledged','partially_delivered','delivered','completed','cancelled') NOT NULL DEFAULT 'draft';

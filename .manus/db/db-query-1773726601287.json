@@ -1,0 +1,24 @@
+{
+  "query": "\nSELECT o.id as orgId, o.name, o.primaryAdminId, u.email as adminEmail, u.name as adminName\nFROM organizations o\nLEFT JOIN users u ON u.id = o.primaryAdminId\nWHERE o.name LIKE '%Yamany%' OR o.name LIKE '%YDH%'\nLIMIT 5;\n",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway03.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3DLEw35gkkimUcv.eeb1f1cd43d3 --database 6e38zfddYazj4vVoRnY5Mj --execute \nSELECT o.id as orgId, o.name, o.primaryAdminId, u.email as adminEmail, u.name as adminName\nFROM organizations o\nLEFT JOIN users u ON u.id = o.primaryAdminId\nWHERE o.name LIKE '%Yamany%' OR o.name LIKE '%YDH%'\nLIMIT 5;\n",
+  "rows": [
+    {
+      "orgId": "30001",
+      "name": "Yamany Development Foundation",
+      "primaryAdminId": "1597115",
+      "adminEmail": "programs@yamany.org",
+      "adminName": "programs"
+    },
+    {
+      "orgId": "210002",
+      "name": "Yamany Foundation for Development - YDH",
+      "primaryAdminId": "1625317",
+      "adminEmail": "Info@ydhorg.onmicrosoft.com",
+      "adminName": "Admin"
+    }
+  ],
+  "messages": [],
+  "stdout": "orgId\tname\tprimaryAdminId\tadminEmail\tadminName\n30001\tYamany Development Foundation\t1597115\tprograms@yamany.org\tprograms\n210002\tYamany Foundation for Development - YDH\t1625317\tInfo@ydhorg.onmicrosoft.com\tAdmin\n",
+  "stderr": "",
+  "execution_time_ms": 53
+}

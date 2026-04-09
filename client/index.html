@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en" dir="ltr" data-dir="ltr">
+  <head>
+    <script>
+      // CRITICAL: Set direction BEFORE React mounts to prevent LTR lock-in
+      // This script runs synchronously before any DOM parsing
+      (function() {
+        const lang = localStorage.getItem('pms_language') || 'en';
+        const dir = lang === 'ar' ? 'rtl' : 'ltr';
+        document.documentElement.dir = dir;
+        document.documentElement.lang = lang;
+        document.documentElement.setAttribute('data-dir', dir);
+      })();
+    </script>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1" />
+    <title>Integrated Management System</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  </head>
+
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+    <script
+      defer
+      src="%VITE_ANALYTICS_ENDPOINT%/umami"
+      data-website-id="%VITE_ANALYTICS_WEBSITE_ID%"></script>
+  </body>
+
+</html>

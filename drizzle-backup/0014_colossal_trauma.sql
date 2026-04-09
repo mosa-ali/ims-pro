@@ -1,0 +1,1 @@
+ALTER TABLE `user_operating_units` ADD `role` enum('organization_admin','user') DEFAULT 'user' NOT NULL;

@@ -1,0 +1,1 @@
+id,organizationId,operatingUnitId,projectId,grantId,budgetId,category,alertType,severity,budgetAmount,actualAmount,variance,variancePercentage,thresholdPercentage,status,acknowledgedBy,acknowledgedAt,resolvedBy,resolvedAt,notificationSent,notificationSentAt,description,notes,createdAt,updatedAt,isDeleted,deletedAt,deletedBy

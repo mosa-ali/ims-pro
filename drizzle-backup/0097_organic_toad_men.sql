@@ -1,0 +1,1 @@
+ALTER TABLE `rfq_vendors` ADD `yearsOfExperience` int;

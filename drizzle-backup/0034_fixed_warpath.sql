@@ -1,0 +1,1 @@
+ALTER TABLE `activities` ADD `activityCode` varchar(50) NOT NULL;

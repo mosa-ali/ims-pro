@@ -1,0 +1,1 @@
+ALTER TABLE `delivery_notes` ADD `isDeleted` boolean DEFAULT false NOT NULL;

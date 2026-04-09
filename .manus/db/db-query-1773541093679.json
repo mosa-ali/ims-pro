@@ -1,0 +1,28 @@
+{
+  "query": "SHOW TABLES LIKE 'email%';",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway03.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3DLEw35gkkimUcv.eeb1f1cd43d3 --database 6e38zfddYazj4vVoRnY5Mj --execute SHOW TABLES LIKE 'email%';",
+  "rows": [
+    {
+      "Tables_in_6e38zfddYazj4vVoRnY5Mj (email%)": "email_dead_letter_queue"
+    },
+    {
+      "Tables_in_6e38zfddYazj4vVoRnY5Mj (email%)": "email_outbox"
+    },
+    {
+      "Tables_in_6e38zfddYazj4vVoRnY5Mj (email%)": "email_provider_settings"
+    },
+    {
+      "Tables_in_6e38zfddYazj4vVoRnY5Mj (email%)": "email_templates"
+    },
+    {
+      "Tables_in_6e38zfddYazj4vVoRnY5Mj (email%)": "email_verification_tokens"
+    },
+    {
+      "Tables_in_6e38zfddYazj4vVoRnY5Mj (email%)": "email_webhook_events"
+    }
+  ],
+  "messages": [],
+  "stdout": "Tables_in_6e38zfddYazj4vVoRnY5Mj (email%)\nemail_dead_letter_queue\nemail_outbox\nemail_provider_settings\nemail_templates\nemail_verification_tokens\nemail_webhook_events\n",
+  "stderr": "",
+  "execution_time_ms": 53
+}

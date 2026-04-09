@@ -1,0 +1,419 @@
+/**
+ * ============================================================================
+ * OFFICIAL PDF STYLESHEET
+ * System-wide design standards for all PDF documents
+ * ============================================================================
+ * 
+ * Design Principles:
+ * - Professional, consistent appearance across all documents
+ * - RTL/LTR support with proper direction inheritance
+ * - Print-optimized with proper color management
+ * - Accessible and readable typography
+ * - Data isolation and organization branding
+ */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+@page {
+  size: A4 portrait;
+  margin: 15mm 10mm;
+}
+
+html {
+  /* Direction is set by template: dir="rtl" or dir="ltr" */
+  /* All children inherit this direction */
+}
+
+body {
+  font-family: 'Segoe UI', 'Arial', sans-serif;
+  font-size: 10pt;
+  line-height: 1.4;
+  color: #1F2937;
+  background: white;
+  -webkit-print-color-adjust: exact !important;
+  print-color-adjust: exact !important;
+}
+
+/* ============================================================================
+   HEADER SECTION
+   ============================================================================ */
+
+.document-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 20px;
+  padding-bottom: 15px;
+  border-bottom: 2px solid #2563EB;
+}
+
+.header-left {
+  display: flex;
+  gap: 15px;
+  align-items: flex-start;
+  flex: 1;
+}
+
+.logo {
+  width: 50px;
+  height: 50px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+.header-info h1 {
+  font-size: 16pt;
+  font-weight: 700;
+  margin-bottom: 2px;
+  color: #1F2937;
+}
+
+.header-info p {
+  font-size: 9pt;
+  color: #6B7280;
+  margin: 2px 0;
+}
+
+.header-right {
+  text-align: right;
+  font-size: 9pt;
+  color: #6B7280;
+  flex-shrink: 0;
+}
+
+.header-right p {
+  margin: 2px 0;
+}
+
+/* ============================================================================
+   DOCUMENT TITLE & METADATA
+   ============================================================================ */
+
+.document-title {
+  font-size: 14pt;
+  font-weight: 700;
+  margin: 15px 0 10px 0;
+  color: #1F2937;
+}
+
+.document-meta {
+  display: flex;
+  justify-content: space-between;
+  font-size: 9pt;
+  color: #6B7280;
+  margin-bottom: 20px;
+  padding: 10px;
+  background-color: #F9FAFB;
+  border-left: 3px solid #2563EB;
+}
+
+.meta-item {
+  flex: 1;
+}
+
+.meta-label {
+  font-weight: 600;
+  color: #1F2937;
+}
+
+/* ============================================================================
+   SECTION STYLES
+   ============================================================================ */
+
+.section {
+  margin: 10px 0;
+  page-break-inside: avoid;
+}
+
+.section-title {
+  font-size: 12pt;
+  font-weight: 700;
+  margin: 15px 0 10px 0;
+  padding-bottom: 5px;
+  border-bottom: 1pt solid #2563EB;
+  color: #1F2937;
+}
+
+.section-content {
+  margin-left: 10px;
+}
+
+/* ============================================================================
+   DATA GRID & ITEMS
+   ============================================================================ */
+
+.data-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px;
+  margin: 10px 0;
+}
+
+.data-item {
+  padding: 8px;
+  background-color: #F9FAFB;
+  border-left: 3px solid #2563EB;
+}
+
+.data-label {
+  font-size: 9pt;
+  color: #6B7280;
+  font-weight: 600;
+  margin-bottom: 3px;
+}
+
+.data-value {
+  font-size: 10pt;
+  color: #1F2937;
+  word-break: break-word;
+}
+
+/* ============================================================================
+   TABLE STYLES
+   ============================================================================ */
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 15px 0;
+}
+
+thead {
+  background-color: #F3F4F6;
+}
+
+th {
+  padding: 8px;
+  text-align: left;
+  font-weight: 600;
+  font-size: 10pt;
+  border: 0.5pt solid #E5E7EB;
+  color: #1F2937;
+}
+
+td {
+  padding: 6px 8px;
+  border: 0.5pt solid #E5E7EB;
+  font-size: 10pt;
+}
+
+tbody tr:nth-child(even) {
+  background-color: #F9FAFB;
+}
+
+tbody tr:hover {
+  background-color: #F3F4F6;
+}
+
+tfoot {
+  background-color: #F3F4F6;
+  font-weight: 600;
+  border-top: 1pt solid #1F2937;
+}
+
+tfoot td {
+  padding: 8px;
+  border: 0.5pt solid #E5E7EB;
+}
+
+/* ============================================================================
+   STATUS BADGES
+   ============================================================================ */
+
+.badge {
+  display: inline-block;
+  padding: 3px 8px;
+  border-radius: 3px;
+  font-size: 9pt;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.badge-success {
+  background-color: #D1FAE5;
+  color: #065F46;
+}
+
+.badge-warning {
+  background-color: #FEF3C7;
+  color: #92400E;
+}
+
+.badge-danger {
+  background-color: #FEE2E2;
+  color: #991B1B;
+}
+
+.badge-info {
+  background-color: #DBEAFE;
+  color: #0C4A6E;
+}
+
+/* ============================================================================
+   SIGNATURE SECTION
+   ============================================================================ */
+
+.signatures-section {
+  margin-top: 15px;
+  page-break-inside: avoid;
+}
+
+.signature-block {
+  margin-bottom: 15px;
+}
+
+.signature-block-title {
+  font-weight: 600;
+  font-size: 10pt;
+  margin-bottom: 15px;
+  color: #1F2937;
+}
+
+.signature-line {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.signature-label {
+  font-size: 9pt;
+  color: #6B7280;
+  font-weight: 600;
+  width: 30%;
+}
+
+.signature-input {
+  border-bottom: 1pt solid #1F2937;
+  width: 65%;
+}
+
+/* ============================================================================
+   FOOTER SECTION
+   ============================================================================ */
+
+.document-footer {
+  margin-top: 15px;
+  padding-top: 10px;
+  border-top: 1pt solid #E5E7EB;
+  font-size: 9pt;
+  color: #6B7280;
+  text-align: center;
+}
+
+.footer-line {
+  margin: 3px 0;
+}
+
+/* ============================================================================
+   UTILITY CLASSES
+   ============================================================================ */
+
+.page-break {
+  page-break-after: always;
+}
+
+.no-break {
+  page-break-inside: avoid;
+}
+
+.no-print {
+  display: none !important;
+}
+
+/* LTR-Safe: Use for reference numbers, codes, amounts, IDs */
+.ltr-safe {
+  direction: ltr;
+  unicode-bidi: isolate;
+}
+
+/* ============================================================================
+   RTL SUPPORT
+   ============================================================================ */
+
+[dir="rtl"] {
+  direction: rtl;
+  text-align: right;
+}
+
+[dir="rtl"] .header-left {
+  flex-direction: row-reverse;
+}
+
+[dir="rtl"] .header-right {
+  text-align: left;
+}
+
+[dir="rtl"] .document-meta {
+  border-left: none;
+  border-right: 3px solid #2563EB;
+}
+
+[dir="rtl"] .data-item {
+  border-left: none;
+  border-right: 3px solid #2563EB;
+}
+
+[dir="rtl"] .section-title {
+  border-bottom: 1pt solid #2563EB;
+}
+
+[dir="rtl"] .signature-line {
+  flex-direction: row-reverse;
+}
+
+[dir="rtl"] table {
+  direction: rtl;
+}
+
+[dir="rtl"] th,
+[dir="rtl"] td {
+  text-align: right;
+}
+
+/* ============================================================================
+   PRINT OPTIMIZATION
+   ============================================================================ */
+
+@media print {
+  body {
+    margin: 0;
+    padding: 0;
+  }
+
+  a {
+    text-decoration: none;
+    color: #1F2937;
+  }
+
+  .no-print {
+    display: none !important;
+  }
+}
+
+/* ============================================================================
+   ARABIC FONT SUPPORT
+   ============================================================================ */
+
+[lang="ar"] {
+  font-family: 'Noto Sans Arabic', 'Arial', sans-serif;
+}
+
+/* ============================================================================
+   ACCESSIBILITY
+   ============================================================================ */
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}

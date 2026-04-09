@@ -1,0 +1,1180 @@
+{
+  "query": "SELECT id, name, domain FROM organizations ORDER BY id;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway03.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3DLEw35gkkimUcv.eeb1f1cd43d3 --database 6e38zfddYazj4vVoRnY5Mj --execute SELECT id, name, domain FROM organizations ORDER BY id;",
+  "rows": [
+    {
+      "id": "30001",
+      "name": "Yamany Development Foundation",
+      "domain": "yamany.org"
+    },
+    {
+      "id": "30001",
+      "name": "Yamany Development Foundation",
+      "domain": "yamany.org"
+    },
+    {
+      "id": "30002",
+      "name": "Efadah Organization for Development (EFADAH)",
+      "domain": "efadah-ye.org"
+    },
+    {
+      "id": "30002",
+      "name": "Efadah Organization for Development (EFADAH)",
+      "domain": "efadah-ye.org"
+    },
+    {
+      "id": "150288",
+      "name": "E2E Test Organization",
+      "domain": "e2e-test.com"
+    },
+    {
+      "id": "150290",
+      "name": "Test Organization E2E",
+      "domain": "test-e2e.com"
+    },
+    {
+      "id": "150292",
+      "name": "Second Test Organization",
+      "domain": "org2-test.com"
+    },
+    {
+      "id": "150294",
+      "name": "Test Organization 2 E2E",
+      "domain": "test-e2e-2.com"
+    },
+    {
+      "id": "150296",
+      "name": "Test Organization MS365",
+      "domain": "test-ms365.com"
+    },
+    {
+      "id": "150298",
+      "name": "Test gmail.com",
+      "domain": "gmail.com"
+    },
+    {
+      "id": "150300",
+      "name": "Test yahoo.com",
+      "domain": "yahoo.com"
+    },
+    {
+      "id": "150302",
+      "name": "Test hotmail.com",
+      "domain": "hotmail.com"
+    },
+    {
+      "id": "150304",
+      "name": "Test outlook.com",
+      "domain": "outlook.com"
+    },
+    {
+      "id": "150306",
+      "name": "Admin Consent Test Org",
+      "domain": "consent-test.com"
+    },
+    {
+      "id": "150308",
+      "name": "E2E Test Organization",
+      "domain": "e2e-test.com"
+    },
+    {
+      "id": "150310",
+      "name": "Test Organization E2E",
+      "domain": "test-e2e.com"
+    },
+    {
+      "id": "150312",
+      "name": "Test Organization MS365",
+      "domain": "test-ms365.com"
+    },
+    {
+      "id": "150314",
+      "name": "Second Test Organization",
+      "domain": "org2-test.com"
+    },
+    {
+      "id": "150316",
+      "name": "Test Organization 2 E2E",
+      "domain": "test-e2e-2.com"
+    },
+    {
+      "id": "150318",
+      "name": "Test gmail.com",
+      "domain": "gmail.com"
+    },
+    {
+      "id": "150320",
+      "name": "Test yahoo.com",
+      "domain": "yahoo.com"
+    },
+    {
+      "id": "150322",
+      "name": "Test hotmail.com",
+      "domain": "hotmail.com"
+    },
+    {
+      "id": "150324",
+      "name": "Test outlook.com",
+      "domain": "outlook.com"
+    },
+    {
+      "id": "150326",
+      "name": "Admin Consent Test Org",
+      "domain": "consent-test.com"
+    },
+    {
+      "id": "150328",
+      "name": "E2E Test Organization",
+      "domain": "e2e-test.com"
+    },
+    {
+      "id": "150330",
+      "name": "Test Organization E2E",
+      "domain": "test-e2e.com"
+    },
+    {
+      "id": "150332",
+      "name": "Second Test Organization",
+      "domain": "org2-test.com"
+    },
+    {
+      "id": "150334",
+      "name": "Test Organization 2 E2E",
+      "domain": "test-e2e-2.com"
+    },
+    {
+      "id": "150336",
+      "name": "Test Organization MS365",
+      "domain": "test-ms365.com"
+    },
+    {
+      "id": "150338",
+      "name": "Test gmail.com",
+      "domain": "gmail.com"
+    },
+    {
+      "id": "150340",
+      "name": "Test yahoo.com",
+      "domain": "yahoo.com"
+    },
+    {
+      "id": "150342",
+      "name": "Test hotmail.com",
+      "domain": "hotmail.com"
+    },
+    {
+      "id": "150344",
+      "name": "Test outlook.com",
+      "domain": "outlook.com"
+    },
+    {
+      "id": "150346",
+      "name": "Admin Consent Test Org",
+      "domain": "consent-test.com"
+    },
+    {
+      "id": "150348",
+      "name": "E2E Test Organization",
+      "domain": "e2e-test.com"
+    },
+    {
+      "id": "150350",
+      "name": "Test Organization E2E",
+      "domain": "test-e2e.com"
+    },
+    {
+      "id": "150352",
+      "name": "Second Test Organization",
+      "domain": "org2-test.com"
+    },
+    {
+      "id": "150354",
+      "name": "Test Organization MS365",
+      "domain": "test-ms365.com"
+    },
+    {
+      "id": "150356",
+      "name": "Test Organization 2 E2E",
+      "domain": "test-e2e-2.com"
+    },
+    {
+      "id": "150358",
+      "name": "Test gmail.com",
+      "domain": "gmail.com"
+    },
+    {
+      "id": "150360",
+      "name": "Test yahoo.com",
+      "domain": "yahoo.com"
+    },
+    {
+      "id": "150362",
+      "name": "Test hotmail.com",
+      "domain": "hotmail.com"
+    },
+    {
+      "id": "150364",
+      "name": "Test outlook.com",
+      "domain": "outlook.com"
+    },
+    {
+      "id": "150366",
+      "name": "Admin Consent Test Org",
+      "domain": "consent-test.com"
+    },
+    {
+      "id": "150368",
+      "name": "E2E Test Organization",
+      "domain": "e2e-test.com"
+    },
+    {
+      "id": "150370",
+      "name": "Test Organization E2E",
+      "domain": "test-e2e.com"
+    },
+    {
+      "id": "150372",
+      "name": "Second Test Organization",
+      "domain": "org2-test.com"
+    },
+    {
+      "id": "150374",
+      "name": "Test Organization 2 E2E",
+      "domain": "test-e2e-2.com"
+    },
+    {
+      "id": "150376",
+      "name": "Test Organization MS365",
+      "domain": "test-ms365.com"
+    },
+    {
+      "id": "150378",
+      "name": "Test gmail.com",
+      "domain": "gmail.com"
+    },
+    {
+      "id": "150380",
+      "name": "Test yahoo.com",
+      "domain": "yahoo.com"
+    },
+    {
+      "id": "150382",
+      "name": "Test hotmail.com",
+      "domain": "hotmail.com"
+    },
+    {
+      "id": "150384",
+      "name": "Test outlook.com",
+      "domain": "outlook.com"
+    },
+    {
+      "id": "150386",
+      "name": "Admin Consent Test Org",
+      "domain": "consent-test.com"
+    },
+    {
+      "id": "150388",
+      "name": "E2E Test Organization",
+      "domain": "e2e-test.com"
+    },
+    {
+      "id": "150390",
+      "name": "Test Organization E2E",
+      "domain": "test-e2e.com"
+    },
+    {
+      "id": "150392",
+      "name": "Test Organization 2 E2E",
+      "domain": "test-e2e-2.com"
+    },
+    {
+      "id": "150394",
+      "name": "Second Test Organization",
+      "domain": "org2-test.com"
+    },
+    {
+      "id": "150396",
+      "name": "Test gmail.com",
+      "domain": "gmail.com"
+    },
+    {
+      "id": "150398",
+      "name": "Test yahoo.com",
+      "domain": "yahoo.com"
+    },
+    {
+      "id": "150400",
+      "name": "Test hotmail.com",
+      "domain": "hotmail.com"
+    },
+    {
+      "id": "150402",
+      "name": "Test outlook.com",
+      "domain": "outlook.com"
+    },
+    {
+      "id": "150404",
+      "name": "Test Organization MS365",
+      "domain": "test-ms365.com"
+    },
+    {
+      "id": "150406",
+      "name": "Admin Consent Test Org",
+      "domain": "consent-test.com"
+    },
+    {
+      "id": "150408",
+      "name": "E2E Test Organization",
+      "domain": "e2e-test.com"
+    },
+    {
+      "id": "150410",
+      "name": "Test Organization E2E",
+      "domain": "test-e2e.com"
+    },
+    {
+      "id": "150412",
+      "name": "Second Test Organization",
+      "domain": "org2-test.com"
+    },
+    {
+      "id": "150414",
+      "name": "Test Organization MS365",
+      "domain": "test-ms365.com"
+    },
+    {
+      "id": "150416",
+      "name": "Test Organization 2 E2E",
+      "domain": "test-e2e-2.com"
+    },
+    {
+      "id": "150418",
+      "name": "Test gmail.com",
+      "domain": "gmail.com"
+    },
+    {
+      "id": "150420",
+      "name": "Test yahoo.com",
+      "domain": "yahoo.com"
+    },
+    {
+      "id": "150422",
+      "name": "Test hotmail.com",
+      "domain": "hotmail.com"
+    },
+    {
+      "id": "150424",
+      "name": "Test outlook.com",
+      "domain": "outlook.com"
+    },
+    {
+      "id": "150426",
+      "name": "Admin Consent Test Org",
+      "domain": "consent-test.com"
+    },
+    {
+      "id": "150428",
+      "name": "E2E Test Organization",
+      "domain": "e2e-test.com"
+    },
+    {
+      "id": "150430",
+      "name": "Test Organization E2E",
+      "domain": "test-e2e.com"
+    },
+    {
+      "id": "150432",
+      "name": "Second Test Organization",
+      "domain": "org2-test.com"
+    },
+    {
+      "id": "150434",
+      "name": "Test Organization 2 E2E",
+      "domain": "test-e2e-2.com"
+    },
+    {
+      "id": "150436",
+      "name": "Test Organization MS365",
+      "domain": "test-ms365.com"
+    },
+    {
+      "id": "150438",
+      "name": "Test gmail.com",
+      "domain": "gmail.com"
+    },
+    {
+      "id": "150440",
+      "name": "Test yahoo.com",
+      "domain": "yahoo.com"
+    },
+    {
+      "id": "150442",
+      "name": "Test hotmail.com",
+      "domain": "hotmail.com"
+    },
+    {
+      "id": "150444",
+      "name": "Test outlook.com",
+      "domain": "outlook.com"
+    },
+    {
+      "id": "150446",
+      "name": "Admin Consent Test Org",
+      "domain": "consent-test.com"
+    },
+    {
+      "id": "150448",
+      "name": "E2E Test Organization",
+      "domain": "e2e-test.com"
+    },
+    {
+      "id": "150450",
+      "name": "Test Organization E2E",
+      "domain": "test-e2e.com"
+    },
+    {
+      "id": "150452",
+      "name": "Test Organization MS365",
+      "domain": "test-ms365.com"
+    },
+    {
+      "id": "150454",
+      "name": "Second Test Organization",
+      "domain": "org2-test.com"
+    },
+    {
+      "id": "150456",
+      "name": "Test Organization 2 E2E",
+      "domain": "test-e2e-2.com"
+    },
+    {
+      "id": "150458",
+      "name": "Test gmail.com",
+      "domain": "gmail.com"
+    },
+    {
+      "id": "150460",
+      "name": "Test yahoo.com",
+      "domain": "yahoo.com"
+    },
+    {
+      "id": "150462",
+      "name": "Test hotmail.com",
+      "domain": "hotmail.com"
+    },
+    {
+      "id": "150464",
+      "name": "Test outlook.com",
+      "domain": "outlook.com"
+    },
+    {
+      "id": "150466",
+      "name": "Admin Consent Test Org",
+      "domain": "consent-test.com"
+    },
+    {
+      "id": "150468",
+      "name": "E2E Test Organization",
+      "domain": "e2e-test.com"
+    },
+    {
+      "id": "150470",
+      "name": "Test Organization E2E",
+      "domain": "test-e2e.com"
+    },
+    {
+      "id": "150472",
+      "name": "Test Organization MS365",
+      "domain": "test-ms365.com"
+    },
+    {
+      "id": "150474",
+      "name": "Test Organization 2 E2E",
+      "domain": "test-e2e-2.com"
+    },
+    {
+      "id": "150476",
+      "name": "Test gmail.com",
+      "domain": "gmail.com"
+    },
+    {
+      "id": "150478",
+      "name": "Second Test Organization",
+      "domain": "org2-test.com"
+    },
+    {
+      "id": "150480",
+      "name": "Test yahoo.com",
+      "domain": "yahoo.com"
+    },
+    {
+      "id": "150482",
+      "name": "Test hotmail.com",
+      "domain": "hotmail.com"
+    },
+    {
+      "id": "150484",
+      "name": "Test outlook.com",
+      "domain": "outlook.com"
+    },
+    {
+      "id": "150486",
+      "name": "Admin Consent Test Org",
+      "domain": "consent-test.com"
+    },
+    {
+      "id": "150488",
+      "name": "E2E Test Organization",
+      "domain": "e2e-test.com"
+    },
+    {
+      "id": "150490",
+      "name": "Test Organization E2E",
+      "domain": "test-e2e.com"
+    },
+    {
+      "id": "150492",
+      "name": "Test Organization MS365",
+      "domain": "test-ms365.com"
+    },
+    {
+      "id": "150494",
+      "name": "Test Organization 2 E2E",
+      "domain": "test-e2e-2.com"
+    },
+    {
+      "id": "150496",
+      "name": "Second Test Organization",
+      "domain": "org2-test.com"
+    },
+    {
+      "id": "150498",
+      "name": "Test gmail.com",
+      "domain": "gmail.com"
+    },
+    {
+      "id": "150500",
+      "name": "Test yahoo.com",
+      "domain": "yahoo.com"
+    },
+    {
+      "id": "150502",
+      "name": "Test hotmail.com",
+      "domain": "hotmail.com"
+    },
+    {
+      "id": "150504",
+      "name": "Test outlook.com",
+      "domain": "outlook.com"
+    },
+    {
+      "id": "150506",
+      "name": "Admin Consent Test Org",
+      "domain": "consent-test.com"
+    },
+    {
+      "id": "150508",
+      "name": "E2E Test Organization",
+      "domain": "e2e-test.com"
+    },
+    {
+      "id": "150510",
+      "name": "Test Organization E2E",
+      "domain": "test-e2e.com"
+    },
+    {
+      "id": "150512",
+      "name": "Second Test Organization",
+      "domain": "org2-test.com"
+    },
+    {
+      "id": "150514",
+      "name": "Test Organization 2 E2E",
+      "domain": "test-e2e-2.com"
+    },
+    {
+      "id": "150516",
+      "name": "Test Organization MS365",
+      "domain": "test-ms365.com"
+    },
+    {
+      "id": "150518",
+      "name": "Test gmail.com",
+      "domain": "gmail.com"
+    },
+    {
+      "id": "150520",
+      "name": "Test yahoo.com",
+      "domain": "yahoo.com"
+    },
+    {
+      "id": "150522",
+      "name": "Test hotmail.com",
+      "domain": "hotmail.com"
+    },
+    {
+      "id": "150524",
+      "name": "Test outlook.com",
+      "domain": "outlook.com"
+    },
+    {
+      "id": "150526",
+      "name": "Admin Consent Test Org",
+      "domain": "consent-test.com"
+    },
+    {
+      "id": "150528",
+      "name": "E2E Test Organization",
+      "domain": "e2e-test.com"
+    },
+    {
+      "id": "150530",
+      "name": "Test Organization E2E",
+      "domain": "test-e2e.com"
+    },
+    {
+      "id": "150532",
+      "name": "Test Organization MS365",
+      "domain": "test-ms365.com"
+    },
+    {
+      "id": "150534",
+      "name": "Second Test Organization",
+      "domain": "org2-test.com"
+    },
+    {
+      "id": "150536",
+      "name": "Test Organization 2 E2E",
+      "domain": "test-e2e-2.com"
+    },
+    {
+      "id": "150538",
+      "name": "Test gmail.com",
+      "domain": "gmail.com"
+    },
+    {
+      "id": "150540",
+      "name": "Test yahoo.com",
+      "domain": "yahoo.com"
+    },
+    {
+      "id": "150542",
+      "name": "Test hotmail.com",
+      "domain": "hotmail.com"
+    },
+    {
+      "id": "150544",
+      "name": "Test outlook.com",
+      "domain": "outlook.com"
+    },
+    {
+      "id": "150546",
+      "name": "Admin Consent Test Org",
+      "domain": "consent-test.com"
+    },
+    {
+      "id": "150548",
+      "name": "E2E Test Organization",
+      "domain": "e2e-test.com"
+    },
+    {
+      "id": "150550",
+      "name": "Test Organization E2E",
+      "domain": "test-e2e.com"
+    },
+    {
+      "id": "150552",
+      "name": "Test Organization MS365",
+      "domain": "test-ms365.com"
+    },
+    {
+      "id": "150554",
+      "name": "Second Test Organization",
+      "domain": "org2-test.com"
+    },
+    {
+      "id": "150556",
+      "name": "Test Organization 2 E2E",
+      "domain": "test-e2e-2.com"
+    },
+    {
+      "id": "150558",
+      "name": "Test gmail.com",
+      "domain": "gmail.com"
+    },
+    {
+      "id": "150560",
+      "name": "Test yahoo.com",
+      "domain": "yahoo.com"
+    },
+    {
+      "id": "150562",
+      "name": "Test hotmail.com",
+      "domain": "hotmail.com"
+    },
+    {
+      "id": "150564",
+      "name": "Test outlook.com",
+      "domain": "outlook.com"
+    },
+    {
+      "id": "150566",
+      "name": "Admin Consent Test Org",
+      "domain": "consent-test.com"
+    },
+    {
+      "id": "150568",
+      "name": "E2E Test Organization",
+      "domain": "e2e-test.com"
+    },
+    {
+      "id": "150570",
+      "name": "Test Organization E2E",
+      "domain": "test-e2e.com"
+    },
+    {
+      "id": "150572",
+      "name": "Second Test Organization",
+      "domain": "org2-test.com"
+    },
+    {
+      "id": "150574",
+      "name": "Test Organization MS365",
+      "domain": "test-ms365.com"
+    },
+    {
+      "id": "150576",
+      "name": "Test Organization 2 E2E",
+      "domain": "test-e2e-2.com"
+    },
+    {
+      "id": "150578",
+      "name": "Test gmail.com",
+      "domain": "gmail.com"
+    },
+    {
+      "id": "150580",
+      "name": "Test yahoo.com",
+      "domain": "yahoo.com"
+    },
+    {
+      "id": "150582",
+      "name": "Test hotmail.com",
+      "domain": "hotmail.com"
+    },
+    {
+      "id": "150584",
+      "name": "Test outlook.com",
+      "domain": "outlook.com"
+    },
+    {
+      "id": "150586",
+      "name": "Admin Consent Test Org",
+      "domain": "consent-test.com"
+    },
+    {
+      "id": "150588",
+      "name": "E2E Test Organization",
+      "domain": "e2e-test.com"
+    },
+    {
+      "id": "150590",
+      "name": "Test Organization E2E",
+      "domain": "test-e2e.com"
+    },
+    {
+      "id": "150592",
+      "name": "Test Organization 2 E2E",
+      "domain": "test-e2e-2.com"
+    },
+    {
+      "id": "150594",
+      "name": "Second Test Organization",
+      "domain": "org2-test.com"
+    },
+    {
+      "id": "150596",
+      "name": "Test gmail.com",
+      "domain": "gmail.com"
+    },
+    {
+      "id": "150598",
+      "name": "Test yahoo.com",
+      "domain": "yahoo.com"
+    },
+    {
+      "id": "150600",
+      "name": "Test hotmail.com",
+      "domain": "hotmail.com"
+    },
+    {
+      "id": "150602",
+      "name": "Test outlook.com",
+      "domain": "outlook.com"
+    },
+    {
+      "id": "150604",
+      "name": "Test Organization MS365",
+      "domain": "test-ms365.com"
+    },
+    {
+      "id": "150606",
+      "name": "Admin Consent Test Org",
+      "domain": "consent-test.com"
+    },
+    {
+      "id": "150608",
+      "name": "E2E Test Organization",
+      "domain": "e2e-test.com"
+    },
+    {
+      "id": "150610",
+      "name": "Test Organization E2E",
+      "domain": "test-e2e.com"
+    },
+    {
+      "id": "150612",
+      "name": "Second Test Organization",
+      "domain": "org2-test.com"
+    },
+    {
+      "id": "150614",
+      "name": "Test Organization 2 E2E",
+      "domain": "test-e2e-2.com"
+    },
+    {
+      "id": "150616",
+      "name": "Test gmail.com",
+      "domain": "gmail.com"
+    },
+    {
+      "id": "150618",
+      "name": "Test Organization MS365",
+      "domain": "test-ms365.com"
+    },
+    {
+      "id": "150620",
+      "name": "Test yahoo.com",
+      "domain": "yahoo.com"
+    },
+    {
+      "id": "150622",
+      "name": "Test hotmail.com",
+      "domain": "hotmail.com"
+    },
+    {
+      "id": "150624",
+      "name": "Test outlook.com",
+      "domain": "outlook.com"
+    },
+    {
+      "id": "150626",
+      "name": "Admin Consent Test Org",
+      "domain": "consent-test.com"
+    },
+    {
+      "id": "150628",
+      "name": "E2E Test Organization",
+      "domain": "e2e-test.com"
+    },
+    {
+      "id": "150630",
+      "name": "Test Organization E2E",
+      "domain": "test-e2e.com"
+    },
+    {
+      "id": "150632",
+      "name": "Second Test Organization",
+      "domain": "org2-test.com"
+    },
+    {
+      "id": "150634",
+      "name": "Test Organization 2 E2E",
+      "domain": "test-e2e-2.com"
+    },
+    {
+      "id": "150636",
+      "name": "Test Organization MS365",
+      "domain": "test-ms365.com"
+    },
+    {
+      "id": "150638",
+      "name": "Test gmail.com",
+      "domain": "gmail.com"
+    },
+    {
+      "id": "150640",
+      "name": "Test yahoo.com",
+      "domain": "yahoo.com"
+    },
+    {
+      "id": "150642",
+      "name": "Test hotmail.com",
+      "domain": "hotmail.com"
+    },
+    {
+      "id": "150644",
+      "name": "Test outlook.com",
+      "domain": "outlook.com"
+    },
+    {
+      "id": "150646",
+      "name": "Admin Consent Test Org",
+      "domain": "consent-test.com"
+    },
+    {
+      "id": "150648",
+      "name": "E2E Test Organization",
+      "domain": "e2e-test.com"
+    },
+    {
+      "id": "150650",
+      "name": "Test Organization E2E",
+      "domain": "test-e2e.com"
+    },
+    {
+      "id": "150652",
+      "name": "Test Organization 2 E2E",
+      "domain": "test-e2e-2.com"
+    },
+    {
+      "id": "150654",
+      "name": "Test Organization MS365",
+      "domain": "test-ms365.com"
+    },
+    {
+      "id": "150656",
+      "name": "Second Test Organization",
+      "domain": "org2-test.com"
+    },
+    {
+      "id": "150658",
+      "name": "Test gmail.com",
+      "domain": "gmail.com"
+    },
+    {
+      "id": "150660",
+      "name": "Test yahoo.com",
+      "domain": "yahoo.com"
+    },
+    {
+      "id": "150662",
+      "name": "Test hotmail.com",
+      "domain": "hotmail.com"
+    },
+    {
+      "id": "150664",
+      "name": "Test outlook.com",
+      "domain": "outlook.com"
+    },
+    {
+      "id": "150666",
+      "name": "Admin Consent Test Org",
+      "domain": "consent-test.com"
+    },
+    {
+      "id": "150668",
+      "name": "E2E Test Organization",
+      "domain": "e2e-test.com"
+    },
+    {
+      "id": "150670",
+      "name": "Test Organization E2E",
+      "domain": "test-e2e.com"
+    },
+    {
+      "id": "150672",
+      "name": "Test Organization 2 E2E",
+      "domain": "test-e2e-2.com"
+    },
+    {
+      "id": "150674",
+      "name": "Test gmail.com",
+      "domain": "gmail.com"
+    },
+    {
+      "id": "150676",
+      "name": "Test yahoo.com",
+      "domain": "yahoo.com"
+    },
+    {
+      "id": "150678",
+      "name": "Test Organization MS365",
+      "domain": "test-ms365.com"
+    },
+    {
+      "id": "150680",
+      "name": "Test hotmail.com",
+      "domain": "hotmail.com"
+    },
+    {
+      "id": "150682",
+      "name": "Test outlook.com",
+      "domain": "outlook.com"
+    },
+    {
+      "id": "150684",
+      "name": "Second Test Organization",
+      "domain": "org2-test.com"
+    },
+    {
+      "id": "150686",
+      "name": "Admin Consent Test Org",
+      "domain": "consent-test.com"
+    },
+    {
+      "id": "150688",
+      "name": "E2E Test Organization",
+      "domain": "e2e-test.com"
+    },
+    {
+      "id": "150690",
+      "name": "Test Organization E2E",
+      "domain": "test-e2e.com"
+    },
+    {
+      "id": "150692",
+      "name": "Second Test Organization",
+      "domain": "org2-test.com"
+    },
+    {
+      "id": "150694",
+      "name": "Test Organization MS365",
+      "domain": "test-ms365.com"
+    },
+    {
+      "id": "150696",
+      "name": "Test Organization 2 E2E",
+      "domain": "test-e2e-2.com"
+    },
+    {
+      "id": "150698",
+      "name": "Test gmail.com",
+      "domain": "gmail.com"
+    },
+    {
+      "id": "150700",
+      "name": "Test yahoo.com",
+      "domain": "yahoo.com"
+    },
+    {
+      "id": "150702",
+      "name": "Test hotmail.com",
+      "domain": "hotmail.com"
+    },
+    {
+      "id": "150704",
+      "name": "Test outlook.com",
+      "domain": "outlook.com"
+    },
+    {
+      "id": "150706",
+      "name": "Admin Consent Test Org",
+      "domain": "consent-test.com"
+    },
+    {
+      "id": "150708",
+      "name": "E2E Test Organization",
+      "domain": "e2e-test.com"
+    },
+    {
+      "id": "150710",
+      "name": "Test Organization E2E",
+      "domain": "test-e2e.com"
+    },
+    {
+      "id": "150712",
+      "name": "Second Test Organization",
+      "domain": "org2-test.com"
+    },
+    {
+      "id": "150714",
+      "name": "Test Organization 2 E2E",
+      "domain": "test-e2e-2.com"
+    },
+    {
+      "id": "150716",
+      "name": "Test Organization MS365",
+      "domain": "test-ms365.com"
+    },
+    {
+      "id": "150718",
+      "name": "Test gmail.com",
+      "domain": "gmail.com"
+    },
+    {
+      "id": "150720",
+      "name": "Test yahoo.com",
+      "domain": "yahoo.com"
+    },
+    {
+      "id": "150722",
+      "name": "Test hotmail.com",
+      "domain": "hotmail.com"
+    },
+    {
+      "id": "150724",
+      "name": "Test outlook.com",
+      "domain": "outlook.com"
+    },
+    {
+      "id": "150726",
+      "name": "Admin Consent Test Org",
+      "domain": "consent-test.com"
+    },
+    {
+      "id": "150728",
+      "name": "E2E Test Organization",
+      "domain": "e2e-test.com"
+    },
+    {
+      "id": "150730",
+      "name": "Test Organization E2E",
+      "domain": "test-e2e.com"
+    },
+    {
+      "id": "150732",
+      "name": "Second Test Organization",
+      "domain": "org2-test.com"
+    },
+    {
+      "id": "150734",
+      "name": "Test Organization 2 E2E",
+      "domain": "test-e2e-2.com"
+    },
+    {
+      "id": "150736",
+      "name": "Test Organization MS365",
+      "domain": "test-ms365.com"
+    },
+    {
+      "id": "150738",
+      "name": "Test gmail.com",
+      "domain": "gmail.com"
+    },
+    {
+      "id": "150740",
+      "name": "Test yahoo.com",
+      "domain": "yahoo.com"
+    },
+    {
+      "id": "150742",
+      "name": "Test hotmail.com",
+      "domain": "hotmail.com"
+    },
+    {
+      "id": "150744",
+      "name": "Test outlook.com",
+      "domain": "outlook.com"
+    },
+    {
+      "id": "150746",
+      "name": "Admin Consent Test Org",
+      "domain": "consent-test.com"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tname\tdomain\n30001\tYamany Development Foundation\tyamany.org\n30001\tYamany Development Foundation\tyamany.org\n30002\tEfadah Organization for Development (EFADAH)\tefadah-ye.org\n30002\tEfadah Organization for Development (EFADAH)\tefadah-ye.org\n150288\tE2E Test Organization\te2e-test.com\n150290\tTest Organization E2E\ttest-e2e.com\n150292\tSecond Test Organization\torg2-test.com\n150294\tTest Organization 2 E2E\ttest-e2e-2.com\n150296\tTest Organization MS365\ttest-ms365.com\n150298\tTest gmail.com\tgmail.com\n150300\tTest yahoo.com\tyahoo.com\n150302\tTest hotmail.com\thotmail.com\n150304\tTest outlook.com\toutlook.com\n150306\tAdmin Consent Test Org\tconsent-test.com\n150308\tE2E Test Organization\te2e-test.com\n150310\tTest Organization E2E\ttest-e2e.com\n150312\tTest Organization MS365\ttest-ms365.com\n150314\tSecond Test Organization\torg2-test.com\n150316\tTest Organization 2 E2E\ttest-e2e-2.com\n150318\tTest gmail.com\tgmail.com\n150320\tTest yahoo.com\tyahoo.com\n150322\tTest hotmail.com\thotmail.com\n150324\tTest outlook.com\toutlook.com\n150326\tAdmin Consent Test Org\tconsent-test.com\n150328\tE2E Test Organization\te2e-test.com\n150330\tTest Organization E2E\ttest-e2e.com\n150332\tSecond Test Organization\torg2-test.com\n150334\tTest Organization 2 E2E\ttest-e2e-2.com\n150336\tTest Organization MS365\ttest-ms365.com\n150338\tTest gmail.com\tgmail.com\n150340\tTest yahoo.com\tyahoo.com\n150342\tTest hotmail.com\thotmail.com\n150344\tTest outlook.com\toutlook.com\n150346\tAdmin Consent Test Org\tconsent-test.com\n150348\tE2E Test Organization\te2e-test.com\n150350\tTest Organization E2E\ttest-e2e.com\n150352\tSecond Test Organization\torg2-test.com\n150354\tTest Organization MS365\ttest-ms365.com\n150356\tTest Organization 2 E2E\ttest-e2e-2.com\n150358\tTest gmail.com\tgmail.com\n150360\tTest yahoo.com\tyahoo.com\n150362\tTest hotmail.com\thotmail.com\n150364\tTest outlook.com\toutlook.com\n150366\tAdmin Consent Test Org\tconsent-test.com\n150368\tE2E Test Organization\te2e-test.com\n150370\tTest Organization E2E\ttest-e2e.com\n150372\tSecond Test Organization\torg2-test.com\n150374\tTest Organization 2 E2E\ttest-e2e-2.com\n150376\tTest Organization MS365\ttest-ms365.com\n150378\tTest gmail.com\tgmail.com\n150380\tTest yahoo.com\tyahoo.com\n150382\tTest hotmail.com\thotmail.com\n150384\tTest outlook.com\toutlook.com\n150386\tAdmin Consent Test Org\tconsent-test.com\n150388\tE2E Test Organization\te2e-test.com\n150390\tTest Organization E2E\ttest-e2e.com\n150392\tTest Organization 2 E2E\ttest-e2e-2.com\n150394\tSecond Test Organization\torg2-test.com\n150396\tTest gmail.com\tgmail.com\n150398\tTest yahoo.com\tyahoo.com\n150400\tTest hotmail.com\thotmail.com\n150402\tTest outlook.com\toutlook.com\n150404\tTest Organization MS365\ttest-ms365.com\n150406\tAdmin Consent Test Org\tconsent-test.com\n150408\tE2E Test Organization\te2e-test.com\n150410\tTest Organization E2E\ttest-e2e.com\n150412\tSecond Test Organization\torg2-test.com\n150414\tTest Organization MS365\ttest-ms365.com\n150416\tTest Organization 2 E2E\ttest-e2e-2.com\n150418\tTest gmail.com\tgmail.com\n150420\tTest yahoo.com\tyahoo.com\n150422\tTest hotmail.com\thotmail.com\n150424\tTest outlook.com\toutlook.com\n150426\tAdmin Consent Test Org\tconsent-test.com\n150428\tE2E Test Organization\te2e-test.com\n150430\tTest Organization E2E\ttest-e2e.com\n150432\tSecond Test Organization\torg2-test.com\n150434\tTest Organization 2 E2E\ttest-e2e-2.com\n150436\tTest Organization MS365\ttest-ms365.com\n150438\tTest gmail.com\tgmail.com\n150440\tTest yahoo.com\tyahoo.com\n150442\tTest hotmail.com\thotmail.com\n150444\tTest outlook.com\toutlook.com\n150446\tAdmin Consent Test Org\tconsent-test.com\n150448\tE2E Test Organization\te2e-test.com\n150450\tTest Organization E2E\ttest-e2e.com\n150452\tTest Organization MS365\ttest-ms365.com\n150454\tSecond Test Organization\torg2-test.com\n150456\tTest Organization 2 E2E\ttest-e2e-2.com\n150458\tTest gmail.com\tgmail.com\n150460\tTest yahoo.com\tyahoo.com\n150462\tTest hotmail.com\thotmail.com\n150464\tTest outlook.com\toutlook.com\n150466\tAdmin Consent Test Org\tconsent-test.com\n150468\tE2E Test Organization\te2e-test.com\n150470\tTest Organization E2E\ttest-e2e.com\n150472\tTest Organization MS365\ttest-ms365.com\n150474\tTest Organization 2 E2E\ttest-e2e-2.com\n150476\tTest gmail.com\tgmail.com\n150478\tSecond Test Organization\torg2-test.com\n150480\tTest yahoo.com\tyahoo.com\n150482\tTest hotmail.com\thotmail.com\n150484\tTest outlook.com\toutlook.com\n150486\tAdmin Consent Test Org\tconsent-test.com\n150488\tE2E Test Organization\te2e-test.com\n150490\tTest Organization E2E\ttest-e2e.com\n150492\tTest Organization MS365\ttest-ms365.com\n150494\tTest Organization 2 E2E\ttest-e2e-2.com\n150496\tSecond Test Organization\torg2-test.com\n150498\tTest gmail.com\tgmail.com\n150500\tTest yahoo.com\tyahoo.com\n150502\tTest hotmail.com\thotmail.com\n150504\tTest outlook.com\toutlook.com\n150506\tAdmin Consent Test Org\tconsent-test.com\n150508\tE2E Test Organization\te2e-test.com\n150510\tTest Organization E2E\ttest-e2e.com\n150512\tSecond Test Organization\torg2-test.com\n150514\tTest Organization 2 E2E\ttest-e2e-2.com\n150516\tTest Organization MS365\ttest-ms365.com\n150518\tTest gmail.com\tgmail.com\n150520\tTest yahoo.com\tyahoo.com\n150522\tTest hotmail.com\thotmail.com\n150524\tTest outlook.com\toutlook.com\n150526\tAdmin Consent Test Org\tconsent-test.com\n150528\tE2E Test Organization\te2e-test.com\n150530\tTest Organization E2E\ttest-e2e.com\n150532\tTest Organization MS365\ttest-ms365.com\n150534\tSecond Test Organization\torg2-test.com\n150536\tTest Organization 2 E2E\ttest-e2e-2.com\n150538\tTest gmail.com\tgmail.com\n150540\tTest yahoo.com\tyahoo.com\n150542\tTest hotmail.com\thotmail.com\n150544\tTest outlook.com\toutlook.com\n150546\tAdmin Consent Test Org\tconsent-test.com\n150548\tE2E Test Organization\te2e-test.com\n150550\tTest Organization E2E\ttest-e2e.com\n150552\tTest Organization MS365\ttest-ms365.com\n150554\tSecond Test Organization\torg2-test.com\n150556\tTest Organization 2 E2E\ttest-e2e-2.com\n150558\tTest gmail.com\tgmail.com\n150560\tTest yahoo.com\tyahoo.com\n150562\tTest hotmail.com\thotmail.com\n150564\tTest outlook.com\toutlook.com\n150566\tAdmin Consent Test Org\tconsent-test.com\n150568\tE2E Test Organization\te2e-test.com\n150570\tTest Organization E2E\ttest-e2e.com\n150572\tSecond Test Organization\torg2-test.com\n150574\tTest Organization MS365\ttest-ms365.com\n150576\tTest Organization 2 E2E\ttest-e2e-2.com\n150578\tTest gmail.com\tgmail.com\n150580\tTest yahoo.com\tyahoo.com\n150582\tTest hotmail.com\thotmail.com\n150584\tTest outlook.com\toutlook.com\n150586\tAdmin Consent Test Org\tconsent-test.com\n150588\tE2E Test Organization\te2e-test.com\n150590\tTest Organization E2E\ttest-e2e.com\n150592\tTest Organization 2 E2E\ttest-e2e-2.com\n150594\tSecond Test Organization\torg2-test.com\n150596\tTest gmail.com\tgmail.com\n150598\tTest yahoo.com\tyahoo.com\n150600\tTest hotmail.com\thotmail.com\n150602\tTest outlook.com\toutlook.com\n150604\tTest Organization MS365\ttest-ms365.com\n150606\tAdmin Consent Test Org\tconsent-test.com\n150608\tE2E Test Organization\te2e-test.com\n150610\tTest Organization E2E\ttest-e2e.com\n150612\tSecond Test Organization\torg2-test.com\n150614\tTest Organization 2 E2E\ttest-e2e-2.com\n150616\tTest gmail.com\tgmail.com\n150618\tTest Organization MS365\ttest-ms365.com\n150620\tTest yahoo.com\tyahoo.com\n150622\tTest hotmail.com\thotmail.com\n150624\tTest outlook.com\toutlook.com\n150626\tAdmin Consent Test Org\tconsent-test.com\n150628\tE2E Test Organization\te2e-test.com\n150630\tTest Organization E2E\ttest-e2e.com\n150632\tSecond Test Organization\torg2-test.com\n150634\tTest Organization 2 E2E\ttest-e2e-2.com\n150636\tTest Organization MS365\ttest-ms365.com\n150638\tTest gmail.com\tgmail.com\n150640\tTest yahoo.com\tyahoo.com\n150642\tTest hotmail.com\thotmail.com\n150644\tTest outlook.com\toutlook.com\n150646\tAdmin Consent Test Org\tconsent-test.com\n150648\tE2E Test Organization\te2e-test.com\n150650\tTest Organization E2E\ttest-e2e.com\n150652\tTest Organization 2 E2E\ttest-e2e-2.com\n150654\tTest Organization MS365\ttest-ms365.com\n150656\tSecond Test Organization\torg2-test.com\n150658\tTest gmail.com\tgmail.com\n150660\tTest yahoo.com\tyahoo.com\n150662\tTest hotmail.com\thotmail.com\n150664\tTest outlook.com\toutlook.com\n150666\tAdmin Consent Test Org\tconsent-test.com\n150668\tE2E Test Organization\te2e-test.com\n150670\tTest Organization E2E\ttest-e2e.com\n150672\tTest Organization 2 E2E\ttest-e2e-2.com\n150674\tTest gmail.com\tgmail.com\n150676\tTest yahoo.com\tyahoo.com\n150678\tTest Organization MS365\ttest-ms365.com\n150680\tTest hotmail.com\thotmail.com\n150682\tTest outlook.com\toutlook.com\n150684\tSecond Test Organization\torg2-test.com\n150686\tAdmin Consent Test Org\tconsent-test.com\n150688\tE2E Test Organization\te2e-test.com\n150690\tTest Organization E2E\ttest-e2e.com\n150692\tSecond Test Organization\torg2-test.com\n150694\tTest Organization MS365\ttest-ms365.com\n150696\tTest Organization 2 E2E\ttest-e2e-2.com\n150698\tTest gmail.com\tgmail.com\n150700\tTest yahoo.com\tyahoo.com\n150702\tTest hotmail.com\thotmail.com\n150704\tTest outlook.com\toutlook.com\n150706\tAdmin Consent Test Org\tconsent-test.com\n150708\tE2E Test Organization\te2e-test.com\n150710\tTest Organization E2E\ttest-e2e.com\n150712\tSecond Test Organization\torg2-test.com\n150714\tTest Organization 2 E2E\ttest-e2e-2.com\n150716\tTest Organization MS365\ttest-ms365.com\n150718\tTest gmail.com\tgmail.com\n150720\tTest yahoo.com\tyahoo.com\n150722\tTest hotmail.com\thotmail.com\n150724\tTest outlook.com\toutlook.com\n150726\tAdmin Consent Test Org\tconsent-test.com\n150728\tE2E Test Organization\te2e-test.com\n150730\tTest Organization E2E\ttest-e2e.com\n150732\tSecond Test Organization\torg2-test.com\n150734\tTest Organization 2 E2E\ttest-e2e-2.com\n150736\tTest Organization MS365\ttest-ms365.com\n150738\tTest gmail.com\tgmail.com\n150740\tTest yahoo.com\tyahoo.com\n150742\tTest hotmail.com\thotmail.com\n150744\tTest outlook.com\toutlook.com\n150746\tAdmin Consent Test Org\tconsent-test.com\n",
+  "stderr": "",
+  "execution_time_ms": 49
+}

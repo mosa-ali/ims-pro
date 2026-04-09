@@ -1,0 +1,1 @@
+id,organizationId,operatingUnitId,categoryId,accountCode,name,nameAr,description,descriptionAr,accountType,normalBalance,parentAccountId,level,isControlAccount,isBankAccount,isCashAccount,isReceivable,isPayable,currencyId,openingBalance,currentBalance,isActive,isPostable,sortOrder,createdAt,updatedAt,createdBy,updatedBy,deletedAt,deletedBy

@@ -1,0 +1,25 @@
+{
+  "query": "SELECT role, COUNT(*) as count, SUM(isDeleted) as deleted FROM users GROUP BY role;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway03.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3DLEw35gkkimUcv.eeb1f1cd43d3 --database 6e38zfddYazj4vVoRnY5Mj --execute SELECT role, COUNT(*) as count, SUM(isDeleted) as deleted FROM users GROUP BY role;",
+  "rows": [
+    {
+      "role": "organization_admin",
+      "count": "2",
+      "deleted": "0"
+    },
+    {
+      "role": "user",
+      "count": "44",
+      "deleted": "0"
+    },
+    {
+      "role": "platform_super_admin",
+      "count": "1",
+      "deleted": "0"
+    }
+  ],
+  "messages": [],
+  "stdout": "role\tcount\tdeleted\norganization_admin\t2\t0\nuser\t44\t0\nplatform_super_admin\t1\t0\n",
+  "stderr": "",
+  "execution_time_ms": 70
+}

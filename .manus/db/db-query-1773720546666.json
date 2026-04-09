@@ -1,0 +1,90 @@
+{
+  "query": "SELECT id, name, email, role, isDeleted, isActive FROM users LIMIT 10;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway03.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3DLEw35gkkimUcv.eeb1f1cd43d3 --database 6e38zfddYazj4vVoRnY5Mj --execute SELECT id, name, email, role, isDeleted, isActive FROM users LIMIT 10;",
+  "rows": [
+    {
+      "id": "1265089",
+      "name": "Mosa Drwesh",
+      "email": "mdrwesh82@gmail.com",
+      "role": "platform_super_admin",
+      "isDeleted": "0",
+      "isActive": "1"
+    },
+    {
+      "id": "1597115",
+      "name": "programs",
+      "email": "programs@yamany.org",
+      "role": "organization_admin",
+      "isDeleted": "0",
+      "isActive": "1"
+    },
+    {
+      "id": "1625317",
+      "name": "Admin",
+      "email": "Info@ydhorg.onmicrosoft.com",
+      "role": "user",
+      "isDeleted": "0",
+      "isActive": "1"
+    },
+    {
+      "id": "1625319",
+      "name": "Mosa",
+      "email": "mdrwesh@outlook.com",
+      "role": "user",
+      "isDeleted": "0",
+      "isActive": "1"
+    },
+    {
+      "id": "1657035",
+      "name": "Mosa Ali",
+      "email": "mosamali2050@gmail.com",
+      "role": "organization_admin",
+      "isDeleted": "0",
+      "isActive": "1"
+    },
+    {
+      "id": "1804821",
+      "name": "NULL",
+      "email": "NULL",
+      "role": "user",
+      "isDeleted": "0",
+      "isActive": "1"
+    },
+    {
+      "id": "1804823",
+      "name": "NULL",
+      "email": "NULL",
+      "role": "user",
+      "isDeleted": "0",
+      "isActive": "1"
+    },
+    {
+      "id": "1804825",
+      "name": "NULL",
+      "email": "NULL",
+      "role": "user",
+      "isDeleted": "0",
+      "isActive": "1"
+    },
+    {
+      "id": "1804827",
+      "name": "NULL",
+      "email": "NULL",
+      "role": "user",
+      "isDeleted": "0",
+      "isActive": "1"
+    },
+    {
+      "id": "1804829",
+      "name": "NULL",
+      "email": "NULL",
+      "role": "user",
+      "isDeleted": "0",
+      "isActive": "1"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tname\temail\trole\tisDeleted\tisActive\n1265089\tMosa Drwesh\tmdrwesh82@gmail.com\tplatform_super_admin\t0\t1\n1597115\tprograms\tprograms@yamany.org\torganization_admin\t0\t1\n1625317\tAdmin\tInfo@ydhorg.onmicrosoft.com\tuser\t0\t1\n1625319\tMosa\tmdrwesh@outlook.com\tuser\t0\t1\n1657035\tMosa Ali\tmosamali2050@gmail.com\torganization_admin\t0\t1\n1804821\tNULL\tNULL\tuser\t0\t1\n1804823\tNULL\tNULL\tuser\t0\t1\n1804825\tNULL\tNULL\tuser\t0\t1\n1804827\tNULL\tNULL\tuser\t0\t1\n1804829\tNULL\tNULL\tuser\t0\t1\n",
+  "stderr": "",
+  "execution_time_ms": 244
+}

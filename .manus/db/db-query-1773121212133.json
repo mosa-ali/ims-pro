@@ -1,0 +1,46 @@
+{
+  "query": "\nSELECT \n  'vendors' as table_name, COUNT(*) as record_count FROM vendors\nUNION ALL\nSELECT 'purchase_requests', COUNT(*) FROM purchase_requests\nUNION ALL\nSELECT 'purchase_orders', COUNT(*) FROM purchase_orders\nUNION ALL\nSELECT 'goods_receipt_notes', COUNT(*) FROM goods_receipt_notes\nUNION ALL\nSELECT 'contracts', COUNT(*) FROM contracts\nUNION ALL\nSELECT 'payments', COUNT(*) FROM payments\nUNION ALL\nSELECT 'stock_items', COUNT(*) FROM stock_items\nUNION ALL\nSELECT 'stock_ledger', COUNT(*) FROM stock_ledger\nUNION ALL\nSELECT 'documents', COUNT(*) FROM documents\nORDER BY table_name;\n",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway03.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3DLEw35gkkimUcv.eeb1f1cd43d3 --database 6e38zfddYazj4vVoRnY5Mj --execute \nSELECT \n  'vendors' as table_name, COUNT(*) as record_count FROM vendors\nUNION ALL\nSELECT 'purchase_requests', COUNT(*) FROM purchase_requests\nUNION ALL\nSELECT 'purchase_orders', COUNT(*) FROM purchase_orders\nUNION ALL\nSELECT 'goods_receipt_notes', COUNT(*) FROM goods_receipt_notes\nUNION ALL\nSELECT 'contracts', COUNT(*) FROM contracts\nUNION ALL\nSELECT 'payments', COUNT(*) FROM payments\nUNION ALL\nSELECT 'stock_items', COUNT(*) FROM stock_items\nUNION ALL\nSELECT 'stock_ledger', COUNT(*) FROM stock_ledger\nUNION ALL\nSELECT 'documents', COUNT(*) FROM documents\nORDER BY table_name;\n",
+  "rows": [
+    {
+      "table_name": "contracts",
+      "record_count": "0"
+    },
+    {
+      "table_name": "documents",
+      "record_count": "45"
+    },
+    {
+      "table_name": "goods_receipt_notes",
+      "record_count": "10"
+    },
+    {
+      "table_name": "payments",
+      "record_count": "0"
+    },
+    {
+      "table_name": "purchase_orders",
+      "record_count": "14"
+    },
+    {
+      "table_name": "purchase_requests",
+      "record_count": "24"
+    },
+    {
+      "table_name": "stock_items",
+      "record_count": "16"
+    },
+    {
+      "table_name": "stock_ledger",
+      "record_count": "16"
+    },
+    {
+      "table_name": "vendors",
+      "record_count": "26"
+    }
+  ],
+  "messages": [],
+  "stdout": "table_name\trecord_count\ncontracts\t0\ndocuments\t45\ngoods_receipt_notes\t10\npayments\t0\npurchase_orders\t14\npurchase_requests\t24\nstock_items\t16\nstock_ledger\t16\nvendors\t26\n",
+  "stderr": "",
+  "execution_time_ms": 422
+}

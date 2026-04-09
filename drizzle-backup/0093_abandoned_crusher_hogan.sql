@@ -1,0 +1,1 @@
+ALTER TABLE `rfqs` MODIFY COLUMN `status` enum('draft','active','sent','received','cancelled') NOT NULL DEFAULT 'draft';

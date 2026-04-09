@@ -1,0 +1,1 @@
+id,surveyId,questionCode,questionText,questionTextAr,helpText,helpTextAr,questionType,isRequired,order,sectionId,sectionTitle,sectionTitleAr,options,validationRules,skipLogic,isDeleted,deletedAt,deletedBy,createdAt,updatedAt

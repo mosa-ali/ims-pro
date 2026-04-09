@@ -1,0 +1,1 @@
+id,organizationId,operatingUnitId,purchaseOrderId,supplierId,paymentNumber,paymentDate,amount,currency,paymentMethod,referenceNumber,invoiceNumber,description,status,processedBy,processedAt,remarks,isDeleted,deletedAt,deletedBy,createdAt,updatedAt,createdBy,updatedBy

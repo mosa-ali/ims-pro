@@ -1,0 +1,1 @@
+id,organizationId,operatingUnitId,employeeId,date,checkIn,checkOut,status,workHours,overtimeHours,location,notes,periodLocked,lockedBy,lockedAt,isDeleted,deletedAt,deletedBy,createdAt,updatedAt

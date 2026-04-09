@@ -1,0 +1,4 @@
+id,name,nameAr,category,minAmount,maxAmount,currency,approverRole,approverUserId,requiresMultipleApprovers,approverCount,sequentialApproval,autoApproveBelow,isActive,notes,organizationId,operatingUnitId,isDeleted,deletedAt,deletedBy,createdAt,updatedAt,appliesToModule,appliesToTransactionType,currencyId,isAmountInBaseCurrency,effectiveFrom,effectiveTo
+1,Low Value Expenses,نفقات منخفضة القيمة,expense,0.00,1000.00,USD,finance_officer,,0,1,0,,1,,30001,,0,,,2026-02-02 01:25:56,2026-02-02 01:25:56,,,,1,,
+2,Medium Value Expenses,نفقات متوسطة القيمة,expense,1000.00,10000.00,USD,finance_manager,,0,1,0,,1,,30001,,0,,,2026-02-02 01:25:56,2026-02-02 01:25:56,,,,1,,
+3,High Value Expenses,نفقات عالية القيمة,expense,10000.00,100000.00,USD,finance_director,,1,1,0,,1,,30001,,0,,,2026-02-02 01:25:56,2026-02-02 01:25:56,,,,1,,

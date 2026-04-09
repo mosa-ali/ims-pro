@@ -1,0 +1,90 @@
+{
+  "query": "SELECT id, email, request_type, requested_auth_provider, status, routed_to_role FROM request_access_requests ORDER BY created_at DESC LIMIT 10;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway03.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3DLEw35gkkimUcv.eeb1f1cd43d3 --database 6e38zfddYazj4vVoRnY5Mj --execute SELECT id, email, request_type, requested_auth_provider, status, routed_to_role FROM request_access_requests ORDER BY created_at DESC LIMIT 10;",
+  "rows": [
+    {
+      "id": "RAR-1773449507042",
+      "email": "testplatformlocal2@example.com",
+      "request_type": "platform_admin",
+      "requested_auth_provider": "local",
+      "status": "new",
+      "routed_to_role": "NULL"
+    },
+    {
+      "id": "RAR-1773448955094",
+      "email": "testorglocal@example.com",
+      "request_type": "organization_user",
+      "requested_auth_provider": "local",
+      "status": "new",
+      "routed_to_role": "NULL"
+    },
+    {
+      "id": "RAR-1773448888451",
+      "email": "testorguser@example.com",
+      "request_type": "organization_user",
+      "requested_auth_provider": "microsoft",
+      "status": "new",
+      "routed_to_role": "NULL"
+    },
+    {
+      "id": "RAR-1773446986860",
+      "email": "ahmed.hassan@yamany.org",
+      "request_type": "organization_user",
+      "requested_auth_provider": "NULL",
+      "status": "new",
+      "routed_to_role": "NULL"
+    },
+    {
+      "id": "RAR-1773446855233",
+      "email": "test.duplicate.1773446855221@example.com",
+      "request_type": "organization_user",
+      "requested_auth_provider": "NULL",
+      "status": "new",
+      "routed_to_role": "NULL"
+    },
+    {
+      "id": "RAR-1773446855208",
+      "email": "test.access.1773446855197@example.com",
+      "request_type": "organization_user",
+      "requested_auth_provider": "NULL",
+      "status": "new",
+      "routed_to_role": "NULL"
+    },
+    {
+      "id": "RAR-STATUS-1773446771760",
+      "email": "status-test-1773446771760@yamany.org",
+      "request_type": "organization_user",
+      "requested_auth_provider": "NULL",
+      "status": "new",
+      "routed_to_role": "org_admin"
+    },
+    {
+      "id": "RAR-1773446771555",
+      "email": "test.duplicate.1773446771544@example.com",
+      "request_type": "organization_user",
+      "requested_auth_provider": "NULL",
+      "status": "new",
+      "routed_to_role": "NULL"
+    },
+    {
+      "id": "RAR-1773446771532",
+      "email": "test.access.1773446771512@example.com",
+      "request_type": "organization_user",
+      "requested_auth_provider": "NULL",
+      "status": "new",
+      "routed_to_role": "NULL"
+    },
+    {
+      "id": "RAR-TEST-1773446771739",
+      "email": "test-duplicate-1773446771739@yamany.org",
+      "request_type": "organization_user",
+      "requested_auth_provider": "NULL",
+      "status": "new",
+      "routed_to_role": "org_admin"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\temail\trequest_type\trequested_auth_provider\tstatus\trouted_to_role\nRAR-1773449507042\ttestplatformlocal2@example.com\tplatform_admin\tlocal\tnew\tNULL\nRAR-1773448955094\ttestorglocal@example.com\torganization_user\tlocal\tnew\tNULL\nRAR-1773448888451\ttestorguser@example.com\torganization_user\tmicrosoft\tnew\tNULL\nRAR-1773446986860\tahmed.hassan@yamany.org\torganization_user\tNULL\tnew\tNULL\nRAR-1773446855233\ttest.duplicate.1773446855221@example.com\torganization_user\tNULL\tnew\tNULL\nRAR-1773446855208\ttest.access.1773446855197@example.com\torganization_user\tNULL\tnew\tNULL\nRAR-STATUS-1773446771760\tstatus-test-1773446771760@yamany.org\torganization_user\tNULL\tnew\torg_admin\nRAR-1773446771555\ttest.duplicate.1773446771544@example.com\torganization_user\tNULL\tnew\tNULL\nRAR-1773446771532\ttest.access.1773446771512@example.com\torganization_user\tNULL\tnew\tNULL\nRAR-TEST-1773446771739\ttest-duplicate-1773446771739@yamany.org\torganization_user\tNULL\tnew\torg_admin\n",
+  "stderr": "",
+  "execution_time_ms": 64
+}

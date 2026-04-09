@@ -1,0 +1,2 @@
+id,projectId,organizationId,operatingUnitId,warningThreshold,criticalThreshold,isEnabled,notifyProjectManager,notifyFinanceTeam,notifyOwner,createdAt,updatedAt,createdBy,updatedBy,isDeleted,deletedAt,deletedBy
+1,150027,30001,30001,3.00,5.00,1,1,1,0,2026-02-04 19:24:15,2026-02-04 19:25:25,1080332,1080332,0,,

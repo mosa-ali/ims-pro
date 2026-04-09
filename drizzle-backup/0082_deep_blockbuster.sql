@@ -1,0 +1,1 @@
+ALTER TABLE `organizations` ADD `defaultLanguage` varchar(10) DEFAULT 'en' NOT NULL;

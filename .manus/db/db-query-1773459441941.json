@@ -1,0 +1,42 @@
+{
+  "query": "SELECT uo.id, uo.userId, uo.organizationId, uo.platformRole, o.name as orgName, o.shortCode FROM user_organizations uo LEFT JOIN organizations o ON uo.organizationId = o.id WHERE uo.userId = 1265089 ORDER BY uo.organizationId, uo.id;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway03.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3DLEw35gkkimUcv.eeb1f1cd43d3 --database 6e38zfddYazj4vVoRnY5Mj --execute SELECT uo.id, uo.userId, uo.organizationId, uo.platformRole, o.name as orgName, o.shortCode FROM user_organizations uo LEFT JOIN organizations o ON uo.organizationId = o.id WHERE uo.userId = 1265089 ORDER BY uo.organizationId, uo.id;",
+  "rows": [
+    {
+      "id": "90053",
+      "userId": "1265089",
+      "organizationId": "30001",
+      "platformRole": "organization_admin",
+      "orgName": "Yamany Development Foundation",
+      "shortCode": "YDH"
+    },
+    {
+      "id": "90055",
+      "userId": "1265089",
+      "organizationId": "30001",
+      "platformRole": "organization_admin",
+      "orgName": "Yamany Development Foundation",
+      "shortCode": "YDH"
+    },
+    {
+      "id": "90051",
+      "userId": "1265089",
+      "organizationId": "30002",
+      "platformRole": "organization_admin",
+      "orgName": "Efadah Organization for Development (EFADAH)",
+      "shortCode": "EFADAH"
+    },
+    {
+      "id": "90057",
+      "userId": "1265089",
+      "organizationId": "30002",
+      "platformRole": "organization_admin",
+      "orgName": "Efadah Organization for Development (EFADAH)",
+      "shortCode": "EFADAH"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tuserId\torganizationId\tplatformRole\torgName\tshortCode\n90053\t1265089\t30001\torganization_admin\tYamany Development Foundation\tYDH\n90055\t1265089\t30001\torganization_admin\tYamany Development Foundation\tYDH\n90051\t1265089\t30002\torganization_admin\tEfadah Organization for Development (EFADAH)\tEFADAH\n90057\t1265089\t30002\torganization_admin\tEfadah Organization for Development (EFADAH)\tEFADAH\n",
+  "stderr": "",
+  "execution_time_ms": 112
+}

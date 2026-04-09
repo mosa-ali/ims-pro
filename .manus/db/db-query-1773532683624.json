@@ -1,0 +1,19 @@
+{
+  "query": "SHOW TABLES LIKE 'email_%';",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway03.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3DLEw35gkkimUcv.eeb1f1cd43d3 --database 6e38zfddYazj4vVoRnY5Mj --execute SHOW TABLES LIKE 'email_%';",
+  "rows": [
+    {
+      "Tables_in_6e38zfddYazj4vVoRnY5Mj (email_%)": "email_provider_settings"
+    },
+    {
+      "Tables_in_6e38zfddYazj4vVoRnY5Mj (email_%)": "email_templates"
+    },
+    {
+      "Tables_in_6e38zfddYazj4vVoRnY5Mj (email_%)": "email_verification_tokens"
+    }
+  ],
+  "messages": [],
+  "stdout": "Tables_in_6e38zfddYazj4vVoRnY5Mj (email_%)\nemail_provider_settings\nemail_templates\nemail_verification_tokens\n",
+  "stderr": "",
+  "execution_time_ms": 53
+}

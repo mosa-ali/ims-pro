@@ -1,0 +1,26 @@
+// ============================================================================
+// TRANSLATION HOOK
+// Centralized hook for accessing translations based on current language
+// ============================================================================
+
+import { useLanguage } from '@/contexts/LanguageContext';
+import { en, ar, type Translations } from './translations';
+
+export function useTranslation() {
+ const { language } = useLanguage();
+ 
+ const t: Translations = language === 'ar' ? ar : en;
+ 
+ return { t, language };
+}
+
+// Type-safe translation key access
+export type TranslationKey = keyof Translations;
+
+// Helper function for nested translations
+export function getNestedTranslation(
+ obj: any,
+ path: string
+): string {
+ return path.split('.').reduce((acc, part) => acc?.[part], obj) || path;
+}

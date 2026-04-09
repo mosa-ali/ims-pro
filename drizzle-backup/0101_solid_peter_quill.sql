@@ -1,0 +1,1 @@
+ALTER TABLE `goods_receipt_notes` MODIFY COLUMN `createdBy` int NOT NULL;

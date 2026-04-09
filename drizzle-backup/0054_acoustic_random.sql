@@ -1,0 +1,1 @@
+ALTER TABLE `indicators` ADD `reportingFrequency` enum('monthly','quarterly','bi_annually','annually','end_of_project') DEFAULT 'quarterly';

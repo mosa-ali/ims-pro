@@ -1,0 +1,24 @@
+{
+  "include": ["client/src/**/*", "shared/**/*", "server/**/*"],
+  "exclude": ["node_modules", "build", "dist", "**/*.test.ts"],
+  "compilerOptions": {
+    "baseUrl": ".",
+    "types": ["node", "vite/client"],
+    "paths": {
+      "@/*": ["./client/src/*"],
+      "@shared/*": ["./shared/*"]
+    },
+    "incremental": false,
+    "noEmit": true,
+    "module": "ESNext",
+    "strict": true,
+    "lib": ["esnext", "dom", "dom.iterable"],
+    "jsx": "preserve",
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "noErrorTruncation": false,
+    "allowImportingTsExtensions": true,
+    "moduleResolution": "bundler",
+    "ignoreDeprecations": "6.0"
+  }
+}

@@ -1,0 +1,8 @@
+id,organizationId,gradeCode,gradeName,gradeNameAr,minSalary,maxSalary,midSalary,currency,steps,housingAllowance,transportAllowance,otherAllowances,effectiveDate,expiryDate,status,notes,isDeleted,deletedAt,deletedBy,createdAt,updatedAt
+22,30001,G1,Grade 1 - Entry Level,,800.00,1200.00,,USD,,,,,,,active,,0,,,2026-02-01 06:12:07,2026-02-01 06:12:07
+23,30001,G2,Grade 2 - Junior,,1200.00,1800.00,,USD,,,,,,,active,,0,,,2026-02-01 06:12:07,2026-02-01 06:12:07
+24,30001,G3,Grade 3 - Mid-Level,,1800.00,2500.00,,USD,,,,,,,active,,0,,,2026-02-01 06:12:07,2026-02-01 06:12:07
+25,30001,G4,Grade 4 - Senior,,2500.00,3500.00,,USD,,,,,,,active,,0,,,2026-02-01 06:12:07,2026-02-01 06:12:07
+26,30001,G5,Grade 5 - Lead,,3500.00,5000.00,,USD,,,,,,,active,,0,,,2026-02-01 06:12:07,2026-02-01 06:12:07
+27,30001,G6,Grade 6 - Manager,,5000.00,7000.00,,USD,,,,,,,active,,0,,,2026-02-01 06:12:07,2026-02-01 06:12:07
+28,30001,G7,Grade 7 - Director,,7000.00,10000.00,,USD,,,,,,,active,,0,,,2026-02-01 06:12:07,2026-02-01 06:12:07

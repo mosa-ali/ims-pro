@@ -1,0 +1,1 @@
+id,organizationId,operatingUnitId,bankAccountId,reconciliationNumber,reconciliationDate,statementDate,statementBalance,bookBalance,adjustedBookBalance,outstandingDeposits,outstandingCheques,difference,status,notes,completedAt,completedBy,approvedAt,approvedBy,createdAt,updatedAt,createdBy,updatedBy,isDeleted,deletedAt,deletedBy

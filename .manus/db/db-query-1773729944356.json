@@ -1,0 +1,9 @@
+{
+  "query": "UPDATE email_outbox SET status = 'pending', retryCount = 0, lastError = NULL, errorCode = NULL, nextRetryAt = NULL WHERE id = 60321;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway03.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3DLEw35gkkimUcv.eeb1f1cd43d3 --database 6e38zfddYazj4vVoRnY5Mj --execute UPDATE email_outbox SET status = 'pending', retryCount = 0, lastError = NULL, errorCode = NULL, nextRetryAt = NULL WHERE id = 60321;",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 90
+}

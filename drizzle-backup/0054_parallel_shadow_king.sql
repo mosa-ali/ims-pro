@@ -1,0 +1,1 @@
+ALTER TABLE `indicators` MODIFY COLUMN `reportingFrequency` varchar(50) DEFAULT 'quarterly';

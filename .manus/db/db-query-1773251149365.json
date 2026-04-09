@@ -1,0 +1,15 @@
+{
+  "query": "SELECT id, projectCode, title FROM projects WHERE id IN (30001, 30002) LIMIT 5;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway03.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3DLEw35gkkimUcv.eeb1f1cd43d3 --database 6e38zfddYazj4vVoRnY5Mj --execute SELECT id, projectCode, title FROM projects WHERE id IN (30001, 30002) LIMIT 5;",
+  "rows": [
+    {
+      "id": "30001",
+      "projectCode": "hggyde",
+      "title": "test project"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tprojectCode\ttitle\n30001\thggyde\ttest project\n",
+  "stderr": "",
+  "execution_time_ms": 49
+}

@@ -1,0 +1,27 @@
+{
+  "query": "SHOW COLUMNS FROM email_outbox; SELECT id, status, recipient_email, retry_count FROM email_outbox WHERE id = 60321;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway03.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3DLEw35gkkimUcv.eeb1f1cd43d3 --database 6e38zfddYazj4vVoRnY5Mj --execute SHOW COLUMNS FROM email_outbox; SELECT id, status, recipient_email, retry_count FROM email_outbox WHERE id = 60321;",
+  "returncode": 1,
+  "logs": [
+    "Field\tType\tNull\tKey\tDefault\tExtra",
+    "id\tint\tNO\tPRI\tNULL\tauto_increment",
+    "organizationId\tint\tNO\tMUL\tNULL\t",
+    "templateKey\tvarchar(100)\tNO\t\tNULL\t",
+    "recipientEmail\tvarchar(255)\tNO\t\tNULL\t",
+    "recipientName\tvarchar(255)\tYES\t\tNULL\t",
+    "subject\tvarchar(255)\tNO\t\tNULL\t",
+    "bodyHtml\tlongtext\tNO\t\tNULL\t",
+    "bodyText\tlongtext\tYES\t\tNULL\t",
+    "status\tenum('pending','sending','sent','failed','dead_letter')\tNO\tMUL\tpending\t",
+    "retryCount\tint\tNO\t\t0\t",
+    "maxRetries\tint\tNO\t\t5\t",
+    "lastError\ttext\tYES\t\tNULL\t",
+    "errorCode\tvarchar(50)\tYES\t\tNULL\t",
+    "createdAt\ttimestamp\tNO\tMUL\tCURRENT_TIMESTAMP\t",
+    "sentAt\ttimestamp\tYES\t\tNULL\t",
+    "nextRetryAt\ttimestamp\tYES\tMUL\tNULL\t",
+    "completedAt\ttimestamp\tYES\t\tNULL\t",
+    "metadata\tjson\tYES\t\tNULL",
+    "ERROR 1054 (42S22) at line 1: Unknown column 'recipient_email' in 'field list'"
+  ]
+}

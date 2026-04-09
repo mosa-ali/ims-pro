@@ -1,0 +1,1 @@
+id,organizationId,operatingUnitId,entryNumber,entryDate,fiscalYearId,fiscalPeriodId,entryType,sourceModule,sourceDocumentId,sourceDocumentType,description,descriptionAr,totalDebit,totalCredit,currencyId,exchangeRateId,status,postedAt,postedBy,reversedAt,reversedBy,reversalEntryId,projectId,grantId,attachments,createdAt,updatedAt,createdBy,updatedBy,deletedAt,deletedBy

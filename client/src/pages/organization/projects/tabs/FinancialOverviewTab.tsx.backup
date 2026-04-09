@@ -1,0 +1,828 @@
+import { useState } from 'react';
+import { DollarSign, TrendingUp, TrendingDown, AlertCircle, Download, Upload, FileSpreadsheet, Plus, Edit2, Trash2, Save, X } from 'lucide-react';
+import { useLanguage } from '@/contexts/LanguageContext';
+import { formatCurrency, formatNumber } from '@/utils/formatters';
+import { useTranslation } from '@/i18n/useTranslation';
+import ExcelJS from 'exceljs';
+import { saveAs } from 'file-saver';
+import { UnifiedExportButton } from '@/components/exports/UnifiedExportButton';
+
+interface FinancialOverviewTabProps {
+  projectId: string;
+}
+
+// 🔗 MASTER BUDGET LINE INTERFACE
+// This is the SINGLE SOURCE OF TRUTH for all financial data
+// Forecast Plan and Expenses MUST reference these budget items
+export interface BudgetLine {
+  id: string;
+  
+  // Core Budget Structure (Required for Forecast Plan)
+  fiscalYear: string;
+  budgetCode: string;
+  subBL: string;
+  budgetItem: string; // Activity Name
+  category: string;
+  
+  // Detailed Breakdown (Required for calculations)
+  quantity: number;
+  unitType: string;
+  unitCost: number;
+  recurrence: number;
+  totalBudgetLine: number; // Qty × Unit Cost × Recurrence (AUTO-CALCULATED)
+  currency: string;
+  
+  // Planning Metadata (Required for Forecast Plan)
+  previousYearBudget: number;
+  planPeriod: number; // months
+  planStartDate: string;
+  planEndDate: string;
+  
+  // Financial Tracking (From Expenses)
+  spent: number;
+  committed: number;
+  balance: number; // totalBudgetLine - spent
+  variancePercent: number; // (spent / totalBudgetLine) * 100
+  
+  // Additional Info
+  notes: string;
+}
+
+// Mock data matching the screenshot structure
+const mockBudgetLines: BudgetLine[] = [
+  {
+    id: 'budget-1',
+    fiscalYear: 'FY2025',
+    budgetCode: 'BL-1000',
+    subBL: '1.1',
+    budgetItem: 'Personnel Costs',
+    category: 'Staff Costs',
+    quantity: 1,
+    unitType: 'person',
+    unitCost: 4167,
+    recurrence: 12,
+    totalBudgetLine: 50000, // 1 × 4167 × 12 ≈ 50000
+    currency: 'USD',
+    previousYearBudget: 48000,
+    planPeriod: 12,
+    planStartDate: '01/01/2025',
+    planEndDate: '31/12/2025',
+    spent: 12500,
+    committed: 10000,
+    balance: 37500,
+    variancePercent: 25,
+    notes: 'Project Manager - Quarterly payments'
+  },
+  {
+    id: 'budget-2',
+    fiscalYear: 'FY2025',
+    budgetCode: 'BL-2000',
+    subBL: '2.1',
+    budgetItem: 'Travel & Accommodation',
+    category: 'Direct Costs',
+    quantity: 10,
+    unitType: 'trips',
+    unitCost: 1500,
+    recurrence: 1,
+    totalBudgetLine: 15000, // 10 × 1500 × 1
+    currency: 'USD',
+    previousYearBudget: 12000,
+    planPeriod: 12,
+    planStartDate: '01/01/2025',
+    planEndDate: '31/12/2025',
+    spent: 4200,
+    committed: 2000,
+    balance: 10800,
+    variancePercent: 28,
+    notes: 'Field Visits'
+  },
+  {
+    id: 'budget-3',
+    fiscalYear: 'FY2025',
+    budgetCode: 'BL-3000',
+    subBL: '3.1',
+    budgetItem: 'Training Materials',
+    category: 'Activities',
+    quantity: 100,
+    unitType: 'kits',
+    unitCost: 80,
+    recurrence: 1,
+    totalBudgetLine: 8000, // 100 × 80 × 1
+    currency: 'USD',
+    previousYearBudget: 7500,
+    planPeriod: 12,
+    planStartDate: '01/01/2025',
+    planEndDate: '31/12/2025',
+    spent: 3100,
+    committed: 1500,
+    balance: 4900,
+    variancePercent: 38.75,
+    notes: 'Workshop Supplies'
+  }
+];
+
+export function FinancialOverviewTab({ projectId }: FinancialOverviewTabProps) {
+  const { language, isRTL } = useLanguage();
+  const { t } = useTranslation();
+  const [budgetLines, setBudgetLines] = useState<BudgetLine[]>(mockBudgetLines);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editForm, setEditForm] = useState<Partial<BudgetLine>>({});
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState<string | null>(null);
+  const [showImportModal, setShowImportModal] = useState(false);
+  
+  // Calculate totals for KPI cards
+  const financialData = {
+    totalApprovedBudget: budgetLines.reduce((sum, line) => sum + line.totalBudgetLine, 0),
+    actualSpent: budgetLines.reduce((sum, line) => sum + line.spent, 0),
+    committed: budgetLines.reduce((sum, line) => sum + line.committed, 0),
+    remainingBalance: budgetLines.reduce((sum, line) => sum + line.balance, 0)
+  };
+  
+  const calculated = {
+    burnRate: financialData.totalApprovedBudget > 0 
+      ? (financialData.actualSpent / financialData.totalApprovedBudget) * 100 
+      : 0
+  };
+
+  // Export to Excel (Full structure for Forecast Plan compatibility)
+  const handleExportExcel = async () => {
+    const workbook = new ExcelJS.Workbook();
+    const worksheet = workbook.addWorksheet('Financial Overview');
+
+    worksheet.columns = [
+      { header: 'Fiscal Year', key: 'fiscalYear', width: 12 },
+      { header: 'Budget Code', key: 'budgetCode', width: 12 },
+      { header: 'Sub-BL', key: 'subBL', width: 10 },
+      { header: 'Budget Item', key: 'budgetItem', width: 30 },
+      { header: 'Category', key: 'category', width: 20 },
+      { header: 'Quantity', key: 'quantity', width: 10 },
+      { header: 'Unit Type', key: 'unitType', width: 12 },
+      { header: 'Unit Cost', key: 'unitCost', width: 12 },
+      { header: 'Recurrence', key: 'recurrence', width: 12 },
+      { header: 'Total Budget Line', key: 'totalBudgetLine', width: 18 },
+      { header: 'Currency', key: 'currency', width: 10 },
+      { header: 'Previous Year Budget', key: 'previousYearBudget', width: 18 },
+      { header: 'Plan Period (months)', key: 'planPeriod', width: 12 },
+      { header: 'Plan Start Date', key: 'planStartDate', width: 15 },
+      { header: 'Plan End Date', key: 'planEndDate', width: 15 },
+      { header: 'Spent', key: 'spent', width: 15 },
+      { header: 'Committed', key: 'committed', width: 15 },
+      { header: 'Balance', key: 'balance', width: 15 },
+      { header: 'Variance %', key: 'variancePercent', width: 12 },
+      { header: 'Notes', key: 'notes', width: 30 }
+    ];
+
+    worksheet.getRow(1).font = { bold: true, color: { argb: 'FFFFFFFF' } };
+    worksheet.getRow(1).fill = {
+      type: 'pattern',
+      pattern: 'solid',
+      fgColor: { argb: 'FF3B82F6' }
+    };
+
+    budgetLines.forEach(line => {
+      worksheet.addRow(line);
+    });
+
+    // Add summary row
+    const summaryRow = worksheet.addRow({
+      fiscalYear: '',
+      budgetCode: 'TOTAL',
+      subBL: '',
+      budgetItem: '',
+      category: '',
+      quantity: '',
+      unitType: '',
+      unitCost: '',
+      recurrence: '',
+      totalBudgetLine: financialData.totalApprovedBudget,
+      currency: '',
+      previousYearBudget: '',
+      planPeriod: '',
+      planStartDate: '',
+      planEndDate: '',
+      spent: financialData.actualSpent,
+      committed: financialData.committed,
+      balance: financialData.remainingBalance,
+      variancePercent: calculated.burnRate,
+      notes: ''
+    });
+    summaryRow.font = { bold: true };
+    summaryRow.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFF3F4F6' } };
+
+    const buffer = await workbook.xlsx.writeBuffer();
+    const blob = new Blob([buffer], { 
+      type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' 
+    });
+    saveAs(blob, `Financial_Overview_${new Date().toISOString().split('T')[0]}.xlsx`);
+  };
+
+  // Export Empty Template
+  const handleExportTemplate = async () => {
+    const workbook = new ExcelJS.Workbook();
+    const worksheet = workbook.addWorksheet('Budget Template');
+
+    worksheet.columns = [
+      { header: 'Fiscal Year*', key: 'fiscalYear', width: 12 },
+      { header: 'Budget Code*', key: 'budgetCode', width: 12 },
+      { header: 'Sub-BL*', key: 'subBL', width: 10 },
+      { header: 'Budget Item*', key: 'budgetItem', width: 30 },
+      { header: 'Category*', key: 'category', width: 20 },
+      { header: 'Quantity*', key: 'quantity', width: 10 },
+      { header: 'Unit Type*', key: 'unitType', width: 12 },
+      { header: 'Unit Cost*', key: 'unitCost', width: 12 },
+      { header: 'Recurrence*', key: 'recurrence', width: 12 },
+      { header: 'Currency*', key: 'currency', width: 10 },
+      { header: 'Previous Year Budget', key: 'previousYearBudget', width: 18 },
+      { header: 'Plan Period (months)*', key: 'planPeriod', width: 12 },
+      { header: 'Plan Start Date*', key: 'planStartDate', width: 15 },
+      { header: 'Plan End Date*', key: 'planEndDate', width: 15 },
+      { header: 'Notes', key: 'notes', width: 30 }
+    ];
+
+    worksheet.getRow(1).font = { bold: true, color: { argb: 'FFFFFFFF' } };
+    worksheet.getRow(1).fill = {
+      type: 'pattern',
+      pattern: 'solid',
+      fgColor: { argb: 'FF059669' }
+    };
+
+    // Add sample row
+    worksheet.addRow({
+      fiscalYear: 'FY2025',
+      budgetCode: 'BL-1000',
+      subBL: '1.1',
+      budgetItem: 'Personnel Costs',
+      category: 'Staff Costs',
+      quantity: 1,
+      unitType: 'person',
+      unitCost: 5000,
+      recurrence: 12,
+      currency: 'USD',
+      previousYearBudget: 48000,
+      planPeriod: 12,
+      planStartDate: '01/01/2025',
+      planEndDate: '31/12/2025',
+      notes: 'Sample budget line'
+    });
+
+    const buffer = await workbook.xlsx.writeBuffer();
+    const blob = new Blob([buffer], { 
+      type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' 
+    });
+    saveAs(blob, 'Budget_Template_Empty.xlsx');
+  };
+
+  // Import from Excel
+  const handleImportExcel = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    const workbook = new ExcelJS.Workbook();
+    const arrayBuffer = await file.arrayBuffer();
+    await workbook.xlsx.load(arrayBuffer);
+
+    const worksheet = workbook.worksheets[0];
+    const importedData: BudgetLine[] = [];
+    const errors: string[] = [];
+
+    worksheet.eachRow((row, rowNumber) => {
+      if (rowNumber === 1) return; // Skip header
+
+      const fiscalYear = row.getCell(1).value?.toString() || '';
+      const budgetCode = row.getCell(2).value?.toString() || '';
+      const subBL = row.getCell(3).value?.toString() || '';
+      const budgetItem = row.getCell(4).value?.toString() || '';
+      const category = row.getCell(5).value?.toString() || '';
+      const quantity = parseFloat(row.getCell(6).value?.toString() || '0');
+      const unitType = row.getCell(7).value?.toString() || '';
+      const unitCost = parseFloat(row.getCell(8).value?.toString() || '0');
+      const recurrence = parseFloat(row.getCell(9).value?.toString() || '1');
+      const currency = row.getCell(10).value?.toString() || 'USD';
+      const previousYearBudget = parseFloat(row.getCell(11).value?.toString() || '0');
+      const planPeriod = parseFloat(row.getCell(12).value?.toString() || '12');
+      const planStartDate = row.getCell(13).value?.toString() || '';
+      const planEndDate = row.getCell(14).value?.toString() || '';
+      const notes = row.getCell(15).value?.toString() || '';
+
+      // Validate required fields
+      if (!fiscalYear) errors.push(`Row ${rowNumber}: Fiscal Year is required`);
+      if (!budgetCode) errors.push(`Row ${rowNumber}: Budget Code is required`);
+      if (!subBL) errors.push(`Row ${rowNumber}: Sub-BL is required`);
+      if (!budgetItem) errors.push(`Row ${rowNumber}: Budget Item is required`);
+      if (!quantity || quantity <= 0) errors.push(`Row ${rowNumber}: Quantity must be > 0`);
+      if (!unitCost || unitCost <= 0) errors.push(`Row ${rowNumber}: Unit Cost must be > 0`);
+
+      // Auto-calculate Total Budget Line
+      const totalBudgetLine = quantity * unitCost * recurrence;
+
+      importedData.push({
+        id: `imported-${Date.now()}-${rowNumber}`,
+        fiscalYear,
+        budgetCode,
+        subBL,
+        budgetItem,
+        category,
+        quantity,
+        unitType,
+        unitCost,
+        recurrence,
+        totalBudgetLine,
+        currency,
+        previousYearBudget,
+        planPeriod,
+        planStartDate,
+        planEndDate,
+        spent: 0,
+        committed: 0,
+        balance: totalBudgetLine,
+        variancePercent: 0,
+        notes
+      });
+    });
+
+    if (errors.length > 0) {
+      alert(`Import errors:\n${errors.join('\n')}`);
+      return;
+    }
+
+    setBudgetLines([...budgetLines, ...importedData]);
+    alert(`Successfully imported ${importedData.length} budget lines!`);
+    setShowImportModal(false);
+  };
+
+  const handleCreate = () => {
+    if (!editForm.budgetCode || !editForm.budgetItem || !editForm.quantity || !editForm.unitCost) {
+      alert('Please fill all required fields');
+      return;
+    }
+
+    const totalBudgetLine = (editForm.quantity || 0) * (editForm.unitCost || 0) * (editForm.recurrence || 1);
+
+    const newBudgetLine: BudgetLine = {
+      id: `budget-${Date.now()}`,
+      fiscalYear: editForm.fiscalYear || 'FY2025',
+      budgetCode: editForm.budgetCode || '',
+      subBL: editForm.subBL || '',
+      budgetItem: editForm.budgetItem || '',
+      category: editForm.category || '',
+      quantity: editForm.quantity || 0,
+      unitType: editForm.unitType || '',
+      unitCost: editForm.unitCost || 0,
+      recurrence: editForm.recurrence || 1,
+      totalBudgetLine,
+      currency: editForm.currency || 'USD',
+      previousYearBudget: editForm.previousYearBudget || 0,
+      planPeriod: editForm.planPeriod || 12,
+      planStartDate: editForm.planStartDate || '',
+      planEndDate: editForm.planEndDate || '',
+      spent: 0,
+      committed: 0,
+      balance: totalBudgetLine,
+      variancePercent: 0,
+      notes: editForm.notes || ''
+    };
+
+    setBudgetLines([...budgetLines, newBudgetLine]);
+    setShowCreateModal(false);
+    setEditForm({});
+    alert('Budget line created successfully!');
+  };
+
+  const handleEdit = (id: string) => {
+    const line = budgetLines.find(l => l.id === id);
+    if (line) {
+      setEditingId(id);
+      setEditForm(line);
+    }
+  };
+
+  const handleSaveEdit = () => {
+    if (!editingId) return;
+
+    const totalBudgetLine = (editForm.quantity || 0) * (editForm.unitCost || 0) * (editForm.recurrence || 1);
+    const spent = editForm.spent || 0;
+    const committed = editForm.committed || 0;
+    const balance = totalBudgetLine - spent;
+    const variancePercent = totalBudgetLine > 0 ? (spent / totalBudgetLine) * 100 : 0;
+
+    setBudgetLines(budgetLines.map(line => 
+      line.id === editingId 
+        ? { 
+            ...line, 
+            ...editForm, 
+            totalBudgetLine,
+            balance,
+            variancePercent
+          } 
+        : line
+    ));
+    setEditingId(null);
+    setEditForm({});
+    alert('Budget line updated successfully!');
+  };
+
+  const handleDelete = (id: string) => {
+    setBudgetLines(budgetLines.filter(line => line.id !== id));
+    setShowDeleteConfirm(null);
+    alert('Budget line deleted successfully!');
+  };
+
+  return (
+    <div className="space-y-6">
+      {/* KPI Cards - Matching Screenshot */}
+      <div className="grid grid-cols-4 gap-4 mt-6">
+        <div className="bg-white rounded-lg p-4 border border-gray-200">
+          <div className={`flex items-center gap-2 mb-2 ${isRTL ? 'flex-row-reverse' : ''}`}>
+            <DollarSign className="w-5 h-5 text-blue-600" />
+            <div className="text-xs text-gray-600">Total Approved Budget</div>
+          </div>
+          <div className="ltr-safe text-2xl font-bold text-gray-900">
+            ${formatNumber(financialData.totalApprovedBudget)}
+          </div>
+        </div>
+
+        <div className="bg-white rounded-lg p-4 border border-gray-200">
+          <div className={`flex items-center gap-2 mb-2 ${isRTL ? 'flex-row-reverse' : ''}`}>
+            <TrendingDown className="w-5 h-5 text-red-600" />
+            <div className="text-xs text-gray-600">Actual Spent</div>
+          </div>
+          <div className="ltr-safe text-2xl font-bold text-gray-900">
+            ${formatNumber(financialData.actualSpent)}
+          </div>
+        </div>
+
+        <div className="bg-white rounded-lg p-4 border border-gray-200">
+          <div className={`flex items-center gap-2 mb-2 ${isRTL ? 'flex-row-reverse' : ''}`}>
+            <AlertCircle className="w-5 h-5 text-orange-600" />
+            <div className="text-xs text-gray-600">Committed Funds</div>
+          </div>
+          <div className="ltr-safe text-2xl font-bold text-gray-900">
+            ${formatNumber(financialData.committed)}
+          </div>
+        </div>
+
+        <div className="bg-white rounded-lg p-4 border border-gray-200">
+          <div className={`flex items-center gap-2 mb-2 ${isRTL ? 'flex-row-reverse' : ''}`}>
+            <TrendingUp className="w-5 h-5 text-green-600" />
+            <div className="text-xs text-gray-600">Remaining Balance</div>
+          </div>
+          <div className="ltr-safe text-2xl font-bold text-gray-900">
+            ${formatNumber(financialData.remainingBalance)}
+          </div>
+          <div className="text-xs text-gray-500 mt-1">
+            Burn Rate: {calculated.burnRate.toFixed(1)}% {calculated.burnRate < 75 ? '(On Track)' : '(High)'}
+          </div>
+        </div>
+      </div>
+
+      {/* Budget Lines Table - Matching Screenshot */}
+      <div className="bg-white rounded-lg shadow-sm border border-gray-200">
+        <div className={`flex items-center justify-between p-4 border-b border-gray-200 ${isRTL ? 'flex-row-reverse' : ''}`}>
+          <div>
+            <h3 className="text-sm font-semibold text-gray-900">Budget Lines</h3>
+            <p className="text-xs text-gray-600 mt-0.5">
+              Excel-like grid with approved budget, expenditures, and variance tracking
+            </p>
+          </div>
+          <div className={`flex items-center gap-2 ${isRTL ? 'flex-row-reverse' : ''}`}>
+            <UnifiedExportButton
+              hasData={budgetLines.length > 0}
+              onExportData={handleExportExcel}
+              onExportTemplate={handleExportTemplate}
+              moduleName="Budget Lines"
+              showModal={true}
+            />
+            <button
+              onClick={() => setShowImportModal(true)}
+              className={`px-3 py-2 text-sm border border-gray-300 rounded-md hover:bg-gray-50 flex items-center gap-2 ${isRTL ? 'flex-row-reverse' : ''}`}
+            >
+              <Upload className="w-4 h-4" />
+              Import
+            </button>
+            <button
+              onClick={() => setShowCreateModal(true)}
+              className={`px-4 py-2 text-sm bg-primary text-white rounded-md hover:bg-primary/90 flex items-center gap-2 ${isRTL ? 'flex-row-reverse' : ''}`}
+            >
+              <Plus className="w-4 h-4" />
+              Add Budget Line
+            </button>
+          </div>
+        </div>
+
+        <div className="overflow-x-auto">
+          <table className="w-full">
+            <thead className="bg-gray-50 border-b border-gray-200">
+              <tr>
+                <th className="px-4 py-3 text-xs font-semibold text-gray-700 text-left">CODE</th>
+                <th className="px-4 py-3 text-xs font-semibold text-gray-700 text-left">BUDGET ITEM</th>
+                <th className="px-4 py-3 text-xs font-semibold text-gray-700 text-left">CATEGORY</th>
+                <th className="px-4 py-3 text-xs font-semibold text-gray-700 text-right">APPROVED</th>
+                <th className="px-4 py-3 text-xs font-semibold text-gray-700 text-right">SPENT</th>
+                <th className="px-4 py-3 text-xs font-semibold text-gray-700 text-right">COMMITTED</th>
+                <th className="px-4 py-3 text-xs font-semibold text-gray-700 text-right">BALANCE</th>
+                <th className="px-4 py-3 text-xs font-semibold text-gray-700 text-right">VARIANCE %</th>
+                <th className="px-4 py-3 text-xs font-semibold text-gray-700 text-center">ACTION</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-200">
+              {budgetLines.map((line) => (
+                <tr key={line.id} className="hover:bg-gray-50">
+                  <td className="px-4 py-3 text-sm font-medium">{line.budgetCode}</td>
+                  <td className="px-4 py-3 text-sm">
+                    <div className="font-medium text-gray-900">{line.budgetItem}</div>
+                    <div className="text-xs text-gray-500">{line.subBL}</div>
+                  </td>
+                  <td className="px-4 py-3 text-sm text-gray-600">{line.category}</td>
+                  <td className="ltr-safe px-4 py-3 text-sm text-right font-medium">
+                    ${formatNumber(line.totalBudgetLine)}
+                  </td>
+                  <td className="ltr-safe px-4 py-3 text-sm text-right">
+                    ${formatNumber(line.spent)}
+                  </td>
+                  <td className="ltr-safe px-4 py-3 text-sm text-right">
+                    ${formatNumber(line.committed)}
+                  </td>
+                  <td className="ltr-safe px-4 py-3 text-sm text-right">
+                    ${formatNumber(line.balance)}
+                  </td>
+                  <td className="px-4 py-3 text-sm text-right">
+                    <span className={`font-medium ${
+                      line.variancePercent > 75 ? 'text-red-600' :
+                      line.variancePercent > 50 ? 'text-orange-600' :
+                      'text-green-600'
+                    }`}>
+                      {(line.variancePercent || 0).toFixed(1)}%
+                    </span>
+                  </td>
+                  <td className="px-4 py-3 text-sm">
+                    <div className="flex items-center justify-center gap-2">
+                      <button
+                        onClick={() => handleEdit(line.id)}
+                        className="text-blue-600 hover:text-blue-800"
+                        title="Edit"
+                      >
+                        <Edit2 className="w-4 h-4" />
+                      </button>
+                      <button
+                        onClick={() => setShowDeleteConfirm(line.id)}
+                        className="text-red-600 hover:text-red-800"
+                        title="Delete"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+              <tr className="bg-gray-100 font-bold">
+                <td className="px-4 py-3 text-sm" colSpan={3}>Total</td>
+                <td className="ltr-safe px-4 py-3 text-sm text-right">
+                  ${formatNumber(financialData.totalApprovedBudget)}
+                </td>
+                <td className="ltr-safe px-4 py-3 text-sm text-right">
+                  ${formatNumber(financialData.actualSpent)}
+                </td>
+                <td className="ltr-safe px-4 py-3 text-sm text-right">
+                  ${formatNumber(financialData.committed)}
+                </td>
+                <td className="ltr-safe px-4 py-3 text-sm text-right">
+                  ${formatNumber(financialData.remainingBalance)}
+                </td>
+                <td className="px-4 py-3 text-sm text-right">
+                  {calculated.burnRate.toFixed(1)}%
+                </td>
+                <td></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      {/* Create/Edit Modal */}
+      {(showCreateModal || editingId) && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg max-w-4xl w-full p-6 max-h-[90vh] overflow-y-auto">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">
+              {editingId ? 'Edit Budget Line' : 'Add New Budget Line'}
+            </h3>
+            
+            <div className="grid grid-cols-3 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Fiscal Year*</label>
+                <input
+                  type="text"
+                  value={editForm.fiscalYear || ''}
+                  onChange={(e) => setEditForm({ ...editForm, fiscalYear: e.target.value })}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                  placeholder="FY2025"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Budget Code*</label>
+                <input
+                  type="text"
+                  value={editForm.budgetCode || ''}
+                  onChange={(e) => setEditForm({ ...editForm, budgetCode: e.target.value })}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                  placeholder="BL-1000"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Sub-BL*</label>
+                <input
+                  type="text"
+                  value={editForm.subBL || ''}
+                  onChange={(e) => setEditForm({ ...editForm, subBL: e.target.value })}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                  placeholder="1.1"
+                />
+              </div>
+              <div className="col-span-2">
+                <label className="block text-sm font-medium text-gray-700 mb-1">Budget Item*</label>
+                <input
+                  type="text"
+                  value={editForm.budgetItem || ''}
+                  onChange={(e) => setEditForm({ ...editForm, budgetItem: e.target.value })}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                  placeholder="Personnel Costs"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Category*</label>
+                <input
+                  type="text"
+                  value={editForm.category || ''}
+                  onChange={(e) => setEditForm({ ...editForm, category: e.target.value })}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                  placeholder="Staff Costs"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Quantity*</label>
+                <input
+                  type="number"
+                  value={editForm.quantity || ''}
+                  onChange={(e) => setEditForm({ ...editForm, quantity: parseFloat(e.target.value) })}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Unit Type*</label>
+                <input
+                  type="text"
+                  value={editForm.unitType || ''}
+                  onChange={(e) => setEditForm({ ...editForm, unitType: e.target.value })}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                  placeholder="person/item"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Unit Cost*</label>
+                <input
+                  type="number"
+                  value={editForm.unitCost || ''}
+                  onChange={(e) => setEditForm({ ...editForm, unitCost: parseFloat(e.target.value) })}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Recurrence*</label>
+                <input
+                  type="number"
+                  value={editForm.recurrence || 1}
+                  onChange={(e) => setEditForm({ ...editForm, recurrence: parseFloat(e.target.value) })}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Currency*</label>
+                <select
+                  value={editForm.currency || 'USD'}
+                  onChange={(e) => setEditForm({ ...editForm, currency: e.target.value })}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                >
+                  <option value="USD">USD</option>
+                  <option value="EUR">EUR</option>
+                  <option value="GBP">GBP</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Plan Period (months)</label>
+                <input
+                  type="number"
+                  value={editForm.planPeriod || 12}
+                  onChange={(e) => setEditForm({ ...editForm, planPeriod: parseFloat(e.target.value) })}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Plan Start Date</label>
+                <input
+                  type="text"
+                  value={editForm.planStartDate || ''}
+                  onChange={(e) => setEditForm({ ...editForm, planStartDate: e.target.value })}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                  placeholder="01/01/2025"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Plan End Date</label>
+                <input
+                  type="text"
+                  value={editForm.planEndDate || ''}
+                  onChange={(e) => setEditForm({ ...editForm, planEndDate: e.target.value })}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                  placeholder="31/12/2025"
+                />
+              </div>
+              <div className="col-span-3">
+                <label className="block text-sm font-medium text-gray-700 mb-1">Notes</label>
+                <textarea
+                  value={editForm.notes || ''}
+                  onChange={(e) => setEditForm({ ...editForm, notes: e.target.value })}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                  rows={2}
+                />
+              </div>
+            </div>
+
+            <div className="mt-6 flex justify-end gap-2">
+              <button
+                onClick={() => {
+                  setShowCreateModal(false);
+                  setEditingId(null);
+                  setEditForm({});
+                }}
+                className="px-4 py-2 text-sm border border-gray-300 rounded-md hover:bg-gray-50"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={editingId ? handleSaveEdit : handleCreate}
+                className="px-4 py-2 text-sm bg-primary text-white rounded-md hover:bg-primary/90"
+              >
+                {editingId ? 'Update' : 'Create'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Import Modal */}
+      {showImportModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg max-w-md w-full p-6">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">Import Budget Lines</h3>
+            <p className="text-sm text-gray-600 mb-4">
+              Upload an Excel file with budget data. Use the template for correct format.
+            </p>
+            <input
+              type="file"
+              accept=".xlsx,.xls"
+              onChange={handleImportExcel}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md"
+            />
+            <div className="mt-4 flex justify-end gap-2">
+              <button
+                onClick={() => setShowImportModal(false)}
+                className="px-4 py-2 text-sm border border-gray-300 rounded-md hover:bg-gray-50"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Delete Confirmation */}
+      {showDeleteConfirm && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg max-w-md w-full p-6">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">Confirm Delete</h3>
+            <p className="text-sm text-gray-600 mb-4">
+              Are you sure you want to delete this budget line? This action cannot be undone.
+            </p>
+            <div className="flex justify-end gap-2">
+              <button
+                onClick={() => setShowDeleteConfirm(null)}
+                className="px-4 py-2 text-sm border border-gray-300 rounded-md hover:bg-gray-50"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => handleDelete(showDeleteConfirm)}
+                className="px-4 py-2 text-sm bg-red-600 text-white rounded-md hover:bg-red-700"
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// Export the BudgetLine interface for use in ForecastPlanTab
+export type { BudgetLine };

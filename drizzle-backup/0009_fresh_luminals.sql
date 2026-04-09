@@ -1,0 +1,2 @@
+ALTER TABLE `reporting_schedules` ADD `grantId` int;--> statement-breakpoint
+ALTER TABLE `reporting_schedules` ADD CONSTRAINT `reporting_schedules_grantId_grants_id_fk` FOREIGN KEY (`grantId`) REFERENCES `grants`(`id`) ON DELETE cascade ON UPDATE no action;

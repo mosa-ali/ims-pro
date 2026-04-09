@@ -1,0 +1,434 @@
+import { describe, it, expect, beforeAll } from 'vitest';
+import { getDb } from './db';
+import { projects, grants, reportingSchedules } from '../drizzle/schema';
+import { eq, and } from 'drizzle-orm';
+
+/**
+ * Data Isolation Test Suite
+ * 
+ * Tests that all queries properly enforce organizationId AND operatingUnitId filtering
+ * to prevent cross-organization and cross-OU data leakage.
+ * 
+ * Test Strategy:
+ * 1. Create test data for two different organizations with different OUs
+ * 2. Query with ORG1/OU1 credentials
+ * 3. Verify ONLY ORG1/OU1 data is returned (no ORG2 or ORG1/OU2 data)
+ */
+
+describe('Data Isolation - Organization & Operating Unit Filtering', () => {
+  let db: Awaited<ReturnType<typeof getDb>>;
+
+  // Test data IDs
+  const ORG1_ID = 9001;
+  const ORG1_OU1_ID = 1001;
+  const ORG1_OU2_ID = 1002;
+  const ORG2_ID = 9002;
+  const ORG2_OU1_ID = 2001;
+  const TEST_USER_ID = 1;
+
+  beforeAll(async () => {
+    db = await getDb();
+    if (!db) throw new Error('Database not available');
+
+    // Clean up any existing test data
+    await db.delete(reportingSchedules).where(eq(reportingSchedules.organizationId, ORG1_ID));
+    await db.delete(reportingSchedules).where(eq(reportingSchedules.organizationId, ORG2_ID));
+    await db.delete(grants).where(eq(grants.organizationId, ORG1_ID));
+    await db.delete(grants).where(eq(grants.organizationId, ORG2_ID));
+    // pipelineOpportunities table may not exist yet, skip cleanup
+    // proposals table may not exist yet, skip cleanup
+    await db.delete(projects).where(eq(projects.organizationId, ORG1_ID));
+    await db.delete(projects).where(eq(projects.organizationId, ORG2_ID));
+  });
+
+  describe('Projects Table Isolation', () => {
+    it('should isolate projects by organizationId AND operatingUnitId', async () => {
+      // Create test projects
+      await db.insert(projects).values([
+        {
+          totalBudget: '100000',
+        sectors: ['Health', 'Education'],
+        code: 'PRJ-ORG1-OU1',
+          title: 'Project for Org1 OU1',
+          organizationId: ORG1_ID,
+          operatingUnitId: ORG1_OU1_ID,
+          status: 'ongoing',
+          startDate: new Date('2024-01-01'),
+          endDate: new Date('2024-12-31'),
+          createdBy: TEST_USER_ID,
+          updatedBy: TEST_USER_ID,
+        },
+        {
+          totalBudget: '100000',
+        sectors: ['Health', 'Education'],
+        code: 'PRJ-ORG1-OU2',
+          title: 'Project for Org1 OU2',
+          organizationId: ORG1_ID,
+          operatingUnitId: ORG1_OU2_ID,
+          status: 'ongoing',
+          startDate: new Date('2024-01-01'),
+          endDate: new Date('2024-12-31'),
+          createdBy: TEST_USER_ID,
+          updatedBy: TEST_USER_ID,
+        },
+        {
+          totalBudget: '100000',
+        sectors: ['Health', 'Education'],
+        code: 'PRJ-ORG2-OU1',
+          title: 'Project for Org2 OU1',
+          organizationId: ORG2_ID,
+          operatingUnitId: ORG2_OU1_ID,
+          status: 'ongoing',
+          startDate: new Date('2024-01-01'),
+          endDate: new Date('2024-12-31'),
+          createdBy: TEST_USER_ID,
+          updatedBy: TEST_USER_ID,
+        },
+      ]);
+
+      // Query with ORG1/OU1 credentials
+      const results = await db
+        .select()
+        .from(projects)
+        .where(
+          and(
+            eq(projects.organizationId, ORG1_ID),
+            eq(projects.operatingUnitId, ORG1_OU1_ID),
+            eq(projects.isDeleted, false)
+          )
+        );
+
+      // Should only return ORG1/OU1 project
+      expect(results).toHaveLength(1);
+      expect(results[0].code).toBe('PRJ-ORG1-OU1');
+      expect(results[0].organizationId).toBe(ORG1_ID);
+      expect(results[0].operatingUnitId).toBe(ORG1_OU1_ID);
+    });
+  });
+
+  describe('Proposals Table Isolation', () => {
+    it('should isolate proposals by organizationId AND operatingUnitId', async () => {
+      // Create test proposals
+      await db.insert(proposals).values([
+        {
+          proposalNumber: 'PROP-ORG1-OU1',
+          proposalTitle: 'Proposal for Org1 OU1',
+          organizationId: ORG1_ID,
+          operatingUnitId: ORG1_OU1_ID,
+          donorName: 'Test Donor',
+          totalRequestedBudget: '100000',
+          proposalStatus: 'Draft',
+          createdBy: TEST_USER_ID,
+          updatedBy: TEST_USER_ID,
+        },
+        {
+          proposalNumber: 'PROP-ORG1-OU2',
+          proposalTitle: 'Proposal for Org1 OU2',
+          organizationId: ORG1_ID,
+          operatingUnitId: ORG1_OU2_ID,
+          donorName: 'Test Donor',
+          totalRequestedBudget: '100000',
+          proposalStatus: 'Draft',
+          createdBy: TEST_USER_ID,
+          updatedBy: TEST_USER_ID,
+        },
+        {
+          proposalNumber: 'PROP-ORG2-OU1',
+          proposalTitle: 'Proposal for Org2 OU1',
+          organizationId: ORG2_ID,
+          operatingUnitId: ORG2_OU1_ID,
+          donorName: 'Test Donor',
+          totalRequestedBudget: '100000',
+          proposalStatus: 'Draft',
+          createdBy: TEST_USER_ID,
+          updatedBy: TEST_USER_ID,
+        },
+      ]);
+
+      // Query with ORG1/OU1 credentials
+      const results = await db
+        .select()
+        .from(proposals)
+        .where(
+          and(
+            eq(proposals.organizationId, ORG1_ID),
+            eq(proposals.operatingUnitId, ORG1_OU1_ID),
+            eq(proposals.isDeleted, false)
+          )
+        );
+
+      // Should only return ORG1/OU1 proposal
+      expect(results).toHaveLength(1);
+      expect(results[0].proposalNumber).toBe('PROP-ORG1-OU1');
+      expect(results[0].organizationId).toBe(ORG1_ID);
+      expect(results[0].operatingUnitId).toBe(ORG1_OU1_ID);
+    });
+  });
+
+  describe('Pipeline Opportunities Table Isolation', () => {
+    it('should isolate pipeline opportunities by organizationId AND operatingUnitId', async () => {
+      // Create test opportunities
+      await db.insert(pipelineOpportunities).values([
+        {
+          type: 'pipeline',
+          title: 'Pipeline for Org1 OU1',
+          organizationId: ORG1_ID,
+          operatingUnitId: ORG1_OU1_ID,
+          donorName: 'Test Donor',
+          donorType: 'UN',
+          deadline: new Date('2024-12-31'),
+          indicativeBudgetMin: '50000',
+          indicativeBudgetMax: '100000',
+          sectors: ['Health', 'Education'],
+          country: 'Test Country',
+          stage: 'Identified',
+          probability: 50,
+          createdBy: TEST_USER_ID,
+          updatedBy: TEST_USER_ID,
+        },
+        {
+          type: 'pipeline',
+          title: 'Pipeline for Org1 OU2',
+          organizationId: ORG1_ID,
+          operatingUnitId: ORG1_OU2_ID,
+          donorName: 'Test Donor',
+          donorType: 'UN',
+          deadline: new Date('2024-12-31'),
+          indicativeBudgetMin: '50000',
+          indicativeBudgetMax: '100000',
+          sectors: ['Health', 'Education'],
+          country: 'Test Country',
+          stage: 'Identified',
+          probability: 50,
+          createdBy: TEST_USER_ID,
+          updatedBy: TEST_USER_ID,
+        },
+        {
+          type: 'pipeline',
+          title: 'Pipeline for Org2 OU1',
+          organizationId: ORG2_ID,
+          operatingUnitId: ORG2_OU1_ID,
+          donorName: 'Test Donor',
+          donorType: 'UN',
+          deadline: new Date('2024-12-31'),
+          indicativeBudgetMin: '50000',
+          indicativeBudgetMax: '100000',
+          sectors: ['Health', 'Education'],
+          country: 'Test Country',
+          stage: 'Identified',
+          probability: 50,
+          createdBy: TEST_USER_ID,
+          updatedBy: TEST_USER_ID,
+        },
+      ]);
+
+      // Query with ORG1/OU1 credentials
+      const results = await db
+        .select()
+        .from(pipelineOpportunities)
+        .where(
+          and(
+            eq(pipelineOpportunities.organizationId, ORG1_ID),
+            eq(pipelineOpportunities.operatingUnitId, ORG1_OU1_ID),
+            eq(pipelineOpportunities.isDeleted, false)
+          )
+        );
+
+      // Should only return ORG1/OU1 opportunity
+      expect(results).toHaveLength(1);
+      expect(results[0].title).toBe('Pipeline for Org1 OU1');
+      expect(results[0].organizationId).toBe(ORG1_ID);
+      expect(results[0].operatingUnitId).toBe(ORG1_OU1_ID);
+    });
+  });
+
+  describe('Grants Table Isolation', () => {
+    it('should isolate grants by organizationId AND operatingUnitId', async () => {
+      // First create projects to link grants to
+      const [project1] = await db.insert(projects).values({
+        totalBudget: '100000',
+        sectors: ['Health', 'Education'],
+        code: 'PRJ-GRANT-ORG1-OU1',
+        title: 'Project for Grant Org1 OU1',
+        organizationId: ORG1_ID,
+        operatingUnitId: ORG1_OU1_ID,
+        status: 'ongoing',
+        startDate: new Date('2024-01-01'),
+        endDate: new Date('2024-12-31'),
+        createdBy: TEST_USER_ID,
+        updatedBy: TEST_USER_ID,
+      });
+
+      const [project2] = await db.insert(projects).values({
+        totalBudget: '100000',
+        sectors: ['Health', 'Education'],
+        code: 'PRJ-GRANT-ORG1-OU2',
+        title: 'Project for Grant Org1 OU2',
+        organizationId: ORG1_ID,
+        operatingUnitId: ORG1_OU2_ID,
+        status: 'ongoing',
+        startDate: new Date('2024-01-01'),
+        endDate: new Date('2024-12-31'),
+        createdBy: TEST_USER_ID,
+        updatedBy: TEST_USER_ID,
+      });
+
+      const [project3] = await db.insert(projects).values({
+        totalBudget: '100000',
+        sectors: ['Health', 'Education'],
+        code: 'PRJ-GRANT-ORG2-OU1',
+        title: 'Project for Grant Org2 OU1',
+        organizationId: ORG2_ID,
+        operatingUnitId: ORG2_OU1_ID,
+        status: 'ongoing',
+        startDate: new Date('2024-01-01'),
+        endDate: new Date('2024-12-31'),
+        createdBy: TEST_USER_ID,
+        updatedBy: TEST_USER_ID,
+      });
+
+      // Create test grants
+      await db.insert(grants).values([
+        {
+          projectId: Number(project1.insertId),
+          grantNumber: 'GRT-ORG1-OU1',
+          grantName: 'Grant for Org1 OU1',
+          organizationId: ORG1_ID,
+          operatingUnitId: ORG1_OU1_ID,
+          donorName: 'Test Donor',
+          grantAmount: 100000,
+          currency: 'USD',
+          startDate: new Date('2024-01-01'),
+          endDate: new Date('2024-12-31'),
+          status: 'ongoing',
+          reportingStatus: 'on_track',
+          reportingFrequency: 'quarterly',
+          createdBy: TEST_USER_ID,
+          updatedBy: TEST_USER_ID,
+        },
+        {
+          projectId: Number(project2.insertId),
+          grantNumber: 'GRT-ORG1-OU2',
+          grantName: 'Grant for Org1 OU2',
+          organizationId: ORG1_ID,
+          operatingUnitId: ORG1_OU2_ID,
+          donorName: 'Test Donor',
+          grantAmount: 100000,
+          currency: 'USD',
+          startDate: new Date('2024-01-01'),
+          endDate: new Date('2024-12-31'),
+          status: 'ongoing',
+          reportingStatus: 'on_track',
+          reportingFrequency: 'quarterly',
+          createdBy: TEST_USER_ID,
+          updatedBy: TEST_USER_ID,
+        },
+        {
+          projectId: Number(project3.insertId),
+          grantNumber: 'GRT-ORG2-OU1',
+          grantName: 'Grant for Org2 OU1',
+          organizationId: ORG2_ID,
+          operatingUnitId: ORG2_OU1_ID,
+          donorName: 'Test Donor',
+          grantAmount: 100000,
+          currency: 'USD',
+          startDate: new Date('2024-01-01'),
+          endDate: new Date('2024-12-31'),
+          status: 'ongoing',
+          reportingStatus: 'on_track',
+          reportingFrequency: 'quarterly',
+          createdBy: TEST_USER_ID,
+          updatedBy: TEST_USER_ID,
+        },
+      ]);
+
+      // Query with ORG1/OU1 credentials
+      const results = await db
+        .select()
+        .from(grants)
+        .where(
+          and(
+            eq(grants.organizationId, ORG1_ID),
+            eq(grants.operatingUnitId, ORG1_OU1_ID),
+            eq(grants.isDeleted, false)
+          )
+        );
+
+      // Should only return ORG1/OU1 grant
+      expect(results).toHaveLength(1);
+      expect(results[0].grantNumber).toBe('GRT-ORG1-OU1');
+      expect(results[0].organizationId).toBe(ORG1_ID);
+      expect(results[0].operatingUnitId).toBe(ORG1_OU1_ID);
+    });
+  });
+
+  describe('Cross-OU Isolation within Same Organization', () => {
+    it('should prevent OU1 from seeing OU2 data in same organization', async () => {
+      // Query ORG1/OU1 - should NOT see ORG1/OU2 data
+      const projectsOU1 = await db
+        .select()
+        .from(projects)
+        .where(
+          and(
+            eq(projects.organizationId, ORG1_ID),
+            eq(projects.operatingUnitId, ORG1_OU1_ID),
+            eq(projects.isDeleted, false)
+          )
+        );
+
+      const projectsOU2 = await db
+        .select()
+        .from(projects)
+        .where(
+          and(
+            eq(projects.organizationId, ORG1_ID),
+            eq(projects.operatingUnitId, ORG1_OU2_ID),
+            eq(projects.isDeleted, false)
+          )
+        );
+
+      // Verify complete separation
+      expect(projectsOU1.length).toBeGreaterThan(0);
+      expect(projectsOU2.length).toBeGreaterThan(0);
+      
+      // Verify no overlap
+      const ou1Codes = projectsOU1.map(p => p.code);
+      const ou2Codes = projectsOU2.map(p => p.code);
+      expect(ou1Codes).not.toContain('PRJ-ORG1-OU2');
+      expect(ou2Codes).not.toContain('PRJ-ORG1-OU1');
+    });
+  });
+
+  describe('KPI Aggregation Isolation', () => {
+    it('should calculate KPIs only for specified OU', async () => {
+      // Count proposals for ORG1/OU1
+      const proposalsOU1 = await db
+        .select()
+        .from(proposals)
+        .where(
+          and(
+            eq(proposals.organizationId, ORG1_ID),
+            eq(proposals.operatingUnitId, ORG1_OU1_ID),
+            eq(proposals.isDeleted, false)
+          )
+        );
+
+      // Count proposals for ORG1/OU2
+      const proposalsOU2 = await db
+        .select()
+        .from(proposals)
+        .where(
+          and(
+            eq(proposals.organizationId, ORG1_ID),
+            eq(proposals.operatingUnitId, ORG1_OU2_ID),
+            eq(proposals.isDeleted, false)
+          )
+        );
+
+      // KPIs should differ between OUs
+      expect(proposalsOU1.length).toBe(1);
+      expect(proposalsOU2.length).toBe(1);
+      expect(proposalsOU1[0].proposalNumber).not.toBe(proposalsOU2[0].proposalNumber);
+    });
+  });
+});

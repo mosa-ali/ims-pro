@@ -1,0 +1,1 @@
+ALTER TABLE `budget_items` ADD `subBudgetLine` varchar(100);

@@ -1,0 +1,20 @@
+{
+  "query": "SELECT id, name, primaryAdminId FROM organizations WHERE name LIKE '%Yamany%' OR name LIKE '%YDH%' LIMIT 5;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway03.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3DLEw35gkkimUcv.eeb1f1cd43d3 --database 6e38zfddYazj4vVoRnY5Mj --execute SELECT id, name, primaryAdminId FROM organizations WHERE name LIKE '%Yamany%' OR name LIKE '%YDH%' LIMIT 5;",
+  "rows": [
+    {
+      "id": "30001",
+      "name": "Yamany Development Foundation",
+      "primaryAdminId": "1597115"
+    },
+    {
+      "id": "210002",
+      "name": "Yamany Foundation for Development - YDH",
+      "primaryAdminId": "1625317"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tname\tprimaryAdminId\n30001\tYamany Development Foundation\t1597115\n210002\tYamany Foundation for Development - YDH\t1625317\n",
+  "stderr": "",
+  "execution_time_ms": 59
+}

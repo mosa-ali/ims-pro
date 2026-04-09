@@ -1,0 +1,385 @@
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Progress } from "@/components/ui/progress";
+import { Plus, TrendingUp, Eye, Edit, Trash2, FileDown, Upload } from "lucide-react";
+import * as XLSX from 'xlsx';
+import { toast } from "sonner";
+import { trpc } from "@/lib/trpc";
+import { useTranslation } from "@/i18n/useTranslation";
+import { IndicatorDialog } from "../dialogs/IndicatorDialog";
+import { useState } from "react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+
+interface ProjectIndicatorsProps {
+  projectId: number;
+}
+
+export default function ProjectIndicators({ projectId }: ProjectIndicatorsProps) {
+  const { t } = useTranslation();
+  const [dialogMode, setDialogMode] = useState<"view" | "edit" | "create" | null>(null);
+  const [selectedIndicator, setSelectedIndicator] = useState<any | null>(null);
+  const [deleteId, setDeleteId] = useState<number | null>(null);
+  const utils = trpc.useUtils();
+
+  // Fetch indicators from backend
+  const { data: indicators = [], isLoading } = trpc.projectIndicators.list.useQuery({ projectId });
+
+  // Mutations
+  const createMutation = trpc.projectIndicators.create.useMutation({
+    onSuccess: () => {
+      toast.success("Indicator created successfully");
+      utils.projectIndicators.list.invalidate();
+    },
+    onError: (error) => {
+      toast.error(`Failed to create indicator: ${error.message}`);
+    },
+  });
+
+  const updateMutation = trpc.projectIndicators.update.useMutation({
+    onSuccess: () => {
+      toast.success("Indicator updated successfully");
+      utils.projectIndicators.list.invalidate();
+    },
+    onError: (error) => {
+      toast.error(`Failed to update indicator: ${error.message}`);
+    },
+  });
+
+  const deleteMutation = trpc.projectIndicators.delete.useMutation({
+    onSuccess: () => {
+      toast.success("Indicator deleted successfully");
+      utils.projectIndicators.list.invalidate();
+      setDeleteId(null);
+    },
+    onError: (error) => {
+      toast.error(`Failed to delete indicator: ${error.message}`);
+    },
+  });
+
+  const getAchievementColor = (percentage: number) => {
+    if (percentage < 50) return "text-red-600";
+    if (percentage < 80) return "text-yellow-600";
+    return "text-green-600";
+  };
+
+  const getProgressColor = (percentage: number) => {
+    if (percentage < 50) return "bg-red-600";
+    if (percentage < 80) return "bg-yellow-600";
+    return "bg-green-600";
+  };
+
+  const getTypeBadge = (type: string): "default" | "secondary" | "destructive" | "outline" => {
+    const variants: Record<string, "default" | "secondary" | "destructive" | "outline"> = {
+      output: "default",
+      outcome: "secondary",
+      impact: "outline",
+      process: "secondary",
+    };
+    return variants[type] || "default";
+  };
+
+  const getStatusBadge = (status: string): "default" | "secondary" | "destructive" | "outline" => {
+    const variants: Record<string, "default" | "secondary" | "destructive" | "outline"> = {
+      not_started: "secondary",
+      on_track: "default",
+      at_risk: "destructive",
+      achieved: "outline",
+      not_achieved: "destructive",
+    };
+    return variants[status] || "secondary";
+  };
+
+  const handleExportToExcel = () => {
+    const exportData = indicators.length > 0 ? indicators : [
+      { name: "Example Indicator", baseline: "0", target: "100", achieved: "50", unit: "persons", type: "output", status: "on_track" }
+    ];
+
+    const ws = XLSX.utils.json_to_sheet(exportData.map(i => ({
+      "Indicator Name": i.name,
+      "Type": i.type,
+      "Baseline": i.baseline || "0",
+      "Target": i.target,
+      "Achieved": i.achieved,
+      "Unit": i.unit,
+      "Status": i.status,
+      "Achievement %": ((parseFloat(i.achieved) / parseFloat(i.target)) * 100).toFixed(1),
+    })));
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Indicators");
+    XLSX.writeFile(wb, `Project_${projectId}_Indicators.xlsx`);
+    toast.success("Export successful");
+  };
+
+  const handleImportExcel = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      try {
+        const data = new Uint8Array(event.target?.result as ArrayBuffer);
+        const workbook = XLSX.read(data, { type: 'array' });
+        const worksheet = workbook.Sheets[workbook.SheetNames[0]];
+        const jsonData = XLSX.utils.sheet_to_json(worksheet);
+        
+        toast.success(`Import successful: ${jsonData.length} records imported`);
+      } catch (error) {
+        toast.error("Import failed: Invalid file format");
+      }
+    };
+    reader.readAsArrayBuffer(file);
+  };
+
+  const handleSave = async (data: any) => {
+    if (dialogMode === "create") {
+      await createMutation.mutateAsync({
+        projectId,
+        ...data,
+      });
+    } else if (dialogMode === "edit" && selectedIndicator) {
+      await updateMutation.mutateAsync({
+        id: selectedIndicator.id,
+        ...data,
+      });
+    }
+  };
+
+  const handleDelete = () => {
+    if (deleteId) {
+      deleteMutation.mutate({ id: deleteId });
+    }
+  };
+
+  if (isLoading) {
+    return <div className="p-8 text-center">Loading indicators...</div>;
+  }
+
+  return (
+    <div className="space-y-6">
+      {/* Header with Actions */}
+      <div className="flex items-center justify-between">
+        <div>
+          <h3 className="text-lg font-semibold">MEAL Indicators</h3>
+          <p className="text-sm text-muted-foreground">
+            Monitor and evaluate project indicators
+          </p>
+        </div>
+        <div className="flex gap-2">
+          <Button
+            onClick={handleExportToExcel}
+            size="sm"
+            variant="outline"
+            className="h-8"
+          >
+            <FileDown className="h-4 w-4 mr-2" />
+            Export to Excel
+          </Button>
+          <label>
+            <Button
+              size="sm"
+              variant="outline"
+              className="h-8"
+              asChild
+            >
+              <span>
+                <Upload className="h-4 w-4 mr-2" />
+                Import Excel
+              </span>
+            </Button>
+            <input
+              type="file"
+              accept=".xlsx,.xls"
+              onChange={handleImportExcel}
+              className="hidden"
+            />
+          </label>
+          <Button
+            onClick={() => {
+              setSelectedIndicator(null);
+              setDialogMode("create");
+            }}
+            size="sm"
+            className="h-8"
+          >
+            <Plus className="h-4 w-4 mr-2" />
+            Add Indicator
+          </Button>
+        </div>
+      </div>
+
+      {/* Indicators Grid */}
+      <div className="grid gap-4">
+        {indicators.length === 0 ? (
+          <Card>
+            <CardContent className="py-8 text-center text-muted-foreground">
+              No indicators found. Click "Add Indicator" to create one.
+            </CardContent>
+          </Card>
+        ) : (
+          indicators.map((indicator) => {
+            const target = parseFloat(indicator.target);
+            const achieved = parseFloat(indicator.achieved);
+            const baseline = parseFloat(indicator.baseline || "0");
+            const percentage = target > 0 ? (achieved / target) * 100 : 0;
+
+            return (
+              <Card key={indicator.id} className="hover:shadow-md transition-shadow">
+                <CardHeader>
+                  <div className="flex items-start justify-between">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 mb-2">
+                        <Badge variant={getTypeBadge(indicator.type)}>
+                          {indicator.type}
+                        </Badge>
+                        <Badge variant={getStatusBadge(indicator.status)}>
+                          {indicator.status.replace('_', ' ')}
+                        </Badge>
+                      </div>
+                      <CardTitle className="text-base">{indicator.name}</CardTitle>
+                      {indicator.description && (
+                        <p className="text-sm text-muted-foreground mt-1">
+                          {indicator.description}
+                        </p>
+                      )}
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <TrendingUp className="h-5 w-5 text-muted-foreground" />
+                    </div>
+                  </div>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  {/* Metrics */}
+                  <div className="grid grid-cols-4 gap-4 text-sm">
+                    <div>
+                      <div className="text-muted-foreground">Baseline</div>
+                      <div className="font-semibold">{baseline} {indicator.unit}</div>
+                    </div>
+                    <div>
+                      <div className="text-muted-foreground">Target</div>
+                      <div className="font-semibold">{target} {indicator.unit}</div>
+                    </div>
+                    <div>
+                      <div className="text-muted-foreground">Achieved</div>
+                      <div className="font-semibold">{achieved} {indicator.unit}</div>
+                    </div>
+                    <div>
+                      <div className="text-muted-foreground">Achievement</div>
+                      <div className={`font-semibold ${getAchievementColor(percentage)}`}>
+                        {percentage.toFixed(1)}%
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Progress Bar */}
+                  <div>
+                    <Progress value={percentage} className={`h-2 ${getProgressColor(percentage)}`} />
+                  </div>
+
+                  {/* Additional Info */}
+                  {(indicator.dataSource || indicator.collectionFrequency || indicator.responsiblePerson) && (
+                    <div className="grid grid-cols-3 gap-4 text-sm text-muted-foreground pt-2 border-t">
+                      {indicator.dataSource && (
+                        <div>
+                          <span className="font-medium">Source:</span> {indicator.dataSource}
+                        </div>
+                      )}
+                      {indicator.collectionFrequency && (
+                        <div>
+                          <span className="font-medium">Frequency:</span> {indicator.collectionFrequency}
+                        </div>
+                      )}
+                      {indicator.responsiblePerson && (
+                        <div>
+                          <span className="font-medium">Responsible:</span> {indicator.responsiblePerson}
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  {/* Action Buttons */}
+                  <div className="flex gap-2 pt-2">
+                    <Button
+                      onClick={() => {
+                        setSelectedIndicator(indicator);
+                        setDialogMode("view");
+                      }}
+                      size="sm"
+                      variant="default"
+                      className="h-8"
+                    >
+                      <Eye className="h-4 w-4 mr-2" />
+                      View Details
+                    </Button>
+                    <Button
+                      onClick={() => {
+                        setSelectedIndicator(indicator);
+                        setDialogMode("edit");
+                      }}
+                      size="sm"
+                      variant="outline"
+                      className="h-8"
+                    >
+                      <Edit className="h-4 w-4 mr-2" />
+                      Edit
+                    </Button>
+                    <Button
+                      onClick={() => setDeleteId(indicator.id)}
+                      size="sm"
+                      variant="destructive"
+                      className="h-8"
+                    >
+                      <Trash2 className="h-4 w-4 mr-2" />
+                      Delete
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            );
+          })
+        )}
+      </div>
+
+      {/* Indicator Dialog */}
+      <IndicatorDialog
+        open={dialogMode !== null}
+        onOpenChange={(open) => {
+          if (!open) {
+            setDialogMode(null);
+            setSelectedIndicator(null);
+          }
+        }}
+        mode={dialogMode || "view"}
+        indicator={selectedIndicator}
+        onSave={handleSave}
+      />
+
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={deleteId !== null} onOpenChange={(open) => !open && setDeleteId(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Indicator</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete this indicator? This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+              {t.common.delete}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </div>
+  );
+}

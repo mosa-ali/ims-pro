@@ -1,0 +1,1 @@
+id,organizationId,operatingUnitId,vehicleId,driverId,tripNumber,tripDate,purpose,purposeAr,startLocation,endLocation,startMileage,endMileage,distanceTraveled,startTime,endTime,passengers,projectCode,status,remarks,isDeleted,deletedAt,deletedBy,createdAt,updatedAt,createdBy,updatedBy

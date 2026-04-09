@@ -1,0 +1,9 @@
+{
+  "query": "SELECT r.id, r.email, r.full_name, r.status, r.provisioned_user_id, r.created_at FROM request_access_requests r WHERE r.provisioned_user_id IN (SELECT u.id FROM users u WHERE u.name IS NULL OR u.email IS NULL) LIMIT 10;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway03.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3DLEw35gkkimUcv.eeb1f1cd43d3 --database 6e38zfddYazj4vVoRnY5Mj --execute SELECT r.id, r.email, r.full_name, r.status, r.provisioned_user_id, r.created_at FROM request_access_requests r WHERE r.provisioned_user_id IN (SELECT u.id FROM users u WHERE u.name IS NULL OR u.email IS NULL) LIMIT 10;",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 64
+}

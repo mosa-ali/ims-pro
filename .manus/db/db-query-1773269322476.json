@@ -1,0 +1,70 @@
+{
+  "query": "SELECT id, name, email, role FROM users WHERE email IS NOT NULL LIMIT 10;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway03.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3DLEw35gkkimUcv.eeb1f1cd43d3 --database 6e38zfddYazj4vVoRnY5Mj --execute SELECT id, name, email, role FROM users WHERE email IS NOT NULL LIMIT 10;",
+  "rows": [
+    {
+      "id": "1080383",
+      "name": "Mosa Ali",
+      "email": "mdrwesh@outlook.com",
+      "role": "platform_admin"
+    },
+    {
+      "id": "1264648",
+      "name": "mosamali2050",
+      "email": "mosamali2050@gmail.com",
+      "role": "platform_super_admin"
+    },
+    {
+      "id": "1291213",
+      "name": "programs",
+      "email": "programs@yamany.org",
+      "role": "user"
+    },
+    {
+      "id": "1291218",
+      "name": "Mosa Drwesh",
+      "email": "mdrwesh82@gmail.com",
+      "role": "platform_super_admin"
+    },
+    {
+      "id": "1355837",
+      "name": "Test User",
+      "email": "test@example.com",
+      "role": "user"
+    },
+    {
+      "id": "1355839",
+      "name": "Archive Test User",
+      "email": "archive@example.com",
+      "role": "user"
+    },
+    {
+      "id": "1355841",
+      "name": "Already Deleted User",
+      "email": "already@example.com",
+      "role": "user"
+    },
+    {
+      "id": "1355843",
+      "name": "Deleted List User",
+      "email": "deleted-list@example.com",
+      "role": "user"
+    },
+    {
+      "id": "1355845",
+      "name": "Search Test 1773101491459",
+      "email": "search-1773101491459@example.com",
+      "role": "user"
+    },
+    {
+      "id": "1355847",
+      "name": "Role Archive User",
+      "email": "role-archive@example.com",
+      "role": "organization_admin"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tname\temail\trole\n1080383\tMosa Ali\tmdrwesh@outlook.com\tplatform_admin\n1264648\tmosamali2050\tmosamali2050@gmail.com\tplatform_super_admin\n1291213\tprograms\tprograms@yamany.org\tuser\n1291218\tMosa Drwesh\tmdrwesh82@gmail.com\tplatform_super_admin\n1355837\tTest User\ttest@example.com\tuser\n1355839\tArchive Test User\tarchive@example.com\tuser\n1355841\tAlready Deleted User\talready@example.com\tuser\n1355843\tDeleted List User\tdeleted-list@example.com\tuser\n1355845\tSearch Test 1773101491459\tsearch-1773101491459@example.com\tuser\n1355847\tRole Archive User\trole-archive@example.com\torganization_admin\n",
+  "stderr": "",
+  "execution_time_ms": 70
+}

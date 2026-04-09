@@ -1,0 +1,11 @@
+#!/usr/bin/expect -f
+set timeout 300
+cd /home/ubuntu/ims_website
+spawn pnpm drizzle-kit push
+expect "Do you want to truncate operating_units table?"
+send "\r"
+expect "Do you want to truncate organizations table?"
+send "\r"
+expect "Do you still want to push changes?"
+send "j\r"
+expect eof

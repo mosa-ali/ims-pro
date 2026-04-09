@@ -1,0 +1,129 @@
+id,organizationId,templateKey,name,nameAr,subject,subjectAr,bodyHtml,bodyHtmlAr,isActive,createdAt,updatedAt
+11,30001,test_grant_approved,Grant Approved Notification,إشعار الموافقة على المنحة,Your grant {{grantName}} has been approved,تمت الموافقة على منحتك {{grantName}},<div><h2>Hello {{recipientName}}</h2><p>Your grant {{grantName}} for {{amount}} has been approved.</p></div>,"<div dir=""rtl""><h2>مرحباً {{recipientName}}</h2><p>تمت الموافقة على منحتك {{grantName}} بمبلغ {{amount}}.</p></div>",1,2026-02-07 14:55:06,2026-02-07 14:55:06
+12,30001,test_get_by_id,Test Template,,,,,,1,2026-02-07 14:55:06,2026-02-07 14:55:06
+13,30001,test_update_template,Updated Name,,Updated Subject: {{grantName}},,,,0,2026-02-07 14:55:06,2026-02-07 14:55:06
+15,30001,test_auth_delete,Auth Test,,,,,,1,2026-02-07 14:55:07,2026-02-07 14:55:07
+16,30001,test_grant_approved,Grant Approved Notification,إشعار الموافقة على المنحة,Your grant {{grantName}} has been approved,تمت الموافقة على منحتك {{grantName}},<div><h2>Hello {{recipientName}}</h2><p>Your grant {{grantName}} for {{amount}} has been approved.</p></div>,"<div dir=""rtl""><h2>مرحباً {{recipientName}}</h2><p>تمت الموافقة على منحتك {{grantName}} بمبلغ {{amount}}.</p></div>",1,2026-02-07 14:55:16,2026-02-07 14:55:16
+17,30001,test_get_by_id,Test Template,,,,,,1,2026-02-07 14:55:16,2026-02-07 14:55:16
+18,30001,test_update_template,Updated Name,,Updated Subject: {{grantName}},,,,0,2026-02-07 14:55:16,2026-02-07 14:55:16
+20,30001,test_auth_delete,Auth Test,,,,,,1,2026-02-07 14:55:16,2026-02-07 14:55:16
+21,30001,test_grant_approved,Grant Approved Notification,إشعار الموافقة على المنحة,Your grant {{grantName}} has been approved,تمت الموافقة على منحتك {{grantName}},<div><h2>Hello {{recipientName}}</h2><p>Your grant {{grantName}} for {{amount}} has been approved.</p></div>,"<div dir=""rtl""><h2>مرحباً {{recipientName}}</h2><p>تمت الموافقة على منحتك {{grantName}} بمبلغ {{amount}}.</p></div>",1,2026-02-07 14:55:25,2026-02-07 14:55:25
+22,30001,test_get_by_id,Test Template,,,,,,1,2026-02-07 14:55:25,2026-02-07 14:55:25
+23,30001,test_update_template,Updated Name,,Updated Subject: {{grantName}},,,,0,2026-02-07 14:55:25,2026-02-07 14:55:25
+25,30001,test_auth_delete,Auth Test,,,,,,1,2026-02-07 14:55:26,2026-02-07 14:55:26
+26,30001,test_grant_approved,Grant Approved Notification,إشعار الموافقة على المنحة,Your grant {{grantName}} has been approved,تمت الموافقة على منحتك {{grantName}},<div><h2>Hello {{recipientName}}</h2><p>Your grant {{grantName}} for {{amount}} has been approved.</p></div>,"<div dir=""rtl""><h2>مرحباً {{recipientName}}</h2><p>تمت الموافقة على منحتك {{grantName}} بمبلغ {{amount}}.</p></div>",1,2026-02-07 14:55:53,2026-02-07 14:55:53
+27,30001,test_get_by_id,Test Template,,,,,,1,2026-02-07 14:55:53,2026-02-07 14:55:53
+28,30001,test_update_template,Updated Name,,Updated Subject: {{grantName}},,,,0,2026-02-07 14:55:53,2026-02-07 14:55:53
+30,30001,test_auth_delete,Auth Test,,,,,,1,2026-02-07 14:55:53,2026-02-07 14:55:53
+31,30001,test_grant_approved,Grant Approved Notification,إشعار الموافقة على المنحة,Your grant {{grantName}} has been approved,تمت الموافقة على منحتك {{grantName}},<div><h2>Hello {{recipientName}}</h2><p>Your grant {{grantName}} for {{amount}} has been approved.</p></div>,"<div dir=""rtl""><h2>مرحباً {{recipientName}}</h2><p>تمت الموافقة على منحتك {{grantName}} بمبلغ {{amount}}.</p></div>",1,2026-02-07 14:56:03,2026-02-07 14:56:03
+32,30001,test_get_by_id,Test Template,,,,,,1,2026-02-07 14:56:03,2026-02-07 14:56:03
+33,30001,test_update_template,Updated Name,,Updated Subject: {{grantName}},,,,0,2026-02-07 14:56:03,2026-02-07 14:56:03
+35,30001,test_auth_delete,Auth Test,,,,,,1,2026-02-07 14:56:03,2026-02-07 14:56:03
+36,30001,test_grant_approved,Grant Approved Notification,إشعار الموافقة على المنحة,Your grant {{grantName}} has been approved,تمت الموافقة على منحتك {{grantName}},<div><h2>Hello {{recipientName}}</h2><p>Your grant {{grantName}} for {{amount}} has been approved.</p></div>,"<div dir=""rtl""><h2>مرحباً {{recipientName}}</h2><p>تمت الموافقة على منحتك {{grantName}} بمبلغ {{amount}}.</p></div>",1,2026-02-07 14:57:34,2026-02-07 14:57:34
+37,30001,test_get_by_id,Test Template,,,,,,1,2026-02-07 14:57:34,2026-02-07 14:57:34
+38,30001,test_update_template,Updated Name,,Updated Subject: {{grantName}},,,,0,2026-02-07 14:57:34,2026-02-07 14:57:34
+40,30001,test_auth_delete,Auth Test,,,,,,1,2026-02-07 14:57:34,2026-02-07 14:57:34
+41,30001,test_grant_approved,Grant Approved Notification,إشعار الموافقة على المنحة,Your grant {{grantName}} has been approved,تمت الموافقة على منحتك {{grantName}},<div><h2>Hello {{recipientName}}</h2><p>Your grant {{grantName}} for {{amount}} has been approved.</p></div>,"<div dir=""rtl""><h2>مرحباً {{recipientName}}</h2><p>تمت الموافقة على منحتك {{grantName}} بمبلغ {{amount}}.</p></div>",1,2026-02-07 16:45:15,2026-02-07 16:45:15
+42,30001,test_get_by_id,Test Template,,,,,,1,2026-02-07 16:45:15,2026-02-07 16:45:15
+43,30001,test_update_template,Updated Name,,Updated Subject: {{grantName}},,,,0,2026-02-07 16:45:15,2026-02-07 16:45:15
+45,30001,test_auth_delete,Auth Test,,,,,,1,2026-02-07 16:45:15,2026-02-07 16:45:15
+46,30001,test_grant_approved,Grant Approved Notification,إشعار الموافقة على المنحة,Your grant {{grantName}} has been approved,تمت الموافقة على منحتك {{grantName}},<div><h2>Hello {{recipientName}}</h2><p>Your grant {{grantName}} for {{amount}} has been approved.</p></div>,"<div dir=""rtl""><h2>مرحباً {{recipientName}}</h2><p>تمت الموافقة على منحتك {{grantName}} بمبلغ {{amount}}.</p></div>",1,2026-02-07 16:45:40,2026-02-07 16:45:40
+47,30001,test_get_by_id,Test Template,,,,,,1,2026-02-07 16:45:40,2026-02-07 16:45:40
+48,30001,test_update_template,Updated Name,,Updated Subject: {{grantName}},,,,0,2026-02-07 16:45:40,2026-02-07 16:45:40
+50,30001,test_auth_delete,Auth Test,,,,,,1,2026-02-07 16:45:40,2026-02-07 16:45:40
+51,30001,test_grant_approved,Grant Approved Notification,إشعار الموافقة على المنحة,Your grant {{grantName}} has been approved,تمت الموافقة على منحتك {{grantName}},<div><h2>Hello {{recipientName}}</h2><p>Your grant {{grantName}} for {{amount}} has been approved.</p></div>,"<div dir=""rtl""><h2>مرحباً {{recipientName}}</h2><p>تمت الموافقة على منحتك {{grantName}} بمبلغ {{amount}}.</p></div>",1,2026-02-07 16:46:06,2026-02-07 16:46:06
+52,30001,test_get_by_id,Test Template,,,,,,1,2026-02-07 16:46:06,2026-02-07 16:46:06
+53,30001,test_update_template,Updated Name,,Updated Subject: {{grantName}},,,,0,2026-02-07 16:46:06,2026-02-07 16:46:06
+55,30001,test_auth_delete,Auth Test,,,,,,1,2026-02-07 16:46:06,2026-02-07 16:46:06
+56,30001,test_grant_approved,Grant Approved Notification,إشعار الموافقة على المنحة,Your grant {{grantName}} has been approved,تمت الموافقة على منحتك {{grantName}},<div><h2>Hello {{recipientName}}</h2><p>Your grant {{grantName}} for {{amount}} has been approved.</p></div>,"<div dir=""rtl""><h2>مرحباً {{recipientName}}</h2><p>تمت الموافقة على منحتك {{grantName}} بمبلغ {{amount}}.</p></div>",1,2026-02-07 16:46:31,2026-02-07 16:46:31
+57,30001,test_get_by_id,Test Template,,,,,,1,2026-02-07 16:46:31,2026-02-07 16:46:31
+58,30001,test_update_template,Updated Name,,Updated Subject: {{grantName}},,,,0,2026-02-07 16:46:31,2026-02-07 16:46:31
+60,30001,test_auth_delete,Auth Test,,,,,,1,2026-02-07 16:46:31,2026-02-07 16:46:31
+61,30001,test_grant_approved,Grant Approved Notification,إشعار الموافقة على المنحة,Your grant {{grantName}} has been approved,تمت الموافقة على منحتك {{grantName}},<div><h2>Hello {{recipientName}}</h2><p>Your grant {{grantName}} for {{amount}} has been approved.</p></div>,"<div dir=""rtl""><h2>مرحباً {{recipientName}}</h2><p>تمت الموافقة على منحتك {{grantName}} بمبلغ {{amount}}.</p></div>",1,2026-02-07 16:47:14,2026-02-07 16:47:14
+62,30001,test_get_by_id,Test Template,,,,,,1,2026-02-07 16:47:14,2026-02-07 16:47:14
+63,30001,test_update_template,Updated Name,,Updated Subject: {{grantName}},,,,0,2026-02-07 16:47:14,2026-02-07 16:47:14
+65,30001,test_auth_delete,Auth Test,,,,,,1,2026-02-07 16:47:14,2026-02-07 16:47:14
+66,30001,test_grant_approved,Grant Approved Notification,إشعار الموافقة على المنحة,Your grant {{grantName}} has been approved,تمت الموافقة على منحتك {{grantName}},<div><h2>Hello {{recipientName}}</h2><p>Your grant {{grantName}} for {{amount}} has been approved.</p></div>,"<div dir=""rtl""><h2>مرحباً {{recipientName}}</h2><p>تمت الموافقة على منحتك {{grantName}} بمبلغ {{amount}}.</p></div>",1,2026-02-07 16:47:40,2026-02-07 16:47:40
+67,30001,test_get_by_id,Test Template,,,,,,1,2026-02-07 16:47:40,2026-02-07 16:47:40
+68,30001,test_update_template,Updated Name,,Updated Subject: {{grantName}},,,,0,2026-02-07 16:47:41,2026-02-07 16:47:41
+70,30001,test_auth_delete,Auth Test,,,,,,1,2026-02-07 16:47:41,2026-02-07 16:47:41
+71,30001,test_grant_approved,Grant Approved Notification,إشعار الموافقة على المنحة,Your grant {{grantName}} has been approved,تمت الموافقة على منحتك {{grantName}},<div><h2>Hello {{recipientName}}</h2><p>Your grant {{grantName}} for {{amount}} has been approved.</p></div>,"<div dir=""rtl""><h2>مرحباً {{recipientName}}</h2><p>تمت الموافقة على منحتك {{grantName}} بمبلغ {{amount}}.</p></div>",1,2026-02-07 16:48:06,2026-02-07 16:48:06
+72,30001,test_get_by_id,Test Template,,,,,,1,2026-02-07 16:48:06,2026-02-07 16:48:06
+73,30001,test_update_template,Updated Name,,Updated Subject: {{grantName}},,,,0,2026-02-07 16:48:06,2026-02-07 16:48:06
+75,30001,test_auth_delete,Auth Test,,,,,,1,2026-02-07 16:48:06,2026-02-07 16:48:06
+76,30001,test_grant_approved,Grant Approved Notification,إشعار الموافقة على المنحة,Your grant {{grantName}} has been approved,تمت الموافقة على منحتك {{grantName}},<div><h2>Hello {{recipientName}}</h2><p>Your grant {{grantName}} for {{amount}} has been approved.</p></div>,"<div dir=""rtl""><h2>مرحباً {{recipientName}}</h2><p>تمت الموافقة على منحتك {{grantName}} بمبلغ {{amount}}.</p></div>",1,2026-02-07 16:49:12,2026-02-07 16:49:12
+77,30001,test_get_by_id,Test Template,,,,,,1,2026-02-07 16:49:12,2026-02-07 16:49:12
+78,30001,test_update_template,Updated Name,,Updated Subject: {{grantName}},,,,0,2026-02-07 16:49:12,2026-02-07 16:49:13
+80,30001,test_auth_delete,Auth Test,,,,,,1,2026-02-07 16:49:13,2026-02-07 16:49:13
+81,30001,test_grant_approved,Grant Approved Notification,إشعار الموافقة على المنحة,Your grant {{grantName}} has been approved,تمت الموافقة على منحتك {{grantName}},<div><h2>Hello {{recipientName}}</h2><p>Your grant {{grantName}} for {{amount}} has been approved.</p></div>,"<div dir=""rtl""><h2>مرحباً {{recipientName}}</h2><p>تمت الموافقة على منحتك {{grantName}} بمبلغ {{amount}}.</p></div>",1,2026-02-07 16:49:38,2026-02-07 16:49:38
+82,30001,test_get_by_id,Test Template,,,,,,1,2026-02-07 16:49:38,2026-02-07 16:49:38
+83,30001,test_update_template,Updated Name,,Updated Subject: {{grantName}},,,,0,2026-02-07 16:49:38,2026-02-07 16:49:38
+85,30001,test_auth_delete,Auth Test,,,,,,1,2026-02-07 16:49:38,2026-02-07 16:49:38
+86,30001,test_grant_approved,Grant Approved Notification,إشعار الموافقة على المنحة,Your grant {{grantName}} has been approved,تمت الموافقة على منحتك {{grantName}},<div><h2>Hello {{recipientName}}</h2><p>Your grant {{grantName}} for {{amount}} has been approved.</p></div>,"<div dir=""rtl""><h2>مرحباً {{recipientName}}</h2><p>تمت الموافقة على منحتك {{grantName}} بمبلغ {{amount}}.</p></div>",1,2026-02-07 16:50:04,2026-02-07 16:50:04
+87,30001,test_get_by_id,Test Template,,,,,,1,2026-02-07 16:50:04,2026-02-07 16:50:04
+88,30001,test_update_template,Updated Name,,Updated Subject: {{grantName}},,,,0,2026-02-07 16:50:04,2026-02-07 16:50:04
+90,30001,test_auth_delete,Auth Test,,,,,,1,2026-02-07 16:50:04,2026-02-07 16:50:04
+91,30001,test_grant_approved,Grant Approved Notification,إشعار الموافقة على المنحة,Your grant {{grantName}} has been approved,تمت الموافقة على منحتك {{grantName}},<div><h2>Hello {{recipientName}}</h2><p>Your grant {{grantName}} for {{amount}} has been approved.</p></div>,"<div dir=""rtl""><h2>مرحباً {{recipientName}}</h2><p>تمت الموافقة على منحتك {{grantName}} بمبلغ {{amount}}.</p></div>",1,2026-02-07 17:06:55,2026-02-07 17:06:55
+92,30001,test_get_by_id,Test Template,,,,,,1,2026-02-07 17:06:55,2026-02-07 17:06:55
+93,30001,test_update_template,Updated Name,,Updated Subject: {{grantName}},,,,0,2026-02-07 17:06:55,2026-02-07 17:06:55
+95,30001,test_auth_delete,Auth Test,,,,,,1,2026-02-07 17:06:55,2026-02-07 17:06:55
+96,30001,test_grant_approved,Grant Approved Notification,إشعار الموافقة على المنحة,Your grant {{grantName}} has been approved,تمت الموافقة على منحتك {{grantName}},<div><h2>Hello {{recipientName}}</h2><p>Your grant {{grantName}} for {{amount}} has been approved.</p></div>,"<div dir=""rtl""><h2>مرحباً {{recipientName}}</h2><p>تمت الموافقة على منحتك {{grantName}} بمبلغ {{amount}}.</p></div>",1,2026-02-07 17:07:19,2026-02-07 17:07:19
+97,30001,test_get_by_id,Test Template,,,,,,1,2026-02-07 17:07:19,2026-02-07 17:07:19
+98,30001,test_update_template,Updated Name,,Updated Subject: {{grantName}},,,,0,2026-02-07 17:07:19,2026-02-07 17:07:19
+100,30001,test_auth_delete,Auth Test,,,,,,1,2026-02-07 17:07:19,2026-02-07 17:07:19
+101,30001,test_grant_approved,Grant Approved Notification,إشعار الموافقة على المنحة,Your grant {{grantName}} has been approved,تمت الموافقة على منحتك {{grantName}},<div><h2>Hello {{recipientName}}</h2><p>Your grant {{grantName}} for {{amount}} has been approved.</p></div>,"<div dir=""rtl""><h2>مرحباً {{recipientName}}</h2><p>تمت الموافقة على منحتك {{grantName}} بمبلغ {{amount}}.</p></div>",1,2026-02-07 17:07:43,2026-02-07 17:07:43
+102,30001,test_get_by_id,Test Template,,,,,,1,2026-02-07 17:07:43,2026-02-07 17:07:43
+103,30001,test_update_template,Updated Name,,Updated Subject: {{grantName}},,,,0,2026-02-07 17:07:43,2026-02-07 17:07:43
+105,30001,test_auth_delete,Auth Test,,,,,,1,2026-02-07 17:07:43,2026-02-07 17:07:43
+106,30001,test_grant_approved,Grant Approved Notification,إشعار الموافقة على المنحة,Your grant {{grantName}} has been approved,تمت الموافقة على منحتك {{grantName}},<div><h2>Hello {{recipientName}}</h2><p>Your grant {{grantName}} for {{amount}} has been approved.</p></div>,"<div dir=""rtl""><h2>مرحباً {{recipientName}}</h2><p>تمت الموافقة على منحتك {{grantName}} بمبلغ {{amount}}.</p></div>",1,2026-02-07 17:08:08,2026-02-07 17:08:08
+107,30001,test_get_by_id,Test Template,,,,,,1,2026-02-07 17:08:08,2026-02-07 17:08:08
+108,30001,test_update_template,Updated Name,,Updated Subject: {{grantName}},,,,0,2026-02-07 17:08:08,2026-02-07 17:08:08
+110,30001,test_auth_delete,Auth Test,,,,,,1,2026-02-07 17:08:08,2026-02-07 17:08:08
+111,30001,test_grant_approved,Grant Approved Notification,إشعار الموافقة على المنحة,Your grant {{grantName}} has been approved,تمت الموافقة على منحتك {{grantName}},<div><h2>Hello {{recipientName}}</h2><p>Your grant {{grantName}} for {{amount}} has been approved.</p></div>,"<div dir=""rtl""><h2>مرحباً {{recipientName}}</h2><p>تمت الموافقة على منحتك {{grantName}} بمبلغ {{amount}}.</p></div>",1,2026-02-07 17:08:51,2026-02-07 17:08:51
+112,30001,test_get_by_id,Test Template,,,,,,1,2026-02-07 17:08:51,2026-02-07 17:08:51
+113,30001,test_update_template,Updated Name,,Updated Subject: {{grantName}},,,,0,2026-02-07 17:08:51,2026-02-07 17:08:51
+115,30001,test_auth_delete,Auth Test,,,,,,1,2026-02-07 17:08:51,2026-02-07 17:08:51
+116,30001,test_grant_approved,Grant Approved Notification,إشعار الموافقة على المنحة,Your grant {{grantName}} has been approved,تمت الموافقة على منحتك {{grantName}},<div><h2>Hello {{recipientName}}</h2><p>Your grant {{grantName}} for {{amount}} has been approved.</p></div>,"<div dir=""rtl""><h2>مرحباً {{recipientName}}</h2><p>تمت الموافقة على منحتك {{grantName}} بمبلغ {{amount}}.</p></div>",1,2026-02-07 17:09:17,2026-02-07 17:09:17
+117,30001,test_get_by_id,Test Template,,,,,,1,2026-02-07 17:09:17,2026-02-07 17:09:17
+118,30001,test_update_template,Updated Name,,Updated Subject: {{grantName}},,,,0,2026-02-07 17:09:17,2026-02-07 17:09:17
+120,30001,test_auth_delete,Auth Test,,,,,,1,2026-02-07 17:09:17,2026-02-07 17:09:17
+121,30001,test_grant_approved,Grant Approved Notification,إشعار الموافقة على المنحة,Your grant {{grantName}} has been approved,تمت الموافقة على منحتك {{grantName}},<div><h2>Hello {{recipientName}}</h2><p>Your grant {{grantName}} for {{amount}} has been approved.</p></div>,"<div dir=""rtl""><h2>مرحباً {{recipientName}}</h2><p>تمت الموافقة على منحتك {{grantName}} بمبلغ {{amount}}.</p></div>",1,2026-02-07 17:28:51,2026-02-07 17:28:51
+122,30001,test_get_by_id,Test Template,,,,,,1,2026-02-07 17:28:51,2026-02-07 17:28:51
+123,30001,test_update_template,Updated Name,,Updated Subject: {{grantName}},,,,0,2026-02-07 17:28:51,2026-02-07 17:28:51
+125,30001,test_auth_delete,Auth Test,,,,,,1,2026-02-07 17:28:52,2026-02-07 17:28:52
+126,30001,test_grant_approved,Grant Approved Notification,إشعار الموافقة على المنحة,Your grant {{grantName}} has been approved,تمت الموافقة على منحتك {{grantName}},<div><h2>Hello {{recipientName}}</h2><p>Your grant {{grantName}} for {{amount}} has been approved.</p></div>,"<div dir=""rtl""><h2>مرحباً {{recipientName}}</h2><p>تمت الموافقة على منحتك {{grantName}} بمبلغ {{amount}}.</p></div>",1,2026-02-07 17:29:23,2026-02-07 17:29:23
+127,30001,test_get_by_id,Test Template,,,,,,1,2026-02-07 17:29:23,2026-02-07 17:29:23
+128,30001,test_update_template,Updated Name,,Updated Subject: {{grantName}},,,,0,2026-02-07 17:29:23,2026-02-07 17:29:23
+130,30001,test_auth_delete,Auth Test,,,,,,1,2026-02-07 17:29:23,2026-02-07 17:29:23
+131,30001,test_grant_approved,Grant Approved Notification,إشعار الموافقة على المنحة,Your grant {{grantName}} has been approved,تمت الموافقة على منحتك {{grantName}},<div><h2>Hello {{recipientName}}</h2><p>Your grant {{grantName}} for {{amount}} has been approved.</p></div>,"<div dir=""rtl""><h2>مرحباً {{recipientName}}</h2><p>تمت الموافقة على منحتك {{grantName}} بمبلغ {{amount}}.</p></div>",1,2026-02-07 17:29:55,2026-02-07 17:29:55
+132,30001,test_get_by_id,Test Template,,,,,,1,2026-02-07 17:29:55,2026-02-07 17:29:55
+133,30001,test_update_template,Updated Name,,Updated Subject: {{grantName}},,,,0,2026-02-07 17:29:55,2026-02-07 17:29:55
+135,30001,test_auth_delete,Auth Test,,,,,,1,2026-02-07 17:29:55,2026-02-07 17:29:55
+136,30001,test_grant_approved,Grant Approved Notification,إشعار الموافقة على المنحة,Your grant {{grantName}} has been approved,تمت الموافقة على منحتك {{grantName}},<div><h2>Hello {{recipientName}}</h2><p>Your grant {{grantName}} for {{amount}} has been approved.</p></div>,"<div dir=""rtl""><h2>مرحباً {{recipientName}}</h2><p>تمت الموافقة على منحتك {{grantName}} بمبلغ {{amount}}.</p></div>",1,2026-02-07 17:42:00,2026-02-07 17:42:00
+137,30001,test_get_by_id,Test Template,,,,,,1,2026-02-07 17:42:00,2026-02-07 17:42:00
+138,30001,test_update_template,Updated Name,,Updated Subject: {{grantName}},,,,0,2026-02-07 17:42:00,2026-02-07 17:42:00
+140,30001,test_auth_delete,Auth Test,,,,,,1,2026-02-07 17:42:00,2026-02-07 17:42:00
+141,30001,test_grant_approved,Grant Approved Notification,إشعار الموافقة على المنحة,Your grant {{grantName}} has been approved,تمت الموافقة على منحتك {{grantName}},<div><h2>Hello {{recipientName}}</h2><p>Your grant {{grantName}} for {{amount}} has been approved.</p></div>,"<div dir=""rtl""><h2>مرحباً {{recipientName}}</h2><p>تمت الموافقة على منحتك {{grantName}} بمبلغ {{amount}}.</p></div>",1,2026-02-07 17:42:28,2026-02-07 17:42:28
+142,30001,test_get_by_id,Test Template,,,,,,1,2026-02-07 17:42:28,2026-02-07 17:42:28
+143,30001,test_update_template,Updated Name,,Updated Subject: {{grantName}},,,,0,2026-02-07 17:42:28,2026-02-07 17:42:28
+145,30001,test_auth_delete,Auth Test,,,,,,1,2026-02-07 17:42:28,2026-02-07 17:42:28
+146,30001,test_grant_approved,Grant Approved Notification,إشعار الموافقة على المنحة,Your grant {{grantName}} has been approved,تمت الموافقة على منحتك {{grantName}},<div><h2>Hello {{recipientName}}</h2><p>Your grant {{grantName}} for {{amount}} has been approved.</p></div>,"<div dir=""rtl""><h2>مرحباً {{recipientName}}</h2><p>تمت الموافقة على منحتك {{grantName}} بمبلغ {{amount}}.</p></div>",1,2026-02-07 17:42:57,2026-02-07 17:42:57
+147,30001,test_get_by_id,Test Template,,,,,,1,2026-02-07 17:42:57,2026-02-07 17:42:57
+148,30001,test_update_template,Updated Name,,Updated Subject: {{grantName}},,,,0,2026-02-07 17:42:57,2026-02-07 17:42:57
+150,30001,test_auth_delete,Auth Test,,,,,,1,2026-02-07 17:42:58,2026-02-07 17:42:58
+151,30001,test_grant_approved,Grant Approved Notification,إشعار الموافقة على المنحة,Your grant {{grantName}} has been approved,تمت الموافقة على منحتك {{grantName}},<div><h2>Hello {{recipientName}}</h2><p>Your grant {{grantName}} for {{amount}} has been approved.</p></div>,"<div dir=""rtl""><h2>مرحباً {{recipientName}}</h2><p>تمت الموافقة على منحتك {{grantName}} بمبلغ {{amount}}.</p></div>",1,2026-02-07 17:50:15,2026-02-07 17:50:15
+152,30001,test_get_by_id,Test Template,,,,,,1,2026-02-07 17:50:15,2026-02-07 17:50:15
+153,30001,test_update_template,Updated Name,,Updated Subject: {{grantName}},,,,0,2026-02-07 17:50:15,2026-02-07 17:50:15
+155,30001,test_auth_delete,Auth Test,,,,,,1,2026-02-07 17:50:15,2026-02-07 17:50:15
+156,30001,test_grant_approved,Grant Approved Notification,إشعار الموافقة على المنحة,Your grant {{grantName}} has been approved,تمت الموافقة على منحتك {{grantName}},<div><h2>Hello {{recipientName}}</h2><p>Your grant {{grantName}} for {{amount}} has been approved.</p></div>,"<div dir=""rtl""><h2>مرحباً {{recipientName}}</h2><p>تمت الموافقة على منحتك {{grantName}} بمبلغ {{amount}}.</p></div>",1,2026-02-07 17:50:42,2026-02-07 17:50:42
+157,30001,test_get_by_id,Test Template,,,,,,1,2026-02-07 17:50:42,2026-02-07 17:50:42
+158,30001,test_update_template,Updated Name,,Updated Subject: {{grantName}},,,,0,2026-02-07 17:50:42,2026-02-07 17:50:42
+160,30001,test_auth_delete,Auth Test,,,,,,1,2026-02-07 17:50:43,2026-02-07 17:50:43
+161,30001,test_grant_approved,Grant Approved Notification,إشعار الموافقة على المنحة,Your grant {{grantName}} has been approved,تمت الموافقة على منحتك {{grantName}},<div><h2>Hello {{recipientName}}</h2><p>Your grant {{grantName}} for {{amount}} has been approved.</p></div>,"<div dir=""rtl""><h2>مرحباً {{recipientName}}</h2><p>تمت الموافقة على منحتك {{grantName}} بمبلغ {{amount}}.</p></div>",1,2026-02-07 17:58:18,2026-02-07 17:58:18
+162,30001,test_get_by_id,Test Template,,,,,,1,2026-02-07 17:58:18,2026-02-07 17:58:18
+163,30001,test_update_template,Updated Name,,Updated Subject: {{grantName}},,,,0,2026-02-07 17:58:18,2026-02-07 17:58:18
+165,30001,test_auth_delete,Auth Test,,,,,,1,2026-02-07 17:58:18,2026-02-07 17:58:18
+166,30001,test_grant_approved,Grant Approved Notification,إشعار الموافقة على المنحة,Your grant {{grantName}} has been approved,تمت الموافقة على منحتك {{grantName}},<div><h2>Hello {{recipientName}}</h2><p>Your grant {{grantName}} for {{amount}} has been approved.</p></div>,"<div dir=""rtl""><h2>مرحباً {{recipientName}}</h2><p>تمت الموافقة على منحتك {{grantName}} بمبلغ {{amount}}.</p></div>",1,2026-02-07 17:58:44,2026-02-07 17:58:44
+167,30001,test_get_by_id,Test Template,,,,,,1,2026-02-07 17:58:44,2026-02-07 17:58:44
+168,30001,test_update_template,Updated Name,,Updated Subject: {{grantName}},,,,0,2026-02-07 17:58:44,2026-02-07 17:58:44
+170,30001,test_auth_delete,Auth Test,,,,,,1,2026-02-07 17:58:44,2026-02-07 17:58:44

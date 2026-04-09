@@ -1,0 +1,1 @@
+id,organizationId,operatingUnitId,purchaseRequestId,quotationAnalysisId,bidAnalysisId,supplierId,poNumber,poDate,deliveryDate,deliveryLocation,deliveryLocationAr,paymentTerms,currency,subtotal,taxAmount,totalAmount,termsAndConditions,status,sentAt,acknowledgedAt,approvedBy,approvedAt,isDeleted,deletedAt,deletedBy,createdAt,updatedAt,createdBy,updatedBy

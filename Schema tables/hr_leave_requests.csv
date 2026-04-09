@@ -1,0 +1,8 @@
+id,organizationId,operatingUnitId,employeeId,leaveType,startDate,endDate,totalDays,reason,attachmentUrl,status,approvedBy,approvedAt,rejectionReason,balanceBefore,balanceAfter,notes,isDeleted,deletedAt,deletedBy,createdAt,updatedAt
+8,30001,30001,34,annual,2026-01-15 00:00:00,2026-01-20 00:00:00,5.0,Family vacation,,approved,,,,,,,0,,,2026-02-01 06:12:08,2026-02-01 11:24:24
+9,30001,30001,35,sick,2026-01-25 00:00:00,2026-01-26 00:00:00,2.0,Medical appointment,,approved,,,,,,,0,,,2026-02-01 06:12:08,2026-02-01 11:24:24
+10,30001,30001,36,annual,2026-02-10 00:00:00,2026-02-14 00:00:00,5.0,Personal travel,,pending,,,,,,,0,,,2026-02-01 06:12:08,2026-02-01 11:24:24
+11,30001,30001,37,compassionate,2026-01-28 00:00:00,2026-01-30 00:00:00,3.0,Family emergency,,approved,,,,,,,0,,,2026-02-01 06:12:08,2026-02-01 11:24:24
+12,30001,30001,38,annual,2026-02-20 00:00:00,2026-02-25 00:00:00,5.0,Vacation,,pending,,,,,,,0,,,2026-02-01 06:12:08,2026-02-01 11:24:24
+13,30001,30001,39,sick,2026-01-10 00:00:00,2026-01-11 00:00:00,2.0,Flu,,approved,,,,,,,0,,,2026-02-01 06:12:08,2026-02-01 11:24:24
+14,30001,30001,42,annual,2026-03-01 00:00:00,2026-03-10 00:00:00,8.0,Extended vacation,,rejected,,,Critical project deadline,,,,0,,,2026-02-01 06:12:08,2026-02-01 11:24:24

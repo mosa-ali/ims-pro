@@ -1,0 +1,1 @@
+id,budgetLineId,budgetId,allocationMonth,monthNumber,quarterNumber,fiscalYear,plannedAmount,forecastAmount,actualAmount,variance,notes,notesAr,createdAt,updatedAt,createdBy,updatedBy,organizationId,operatingUnitId,isDeleted,deletedAt,deletedBy

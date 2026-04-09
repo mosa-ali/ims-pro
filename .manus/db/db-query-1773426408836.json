@@ -1,0 +1,18 @@
+{
+  "query": "SELECT id, email, name, authenticationProvider, isActive, role FROM users WHERE email = 'test@example.com';",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway03.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3DLEw35gkkimUcv.eeb1f1cd43d3 --database 6e38zfddYazj4vVoRnY5Mj --execute SELECT id, email, name, authenticationProvider, isActive, role FROM users WHERE email = 'test@example.com';",
+  "rows": [
+    {
+      "id": "1534705",
+      "email": "test@example.com",
+      "name": "Test User",
+      "authenticationProvider": "email",
+      "isActive": "1",
+      "role": "user"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\temail\tname\tauthenticationProvider\tisActive\trole\n1534705\ttest@example.com\tTest User\temail\t1\tuser\n",
+  "stderr": "",
+  "execution_time_ms": 62
+}

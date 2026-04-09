@@ -1,0 +1,220 @@
+name: Build and deploy Node.js app to Azure Web App (Linux)
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+env:
+  CI: true
+  HUSKY: 0
+  NODE_ENV: production
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    environment: .env
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          run_install: false
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '~22.x'
+          cache: pnpm
+
+      - name: Show tool versions
+        run: |
+          node -v
+          npm -v
+          pnpm -v
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build deployment artifact
+        run: pnpm run build:deploy
+
+      - name: Show artifact structure after build
+        run: |
+          echo "=== project root ==="
+          ls -la
+          echo "=== deploy ==="
+          ls -la deploy
+          echo "=== deploy/dist ==="
+          ls -la deploy/dist
+
+      - name: Validate no forbidden Drizzle import path
+        run: |
+          echo "=== Checking for forbidden Drizzle import path ==="
+          if grep -RIn 'drizzle-orm/mysql-core/index.js' deploy/dist 2>/dev/null; then
+            echo "ERROR: forbidden Drizzle import path found in deploy/dist"
+            exit 1
+          fi
+          echo "✓ No forbidden Drizzle import path found"
+
+      - name: Validate deploy/dist/index.js contains NO dev-only Vite references
+        run: |
+          echo "=== Checking for dev-only package references in deploy/dist/index.js ==="
+
+          if grep -E '@builder.io/vite-plugin-jsx-loc' deploy/dist/index.js; then
+            echo "ERROR: @builder.io/vite-plugin-jsx-loc found in production deploy/dist/index.js"
+            exit 1
+          fi
+
+          if grep -E 'from "vite"|from '\''vite'\''|import\("vite"\)|import\('\''vite'\''\)|defineConfig\(' deploy/dist/index.js; then
+            echo "ERROR: vite import/reference found in production deploy/dist/index.js"
+            exit 1
+          fi
+
+          echo "✓ No dev-only Vite references found in production deploy/dist/index.js"
+
+      - name: Install PRODUCTION ONLY dependencies using pnpm
+        run: |
+          cd deploy
+          pnpm install --prod --frozen-lockfile
+          echo "✓ Production dependencies installed"
+
+      - name: Validate deploy package structure
+        run: |
+          cd deploy
+
+          [ -f package.json ] || (echo "ERROR: package.json not found in deploy" && exit 1)
+          [ -f dist/index.js ] || (echo "ERROR: dist/index.js not found in deploy" && exit 1)
+          [ -d node_modules ] || (echo "ERROR: node_modules not found in deploy" && exit 1)
+
+          [ -d node_modules/express ] || (echo "ERROR: express not found in production node_modules" && exit 1)
+          [ -d node_modules/drizzle-orm ] || (echo "ERROR: drizzle-orm not found in production node_modules" && exit 1)
+          [ -d node_modules/mysql2 ] || (echo "ERROR: mysql2 not found in production node_modules" && exit 1)
+          [ -d node_modules/axios ] || (echo "ERROR: axios not found in production node_modules" && exit 1)
+          [ -d node_modules/cookie ] || (echo "ERROR: cookie not found in production node_modules" && exit 1)
+          [ -d node_modules/bcryptjs ] || (echo "ERROR: bcryptjs not found in production node_modules" && exit 1)
+
+          if [ -d patches ]; then
+            [ -f patches/wouter@3.7.1.patch ] || (echo "ERROR: required patch file missing in deploy/patches" && exit 1)
+          fi
+
+          echo "✓ Deploy package structure verified"
+
+      - name: Verify PRODUCTION runtime dependencies are installed
+        run: |
+          cd deploy
+          pnpm list express drizzle-orm mysql2 axios cookie bcryptjs --depth 0
+
+      - name: Verify devDependencies are NOT installed
+        run: |
+          cd deploy
+
+          if [ -d node_modules/vite ]; then
+            echo "ERROR: vite found in production node_modules"
+            exit 1
+          fi
+
+          if [ -d node_modules/@builder.io ]; then
+            echo "ERROR: @builder.io found in production node_modules"
+            exit 1
+          fi
+
+          if [ -d node_modules/typescript ]; then
+            echo "ERROR: typescript found in production node_modules"
+            exit 1
+          fi
+
+          echo "✓ Verified: no devDependencies installed in production"
+
+      - name: Validate runtime imports
+        run: |
+          cd deploy
+          node --input-type=module -e "import('drizzle-orm/mysql-core').then(()=>console.log('✓ drizzle mysql-core import OK')).catch(err=>{console.error(err); process.exit(1)})"
+          node --input-type=module -e "import('express').then(()=>console.log('✓ express import OK')).catch(err=>{console.error(err); process.exit(1)})"
+          node --input-type=module -e "import('mysql2').then(()=>console.log('✓ mysql2 import OK')).catch(err=>{console.error(err); process.exit(1)})"
+          node --input-type=module -e "import('axios').then(()=>console.log('✓ axios import OK')).catch(err=>{console.error(err); process.exit(1)})"
+          node --input-type=module -e "import('cookie').then(()=>console.log('✓ cookie import OK')).catch(err=>{console.error(err); process.exit(1)})"
+          node --input-type=module -e "import('bcryptjs').then(()=>console.log('✓ bcryptjs import OK')).catch(err=>{console.error(err); process.exit(1)})"
+
+      - name: Validate production server startup
+        run: |
+          cd deploy
+
+          export NODE_ENV=production
+          export PORT=3001
+          export APP_BASE_URL="${APP_BASE_URL:-http://localhost:3001}"
+          export OAUTH_SERVER_URL="${OAUTH_SERVER_URL:-http://localhost:3001}"
+          export JWT_SECRET="${JWT_SECRET:-ci_dummy_jwt_secret_123456789}"
+          export DATABASE_URL="${DATABASE_URL:-mysql://test:test@127.0.0.1:3306/testdb}"
+
+          set +e
+          timeout 20s sh -c 'node dist/index.js' > startup.log 2>&1
+          EXIT_CODE=$?
+          set -e
+
+          echo "=== Startup log ==="
+          cat startup.log || true
+
+          if [ "$EXIT_CODE" -eq 124 ]; then
+            echo "✓ Server started successfully and was stopped by timeout"
+            exit 0
+          fi
+
+          if grep -Ei 'ERR_MODULE_NOT_FOUND|Cannot find package|Cannot find module|ERR_PACKAGE_PATH_NOT_EXPORTED|ERR_UNSUPPORTED_DIR_IMPORT' startup.log; then
+            echo "ERROR: production startup failed due to missing package or invalid runtime import"
+            exit 1
+          fi
+
+          echo "✓ Startup validation completed without packaging/runtime import errors"
+
+      - name: Show deploy package contents
+        run: |
+          echo "==== deploy root ===="
+          ls -la deploy
+
+          echo "==== deploy dist ===="
+          ls -la deploy/dist
+
+          echo "==== deploy patches ===="
+          ls -la deploy/patches || true
+
+          echo "==== key runtime packages ===="
+          ls -la deploy/node_modules/drizzle-orm || true
+          ls -la deploy/node_modules/mysql2 || true
+          ls -la deploy/node_modules/axios || true
+          ls -la deploy/node_modules/cookie || true
+          ls -la deploy/node_modules/bcryptjs || true
+
+      - name: Check publish profile exists
+        run: |
+          if [ -z "$AZURE_WEBAPP_PUBLISH_PROFILE" ]; then
+            echo "ERROR: AZURE_WEBAPP_PUBLISH_PROFILE secret is missing"
+            exit 1
+          fi
+          echo "✓ AZURE_WEBAPP_PUBLISH_PROFILE secret is available"
+        env:
+          AZURE_WEBAPP_PUBLISH_PROFILE: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+
+      - name: Azure Configuration Requirements
+        run: |
+          echo "=============================================="
+          echo "IMPORTANT: Azure App Service Configuration"
+          echo "=============================================="
+          echo "Please ensure these App Settings are configured in Azure:"
+          echo "1. SCM_DO_BUILD_DURING_DEPLOYMENT = false"
+          echo "2. WEBSITE_NODE_DEFAULT_VERSION = ~22"
+          echo "3. All required environment variables are set"
+          echo "=============================================="
+
+      - name: Deploy to Azure Web App
+        uses: azure/webapps-deploy@v3
+        with:
+          app-name: ims
+          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+          package: deploy

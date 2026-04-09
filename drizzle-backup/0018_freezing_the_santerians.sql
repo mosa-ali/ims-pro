@@ -1,0 +1,2 @@
+ALTER TABLE `pipeline_opportunities` ADD `type` enum('opportunity','pipeline','proposal') DEFAULT 'pipeline' NOT NULL;--> statement-breakpoint
+ALTER TABLE `pipeline_opportunities` ADD `statusHistory` json;

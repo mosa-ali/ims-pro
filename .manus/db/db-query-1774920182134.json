@@ -1,0 +1,17 @@
+{
+  "query": "\n-- Create test user for production authentication testing\nINSERT INTO users (email, name, passwordHash, role, authenticationProvider, loginMethod, isActive, emailVerified, emailVerifiedAt, createdAt, updatedAt)\nVALUES (\n  'prod-test@example.com',\n  'Production Test User',\n  '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcg7b3XeKeUxWdeS86E36P4/KFm', -- bcrypt hash of 'TestPassword123!'\n  'user',\n  'local',\n  'email',\n  1,\n  1,\n  NOW(),\n  NOW(),\n  NOW()\n);\n\n-- Verify user was created\nSELECT id, email, name, role, emailVerified FROM users WHERE email = 'prod-test@example.com';\n",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway03.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3DLEw35gkkimUcv.eeb1f1cd43d3 --database 6e38zfddYazj4vVoRnY5Mj --execute \n-- Create test user for production authentication testing\nINSERT INTO users (email, name, passwordHash, role, authenticationProvider, loginMethod, isActive, emailVerified, emailVerifiedAt, createdAt, updatedAt)\nVALUES (\n  'prod-test@example.com',\n  'Production Test User',\n  '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcg7b3XeKeUxWdeS86E36P4/KFm', -- bcrypt hash of 'TestPassword123!'\n  'user',\n  'local',\n  'email',\n  1,\n  1,\n  NOW(),\n  NOW(),\n  NOW()\n);\n\n-- Verify user was created\nSELECT id, email, name, role, emailVerified FROM users WHERE email = 'prod-test@example.com';\n",
+  "rows": [
+    {
+      "id": "1354717",
+      "email": "prod-test@example.com",
+      "name": "Production Test User",
+      "role": "user",
+      "emailVerified": "1"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\temail\tname\trole\temailVerified\n1354717\tprod-test@example.com\tProduction Test User\tuser\t1\n",
+  "stderr": "",
+  "execution_time_ms": 65
+}

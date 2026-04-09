@@ -1,0 +1,25 @@
+{
+  "query": "SELECT id, projectCode, title FROM projects LIMIT 10;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway03.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3DLEw35gkkimUcv.eeb1f1cd43d3 --database 6e38zfddYazj4vVoRnY5Mj --execute SELECT id, projectCode, title FROM projects LIMIT 10;",
+  "rows": [
+    {
+      "id": "1",
+      "projectCode": "PRO-01-2026",
+      "title": "Child Protection and Food security"
+    },
+    {
+      "id": "30001",
+      "projectCode": "hggyde",
+      "title": "test project"
+    },
+    {
+      "id": "30003",
+      "projectCode": "TEST-VERIFY-001",
+      "title": "Verification Test Project"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tprojectCode\ttitle\n1\tPRO-01-2026\tChild Protection and Food security\n30001\thggyde\ttest project\n30003\tTEST-VERIFY-001\tVerification Test Project\n",
+  "stderr": "",
+  "execution_time_ms": 98
+}

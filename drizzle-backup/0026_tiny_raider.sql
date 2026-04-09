@@ -1,0 +1,1 @@
+ALTER TABLE `projects` ADD `physicalProgressPercentage` decimal(5,2) DEFAULT '0.00' NOT NULL;

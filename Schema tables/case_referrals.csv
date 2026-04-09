@@ -1,0 +1,7 @@
+id,caseId,projectId,organizationId,referralDate,referralType,serviceRequired,receivingOrganization,focalPoint,focalPointContact,status,followUpDate,feedbackReceived,feedbackNotes,consentObtained,createdAt,updatedAt,createdBy,isDeleted
+1,1,60002,30001,2026-01-30 00:00:00,external,Medical Assessment,City Hospital,Dr. Ahmed,+962-799-123456,pending,,0,,1,2026-01-31 21:37:19,2026-02-03 18:36:44,,0
+30002,30006,150027,30001,2026-02-05 00:00:00,internal,Child Protection,+962-6-555-0100,Dr. Ahmad Nasser,UNHCR Jordan,pending,,0,,1,2026-02-06 12:13:49,2026-02-06 12:13:49,1080332,0
+30003,30005,150027,30001,2026-02-05 00:00:00,external,Save the Children,Ms. Rania Khalil,Education Support,+962-7-888-0200,accepted,,0,,1,2026-02-06 12:15:06,2026-02-06 12:15:06,1080332,0
+30004,30004,150027,30001,2026-02-05 00:00:00,internal,Mental Health,Dr. Hana Mahmoud,+962-6-777-0300,IMC Health Center,completed,,0,,1,2026-02-06 12:16:24,2026-02-06 12:16:24,1080332,0
+30005,30003,150027,30001,2026-02-05 00:00:00,external,Legal Aid,UNICEF Jordan,Mr. Ahmad Nasser,+962-6-555-0400,pending,,0,,1,2026-02-06 12:18:04,2026-02-06 12:18:04,1080332,0
+30006,30006,150027,30001,2026-02-05 00:00:00,internal,Health Services,WHO Jordan,Dr. Khalid Mansour,+962-6-888-0500,rejected,,0,,1,2026-02-06 12:19:16,2026-02-06 12:19:16,1080332,0

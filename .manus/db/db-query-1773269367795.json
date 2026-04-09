@@ -1,0 +1,45 @@
+{
+  "query": "SELECT id, name, email, authenticationProvider, isActive FROM users WHERE authenticationProvider = 'email' LIMIT 5;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway03.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3DLEw35gkkimUcv.eeb1f1cd43d3 --database 6e38zfddYazj4vVoRnY5Mj --execute SELECT id, name, email, authenticationProvider, isActive FROM users WHERE authenticationProvider = 'email' LIMIT 5;",
+  "rows": [
+    {
+      "id": "1080383",
+      "name": "Mosa Ali",
+      "email": "mdrwesh@outlook.com",
+      "authenticationProvider": "email",
+      "isActive": "1"
+    },
+    {
+      "id": "1264648",
+      "name": "mosamali2050",
+      "email": "mosamali2050@gmail.com",
+      "authenticationProvider": "email",
+      "isActive": "1"
+    },
+    {
+      "id": "1291213",
+      "name": "programs",
+      "email": "programs@yamany.org",
+      "authenticationProvider": "email",
+      "isActive": "1"
+    },
+    {
+      "id": "1291218",
+      "name": "Mosa Drwesh",
+      "email": "mdrwesh82@gmail.com",
+      "authenticationProvider": "email",
+      "isActive": "1"
+    },
+    {
+      "id": "1355367",
+      "name": "NULL",
+      "email": "NULL",
+      "authenticationProvider": "email",
+      "isActive": "1"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tname\temail\tauthenticationProvider\tisActive\n1080383\tMosa Ali\tmdrwesh@outlook.com\temail\t1\n1264648\tmosamali2050\tmosamali2050@gmail.com\temail\t1\n1291213\tprograms\tprograms@yamany.org\temail\t1\n1291218\tMosa Drwesh\tmdrwesh82@gmail.com\temail\t1\n1355367\tNULL\tNULL\temail\t1\n",
+  "stderr": "",
+  "execution_time_ms": 61
+}

@@ -1,0 +1,1 @@
+ALTER TABLE `budget_items` MODIFY COLUMN `fiscalYear` varchar(20);

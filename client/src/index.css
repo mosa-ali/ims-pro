@@ -1,0 +1,563 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+
+
+@theme inline {
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+}
+
+:root {
+  /* Enterprise Minimalism: Swiss Modernism meets Contemporary Enterprise Design */
+  /* Primary: Deep slate blue (#1e3a5f) for authority and trust */
+  /* Accent: Vibrant teal (#00a8a8) for critical information */
+  --primary: #1e3a5f;
+  --primary-foreground: #f8f9fa;
+  --sidebar-primary: #1e3a5f;
+  --sidebar-primary-foreground: #f8f9fa;
+  --chart-1: #00a8a8;
+  --chart-2: #0d7f7f;
+  --chart-3: #1e3a5f;
+  --chart-4: #2d5a7b;
+  --chart-5: #3c7a9e;
+  --radius: 0.5rem;
+  --background: #f8f9fa;
+  --foreground: #1a202c;
+  --card: #ffffff;
+  --card-foreground: #1a202c;
+  --popover: #ffffff;
+  --popover-foreground: #1a202c;
+  --secondary: #e2e8f0;
+  --secondary-foreground: #2d3748;
+  --muted: #cbd5e0;
+  --muted-foreground: #4a5568;
+  --accent: #00a8a8;
+  --accent-foreground: #ffffff;
+  --destructive: #dc2626;
+  --destructive-foreground: #ffffff;
+  --border: #e2e8f0;
+  --input: #e2e8f0;
+  --ring: #00a8a8;
+  --sidebar: #ffffff;
+  --sidebar-foreground: #1a202c;
+  --sidebar-accent: #1e3a5f;
+  --sidebar-accent-foreground: #f8f9fa;
+  --sidebar-border: #e2e8f0;
+  --sidebar-ring: #00a8a8;
+}
+
+.dark {
+  /* Dark mode for Enterprise Minimalism */
+  --primary: #1e3a5f;
+  --primary-foreground: #f8f9fa;
+  --sidebar-primary: #1e3a5f;
+  --sidebar-primary-foreground: #f8f9fa;
+  --background: #0f172a;
+  --foreground: #e2e8f0;
+  --card: #1a2332;
+  --card-foreground: #e2e8f0;
+  --popover: #1a2332;
+  --popover-foreground: #e2e8f0;
+  --secondary: #2d3e50;
+  --secondary-foreground: #cbd5e0;
+  --muted: #3d4f63;
+  --muted-foreground: #a0aec0;
+  --accent: #00a8a8;
+  --accent-foreground: #0f172a;
+  --destructive: #ef4444;
+  --destructive-foreground: #ffffff;
+  --border: #2d3e50;
+  --input: #2d3e50;
+  --ring: #00a8a8;
+  --chart-1: #00a8a8;
+  --chart-2: #0d7f7f;
+  --chart-3: #1e3a5f;
+  --chart-4: #2d5a7b;
+  --chart-5: #3c7a9e;
+  --sidebar: #1a2332;
+  --sidebar-foreground: #e2e8f0;
+  --sidebar-accent: #00a8a8;
+  --sidebar-accent-foreground: #0f172a;
+  --sidebar-border: #2d3e50;
+  --sidebar-ring: #00a8a8;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  html {
+    scroll-behavior: smooth;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 16px;
+    line-height: 1.6;
+  }
+  h1 {
+    font-family: 'IBM Plex Serif', serif;
+    font-size: 48px;
+    font-weight: 700;
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+  }
+  h2 {
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 28px;
+    font-weight: 600;
+    line-height: 1.3;
+    letter-spacing: -0.01em;
+  }
+  h3 {
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 22px;
+    font-weight: 600;
+    line-height: 1.4;
+  }
+  h4 {
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 18px;
+    font-weight: 600;
+    line-height: 1.5;
+  }
+  code {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 14px;
+    font-weight: 400;
+  }
+  pre {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+    line-height: 1.5;
+  }
+  button:not(:disabled),
+  [role="button"]:not([aria-disabled="true"]),
+  [type="button"]:not(:disabled),
+  [type="submit"]:not(:disabled),
+  [type="reset"]:not(:disabled),
+  a[href],
+  select:not(:disabled),
+  input[type="checkbox"]:not(:disabled),
+  input[type="radio"]:not(:disabled) {
+    @apply cursor-pointer;
+  }
+}
+
+@layer components {
+  .container {
+    width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  .flex {
+    min-height: 0;
+    min-width: 0;
+  }
+
+  .section-divider {
+    @apply my-12 h-px bg-gradient-to-r from-accent via-accent/50 to-transparent;
+  }
+
+  .section-header {
+    @apply mb-8 flex items-baseline gap-4;
+  }
+
+  .section-number {
+    @apply text-3xl font-bold text-accent flex-shrink-0;
+  }
+
+  .section-title {
+    @apply text-2xl font-semibold text-foreground;
+  }
+
+  .info-card {
+    @apply rounded-lg bg-card p-6 shadow-sm transition-all duration-300 hover:shadow-md;
+  }
+
+  .expandable-section {
+    @apply border-l-4 border-accent bg-secondary/30 p-4 rounded-r-lg;
+  }
+
+  .breadcrumb {
+    @apply flex items-center gap-2 text-sm text-muted-foreground mb-6;
+  }
+
+  .breadcrumb-item {
+    @apply hover:text-accent transition-colors;
+  }
+
+  .breadcrumb-separator {
+    @apply text-muted-foreground;
+  }
+
+  .accent-highlight {
+    @apply text-accent font-semibold;
+  }
+
+  .code-block {
+    @apply bg-muted/50 border border-border rounded-lg p-4 font-mono text-sm overflow-x-auto;
+  }
+
+  .hierarchy-item {
+    @apply ml-6 py-2 border-l border-border pl-4 relative;
+  }
+
+  @media (min-width: 640px) {
+    .container {
+      padding-left: 1.5rem;
+      padding-right: 1.5rem;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .container {
+      padding-left: 2rem;
+      padding-right: 2rem;
+      max-width: 1280px;
+    }
+  }
+}
+/* ============================================================================
+   CENTRALIZED RTL/LTR DIRECTION SYSTEM
+   ============================================================================
+   Per FINAL LOCKED GUIDELINE — RTL/LTR DIRECTION HANDLING
+   
+   SINGLE SOURCE OF TRUTH: Direction is set ONCE on <html dir="..."> and
+   inherited by ALL elements. No module, screen, or component may override
+   direction unless explicitly marked as an exception (.ltr-safe).
+   
+   The <html> element's dir attribute is set:
+   1. Before first paint via inline script in index.html
+   2. On language change via LanguageContext.tsx
+   ============================================================================ */
+
+/* ── 1. Base Direction Inheritance ────────────────────────────────────────── */
+/* Direction flows from html[dir] to body and all descendants */
+html[dir="rtl"] body { direction: rtl; }
+html[dir="ltr"] body { direction: ltr; }
+
+/* All form elements and text containers MUST inherit direction */
+input, textarea, select, button {
+  direction: inherit;
+  text-align: inherit;
+}
+label, th, td, p, span, div, h1, h2, h3, h4, h5, h6, li, a {
+  direction: inherit;
+}
+
+/* ── 2. Override Tailwind CSS 4 unicode-bidi: isolate ────────────────────── */
+/* Tailwind 4 sets unicode-bidi: isolate on many elements by default,
+   which breaks Arabic text flow. We reset to normal globally in RTL. */
+[dir="rtl"] * {
+  unicode-bidi: normal !important;
+}
+
+/* Preserve isolate behavior only for elements that explicitly need it */
+[dir="rtl"] .ltr-numbers {
+  unicode-bidi: embed !important;
+}
+
+/* ── 3. LTR-Safe Exception Class ─────────────────────────────────────────── */
+/* For IDs, reference numbers, codes, emails, URLs, amounts, dates */
+/* Apply this class to individual elements that MUST stay LTR */
+.ltr-safe {
+  direction: ltr !important;
+  unicode-bidi: plaintext !important;
+  text-align: start;
+}
+
+/* Numeric columns in tables stay LTR */
+.numeric-cell {
+  direction: ltr !important;
+  unicode-bidi: plaintext !important;
+}
+
+/* ── 4. Icon & Arrow Mirroring ───────────────────────────────────────────── */
+/* All arrow-left icons auto-flip in RTL mode */
+[dir="rtl"] .lucide-arrow-left,
+[dir="rtl"] svg.lucide-arrow-left,
+[dir="rtl"] svg[class*="lucide-arrow-left"],
+[dir="rtl"] button .lucide-arrow-left,
+[dir="rtl"] a .lucide-arrow-left,
+[dir="rtl"] [role="button"] .lucide-arrow-left,
+[dir="rtl"] [data-back-nav] svg,
+[dir="rtl"] [data-back-nav] .lucide-arrow-left {
+  transform: scaleX(-1);
+}
+
+/* Back navigation buttons: Reverse flex direction in RTL so icon+text flow correctly */
+[dir="rtl"] [data-back-nav],
+[dir="rtl"] button[data-back-nav] {
+  flex-direction: row-reverse;
+}
+
+/* Chevron-left icons flip in RTL */
+[dir="rtl"] .lucide-chevron-left,
+[dir="rtl"] [data-icon="chevron-left"],
+[dir="rtl"] [data-icon="arrow-left"] {
+  transform: scaleX(-1);
+}
+
+/* Breadcrumb separators flip in RTL */
+[dir="rtl"] .breadcrumb-separator svg,
+[dir="rtl"] [data-breadcrumb-separator] svg {
+  transform: scaleX(-1);
+}
+
+/* General RTL mirror utility */
+.rtl\:mirror {
+  transform: scaleX(-1);
+}
+[dir="rtl"] .rtl\:mirror {
+  transform: scaleX(-1);
+}
+
+/* ── 5. Table Direction ──────────────────────────────────────────────────── */
+/* Tables inherit direction from root — text aligns to start automatically */
+/* No forced text-align: end — let direction handle it */
+
+/* ── 6. Layout Utilities ─────────────────────────────────────────────────── */
+/* Button groups: Reverse order in RTL */
+[dir="rtl"] .button-group,
+[dir="rtl"] [data-button-group] {
+  flex-direction: row-reverse;
+}
+
+/* Action buttons in tables/lists: Reverse in RTL */
+[dir="rtl"] .action-buttons,
+[dir="rtl"] [data-action-buttons] {
+  flex-direction: row-reverse;
+}
+
+/* Text alignment utilities using logical properties */
+.text-start { text-align: start; }
+.text-end { text-align: end; }
+
+/* Margin utilities using logical properties */
+.ms-auto { margin-inline-start: auto; }
+.me-auto { margin-inline-end: auto; }
+.ms-2 { margin-inline-start: 0.5rem; }
+.me-2 { margin-inline-end: 0.5rem; }
+.ms-4 { margin-inline-start: 1rem; }
+.me-4 { margin-inline-end: 1rem; }
+
+/* Print Styles for Financial Reports */
+@media print {
+  /* Hide navigation, buttons, and interactive elements */
+  .no-print,
+  button:not(.print-keep),
+  nav,
+  aside,
+  header:not(.print-keep),
+  .sidebar,
+  [data-sidebar],
+  [role="navigation"],
+  [role="tablist"],
+  input[type="text"],
+  input[type="search"],
+  select,
+  textarea,
+  /* Hide preview mode banner */
+  [class*="preview-mode"],
+  [class*="Preview mode"],
+  div[class*="bg-amber"],
+  /* Hide all tabs navigation */
+  [class*="tabs-list"],
+  [class*="TabsList"],
+  /* Hide sidebar and navigation wrapper */
+  [class*="SidebarProvider"],
+  [class*="sidebar-provider"],
+  /* Hide refresh and export buttons */
+  [class*="RefreshCw"],
+  [class*="Download"],
+  /* Hide breadcrumb navigation */
+  .breadcrumb,
+  [class*="breadcrumb"] {
+    display: none !important;
+  }
+  
+  /* Force main content to full width */
+  main, [role="main"], .main-content {
+    margin-left: 0 !important;
+    padding-left: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+  
+  /* Optimize layout for printing */
+  body {
+    background: white !important;
+    color: black !important;
+    font-size: 11pt;
+    line-height: 1.4;
+  }
+  
+  /* Remove shadows and borders for cleaner print */
+  * {
+    box-shadow: none !important;
+    text-shadow: none !important;
+  }
+  
+  /* Ensure content fits on page */
+  .container {
+    max-width: 100% !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+  
+  /* Page breaks */
+  h1, h2, h3, h4, h5, h6 {
+    page-break-after: avoid;
+    page-break-inside: avoid;
+  }
+  
+  table, figure, img {
+    page-break-inside: avoid;
+  }
+  
+  /* Table styling for print */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 9pt;
+  }
+  
+  table th,
+  table td {
+    border: 1px solid #ddd !important;
+    padding: 6px 8px !important;
+    text-align: start;
+  }
+  
+  table th {
+    background-color: #f5f5f5 !important;
+    font-weight: bold;
+  }
+  
+  /* Print header for financial reports */
+  .print-header {
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #333;
+  }
+  
+  .print-header h1 {
+    font-size: 18pt;
+    margin: 0 0 5px 0;
+  }
+  
+  .print-header p {
+    font-size: 10pt;
+    margin: 0;
+    color: #666;
+  }
+  
+  /* Metrics cards for print */
+  .print-metrics {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    margin: 15px 0;
+    page-break-inside: avoid;
+  }
+  
+  .print-metric-card {
+    border: 1px solid #ddd;
+    padding: 10px;
+    background: #f9f9f9;
+  }
+  
+  .print-metric-card .label {
+    font-size: 8pt;
+    color: #666;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+  
+  .print-metric-card .value {
+    font-size: 14pt;
+    font-weight: bold;
+    color: #000;
+  }
+  
+  /* Charts and visualizations */
+  .print-chart {
+    page-break-inside: avoid;
+    margin: 15px 0;
+  }
+  
+  /* Footer for print */
+  .print-footer {
+    margin-top: 20px;
+    padding-top: 10px;
+    border-top: 1px solid #ddd;
+    font-size: 8pt;
+    color: #666;
+    text-align: center;
+  }
+  
+  /* Ensure all text is visible */
+  * {
+    color: black !important;
+    background: white !important;
+  }
+  
+  /* Keep important colors for metrics */
+  .text-green-600,
+  .text-blue-600,
+  .text-red-600,
+  .text-yellow-600 {
+    color: inherit !important;
+    font-weight: bold;
+  }
+  
+  /* Page margins */
+  @page {
+    margin: 1.5cm 1cm;
+    size: A4 portrait;
+  }
+  
+  /* Landscape for wide tables */
+  @page :first {
+    size: A4 landscape;
+  }
+}

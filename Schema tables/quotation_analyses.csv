@@ -1,0 +1,3 @@
+id,organizationId,operatingUnitId,purchaseRequestId,qaNumber,title,titleAr,rfqDate,closingDate,selectedSupplierId,selectionJustification,status,approvedBy,approvedAt,isDeleted,deletedAt,deletedBy,createdAt,updatedAt,createdBy,updatedBy
+1,30001,30001,8,QA-HQ-2026-001,Mobile Health Clinics,Mobile Health Clinics,2026-02-07 02:42:46,,30002,,approved,1080332,2026-02-07 11:41:04,0,,,2026-02-07 02:42:45,2026-02-07 11:41:04,1080332,1080332
+2,30001,30001,7,QA-HQ-2026-002,Water & Sanitation - Phase 2,Water & Sanitation - Phase 2,2026-02-07 02:43:53,,,,draft,,,0,,,2026-02-07 02:43:52,2026-02-07 02:43:52,1080332,1080332

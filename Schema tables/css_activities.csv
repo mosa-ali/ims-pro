@@ -1,0 +1,6 @@
+id,cssId,projectId,organizationId,activityType,activityDate,facilitatorId,facilitatorName,participantsCount,maleCount,femaleCount,notes,linkedCaseId,linkedIndicatorId,createdAt,updatedAt,createdBy,isDeleted
+6,30002,150027,30001,recreational,2026-02-05 00:00:00,,Ahmad Nasser,25,12,13,Outdoor games and sports activities for children aged 6-12.,,,2026-02-06 12:08:08,2026-02-06 12:08:08,1080332,0
+7,30003,150027,30001,life_skills,2026-02-05 00:00:00,,Maryam Hassan,18,8,10,Life skills workshop on personal hygiene and safety.,,,2026-02-06 12:08:58,2026-02-06 12:08:58,1080332,0
+8,30004,150027,30001,educational,2026-02-05 00:00:00,,Khaled Mansour,30,15,15,Math and Arabic literacy classes for ages 8-14.,,,2026-02-06 12:10:03,2026-02-06 12:10:03,1080332,0
+9,30005,150027,30001,psychosocial,2026-02-05 00:00:00,,Nour Al-Din,20,10,10,Group therapy and emotional support sessions.,,,2026-02-06 12:10:55,2026-02-06 12:10:55,1080332,0
+10,30002,150027,30001,educational,2026-02-05 00:00:00,,Rania Yousef,22,11,11,Art therapy and creative expression workshop.,,,2026-02-06 12:11:48,2026-02-06 12:11:48,1080332,0

@@ -1,0 +1,26 @@
+{
+  "query": "SELECT id, name, email, authenticationProvider, passwordHash, isActive FROM users WHERE email = 'test@example.com';",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway03.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3DLEw35gkkimUcv.eeb1f1cd43d3 --database 6e38zfddYazj4vVoRnY5Mj --execute SELECT id, name, email, authenticationProvider, passwordHash, isActive FROM users WHERE email = 'test@example.com';",
+  "rows": [
+    {
+      "id": "1355837",
+      "name": "Test User",
+      "email": "test@example.com",
+      "authenticationProvider": "email",
+      "passwordHash": "NULL",
+      "isActive": "1"
+    },
+    {
+      "id": "1534705",
+      "name": "Test User",
+      "email": "test@example.com",
+      "authenticationProvider": "email",
+      "passwordHash": "$2b$10$Mbx8pd55mKm841xUxyfj5e9K.9WG.k5wrbTrP4xJbS5zli4/h9sHO",
+      "isActive": "1"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tname\temail\tauthenticationProvider\tpasswordHash\tisActive\n1355837\tTest User\ttest@example.com\temail\tNULL\t1\n1534705\tTest User\ttest@example.com\temail\t$2b$10$Mbx8pd55mKm841xUxyfj5e9K.9WG.k5wrbTrP4xJbS5zli4/h9sHO\t1\n",
+  "stderr": "",
+  "execution_time_ms": 63
+}

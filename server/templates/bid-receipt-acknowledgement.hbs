@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html dir="{{direction}}" lang="{{language}}">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{documentTitle}}</title>
+  <style>
+    {{#if cssContent}}
+      {{{cssContent}}}
+    {{/if}}
+  </style>
+</head>
+<body>
+  <!-- ========================================================================
+       DOCUMENT HEADER - BOM flexbox approach (auto-mirrors in RTL)
+       ======================================================================== -->
+  <div class="official-header">
+    <div class="header-left">
+      <div class="org-block">
+        <div class="org-name">{{organizationName}}</div>
+        {{#if operatingUnitName}}
+          <div class="ou-name">{{operatingUnitName}}</div>
+        {{/if}}
+        <div class="module-name">{{labels.department}}</div>
+      </div>
+    </div>
+    <div class="header-center">
+      <div class="doc-title">{{documentTitle}}</div>
+    </div>
+    <div class="header-right">
+      {{#if logoUrl}}
+        <img class="org-logo" src="{{logoUrl}}" alt="Logo" />
+      {{/if}}
+      <div class="ref-date">
+        <div class="value ltr-safe">{{receiptReference}}</div>
+        <div class="value ltr-safe">{{generatedDate}}</div>
+      </div>
+    </div>
+  </div>
+  <hr class="hr-strong" />
+
+  <!-- ========================================================================
+       DOCUMENT METADATA
+       ======================================================================== -->
+  <div class="document-meta">
+    <div class="meta-item">
+      <span class="meta-label">{{labels.reference}}:</span> <span class="ltr-safe">{{receiptReference}}</span>
+    </div>
+    <div class="meta-item">
+      <span class="meta-label">{{labels.status}}:</span> <span class="badge badge-info">{{status}}</span>
+    </div>
+  </div>
+
+  <!-- ========================================================================
+       TENDER INFORMATION SECTION
+       ======================================================================== -->
+  <div class="section">
+    <div class="section-title">{{labels.tenderInformation}}</div>
+    <div class="section-content">
+      <div class="data-grid">
+        <div class="data-item">
+          <div class="data-label">{{labels.prNumber}}</div>
+          <div class="data-value ltr-safe">{{prNumber}}</div>
+        </div>
+        <div class="data-item">
+          <div class="data-label">{{labels.tenderReference}}</div>
+          <div class="data-value ltr-safe">{{tenderReference}}</div>
+        </div>
+        <div class="data-item">
+          <div class="data-label">{{labels.operatingUnit}}</div>
+          <div class="data-value">{{operatingUnitName}}</div>
+        </div>
+        <div class="data-item">
+          <div class="data-label">{{labels.receiptDateTime}}</div>
+          <div class="data-value">{{receiptDateTime}}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================================
+       BIDDER DETAILS SECTION
+       ======================================================================== -->
+  <div class="section">
+    <div class="section-title">{{labels.bidderDetails}}</div>
+    <div class="section-content">
+      <div class="data-grid">
+        <div class="data-item">
+          <div class="data-label">{{labels.bidderName}}</div>
+          <div class="data-value">{{bidderName}}</div>
+        </div>
+        <div class="data-item">
+          <div class="data-label">{{labels.submissionDate}}</div>
+          <div class="data-value">{{submissionDate}}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================================
+       ACKNOWLEDGEMENT TEXT
+       ======================================================================== -->
+  <div class="section">
+    <p style="font-style: italic; color: #6B7280; line-height: 1.6;">
+      {{acknowledgementText}}
+    </p>
+  </div>
+
+  <!-- ========================================================================
+       SIGNATURES SECTION
+       ======================================================================== -->
+  <div class="signatures-section">
+    <div class="section-title">{{labels.signatures}}</div>
+
+    <!-- Organization Signature Block -->
+    <div class="signature-block">
+      <div class="signature-block-title">{{labels.forOrganization}}</div>
+      <div class="signature-line">
+        <div class="signature-label">{{labels.name}}</div>
+        <div class="signature-input"></div>
+      </div>
+      <div class="signature-line">
+        <div class="signature-label">{{labels.title}}</div>
+        <div class="signature-input"></div>
+      </div>
+      <div class="signature-line">
+        <div class="signature-label">{{labels.signature}}</div>
+        <div class="signature-input"></div>
+      </div>
+      <div class="signature-line">
+        <div class="signature-label">{{labels.date}}</div>
+        <div class="signature-input"></div>
+      </div>
+    </div>
+
+    <!-- Bidder Signature Block -->
+    <div class="signature-block">
+      <div class="signature-block-title">{{labels.forBidder}}</div>
+      <div class="signature-line">
+        <div class="signature-label">{{labels.name}}</div>
+        <div class="signature-input"></div>
+      </div>
+      <div class="signature-line">
+        <div class="signature-label">{{labels.company}}</div>
+        <div class="signature-input"></div>
+      </div>
+      <div class="signature-line">
+        <div class="signature-label">{{labels.signature}}</div>
+        <div class="signature-input"></div>
+      </div>
+      <div class="signature-line">
+        <div class="signature-label">{{labels.date}}</div>
+        <div class="signature-input"></div>
+      </div>
+    </div>
+  </div>
+
+
+</body>
+</html>

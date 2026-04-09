@@ -1,0 +1,1 @@
+ALTER TABLE `grants` MODIFY COLUMN `projectId` int;

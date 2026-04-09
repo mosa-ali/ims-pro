@@ -1,0 +1,1 @@
+ALTER TABLE `opportunities` ADD `donorType` enum('UN','EU','INGO','Foundation','Government','Other') NOT NULL;

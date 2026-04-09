@@ -1,0 +1,302 @@
+/**
+ * ============================================================================
+ * REFERENCE UPLOAD MODAL - Upload External Reference Forms
+ * ============================================================================
+ * 
+ * ✅ HR Manager / Admin Only
+ * ✅ Upload signed reference forms from external organizations
+ * ✅ No editing after upload
+ * ============================================================================
+ */
+
+import { useState } from 'react';
+import { X, Upload, FileText, AlertCircle } from 'lucide-react';
+import { useLanguage } from '@/app/contexts/LanguageContext';
+import { StaffMember } from '../types/hrTypes';
+import { referenceUploadService, ReferenceType } from '@/app/services/referenceUploadService';
+import { ModalOverlay } from '@/app/components/ui/ModalOverlay';
+
+interface Props {
+  employee: StaffMember;
+  onClose: () => void;
+  onUpload: () => void;
+}
+
+export function ReferenceUploadModal({ employee, onClose, onUpload }: Props) {
+  const { language, isRTL } = useLanguage();
+  
+  const [formData, setFormData] = useState({
+    requestingOrganization: '',
+    referenceType: 'Employment' as ReferenceType,
+    dateRequested: new Date().toISOString().split('T')[0],
+    dateIssued: '',
+    notes: '',
+    expiryDate: ''
+  });
+
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [uploading, setUploading] = useState(false);
+
+  const t = {
+    title: language === 'en' ? 'Upload Reference / Verification Form' : 'تحميل نموذج المرجع / التحقق',
+    subtitle: language === 'en' ? '🔐 HR Manager / Admin Only' : '🔐 لمدير الموارد البشرية / المشرف فقط',
+    
+    employeeInfo: language === 'en' ? 'Employee Information' : 'معلومات الموظف',
+    staffId: language === 'en' ? 'Staff ID' : 'رقم الموظف',
+    fullName: language === 'en' ? 'Full Name' : 'الاسم الكامل',
+    
+    requestingOrganization: language === 'en' ? 'Requesting Organization' : 'المنظمة الطالبة',
+    requestingOrgPlaceholder: language === 'en' ? 'e.g., UNHCR, World Bank, Embassy of Canada' : 'مثال: المفوضية، البنك الدولي، سفارة كندا',
+    
+    referenceType: language === 'en' ? 'Reference Type' : 'نوع المرجع',
+    employment: language === 'en' ? 'Employment' : 'التوظيف',
+    salary: language === 'en' ? 'Salary' : 'الراتب',
+    conduct: language === 'en' ? 'Conduct' : 'السلوك',
+    general: language === 'en' ? 'General' : 'عام',
+    
+    dateRequested: language === 'en' ? 'Date Requested' : 'تاريخ الطلب',
+    dateIssued: language === 'en' ? 'Date Issued (Optional)' : 'تاريخ الإصدار (اختياري)',
+    expiryDate: language === 'en' ? 'Expiry Date (Optional)' : 'تاريخ الانتهاء (اختياري)',
+    
+    uploadFile: language === 'en' ? 'Upload Reference Document' : 'تحميل وثيقة المرجع',
+    selectFile: language === 'en' ? 'Select File' : 'اختر ملف',
+    fileFormats: language === 'en' ? 'PDF, DOC, DOCX' : 'PDF, DOC, DOCX',
+    noFileSelected: language === 'en' ? 'No file selected' : 'لم يتم اختيار ملف',
+    
+    notes: language === 'en' ? 'Notes (Optional)' : 'ملاحظات (اختياري)',
+    
+    cancel: language === 'en' ? 'Cancel' : 'إلغاء',
+    uploadBtn: language === 'en' ? 'Upload & Save' : 'تحميل وحفظ',
+    uploading: language === 'en' ? 'Uploading...' : 'جارٍ التحميل...',
+    required: language === 'en' ? 'Please fill in all required fields and select a file' : 'يرجى ملء جميع الحقول المطلوبة واختيار ملف',
+    success: language === 'en' ? 'Reference document uploaded successfully' : 'تم تحميل وثيقة المرجع بنجاح',
+    
+    infoNote: language === 'en' 
+      ? '💡 Upload signed reference forms received from external organizations. These documents cannot be edited after upload.'
+      : '💡 قم بتحميل نماذج المراجع الموقعة المستلمة من المنظمات الخارجية. لا يمكن تعديل هذه الوثائق بعد التحميل.'
+  };
+
+  const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      // Check file type
+      const validTypes = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
+      if (!validTypes.includes(file.type)) {
+        alert(language === 'en' ? 'Invalid file type. Please upload PDF or DOC files.' : 'نوع ملف غير صالح. يرجى تحميل ملفات PDF أو DOC.');
+        return;
+      }
+      
+      // Check file size (max 10MB)
+      if (file.size > 10 * 1024 * 1024) {
+        alert(language === 'en' ? 'File too large. Maximum size is 10MB.' : 'الملف كبير جدًا. الحد الأقصى للحجم هو 10 ميجابايت.');
+        return;
+      }
+      
+      setSelectedFile(file);
+    }
+  };
+
+  const handleUpload = async () => {
+    // Validation
+    if (!formData.requestingOrganization || !selectedFile) {
+      alert(t.required);
+      return;
+    }
+    
+    setUploading(true);
+    
+    try {
+      // In a real app, this would upload to a file storage service
+      // For now, we'll simulate with base64 or file name
+      const fileUrl = `uploads/${selectedFile.name}`; // Simulated URL
+      
+      referenceUploadService.add({
+        staffId: employee.staffId,
+        employeeName: employee.fullName,
+        requestingOrganization: formData.requestingOrganization,
+        referenceType: formData.referenceType,
+        dateRequested: formData.dateRequested,
+        dateIssued: formData.dateIssued || undefined,
+        fileName: selectedFile.name,
+        fileType: selectedFile.type,
+        fileSize: selectedFile.size,
+        fileUrl: fileUrl,
+        uploadedBy: 'Current User', // TODO: Replace with actual user
+        notes: formData.notes || undefined,
+        expiryDate: formData.expiryDate || undefined
+      });
+      
+      alert(t.success);
+      onUpload();
+      onClose();
+    } catch (error) {
+      alert(language === 'en' ? 'Upload failed. Please try again.' : 'فشل التحميل. يرجى المحاولة مرة أخرى.');
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  return (
+    <ModalOverlay onClose={onClose}>
+      <div className="bg-white rounded-lg w-full max-w-2xl max-h-[90vh] flex flex-col" dir={isRTL ? 'rtl' : 'ltr'}>
+        {/* Header */}
+        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 bg-blue-50">
+          <div className="flex items-center gap-3">
+            <Upload className="w-6 h-6 text-blue-600" />
+            <div>
+              <h2 className="text-xl font-bold text-gray-900">{t.title}</h2>
+              <p className="text-sm text-blue-600">{t.subtitle}</p>
+            </div>
+          </div>
+          <button onClick={onClose} className="text-gray-400 hover:text-gray-600">
+            <X className="w-6 h-6" />
+          </button>
+        </div>
+
+        {/* Content */}
+        <div className="flex-1 overflow-y-auto px-6 py-4">
+          <div className="space-y-4">
+            {/* Info Note */}
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 flex items-start gap-2">
+              <AlertCircle className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
+              <p className="text-sm text-blue-800">{t.infoNote}</p>
+            </div>
+
+            {/* Employee Info */}
+            <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
+              <h3 className="text-sm font-semibold text-gray-900 mb-2">{t.employeeInfo}</h3>
+              <div className="grid grid-cols-2 gap-2 text-sm">
+                <div><span className="text-gray-600">{t.staffId}:</span> <span className="font-medium">{employee.staffId}</span></div>
+                <div><span className="text-gray-600">{t.fullName}:</span> <span className="font-medium">{employee.fullName}</span></div>
+              </div>
+            </div>
+
+            {/* Requesting Organization */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">{t.requestingOrganization} *</label>
+              <input
+                type="text"
+                value={formData.requestingOrganization}
+                onChange={(e) => setFormData({ ...formData, requestingOrganization: e.target.value })}
+                placeholder={t.requestingOrgPlaceholder}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+
+            {/* Reference Type & Date Requested */}
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">{t.referenceType} *</label>
+                <select
+                  value={formData.referenceType}
+                  onChange={(e) => setFormData({ ...formData, referenceType: e.target.value as ReferenceType })}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value="Employment">{t.employment}</option>
+                  <option value="Salary">{t.salary}</option>
+                  <option value="Conduct">{t.conduct}</option>
+                  <option value="General">{t.general}</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">{t.dateRequested} *</label>
+                <input
+                  type="date"
+                  value={formData.dateRequested}
+                  onChange={(e) => setFormData({ ...formData, dateRequested: e.target.value })}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+            </div>
+
+            {/* Date Issued & Expiry Date */}
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">{t.dateIssued}</label>
+                <input
+                  type="date"
+                  value={formData.dateIssued}
+                  onChange={(e) => setFormData({ ...formData, dateIssued: e.target.value })}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">{t.expiryDate}</label>
+                <input
+                  type="date"
+                  value={formData.expiryDate}
+                  onChange={(e) => setFormData({ ...formData, expiryDate: e.target.value })}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+            </div>
+
+            {/* File Upload */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">{t.uploadFile} *</label>
+              <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 hover:border-blue-400 transition-colors">
+                <div className="flex flex-col items-center gap-3">
+                  <FileText className="w-12 h-12 text-gray-400" />
+                  
+                  <div className="text-center">
+                    <label className="cursor-pointer">
+                      <span className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 inline-block">
+                        {t.selectFile}
+                      </span>
+                      <input
+                        type="file"
+                        accept=".pdf,.doc,.docx"
+                        onChange={handleFileSelect}
+                        className="hidden"
+                      />
+                    </label>
+                    <p className="text-xs text-gray-500 mt-2">{t.fileFormats}</p>
+                  </div>
+                  
+                  {selectedFile ? (
+                    <div className="mt-2 text-sm">
+                      <p className="font-medium text-green-600">✓ {selectedFile.name}</p>
+                      <p className="text-xs text-gray-500">{(selectedFile.size / 1024).toFixed(2)} KB</p>
+                    </div>
+                  ) : (
+                    <p className="text-sm text-gray-500">{t.noFileSelected}</p>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* Notes */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">{t.notes}</label>
+              <textarea
+                value={formData.notes}
+                onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
+                rows={3}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Footer */}
+        <div className={`flex items-center gap-3 px-6 py-4 border-t border-gray-200 bg-gray-50 ${isRTL ? 'flex-row-reverse' : ''}`}>
+          <button
+            onClick={onClose}
+            className="px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
+            disabled={uploading}
+          >
+            {t.cancel}
+          </button>
+          <button
+            onClick={handleUpload}
+            disabled={uploading || !selectedFile}
+            className={`flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed ${isRTL ? 'flex-row-reverse' : ''}`}
+          >
+            <Upload className="w-5 h-5" />
+            <span>{uploading ? t.uploading : t.uploadBtn}</span>
+          </button>
+        </div>
+      </div>
+    </ModalOverlay>
+  );
+}

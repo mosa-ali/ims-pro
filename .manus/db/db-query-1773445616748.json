@@ -1,0 +1,9 @@
+{
+  "query": "DELETE FROM `user_operating_units` WHERE operatingUnitId IN (30001, 30002, 60005, 90001); DELETE FROM `user_organizations` WHERE organizationId IN (30001, 30002); DELETE FROM `rbac_user_permissions` WHERE userId IN (1080383, 1264648, 1265089, 1291213, 2730618); DELETE FROM `rbac_roles` WHERE organizationId IN (30001, 30002);",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway03.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3DLEw35gkkimUcv.eeb1f1cd43d3 --database 6e38zfddYazj4vVoRnY5Mj --execute DELETE FROM `user_operating_units` WHERE operatingUnitId IN (30001, 30002, 60005, 90001); DELETE FROM `user_organizations` WHERE organizationId IN (30001, 30002); DELETE FROM `rbac_user_permissions` WHERE userId IN (1080383, 1264648, 1265089, 1291213, 2730618); DELETE FROM `rbac_roles` WHERE organizationId IN (30001, 30002);",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 92
+}

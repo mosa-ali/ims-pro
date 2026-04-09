@@ -1,0 +1,1 @@
+ALTER TABLE `quotation_analyses` ADD `evaluationReport` text;

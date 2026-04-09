@@ -1,0 +1,12 @@
+id,openId,name,email,loginMethod,authenticationProvider,externalIdentityId,role,createdAt,updatedAt,lastSignedIn,organizationId,currentOrganizationId,languagePreference,isDeleted,deletedAt,deletedBy,deletionReason,passwordResetToken,passwordResetExpiry
+241806,nJBQcy2es6LWokUpU2qrJT,programs,programs@yamany.org,email,email,,organization_admin,2026-01-28 02:51:00,2026-01-30 20:13:01,2026-01-30 20:13:02,,,,0,,,,,
+1080332,dHa9KHTsZR4b4pk8b2nQhD,Mosa Drwesh,mdrwesh82@gmail.com,google,email,,platform_admin,2026-02-03 18:13:45,2026-02-07 23:44:34,2026-02-07 23:44:35,,,,0,,,,,
+1080383,3dpWpYwuvmbie7YWiB9mjE,Mosa Ali,mdrwesh@outlook.com,email,email,,platform_admin,2026-02-03 18:36:44,2026-02-05 23:42:26,2026-02-05 23:42:27,,,,0,,,,,
+1261017,wizard-0967a70e-812e-4b7b-b1e5-73a33764fa2e,John Smith,john@complete-test.org,,email,,user,2026-02-04 21:02:09,2026-02-04 21:02:09,2026-02-04 21:02:09,,,,0,,,,,
+1261018,wizard-95fe4f99-ef71-41f1-ad83-948aa1b1de5b,Jane Doe,jane@complete-test.org,,email,,user,2026-02-04 21:02:09,2026-02-04 21:02:09,2026-02-04 21:02:09,,,,0,,,,,
+1261019,wizard-b427cd26-9c00-428a-881a-0bb091e7c672,Solo Admin,solo@single-admin.org,,email,,user,2026-02-04 21:02:09,2026-02-04 21:02:09,2026-02-04 21:02:09,,,,0,,,,,
+1261020,wizard-a4f4512d-b72b-4038-b4a3-4bc08bff7408,Original Admin,original@edit-test.org,,email,,user,2026-02-04 21:02:09,2026-02-04 21:02:09,2026-02-04 21:02:09,,,,0,,,,,
+1862960,,Test Role Persistence User,role-test-1770489143154@test.com,email,email,,platform_auditor,2026-02-07 18:32:23,2026-02-07 18:32:23,2026-02-07 18:32:23,,,,0,,,,,
+1862968,,Test Role Persistence User,role-test-1770489158322@test.com,email,email,,platform_auditor,2026-02-07 18:32:38,2026-02-07 18:32:38,2026-02-07 18:32:38,,,,0,,,,,
+1863276,,Mosa Drwesh,mdrwesh82@gmail.com,email,email,,platform_super_admin,2026-02-07 19:01:38,2026-02-07 19:11:59,2026-02-07 19:01:38,,,,0,,,,,
+1863310,,Ali Ali,mosamali2050@gmail.com,email,email,,platform_super_admin,2026-02-07 19:11:48,2026-02-07 19:11:48,2026-02-07 19:11:48,,,,0,,,,,

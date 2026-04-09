@@ -1,0 +1,2 @@
+id,organizationId,operatingUnitId,fundCode,fundName,fundNameAr,fundType,donorId,donorName,grantNumber,currency,totalBudget,totalReceived,totalExpended,currentBalance,startDate,endDate,bankAccountId,isActive,notes,isDeleted,deletedAt,deletedBy,createdAt,createdBy,updatedAt,updatedBy,projectId,baseCurrencyId,amountInBaseCurrency,status,restrictedType
+1,30001,,FUND-001,General Operating Fund,صندوق التشغيل العام,UNRESTRICTED,,,,USD,100000.00,0.00,0.00,100000.00,,,,1,Main unrestricted operating fund,0,,,2026-02-02 00:43:58,1,2026-02-02 00:43:58,,,,,active,restricted
