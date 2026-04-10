@@ -108,7 +108,7 @@ class EntraIdAuthService {
       response_type: "code",
       redirect_uri: config.redirectUri,
       response_mode: "query",
-      scope: "openid profile email",
+      scope: "openid profile email User.Read",
       state: generatedState,
       prompt: "select_account",
     });
