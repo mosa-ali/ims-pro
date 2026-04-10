@@ -127,6 +127,7 @@ const QUESTION_TYPES: {
 
 // ✅ Icon mapping for each question type
 const getQuestionIcon = (type: QuestionType) => {
+ const { t } = useTranslation();
  const iconMap = {
  select_one: ListChecks,
  select_multiple: CheckSquare,
@@ -1033,7 +1034,7 @@ export function SurveyEditor() {
  const updatedQuestions = questions.map(q => 
  q.id === updatedQuestion.id ? updatedQuestion : q
  );
- setQuestions(updatedQuestion);
+ setQuestions(updatedQuestions);
  }}
  onClose={() => setShowSettingsPanel(false)}
  />
