@@ -189,11 +189,17 @@ const { code, state, error, error_description } = req.query;
   // ============================================================
   // 8️⃣ Create session (FIXED)
   // ============================================================
-  (req as any).session.user = {
-    id: provisioned.userId,
-    email: provisioned.email,
-    organizationId: orgContext.organizationId,
-  };
+  const openId = `ms-${userInfo.id}`;
+
+    const sessionToken = await sdk.createSessionToken(openId, {
+      name: userInfo.displayName || email || "",
+    });
+
+    const cookieOptions = getSessionCookieOptions(req);
+
+    res.cookie(COOKIE_NAME, sessionToken, {
+      ...cookieOptions,
+    });
 
   // ============================================================
   // 9️⃣ Redirect
