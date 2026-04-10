@@ -56,7 +56,7 @@ export async function getDb() {
         queueLimit: 0,
         ssl: {
           minVersion: "TLSv1.2",
-          rejectUnauthorized: false,
+          rejectUnauthorized: true,
         },
       });
 

@@ -115,18 +115,16 @@ async function startServer() {
 
       // Generate a stable openId for email-auth users (email-based, deterministic)
       const stableOpenId = `email-${email.toLowerCase().replace(/[^a-z0-9]/g, "-")}`;
-      const nowSql = new Date()
-  .toLocaleString("sv-SE")
-  .replace("T", " ");
+      const nowSql = new Date().toISOString().slice(0, 19).replace('T', ' ');
 
       // Upsert user record with stable openId so authenticateRequest can find them
-      await dbModule.upsertUser({
-        openId: stableOpenId,
-        name: user.name || null,
-        email: user.email ?? null,
-        loginMethod: "email",
-        lastSignedIn: nowSql,
-      });
+        await dbModule.upsertUser({
+          openId: stableOpenId,
+          name: user.name || null,
+          email: user.email ?? null,
+          loginMethod: "email",
+          lastSignedIn: nowSql,
+        });
 
       const sessionToken = await sdk.createSessionToken(stableOpenId, {
         name: user.name || user.email || "",
@@ -778,24 +776,13 @@ async function startServer() {
 
     // development mode uses Vite, production mode uses static files
       if (!ENV.isProduction) {
-      console.log("[Frontend] Setting up Vite dev middleware...");
-      const { setupVite } = await import("./vite");
-      try {
+        const { setupVite } = await import("./vite");
         await setupVite(app, server);
-        console.log("[Frontend] Vite dev middleware initialized successfully");
-      } catch (error) {
-        console.error("[Frontend] Failed to setup Vite:", error);
-        console.log("[Frontend] Falling back to static file serving...");
-        const { serveStatic } = await import("./static");
+      } else {
         serveStatic(app);
       }
-    } else {
-      console.log("[Frontend] Setting up static file serving (production mode)...");
-      const { serveStatic } = await import("./static");
-      serveStatic(app);
-    }
 
-  const preferredPort = parseInt(process.env.PORT || "3000", 10);
+  const preferredPort = parseInt(process.env.PORT || "8080", 10);
   const port = ENV.isProduction
     ? preferredPort
     : await findAvailablePort(preferredPort);
