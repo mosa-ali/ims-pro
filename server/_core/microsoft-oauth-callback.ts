@@ -5,6 +5,9 @@ import { organizations } from "../../drizzle/schema";
 import { eq, and, isNull } from "drizzle-orm";
 import { createAuditLog } from "../db";
 import session from "express-session";
+import { sdk } from "../_core/sdk";
+import { COOKIE_NAME } from "@shared/const";
+import { getSessionCookieOptions } from "../_core/cookies";
 
 // 🔵 Services
 import { userProvisioningService } from "../services/microsoft/userProvisioningService";
@@ -195,7 +198,7 @@ const { code, state, error, error_description } = req.query;
   // ============================================================
   // 9️⃣ Redirect
   // ============================================================
-  return res.redirect(`${process.env.APP_BASE_URL}/dashboard`);
+  return res.redirect(`${process.env.APP_BASE_URL}/organization`);
 
 } catch (error: any) {
   console.error("[Microsoft OAuth] Unexpected error:", error.message);
