@@ -80,6 +80,13 @@ export const platformEmailRouter = router({
         .from(platformEmailSettings)
         .limit(1);
 
+      if (!ctx.user) {
+        throw new TRPCError({
+          code: "UNAUTHORIZED",
+          message: "User not authenticated",
+        });
+      }
+      
       const userId = ctx.user.id;
 
       // Build update payload
