@@ -33,7 +33,7 @@ class AdminConsentService {
     const redirectUri = `${ENV.APP_BASE_URL}/api/auth/microsoft/admin-consent/callback`;
 
     const adminConsentUrl = new URL(
-      `${this.AUTHORITY_BASE}/common/oauth2/v2.0/adminconsent`
+      `${this.AUTHORITY_BASE}/common/adminconsent`
     );
 
     adminConsentUrl.searchParams.set("client_id", ENV.MS_CLIENT_ID);
