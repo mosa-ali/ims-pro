@@ -4,7 +4,7 @@ import { Bell, AlertTriangle, AlertCircle, Check, X, Settings, Trash2 } from 'lu
 import { Button } from '@/components/ui/button';
 import { useTranslation } from '@/i18n/useTranslation';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { useToast } from '@/hooks/use-toast';
+import { toast } from 'sonner';
 
 interface VarianceAlertsTabProps {
   projectId: number;
