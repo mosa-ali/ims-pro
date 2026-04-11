@@ -200,12 +200,14 @@ router.get("/api/oauth/microsoft/admin-consent/callback", async (req: Request, r
         .map((d) => d.name) || [];
 
     // 🔹 Update organization
+    // ✅ FIX: Added missing tenantVerified field
     await db
       .update(organizations)
       .set({
         tenantId: tenantInfo.id,
         onboardingStatus: "connected",
         microsoft365Enabled: 1,
+        tenantVerified: 1, // ✅ FIXED: Added this field
         consentGrantedAt: new Date().toISOString(),
         allowedDomains: JSON.stringify(verifiedDomains),
         updatedAt: new Date().toISOString(),
