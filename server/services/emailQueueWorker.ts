@@ -175,7 +175,7 @@ class EmailQueueWorker {
         bodyText: email.bodyText,
         failureReason: errorMessage.substring(0, 1000),
         failureCode: errorCode,
-        finalRetryCount: newRetryCount,
+        retryCount: newRetryCount,
         movedAt: new Date().toISOString(),
         metadata: email.metadata,
       });
@@ -188,11 +188,12 @@ class EmailQueueWorker {
           action: "email_failed_dead_letter",
           entityType: "email_outbox",
           entityId: email.id,
-          changes: {
+          metadata: {
             reason: errorMessage,
             retries: newRetryCount,
           },
         });
+
       } catch (error: any) {
         console.error("[EmailQueueWorker] Failed to create audit log:", error.message);
       }
@@ -248,42 +249,40 @@ class EmailQueueWorker {
         provider.fromEmail && provider.fromEmail.trim() !== '';
 
       if (!provider || !isValidProvider) {
-        // Fallback: try platform-level email service
-        console.log(`[EmailQueueWorker] No org provider for org ${email.organizationId}, trying platform email service`);
+        console.warn(`[EmailQueueWorker] No valid org provider for org ${email.organizationId}`);
+
+        // 🔐 STRICT platform fallback (only if explicitly enabled)
         try {
           const platformResult = await platformEmailService.sendEmail({
             to: email.recipientEmail,
             toName: email.recipientName,
             subject: email.subject,
-            bodyHtml: typeof email.bodyHtml === 'string' ? email.bodyHtml : (email.bodyHtml ? Buffer.from(email.bodyHtml).toString('utf-8') : ''),
-            bodyText: typeof email.bodyText === 'string' ? email.bodyText : (email.bodyText ? Buffer.from(email.bodyText).toString('utf-8') : undefined),
+            bodyHtml: typeof email.bodyHtml === 'string'
+              ? email.bodyHtml
+              : Buffer.from(email.bodyHtml || '').toString('utf-8'),
+            bodyText: typeof email.bodyText === 'string'
+              ? email.bodyText
+              : undefined,
           });
+
           if (platformResult.success) {
-            console.log(`[EmailQueueWorker] Email ${email.id} sent via platform email service`);
             return { success: true, messageId: `platform-${Date.now()}` };
           }
-          console.warn(`[EmailQueueWorker] Platform email service also failed: ${platformResult.error}`);
+
+          // ❗ IMPORTANT: classify as CONFIG ERROR (NO RETRY LOOP)
           return {
             success: false,
-            error: platformResult.error ?? 'Platform email service failed',
-            errorCode: 'PLATFORM_SEND_ERROR',
+            error: platformResult.error || 'Platform email failed',
+            errorCode: "NO_PROVIDER_CONFIG",
           };
-        } catch (platformErr: any) {
-          console.error(`[EmailQueueWorker] Platform email service exception:`, platformErr.message);
-        }
-        return {
-          success: false,
-          error: `No active email provider configured for organization ${email.organizationId} and platform email service failed`,
-          errorCode: "NO_PROVIDER",
-        };
-      }
 
-      if (provider.providerType !== "m365") {
-        return {
-          success: false,
-          error: `Unsupported email provider type: ${provider.providerType}`,
-          errorCode: "UNSUPPORTED_PROVIDER",
-        };
+        } catch (err: any) {
+          return {
+            success: false,
+            error: err.message,
+            errorCode: "NO_PROVIDER_CONFIG",
+          };
+        }
       }
 
       // Build M365 config from provider settings
@@ -366,5 +365,3 @@ export async function enqueueEmail(data: {
     throw error;
   }
 }
-
-
