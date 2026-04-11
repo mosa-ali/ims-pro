@@ -33,7 +33,7 @@ export const ENV = {
         .replace(/\/$/, '');
     }
     if (process.env.VITE_FRONTEND_URL) return process.env.VITE_FRONTEND_URL.replace(/\/$/, '');
-    return 'https://www.imserp.org';
+    return 'https://platform.imserp.org';
   },
 
   // Storage mode: "manus" (default), "local" (filesystem), "s3" (MinIO/AWS S3)
