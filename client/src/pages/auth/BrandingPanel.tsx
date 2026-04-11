@@ -7,7 +7,6 @@ interface BrandingPanelProps {
   organizationLogo?: string;
   organizationName?: string;
   operatingUnitName?: string;
-  imsLogo?: string;
 }
 
 const translations = {
@@ -44,11 +43,9 @@ const translations = {
 };
 
 export function BrandingPanel({
-
   organizationLogo,
   organizationName,
   operatingUnitName,
-  imsLogo = '/ims-logo.svg',
 }: BrandingPanelProps) {
   const { language } = useLanguage();
   const t = translations[language as keyof typeof translations] || translations.en;
@@ -57,12 +54,9 @@ export function BrandingPanel({
   return (
     <div className="flex flex-col gap-8">
       {/* Logo */}
-      <div className="flex items-center gap-3">
-        <img src={imsLogo} alt="IMS Logo" className="h-12 w-12" />
-        <div>
-          <h1 className="text-2xl font-bold text-slate-900">{t.welcomeTitle}</h1>
-          <p className="text-sm text-slate-600">{t.systemName}</p>
-        </div>
+      <div>
+        <h1 className="text-2xl font-bold text-slate-900">{t.welcomeTitle}</h1>
+        <p className="text-sm text-slate-600">{t.systemName}</p>
       </div>
 
       {/* System Description */}

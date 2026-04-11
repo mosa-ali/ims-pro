@@ -8,6 +8,13 @@
       "when": 1775736892695,
       "tag": "0000_rare_omega_red",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "5",
+      "when": 1775917603907,
+      "tag": "0001_early_leopardon",
+      "breakpoints": true
     }
   ]
 }

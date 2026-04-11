@@ -1,12 +1,15 @@
 /**
  * ============================================================================
- * SURVEY FORM PREVIEW
+ * SURVEY FORM PREVIEW - FIXED WITH DATA ISOLATION
  * ============================================================================
  * 
  * Read-only preview of survey form as it appears to respondents
  * 
  * FEATURES:
- * - Loads ACTUAL survey data from localStorage
+ * - ✅ Organization-level data isolation
+ * - ✅ Operating unit-level data isolation
+ * - ✅ Scoped tRPC queries instead of localStorage
+ * - Loads ACTUAL survey data from scoped tRPC
  * - Displays real questions from the selected survey
  * - Read-only form preview
  * - Preview mode indicator
@@ -19,12 +22,15 @@
 import { useNavigate } from '@/lib/router-compat';
 import { useSearch } from 'wouter';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { useOrganization } from '@/contexts/OrganizationContext';
+import { useOperatingUnit } from '@/contexts/OperatingUnitContext';
 import { useState, useEffect } from 'react';
 import { AlertCircle } from 'lucide-react';
 import { FormPreview } from '@/components/FormPreview';
 import { Button } from '@/components/ui/button';
 import { useTranslation } from '@/i18n/useTranslation';
 import { BackButton } from "@/components/BackButton";
+import { trpc } from '@/lib/trpc';
 
 export function SurveyFormPreview() {
  const { t } = useTranslation();
@@ -32,6 +38,8 @@ export function SurveyFormPreview() {
  const searchString = useSearch();
  const searchParams = new URLSearchParams(searchString);
  const { language, isRTL } = useLanguage();
+ const { currentOrganizationId } = useOrganization();
+ const { currentOperatingUnitId } = useOperatingUnit();
  
  const surveyId = searchParams.get('surveyId') || '';
  const projectId = searchParams.get('projectId') || '';
@@ -50,65 +58,56 @@ export function SurveyFormPreview() {
  surveyNotFound: t.mealSurvey.surveyNotFound6,
  };
 
- // ✅ Load actual survey data from localStorage
+ // ✅ FIXED: Use scoped tRPC query to load survey by ID
+ const { data: survey, isLoading: surveyLoading, error: surveyError } = trpc.mealSurveys.getById.useQuery(
+   { id: surveyId ? parseInt(surveyId) : 0 },
+   { 
+     enabled: !!surveyId && !!currentOrganizationId && !!currentOperatingUnitId,
+   }
+ );
+
+ // ✅ FIXED: Load survey questions from scoped tRPC
+ const { data: questions = [], isLoading: questionsLoading } = trpc.mealSurveys.getById.useQuery(
+   { id: surveyId ? parseInt(surveyId) : 0 },
+   { 
+     enabled: !!surveyId && !!currentOrganizationId && !!currentOperatingUnitId,
+   }
+ );
+
+ // ✅ FIXED: Transform scoped data
  useEffect(() => {
- if (!surveyId) {
- setError(labels.surveyNotFound);
- setLoading(false);
- return;
- }
+   if (!surveyId) {
+     setError(labels.surveyNotFound);
+     setLoading(false);
+     return;
+   }
 
- try {
- // 1. Load survey metadata
- const surveysKey = 'meal_surveys';
- const storedSurveys = localStorage.getItem(surveysKey);
- 
- if (!storedSurveys) {
- setError(labels.surveyNotFound);
- setLoading(false);
- return;
- }
+   if (surveyLoading || questionsLoading) {
+     setLoading(true);
+     return;
+   }
 
- const surveys = JSON.parse(storedSurveys);
- const survey = surveys.find((s: any) => s.id === surveyId);
- 
- if (!survey) {
- setError(labels.surveyNotFound);
- setLoading(false);
- return;
- }
+   if (surveyError || !survey) {
+     setError(labels.surveyNotFound);
+     setLoading(false);
+     return;
+   }
 
- // 2. Load survey questions
- const questionsKey = `survey_questions_${surveyId}`;
- const storedQuestions = localStorage.getItem(questionsKey);
- 
- let questions = [];
- let formStyle = 'default';
- 
- if (storedQuestions) {
- try {
- const questionsData = JSON.parse(storedQuestions);
- questions = questionsData.questions || [];
- formStyle = questionsData.formStyle || 'default';
- } catch (err) {
- console.error('Error parsing questions:', err);
- }
- }
-
- setSurveyData({
- id: survey.id,
- title: survey.name,
- description: survey.description,
- questions: questions,
- formStyle: formStyle,
- });
- setLoading(false);
- } catch (err) {
- console.error('Error loading survey:', err);
- setError(labels.error);
- setLoading(false);
- }
- }, [surveyId]);
+   try {
+     setSurveyData({
+       id: survey.id,
+       title: survey.title || survey.id || '',
+       description: survey.description || '',
+       questions: questions || [],
+       formStyle: survey.formConfig?.formStyle || 'default',
+     });
+     setLoading(false);
+   } catch (err) {
+     console.error('Error loading survey:', err);
+     setError(labels.error);
+     setLoading(false);
+   }
+ }, [survey, questions, surveyLoading, questionsLoading, surveyError, surveyId]);
 
  if (loading) {
  return (
@@ -146,7 +145,7 @@ export function SurveyFormPreview() {
  );
  }
 
- // ✅ Use the FormPreview component with ACTUAL survey data
+ // ✅ Use the FormPreview component with scoped survey data
  return (
  <div>
  {/* Back Navigation */}

@@ -655,8 +655,8 @@ export const authRouter = router({
             const openId = `ms-${user.id}`;
             await db.upsertUser({
               openId,
-              name: user.displayName || null,
-              email: user.userPrincipalName ?? null,
+              name: user.displayName,
+              email: user.userPrincipalName,
               loginMethod: 'microsoft',
               lastSignedIn: nowSql,
             });
@@ -698,7 +698,7 @@ export const authRouter = router({
    */
   me: protectedProcedure.query(async ({ ctx }) => {
     try {
-      if (!ctx.user) {
+      if (!ctx.user ) {
         throw new TRPCError({
           code: "UNAUTHORIZED",
           message: "Not authenticated",

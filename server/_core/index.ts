@@ -94,42 +94,66 @@ async function startServer() {
     console.log("[Mock Auth] Mock auth endpoints registered: POST /api/auth/mock/login, POST /api/auth/mock/logout");
   }
 
-  // ─── Email/Password Sign-In endpoint ────────────────────────────────────────
-  // Authenticates user with email and password, creates session cookie
-  app.post("/api/auth/email-signin", express.json(), async (req, res) => {
-    try {
-      const { email, password } = req.body;
+    // ─── Email/Password Sign-In endpoint ────────────────────────────────────────
+// Authenticates user with email and password, creates session cookie
+app.post("/api/auth/email-signin", express.json(), async (req, res) => {
+  try {
+    const { email, password } = req.body;
 
-      if (!email || !password) {
-        res.status(400).json({ message: "Email and password are required" });
-        return;
-      }
+    if (!email || !password) {
+      res.status(400).json({ message: "Email and password are required" });
+      return;
+    }
 
-      const { EmailPasswordAuthService } = await import("../services/auth/emailPasswordAuthService");
-      const user = await EmailPasswordAuthService.authenticateUser(email, password);
+    const { EmailPasswordAuthService } = await import("../services/auth/emailPasswordAuthService");
 
-      // Create session token using SDK (same as OAuth)
-      const { sdk } = await import("./sdk");
-      const { COOKIE_NAME, ONE_YEAR_MS } = await import("@shared/const");
-      const dbModule = await import("../db");
+    // ✅ FIX: correct destructuring
+    const authResult = await EmailPasswordAuthService.authenticateUser(email, password);
 
-      // Generate a stable openId for email-auth users (email-based, deterministic)
-      const stableOpenId = `email-${email.toLowerCase().replace(/[^a-z0-9]/g, "-")}`;
-      const nowSql = new Date().toISOString().slice(0, 19).replace('T', ' ');
-
-      // Upsert user record with stable openId so authenticateRequest can find them
-        await dbModule.upsertUser({
-          openId: stableOpenId,
-          name: user.name || null,
-          email: user.email ?? null,
-          loginMethod: "email",
-          lastSignedIn: nowSql,
-        });
-
-      const sessionToken = await sdk.createSessionToken(stableOpenId, {
-        name: user.name || user.email || "",
+    if (!authResult.success || !authResult.user) {
+      res.status(401).json({
+        message: authResult.error || "Invalid email or password",
       });
+      return;
+    }
 
+    const user = authResult.user;
+
+    // 🚨 CRITICAL: block invalid users (prevents NULL records)
+    if (!user.email) {
+      console.error("[Auth] BLOCKED: user has no email", user);
+      res.status(400).json({
+        message: "User account is invalid (missing email)",
+      });
+      return;
+    }
+
+    // Normalize data
+    const emailNormalized = user.email.toLowerCase().trim();
+    const displayName = user.name?.trim() || emailNormalized;
+
+    // Create session token using SDK (same as OAuth)
+    const { sdk } = await import("./sdk");
+    const { COOKIE_NAME, ONE_YEAR_MS } = await import("@shared/const");
+    const dbModule = await import("../db");
+
+    // Generate a stable openId for email-auth users
+    const stableOpenId = `email-${emailNormalized.replace(/[^a-z0-9]/g, "-")}`;
+    const nowSql = new Date().toISOString().slice(0, 19).replace('T', ' ');
+
+    // ✅ FIX: safe upsert (NO NULL values)
+    await dbModule.upsertUser({
+      openId: stableOpenId,
+      name: displayName,
+      email: emailNormalized, // 🚨 NEVER NULL
+      loginMethod: "email",
+      lastSignedIn: nowSql,
+    });
+
+    const sessionToken = await sdk.createSessionToken(stableOpenId, {
+      name: displayName,
+    });
+    
       // Set session cookie
       const cookieOptions = getSessionCookieOptions(req);
 
@@ -782,7 +806,7 @@ async function startServer() {
         serveStatic(app);
       }
 
-  const preferredPort = parseInt(process.env.PORT || "8080", 10);
+  const preferredPort = parseInt(process.env.PORT || "3000", 10);
   const port = ENV.isProduction
     ? preferredPort
     : await findAvailablePort(preferredPort);

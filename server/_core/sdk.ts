@@ -14,6 +14,9 @@ import type {
   GetUserInfoWithJwtRequest,
   GetUserInfoWithJwtResponse,
 } from "./types/manusTypes";
+
+const nowSql = new Date().toISOString().slice(0, 19).replace('T', ' ');
+
 // Utility function
 const isNonEmptyString = (value: unknown): value is string =>
   typeof value === "string" && value.length > 0;
@@ -271,7 +274,7 @@ class SDKServer {
     }
 
     const sessionUserId = session.openId;
-    const signedInAt = new Date();
+    const signedInAt = nowSql;
     
     // For email-based sessions, skip OAuth sync entirely (it's not needed for local auth)
     // This prevents 30-second timeouts on every API request
@@ -292,7 +295,7 @@ class SDKServer {
       
       await db.upsertUser({
         openId: user.openId,
-        lastSignedIn: signedInAt,
+        lastSignedIn: nowSql,
       });
       
       return user;
@@ -306,10 +309,10 @@ class SDKServer {
         const userInfo = await this.getUserInfoWithJwt(sessionCookie ?? "");
         await db.upsertUser({
           openId: userInfo.openId,
-          name: userInfo.name || null,
-          email: userInfo.email ?? null,
-          loginMethod: userInfo.loginMethod ?? userInfo.platform ?? null,
-          lastSignedIn: signedInAt,
+          name: userInfo.name,
+          email: userInfo.email,
+          loginMethod: userInfo.loginMethod ?? userInfo.platform,
+          lastSignedIn: nowSql,
         });
         user = await db.getUserByOpenId(userInfo.openId);
       } catch (error) {

@@ -39,7 +39,7 @@ aadCallbackRouter.get("/api/oauth/microsoft/callback", async (req: Request, res:
     console.log("[AAD Callback] Exchanging code for token");
 
     const tokenRes = await fetch(
-      `https://login.microsoftonline.com/common/oauth2/v2.0/token`,
+       `https://login.microsoftonline.com/${process.env.MS_TENANT_ID}/oauth2/v2.0/token`,
       {
         method: "POST",
         headers: { "Content-Type": "application/x-www-form-urlencoded" },

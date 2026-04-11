@@ -3469,29 +3469,86 @@ export const mealLearningItems = mysqlTable("meal_learning_items", {
 	isDeleted: tinyint().default(0).notNull(),
 });
 
-export const mealSurveyQuestions = mysqlTable("meal_survey_questions", {
-	id: int().autoincrement().primaryKey().notNull(),
-	surveyId: int().notNull(),
-	questionCode: varchar({ length: 50 }).notNull(),
-	questionText: text().notNull(),
-	questionTextAr: text(),
-	helpText: text(),
-	helpTextAr: text(),
-	questionType: mysqlEnum(['text','textarea','number','email','phone','date','time','datetime','select','multiselect','radio','checkbox','rating','scale','file','image','signature','location','matrix']).default('text').notNull(),
-	isRequired: tinyint().default(0).notNull(),
-	order: int().default(0).notNull(),
-	sectionId: varchar({ length: 50 }),
-	sectionTitle: varchar({ length: 255 }),
-	sectionTitleAr: varchar({ length: 255 }),
-	options: json(),
-	validationRules: json(),
-	skipLogic: json(),
-	isDeleted: tinyint().default(0).notNull(),
-	deletedAt: timestamp({ mode: 'string' }),
-	deletedBy: int(),
-	createdAt: timestamp({ mode: 'string' }).defaultNow().notNull(),
-	updatedAt: timestamp({ mode: 'string' }).defaultNow().onUpdateNow().notNull(),
-});
+export const mealSurveyQuestions = mysqlTable(
+  "meal_survey_questions",
+  {
+    id: int().autoincrement().primaryKey().notNull(),
+
+    // 🔐 Multi-tenant isolation (MANDATORY)
+    organizationId: int(),
+    operatingUnitId: int(),
+    projectId: int(),
+
+    // 🔗 Relations
+    surveyId: int().notNull(),
+
+    // 🧾 Core question data
+    questionCode: varchar({ length: 50 }).notNull(),
+    questionText: text().notNull(),
+    questionTextAr: text(),
+
+    helpText: text(),
+    helpTextAr: text(),
+
+    questionType: mysqlEnum([
+      "text","textarea","number","email","phone","date","time","datetime",
+      "select","multiselect","radio","checkbox","rating","scale",
+      "file","image","signature","location","matrix"
+    ]).default("text").notNull(),
+
+    // ⚠️ tinyint → always number (0/1)
+    isRequired: tinyint().default(0).notNull(),
+
+    // 📊 Structure
+    order: int().default(0).notNull(),
+
+    sectionId: varchar({ length: 50 }),
+    sectionTitle: varchar({ length: 255 }),
+    sectionTitleAr: varchar({ length: 255 }),
+
+    // 🧠 Advanced config
+    options: json(),
+    validationRules: json(),
+    skipLogic: json(),
+
+    // 🗑 Soft delete
+    isDeleted: tinyint().default(0).notNull(),
+    deletedAt: timestamp({ mode: "string" }),
+    deletedBy: int(),
+
+    // 👤 Audit
+    createdBy: int(),
+    updatedBy: int(),
+
+    createdAt: timestamp({ mode: "string" }).defaultNow().notNull(),
+    updatedAt: timestamp({ mode: "string" }).defaultNow().onUpdateNow().notNull(),
+  },
+  (table) => {
+    return {
+      // 🔥 PERFORMANCE INDEXES (MATCH YOUR SQL)
+
+      // Scope + soft delete (MOST USED)
+      idxScopeDeleted: index("idx_meal_survey_questions_scope_deleted").on(
+        table.organizationId,
+        table.operatingUnitId,
+        table.isDeleted
+      ),
+
+      // Survey queries (core operations)
+      idxSurveyScope: index("idx_meal_survey_questions_survey_scope").on(
+        table.surveyId,
+        table.organizationId,
+        table.operatingUnitId
+      ),
+
+      // Project filtering
+      idxProjectScope: index("idx_meal_survey_questions_project").on(
+        table.projectId,
+        table.organizationId
+      ),
+    };
+  }
+);
 
 export const mealSurveyStandards = mysqlTable("meal_survey_standards", {
 	id: int().autoincrement().primaryKey().notNull(),

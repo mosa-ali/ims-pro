@@ -1,11 +1,14 @@
 /**
  * ============================================================================
- * SURVEY & DATA COLLECTION - REPORTS (SYSTEM-WIDE)
+ * SURVEY & DATA COLLECTION - REPORTS (SYSTEM-WIDE) - FIXED WITH DATA ISOLATION
  * ============================================================================
  * 
  * System-wide survey reports showing all surveys in a table format
  * 
  * FEATURES:
+ * - ✅ Organization-level data isolation
+ * - ✅ Operating unit-level data isolation
+ * - ✅ Scoped tRPC queries instead of localStorage
  * - Table of all surveys with metadata
  * - Survey Name, Date Started, Date End, Status
  * - View Survey action (navigates to Survey Detail View)
@@ -18,20 +21,24 @@
 import { useNavigate } from '@/lib/router-compat';
 import { useSearch } from 'wouter';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { useOrganization } from '@/contexts/OrganizationContext';
+import { useOperatingUnit } from '@/contexts/OperatingUnitContext';
 import { useState, useEffect } from 'react';
 import { Download, Eye } from 'lucide-react';
-import { surveyService } from '@/services/mealService';
 import { Button } from '@/components/ui/button';
 import { useTranslation } from '@/i18n/useTranslation';
 import { BackButton } from "@/components/BackButton";
+import { trpc } from '@/lib/trpc';
 
 interface Survey {
- id: string;
- name: string;
- projectId: string;
+ id: string | number;
+ title?: string;
+ name?: string;
+ projectId?: string | number;
  status: 'draft' | 'published' | 'paused' | 'completed' | 'archived';
  createdAt: string;
  updatedAt: string;
+ publishedAt?: string;
  deployedAt?: string;
  completedAt?: string;
 }
@@ -42,11 +49,23 @@ export function SurveyReports() {
  const searchString = useSearch();
  const searchParams = new URLSearchParams(searchString);
  const { language, isRTL } = useLanguage();
+ const { currentOrganizationId } = useOrganization();
+ const { currentOperatingUnitId } = useOperatingUnit();
  const [surveys, setSurveys] = useState<Survey[]>([]);
  const [loading, setLoading] = useState(true);
 
  const projectId = searchParams.get('projectId') || '';
  const projectName = searchParams.get('projectName') || '';
+
+ // ✅ FIXED: Use scoped tRPC query instead of localStorage
+ const { data: scopedSurveys = [], isLoading: surveysLoading } = trpc.mealSurveys.getAll.useQuery(
+   {
+     projectId: projectId ? parseInt(projectId) : undefined,
+   },
+   { 
+     enabled: !!currentOrganizationId && !!currentOperatingUnitId,
+   }
+ );
 
  const labels = {
  title: t.mealSurvey.surveyDataCollectionReports,
@@ -71,28 +90,30 @@ export function SurveyReports() {
  ongoing: t.mealSurvey.ongoing,
  };
 
+ // ✅ FIXED: Transform scoped data
  useEffect(() => {
- loadSurveys();
- }, [projectId]);
-
- const loadSurveys = () => {
- try {
- setLoading(true);
- const allSurveys = surveyService.getAllSurveys();
- 
- // Filter by project if projectId is provided
- const filteredSurveys = projectId 
- ? allSurveys.filter(s => s.projectId === projectId)
- : allSurveys;
- 
- setSurveys(filteredSurveys);
- } catch (error) {
- console.error('Error loading surveys:', error);
- setSurveys([]);
- } finally {
- setLoading(false);
- }
- };
+   try {
+     // Data is already filtered by organization and operating unit by backend
+     const transformedSurveys: Survey[] = scopedSurveys.map((s: any) => ({
+       id: s.id,
+       name: s.title || s.name || '',
+       title: s.title || s.name || '',
+       projectId: s.projectId,
+       status: s.status === 'published' ? 'published' : s.status === 'archived' ? 'archived' : 'draft',
+       createdAt: s.createdAt || new Date().toISOString(),
+       updatedAt: s.updatedAt || new Date().toISOString(),
+       publishedAt: s.publishedAt,
+       deployedAt: s.publishedAt,
+       completedAt: undefined,
+     }));
+     setSurveys(transformedSurveys);
+   } catch (error) {
+     console.error('Error loading surveys:', error);
+     setSurveys([]);
+   } finally {
+     setLoading(false);
+   }
+ }, [scopedSurveys]);
 
  const getStatusBadge = (status: Survey['status']) => {
  const badges = {
@@ -158,7 +179,7 @@ export function SurveyReports() {
 
  {/* Surveys Table */}
  <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
- {loading ? (
+ {loading || surveysLoading ? (
  <div className="text-center py-12">
  <p className="text-gray-500">{labels.loading}</p>
  </div>

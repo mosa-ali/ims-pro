@@ -1,8 +1,12 @@
 {
   "ExpandedNodes": [
     "",
+    "\\client\\src\\pages",
+    "\\client\\src\\pages\\admin",
+    "\\client\\src\\pages\\platform",
     "\\server",
-    "\\server\\_core"
+    "\\server\\routers"
   ],
+  "SelectedNode": "\\server\\routers\\authRouter.ts",
   "PreviewInSolutionExplorer": false
 }
