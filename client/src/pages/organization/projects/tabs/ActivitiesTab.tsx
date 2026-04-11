@@ -16,6 +16,25 @@ import { validateImportData, type PreviewRow } from '@/lib/clientSideValidation'
 import { ACTIVITIES_CONFIG } from '@shared/importConfigs/activities';
 import { generateActivitiesTemplate } from '@/lib/templateGenerator';
 
+// ✅ Helper function to get currency symbol
+const getCurrencySymbol = (currency: string): string => {
+ const symbols: Record<string, string> = {
+  'EUR': '€',
+  'USD': '$',
+  'CHF': 'CHF ',
+  'GBP': '£',
+  'YER': 'YER ',
+  'SAR': 'SAR ',
+ };
+ return symbols[currency] || currency + ' ';
+};
+
+// ✅ Helper function to format currency with symbol
+const formatCurrencyWithSymbol = (amount: number, currency: string): string => {
+ const symbol = getCurrencySymbol(currency);
+ return `${symbol}${amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+};
+
 // Helper function to format dates (handles both Date objects and strings)
 const formatDate = (date: Date | string | null | undefined): string => {
  if (!date) return '';
@@ -73,9 +92,13 @@ export function ActivitiesTab({
  projectId }: ActivitiesTabProps) {
  const { t } = useTranslation();
  const { isRTL } = useLanguage();
-// ✅ Load activities from database via tRPC
+ // ✅ Load activities from database via tRPC
  const projectIdNum = parseInt(projectId, 10);
  const { data: activities = [], isLoading, refetch } = trpc.activities.getByProject.useQuery({ projectId: projectIdNum });
+ 
+ // ✅ FIXED: Fetch project to get currency
+ const { data: projectData } = trpc.projects.getById.useQuery({ id: projectIdNum });
+ const projectCurrency = projectData?.currency || 'USD';
  
  // Mutations
  const createMutation = trpc.activities.create.useMutation({
@@ -131,7 +154,7 @@ export function ActivitiesTab({
  target: '',
  unitType: '',
  achievedValue: '',
- currency: 'USD' as Activity['currency'],
+ currency: projectCurrency as Activity['currency'], // ✅ FIXED: Use project currency
  location: '',
  locationAr: '',
  responsiblePerson: ''
@@ -153,8 +176,8 @@ export function ActivitiesTab({
  { name: t.projectDetail.activityStatus, key: 'status', width: 15, type: 'text' },
  { name: t.projectDetail.activityStartDate, key: 'plannedStartDate', width: 15, type: 'date' },
  { name: t.projectDetail.activityEndDate, key: 'plannedEndDate', width: 15, type: 'date' },
- { name: `${t.projectDetail.activityBudget} (USD)`, key: 'budgetAllocated', width: 15, type: 'currency', totals: 'sum' },
- { name: `${t.projectDetail.activitySpent} (USD)`, key: 'actualSpent', width: 15, type: 'currency', totals: 'sum' },
+ { name: `${t.projectDetail.activityBudget} (${projectCurrency})`, key: 'budgetAllocated', width: 15, type: 'currency', totals: 'sum' }, // ✅ FIXED: Dynamic currency
+ { name: `${t.projectDetail.activitySpent} (${projectCurrency})`, key: 'actualSpent', width: 15, type: 'currency', totals: 'sum' }, // ✅ FIXED: Dynamic currency
  { name: `${t.projectDetail.activityCompletion} (%)`, key: 'progressPercentage', width: 15, type: 'number', totals: 'average' },
  { name: t.projectDetail.activityResponsible, key: 'responsiblePerson', width: 25, type: 'text' },
  { name: t.projectDetail.activityLocation, key: 'location', width: 25, type: 'text' },
@@ -179,8 +202,8 @@ export function ActivitiesTab({
  { name: t.projectDetail.activityStatus, key: 'status', width: 15, type: 'text' },
  { name: `${t.projectDetail.activityStartDate} (YYYY-MM-DD)*`, key: 'plannedStartDate', width: 20, type: 'date' },
  { name: `${t.projectDetail.activityEndDate} (YYYY-MM-DD)*`, key: 'plannedEndDate', width: 20, type: 'date' },
- { name: `${t.projectDetail.activityBudget} (USD)`, key: 'budgetAllocated', width: 15, type: 'currency' },
- { name: `${t.projectDetail.activitySpent} (USD)`, key: 'actualSpent', width: 15, type: 'currency' },
+ { name: `${t.projectDetail.activityBudget} (${projectCurrency})`, key: 'budgetAllocated', width: 15, type: 'currency' }, // ✅ FIXED: Dynamic currency
+ { name: `${t.projectDetail.activitySpent} (${projectCurrency})`, key: 'actualSpent', width: 15, type: 'currency' }, // ✅ FIXED: Dynamic currency
  { name: `${t.projectDetail.activityCompletion} (%)`, key: 'progressPercentage', width: 15, type: 'number' },
  { name: t.projectDetail.activityResponsible, key: 'responsiblePerson', width: 25, type: 'text' },
  { name: t.projectDetail.activityLocation, key: 'location', width: 25, type: 'text' },
@@ -476,7 +499,8 @@ export function ActivitiesTab({
  <div className="bg-white border border-gray-200 rounded-lg p-4">
  <div className="text-sm text-gray-600 text-start">{t.projectDetail.totalBudget}</div>
  <div className="text-2xl font-bold text-gray-900 text-start">
- <span className="ltr-safe">${activities.reduce((sum, a) => sum + parseFloat(a.budgetAllocated || '0'), 0).toLocaleString()}</span>
+ {/* ✅ FIXED: Use dynamic currency instead of hardcoded $ */}
+ <span className="ltr-safe">{formatCurrencyWithSymbol(activities.reduce((sum, a) => sum + parseFloat(a.budgetAllocated || '0'), 0), projectCurrency)}</span>
  </div>
  </div>
  </div>
@@ -531,7 +555,8 @@ export function ActivitiesTab({
  <span className="ltr-safe">{formatDate(activity.plannedStartDate)} - {formatDate(activity.plannedEndDate)}</span>
  </td>
  <td className="px-4 py-3 text-sm text-start">
- <span className="ltr-safe">${parseFloat(activity.budgetAllocated || '0').toLocaleString()}</span>
+ {/* ✅ FIXED: Use dynamic currency instead of hardcoded $ */}
+ <span className="ltr-safe">{formatCurrencyWithSymbol(parseFloat(activity.budgetAllocated || '0'), activity.currency)}</span>
  </td>
  <td className="px-4 py-3 text-start">
  <div className="flex items-center gap-2">
@@ -597,7 +622,8 @@ export function ActivitiesTab({
  <p className="text-sm text-gray-600 mt-1 text-start">{isRTL ? activity.descriptionAr || activity.description : activity.description}</p>
  <div className="mt-3 flex items-center gap-4 text-sm text-gray-500">
  <span className="ltr-safe">📅 {formatDate(activity.plannedStartDate)} → {formatDate(activity.plannedEndDate)}</span>
- <span className="ltr-safe">💰 ${parseFloat(activity.budgetAllocated || '0').toLocaleString()}</span>
+ {/* ✅ FIXED: Use dynamic currency instead of hardcoded $ */}
+ <span className="ltr-safe">💰 {formatCurrencyWithSymbol(parseFloat(activity.budgetAllocated || '0'), activity.currency)}</span>
  <span>👤 {activity.responsiblePerson}</span>
  </div>
  </div>

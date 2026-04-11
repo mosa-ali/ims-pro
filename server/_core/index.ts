@@ -806,7 +806,7 @@ app.post("/api/auth/email-signin", express.json(), async (req, res) => {
         serveStatic(app);
       }
 
-  const preferredPort = parseInt(process.env.PORT || "3000", 10);
+  const preferredPort = parseInt(process.env.PORT || "4000", 10);
   const port = ENV.isProduction
     ? preferredPort
     : await findAvailablePort(preferredPort);
