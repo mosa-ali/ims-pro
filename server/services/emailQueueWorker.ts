@@ -188,12 +188,7 @@ class EmailQueueWorker {
           action: "email_failed_dead_letter",
           entityType: "email_outbox",
           entityId: email.id,
-          metadata: {
-            reason: errorMessage,
-            retries: newRetryCount,
-          },
         });
-
       } catch (error: any) {
         console.error("[EmailQueueWorker] Failed to create audit log:", error.message);
       }
@@ -365,3 +360,5 @@ export async function enqueueEmail(data: {
     throw error;
   }
 }
+
+
