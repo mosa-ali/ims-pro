@@ -4,7 +4,6 @@ import { Bell, AlertTriangle, AlertCircle, Check, X, Settings } from 'lucide-rea
 import { Button } from '@/components/ui/button';
 import { useTranslation } from '@/i18n/useTranslation';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { toast } from 'sonner';
 
 interface VarianceAlertsTabProps {
  projectId: string;
@@ -36,10 +35,10 @@ export function VarianceAlertsTab({
  onSuccess: () => {
  refetchConfig();
  setShowConfigModal(false);
- toast.success(t.projectDetail.alertSettingsUpdatedSuccessfully);
+ alert(t.projectDetail.alertSettingsUpdatedSuccessfully);
  },
  onError: (error) => {
- toast.error(`${t.projectDetail.updateFailed}: ${error.message}`);
+ alert(`${t.projectDetail.updateFailed}: ${error.message}`);
  },
  });
 
@@ -47,10 +46,9 @@ export function VarianceAlertsTab({
  const acknowledgeMutation = trpc.varianceAlerts.acknowledgeAlert.useMutation({
  onSuccess: () => {
  refetchAlerts();
- toast.success("Alert acknowledged successfully");
  },
  onError: (error) => {
- toast.error(`${t.projectDetail.acknowledgmentFailed}: ${error.message}`);
+ alert(`${t.projectDetail.acknowledgmentFailed}: ${error.message}`);
  },
  });
 
@@ -60,17 +58,17 @@ export function VarianceAlertsTab({
  setConfigData({
  warningThreshold: parseFloat(config.warningThreshold || '10'),
  criticalThreshold: parseFloat(config.criticalThreshold || '20'),
- isEnabled: config.isEnabled ?? true,
- notifyProjectManager: config.notifyProjectManager ?? true,
- notifyFinanceTeam: config.notifyFinanceTeam ?? true,
- notifyOwner: config.notifyOwner ?? false,
+isEnabled: config.isEnabled === 1,
+notifyProjectManager: config.notifyProjectManager === 1,
+notifyFinanceTeam: config.notifyFinanceTeam === 1,
+notifyOwner: config.notifyOwner === 1,
  });
  }
  }, [config]);
 
  const handleSaveConfig = () => {
  if (configData.criticalThreshold <= configData.warningThreshold) {
- toast.error(t.projectDetail.criticalThresholdMustBeGreaterThan);
+ alert(t.projectDetail.criticalThresholdMustBeGreaterThan);
  return;
  }
 

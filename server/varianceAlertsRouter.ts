@@ -1,94 +1,38 @@
 import { z } from "zod";
-import { router, scopedProcedure } from "./_core/trpc";
+import { router, protectedProcedure, scopedProcedure } from "./_core/trpc";
 import { getDb } from "./db";
-import { varianceAlerts, projects } from "../drizzle/schema";
+import { varianceAlertConfig, varianceAlertHistory, budgetItems, projects } from "../drizzle/schema";
 import { eq, and, desc } from "drizzle-orm";
 import { TRPCError } from "@trpc/server";
 import { notifyOwner } from "./_core/notification";
-import { toast } from "sonner";
-
-/**
- * Adapter Router for Variance Alerts
- * Maps the original API design to the actual varianceAlerts table schema
- * 
- * Original Design:
- * - varianceAlertConfig table (settings)
- * - varianceAlertHistory table (alert records)
- * 
- * Actual Schema:
- * - varianceAlerts table (combined)
- * 
- * This router adapts the original component to work with the actual schema
- */
 
 export const varianceAlertsRouter = router({
   /**
-   * Get alert configuration for a project
-   * Maps to varianceAlerts table - returns first config-type record
+   * Get or create variance alert configuration for a project
    */
   getConfig: scopedProcedure
     .input(z.object({ projectId: z.number() }))
-    .query(async ({ input, ctx }) => {
+    .query(async ({ input }) => {
       const db = await getDb();
       if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Database not available" });
 
-      // ✅ Validate scope context
-      if (!ctx.scope?.organizationId || !ctx.scope?.operatingUnitId) {
-        throw new TRPCError({
-          code: "FORBIDDEN",
-          message: "Missing scope context. Organization and Operating Unit must be selected.",
-        });
+      // Try to get existing config
+      const [config] = await db
+        .select()
+        .from(varianceAlertConfig)
+        .where(eq(varianceAlertConfig.projectId, input.projectId))
+        .limit(1);
+
+      if (config) {
+        return config;
       }
 
-      try {
-        // Get the first alert record for this project to extract config
-        // In the actual schema, we store config as part of each alert
-        const [alert] = await db
-          .select()
-          .from(varianceAlerts)
-          .where(
-            and(
-              eq(varianceAlerts.projectId, input.projectId),
-              eq(varianceAlerts.organizationId, ctx.scope.organizationId),
-              eq(varianceAlerts.operatingUnitId, ctx.scope.operatingUnitId)
-            )
-          )
-          .limit(1);
-
-        // If we have an alert, use its thresholds as config
-        if (alert) {
-          return {
-            projectId: input.projectId,
-            warningThreshold: alert.thresholdPercentage?.toString() || "10",
-            criticalThreshold: alert.thresholdPercentage ? (parseFloat(alert.thresholdPercentage) * 1.5).toString() : "20",
-            isEnabled: alert.status !== 'dismissed',
-            notifyProjectManager: alert.notificationSent === 1,
-            notifyFinanceTeam: alert.notificationSent === 1,
-            notifyOwner: alert.notificationSent === 1,
-          };
-        }
-
-        // Default config if no alerts exist
-        return {
-          projectId: input.projectId,
-          warningThreshold: "10",
-          criticalThreshold: "20",
-          isEnabled: true,
-          notifyProjectManager: true,
-          notifyFinanceTeam: true,
-          notifyOwner: false,
-        };
-      } catch (error: any) {
-        throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
-          message: `Failed to fetch config: ${error.message}`,
-        });
-      }
+      // If no config exists, return default values (don't auto-create)
+      return null;
     }),
 
   /**
    * Create or update variance alert configuration
-   * Stores config in varianceAlerts table
    */
   upsertConfig: scopedProcedure
     .input(
@@ -106,13 +50,7 @@ export const varianceAlertsRouter = router({
       const db = await getDb();
       if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Database not available" });
 
-      // ✅ Validate scope context
-      if (!ctx.scope?.organizationId || !ctx.scope?.operatingUnitId) {
-        throw new TRPCError({
-          code: "FORBIDDEN",
-          message: "Missing scope context. Organization and Operating Unit must be selected.",
-        });
-      }
+      const userId = ctx.user.id;
 
       // Validate thresholds
       if (input.criticalThreshold <= input.warningThreshold) {
@@ -122,116 +60,232 @@ export const varianceAlertsRouter = router({
         });
       }
 
-      try {
-        // Get project details
-        const [project] = await db
-          .select()
-          .from(projects)
-          .where(eq(projects.id, input.projectId))
-          .limit(1);
+      // Get project details for organizationId and operatingUnitId
+      const [project] = await db
+        .select()
+        .from(projects)
+        .where(eq(projects.id, input.projectId))
+        .limit(1);
 
-        if (!project) {
-          throw new TRPCError({ code: "NOT_FOUND", message: "Project not found" });
-        }
+      if (!project) {
+        throw new TRPCError({ code: "NOT_FOUND", message: "Project not found" });
+      }
 
-        // Create a config alert record (special marker alert)
-        // This stores the configuration in the varianceAlerts table
-        await db.insert(varianceAlerts).values({
-          organizationId: ctx.scope.organizationId,
-          operatingUnitId: ctx.scope.operatingUnitId,
+      // Check if config exists
+      const [existingConfig] = await db
+        .select()
+        .from(varianceAlertConfig)
+        .where(eq(varianceAlertConfig.projectId, input.projectId))
+        .limit(1);
+
+      if (existingConfig) {
+        // Update existing config
+        await db
+          .update(varianceAlertConfig)
+          .set({
+            warningThreshold: input.warningThreshold.toString(),
+            criticalThreshold: input.criticalThreshold.toString(),
+            isEnabled: input.isEnabled ? 1 : 0,
+            notifyProjectManager: input.notifyProjectManager ? 1 : 0,
+            notifyFinanceTeam: input.notifyFinanceTeam ? 1 : 0,
+            notifyOwner: input.notifyOwner ? 1 : 0,
+            updatedBy: userId,
+          })
+          .where(eq(varianceAlertConfig.id, existingConfig.id));
+
+        return { success: 1, message: "Alert configuration updated successfully" };
+      } else {
+        // Create new config
+        await db.insert(varianceAlertConfig).values({
           projectId: input.projectId,
-          category: "_CONFIG_",
-          alertType: 'threshold_exceeded',
-          severity: 'medium',
-          budgetAmount: "0",
-          actualAmount: "0",
-          variance: "0",
-          variancePercentage: "0",
-          thresholdPercentage: input.warningThreshold.toString(),
-          status: input.isEnabled ? 'active' : 'dismissed',
-          notificationSent: input.notifyOwner ? 1 : 0,
-          description: `Config: Warning=${input.warningThreshold}%, Critical=${input.criticalThreshold}%`,
-          notes: JSON.stringify({
-            warningThreshold: input.warningThreshold,
-            criticalThreshold: input.criticalThreshold,
-            notifyProjectManager: input.notifyProjectManager,
-            notifyFinanceTeam: input.notifyFinanceTeam,
-            notifyOwner: input.notifyOwner,
-          }),
+          organizationId: project.organizationId,
+          operatingUnitId: project.operatingUnitId,
+          warningThreshold: input.warningThreshold.toString(),
+          criticalThreshold: input.criticalThreshold.toString(),
+          isEnabled: input.isEnabled ? 1 : 0,
+          notifyProjectManager: input.notifyProjectManager ? 1 : 0,
+          notifyFinanceTeam: input.notifyFinanceTeam ? 1 : 0,
+          notifyOwner: input.notifyOwner ? 1 : 0,
+          createdBy: userId,
+          updatedBy: userId,
         });
 
-        return { success: true, message: "Alert configuration saved successfully" };
-      } catch (error: any) {
-        throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
-          message: `Failed to save config: ${error.message}`,
-        });
+        return { success: 1, message: "Alert configuration created successfully" };
       }
     }),
 
   /**
-   * Get alert history for a project
-   * Maps varianceAlerts records to the original alert format
+   * Check variance for a specific budget item and trigger alert if needed
+   * This is called after updating actualSpent in a budget item
+   */
+  checkVariance: scopedProcedure
+    .input(z.object({ budgetItemId: z.number() }))
+    .mutation(async ({ input }) => {
+      const db = await getDb();
+      if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Database not available" });
+
+      // Get budget item details
+      const [item] = await db
+        .select()
+        .from(budgetItems)
+        .where(eq(budgetItems.id, input.budgetItemId))
+        .limit(1);
+
+      if (!item) {
+        throw new TRPCError({ code: "NOT_FOUND", message: "Budget item not found" });
+      }
+
+      // Get alert configuration for this project
+      const [config] = await db
+        .select()
+        .from(varianceAlertConfig)
+        .where(eq(varianceAlertConfig.projectId, item.projectId))
+        .limit(1);
+
+      // If no config or alerts disabled, skip
+      if (!config || config.isEnabled !== 1) {
+        return { alertTriggered: 0, message: "Variance alerts not configured or disabled" };
+      }
+
+      // Calculate variance
+      const totalBudget = parseFloat(item.totalBudgetLine || "0");
+      const actualSpent = parseFloat(item.actualSpent || "0");
+      
+      if (totalBudget === 0) {
+        return { alertTriggered: 0, message: "Total budget is zero, cannot calculate variance" };
+      }
+
+      const varianceAmount = actualSpent - totalBudget;
+      const variancePercentage = (varianceAmount / totalBudget) * 100;
+
+      // Only trigger alert if overspending (positive variance)
+      if (variancePercentage <= 0) {
+        return { alertTriggered: 0, message: "No overspending detected" };
+      }
+
+      const warningThreshold = parseFloat(config.warningThreshold || "10");
+      const criticalThreshold = parseFloat(config.criticalThreshold || "20");
+
+      let alertLevel: "warning" | "critical" | null = null;
+
+      if (variancePercentage >= criticalThreshold) {
+        alertLevel = "critical";
+      } else if (variancePercentage >= warningThreshold) {
+        alertLevel = "warning";
+      }
+
+      // If no threshold exceeded, no alert
+      if (!alertLevel) {
+        return { alertTriggered: 0, message: "Variance within acceptable limits" };
+      }
+
+      // Check if alert already exists for this budget item at this level (avoid duplicates)
+      const [existingAlert] = await db
+        .select()
+        .from(varianceAlertHistory)
+        .where(
+          and(
+            eq(varianceAlertHistory.budgetItemId, input.budgetItemId),
+            eq(varianceAlertHistory.alertLevel, alertLevel)
+          )
+        )
+        .orderBy(desc(varianceAlertHistory.createdAt))
+        .limit(1);
+
+      // If alert exists and was created recently (within 24 hours), don't create duplicate
+      if (existingAlert) {
+        const hoursSinceLastAlert = (Date.now() - new Date(existingAlert.createdAt).getTime()) / (1000 * 60 * 60);
+        if (hoursSinceLastAlert < 24) {
+          return { alertTriggered: 0, message: "Alert already sent within last 24 hours" };
+        }
+      }
+
+      // Create alert history record
+      const alertRecord = await db.insert(varianceAlertHistory).values({
+        projectId: item.projectId,
+        budgetItemId: input.budgetItemId,
+        organizationId: item.organizationId,
+        operatingUnitId: item.operatingUnitId,
+        budgetCode: item.budgetCode,
+        budgetItem: item.budgetItem,
+        totalBudget: totalBudget.toString(),
+        actualSpent: actualSpent.toString(),
+        varianceAmount: varianceAmount.toString(),
+        variancePercentage: variancePercentage.toFixed(2),
+        alertLevel,
+        notificationSent: 1,
+      });
+
+      // Send notification if configured
+      let notificationSent = 0;
+      let notificationError = null;
+
+      if (config.notifyOwner === 1) {
+        try {
+          const success = await notifyOwner({
+            title: `${alertLevel === "critical" ? "🚨 CRITICAL" : "⚠️ WARNING"}: Budget Overspending Alert`,
+            content: `Budget item "${item.budgetItem}" (Code: ${item.budgetCode}) has exceeded the ${alertLevel} threshold.\n\n` +
+              `Total Budget: $${totalBudget.toFixed(2)}\n` +
+              `Actual Spent: $${actualSpent.toFixed(2)}\n` +
+              `Overspending: $${varianceAmount.toFixed(2)} (${variancePercentage.toFixed(2)}%)\n\n` +
+              `Threshold: ${alertLevel === "critical" ? criticalThreshold : warningThreshold}%`,
+          });
+          notificationSent = success ? 1 : 0;
+          if (!success) {
+            notificationError = "Notification service unavailable";
+          }
+        } catch (error: any) {
+          notificationError = error.message || "Failed to send notification";
+        }
+      }
+
+      // Update alert record with notification status
+      const insertId = (alertRecord as any).insertId;
+      await db
+        .update(varianceAlertHistory)
+        .set({
+          notificationSent,
+          notificationError,
+        })
+        .where(eq(varianceAlertHistory.id, insertId));
+
+      return {
+        alertTriggered: 1,
+        alertLevel,
+        variancePercentage: variancePercentage.toFixed(2),
+        notificationSent,
+        message: `${alertLevel.toUpperCase()} alert triggered for ${variancePercentage.toFixed(2)}% overspending`,
+      };
+    }),
+
+  /**
+   * Get alert history (organization-wide or project-specific)
    */
   getHistory: scopedProcedure
     .input(
       z.object({
-        projectId: z.number(),
-        limit: z.number().optional().default(100),
+        projectId: z.number().optional(),
+        limit: z.number().optional().default(50),
       })
     )
-    .query(async ({ input, ctx }) => {
+    .query(async ({ input }) => {
       const db = await getDb();
       if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Database not available" });
 
-      // ✅ Validate scope context
-      if (!ctx.scope?.organizationId || !ctx.scope?.operatingUnitId) {
-        throw new TRPCError({
-          code: "FORBIDDEN",
-          message: "Missing scope context. Organization and Operating Unit must be selected.",
-        });
+      // If projectId is provided, filter by project; otherwise return all alerts
+      const query = db
+        .select()
+        .from(varianceAlertHistory)
+        .orderBy(desc(varianceAlertHistory.createdAt))
+        .limit(input.limit);
+
+      if (input.projectId) {
+        const alerts = await query.where(eq(varianceAlertHistory.projectId, input.projectId));
+        return alerts;
       }
 
-      try {
-        const alerts = await db
-          .select()
-          .from(varianceAlerts)
-          .where(
-            and(
-              eq(varianceAlerts.projectId, input.projectId),
-              eq(varianceAlerts.organizationId, ctx.scope.organizationId),
-              eq(varianceAlerts.operatingUnitId, ctx.scope.operatingUnitId),
-              eq(varianceAlerts.isDeleted, 0)
-            )
-          )
-          .orderBy(desc(varianceAlerts.createdAt))
-          .limit(input.limit);
-
-        // Map to original alert format
-        return alerts.map((alert) => ({
-          id: alert.id,
-          projectId: alert.projectId,
-          budgetItemId: alert.budgetId,
-          budgetCode: alert.category || "N/A",
-          budgetItem: alert.description || "Budget Item",
-          totalBudget: alert.budgetAmount,
-          actualSpent: alert.actualAmount,
-          varianceAmount: alert.variance,
-          variancePercentage: alert.variancePercentage,
-          alertLevel: alert.severity === 'critical' ? 'critical' : 'warning',
-          status: alert.status,
-          createdAt: alert.createdAt,
-          acknowledgedAt: alert.acknowledgedAt,
-          acknowledgedBy: alert.acknowledgedBy,
-          acknowledgedNotes: alert.notes,
-          notificationSent: alert.notificationSent === 1,
-        }));
-      } catch (error: any) {
-        throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
-          message: `Failed to fetch alert history: ${error.message}`,
-        });
-      }
+      const alerts = await query;
+      return alerts;
     }),
 
   /**
@@ -248,195 +302,17 @@ export const varianceAlertsRouter = router({
       const db = await getDb();
       if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Database not available" });
 
-      // ✅ Validate scope context
-      if (!ctx.scope?.organizationId || !ctx.scope?.operatingUnitId) {
-        throw new TRPCError({
-          code: "FORBIDDEN",
-          message: "Missing scope context. Organization and Operating Unit must be selected.",
-        });
-      }
+      const userId = ctx.user.id;
+      const nowSql = new Date().toISOString().slice(0, 19).replace('T', ' ');
+      await db
+        .update(varianceAlertHistory)
+        .set({
+          acknowledgedAt: nowSql,
+          acknowledgedBy: userId,
+          acknowledgedNotes: input.notes || null,
+        })
+        .where(eq(varianceAlertHistory.id, input.alertId));
 
-      try {
-        const userId = ctx.user.id;
-
-        // Verify alert belongs to user's organization/OU
-        const [alert] = await db
-          .select()
-          .from(varianceAlerts)
-          .where(
-            and(
-              eq(varianceAlerts.id, input.alertId),
-              eq(varianceAlerts.organizationId, ctx.scope.organizationId),
-              eq(varianceAlerts.operatingUnitId, ctx.scope.operatingUnitId)
-            )
-          )
-          .limit(1);
-
-        if (!alert) {
-          throw new TRPCError({ code: "NOT_FOUND", message: "Alert not found" });
-        }
-
-        // Update alert status
-        await db
-          .update(varianceAlerts)
-          .set({
-            status: 'acknowledged',
-            acknowledgedAt: new Date().toISOString(),
-            acknowledgedBy: userId,
-            notes: input.notes || alert.notes,
-          })
-          .where(eq(varianceAlerts.id, input.alertId));
-
-        return { success: true, message: "Alert acknowledged successfully" };
-      } catch (error: any) {
-        throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
-          message: `Failed to acknowledge alert: ${error.message}`,
-        });
-      }
-    }),
-
-  /**
-   * Check variance for a budget item and create alert if needed
-   * Called from budgetItemsRouter when actualSpent is updated
-   */
-  checkVariance: scopedProcedure
-    .input(z.object({ budgetItemId: z.number() }))
-    .mutation(async ({ input, ctx }) => {
-      const db = await getDb();
-      if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Database not available" });
-
-      // ✅ Validate scope context
-      if (!ctx.scope?.organizationId || !ctx.scope?.operatingUnitId) {
-        throw new TRPCError({
-          code: "FORBIDDEN",
-          message: "Missing scope context. Organization and Operating Unit must be selected.",
-        });
-      }
-
-      try {
-        // Get budget item details
-        const [item] = await db
-          .select()
-          .from(varianceAlerts)
-          .where(eq(varianceAlerts.budgetId, input.budgetItemId))
-          .limit(1);
-
-        if (!item) {
-          return { alertTriggered: false, message: "Budget item not found" };
-        }
-
-        // Get config for this project (look for config alert)
-        const [configAlert] = await db
-          .select()
-          .from(varianceAlerts)
-          .where(
-            and(
-              eq(varianceAlerts.projectId, item.projectId),
-              eq(varianceAlerts.category, "_CONFIG_")
-            )
-          )
-          .limit(1);
-
-        // If no config or alerts disabled, skip
-        if (!configAlert || configAlert.status === 'dismissed') {
-          return { alertTriggered: false, message: "Variance alerts not configured or disabled" };
-        }
-
-        // Parse config from notes
-        let warningThreshold = 10;
-        let criticalThreshold = 20;
-        let notifyOwner = false;
-
-        if (configAlert.notes) {
-          try {
-            const config = JSON.parse(configAlert.notes);
-            warningThreshold = config.warningThreshold || 10;
-            criticalThreshold = config.criticalThreshold || 20;
-            notifyOwner = config.notifyOwner || false;
-          } catch (e) {
-            // Use defaults if parse fails
-          }
-        }
-
-        // Calculate variance
-        const budgetAmount = parseFloat(item.budgetAmount);
-        const actualAmount = parseFloat(item.actualAmount);
-
-        if (budgetAmount === 0) {
-          return { alertTriggered: false, message: "Budget amount is zero" };
-        }
-
-        const variance = actualAmount - budgetAmount;
-        const variancePercentage = (variance / budgetAmount) * 100;
-
-        // Only trigger if overspending
-        if (variancePercentage <= 0) {
-          return { alertTriggered: false, message: "No overspending detected" };
-        }
-
-        let severity: 'low' | 'medium' | 'high' | 'critical' = 'low';
-        let alertLevel: 'warning' | 'critical' = 'warning';
-
-        if (variancePercentage >= criticalThreshold) {
-          severity = 'critical';
-          alertLevel = 'critical';
-        } else if (variancePercentage >= warningThreshold) {
-          severity = 'high';
-          alertLevel = 'warning';
-        } else {
-          return { alertTriggered: false, message: "Variance within acceptable limits" };
-        }
-
-        // Create alert record
-        await db.insert(varianceAlerts).values({
-          organizationId: ctx.scope.organizationId,
-          operatingUnitId: ctx.scope.operatingUnitId,
-          projectId: item.projectId,
-          budgetId: input.budgetItemId,
-          category: item.category,
-          alertType: 'threshold_exceeded',
-          severity,
-          budgetAmount: budgetAmount.toString(),
-          actualAmount: actualAmount.toString(),
-          variance: variance.toString(),
-          variancePercentage: variancePercentage.toFixed(2),
-          thresholdPercentage: warningThreshold.toString(),
-          status: 'active',
-          notificationSent: 0,
-          description: item.description,
-          notes: `Alert Level: ${alertLevel}`,
-        });
-
-        // Send notification if configured
-        if (notifyOwner) {
-          try {
-            await notifyOwner({
-              title: `${severity === "critical" ? "🚨 CRITICAL" : "⚠️ WARNING"}: Budget Variance Alert`,
-              content: `Budget item has exceeded the ${alertLevel} threshold.\n\n` +
-                `Budget: $${budgetAmount.toFixed(2)}\n` +
-                `Actual Spent: $${actualAmount.toFixed(2)}\n` +
-                `Overspending: $${variance.toFixed(2)} (${variancePercentage.toFixed(2)}%)\n\n` +
-                `Threshold: ${warningThreshold}%`,
-            });
-          } catch (error: any) {
-            console.warn('[Variance Alert] Failed to send notification:', error.message);
-          }
-        }
-
-        return {
-          alertTriggered: true,
-          alertLevel,
-          variancePercentage: variancePercentage.toFixed(2),
-          message: `${alertLevel.toUpperCase()} alert triggered for ${variancePercentage.toFixed(2)}% overspending`,
-        };
-      } catch (error: any) {
-        throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
-          message: `Failed to check variance: ${error.message}`,
-        });
-      }
+      return { success: 1, message: "Alert acknowledged successfully" };
     }),
 });
-
-export type VarianceAlertsRouter = typeof varianceAlertsRouter;
