@@ -1,9 +1,7 @@
 import React, { useState } from 'react';
 import { trpc } from '@/lib/trpc';
-import { Bell, AlertTriangle, AlertCircle, Check, X, Settings, Trash2 } from 'lucide-react';
+import { Bell, AlertTriangle, AlertCircle, Check, X, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { useTranslation } from '@/i18n/useTranslation';
-import { useLanguage } from '@/contexts/LanguageContext';
 import { toast } from 'sonner';
 
 interface VarianceAlertsTabProps {
@@ -18,8 +16,6 @@ export function VarianceAlertsTab({
   projectId,
   isRTL
 }: VarianceAlertsTabProps) {
-  const { t } = useTranslation();
-  const { toast } = useToast();
   const [statusFilter, setStatusFilter] = useState<AlertStatus | 'all'>('all');
   const [severityFilter, setSeverityFilter] = useState<AlertSeverity | 'all'>('all');
 
@@ -42,18 +38,10 @@ export function VarianceAlertsTab({
   const acknowledgeMutation = trpc.varianceAlerts.acknowledgeAlert.useMutation({
     onSuccess: () => {
       refetchAlerts();
-      toast({
-        title: t.projectDetail.success,
-        description: "Alert acknowledged successfully",
-        variant: "default",
-      });
+      toast.success("Alert acknowledged successfully");
     },
     onError: (error) => {
-      toast({
-        title: t.projectDetail.error,
-        description: error.message,
-        variant: "destructive",
-      });
+      toast.error(error.message || "Failed to acknowledge alert");
     },
   });
 
@@ -61,18 +49,10 @@ export function VarianceAlertsTab({
   const resolveMutation = trpc.varianceAlerts.resolveAlert.useMutation({
     onSuccess: () => {
       refetchAlerts();
-      toast({
-        title: t.projectDetail.success,
-        description: "Alert resolved successfully",
-        variant: "default",
-      });
+      toast.success("Alert resolved successfully");
     },
     onError: (error) => {
-      toast({
-        title: t.projectDetail.error,
-        description: error.message,
-        variant: "destructive",
-      });
+      toast.error(error.message || "Failed to resolve alert");
     },
   });
 
@@ -80,18 +60,10 @@ export function VarianceAlertsTab({
   const dismissMutation = trpc.varianceAlerts.dismissAlert.useMutation({
     onSuccess: () => {
       refetchAlerts();
-      toast({
-        title: t.projectDetail.success,
-        description: "Alert dismissed successfully",
-        variant: "default",
-      });
+      toast.success("Alert dismissed successfully");
     },
     onError: (error) => {
-      toast({
-        title: t.projectDetail.error,
-        description: error.message,
-        variant: "destructive",
-      });
+      toast.error(error.message || "Failed to dismiss alert");
     },
   });
 
@@ -99,18 +71,10 @@ export function VarianceAlertsTab({
   const deleteMutation = trpc.varianceAlerts.deleteAlert.useMutation({
     onSuccess: () => {
       refetchAlerts();
-      toast({
-        title: t.projectDetail.success,
-        description: "Alert deleted successfully",
-        variant: "default",
-      });
+      toast.success("Alert deleted successfully");
     },
     onError: (error) => {
-      toast({
-        title: t.projectDetail.error,
-        description: error.message,
-        variant: "destructive",
-      });
+      toast.error(error.message || "Failed to delete alert");
     },
   });
 
@@ -297,7 +261,7 @@ export function VarianceAlertsTab({
                       {getSeverityIcon(alert.severity as AlertSeverity)}
                     </div>
                     <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 mb-2">
+                      <div className="flex items-center gap-2 mb-2 flex-wrap">
                         <span className={`px-2 py-0.5 rounded text-xs font-semibold ${getSeverityColor(alert.severity as AlertSeverity)}`}>
                           {alert.severity.toUpperCase()}
                         </span>
@@ -310,7 +274,7 @@ export function VarianceAlertsTab({
                       </div>
 
                       <h4 className="font-semibold text-gray-900 mb-1">
-                        {alert.alertType.replace('_', ' ').toUpperCase()}
+                        {alert.alertType.replace(/_/g, ' ').toUpperCase()}
                       </h4>
 
                       {alert.category && (
