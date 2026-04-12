@@ -10,6 +10,7 @@ env:
   CI: true
   HUSKY: 0
   NODE_ENV: production
+  PDF_ENABLED: true
 
 jobs:
   build-and-deploy:
@@ -41,6 +42,16 @@ jobs:
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
+
+      - name: Ensure Puppeteer is in package.json
+        run: |
+          echo "=== Checking for Puppeteer dependency ==="
+          if grep -q '"puppeteer"' package.json; then
+            echo "✓ Puppeteer found in package.json"
+          else
+            echo "WARNING: Puppeteer not found in package.json"
+            echo "Please add: pnpm add puppeteer"
+          fi
 
       - name: Build deployment artifact
         run: pnpm run build:deploy
@@ -99,6 +110,7 @@ jobs:
           [ -d node_modules/axios ] || (echo "ERROR: axios not found in production node_modules" && exit 1)
           [ -d node_modules/cookie ] || (echo "ERROR: cookie not found in production node_modules" && exit 1)
           [ -d node_modules/bcryptjs ] || (echo "ERROR: bcryptjs not found in production node_modules" && exit 1)
+          [ -d node_modules/puppeteer ] || (echo "ERROR: puppeteer not found in production node_modules" && exit 1)
 
           if [ -d patches ]; then
             [ -f patches/wouter@3.7.1.patch ] || (echo "ERROR: required patch file missing in deploy/patches" && exit 1)
@@ -109,7 +121,7 @@ jobs:
       - name: Verify PRODUCTION runtime dependencies are installed
         run: |
           cd deploy
-          pnpm list express drizzle-orm mysql2 axios cookie bcryptjs --depth 0
+          pnpm list express drizzle-orm mysql2 axios cookie bcryptjs puppeteer --depth 0
 
       - name: Verify devDependencies are NOT installed
         run: |
@@ -141,6 +153,7 @@ jobs:
           node --input-type=module -e "import('axios').then(()=>console.log('✓ axios import OK')).catch(err=>{console.error(err); process.exit(1)})"
           node --input-type=module -e "import('cookie').then(()=>console.log('✓ cookie import OK')).catch(err=>{console.error(err); process.exit(1)})"
           node --input-type=module -e "import('bcryptjs').then(()=>console.log('✓ bcryptjs import OK')).catch(err=>{console.error(err); process.exit(1)})"
+          node --input-type=module -e "import('puppeteer').then(()=>console.log('✓ puppeteer import OK')).catch(err=>{console.error(err); process.exit(1)})"
 
       - name: Validate production server startup
         run: |
@@ -190,6 +203,7 @@ jobs:
           ls -la deploy/node_modules/axios || true
           ls -la deploy/node_modules/cookie || true
           ls -la deploy/node_modules/bcryptjs || true
+          ls -la deploy/node_modules/puppeteer || true
 
       - name: Check publish profile exists
         run: |
@@ -203,14 +217,48 @@ jobs:
 
       - name: Azure Configuration Requirements
         run: |
-          echo "=============================================="
+          echo "============================================="
           echo "IMPORTANT: Azure App Service Configuration"
-          echo "=============================================="
+          echo "============================================="
           echo "Please ensure these App Settings are configured in Azure:"
           echo "1. SCM_DO_BUILD_DURING_DEPLOYMENT = false"
           echo "2. WEBSITE_NODE_DEFAULT_VERSION = ~22"
           echo "3. All required environment variables are set"
-          echo "=============================================="
+          echo "4. PDF_ENABLED = true (for PDF generation)"
+          echo "============================================="
+          echo ""
+          echo "PDF Generation Dependencies:"
+          echo "- Puppeteer is included in node_modules"
+          echo "- System packages will be installed by Azure startup script"
+          echo "============================================="=="
+
+      - name: Create Azure startup script for PDF dependencies
+        run: |
+          mkdir -p deploy/.azure
+          cat > deploy/.azure/startup.sh << 'EOF'
+          #!/bin/bash
+          set -e
+          
+          echo "=== IMS App Startup ==="
+          echo "Installing PDF generation system dependencies..."
+          
+          # Update package manager
+          apt-get update -qq
+          
+          # Install Chromium and dependencies for Puppeteer
+          apt-get install -y -qq \
+            chromium-browser \
+            libx11-6 libx11-xcb1 libxcb1 libxrandr2 libgbm1 \
+            libpango-1.0-0 libpangoft2-1.0-0 libnss3 libatk1.0-0 \
+            libatk-bridge2.0-0 libcups2 libdrm2 libxkbcommon0 libxss1 \
+            libappindicator3-1 libsecret-1-0 fonts-liberation xdg-utils
+          
+          echo "✓ PDF generation dependencies installed"
+          echo "✓ Ready to start IMS application"
+          EOF
+          
+          chmod +x deploy/.azure/startup.sh
+          echo "✓ Azure startup script created"
 
       - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v3

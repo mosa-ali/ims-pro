@@ -922,7 +922,7 @@ const [narratives, setNarratives] = useState({
  riskCalculation={riskCalculation}
  narratives={narratives}
  language={language as 'en' | 'ar'}
- organizationName="YDH - Yamany Development Foundation"
+ organizationName={reportData?.organizationName || 'Organization'}
  />
  </div>
  </DialogContent>
