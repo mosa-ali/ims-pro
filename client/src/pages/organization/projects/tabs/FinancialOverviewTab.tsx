@@ -84,7 +84,7 @@ export function FinancialOverviewTab({ projectId }: FinancialOverviewTabProps) {
  unitType: '',
  unitCost: 0,
  recurrence: 1,
- currency: 'USD',
+ currency: '',
  notes: '',
  spent: 0,
  });
@@ -92,6 +92,16 @@ export function FinancialOverviewTab({ projectId }: FinancialOverviewTabProps) {
  // Fetch project details to get organization currency
  const { data: projectData } = trpc.projects.getById.useQuery({ id: projectIdNum });
  const organizationCurrency = projectData?.currency || 'USD';
+ 
+ // Initialize formData currency when project data loads
+ useEffect(() => {
+ if (projectData?.currency && formData.currency === '') {
+ setFormData(prev => ({
+ ...prev,
+ currency: projectData.currency
+ }));
+ }
+ }, [projectData?.currency]);
  
  // Fetch budget items from database
  const { data: budgetItems = [], isLoading, refetch } = trpc.budgetItems.getByProject.useQuery({ projectId: projectIdNum });
@@ -124,7 +134,7 @@ export function FinancialOverviewTab({ projectId }: FinancialOverviewTabProps) {
  unitType: '',
  unitCost: 0,
  recurrence: 1,
- currency: 'USD',
+ currency: organizationCurrency,
  notes: '',
  spent: 0,
  });
@@ -195,6 +205,7 @@ export function FinancialOverviewTab({ projectId }: FinancialOverviewTabProps) {
  const handleCreate = () => {
  setEditingItem(null);
  setFormData({
+ category: 'personal',
  budgetCode: '',
  subBudgetLine: '',
  activityId: null,
@@ -204,7 +215,7 @@ export function FinancialOverviewTab({ projectId }: FinancialOverviewTabProps) {
  unitType: '',
  unitCost: 0,
  recurrence: 1,
- currency: 'USD',
+ currency: organizationCurrency,
  notes: '',
  spent: 0,
  });

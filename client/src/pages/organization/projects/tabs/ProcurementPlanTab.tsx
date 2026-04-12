@@ -28,9 +28,10 @@ export function ProcurementPlanTab({
 // Load project data via tRPC query (like ForecastPlanTab)
  const { data: project, isLoading: projectLoading } = trpc.projects.getById.useQuery({ id: parseInt(projectId) });
  
- // Get organizationId and operatingUnitId from project data
+ // Get organizationId, operatingUnitId, and currency from project data
  const organizationId = project?.organizationId;
  const operatingUnitId = project?.operatingUnitId;
+ const projectCurrency = (project?.currency || 'USD') as 'USD' | 'EUR' | 'GBP' | 'CHF';
 
  // Load procurement items from database
  const { data: procurementItems = [], isLoading: itemsLoading, refetch: refetchItems } = trpc.procurement.getByProject.useQuery(
@@ -145,6 +146,16 @@ export function ProcurementPlanTab({
  status: 'PLANNED' as 'PLANNED' | 'IN_PROGRESS' | 'COMPLETED' | 'CANCELLED',
  notes: ''
  });
+ 
+ // Update currency when project data loads
+ useEffect(() => {
+ if (projectCurrency) {
+ setFormData(prev => ({
+ ...prev,
+ currency: projectCurrency
+ }));
+ }
+ }, [projectCurrency]);
 
  // Multi-item form state for adding multiple items per activity
  const [itemsList, setItemsList] = useState<Array<{
