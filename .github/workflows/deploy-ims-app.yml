@@ -225,28 +225,37 @@ jobs:
           echo "2. WEBSITE_NODE_DEFAULT_VERSION = ~22"
           echo "3. All required environment variables are set"
           echo "4. PDF_ENABLED = true (for PDF generation)"
-          echo "============================================="
           echo ""
-          echo "PDF Generation Dependencies:"
-          echo "- Puppeteer is included in node_modules"
-          echo "- System packages will be installed by Azure startup script"
-          echo "============================================="=="
+          echo "For PDF generation, add Startup Command in Azure:"
+          echo "  apt-get update -qq && apt-get install -y -qq chromium-browser libx11-6 libx11-xcb1 libxcb1 libxrandr2 libgbm1 libpango-1.0-0 libpangoft2-1.0-0 libnss3 libatk1.0-0 libatk-bridge2.0-0 libcups2 libdrm2 libxkbcommon0 libxss1 libappindicator3-1 libsecret-1-0 fonts-liberation xdg-utils && node dist/index.js"
+          echo "============================================="
 
       - name: Create Azure startup script for PDF dependencies
         run: |
           mkdir -p deploy/.azure
-          cat > deploy/.azure/startup.sh << 'EOF'
+          cat > deploy/.azure/startup.sh << 'STARTUPEOF'
           #!/bin/bash
           set -e
           echo "=== IMS App Startup ==="
-          echo "Installing PDF generation system dependencies..."
+          echo "Installing Chromium + dependencies..."
           apt-get update -qq
-          apt-get install -y -qq chromium-browser libx11-6 libx11-xcb1 libxcb1 libxrandr2 libgbm1 libpango-1.0-0 libpangoft2-1.0-0 libnss3 libatk1.0-0 libatk-bridge2.0-0 libcups2 libdrm2 libxkbcommon0 libxss1 libappindicator3-1 libsecret-1-0 fonts-liberation xdg-utils
-          echo "✓ PDF generation dependencies installed"
-          echo "✓ Ready to start IMS application"
-          EOF
+          apt-get install -y -qq chromium-browser fonts-noto fonts-noto-cjk fonts-noto-color-emoji libx11-6 libx11-xcb1 libxcb1 libxrandr2 libgbm1 libpango-1.0-0 libpangoft2-1.0-0 libnss3 libatk1.0-0 libatk-bridge2.0-0 libcups2 libdrm2 libxkbcommon0 libxss1 libappindicator3-1 libsecret-1-0 fonts-liberation xdg-utils
+          echo "✓ Dependencies installed"
+          export PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
+          echo "Starting app..."
+          node dist/index.js
+          STARTUPEOF
           chmod +x deploy/.azure/startup.sh
           echo "✓ Azure startup script created"
+
+      - name: Show startup script
+        run: |
+          echo "=== Startup script created ==="
+          cat deploy/.azure/startup.sh
+          echo ""
+          echo "Configure in Azure Portal:"
+          echo "App Service → Configuration → General Settings"
+          echo "Startup Command: /home/site/wwwroot/.azure/startup.sh"
 
       - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v3
