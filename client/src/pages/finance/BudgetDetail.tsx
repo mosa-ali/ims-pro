@@ -344,24 +344,24 @@ export default function BudgetDetail() {
  <TableHeader>
  <TableRow>
  <TableHead className="text-start w-12">#</TableHead>
- <TableHead className="text-start">{labels.description}</TableHead>
- <TableHead className="text-start">{labels.unitCost}</TableHead>
- <TableHead className="text-start">{labels.qty}</TableHead>
- <TableHead className="text-start">{labels.duration}</TableHead>
- <TableHead className="text-start">{labels.total}</TableHead>
- {canEdit && <TableHead className="text-center">{labels.actions}</TableHead>}
+ <TableHead className="text-start max-w-xs">{labels.description}</TableHead>
+ <TableHead className="text-start whitespace-nowrap">{labels.unitCost}</TableHead>
+ <TableHead className="text-start whitespace-nowrap">{labels.qty}</TableHead>
+ <TableHead className="text-start whitespace-nowrap">{labels.duration}</TableHead>
+ <TableHead className="text-start whitespace-nowrap">{labels.total}</TableHead>
+ {canEdit && <TableHead className="text-center whitespace-nowrap">{labels.actions}</TableHead>}
  </TableRow>
  </TableHeader>
  <TableBody>
  {budgetLines.map((line: any, index: number) => (
  <TableRow key={line.id}>
  <TableCell className="font-mono">{line.lineNumber || index + 1}</TableCell>
- <TableCell className="text-start">
- <div>
- <p className="font-medium">
+ <TableCell className="text-start max-w-xs">
+ <div className="break-words whitespace-normal">
+ <p className="font-medium break-words">
  {isRTL && line.descriptionAr ? line.descriptionAr : line.description}
  </p>
- <p className="text-xs text-muted-foreground">{line.lineCode}</p>
+ <p className="text-xs text-muted-foreground break-words">{line.lineCode}</p>
  </div>
  </TableCell>
  <TableCell className="font-mono">
