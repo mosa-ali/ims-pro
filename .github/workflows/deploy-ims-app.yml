@@ -238,25 +238,13 @@ jobs:
           cat > deploy/.azure/startup.sh << 'EOF'
           #!/bin/bash
           set -e
-          
           echo "=== IMS App Startup ==="
           echo "Installing PDF generation system dependencies..."
-          
-          # Update package manager
           apt-get update -qq
-          
-          # Install Chromium and dependencies for Puppeteer
-          apt-get install -y -qq \
-            chromium-browser \
-            libx11-6 libx11-xcb1 libxcb1 libxrandr2 libgbm1 \
-            libpango-1.0-0 libpangoft2-1.0-0 libnss3 libatk1.0-0 \
-            libatk-bridge2.0-0 libcups2 libdrm2 libxkbcommon0 libxss1 \
-            libappindicator3-1 libsecret-1-0 fonts-liberation xdg-utils
-          
+          apt-get install -y -qq chromium-browser libx11-6 libx11-xcb1 libxcb1 libxrandr2 libgbm1 libpango-1.0-0 libpangoft2-1.0-0 libnss3 libatk1.0-0 libatk-bridge2.0-0 libcups2 libdrm2 libxkbcommon0 libxss1 libappindicator3-1 libsecret-1-0 fonts-liberation xdg-utils
           echo "✓ PDF generation dependencies installed"
           echo "✓ Ready to start IMS application"
           EOF
-          
           chmod +x deploy/.azure/startup.sh
           echo "✓ Azure startup script created"
 
