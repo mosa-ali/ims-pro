@@ -1160,7 +1160,7 @@ function VarianceAnalysisTab({
  <Table>
  <TableHeader>
  <TableRow>
- <TableHead className="text-start">{t.financeModule.line}</TableHead>
+ <TableHead className="text-start max-w-xs">{t.financeModule.line}</TableHead>
  <TableHead className="text-end">{t.financeModule.budgeted}</TableHead>
  <TableHead className="text-end">{t.financeModule.actual}</TableHead>
  <TableHead className="text-end">{t.financeModule.variance}</TableHead>
@@ -1171,10 +1171,10 @@ function VarianceAnalysisTab({
  <TableBody>
  {lineVariance.lines?.map((line: any) => (
  <TableRow key={line.lineId}>
- <TableCell className="text-start">
- <div>
- <p className="font-medium">{isRTL && line.descriptionAr ? line.descriptionAr : line.description}</p>
- <p className="text-xs text-muted-foreground">{line.lineCode}</p>
+ <TableCell className="text-start max-w-xs">
+ <div className="break-words whitespace-normal">
+ <p className="font-medium break-words">{isRTL && line.descriptionAr ? line.descriptionAr : line.description}</p>
+ <p className="text-xs text-muted-foreground break-words">{line.lineCode}</p>
  </div>
  </TableCell>
  <TableCell className="font-mono text-end">
