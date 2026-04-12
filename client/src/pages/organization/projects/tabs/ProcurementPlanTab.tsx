@@ -626,7 +626,7 @@ export function ProcurementPlanTab({
  <div className="text-sm text-gray-600 text-start">{t.projectDetail.totalEstimatedCost}</div>
  </div>
  <div className="ltr-safe text-2xl font-bold text-gray-900">
- ${totalEstimatedCost.toLocaleString()}
+ {projectCurrency}{totalEstimatedCost.toLocaleString()}
  </div>
  </div>
  <div className="bg-white border border-gray-200 rounded-lg p-4">
@@ -635,7 +635,7 @@ export function ProcurementPlanTab({
  <div className="text-sm text-gray-600 text-start">{t.finance.approvedBudget}</div>
  </div>
  <div className="ltr-safe text-2xl font-bold text-gray-900">
- ${totalApprovedBudget.toLocaleString()}
+ {projectCurrency}{totalApprovedBudget.toLocaleString()}
  </div>
  </div>
  <div className={`bg-white border rounded-lg p-4 ${budgetExceeded ? 'border-red-200 bg-red-50' : 'border-gray-200'}`}>
@@ -650,7 +650,7 @@ export function ProcurementPlanTab({
  </div>
  </div>
  <div className={`ltr-safe text-2xl font-bold ${budgetExceeded ? 'text-red-600' : 'text-emerald-600'}`}>
- ${remainingBudget.toLocaleString()}
+ {projectCurrency}{remainingBudget.toLocaleString()}
  </div>
  </div>
  </div>
@@ -703,7 +703,7 @@ export function ProcurementPlanTab({
  {item.quantity} {item.unit}
  </td>
  <td className="ltr-safe px-4 py-3 text-sm font-medium text-gray-900">
- ${parseFloat(item.estimatedCost || 0).toLocaleString()}
+ {projectCurrency}{parseFloat(item.estimatedCost || 0).toLocaleString()}
  </td>
  <td className="px-4 py-3 text-sm text-gray-700 text-start">
  {getProcurementMethodLabel(item.procurementMethod)}
@@ -1003,7 +1003,7 @@ function ProcurementItemModal({
  </label>
  <input
  type="text"
- value={`$${(formData.quantity * formData.estimatedUnitCost).toLocaleString()}`}
+ value={`${projectCurrency}${(formData.quantity * formData.estimatedUnitCost).toLocaleString()}`}
  readOnly
  className={`w-full px-3 py-2 border border-gray-200 rounded-md bg-gray-50 text-gray-600 text-start`}
  />
@@ -1261,7 +1261,7 @@ function ProcurementCreateModal({
  </label>
  <input
  type="text"
- value={`$${(formData.quantity * formData.estimatedUnitCost).toLocaleString()}`}
+ value={`${projectCurrency}${(formData.quantity * formData.estimatedUnitCost).toLocaleString()}`}
  readOnly
  className={`w-full px-3 py-2 border border-gray-200 rounded-md bg-gray-50 text-gray-600 text-sm text-start`}
  />
@@ -1353,8 +1353,8 @@ function ProcurementCreateModal({
  <td className="px-3 py-2 text-gray-900">{item.itemDescription}</td>
  <td className="px-3 py-2 text-gray-600">{item.category}</td>
  <td className="px-3 py-2 text-gray-600">{item.quantity} {item.unitOfMeasure}</td>
- <td className="px-3 py-2 text-gray-600">${item.estimatedUnitCost.toLocaleString()}</td>
- <td className="px-3 py-2 text-gray-900 font-medium">${(item.quantity * item.estimatedUnitCost).toLocaleString()}</td>
+ <td className="px-3 py-2 text-gray-600">{projectCurrency}{item.estimatedUnitCost.toLocaleString()}</td>
+ <td className="px-3 py-2 text-gray-900 font-medium">{projectCurrency}{(item.quantity * item.estimatedUnitCost).toLocaleString()}</td>
  <td className="px-3 py-2 text-gray-600">{item.procurementMethod.replace(/_/g, ' ')}</td>
  <td className="px-3 py-2">
  <button
@@ -1375,7 +1375,7 @@ function ProcurementCreateModal({
  {t.projectDetail.totalItems} {itemsList.length}
  </span>
  <span className="text-sm font-semibold text-gray-900">
- {t.projectDetail.grandTotal} ${itemsList.reduce((sum, item) => sum + (item.quantity * item.estimatedUnitCost), 0).toLocaleString()}
+ {t.projectDetail.grandTotal} {projectCurrency}{itemsList.reduce((sum, item) => sum + (item.quantity * item.estimatedUnitCost), 0).toLocaleString()}
  </span>
  </div>
  </div>

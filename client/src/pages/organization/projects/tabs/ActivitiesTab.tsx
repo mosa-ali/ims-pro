@@ -487,13 +487,13 @@ export function ActivitiesTab({
  <div className="bg-white border border-gray-200 rounded-lg p-4">
  <div className="text-sm text-gray-600 text-start">{t.projectDetail.inProgress}</div>
  <div className="text-2xl font-bold text-blue-600 text-start">
- <span className="ltr-safe">{activities.filter(a => a.status === 'In Progress').length}</span>
+ <span className="ltr-safe">{activities.filter(a => a.status === 'IN_PROGRESS').length}</span>
  </div>
  </div>
  <div className="bg-white border border-gray-200 rounded-lg p-4">
  <div className="text-sm text-gray-600 text-start">{t.projectDetail.completed}</div>
  <div className="text-2xl font-bold text-green-600 text-start">
- <span className="ltr-safe">{activities.filter(a => a.status === 'Completed').length}</span>
+ <span className="ltr-safe">{activities.filter(a => a.status === 'COMPLETED').length}</span>
  </div>
  </div>
  <div className="bg-white border border-gray-200 rounded-lg p-4">
