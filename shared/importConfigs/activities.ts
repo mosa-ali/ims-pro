@@ -30,9 +30,9 @@ export const ACTIVITIES_COLUMNS: ColumnDefinition[] = [
     dataType: 'string',
   },
   {
-    key: 'activityTitle',
+    key: 'activityName',
     header: 'Activity Title',
-    headerAr: 'عنوان النشاط',
+    headerAr: 'عنوان النشاء',
     required: true,
     dataType: 'string',
   },
@@ -85,7 +85,7 @@ export const ACTIVITIES_COLUMNS: ColumnDefinition[] = [
     enumValues: [...ACTIVITY_STATUSES],
   },
   {
-    key: 'progress',
+    key: 'progressPercentage',
     header: 'Progress (%)',
     headerAr: 'التقدم (%)',
     required: false,
@@ -94,7 +94,7 @@ export const ACTIVITIES_COLUMNS: ColumnDefinition[] = [
     max: 100,
   },
   {
-    key: 'budget',
+    key: 'budgetAllocated',
     header: 'Budget',
     headerAr: 'الميزانية',
     required: false,
@@ -102,7 +102,7 @@ export const ACTIVITIES_COLUMNS: ColumnDefinition[] = [
     min: 0,
   },
   {
-    key: 'spent',
+    key: 'actualSpent',
     header: 'Spent',
     headerAr: 'المصروف',
     required: false,
@@ -117,7 +117,7 @@ export const ACTIVITIES_COLUMNS: ColumnDefinition[] = [
     dataType: 'string',
   },
   {
-    key: 'responsible',
+    key: 'responsiblePerson',
     header: 'Responsible',
     headerAr: 'المسؤول',
     required: false,

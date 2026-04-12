@@ -15,6 +15,20 @@ import { saveAs } from 'file-saver';
 import { exportToStandardExcel, exportExcelTemplate, type ExcelColumn } from '@/lib/standardExcelExport';
 import { trpc } from '@/lib/trpc';
 import { ProcurementPlanTabSkeleton } from "@/components/ProjectTabSkeletons";
+
+// ✅ Helper function to get currency symbol
+const getCurrencySymbol = (currency: string): string => {
+ const symbols: Record<string, string> = {
+  'EUR': '€',
+  'USD': '$',
+  'CHF': 'CHF ',
+  'GBP': '£',
+  'YER': 'YER ',
+  'SAR': 'SAR ',
+ };
+ return symbols[currency] || currency + ' ';
+};
+
 // organizationId and operatingUnitId now come from project data via tRPC query
 
 interface ProcurementPlanTabProps {
