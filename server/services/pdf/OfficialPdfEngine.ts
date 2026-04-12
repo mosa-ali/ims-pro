@@ -56,15 +56,29 @@ export async function generateOfficialPdf(options: OfficialPdfOptions): Promise<
   });
 
   // Launch Puppeteer
-  const browser = await Puppeteer.launch({
-    headless: true,
-    executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || '/usr/bin/chromium-browser',
-    args: [
-      '--no-sandbox',
-      '--disable-setuid-sandbox',
-      '--disable-dev-shm-usage',
-    ],
-  });
+  try {
+    // Try system Chromium first (installed via startup script)
+    var browser = await Puppeteer.launch({
+      headless: true,
+      executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || '/usr/bin/chromium-browser',
+      args: [
+        '--no-sandbox',
+        '--disable-setuid-sandbox',
+        '--disable-dev-shm-usage',
+      ],
+    });
+  } catch (launchError: any) {
+    // Fallback: Let Puppeteer download Chromium (slower but works)
+    console.warn('System Chromium not found, using Puppeteer bundled Chromium:', launchError.message);
+    var browser = await Puppeteer.launch({
+      headless: true,
+      args: [
+        '--no-sandbox',
+        '--disable-setuid-sandbox',
+        '--disable-dev-shm-usage',
+      ],
+    });
+  }
 
   try {
     const page = await browser.newPage();

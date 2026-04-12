@@ -735,19 +735,19 @@ const [narratives, setNarratives] = useState({
  <CardTitle>{t.projectDetail.indicatorsAchievement}</CardTitle>
  </CardHeader>
  <CardContent>
- <div className="overflow-x-auto">
+ <div className="overflow-x-auto -mx-6 px-6">
  {reportData.indicators.details.length === 0 ? (
  <p className="text-muted-foreground text-center py-8">{t.projectDetail.noIndicatorsFound}</p>
  ) : (
  <table className="w-full text-sm">
  <thead className="border-b">
  <tr className={'text-start'}>
- <th className="pb-3 font-medium">{t.projectDetail.indicatorName}</th>
- <th className={`pb-3 font-medium text-end`}>{t.projectDetail.baseline}</th>
- <th className={`pb-3 font-medium text-end`}>{t.projectDetail.target}</th>
- <th className={`pb-3 font-medium text-end`}>{t.projectDetail.achieved}</th>
- <th className={`pb-3 font-medium text-end`}>{t.projectDetail.achievement}</th>
- <th className="pb-3 font-medium">{t.projectDetail.status}</th>
+ <th className="pb-3 font-medium min-w-[300px]">{t.projectDetail.indicatorName}</th>
+ <th className={`pb-3 font-medium text-end min-w-[80px]`}>{t.projectDetail.baseline}</th>
+ <th className={`pb-3 font-medium text-end min-w-[80px]`}>{t.projectDetail.target}</th>
+ <th className={`pb-3 font-medium text-end min-w-[80px]`}>{t.projectDetail.achieved}</th>
+ <th className={`pb-3 font-medium text-end min-w-[100px]`}>{t.projectDetail.achievement}</th>
+ <th className="pb-3 font-medium min-w-[80px]">{t.projectDetail.status}</th>
  </tr>
  </thead>
  <tbody>
@@ -757,7 +757,7 @@ const [narratives, setNarratives] = useState({
  : 0;
  return (
  <tr key={indicator.code || index} className="border-b">
- <td className="py-3">{indicator.title}</td>
+ <td className="py-3 break-words whitespace-normal">{indicator.title}</td>
  <td className={`py-3 text-end`}>{indicator.baseline}</td>
  <td className={`py-3 text-end`}>{indicator.target}</td>
  <td className={`py-3 font-medium text-end`}>{indicator.achieved}</td>
@@ -974,7 +974,7 @@ const [narratives, setNarratives] = useState({
  riskCalculation={riskCalculation}
  narratives={narratives}
  language={language as 'en' | 'ar'}
- organizationName="YDH - Yamany Development Foundation"
+ organizationName={reportData?.organizationName || 'Organization'}
  reportType="monthly"
  reportPeriodStart={`${selectedYear}-${String(selectedMonth).padStart(2, '0')}-01`}
  reportPeriodEnd={`${selectedYear}-${String(selectedMonth).padStart(2, '0')}-${new Date(selectedYear, selectedMonth, 0).getDate()}`}
