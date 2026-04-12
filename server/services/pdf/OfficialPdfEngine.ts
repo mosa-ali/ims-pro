@@ -56,31 +56,29 @@ export async function generateOfficialPdf(options: OfficialPdfOptions): Promise<
   });
 
   // Launch Puppeteer
-  try {
-    // Try system Chromium first (installed via startup script)
-    var browser = await Puppeteer.launch({
-      headless: true,
-      executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || '/usr/bin/chromium-browser',
-      args: [
-        '--no-sandbox',
-        '--disable-setuid-sandbox',
-        '--disable-dev-shm-usage',
-      ],
-    });
-  } catch (launchError: any) {
-    // Fallback: Let Puppeteer download Chromium (slower but works)
-    console.warn('System Chromium not found, using Puppeteer bundled Chromium:', launchError.message);
-    var browser = await Puppeteer.launch({
-      headless: true,
-      args: [
-        '--no-sandbox',
-        '--disable-setuid-sandbox',
-        '--disable-dev-shm-usage',
-      ],
-    });
-  }
+  // Use system Chromium installed via startup script
+  const executablePath = process.env.PUPPETEER_EXECUTABLE_PATH || '/usr/bin/chromium';
+  
+  console.log('Launching browser at:', executablePath);
+  
+  const browser = await Puppeteer.launch({
+    headless: true,
+    executablePath,
+    args: [
+      '--no-sandbox',
+      '--disable-setuid-sandbox',
+      '--disable-dev-shm-usage',
+      '--disable-gpu',
+      '--no-first-run',
+      '--no-zygote',
+    ],
+  });
 
   try {
+    if (!browser) {
+      throw new Error('Browser failed to launch');
+    }
+    
     const page = await browser.newPage();
     
     // Set content and wait for network idle
@@ -109,6 +107,9 @@ export async function generateOfficialPdf(options: OfficialPdfOptions): Promise<
     const { url, key } = await storagePut(fileName, Buffer.from(pdfBuffer), 'application/pdf');
 
     return { url, key };
+  } catch (pdfError: any) {
+    console.error('PDF generation error:', pdfError.message);
+    throw new Error(`Failed to generate PDF: ${pdfError.message}`);
   } finally {
     await browser.close();
   }
