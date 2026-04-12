@@ -904,7 +904,7 @@ function MonthlyAllocationGrid({
  <Table>
  <TableHeader>
  <TableRow className="bg-muted/50">
- <TableHead className="sticky start-0 bg-muted/50 min-w-[200px] text-start">
+ <TableHead className="sticky start-0 bg-muted/50 max-w-xs text-start">
  {t.financeModule.budgetLine}
  </TableHead>
  {months.map((month, i) => (
@@ -930,12 +930,12 @@ function MonthlyAllocationGrid({
 
  return (
  <TableRow key={line.id} className="hover:bg-muted/30">
- <TableCell className="sticky start-0 bg-background font-medium text-start">
- <div>
- <p className="text-sm">
+ <TableCell className="sticky start-0 bg-background font-medium text-start max-w-xs">
+ <div className="break-words whitespace-normal">
+ <p className="text-sm break-words">
  {isRTL && line.descriptionAr ? line.descriptionAr : line.description}
  </p>
- <p className="text-xs text-muted-foreground">
+ <p className="text-xs text-muted-foreground break-words">
  {t.financeModule.budget}: {formatCurrency(budgetedAmount, currency)}
  {variance !== 0 && (
  <span className={variance > 0 ? "text-amber-600 ms-2" : "text-green-600 ms-2"}>
