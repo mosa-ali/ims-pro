@@ -55,8 +55,8 @@ const { user } = useAuth();
  // Calculate fiscal years from project dates
  const fiscalYears = useMemo(() => {
  if (!project) return [];
- const startYear = new Date(project.startDate).getFullYear();
- const endYear = new Date(project.endDate).getFullYear();
+ const startYear = new Date(project.startDate as string | Date).getFullYear();
+ const endYear = new Date(project.endDate as string | Date).getFullYear();
  const years = [];
  for (let year = startYear; year <= endYear; year++) {
  years.push(`FY${year}`);
@@ -168,8 +168,8 @@ const { user } = useAuth();
  const forecastRow = forecasts.find((f: any) => f.budgetItemId === item.id);
 
  // Calculate active months for this year
- const projectStart = new Date(project.startDate);
- const projectEnd = new Date(project.endDate);
+ const projectStart = new Date(project.startDate as string | Date);
+ const projectEnd = new Date(project.endDate as string | Date);
  const currentYearNum = parseInt(selectedYear.replace('FY', ''));
  const yearStart = new Date(currentYearNum, 0, 1);
  const yearEnd = new Date(currentYearNum, 11, 31);
@@ -877,7 +877,7 @@ const { user } = useAuth();
  onClose={() => setShowPreviewDialog(false)}
  validRows={validRows}
  invalidRows={invalidRows}
- onConfirm={handleConfirmImport}
+ onConfirmImport={handleConfirmImport}
  moduleName="Forecast"
  config={FORECAST_CONFIG}
  />

@@ -40,7 +40,7 @@ export const forecastRouter = router({
         .where(and(
           eq(projects.id, projectId),
           eq(projects.organizationId, organizationId),
-          eq(projects.isDeleted, false)
+          eq(projects.isDeleted, 0)
         ))
         .limit(1);
 
@@ -49,6 +49,7 @@ export const forecastRouter = router({
       }
 
       // Left join with activities to get Activity Code and Activity Name
+      const { operatingUnitId } = ctx.scope;
       const items = await db
         .select({
           // All budget item fields
@@ -59,7 +60,7 @@ export const forecastRouter = router({
           activityId: budgetItems.activityId,
           fiscalYear: budgetItems.fiscalYear,
           budgetCode: budgetItems.budgetCode,
-          subBL: budgetItems.subBL,
+          subBL: budgetItems.subBudgetLine,
           subBudgetLine: budgetItems.subBudgetLine,
           activityName: budgetItems.activityName,
           budgetItem: budgetItems.budgetItem,
@@ -84,7 +85,12 @@ export const forecastRouter = router({
         })
         .from(budgetItems)
         .leftJoin(activities, eq(budgetItems.activityId, activities.id))
-        .where(eq(budgetItems.projectId, projectId))
+        .where(and(
+          eq(budgetItems.projectId, projectId),
+          eq(budgetItems.organizationId, organizationId),
+          eq(budgetItems.operatingUnitId, operatingUnitId),
+          eq(budgetItems.isDeleted, 0)
+        ))
         .orderBy(budgetItems.budgetCode);
 
       return items;
@@ -111,7 +117,7 @@ export const forecastRouter = router({
         .where(and(
           eq(projects.id, projectId),
           eq(projects.organizationId, organizationId),
-          eq(projects.isDeleted, false)
+          eq(projects.isDeleted, 0)
         ))
         .limit(1);
 
@@ -278,13 +284,14 @@ export const forecastRouter = router({
           });
         }
       }
+      const nowSql = new Date().toISOString().slice(0, 19).replace('T', ' ');
 
       await db
         .update(forecastPlan)
         .set({
           ...updates,
           totalForecast: newTotalForecast.toString(),
-          updatedAt: new Date(),
+          updatedAt: nowSql,
           updatedBy: userId,
         })
         .where(eq(forecastPlan.id, forecastId));
@@ -456,7 +463,7 @@ export const forecastRouter = router({
         .where(and(
           eq(projects.id, projectId),
           eq(projects.organizationId, organizationId),
-          eq(projects.isDeleted, false)
+          eq(projects.isDeleted, 0)
         ))
         .limit(1);
 
@@ -489,6 +496,7 @@ export const forecastRouter = router({
           if (allowDuplicates) {
             // Replace existing
             const totalForecast = Object.values(monthlyValues).reduce((sum, val) => sum + val, 0);
+            const nowSql = new Date().toISOString().slice(0, 19).replace('T', ' ');
 
             await db
               .update(forecastPlan)
@@ -496,7 +504,7 @@ export const forecastRouter = router({
                 ...monthlyValues,
                 totalForecast: totalForecast.toString(),
                 updatedBy: userId,
-                updatedAt: new Date(),
+                updatedAt: nowSql,
               })
               .where(eq(forecastPlan.id, existing[0].id));
 
@@ -527,7 +535,7 @@ export const forecastRouter = router({
             projectId,
             budgetItemId,
             organizationId: proj.organizationId,
-            operatingUnitId: proj.operatingUnitId ?? null,
+            operatingUnitId: proj.operatingUnitId,
             fiscalYear,
             yearNumber,
             ...monthlyValues,
