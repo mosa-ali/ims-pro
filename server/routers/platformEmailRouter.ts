@@ -24,7 +24,9 @@ export const platformEmailRouter = router({
    * Get current platform email settings (credentials masked).
    */
   getSettings: platformScopedProcedure.query(async () => {
-    const db = getDb();
+    // ✅ FIX: MUST await getDb()
+    const db = await getDb();
+
     const rows = await db.select().from(platformEmailSettings).limit(1);
     const settings = rows[0] ?? null;
 
@@ -48,33 +50,46 @@ export const platformEmailRouter = router({
     .input(
       z.object({
         providerType: z.enum(["m365", "smtp", "disabled"]),
+
         // M365 fields
         tenantId: z.string().optional(),
         clientId: z.string().optional(),
-        clientSecret: z.string().optional(), // null means "keep existing"
+        clientSecret: z.string().optional(),
+
         senderEmail: z.string().email().optional(),
         senderName: z.string().optional(),
         replyToEmail: z.string().email().optional().nullable(),
+
         // SMTP fields
         smtpHost: z.string().optional(),
         smtpPort: z.number().int().min(1).max(65535).optional(),
         smtpUsername: z.string().optional(),
         smtpPassword: z.string().optional(),
         smtpEncryption: z.enum(["tls", "ssl", "none"]).optional(),
+
         // Status
         isActive: z.boolean().optional(),
       })
     )
     .mutation(async ({ input, ctx }) => {
-      const db = getDb();
+      // ✅ FIX: MUST await getDb()
+      const db = await getDb();
+
       const existing = await db
         .select()
         .from(platformEmailSettings)
         .limit(1);
 
+      if (!ctx.user) {
+        throw new TRPCError({
+          code: "UNAUTHORIZED",
+          message: "User not authenticated",
+        });
+      }
+      
       const userId = ctx.user.id;
 
-      // Build update payload — don't overwrite secrets with masked placeholder
+      // Build update payload
       const updateData: Partial<typeof platformEmailSettings.$inferInsert> = {
         providerType: input.providerType,
         tenantId: input.tenantId ?? null,
@@ -82,18 +97,21 @@ export const platformEmailRouter = router({
         senderEmail: input.senderEmail ?? null,
         senderName: input.senderName ?? "IMS Platform",
         replyToEmail: input.replyToEmail ?? null,
+
         smtpHost: input.smtpHost ?? null,
         smtpPort: input.smtpPort ?? null,
         smtpUsername: input.smtpUsername ?? null,
         smtpEncryption: input.smtpEncryption ?? "tls",
+
         isActive: input.isActive ? 1 : 0,
         updatedBy: userId,
       };
 
-      // Only update secret if a new value was provided (not the masked placeholder)
+      // Only update secrets if new value provided (avoid overwriting with masked value)
       if (input.clientSecret && input.clientSecret !== "••••••••") {
         updateData.clientSecret = input.clientSecret;
       }
+
       if (input.smtpPassword && input.smtpPassword !== "••••••••") {
         updateData.smtpPassword = input.smtpPassword;
       }
@@ -112,7 +130,7 @@ export const platformEmailRouter = router({
           .where(eq(platformEmailSettings.id, existing[0].id));
       }
 
-      // Clear token cache after credential changes
+      // Clear cached tokens after any change
       platformEmailService.clearTokenCache();
 
       return { success: true };

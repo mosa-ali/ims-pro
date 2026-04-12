@@ -171,4 +171,8 @@ microsoftOAuthCallbackRouter.get(
           return res.redirect(
             `${process.env.APP_BASE_URL}/login?error=unexpected`
           );
+<<<<<<< HEAD
         }})
+=======
+        }})
+>>>>>>> 31cbf4d586efa6aa4c0b334c1984418dc05a54bf
