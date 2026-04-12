@@ -84,24 +84,15 @@ export function FinancialOverviewTab({ projectId }: FinancialOverviewTabProps) {
  unitType: '',
  unitCost: 0,
  recurrence: 1,
- currency: '',
+ currency: 'USD',
  notes: '',
  spent: 0,
  });
  
  // Fetch project details to get organization currency
  const { data: projectData } = trpc.projects.getById.useQuery({ id: projectIdNum });
+ // Project currency is the source of truth for all financial displays
  const organizationCurrency = projectData?.currency || 'USD';
- 
- // Initialize formData currency when project data loads
- useEffect(() => {
- if (projectData?.currency && formData.currency === '') {
- setFormData(prev => ({
- ...prev,
- currency: projectData.currency
- }));
- }
- }, [projectData?.currency]);
  
  // Fetch budget items from database
  const { data: budgetItems = [], isLoading, refetch } = trpc.budgetItems.getByProject.useQuery({ projectId: projectIdNum });
@@ -134,7 +125,7 @@ export function FinancialOverviewTab({ projectId }: FinancialOverviewTabProps) {
  unitType: '',
  unitCost: 0,
  recurrence: 1,
- currency: organizationCurrency,
+ currency: 'USD',
  notes: '',
  spent: 0,
  });
@@ -205,7 +196,6 @@ export function FinancialOverviewTab({ projectId }: FinancialOverviewTabProps) {
  const handleCreate = () => {
  setEditingItem(null);
  setFormData({
- category: 'personal',
  budgetCode: '',
  subBudgetLine: '',
  activityId: null,
@@ -215,7 +205,7 @@ export function FinancialOverviewTab({ projectId }: FinancialOverviewTabProps) {
  unitType: '',
  unitCost: 0,
  recurrence: 1,
- currency: organizationCurrency,
+ currency: 'USD',
  notes: '',
  spent: 0,
  });
@@ -387,10 +377,10 @@ export function FinancialOverviewTab({ projectId }: FinancialOverviewTabProps) {
  });
  };
  
- // Get project's primary currency from first budget item
+ // Get project's primary currency from project data (source of truth)
  const projectCurrency = useMemo(() => {
- return budgetItems[0]?.currency || 'USD';
- }, [budgetItems]);
+ return projectData?.currency || 'USD';
+ }, [projectData]);
  
  // Calculate financial metrics
  const metrics = useMemo(() => {

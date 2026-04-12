@@ -31,7 +31,13 @@ export function ProcurementPlanTab({
  // Get organizationId, operatingUnitId, and currency from project data
  const organizationId = project?.organizationId;
  const operatingUnitId = project?.operatingUnitId;
- const projectCurrency = (project?.currency || 'USD') as 'USD' | 'EUR' | 'GBP' | 'CHF';
+
+ // Convert projectId to number for tRPC query
+ const projectIdNum = parseInt(projectId, 10);
+
+  // ✅ FIXED: Fetch project to get currency
+  const { data: projectData } = trpc.projects.getById.useQuery({ id: projectIdNum });
+  const projectCurrency = projectData?.currency || 'USD';
 
  // Load procurement items from database
  const { data: procurementItems = [], isLoading: itemsLoading, refetch: refetchItems } = trpc.procurement.getByProject.useQuery(
@@ -147,16 +153,6 @@ export function ProcurementPlanTab({
  notes: ''
  });
  
- // Update currency when project data loads
- useEffect(() => {
- if (projectCurrency) {
- setFormData(prev => ({
- ...prev,
- currency: projectCurrency
- }));
- }
- }, [projectCurrency]);
-
  // Multi-item form state for adding multiple items per activity
  const [itemsList, setItemsList] = useState<Array<{
  itemDescription: string;
