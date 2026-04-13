@@ -1377,7 +1377,40 @@ function VarianceAnalysisTab({
 
 function BudgetAnalysisExpensesTab({ budgetId, budget, canEdit }: any) {
   const { t } = useTranslation();
-  const { isRTL } = useLanguage();
+  const { isRTL, language } = useLanguage();
+  
+  // Bilingual labels
+  const labels = {
+    title: isRTL ? "مصروفات تحليل الميزانية" : "Budget Analysis Expenses",
+    total: isRTL ? "الإجمالي" : "Total",
+    addExpense: isRTL ? "إضافة مصروف" : "Add Expense",
+    noExpenses: isRTL ? "لم يتم تسجيل أي مصروفات" : "No expenses recorded",
+    budgetLine: isRTL ? "بند الميزانية" : "Budget Line",
+    description: isRTL ? "الوصف" : "Description",
+    amount: isRTL ? "المبلغ" : "Amount",
+    category: isRTL ? "الفئة" : "Category",
+    status: isRTL ? "الحالة" : "Status",
+    actions: isRTL ? "الإجراءات" : "Actions",
+    selectBudgetLine: isRTL ? "اختر بند الميزانية" : "Select budget line",
+    amountPlaceholder: "0.00",
+    descriptionPlaceholder: isRTL ? "وصف المصروف" : "Expense description",
+    categoryPlaceholder: isRTL ? "مثال: السفر، المعدات" : "e.g., Travel, Equipment",
+    reference: isRTL ? "المرجع" : "Reference",
+    referencePlaceholder: isRTL ? "رقم الفاتورة، رقم الإيصال" : "Invoice #, Receipt #",
+    notes: isRTL ? "ملاحظات" : "Notes",
+    notesPlaceholder: isRTL ? "ملاحظات إضافية" : "Additional notes",
+    pending: isRTL ? "قيد الانتظار" : "Pending",
+    approved: isRTL ? "معتمد" : "Approved",
+    rejected: isRTL ? "مرفوض" : "Rejected",
+    cancel: isRTL ? "إلغاء" : "Cancel",
+    add: isRTL ? "إضافة" : "Add",
+    update: isRTL ? "تحديث" : "Update",
+    expense: isRTL ? "مصروف" : "Expense",
+    addExpenseDialog: isRTL ? "إضافة مصروف" : "Add Expense",
+    editExpenseDialog: isRTL ? "تعديل مصروف" : "Edit Expense",
+    deleteConfirm: isRTL ? "حذف هذا المصروف؟" : "Delete this expense?",
+    required: isRTL ? "*" : "*",
+  };
   const [showAddDialog, setShowAddDialog] = useState(false);
   const [editingExpense, setEditingExpense] = useState<any>(null);
   const [formData, setFormData] = useState({
@@ -1510,16 +1543,16 @@ function BudgetAnalysisExpensesTab({ budgetId, budget, canEdit }: any) {
 
   return (
     <Card>
-      <CardContent className="pt-6">
-        <div className="flex items-center justify-between mb-4">
+      <CardContent className="pt-6" dir={isRTL ? "rtl" : "ltr"}>
+        <div className={`flex items-center ${isRTL ? "flex-row-reverse" : "flex-row"} justify-between mb-4`}>
           <div>
-            <h3 className="font-semibold text-lg">Budget Analysis Expenses</h3>
-            <p className="text-sm text-muted-foreground">Total: {formatCurrency(totalExpenses, budget.currency)}</p>
+            <h3 className="font-semibold text-lg">{labels.title}</h3>
+            <p className="text-sm text-muted-foreground">{labels.total}: {formatCurrency(totalExpenses, budget.currency)}</p>
           </div>
           {canEdit && (
             <Button size="sm" onClick={() => setShowAddDialog(true)}>
-              <Plus className="w-4 h-4 me-2" />
-              Add Expense
+              <Plus className={`w-4 h-4 ${isRTL ? "ml-2" : "me-2"}`} />
+              {labels.addExpense}
             </Button>
           )}
         </div>
@@ -1529,45 +1562,46 @@ function BudgetAnalysisExpensesTab({ budgetId, budget, canEdit }: any) {
           <Table>
             <TableHeader>
               <TableRow className="bg-muted/50">
-                <TableHead className="text-start max-w-xs">Budget Line</TableHead>
-                <TableHead className="text-start max-w-xs">Description</TableHead>
-                <TableHead className="text-start whitespace-nowrap">Amount</TableHead>
-                <TableHead className="text-start">Category</TableHead>
-                <TableHead className="text-start">Status</TableHead>
-                {canEdit && <TableHead className="text-center">Actions</TableHead>}
+                <TableHead className={`${isRTL ? "text-end" : "text-start"} max-w-xs`}>{labels.budgetLine}</TableHead>
+                <TableHead className={`${isRTL ? "text-end" : "text-start"} max-w-xs`}>{labels.description}</TableHead>
+                <TableHead className={`${isRTL ? "text-end" : "text-start"} whitespace-nowrap`}>{labels.amount}</TableHead>
+                <TableHead className={`${isRTL ? "text-end" : "text-start"}`}>{labels.category}</TableHead>
+                <TableHead className={`${isRTL ? "text-end" : "text-start"}`}>{labels.status}</TableHead>
+                {canEdit && <TableHead className="text-center">{labels.actions}</TableHead>}
               </TableRow>
             </TableHeader>
             <TableBody>
               {lines.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={canEdit ? 6 : 5} className="text-center py-8 text-muted-foreground">
-                    <Receipt className="w-8 h-8 mx-auto mb-2 opacity-50" />
-                    <p>No expenses recorded</p>
+                    <FolderOpen className="w-8 h-8 mx-auto mb-2 opacity-50" />
+                    <p>{labels.noExpenses}</p>
                   </TableCell>
                 </TableRow>
               ) : (
                 lines.map((line: any) =>
                   line.expenses.map((expense: any) => (
                     <TableRow key={expense.id}>
-                      <TableCell className="font-medium max-w-xs">
+                      <TableCell className={`font-medium max-w-xs ${isRTL ? "text-end" : "text-start"}`}>
                         <div className="break-words whitespace-normal">{line.description}</div>
                       </TableCell>
-                      <TableCell className="max-w-xs">
+                      <TableCell className={`max-w-xs ${isRTL ? "text-end" : "text-start"}`}>
                         <div className="break-words whitespace-normal">{expense.description}</div>
                       </TableCell>
-                      <TableCell className="font-mono whitespace-nowrap">{formatCurrency(expense.expenseAmount, budget.currency)}</TableCell>
-                      <TableCell>{expense.category || "-"}</TableCell>
-                      <TableCell>
+                      <TableCell className={`font-mono whitespace-nowrap ${isRTL ? "text-end" : "text-start"}`}>{formatCurrency(expense.expenseAmount, budget.currency)}</TableCell>
+                      <TableCell className={isRTL ? "text-end" : "text-start"}>{expense.category || "-"}</TableCell>
+                      <TableCell className={isRTL ? "text-end" : "text-start"}>
                         <Badge variant={expense.status === "approved" ? "default" : "secondary"}>
-                          {expense.status}
+                          {expense.status === "approved" ? labels.approved : expense.status === "pending" ? labels.pending : labels.rejected}
                         </Badge>
                       </TableCell>
                       {canEdit && (
-                        <TableCell className="text-center space-x-2">
+                        <TableCell className={`text-center ${isRTL ? "space-x-reverse" : ""} space-x-2`}>
                           <Button
                             variant="ghost"
                             size="icon"
                             onClick={() => handleEditClick(expense)}
+                            title={isRTL ? "تعديل" : "Edit"}
                           >
                             <Edit className="w-4 h-4" />
                           </Button>
@@ -1575,10 +1609,11 @@ function BudgetAnalysisExpensesTab({ budgetId, budget, canEdit }: any) {
                             variant="ghost"
                             size="icon"
                             onClick={() => {
-                              if (confirm("Delete this expense?")) {
+                              if (confirm(labels.deleteConfirm)) {
                                 deleteExpenseMutation.mutate({ id: expense.id });
                               }
                             }}
+                            title={isRTL ? "حذف" : "Delete"}
                           >
                             <Trash2 className="w-4 h-4 text-destructive" />
                           </Button>
@@ -1608,16 +1643,16 @@ function BudgetAnalysisExpensesTab({ budgetId, budget, canEdit }: any) {
             });
           }
         }}>
-          <DialogContent>
+          <DialogContent dir={isRTL ? "rtl" : "ltr"}>
             <DialogHeader>
-              <DialogTitle>{editingExpense ? "Edit Expense" : "Add Expense"}</DialogTitle>
+              <DialogTitle>{editingExpense ? labels.editExpenseDialog : labels.addExpenseDialog}</DialogTitle>
             </DialogHeader>
             <div className="space-y-4">
               <div>
-                <Label>Budget Line *</Label>
+                <Label>{labels.budgetLine} {labels.required}</Label>
                 <Select value={formData.budgetLineId} onValueChange={(value) => setFormData({ ...formData, budgetLineId: value })}>
                   <SelectTrigger>
-                    <SelectValue placeholder="Select budget line" />
+                    <SelectValue placeholder={labels.selectBudgetLine} />
                   </SelectTrigger>
                   <SelectContent>
                     {lines.map((line: any) => (
@@ -1629,58 +1664,63 @@ function BudgetAnalysisExpensesTab({ budgetId, budget, canEdit }: any) {
                 </Select>
               </div>
               <div>
-                <Label>Amount *</Label>
+                <Label>{labels.amount} {labels.required}</Label>
                 <Input
                   type="number"
                   step="0.01"
                   value={formData.expenseAmount}
                   onChange={(e) => setFormData({ ...formData, expenseAmount: e.target.value })}
-                  placeholder="0.00"
+                  placeholder={labels.amountPlaceholder}
+                  dir={isRTL ? "rtl" : "ltr"}
                 />
               </div>
               <div>
-                <Label>Description *</Label>
+                <Label>{labels.description} {labels.required}</Label>
                 <Input
                   value={formData.description}
                   onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                  placeholder="Expense description"
+                  placeholder={labels.descriptionPlaceholder}
+                  dir={isRTL ? "rtl" : "ltr"}
                 />
               </div>
               <div>
-                <Label>Category</Label>
+                <Label>{labels.category}</Label>
                 <Input
                   value={formData.category}
                   onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                  placeholder="e.g., Travel, Equipment"
+                  placeholder={labels.categoryPlaceholder}
+                  dir={isRTL ? "rtl" : "ltr"}
                 />
               </div>
               <div>
-                <Label>Reference</Label>
+                <Label>{labels.reference}</Label>
                 <Input
                   value={formData.reference}
                   onChange={(e) => setFormData({ ...formData, reference: e.target.value })}
-                  placeholder="Invoice #, Receipt #"
+                  placeholder={labels.referencePlaceholder}
+                  dir={isRTL ? "rtl" : "ltr"}
                 />
               </div>
               <div>
-                <Label>Status</Label>
+                <Label>{labels.status}</Label>
                 <Select value={formData.status} onValueChange={(value) => setFormData({ ...formData, status: value })}>
                   <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="pending">Pending</SelectItem>
-                    <SelectItem value="approved">Approved</SelectItem>
-                    <SelectItem value="rejected">Rejected</SelectItem>
+                    <SelectItem value="pending">{labels.pending}</SelectItem>
+                    <SelectItem value="approved">{labels.approved}</SelectItem>
+                    <SelectItem value="rejected">{labels.rejected}</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
               <div>
-                <Label>Notes</Label>
+                <Label>{labels.notes}</Label>
                 <Textarea
                   value={formData.notes}
                   onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-                  placeholder="Additional notes"
+                  placeholder={labels.notesPlaceholder}
+                  dir={isRTL ? "rtl" : "ltr"}
                 />
               </div>
             </div>
@@ -1689,10 +1729,10 @@ function BudgetAnalysisExpensesTab({ budgetId, budget, canEdit }: any) {
                 setShowAddDialog(false);
                 setEditingExpense(null);
               }}>
-                Cancel
+                {labels.cancel}
               </Button>
               <Button onClick={editingExpense ? handleUpdateExpense : handleAddExpense}>
-                {editingExpense ? "Update" : "Add"} Expense
+                {editingExpense ? labels.update : labels.add} {labels.expense}
               </Button>
             </DialogFooter>
           </DialogContent>
