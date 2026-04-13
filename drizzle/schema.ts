@@ -760,6 +760,41 @@ export const budgetMonthlyAllocations = mysqlTable("budget_monthly_allocations",
 	index("unique_month_allocation").on(table.budgetLineId, table.allocationMonth),
 ]);
 
+export const budgetAnalysisExpenses = mysqlTable("budget_analysis_expenses", {
+	id: int().autoincrement().primaryKey().notNull(),
+	budgetId: int().notNull().references(() => budgets.id, { onDelete: "cascade" } ),
+	budgetLineId: int().notNull().references(() => budgetLines.id, { onDelete: "cascade" } ),
+	budgetItemId: int(),
+	organizationId: int().notNull().references(() => organizations.id, { onDelete: "cascade" } ),
+	operatingUnitId: int(),
+	expenseAmount: decimal({ precision: 15, scale: 2 }).notNull(),
+	expenseDate: date({ mode: 'string' }).notNull(),
+	description: text().notNull(),
+	descriptionAr: text(),
+	category: varchar({ length: 100 }),
+	reference: varchar({ length: 255 }),
+	status: mysqlEnum(['pending','approved','rejected']).default('pending').notNull(),
+	notes: text(),
+	notesAr: text(),
+	deletedAt: timestamp({ mode: 'string' }),
+	deletedBy: int().references(() => users.id, { onDelete: "set null" } ),
+	createdAt: timestamp({ mode: 'string' }).defaultNow().notNull(),
+	updatedAt: timestamp({ mode: 'string' }).defaultNow().onUpdateNow().notNull(),
+	createdBy: int().references(() => users.id, { onDelete: "set null" } ),
+	updatedBy: int().references(() => users.id, { onDelete: "set null" } ),
+	isDeleted: tinyint().default(0).notNull(),
+},
+(table) => [
+	index("idx_budget_id").on(table.budgetId),
+	index("idx_budget_line_id").on(table.budgetLineId),
+	index("idx_organization_id").on(table.organizationId),
+	index("idx_expense_date").on(table.expenseDate),
+	index("idx_status").on(table.status),
+]);
+
+export type InsertBudgetAnalysisExpense = typeof budgetAnalysisExpenses.$inferInsert;
+export type SelectBudgetAnalysisExpense = typeof budgetAnalysisExpenses.$inferSelect;
+
 export const budgetReallocationLines = mysqlTable("budget_reallocation_lines", {
 	id: int().autoincrement().primaryKey().notNull(),
 	organizationId: int().notNull(),

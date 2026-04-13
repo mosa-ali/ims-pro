@@ -5,6 +5,7 @@ import { publicProcedure, router } from "./_core/trpc";
 import { imsRouter } from "./routers/ims";
 import { getDb } from "./db";
 import { userOrganizations, userOperatingUnits } from "../drizzle/schema";
+import { budgetAnalysisExpensesRouter } from "./budgetAnalysisExpensesRouter";
 import { eq } from "drizzle-orm";
 import { projectsRouter } from "./projectsRouter";
 import { grantsRouter } from "./grantsRouter";
@@ -111,10 +112,11 @@ import { emailDeliveryStatusRouter } from "./routers/emailDeliveryStatusRouter";
 import { emailTemplateVersionRouter } from "./routers/emailTemplateVersionRouter";
 import { z } from "zod";
 import { bidderAcknowledgementSignatures, serviceAcceptanceCertificates, contracts, vendors, users } from "../drizzle/schema";
-
+import { rbacRolesRouter } from "./routers/auth/rbacRolesRouter";
 
 export const appRouter = router({
   // Public signature verification (no auth required)
+  rbac: rbacRolesRouter, 
   verifySignature: publicProcedure
     .input(z.object({ code: z.string().min(1) }))
     .query(async ({ input }) => {
@@ -203,33 +205,31 @@ export const appRouter = router({
   requestAccess: requestAccessRouter,
   systemReports: systemReportsRouter,
   auth: router({
-    // Microsoft Entra ID procedures
-    microsoftStatus: authRouter.microsoftStatus,
-    getMicrosoftLoginUrl: authRouter.getMicrosoftLoginUrl,
-    handleMicrosoftCallback: authRouter.handleMicrosoftCallback,
-    searchMicrosoft365Users: authRouter.searchMicrosoft365Users,
-    getMicrosoft365User: authRouter.getMicrosoft365User,
-    logoutMicrosoft: authRouter.logoutMicrosoft,
-    
-    // Email/Password Authentication
-    emailSignIn: authRouter.emailSignIn,
-    registerWithEmail: authRouter.registerWithEmail,
-    bulkImportMicrosoft365Users: authRouter.bulkImportMicrosoft365Users,
-    loginWithEmail: authRouter.getMicrosoftLoginUrl,
-    logout: authRouter.logout,
-    requestPasswordReset: authRouter.requestPasswordReset,
-    resetPassword: authRouter.resetPassword,
+  // Microsoft Entra ID procedures
+  microsoftStatus: authRouter.microsoftStatus,
+  getMicrosoftLoginUrl: authRouter.getMicrosoftLoginUrl,
+  handleMicrosoftCallback: authRouter.handleMicrosoftCallback,
+  searchMicrosoft365Users: authRouter.searchMicrosoft365Users,
+  getMicrosoft365User: authRouter.getMicrosoft365User,
+  logoutMicrosoft: authRouter.logoutMicrosoft,
+  
+  // Email/Password Authentication
+  loginWithEmail: authRouter.getMicrosoftLoginUrl,
+  emailSignIn: authRouter.emailSignIn,
+  logout: authRouter.logout,
+  registerWithEmail: authRouter.registerWithEmail,
+  bulkImportMicrosoft365Users: authRouter.bulkImportMicrosoft365Users,
+  requestPasswordReset: authRouter.requestPasswordReset,
+  resetPassword: authRouter.resetPassword,
 
-     
     // Existing procedures
-    me: publicProcedure.query(async (opts) => {
+      me: publicProcedure.query(async (opts) => {
       const user = opts.ctx.user;
       if (!user) return null;
 
-      // Fetch organization assignment
       const db = await getDb();
-      if (!db) return user; // Return basic user if db unavailable
-      
+      if (!db) return user;
+
       const userOrgAssignments = await db
         .select({
           organizationId: userOrganizations.organizationId,
@@ -242,7 +242,6 @@ export const appRouter = router({
         .where(eq(userOrganizations.userId, user.id))
         .limit(1);
 
-      // Fetch operating unit assignment
       const userUnitAssignments = await db
         .select({
           operatingUnitId: userOperatingUnits.operatingUnitId,
@@ -251,7 +250,6 @@ export const appRouter = router({
         .where(eq(userOperatingUnits.userId, user.id))
         .limit(1);
 
-      // Merge organization context into user object
       const orgContext = userOrgAssignments[0] || {};
       const unitContext = userUnitAssignments[0] || {};
 
@@ -265,11 +263,12 @@ export const appRouter = router({
         permissions: orgContext.permissions ? JSON.parse(orgContext.permissions) : {},
       };
     }),
+
     logoutLegacy: publicProcedure.mutation(({ ctx }) => {
       const cookieOptions = getSessionCookieOptions(ctx.req);
-      ctx.res.clearCookie(COOKIE_NAME, cookieOptions);
+      ctx.res.clearCookie(COOKIE_NAME, { ...cookieOptions, maxAge: -1 });
       return { success: true } as const;
-      }),
+    }),
   }),
 
   // IMS Hierarchy Management
@@ -358,6 +357,7 @@ export const appRouter = router({
   budgets: budgetsRouter,
   budgetLines: budgetLinesRouter,
   budgetMonthlyAllocations: budgetMonthlyAllocationsRouter,
+  budgetAnalysisExpenses: budgetAnalysisExpensesRouter,
   donorBudgetExport: donorBudgetExportRouter,
   budgetExpenditure: budgetExpenditureRouter,
 

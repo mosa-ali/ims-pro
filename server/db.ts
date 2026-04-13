@@ -29,6 +29,9 @@ import {
   activities,
   proposals,
   budgetItems,
+  budgetAnalysisExpenses,
+  InsertBudgetAnalysisExpense,
+  SelectBudgetAnalysisExpense,
   opportunities,
 } from "../drizzle/schema";
 import { ENV } from './_core/env';
@@ -3125,5 +3128,220 @@ export async function restoreOrgRecord(entityType: string, entityId: number): Pr
   } catch (error) {
     console.error("[restoreOrgRecord] Error:", { entityType, entityId, error });
     return { success: false, message: error instanceof Error ? error.message : 'Unknown error' };
+  }
+}
+
+// ============================================================================
+// BUDGET ANALYSIS EXPENSES HELPERS
+// ============================================================================
+
+/**
+ * Get total expenses for a budget line
+ */
+export async function getBudgetLineExpensesTotal(budgetLineId: number): Promise<number> {
+  const db = await getDb();
+  if (!db) return 0;
+
+  try {
+    const [result] = await db
+      .select({
+        total: sql<string>`COALESCE(SUM(expenseAmount), 0)`,
+      })
+      .from(budgetAnalysisExpenses)
+      .where(
+        and(
+          eq(budgetAnalysisExpenses.budgetLineId, budgetLineId),
+          isNull(budgetAnalysisExpenses.deletedAt)
+        )
+      );
+
+    return parseFloat(result?.total || "0");
+  } catch (error) {
+    console.error("[Database] Error getting budget line expenses total:", error);
+    return 0;
+  }
+}
+
+/**
+ * Get total expenses for a budget
+ */
+export async function getBudgetExpensesTotal(budgetId: number): Promise<number> {
+  const db = await getDb();
+  if (!db) return 0;
+
+  try {
+    const [result] = await db
+      .select({
+        total: sql<string>`COALESCE(SUM(expenseAmount), 0)`,
+      })
+      .from(budgetAnalysisExpenses)
+      .where(
+        and(
+          eq(budgetAnalysisExpenses.budgetId, budgetId),
+          isNull(budgetAnalysisExpenses.deletedAt)
+        )
+      );
+
+    return parseFloat(result?.total || "0");
+  } catch (error) {
+    console.error("[Database] Error getting budget expenses total:", error);
+    return 0;
+  }
+}
+
+/**
+ * Get expenses breakdown by status for a budget
+ */
+export async function getBudgetExpensesByStatus(budgetId: number) {
+  const db = await getDb();
+  if (!db) return { pending: 0, approved: 0, rejected: 0, total: 0 };
+
+  try {
+    const results = await db
+      .select({
+        status: budgetAnalysisExpenses.status,
+        total: sql<string>`COALESCE(SUM(expenseAmount), 0)`,
+      })
+      .from(budgetAnalysisExpenses)
+      .where(
+        and(
+          eq(budgetAnalysisExpenses.budgetId, budgetId),
+          isNull(budgetAnalysisExpenses.deletedAt)
+        )
+      )
+      .groupBy(budgetAnalysisExpenses.status);
+
+    const breakdown = {
+      pending: 0,
+      approved: 0,
+      rejected: 0,
+      total: 0,
+    };
+
+    for (const row of results) {
+      const amount = parseFloat(row.total || "0");
+      breakdown[row.status as keyof typeof breakdown] = amount;
+      breakdown.total += amount;
+    }
+
+    return breakdown;
+  } catch (error) {
+    console.error("[Database] Error getting budget expenses by status:", error);
+    return { pending: 0, approved: 0, rejected: 0, total: 0 };
+  }
+}
+
+/**
+ * Create a new budget analysis expense
+ */
+export async function createBudgetAnalysisExpense(data: InsertBudgetAnalysisExpense) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  try {
+    const result = await db.insert(budgetAnalysisExpenses).values(data);
+    return result;
+  } catch (error) {
+    console.error("[Database] Error creating budget analysis expense:", error);
+    throw error;
+  }
+}
+
+/**
+ * Get all expenses for a budget line with details
+ */
+export async function getBudgetLineExpenses(budgetLineId: number) {
+  const db = await getDb();
+  if (!db) return [];
+
+  try {
+    const results = await db
+      .select()
+      .from(budgetAnalysisExpenses)
+      .where(
+        and(
+          eq(budgetAnalysisExpenses.budgetLineId, budgetLineId),
+          isNull(budgetAnalysisExpenses.deletedAt)
+        )
+      )
+      .orderBy(desc(budgetAnalysisExpenses.expenseDate));
+
+    return results;
+  } catch (error) {
+    console.error("[Database] Error getting budget line expenses:", error);
+    return [];
+  }
+}
+
+/**
+ * Get all expenses for a budget with details
+ */
+export async function getBudgetExpenses(budgetId: number) {
+  const db = await getDb();
+  if (!db) return [];
+
+  try {
+    const results = await db
+      .select()
+      .from(budgetAnalysisExpenses)
+      .where(
+        and(
+          eq(budgetAnalysisExpenses.budgetId, budgetId),
+          isNull(budgetAnalysisExpenses.deletedAt)
+        )
+      )
+      .orderBy(desc(budgetAnalysisExpenses.createdAt));
+
+    return results;
+  } catch (error) {
+    console.error("[Database] Error getting budget expenses:", error);
+    return [];
+  }
+}
+
+/**
+ * Soft delete a budget analysis expense
+ */
+export async function deleteBudgetAnalysisExpense(expenseId: number, deletedBy: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  try {
+    const result = await db
+      .update(budgetAnalysisExpenses)
+      .set({
+        deletedAt: new Date().toISOString(),
+        deletedBy,
+        isDeleted: 1,
+      })
+      .where(eq(budgetAnalysisExpenses.id, expenseId));
+
+    return result;
+  } catch (error) {
+    console.error("[Database] Error deleting budget analysis expense:", error);
+    throw error;
+  }
+}
+
+/**
+ * Update a budget analysis expense
+ */
+export async function updateBudgetAnalysisExpense(expenseId: number, data: Partial<SelectBudgetAnalysisExpense>) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  try {
+    const result = await db
+      .update(budgetAnalysisExpenses)
+      .set({
+        ...data,
+        updatedAt: new Date().toISOString(),
+      })
+      .where(eq(budgetAnalysisExpenses.id, expenseId));
+
+    return result;
+  } catch (error) {
+    console.error("[Database] Error updating budget analysis expense:", error);
+    throw error;
   }
 }

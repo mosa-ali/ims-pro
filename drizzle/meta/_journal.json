@@ -15,6 +15,13 @@
       "when": 1775917603907,
       "tag": "0001_early_leopardon",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1776038889774,
+      "tag": "0002_eager_sunfire",
+      "breakpoints": true
     }
   ]
 }

@@ -409,6 +409,7 @@ export default function BudgetDetail() {
  isRTL={isRTL}
  canEdit={canEdit}
  onRefresh={() => { refetch(); refetchLines(); }}
+ budget={budget}
  />
  </CardContent>
  </Card>
@@ -755,6 +756,7 @@ interface MonthlyAllocationGridProps {
  isRTL: boolean;
  canEdit: boolean;
  onRefresh: () => void;
+ budget?: { periodStart?: string | Date; periodEnd?: string | Date };
 }
 
 function MonthlyAllocationGrid({
@@ -765,14 +767,53 @@ function MonthlyAllocationGrid({
  isRTL,
  canEdit,
  onRefresh,
+ budget,
 }: MonthlyAllocationGridProps) {
   const { t } = useTranslation();
  const [editingCell, setEditingCell] = useState<{ lineId: number; month: number } | null>(null);
  const [editValue, setEditValue] = useState<string>("");
 
- const months = isRTL
- ? ["يناير", "فبراير", "مارس", "أبريل", "مايو", "يونيو", "يوليو", "أغسطس", "سبتمبر", "أكتوبر", "نوفمبر", "ديسمبر"]
- : ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+ // Helper: Calculate month range based on budget period
+ const calculateMonthRange = () => {
+   if (!budget?.periodStart || !budget?.periodEnd) {
+     return { startMonth: 1, endMonth: 12, monthCount: 12, startYear: new Date().getFullYear(), endYear: new Date().getFullYear() };
+   }
+
+   const start = new Date(budget.periodStart);
+   const end = new Date(budget.periodEnd);
+
+   const startMonth = start.getMonth() + 1;
+   const startYear = start.getFullYear();
+   const endMonth = end.getMonth() + 1;
+   const endYear = end.getFullYear();
+
+   const monthCount = (endYear - startYear) * 12 + (endMonth - startMonth) + 1;
+
+   return { startMonth, endMonth, monthCount, startYear, endYear };
+ };
+
+ const { startMonth, endMonth, monthCount, startYear, endYear } = calculateMonthRange();
+
+ const allMonthsEn = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+ const allMonthsAr = ["يناير", "فبراير", "مارس", "أبريل", "مايو", "يونيو", "يوليو", "أغسطس", "سبتمبر", "أكتوبر", "نوفمبر", "ديسمبر"];
+
+ const months = (() => {
+   const result: string[] = [];
+   let currentMonth = startMonth;
+   let currentYear = startYear;
+
+   for (let i = 0; i < monthCount; i++) {
+     const monthArray = isRTL ? allMonthsAr : allMonthsEn;
+     result.push(monthArray[currentMonth - 1]);
+
+     currentMonth++;
+     if (currentMonth > 12) {
+       currentMonth = 1;
+       currentYear++;
+     }
+   }
+   return result;
+ })();
 
  const { data: allocations = [], refetch: refetchAllocations } = trpc.budgetMonthlyAllocations.listByBudget.useQuery(
  { budgetId },
@@ -811,7 +852,7 @@ function MonthlyAllocationGrid({
  };
 
  const getLineTotal = (lineId: number): number => {
- return Array.from({ length: 12 }, (_, i) => getAllocation(lineId, i + 1))
+ return Array.from({ length: monthCount }, (_, i) => getAllocation(lineId, startMonth + i > 12 ? (startMonth + i - 12) : (startMonth + i)))
  .reduce((sum, val) => sum + val, 0);
  };
 
@@ -826,8 +867,12 @@ function MonthlyAllocationGrid({
  };
 
  const getGrandTotal = (): number => {
- return Array.from({ length: 12 }, (_, i) => getMonthTotal(i + 1))
- .reduce((sum, val) => sum + val, 0);
+ let total = 0;
+ for (let i = 0; i < monthCount; i++) {
+   const monthNum = startMonth + i > 12 ? (startMonth + i - 12) : (startMonth + i);
+   total += getMonthTotal(monthNum);
+ }
+ return total;
  };
 
  const handleCellClick = (lineId: number, month: number) => {
@@ -857,8 +902,8 @@ function MonthlyAllocationGrid({
  budgetLineId: lineId,
  budgetId,
  fiscalYear,
- startMonth: 1,
- endMonth: 12,
+ startMonth: startMonth,
+ endMonth: endMonth,
  });
  };
 
@@ -945,9 +990,10 @@ function MonthlyAllocationGrid({
  </p>
  </div>
  </TableCell>
- {Array.from({ length: 12 }, (_, i) => i + 1).map((month) => {
- const value = getAllocation(line.id, month);
- const isEditing = editingCell?.lineId === line.id && editingCell?.month === month;
+ {Array.from({ length: monthCount }, (_, i) => {
+   const month = startMonth + i > 12 ? (startMonth + i - 12) : (startMonth + i);
+   const value = getAllocation(line.id, month);
+   const isEditing = editingCell?.lineId === line.id && editingCell?.month === month;
 
  return (
  <TableCell
@@ -1004,11 +1050,14 @@ function MonthlyAllocationGrid({
  <TableCell className="sticky start-0 bg-muted/50 text-start">
  {t.financeModule.monthlyTotal}
  </TableCell>
- {Array.from({ length: 12 }, (_, i) => i + 1).map((month) => (
- <TableCell key={month} className="text-center">
- {formatCurrency(getMonthTotal(month), currency)}
- </TableCell>
- ))}
+ {Array.from({ length: monthCount }, (_, i) => {
+   const month = startMonth + i > 12 ? (startMonth + i - 12) : (startMonth + i);
+   return (
+     <TableCell key={month} className="text-center">
+       {formatCurrency(getMonthTotal(month), currency)}
+     </TableCell>
+   );
+ })}
  <TableCell className="text-center bg-primary/10 text-primary">
  {formatCurrency(getGrandTotal(), currency)}
  </TableCell>
@@ -1320,4 +1369,335 @@ function VarianceAnalysisTab({
  )}
  </div>
  );
+}
+
+// ============================================================================
+// BUDGET ANALYSIS EXPENSES TAB COMPONENT
+// ============================================================================
+
+function BudgetAnalysisExpensesTab({ budgetId, budget, canEdit }: any) {
+  const { t } = useTranslation();
+  const { isRTL } = useLanguage();
+  const [showAddDialog, setShowAddDialog] = useState(false);
+  const [editingExpense, setEditingExpense] = useState<any>(null);
+  const [formData, setFormData] = useState({
+    budgetLineId: "",
+    expenseAmount: "",
+    description: "",
+    category: "",
+    reference: "",
+    status: "approved",
+    notes: "",
+  });
+
+  // Fetch expenses
+  const { data: expensesData, isLoading, refetch } = trpc.budgetExpenditure.getAnalysisExpenses.useQuery(
+    { budgetId },
+    { enabled: !!budgetId }
+  );
+
+  // Mutations
+  const createExpenseMutation = trpc.budgetExpenditure.createAnalysisExpense.useMutation({
+    onSuccess: () => {
+      refetch();
+      setShowAddDialog(false);
+      setFormData({
+        budgetLineId: "",
+        expenseAmount: "",
+        description: "",
+        category: "",
+        reference: "",
+        status: "approved",
+        notes: "",
+      });
+      toast.success("Expense added successfully");
+    },
+    onError: (error) => {
+      toast.error(error.message || "Failed to add expense");
+    },
+  });
+
+  const updateExpenseMutation = trpc.budgetExpenditure.updateAnalysisExpense.useMutation({
+    onSuccess: () => {
+      refetch();
+      setEditingExpense(null);
+      setFormData({
+        budgetLineId: "",
+        expenseAmount: "",
+        description: "",
+        category: "",
+        reference: "",
+        status: "approved",
+        notes: "",
+      });
+      toast.success("Expense updated successfully");
+    },
+    onError: (error) => {
+      toast.error(error.message || "Failed to update expense");
+    },
+  });
+
+  const deleteExpenseMutation = trpc.budgetExpenditure.deleteAnalysisExpense.useMutation({
+    onSuccess: () => {
+      refetch();
+      toast.success("Expense deleted successfully");
+    },
+    onError: (error) => {
+      toast.error(error.message || "Failed to delete expense");
+    },
+  });
+
+  const handleAddExpense = () => {
+    if (!formData.budgetLineId || !formData.expenseAmount || !formData.description) {
+      toast.error("Please fill in all required fields");
+      return;
+    }
+
+    createExpenseMutation.mutate({
+      budgetId,
+      budgetLineId: parseInt(formData.budgetLineId),
+      expenseAmount: parseFloat(formData.expenseAmount),
+      description: formData.description,
+      category: formData.category,
+      reference: formData.reference,
+      status: formData.status as "pending" | "approved" | "rejected",
+      notes: formData.notes,
+    });
+  };
+
+  const handleUpdateExpense = () => {
+    if (!formData.expenseAmount || !formData.description) {
+      toast.error("Please fill in all required fields");
+      return;
+    }
+
+    updateExpenseMutation.mutate({
+      id: editingExpense.id,
+      expenseAmount: parseFloat(formData.expenseAmount),
+      description: formData.description,
+      category: formData.category,
+      reference: formData.reference,
+      status: formData.status as "pending" | "approved" | "rejected",
+      notes: formData.notes,
+    });
+  };
+
+  const handleEditClick = (expense: any) => {
+    setEditingExpense(expense);
+    setFormData({
+      budgetLineId: expense.budgetLineId.toString(),
+      expenseAmount: expense.expenseAmount,
+      description: expense.description,
+      category: expense.category || "",
+      reference: expense.reference || "",
+      status: expense.status,
+      notes: expense.notes || "",
+    });
+  };
+
+  if (isLoading) {
+    return (
+      <Card>
+        <CardContent className="pt-6 text-center">
+          <Loader2 className="w-8 h-8 animate-spin mx-auto" />
+        </CardContent>
+      </Card>
+    );
+  }
+
+  const lines = expensesData?.lines || [];
+  const totalExpenses = expensesData?.totalExpenses || 0;
+
+  return (
+    <Card>
+      <CardContent className="pt-6">
+        <div className="flex items-center justify-between mb-4">
+          <div>
+            <h3 className="font-semibold text-lg">Budget Analysis Expenses</h3>
+            <p className="text-sm text-muted-foreground">Total: {formatCurrency(totalExpenses, budget.currency)}</p>
+          </div>
+          {canEdit && (
+            <Button size="sm" onClick={() => setShowAddDialog(true)}>
+              <Plus className="w-4 h-4 me-2" />
+              Add Expense
+            </Button>
+          )}
+        </div>
+
+        {/* Expenses Table */}
+        <div className="overflow-x-auto border rounded-lg">
+          <Table>
+            <TableHeader>
+              <TableRow className="bg-muted/50">
+                <TableHead className="text-start max-w-xs">Budget Line</TableHead>
+                <TableHead className="text-start max-w-xs">Description</TableHead>
+                <TableHead className="text-start whitespace-nowrap">Amount</TableHead>
+                <TableHead className="text-start">Category</TableHead>
+                <TableHead className="text-start">Status</TableHead>
+                {canEdit && <TableHead className="text-center">Actions</TableHead>}
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {lines.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={canEdit ? 6 : 5} className="text-center py-8 text-muted-foreground">
+                    <Receipt className="w-8 h-8 mx-auto mb-2 opacity-50" />
+                    <p>No expenses recorded</p>
+                  </TableCell>
+                </TableRow>
+              ) : (
+                lines.map((line: any) =>
+                  line.expenses.map((expense: any) => (
+                    <TableRow key={expense.id}>
+                      <TableCell className="font-medium max-w-xs">
+                        <div className="break-words whitespace-normal">{line.description}</div>
+                      </TableCell>
+                      <TableCell className="max-w-xs">
+                        <div className="break-words whitespace-normal">{expense.description}</div>
+                      </TableCell>
+                      <TableCell className="font-mono whitespace-nowrap">{formatCurrency(expense.expenseAmount, budget.currency)}</TableCell>
+                      <TableCell>{expense.category || "-"}</TableCell>
+                      <TableCell>
+                        <Badge variant={expense.status === "approved" ? "default" : "secondary"}>
+                          {expense.status}
+                        </Badge>
+                      </TableCell>
+                      {canEdit && (
+                        <TableCell className="text-center space-x-2">
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => handleEditClick(expense)}
+                          >
+                            <Edit className="w-4 h-4" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => {
+                              if (confirm("Delete this expense?")) {
+                                deleteExpenseMutation.mutate({ id: expense.id });
+                              }
+                            }}
+                          >
+                            <Trash2 className="w-4 h-4 text-destructive" />
+                          </Button>
+                        </TableCell>
+                      )}
+                    </TableRow>
+                  ))
+                )
+              )}
+            </TableBody>
+          </Table>
+        </div>
+
+        {/* Add/Edit Expense Dialog */}
+        <Dialog open={showAddDialog || !!editingExpense} onOpenChange={(open) => {
+          if (!open) {
+            setShowAddDialog(false);
+            setEditingExpense(null);
+            setFormData({
+              budgetLineId: "",
+              expenseAmount: "",
+              description: "",
+              category: "",
+              reference: "",
+              status: "approved",
+              notes: "",
+            });
+          }
+        }}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>{editingExpense ? "Edit Expense" : "Add Expense"}</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4">
+              <div>
+                <Label>Budget Line *</Label>
+                <Select value={formData.budgetLineId} onValueChange={(value) => setFormData({ ...formData, budgetLineId: value })}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select budget line" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {lines.map((line: any) => (
+                      <SelectItem key={line.id} value={line.id.toString()}>
+                        {line.description}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label>Amount *</Label>
+                <Input
+                  type="number"
+                  step="0.01"
+                  value={formData.expenseAmount}
+                  onChange={(e) => setFormData({ ...formData, expenseAmount: e.target.value })}
+                  placeholder="0.00"
+                />
+              </div>
+              <div>
+                <Label>Description *</Label>
+                <Input
+                  value={formData.description}
+                  onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                  placeholder="Expense description"
+                />
+              </div>
+              <div>
+                <Label>Category</Label>
+                <Input
+                  value={formData.category}
+                  onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+                  placeholder="e.g., Travel, Equipment"
+                />
+              </div>
+              <div>
+                <Label>Reference</Label>
+                <Input
+                  value={formData.reference}
+                  onChange={(e) => setFormData({ ...formData, reference: e.target.value })}
+                  placeholder="Invoice #, Receipt #"
+                />
+              </div>
+              <div>
+                <Label>Status</Label>
+                <Select value={formData.status} onValueChange={(value) => setFormData({ ...formData, status: value })}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="pending">Pending</SelectItem>
+                    <SelectItem value="approved">Approved</SelectItem>
+                    <SelectItem value="rejected">Rejected</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label>Notes</Label>
+                <Textarea
+                  value={formData.notes}
+                  onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
+                  placeholder="Additional notes"
+                />
+              </div>
+            </div>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => {
+                setShowAddDialog(false);
+                setEditingExpense(null);
+              }}>
+                Cancel
+              </Button>
+              <Button onClick={editingExpense ? handleUpdateExpense : handleAddExpense}>
+                {editingExpense ? "Update" : "Add"} Expense
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      </CardContent>
+    </Card>
+  );
 }
