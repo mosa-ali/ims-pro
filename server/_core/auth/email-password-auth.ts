@@ -30,7 +30,10 @@ interface AuthUser {
 
 export class EmailPasswordAuthService {
   /**
-   * Register a new user with email and password
+   * ✅ HARDENED: User registration is DISABLED
+   * 
+   * SECURITY FIX: Users must be pre-created by admin
+   * System NEVER auto-creates users
    */
   async registerUser(
     email: string,
@@ -40,61 +43,10 @@ export class EmailPasswordAuthService {
     organizationId?: number,
     operatingUnitId?: number
   ): Promise<AuthUser> {
-    try {
-      EmailPasswordAuthSchema.parse({ email, password });
-
-      const db = await getDb();
-
-      // Check if user already exists
-      const existingUser = await db
-        .select()
-        .from(users)
-        .where(eq(users.email, email.toLowerCase()))
-        .limit(1);
-
-      if (existingUser.length > 0) {
-        throw new TRPCError({
-          code: 'CONFLICT',
-          message: 'User with this email already exists',
-        });
-      }
-
-      const passwordHash = hashPassword(password);
-      const fullName = [firstName, lastName].filter(Boolean).join(' ') || email;
-
-      // Insert — id is auto-increment, do not set it
-      await db.insert(users).values({
-        email: email.toLowerCase(),
-        name: fullName,
-        passwordHash,
-        organizationId: organizationId ?? null,
-        isActive: 1,
-        role: 'user',
-        authenticationProvider: 'email',
-      });
-
-      // Fetch the newly created user to get the auto-assigned id
-      const [newUser] = await db
-        .select()
-        .from(users)
-        .where(eq(users.email, email.toLowerCase()))
-        .limit(1);
-
-      return {
-        id: newUser.id,
-        email: newUser.email ?? email.toLowerCase(),
-        name: newUser.name ?? fullName,
-        organizationId: newUser.organizationId ?? undefined,
-        role: newUser.role,
-      };
-    } catch (error) {
-      if (error instanceof TRPCError) throw error;
-      console.error('User registration error:', error);
-      throw new TRPCError({
-        code: 'INTERNAL_SERVER_ERROR',
-        message: 'Failed to register user',
-      });
-    }
+    throw new TRPCError({
+      code: 'FORBIDDEN',
+      message: 'User registration is disabled. Please contact your administrator to create an account.',
+    });
   }
 
   /**
@@ -138,7 +90,18 @@ export class EmailPasswordAuthService {
         });
       }
 
-      // Update last sign-in time
+      // ✅ Validate user has required fields
+      if (!user.email || !user.name || !user.organizationId) {
+        console.error(
+          `[Email Auth] User has incomplete data: ID=${user.id}, email=${user.email}, name=${user.name}, orgId=${user.organizationId}`
+        );
+        throw new TRPCError({
+          code: 'FORBIDDEN',
+          message: 'Your user account is not properly configured. Please contact your administrator.',
+        });
+      }
+
+      // ✅ Update last sign-in time
       const now = new Date();
       const timestamp = now.toISOString().slice(0, 19).replace('T', ' ');
       await db

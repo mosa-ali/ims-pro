@@ -242,18 +242,34 @@ const rbacUsersRouter = router({
     assertAdmin(ctx);
     const db = await getDb();
     const orgId = ctx.scope.organizationId;
-    const orgUsers = await db.select({ userId: userOrganizations.userId, platformRole: userOrganizations.platformRole })
-      .from(userOrganizations).where(eq(userOrganizations.organizationId, orgId));
-    if (orgUsers.length === 0) return [];
-    const userIds = orgUsers.map((u) => u.userId);
+    const ouId = ctx.scope.operatingUnitId;
+    
+    // ✅ NEW: Filter users by organization AND operating unit
+    // Only show users assigned to the current OU
+    const userOUAssignments = await db.select({
+      userId: userOperatingUnits.userId,
+    }).from(userOperatingUnits)
+      .where(eq(userOperatingUnits.operatingUnitId, ouId));
+    
+    if (userOUAssignments.length === 0) return [];
+    
+    const userIds = userOUAssignments.map((u) => u.userId);
+    
+    // Fetch user details
     const userDetails = await db.select({ id: users.id, name: users.name, email: users.email, role: users.role, authenticationProvider: users.authenticationProvider, lastSignedIn: users.lastSignedIn, createdAt: users.createdAt })
       .from(users).where(sql`${users.id} IN (${sql.join(userIds.map(id => sql`${id}`), sql`, `)})`);
+    // ✅ NEW: Get platform role from userOrganizations for context
+    const orgUsers = await db.select({ userId: userOrganizations.userId, platformRole: userOrganizations.platformRole })
+      .from(userOrganizations).where(eq(userOrganizations.organizationId, orgId));
+    const orgUserMap = new Map(orgUsers.map((u) => [u.userId, u]));
+    
     const permissions = await db.select().from(rbacUserPermissions).where(eq(rbacUserPermissions.organizationId, orgId));
     const permMap = new Map(permissions.map((p) => [p.userId, p]));
     const allRoles = await db.select({ id: rbacRoles.id, name: rbacRoles.name }).from(rbacRoles)
       .where(and(eq(rbacRoles.organizationId, orgId), isNull(rbacRoles.deletedAt)));
     const roleMap = new Map(allRoles.map((r) => [r.id, r.name]));
-    // Fetch OU assignments for all users in this org
+    
+    // ✅ UPDATED: Fetch OU assignments for users in current OU only
     const ouAssignments = userIds.length > 0
       ? await db.select({
           userId: userOperatingUnits.userId,
@@ -270,12 +286,12 @@ const rbacUsersRouter = router({
     }
     let result = userDetails.map((u) => {
       const perm = permMap.get(u.id);
-      const orgUser = orgUsers.find((ou) => ou.userId === u.id);
+      const orgUser = orgUserMap.get(u.id);
       return {
         id: u.id, fullName: u.name || "Unknown", email: u.email || "",
         role: u.role, platformRole: orgUser?.platformRole || "user",
         rbacRoleId: perm?.roleId || null, rbacRoleName: perm?.roleId ? roleMap.get(perm.roleId) || null : null,
-        status: perm?.isActive !== false ? "Active" as const : "Disabled" as const,
+        status: perm?.isActive !== 0 ? "Active" as const : "Disabled" as const,
         lastLogin: u.lastSignedIn, createdAt: u.createdAt, hasPermissions: !!perm,
         authenticationProvider: u.authenticationProvider || 'microsoft',
         operatingUnits: ouMap.get(u.id) || [],
@@ -301,6 +317,37 @@ const rbacUsersRouter = router({
     assertAdmin(ctx);
     const db = await getDb();
     const orgId = ctx.scope.organizationId;
+    const ouId = ctx.scope.operatingUnitId;
+    
+    // ✅ NEW: Verify user is assigned to current OU
+    const [userOUAssignment] = await db.select()
+      .from(userOperatingUnits)
+      .where(and(
+        eq(userOperatingUnits.userId, input.userId),
+        eq(userOperatingUnits.operatingUnitId, ouId)
+      ))
+      .limit(1);
+    
+    if (!userOUAssignment) {
+      throw new TRPCError({
+        code: 'FORBIDDEN',
+        message: 'User is not assigned to this operating unit'
+      });
+    }
+    
+    // ✅ NEW: Verify user belongs to correct organization
+    const [user] = await db.select()
+      .from(users)
+      .where(eq(users.id, input.userId))
+      .limit(1);
+    
+    if (!user || user.organizationId !== orgId) {
+      throw new TRPCError({
+        code: 'FORBIDDEN',
+        message: 'User does not belong to this organization'
+      });
+    }
+    
     const existing = await db.select({ id: rbacUserPermissions.id }).from(rbacUserPermissions)
       .where(and(eq(rbacUserPermissions.userId, input.userId), eq(rbacUserPermissions.organizationId, orgId))).limit(1);
     if (existing.length > 0) {
@@ -316,20 +363,39 @@ const rbacUsersRouter = router({
         permissions: JSON.stringify(input.permissions),
         screenPermissions: input.screenPermissions ? JSON.stringify(input.screenPermissions) : null,
         tabPermissions: input.tabPermissions ? JSON.stringify(input.tabPermissions) : null,
-        isActive: true, updatedBy: ctx.user.id,
+        isActive: 1, updatedBy: ctx.user.id,
       });
     }
     // Audit log for permission assignment
-    await logSensitiveAccess(ctx.user.id, orgId, null, existing.length > 0 ? 'permission.update' : 'permission.assign', 'settings', 'roles', 'user_permission', input.userId, JSON.stringify({ roleId: input.roleId, moduleCount: Object.keys(input.permissions).length }));
+    await logSensitiveAccess(ctx.user.id, orgId, ouId, existing.length > 0 ? 'permission.update' : 'permission.assign', 'settings', 'roles', 'user_permission', input.userId, JSON.stringify({ roleId: input.roleId, moduleCount: Object.keys(input.permissions).length }));
     return { success: true };
   }),
 
   toggleStatus: scopedProcedure.input(z.object({ userId: z.number(), isActive: z.boolean() })).mutation(async ({ ctx, input }) => {
     assertAdmin(ctx);
     const db = await getDb();
+    const orgId = ctx.scope.organizationId;
+    const ouId = ctx.scope.operatingUnitId;
+    
+    // ✅ NEW: Verify user is assigned to current OU
+    const [userOUAssignment] = await db.select()
+      .from(userOperatingUnits)
+      .where(and(
+        eq(userOperatingUnits.userId, input.userId),
+        eq(userOperatingUnits.operatingUnitId, ouId)
+      ))
+      .limit(1);
+    
+    if (!userOUAssignment) {
+      throw new TRPCError({
+        code: 'FORBIDDEN',
+        message: 'User is not assigned to this operating unit'
+      });
+    }
+    
     await db.update(rbacUserPermissions).set({ isActive: input.isActive, updatedBy: ctx.user.id })
-      .where(and(eq(rbacUserPermissions.userId, input.userId), eq(rbacUserPermissions.organizationId, ctx.scope.organizationId)));
-    await logSensitiveAccess(ctx.user.id, ctx.scope.organizationId, null, input.isActive ? 'permission.activate' : 'permission.deactivate', 'settings', 'roles', 'user_permission', input.userId);
+      .where(and(eq(rbacUserPermissions.userId, input.userId), eq(rbacUserPermissions.organizationId, orgId)));
+    await logSensitiveAccess(ctx.user.id, orgId, ouId, input.isActive ? 'permission.activate' : 'permission.deactivate', 'settings', 'roles', 'user_permission', input.userId);
     return { success: true };
   }),
 
@@ -341,10 +407,29 @@ const rbacUsersRouter = router({
     assertAdmin(ctx);
     const db = await getDb();
     const orgId = ctx.scope.organizationId;
+    const ouId = ctx.scope.operatingUnitId;
+    
     // Prevent self-deletion
     if (input.userId === ctx.user.id) {
       throw new TRPCError({ code: 'BAD_REQUEST', message: 'Cannot delete your own account' });
     }
+    
+    // ✅ NEW: Verify user is assigned to current OU
+    const [userOUAssignment] = await db.select()
+      .from(userOperatingUnits)
+      .where(and(
+        eq(userOperatingUnits.userId, input.userId),
+        eq(userOperatingUnits.operatingUnitId, ouId)
+      ))
+      .limit(1);
+    
+    if (!userOUAssignment) {
+      throw new TRPCError({
+        code: 'FORBIDDEN',
+        message: 'User is not assigned to this operating unit'
+      });
+    }
+    
     // Fetch the user record
     const [targetUser] = await db.select().from(users).where(eq(users.id, input.userId)).limit(1);
     if (!targetUser) throw new TRPCError({ code: 'NOT_FOUND', message: 'User not found' });
@@ -383,8 +468,8 @@ const rbacUsersRouter = router({
 
     // 2. Mark user as soft-deleted (system-level)
     await db.update(users).set({
-      isDeleted: true,
-      isActive: false,
+      isDeleted: 1,
+      isActive: 0,
       deletedAt: new Date().toISOString().slice(0, 19).replace("T", " "),
       deletedBy: ctx.user.id,
       deletionReason: input.reason || undefined,
@@ -403,7 +488,7 @@ const rbacUsersRouter = router({
       .where(eq(userOrganizations.userId, input.userId));
 
     // 6. Audit log
-    await logSensitiveAccess(ctx.user.id, orgId, undefined, 'user.soft_delete', 'settings', 'users', 'user', input.userId,
+    await logSensitiveAccess(ctx.user.id, orgId, ouId, 'user.soft_delete', 'settings', 'users', 'user', input.userId,
       JSON.stringify({ reason: input.reason, previousOrgs, previousRoles }));
 
     return { success: true };
@@ -484,7 +569,7 @@ const rbacUsersRouter = router({
 
     // Audit log the bulk operation
     const successCount = results.filter(r => r.success).length;
-    await logSensitiveAccess(ctx.user.id, orgId, undefined, 'user.bulk_soft_delete', 'settings', 'users', 'bulk',
+    await logSensitiveAccess(ctx.user.id, orgId, ctx.scope.operatingUnitId, 'user.bulk_soft_delete', 'settings', 'users', 'bulk',
       undefined, JSON.stringify({ reason: input.reason, totalRequested: input.userIds.length, successCount, results }));
 
     return { results, successCount, failedCount: results.length - successCount };
@@ -496,7 +581,23 @@ const rbacUsersRouter = router({
   }).optional()).query(async ({ ctx, input }) => {
     assertAdmin(ctx);
     const db = await getDb();
-    const conditions = [eq(users.isDeleted, true)];
+    const orgId = ctx.scope.organizationId;
+    const ouId = ctx.scope.operatingUnitId;
+    
+    // ✅ NEW: Filter deleted users by current OU
+    const userOUAssignments = await db.select({ userId: userOperatingUnits.userId })
+      .from(userOperatingUnits)
+      .where(eq(userOperatingUnits.operatingUnitId, ouId));
+    
+    const userIds = userOUAssignments.map((u) => u.userId);
+    
+    const conditions = [eq(users.isDeleted, 1)];
+    if (userIds.length > 0) {
+      conditions.push(inArray(users.id, userIds));
+    } else {
+      // No users in this OU, return empty
+      return [];
+    }
     if (input?.search) {
       conditions.push(sql`(${users.name} LIKE ${`%${input.search}%`} OR ${users.email} LIKE ${`%${input.search}%`})`);
     }
@@ -556,8 +657,8 @@ const rbacUsersRouter = router({
 
     // 1. Reactivate the user
     await db.update(users).set({
-      isDeleted: false,
-      isActive: true,
+      isDeleted: 0,
+      isActive: 1,
       deletedAt: null,
       deletedBy: null,
       deletionReason: null,
@@ -860,7 +961,7 @@ const rbacUsersRouter = router({
       .where(and(eq(userPermissionOverrides.id, input.overrideId), eq(userPermissionOverrides.organizationId, orgId)))
       .limit(1);
     if (existing.length === 0) throw new TRPCError({ code: 'NOT_FOUND', message: 'Override not found' });
-    await db.update(userPermissionOverrides).set({ isActive: false }).where(eq(userPermissionOverrides.id, input.overrideId));
+    await db.update(userPermissionOverrides).set({ isActive: 0 }).where(eq(userPermissionOverrides.id, input.overrideId));
     await logSensitiveAccess(ctx.user.id, orgId, null, 'override.deactivate', 'settings', 'roles', 'user_override', existing[0].userId,
       JSON.stringify({ overrideId: input.overrideId, moduleId: existing[0].moduleId }));
     return { success: true };
@@ -1020,8 +1121,8 @@ const rbacUsersRouter = router({
       // Create new user with optional password hashing for local users
       let passwordHash: string | undefined;
       if (input.userType === 'local' && input.password) {
-        const bcryptjs = await import('bcryptjs');
-        passwordHash = await bcryptjs.default.hash(input.password, 10);
+        const bcrypt = await import('bcryptjs');
+        passwordHash = await bcrypt.default.hash(input.password, 10);
       }
       
       const result = await db.insert(users).values({
@@ -1053,7 +1154,7 @@ const rbacUsersRouter = router({
           permissions: role.permissions || "{}",
           screenPermissions: "{}",
           tabPermissions: "{}",
-          isActive: true,
+          isActive: 1,
           updatedBy: ctx.user.id,
         });
       }
@@ -1182,7 +1283,7 @@ const rbacUsersRouter = router({
             permissions: role.permissions || '{}',
             screenPermissions: '{}',
             tabPermissions: '{}',
-            isActive: true,
+            isActive: 1,
             updatedBy: ctx.user.id,
           });
         }
@@ -1242,7 +1343,7 @@ const rbacUsersRouter = router({
           overrideType: input.overrideType,
           reason: input.reason || null,
           expiresAt: input.expiresAt ? new Date(input.expiresAt) : null,
-          isActive: true,
+          isActive: 1,
           createdBy: ctx.user.id,
         });
         successCount++;
@@ -1347,7 +1448,7 @@ const rbacUsersRouter = router({
 
     // Get all active overrides
     const allOverrides = await db.select().from(userPermissionOverrides)
-      .where(and(eq(userPermissionOverrides.organizationId, orgId), eq(userPermissionOverrides.isActive, true)));
+      .where(and(eq(userPermissionOverrides.organizationId, orgId), eq(userPermissionOverrides.isActive, 1)));
     const overridesByUser = new Map<number, typeof allOverrides>();
     for (const ov of allOverrides) {
       const existing = overridesByUser.get(ov.userId) || [];
@@ -1567,7 +1668,7 @@ const rbacUsersRouter = router({
     const roleMap = new Map(allRoles.map(r => [r.id, r.name]));
 
     const allOverrides = await db.select().from(userPermissionOverrides)
-      .where(and(eq(userPermissionOverrides.organizationId, orgId), eq(userPermissionOverrides.isActive, true)));
+      .where(and(eq(userPermissionOverrides.organizationId, orgId), eq(userPermissionOverrides.isActive, 1)));
     const overridesByUser = new Map<number, typeof allOverrides>();
     for (const ov of allOverrides) {
       const existing = overridesByUser.get(ov.userId) || [];
@@ -1767,6 +1868,158 @@ const rbacUsersRouter = router({
       sensitiveWorkspaces: SENSITIVE_WORKSPACES.map(w => ({ moduleId: w.moduleId, screenId: w.screenId })),
     };
   }),
+
+  /** Add user to an operating unit */
+  addOperatingUnit: scopedProcedure.input(z.object({
+    userId: z.number(),
+    operatingUnitId: z.number(),
+    role: z.enum(['organization_admin', 'user']).optional(),
+  })).mutation(async ({ ctx, input }) => {
+    assertAdmin(ctx);
+    const db = await getDb();
+    const orgId = ctx.scope.organizationId;
+    
+    // ✅ Verify user belongs to organization
+    const [user] = await db.select()
+      .from(users)
+      .where(eq(users.id, input.userId))
+      .limit(1);
+    
+    if (!user || user.organizationId !== orgId) {
+      throw new TRPCError({
+        code: 'FORBIDDEN',
+        message: 'User does not belong to this organization'
+      });
+    }
+    
+    // ✅ Verify OU belongs to organization
+    const [ou] = await db.select()
+      .from(operatingUnits)
+      .where(and(
+        eq(operatingUnits.id, input.operatingUnitId),
+        eq(operatingUnits.organizationId, orgId)
+      ))
+      .limit(1);
+    
+    if (!ou) {
+      throw new TRPCError({
+        code: 'NOT_FOUND',
+        message: 'Operating unit not found in this organization'
+      });
+    }
+    
+    // ✅ Check if already assigned
+    const [existing] = await db.select()
+      .from(userOperatingUnits)
+      .where(and(
+        eq(userOperatingUnits.userId, input.userId),
+        eq(userOperatingUnits.operatingUnitId, input.operatingUnitId)
+      ))
+      .limit(1);
+    
+    if (existing) {
+      throw new TRPCError({
+        code: 'CONFLICT',
+        message: 'User is already assigned to this operating unit'
+      });
+    }
+    
+    // ✅ Add assignment
+    await db.insert(userOperatingUnits).values({
+      userId: input.userId,
+      operatingUnitId: input.operatingUnitId,
+      role: input.role || 'user',
+    });
+    
+    // Log the action
+    await logSensitiveAccess(
+      ctx.user.id,
+      orgId,
+      ctx.scope.operatingUnitId,
+      'user.add_ou',
+      'settings',
+      'users',
+      'user_operating_unit',
+      input.userId,
+      JSON.stringify({ operatingUnitId: input.operatingUnitId, role: input.role || 'user' })
+    );
+    
+    return { success: true };
+  }),
+
+  /** Remove user from an operating unit */
+  removeOperatingUnit: scopedProcedure.input(z.object({
+    userId: z.number(),
+    operatingUnitId: z.number(),
+  })).mutation(async ({ ctx, input }) => {
+    assertAdmin(ctx);
+    const db = await getDb();
+    const orgId = ctx.scope.organizationId;
+    
+    // ✅ Verify user belongs to organization
+    const [user] = await db.select()
+      .from(users)
+      .where(eq(users.id, input.userId))
+      .limit(1);
+    
+    if (!user || user.organizationId !== orgId) {
+      throw new TRPCError({
+        code: 'FORBIDDEN',
+        message: 'User does not belong to this organization'
+      });
+    }
+    
+    // ✅ Verify assignment exists
+    const [assignment] = await db.select()
+      .from(userOperatingUnits)
+      .where(and(
+        eq(userOperatingUnits.userId, input.userId),
+        eq(userOperatingUnits.operatingUnitId, input.operatingUnitId)
+      ))
+      .limit(1);
+    
+    if (!assignment) {
+      throw new TRPCError({
+        code: 'NOT_FOUND',
+        message: 'User is not assigned to this operating unit'
+      });
+    }
+    
+    // ✅ Prevent removing last OU assignment
+    const [ouCount] = await db.select({
+      count: sql`COUNT(*)`
+    }).from(userOperatingUnits)
+      .where(eq(userOperatingUnits.userId, input.userId));
+    
+    if (ouCount.count === 1) {
+      throw new TRPCError({
+        code: 'BAD_REQUEST',
+        message: 'User must be assigned to at least one operating unit'
+      });
+    }
+    
+    // ✅ Remove assignment
+    await db.delete(userOperatingUnits)
+      .where(and(
+        eq(userOperatingUnits.userId, input.userId),
+        eq(userOperatingUnits.operatingUnitId, input.operatingUnitId)
+      ));
+    
+    // Log the action
+    await logSensitiveAccess(
+      ctx.user.id,
+      orgId,
+      ctx.scope.operatingUnitId,
+      'user.remove_ou',
+      'settings',
+      'users',
+      'user_operating_unit',
+      input.userId,
+      JSON.stringify({ operatingUnitId: input.operatingUnitId })
+    );
+    
+    return { success: true };
+  }),
 });
 
 // OPTION SETS
@@ -1842,7 +2095,7 @@ const optionSetsRouter = router({
     const db = await getDb();
     const { id, ...data } = input;
     await db.update(optionSetValues).set(data).where(eq(optionSetValues.id, id));
-    return { success: true };
+    return { success: 1 };
   }),
 
   deleteValue: scopedProcedure.input(z.object({ id: z.number() })).mutation(async ({ ctx, input }) => {
@@ -2224,7 +2477,7 @@ const emailTemplatesRouter = router({
     const result = await db.insert(emailTemplates).values({
       organizationId: ctx.scope.organizationId,
       ...input,
-      isActive: input.isActive ?? true,
+      isActive: input.isActive ?? 1,
     });
     return { success: true, id: result[0].insertId };
   }),
@@ -2331,7 +2584,7 @@ const deletedRecordsRouter = router({
       deletedAt: organizations.deletedAt,
       deletedBy: organizations.deletedBy,
     }).from(organizations)
-      .where(and(eq(organizations.isDeleted, true), eq(organizations.id, orgId)))
+      .where(and(eq(organizations.isDeleted, 1), eq(organizations.id, orgId)))
       .limit(1);
     
     results.push(...deletedOrgs);
@@ -2367,14 +2620,14 @@ const deletedRecordsRouter = router({
 
     // Check if it's a deleted organization
     const [org] = await db.select().from(organizations)
-      .where(and(eq(organizations.id, input.id), eq(organizations.isDeleted, true)))
+      .where(and(eq(organizations.id, input.id), eq(organizations.isDeleted, 1)))
       .limit(1);
 
     if (org) {
       // Restore organization
       await db.update(organizations).set({
-        isDeleted: false,
-        isActive: true,
+        isDeleted: 0,
+        isActive: 1,
         deletedAt: null,
         deletedBy: null,
       }).where(eq(organizations.id, input.id));
@@ -2404,7 +2657,7 @@ const deletedRecordsRouter = router({
 
     // Check if it's a deleted organization
     const [org] = await db.select().from(organizations)
-      .where(and(eq(organizations.id, input.id), eq(organizations.isDeleted, true)))
+      .where(and(eq(organizations.id, input.id), eq(organizations.isDeleted, 1)))
       .limit(1);
 
     if (org) {

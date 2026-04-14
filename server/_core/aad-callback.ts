@@ -39,7 +39,7 @@ aadCallbackRouter.get("/api/oauth/microsoft/callback", async (req: Request, res:
     console.log("[AAD Callback] Exchanging code for token");
 
     const tokenRes = await fetch(
-       `https://login.microsoftonline.com/${process.env.MS_TENANT_ID}/oauth2/v2.0/token`,
+      `https://login.microsoftonline.com/${process.env.MS_TENANT_ID}/oauth2/v2.0/token`,
       {
         method: "POST",
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
@@ -99,22 +99,39 @@ aadCallbackRouter.get("/api/oauth/microsoft/callback", async (req: Request, res:
 
     const nowSql = new Date().toISOString().slice(0, 19).replace("T", " ");
 
-    await db.upsertUser({
-      openId: userId,
-      name: data.displayName || email,
-      email,
-      loginMethod: "microsoft_entra",
-      lastSignedIn: nowSql,
-    });
+    // ✅ SECURITY FIX: User MUST be pre-created by admin
+    const existingUser = await db.getUserByOpenId(userId);
+    
+    if (!existingUser) {
+      console.error(`[AAD Callback] User not pre-created: openId=${userId}, email=${email}`);
+      return res.redirect("/login?error=user_not_found");
+    }
+
+    // Block login for soft-deleted users
+    if ((existingUser as any).isDeleted) {
+      console.warn(`[AAD Callback] Blocked login for soft-deleted user: ${userId}`);
+      return res.redirect("/login?error=account_deactivated");
+    }
+
+    // ✅ Update lastSignedIn for existing user
+    try {
+      await db.upsertUser({
+        openId: userId,
+        email,
+        loginMethod: "microsoft_entra",
+        lastSignedIn: nowSql,
+      });
+    } catch (error) {
+      console.error("[AAD Callback] Failed to update user lastSignedIn:", error);
+    }
 
     // Create session
     const sessionToken = await sdk.createSessionToken(userId, {
-      name: data.displayName || email,
+      name: existingUser.name || email,
     });
 
     res.cookie(COOKIE_NAME, sessionToken, {
       ...getSessionCookieOptions(req),
-      maxAge: ONE_YEAR_MS,
     });
 
     console.log(`[AAD Callback] Success login: ${email}`);

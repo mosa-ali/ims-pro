@@ -5,6 +5,8 @@ import { getSessionCookieOptions } from "./cookies";
 import { sdk } from "./sdk";
 import { resolveDomain } from "./domainResolver";
 
+const nowSql = new Date().toISOString().slice(0, 19).replace('T', ' ');
+
 function getQueryParam(req: Request, key: string): string | undefined {
   const value = req.query[key];
   return typeof value === "string" ? value : undefined;
@@ -71,20 +73,34 @@ export function registerOAuthRoutes(app: Express) {
         );
       }
 
-      await db.upsertUser({
-        openId: userInfo.openId,
-        name: userInfo.name.trim(), // Guaranteed to be non-empty after validation
-        email: userInfo.email.trim(), // Guaranteed to be non-empty after validation
-        loginMethod: userInfo.loginMethod ?? userInfo.platform ?? 'unknown', // Default to 'unknown' instead of null
-        lastSignedIn: new Date(),
-      });
+      // ✅ SECURITY FIX: User MUST be pre-created by admin
+      const existingUser = await db.getUserByOpenId(userInfo.openId);
+      
+      if (!existingUser) {
+        console.error(`[OAuth] User not pre-created: openId=${userInfo.openId}, email=${userInfo.email}`);
+        res.status(403).json({
+          error: "Access denied",
+          reason: "User account not found. Please contact your administrator.",
+        });
+        return;
+      }
 
       // Block login for soft-deleted users
-      const existingUser = await db.getUserByOpenId(userInfo.openId);
-      if (existingUser && (existingUser as any).isDeleted) {
+      if ((existingUser as any).isDeleted) {
         console.warn(`[OAuth] Blocked login for soft-deleted user: ${userInfo.openId}`);
         res.status(403).json({ error: "Your account has been deactivated. Please contact your administrator." });
         return;
+      }
+
+      // ✅ Update lastSignedIn for existing user
+      try {
+        await db.upsertUser({
+          openId: userInfo.openId,
+          email: userInfo.email.trim(),
+          lastSignedIn: nowSql,
+        });
+      } catch (error) {
+        console.error("[OAuth] Failed to update user lastSignedIn:", error);
       }
 
       const sessionToken = await sdk.createSessionToken(userInfo.openId, {
