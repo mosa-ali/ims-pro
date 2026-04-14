@@ -14,6 +14,7 @@ import bcryptjs from "bcryptjs";
 import { getDb } from "../../db";
 import { users } from "../../../drizzle/schema";
 import { eq, and, isNull } from "drizzle-orm";
+import { v4 as uuidv4 } from "uuid";
 
 const nowSql = new Date().toISOString().slice(0, 19).replace('T', ' ');
 
@@ -37,6 +38,14 @@ export class EmailPasswordAuthService {
   }
 
   /**
+   * Validate email format
+   */
+  static validateEmail(email: string): boolean {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  }
+
+  /**
    * Validate password strength
    */
   static validatePasswordStrength(password: string): {
@@ -46,7 +55,7 @@ export class EmailPasswordAuthService {
     const errors: string[] = [];
 
     if (password.length < 8) {
-      errors.push("Password must be at least 8 characters");
+      errors.push("Password must be at least 8 characters long");
     }
     if (!/[A-Z]/.test(password)) {
       errors.push("Password must contain at least one uppercase letter");
@@ -102,6 +111,11 @@ export class EmailPasswordAuthService {
       // ✅ FIXED: Generate openId for email users
       const openId = `local-${normalizedEmail.replace(/[^a-z0-9]/g, "-")}`;
 
+      // ✅ FIXED: Validate email is not system email
+      if (normalizedEmail === "temp@system.local" || normalizedEmail.includes("TEMP_USER")) {
+        return { success: false, error: "Cannot register with system email" };
+      }
+
       // Create user
       const result = await db.insert(users).values({
         email: normalizedEmail,
@@ -110,8 +124,8 @@ export class EmailPasswordAuthService {
         openId, // ✅ FIXED: Added openId
         authenticationProvider: "local", // ✅ FIXED: Standardized value
         loginMethod: "email",
-        organizationId: organizationId ?? null,
-        currentOrganizationId: organizationId ?? null,
+        organizationId: organizationId,
+        currentOrganizationId: organizationId,
         languagePreference: "en",
         isActive: 1,
         role: "user",
@@ -127,17 +141,23 @@ export class EmailPasswordAuthService {
 
   /**
    * Authenticate user with email and password
-   * ✅ FIXED: Added isDeleted check, proper error handling
+   * ✅ FIXED: Added isDeleted check, proper error handling, system email validation
+   * Returns: { success: boolean, userId?: number, error?: string }
+   * 
+   * authRouter expects: { success, userId, error }
    */
   static async authenticateUser(
     email: string,
     password: string
-  ): Promise<{ success: boolean; user?: typeof users.$inferSelect; error?: string }> {
+  ): Promise<{ success: boolean; userId?: number; error?: string }> {
     try {
       const normalizedEmail = email.toLowerCase().trim();
       const db = await getDb();
 
-      console.log(`[EmailPasswordAuthService] Authenticating user: ${normalizedEmail}`);
+      // ✅ FIXED: Block system emails
+      if (normalizedEmail === "temp@system.local" || normalizedEmail.includes("TEMP_USER")) {
+        return { success: false, error: "Invalid email or password" };
+      }
 
       // ✅ FIXED: Added isNull(deletedAt) check for soft-delete
       const user = await db.query.users.findFirst({
@@ -148,55 +168,41 @@ export class EmailPasswordAuthService {
       });
 
       if (!user) {
-        console.warn(`[EmailPasswordAuthService] User not found: ${normalizedEmail}`);
         return { success: false, error: "Invalid email or password" };
       }
 
-      console.log(`[EmailPasswordAuthService] User found: ${user.email} (ID: ${user.id})`);
-
       // Check if user is active
       if (!user.isActive) {
-        console.warn(`[EmailPasswordAuthService] User is inactive: ${user.email}`);
         return { success: false, error: "Account is inactive" };
       }
 
       // Check if user is locked
       if (user.lockedUntil && new Date(user.lockedUntil) > new Date()) {
-        console.warn(`[EmailPasswordAuthService] User is locked: ${user.email}`);
         return {
           success: false,
           error: "Account is locked. Please try again later.",
         };
       }
 
-      // Verify password
-      // CRITICAL: Check if passwordHash exists
+      // ✅ FIXED: Check if passwordHash exists before verification
       if (!user.passwordHash) {
-        console.error(
-          `[EmailPasswordAuthService] User ${user.email} has no password hash set. This should not happen for email-authenticated users.`
-        );
         return { success: false, error: "Invalid email or password" };
       }
 
-      console.log(`[EmailPasswordAuthService] Password hash found, verifying password...`);
-      console.log(`[EmailPasswordAuthService] Password length: ${password.length}, Hash length: ${user.passwordHash.length}`);
-
+      // Verify password
       const isPasswordValid = await this.verifyPassword(
         password,
         user.passwordHash
       );
-
-      console.log(`[EmailPasswordAuthService] Password verification result: ${isPasswordValid}`);
 
       if (!isPasswordValid) {
         // ✅ Increment failed login attempts
         const failedAttempts = (user.failedLoginAttempts || 0) + 1;
         const lockoutThreshold = 5;
 
-        let lockedUntil = null;
+        let lockedUntil: string | null = null;
         if (failedAttempts >= lockoutThreshold) {
-          const lockDate = new Date(Date.now() + 30 * 60 * 1000);
-          lockedUntil = lockDate.toISOString().slice(0, 19).replace('T', ' ');
+          lockedUntil = new Date(Date.now() + 30 * 60 * 1000).toISOString();
         }
 
         await db
@@ -222,7 +228,8 @@ export class EmailPasswordAuthService {
         })
         .where(eq(users.id, user.id));
 
-      return { success: true, user };
+      // ✅ FIXED: authRouter expects userId, not user object
+      return { success: true, userId: user.id };
     } catch (error) {
       console.error("[EmailPasswordAuthService] Auth error:", error);
       return { success: false, error: "Authentication failed" };
@@ -304,5 +311,87 @@ export class EmailPasswordAuthService {
     const lockoutEnd = new Date(user.lockedUntil);
     if (lockoutEnd <= now) return 0;
     return Math.ceil((lockoutEnd.getTime() - now.getTime()) / (1000 * 60));
+  }
+
+  /**
+   * Generate password reset token
+   * Used by authRouter.requestPasswordReset
+   */
+  static async generatePasswordResetToken(userId: number): Promise<string> {
+    try {
+      const token = uuidv4();
+      const db = await getDb();
+      const expiresAt = new Date(Date.now() + 1 * 60 * 60 * 1000); // 1 hour
+
+      await db
+        .update(users)
+        .set({
+          passwordResetToken: token,
+          passwordResetExpiry: expiresAt.getTime(), // Store as milliseconds (bigint)
+          updatedAt: nowSql,
+        })
+        .where(eq(users.id, userId));
+
+      return token;
+    } catch (error) {
+      console.error("[EmailPasswordAuthService] Generate reset token error:", error);
+      throw error;
+    }
+  }
+
+  /**
+   * Verify password reset token
+   * Used by authRouter.resetPasswordWithToken
+   */
+  static async verifyPasswordResetToken(
+    token: string
+  ): Promise<typeof users.$inferSelect | null> {
+    try {
+      const db = await getDb();
+
+      const user = await db.query.users.findFirst({
+        where: and(
+          eq(users.passwordResetToken, token),
+          isNull(users.deletedAt)
+        ),
+      });
+
+      if (!user) {
+        return null;
+      }
+
+      // Check if token is expired
+      if (
+        user.passwordResetExpiry &&
+        new Date(user.passwordResetExpiry) < new Date()
+      ) {
+        return null;
+      }
+
+      return user;
+    } catch (error) {
+      console.error("[EmailPasswordAuthService] Verify reset token error:", error);
+      return null;
+    }
+  }
+
+  /**
+   * Clear password reset token after use
+   */
+  static async clearPasswordResetToken(userId: number): Promise<void> {
+    try {
+      const db = await getDb();
+
+      await db
+        .update(users)
+        .set({
+          passwordResetToken: null,
+          passwordResetExpiry: null,
+          updatedAt: nowSql,
+        })
+        .where(eq(users.id, userId));
+    } catch (error) {
+      console.error("[EmailPasswordAuthService] Clear reset token error:", error);
+    }
   }
 }
