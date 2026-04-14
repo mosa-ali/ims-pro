@@ -3510,7 +3510,7 @@ export const mealSurveyQuestions = mysqlTable(
     id: int().autoincrement().primaryKey().notNull(),
 
     // 🔐 Multi-tenant isolation (MANDATORY)
-    organizationId: int(),
+    organizationId: int().notNull(),
     operatingUnitId: int(),
     projectId: int(),
 
@@ -3552,8 +3552,8 @@ export const mealSurveyQuestions = mysqlTable(
     deletedBy: int(),
 
     // 👤 Audit
-    createdBy: int(),
-    updatedBy: int(),
+    createdBy: int().notNull(),
+    updatedBy: int().notNull(),
 
     createdAt: timestamp({ mode: "string" }).defaultNow().notNull(),
     updatedAt: timestamp({ mode: "string" }).defaultNow().onUpdateNow().notNull(),
@@ -3588,11 +3588,14 @@ export const mealSurveyQuestions = mysqlTable(
 export const mealSurveyStandards = mysqlTable("meal_survey_standards", {
 	id: int().autoincrement().primaryKey().notNull(),
 	organizationId: int().notNull(),
+	operatingUnitId: int(),
 	standardName: varchar({ length: 500 }).notNull(),
 	validationRules: json(),
 	requiredFields: json(),
 	gpsRequired: tinyint().default(0).notNull(),
 	photoRequired: tinyint().default(0).notNull(),
+	createdBy: int().notNull(),
+	updatedBy: int().notNull(),
 	createdAt: timestamp({ mode: 'string' }).defaultNow().notNull(),
 	updatedAt: timestamp({ mode: 'string' }).defaultNow().onUpdateNow().notNull(),
 	deletedAt: timestamp({ mode: 'string' }),

@@ -7,6 +7,8 @@ import { canAccess, logSensitiveAccess } from "./rbacService";
 import { TRPCError } from "@trpc/server";
 import { isPlatformAdmin } from "../shared/const";
 
+const nowSql = new Date().toISOString().slice(0, 19).replace('T', ' ');
+
 const accountabilityProcedure = scopedProcedure.use(async ({ ctx, next }) => {
   const userId = ctx.user?.id;
   const orgId = ctx.scope?.organizationId;
@@ -41,7 +43,7 @@ export const mealAccountabilityRouter = router({
       
       const conditions = [
         eq(mealAccountabilityRecords.organizationId, organizationId),
-        eq(mealAccountabilityRecords.isDeleted, false),
+        eq(mealAccountabilityRecords.isDeleted, 0),
       ];
       
       if (operatingUnitId) {
@@ -82,7 +84,7 @@ export const mealAccountabilityRouter = router({
           and(
             eq(mealAccountabilityRecords.id, input.id),
             eq(mealAccountabilityRecords.organizationId, organizationId),
-            eq(mealAccountabilityRecords.isDeleted, false)
+            eq(mealAccountabilityRecords.isDeleted, 0)
           )
         )
         .limit(1);
@@ -100,7 +102,7 @@ export const mealAccountabilityRouter = router({
       
       const conditions = [
         eq(mealAccountabilityRecords.organizationId, organizationId),
-        eq(mealAccountabilityRecords.isDeleted, false),
+        eq(mealAccountabilityRecords.isDeleted, 0),
       ];
       
       if (operatingUnitId) {
@@ -252,8 +254,8 @@ export const mealAccountabilityRouter = router({
       await db
         .update(mealAccountabilityRecords)
         .set({
-          isDeleted: true,
-          deletedAt: new Date(),
+          isDeleted: 1,
+          deletedAt: nowSql,
           deletedBy: ctx.user?.id,
         })
         .where(and(eq(mealAccountabilityRecords.id, input.id), eq(mealAccountabilityRecords.organizationId, organizationId)));
@@ -277,7 +279,7 @@ export const mealAccountabilityRouter = router({
         .set({
           status: 'resolved',
           resolution: input.resolution,
-          resolvedAt: new Date(),
+          resolvedAt: nowSql,
           resolvedBy: ctx.user?.id,
           updatedBy: ctx.user?.id,
         })

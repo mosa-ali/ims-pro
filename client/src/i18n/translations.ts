@@ -211,7 +211,6 @@ export interface Translations {
  orgCode: string;
  orgStatus: string;
  orgProjects: string;
- orgUsers: string;
  orgActions: string;
  viewOrg: string;
  noOrganizations: string;
@@ -525,8 +524,6 @@ export interface Translations {
  statusPlanned: string;
  statusSubmitted: string;
  statusApproved: string;
- statusInProgress: string;
- statusCompleted: string;
  statusCancelled: string;
  // Departments
  deptProgram: string;
@@ -649,7 +646,6 @@ export interface Translations {
  noTasksFoundClickAdd: string;
  totalEstHours: string;
  taskEstHours: string;
- taskActualHours: string;
  hours: string;
  indicatorsPageTitle: string;
  indicatorsPageSubtitle: string;
@@ -2913,7 +2909,6 @@ export interface Translations {
  // ========== RISK & COMPLIANCE ==========
  riskCompliance: {
  // Page Title & Description
- title: string;
  subtitle: string;
  
  // Tabs
@@ -5426,6 +5421,7 @@ export interface Translations {
     childProtection: string;
     chooseFormat: string;
     close: string;
+    closed: string;
     compact: string;
     completed: string;
     completionRate: string;
@@ -6085,7 +6081,6 @@ export interface Translations {
     enus: string;
     exchangeRate: string;
     exchangeTo: string;
-    expired: string;
     expiringSoon: string;
     export: string;
     exportFailed: string;
