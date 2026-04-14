@@ -152,8 +152,8 @@ export const authRouter = router({
         await database
           .update(users)
           .set({
-            name: userInfo.displayName || null,
-            email: userInfo.email ?? null,
+            name: userInfo.displayName,
+            email: userInfo.email,
             loginMethod: "microsoft",
             organizationId: orgContext.organizationId,
             lastSignedIn: nowSql,
@@ -653,6 +653,22 @@ export const authRouter = router({
 
             // ✅ FIX: upsertUser does not accept authenticationProvider — use direct upsert then update
             const openId = `ms-${user.id}`;
+            // 🔒 VALIDATION BEFORE IMPORT
+              if (!user.userPrincipalName || !user.userPrincipalName.trim()) {
+                failedUsers.push({ userId, reason: 'Missing email' });
+                continue;
+              }
+
+              if (!user.displayName || !user.displayName.trim()) {
+                failedUsers.push({ userId, reason: 'Missing display name' });
+                continue;
+              }
+
+              if (user.userPrincipalName === "temp@system.local") {
+                failedUsers.push({ userId, reason: 'Invalid system email' });
+                continue;
+              }
+
             await db.upsertUser({
               openId,
               name: user.displayName,
