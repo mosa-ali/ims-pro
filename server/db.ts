@@ -3130,7 +3130,17 @@ export async function restoreOrgRecord(entityType: string, entityId: number): Pr
     return { success: false, message: error instanceof Error ? error.message : 'Unknown error' };
   }
 }
+  export async function updateUserLastLogin(userId: number, lastLogin: string) {
+  const database = await getDb();
 
+  await database
+    .update(users)
+    .set({
+      lastSignedIn: lastLogin,
+      updatedAt: lastLogin,
+    })
+    .where(eq(users.id, userId));
+}
 // ============================================================================
 // BUDGET ANALYSIS EXPENSES HELPERS
 // ============================================================================
