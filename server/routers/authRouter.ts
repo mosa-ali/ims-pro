@@ -19,6 +19,7 @@ import { getSessionCookieOptions } from "../_core/cookies";
 import * as db from "../db";
 import { ENV } from "../_core/env";
 import { sendPasswordResetEmail } from "../services/emailService";
+import { sdk } from "../_core/sdk";
 
 export const authRouter = router({
   // ============================================
@@ -117,7 +118,7 @@ export const authRouter = router({
   logout: publicProcedure.mutation(async ({ ctx }) => {
     try {
       const cookieOptions = getSessionCookieOptions(ctx.req);
-      ctx.res.clearCookie(COOKIE_NAME, { ...cookieOptions, maxAge: -1 });
+      ctx.res.clearCookie(COOKIE_NAME, { ...cookieOptions });
       return { success: true };
     } catch (error) {
       console.error("[authRouter] logout error:", error);
@@ -166,7 +167,6 @@ export const authRouter = router({
         const cookieOptions = getSessionCookieOptions(ctx.req);
         ctx.res.cookie(COOKIE_NAME, String(user.id), {
           ...cookieOptions,
-          maxAge: ONE_YEAR_MS,
         });
 
         return {
@@ -227,8 +227,9 @@ export const authRouter = router({
         const cookieOptions = getSessionCookieOptions(ctx.req);
         ctx.res.cookie(COOKIE_NAME, String(user.id), {
           ...cookieOptions,
-          maxAge: ONE_YEAR_MS,
         });
+
+        console.log(`[Auth] Email login successful for: ${user.email}`);
 
         return {
           success: true,
@@ -339,6 +340,12 @@ export const authRouter = router({
 
         // Get user by email
         const user = await db.getUserByEmail(input.email);
+        if (user && user.email === "temp@system.local") {
+            return {
+              success: true,
+              message: "Invalid system user",
+            };
+          }
         if (!user) {
           // Don't reveal if user exists
           return {
