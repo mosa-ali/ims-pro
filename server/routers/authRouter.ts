@@ -367,11 +367,6 @@ export const authRouter = router({
         }
 
         // ─────────────────────────────────────────────────────────────────
-        // 3️⃣ GENERATE STABLE OPENID FOR SESSION
-        // ─────────────────────────────────────────────────────────────────
-        // ✅ FIX: second arg is user.id (number), NOT the user object
-        const openId = buildLocalOpenId(user.email, user.id);
-
         // ─────────────────────────────────────────────────────────────────
         // 4️⃣ UPDATE USER IN DATABASE
         // ─────────────────────────────────────────────────────────────────
@@ -389,7 +384,7 @@ export const authRouter = router({
         // ─────────────────────────────────────────────────────────────────
         // 5️⃣ CREATE JWT SESSION TOKEN
         // ─────────────────────────────────────────────────────────────────
-        const sessionToken = await sdk.createSessionToken(openId, {
+        const sessionToken = await sdk.createSessionToken(user.email, {
           name: user.name || "",
         });
 
