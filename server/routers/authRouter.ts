@@ -15,10 +15,10 @@ import { sendPasswordResetEmail, sendPasswordChangedEmail } from "../services/em
 import { users } from "../../drizzle/schema";
 import * as db from "../db";
 
-function buildLocalOpenId(email: string, userId: number) {
-  if (!email) return `local-user-${userId}`;
-  return `local-${email.toLowerCase().replace(/[^a-z0-9]/g, "-")}`;
+function buildLocalOpenId(email: string, userId: number): string {
+  return `local-${userId}-${email}`;
 }
+
 /**
  * ✅ FINAL CORRECTED authRouter
  *
@@ -373,6 +373,12 @@ export const authRouter = router({
         // 3️⃣ GENERATE STABLE OPENID FOR SESSION
         // ─────────────────────────────────────────────────────────────────
         // ✅ FIX: second arg is user.id (number), NOT the user object
+        const openId = buildLocalOpenId(user.email, user.id);
+
+        // ─────────────────────────────────────────────────────────────────
+        // 3️⃣ GENERATE STABLE OPENID FOR SESSION
+        // ─────────────────────────────────────────────────────────────────
+        // ✅ FIX: second arg is user.id (number), NOT the user object
         function buildLocalOpenId(email: string, userId: number): string {
           return `local-${userId}-${email}`;
         }
@@ -385,7 +391,7 @@ export const authRouter = router({
         await database
           .update(users)
           .set({
-            user,
+            openId,
             loginMethod: "email",
             lastSignedIn: nowSql,
           })
@@ -394,7 +400,7 @@ export const authRouter = router({
         // ─────────────────────────────────────────────────────────────────
         // 5️⃣ CREATE JWT SESSION TOKEN
         // ─────────────────────────────────────────────────────────────────
-        const sessionToken = await sdk.createSessionToken(user.email, {
+        const sessionToken = await sdk.createSessionToken(openId, {
           name: user.name || "",
         });
 
