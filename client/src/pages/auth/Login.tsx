@@ -26,7 +26,7 @@ export default function Login() {
   });
 
     const microsoftStatusQuery = trpc.auth.microsoftStatus.useQuery(undefined, {
-    retry: true,
+    retry: false,
     refetchOnWindowFocus: false,
   });
 
