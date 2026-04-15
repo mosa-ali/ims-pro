@@ -8,18 +8,23 @@
  * - Database schema: microsoftObjectId, emailVerified, passwordHash, etc.
  */
 
-import { z } from "zod";
 import { router, publicProcedure, protectedProcedure } from "../_core/trpc";
-import { graphAuthService } from "../services/microsoft/graphAuthService";
+import { z } from "zod";
+import { entraIdAuthService } from "../_core/entraIdAuth";
 import { graphUserService } from "../services/microsoft/graphUserService";
 import { EmailPasswordAuthService } from "../services/auth/emailPasswordAuthService";
+import { tenantOrganizationMappingService } from "../services/microsoft/tenantOrganizationMappingService";
 import { TRPCError } from "@trpc/server";
-import { COOKIE_NAME, ONE_YEAR_MS } from "@shared/const";
-import { getSessionCookieOptions } from "../_core/cookies";
-import * as db from "../db";
-import { ENV } from "../_core/env";
-import { sendPasswordResetEmail } from "../services/emailService";
 import { sdk } from "../_core/sdk";
+import { getSessionCookieOptions } from "../_core/cookies";
+import { getDb } from "../db";
+import { COOKIE_NAME } from "@shared/const";
+import { ENV } from "../_core/env";
+import { eq } from "drizzle-orm";
+import { sendPasswordResetEmail, sendPasswordChangedEmail } from "../services/emailService";
+import { users } from "../../drizzle/schema";
+import * as db from "../db";
+
 
 export const authRouter = router({
   // ============================================
@@ -438,16 +443,42 @@ export const authRouter = router({
 
   /**
    * Get current user info
-   * Returns: { user: {...} }
    */
-  me: publicProcedure.query(async ({ ctx }) => {
+me: protectedProcedure.query(async ({ ctx }) => {
     try {
-      return { user: ctx.user || null };
-    } catch (error) {
-      console.error("[authRouter] me error:", error);
+      if (!ctx.user ) {
+        throw new TRPCError({
+          code: "UNAUTHORIZED",
+          message: "Not authenticated",
+        });
+      }
+
+      const database = await getDb();
+      const [user] = await database
+        .select()
+        .from(users)
+        .where(eq(users.id, ctx.user.id))
+        .limit(1);
+
+      if (!user) {
+        throw new TRPCError({
+          code: "UNAUTHORIZED",
+          message: "User not found",
+        });
+      }
+
+      return {
+        id: user.id,
+        email: user.email,
+        name: user.name,
+        role: user.role,
+        organizationId: user.organizationId,
+      };
+    } catch (err) {
+      console.error('[Auth] me procedure error:', err);
       throw new TRPCError({
-        code: "INTERNAL_SERVER_ERROR",
-        message: "Failed to retrieve user info",
+        code: "UNAUTHORIZED",
+        message: "Authentication failed",
       });
     }
   }),
