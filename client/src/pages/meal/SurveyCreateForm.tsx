@@ -331,7 +331,7 @@ export function SurveyCreateForm() {
  }}
  className={`w-full px-4 py-3 hover:bg-blue-50 transition-colors border-b border-gray-100 last:border-0 text-start`}
  >
- <span className="text-sm font-semibold text-gray-900">{project.projectCode}</span>
+ <span className="text-sm font-semibold text-gray-900">{project.code}</span>
  <p className="text-sm text-gray-600">{project.title}</p>
  </button>
  ))}
