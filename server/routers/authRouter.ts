@@ -15,7 +15,10 @@ import { sendPasswordResetEmail, sendPasswordChangedEmail } from "../services/em
 import { users } from "../../drizzle/schema";
 import * as db from "../db";
 
-
+function buildLocalOpenId(email: string, userId: number) {
+  if (!email) return `local-user-${userId}`;
+  return `local-${email.toLowerCase().replace(/[^a-z0-9]/g, "-")}`;
+}
 /**
  * ✅ FINAL CORRECTED authRouter
  *
@@ -367,6 +370,13 @@ export const authRouter = router({
         }
 
         // ─────────────────────────────────────────────────────────────────
+        // 3️⃣ GENERATE STABLE OPENID FOR SESSION
+        // ─────────────────────────────────────────────────────────────────
+        // ✅ FIX: second arg is user.id (number), NOT the user object
+        function buildLocalOpenId(email: string, userId: number): string {
+          return `local-${userId}-${email}`;
+        }
+
         // ─────────────────────────────────────────────────────────────────
         // 4️⃣ UPDATE USER IN DATABASE
         // ─────────────────────────────────────────────────────────────────
@@ -375,7 +385,7 @@ export const authRouter = router({
         await database
           .update(users)
           .set({
-            openId,
+            user,
             loginMethod: "email",
             lastSignedIn: nowSql,
           })
