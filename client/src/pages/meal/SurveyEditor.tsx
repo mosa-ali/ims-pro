@@ -127,7 +127,6 @@ const QUESTION_TYPES: {
 
 // ✅ Icon mapping for each question type
 const getQuestionIcon = (type: QuestionType) => {
- const { t } = useTranslation();
  const iconMap = {
  select_one: ListChecks,
  select_multiple: CheckSquare,

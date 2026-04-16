@@ -113,6 +113,7 @@ import { emailTemplateVersionRouter } from "./routers/emailTemplateVersionRouter
 import { z } from "zod";
 import { bidderAcknowledgementSignatures, serviceAcceptanceCertificates, contracts, vendors, users } from "../drizzle/schema";
 import { rbacRolesRouter } from "./routers/auth/rbacRolesRouter";
+import { mealExportRouter } from "./mealExportRouter";
 
 export const appRouter = router({
   // Public signature verification (no auth required)
@@ -217,7 +218,6 @@ export const appRouter = router({
   loginWithEmail: authRouter.getMicrosoftLoginUrl,
   emailSignIn: authRouter.emailSignIn,
   logout: authRouter.logout,
-  registerWithEmail: authRouter.registerWithEmail,
   bulkImportMicrosoft365Users: authRouter.bulkImportMicrosoft365Users,
   requestPasswordReset: authRouter.requestPasswordReset,
   resetPassword: authRouter.resetPassword,
@@ -324,6 +324,7 @@ export const appRouter = router({
   mealLearning: mealLearningRouter,
   mealDqa: mealDqaRouter,
   mealSettings: mealSettingsRouter,
+  mealExport: mealExportRouter,
 
   // HR Module (Human Resources Management)
   hrEmployees: hrEmployeesRouter,

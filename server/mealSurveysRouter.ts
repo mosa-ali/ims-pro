@@ -12,7 +12,6 @@ const nowSql = new Date().toISOString().slice(0, 19).replace('T', ' ');
 /**
  * Middleware: Enforce RBAC for Surveys (sensitive workspace).
  * Requires explicit screen-level permission for surveys.
- * MANDATORY: All survey operations must use this procedure.
  */
 const surveyProcedure = scopedProcedure.use(async ({ ctx, next }) => {
   const userId = ctx.user?.id;
@@ -21,10 +20,7 @@ const surveyProcedure = scopedProcedure.use(async ({ ctx, next }) => {
   if (isPlatformAdmin(ctx.user?.role)) return next({ ctx });
   const allowed = await canAccess(userId, orgId, 'meal', 'surveys', undefined, 'view');
   if (!allowed) {
-    throw new TRPCError({ 
-      code: 'FORBIDDEN', 
-      message: 'You do not have permission to access Surveys. This is a sensitive workspace requiring explicit authorization.' 
-    });
+    throw new TRPCError({ code: 'FORBIDDEN', message: 'You do not have permission to access Surveys. This is a sensitive workspace requiring explicit authorization.' });
   }
   await logSensitiveAccess(userId, orgId, null, 'sensitive_access', 'meal', 'surveys', 'survey_management');
   return next({ ctx });
@@ -32,21 +28,13 @@ const surveyProcedure = scopedProcedure.use(async ({ ctx, next }) => {
 
 /**
  * MEAL Surveys Router - Survey Management for MEAL Module
+ * MANDATORY: All queries filter isDeleted = false
+ * MANDATORY: Delete operations use soft delete only (no hard delete)
  * 
- * COMPLIANCE REQUIREMENTS:
- * ✅ All queries filter isDeleted = 0 (soft delete enforcement)
- * ✅ Delete operations use soft delete only (no hard delete allowed)
- * ✅ All procedures use surveyProcedure (scopedProcedure with RBAC)
- * ✅ organizationId and operatingUnitId automatically injected from ctx.scope
- * ✅ Cross-entity validation (Survey ↔ Project scope matching)
- * ✅ All questions include organizationId and operatingUnitId
- * ✅ createdBy and updatedBy tracked for audit trail
+ * PLATFORM-LEVEL ISOLATION: Uses surveyProcedure to automatically inject
+ * organizationId and operatingUnitId from HTTP headers via ctx.scope
  */
 export const mealSurveysRouter = router({
-  // ============================================================================
-  // SURVEY MANAGEMENT
-  // ============================================================================
-  
   // Get all surveys for an organization (excludes soft-deleted)
   // Uses surveyProcedure - organizationId and operatingUnitId come from ctx.scope
   getAll: surveyProcedure
@@ -80,7 +68,7 @@ export const mealSurveysRouter = router({
         .orderBy(desc(mealSurveys.createdAt));
     }),
 
-  // Get single survey by ID with complete scope validation
+  // Get single survey by ID
   // Uses surveyProcedure - organizationId and operatingUnitId come from ctx.scope
   getById: surveyProcedure
     .input(z.object({ id: z.number() }))
@@ -103,79 +91,7 @@ export const mealSurveysRouter = router({
         )
         .limit(1);
       
-      if (!result[0]) {
-        throw new TRPCError({ 
-          code: 'NOT_FOUND', 
-          message: 'Survey not found or access denied' 
-        });
-      }
-      
-      return result[0];
-    }),
-
-  // Get survey with all related data (questions + submissions count)
-  // Uses surveyProcedure - organizationId and operatingUnitId come from ctx.scope
-  getWithDetails: surveyProcedure
-    .input(z.object({ id: z.number() }))
-    .query(async ({ ctx, input }) => {
-      const db = await getDb();
-      if (!db) throw new Error("Database not available");
-      
-      const { organizationId, operatingUnitId } = ctx.scope;
-      
-      // Get survey with scope validation
-      const [survey] = await db
-        .select()
-        .from(mealSurveys)
-        .where(
-          and(
-            eq(mealSurveys.id, input.id),
-            eq(mealSurveys.organizationId, organizationId),
-            eq(mealSurveys.operatingUnitId, operatingUnitId),
-            eq(mealSurveys.isDeleted, 0)
-          )
-        )
-        .limit(1);
-      
-      if (!survey) {
-        throw new TRPCError({ 
-          code: 'NOT_FOUND', 
-          message: 'Survey not found or access denied' 
-        });
-      }
-      
-      // Get questions with scope validation
-      const questions = await db
-        .select()
-        .from(mealSurveyQuestions)
-        .where(
-          and(
-            eq(mealSurveyQuestions.surveyId, input.id),
-            eq(mealSurveyQuestions.organizationId, organizationId),
-            eq(mealSurveyQuestions.operatingUnitId, operatingUnitId),
-            eq(mealSurveyQuestions.isDeleted, 0)
-          )
-        )
-        .orderBy(mealSurveyQuestions.order);
-      
-      // Get submission count
-      const submissionCountResult = await db
-        .select({ count: count() })
-        .from(mealSurveySubmissions)
-        .where(
-          and(
-            eq(mealSurveySubmissions.surveyId, input.id),
-            eq(mealSurveySubmissions.organizationId, organizationId),
-            eq(mealSurveySubmissions.operatingUnitId, operatingUnitId),
-            eq(mealSurveySubmissions.isDeleted, 0)
-          )
-        );
-      
-      return {
-        ...survey,
-        questions,
-        submissionCount: submissionCountResult[0]?.count || 0,
-      };
+      return result[0] || null;
     }),
 
   // Get statistics for dashboard
@@ -226,7 +142,7 @@ export const mealSurveysRouter = router({
       };
     }),
 
-  // Create survey with cross-entity validation
+  // Create survey
   // Uses surveyProcedure - organizationId and operatingUnitId come from ctx.scope
   create: surveyProcedure
     .input(z.object({
@@ -238,9 +154,9 @@ export const mealSurveysRouter = router({
       descriptionAr: z.string().optional(),
       surveyType: z.enum(["baseline", "endline", "monitoring", "assessment", "feedback", "custom"]).default("custom"),
       status: z.enum(["draft", "published", "closed", "archived"]).default("draft"),
-      isAnonymous: 0,
-      allowMultipleSubmissions: 0,
-      requiresApproval: 0,
+      isAnonymous: z.boolean().default(false),
+      allowMultipleSubmissions: z.boolean().default(false),
+      requiresApproval: z.boolean().default(false),
       startDate: z.string().optional(),
       endDate: z.string().optional(),
       formConfig: z.any().optional(),
@@ -250,28 +166,6 @@ export const mealSurveysRouter = router({
       if (!db) throw new Error("Database not available");
       
       const { organizationId, operatingUnitId } = ctx.scope;
-      
-      // Cross-entity validation: If projectId provided, verify it belongs to same scope
-      if (input.projectId) {
-        const [project] = await db
-          .select()
-          .from(projects)
-          .where(
-            and(
-              eq(projects.id, input.projectId),
-              eq(projects.organizationId, organizationId),
-              eq(projects.operatingUnitId, operatingUnitId)
-            )
-          )
-          .limit(1);
-        
-        if (!project) {
-          throw new TRPCError({ 
-            code: 'BAD_REQUEST', 
-            message: 'Project not found in current scope' 
-          });
-        }
-      }
       
       const result = await db.insert(mealSurveys).values({
         organizationId,
@@ -297,7 +191,7 @@ export const mealSurveysRouter = router({
       return { id: result[0].insertId, success: true };
     }),
 
-  // Update survey with scope validation
+  // Update survey
   // Uses surveyProcedure - organizationId and operatingUnitId come from ctx.scope
   update: surveyProcedure
     .input(z.object({
@@ -335,10 +229,7 @@ export const mealSurveysRouter = router({
         .limit(1);
       
       if (!survey) {
-        throw new TRPCError({ 
-          code: 'NOT_FOUND', 
-          message: 'Survey not found or access denied' 
-        });
+        throw new Error("Survey not found");
       }
       
       // ✅ FIXED: Convert booleans before update
@@ -392,13 +283,10 @@ export const mealSurveysRouter = router({
         .limit(1);
       
       if (!survey) {
-        throw new TRPCError({ 
-          code: 'NOT_FOUND', 
-          message: 'Survey not found or access denied' 
-        });
+        throw new Error("Survey not found");
       }
       
-      // MANDATORY: Soft delete only - set isDeleted = 1
+      // MANDATORY: Soft delete only - set isDeleted = true
       await db
         .update(mealSurveys)
         .set({
@@ -419,15 +307,12 @@ export const mealSurveysRouter = router({
   // SURVEY QUESTIONS SUB-ROUTER
   // ============================================================================
   questions: router({
-    // Get all questions for a survey with scope validation
-    // MANDATORY: Includes organizationId and operatingUnitId filters
+    // Get all questions for a survey
     getBySurvey: surveyProcedure
       .input(z.object({ surveyId: z.number() }))
-      .query(async ({ ctx, input }) => {
+      .query(async ({ input }) => {
         const db = await getDb();
         if (!db) throw new Error("Database not available");
-        
-        const { organizationId, operatingUnitId } = ctx.scope;
         
         return await db
           .select()
@@ -435,8 +320,6 @@ export const mealSurveysRouter = router({
           .where(
             and(
               eq(mealSurveyQuestions.surveyId, input.surveyId),
-              eq(mealSurveyQuestions.organizationId, organizationId),
-              eq(mealSurveyQuestions.operatingUnitId, operatingUnitId),
               eq(mealSurveyQuestions.isDeleted, 0)
             )
           )
@@ -590,33 +473,13 @@ export const mealSurveysRouter = router({
         
         return { success: true };
       }),
-
-    // Soft delete question with scope validation
+      
+    // Soft delete question
     delete: surveyProcedure
       .input(z.object({ id: z.number() }))
       .mutation(async ({ input, ctx }) => {
         const db = await getDb();
         if (!db) throw new Error("Database not available");
-        
-        const { organizationId, operatingUnitId } = ctx.scope;
-        
-        // Verify question belongs to current scope
-        const [question] = await db
-          .select()
-          .from(mealSurveyQuestions)
-          .where(and(
-            eq(mealSurveyQuestions.id, input.id),
-            eq(mealSurveyQuestions.organizationId, organizationId),
-            eq(mealSurveyQuestions.operatingUnitId, operatingUnitId)
-          ))
-          .limit(1);
-        
-        if (!question) {
-          throw new TRPCError({ 
-            code: 'NOT_FOUND', 
-            message: 'Question not found or access denied' 
-          });
-        }
         
         await db
           .update(mealSurveyQuestions)
@@ -630,7 +493,7 @@ export const mealSurveysRouter = router({
         return { success: true };
       }),
 
-    // Bulk update order with scope validation
+    // Bulk update order
     updateOrder: surveyProcedure
       .input(z.object({
         surveyId: z.number(),
@@ -639,42 +502,14 @@ export const mealSurveysRouter = router({
           order: z.number(),
         })),
       }))
-      .mutation(async ({ input, ctx }) => {
+      .mutation(async ({ input }) => {
         const db = await getDb();
         if (!db) throw new Error("Database not available");
         
-        const { organizationId, operatingUnitId } = ctx.scope;
-        
-        // Verify all questions belong to survey in current scope
-        for (const q of input.questions) {
-          const [question] = await db
-            .select()
-            .from(mealSurveyQuestions)
-            .where(and(
-              eq(mealSurveyQuestions.id, q.id),
-              eq(mealSurveyQuestions.surveyId, input.surveyId),
-              eq(mealSurveyQuestions.organizationId, organizationId),
-              eq(mealSurveyQuestions.operatingUnitId, operatingUnitId)
-            ))
-            .limit(1);
-          
-          if (!question) {
-            throw new TRPCError({ 
-              code: 'NOT_FOUND', 
-              message: `Question ${q.id} not found or access denied` 
-            });
-          }
-        }
-        
-        // Update all questions
         for (const q of input.questions) {
           await db
             .update(mealSurveyQuestions)
-            .set({ 
-              order: q.order,
-              updatedBy: ctx.user?.id,
-              updatedAt: nowSql,
-            })
+            .set({ order: q.order })
             .where(eq(mealSurveyQuestions.id, q.id));
         }
         
@@ -686,8 +521,8 @@ export const mealSurveysRouter = router({
   // SURVEY SUBMISSIONS SUB-ROUTER
   // ============================================================================
   submissions: router({
-    // Get all submissions for a survey with scope validation
-    // MANDATORY: Filters by organizationId and operatingUnitId
+    // Get all submissions for a survey
+    // Uses surveyProcedure - organizationId and operatingUnitId come from ctx.scope
     getBySurvey: surveyProcedure
       .input(z.object({
         surveyId: z.number(),
@@ -717,7 +552,8 @@ export const mealSurveysRouter = router({
           .orderBy(desc(mealSurveySubmissions.submittedAt));
       }),
 
-    // Get single submission by ID with scope validation
+    // Get single submission by ID
+    // Uses surveyProcedure - organizationId and operatingUnitId come from ctx.scope
     getById: surveyProcedure
       .input(z.object({ id: z.number() }))
       .query(async ({ ctx, input }) => {
@@ -739,18 +575,11 @@ export const mealSurveysRouter = router({
           )
           .limit(1);
         
-        if (!result[0]) {
-          throw new TRPCError({ 
-            code: 'NOT_FOUND', 
-            message: 'Submission not found or access denied' 
-          });
-        }
-        
-        return result[0];
+        return result[0] || null;
       }),
 
-    // Create submission with scope enforcement
-    // MANDATORY: Sets organizationId and operatingUnitId from ctx.scope
+    // Create submission
+    // Uses surveyProcedure - organizationId and operatingUnitId come from ctx.scope
     create: surveyProcedure
       .input(z.object({
         surveyId: z.number(),
@@ -769,24 +598,6 @@ export const mealSurveysRouter = router({
         const { organizationId, operatingUnitId } = ctx.scope;
         const db = await getDb();
         if (!db) throw new Error("Database not available");
-        
-        // Verify survey belongs to current scope
-        const [survey] = await db
-          .select()
-          .from(mealSurveys)
-          .where(and(
-            eq(mealSurveys.id, input.surveyId),
-            eq(mealSurveys.organizationId, organizationId),
-            eq(mealSurveys.operatingUnitId, operatingUnitId)
-          ))
-          .limit(1);
-        
-        if (!survey) {
-          throw new TRPCError({ 
-            code: 'NOT_FOUND', 
-            message: 'Survey not found or access denied' 
-          });
-        }
         
         const result = await db.insert(mealSurveySubmissions).values({
           surveyId: input.surveyId,
@@ -808,7 +619,8 @@ export const mealSurveysRouter = router({
         return { id: result[0].insertId, success: true };
       }),
 
-    // Update validation status with scope validation
+    // Update validation status
+    // Uses surveyProcedure - organizationId and operatingUnitId come from ctx.scope
     updateValidation: surveyProcedure
       .input(z.object({
         id: z.number(),
@@ -833,10 +645,7 @@ export const mealSurveysRouter = router({
           .limit(1);
         
         if (!submission) {
-          throw new TRPCError({ 
-            code: 'NOT_FOUND', 
-            message: 'Submission not found or access denied' 
-          });
+          throw new Error("Submission not found");
         }
         
         await db
@@ -856,7 +665,8 @@ export const mealSurveysRouter = router({
         return { success: true };
       }),
 
-    // Soft delete submission with scope validation
+    // Soft delete submission
+    // Uses surveyProcedure - organizationId and operatingUnitId come from ctx.scope
     delete: surveyProcedure
       .input(z.object({ id: z.number() }))
       .mutation(async ({ input, ctx }) => {
@@ -877,10 +687,7 @@ export const mealSurveysRouter = router({
           .limit(1);
         
         if (!submission) {
-          throw new TRPCError({ 
-            code: 'NOT_FOUND', 
-            message: 'Submission not found or access denied' 
-          });
+          throw new Error("Submission not found");
         }
         
         await db
@@ -899,7 +706,8 @@ export const mealSurveysRouter = router({
         return { success: true };
       }),
 
-    // Get statistics for a survey with scope validation
+    // Get statistics for a survey
+    // Uses surveyProcedure - organizationId and operatingUnitId come from ctx.scope
     getStatistics: surveyProcedure
       .input(z.object({ surveyId: z.number() }))
       .query(async ({ ctx, input }) => {

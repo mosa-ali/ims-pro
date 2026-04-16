@@ -3447,6 +3447,7 @@ export const mealIndicatorDataEntries = mysqlTable("meal_indicator_data_entries"
 export const mealIndicatorTemplates = mysqlTable("meal_indicator_templates", {
 	id: int().autoincrement().primaryKey().notNull(),
 	organizationId: int().notNull(),
+	operatingUnitId: int(),
 	name: varchar({ length: 500 }).notNull(),
 	code: varchar({ length: 100 }),
 	unitOfMeasure: varchar({ length: 100 }),
@@ -3455,11 +3456,22 @@ export const mealIndicatorTemplates = mysqlTable("meal_indicator_templates", {
 	disaggregationFields: json(),
 	defaultTargets: json(),
 	active: tinyint().default(1).notNull(),
+	createdBy: int(),
+	updatedBy: int(),
 	createdAt: timestamp({ mode: 'string' }).defaultNow().notNull(),
 	updatedAt: timestamp({ mode: 'string' }).defaultNow().onUpdateNow().notNull(),
 	deletedAt: timestamp({ mode: 'string' }),
 	isDeleted: tinyint().default(0).notNull(),
 	deletedBy: int(),
+},
+(table) => {
+  return {
+    idxScopeDeleted: index("idx_meal_indicator_templates_scope_deleted").on(
+      table.organizationId,
+      table.operatingUnitId,
+      table.isDeleted
+    ),
+  };
 });
 
 export const mealLearningActions = mysqlTable("meal_learning_actions", {
@@ -3588,7 +3600,7 @@ export const mealSurveyQuestions = mysqlTable(
 export const mealSurveyStandards = mysqlTable("meal_survey_standards", {
 	id: int().autoincrement().primaryKey().notNull(),
 	organizationId: int().notNull(),
-	operatingUnitId: int(),
+	operatingUnitId: int().notNull(),
 	standardName: varchar({ length: 500 }).notNull(),
 	validationRules: json(),
 	requiredFields: json(),
@@ -3601,13 +3613,22 @@ export const mealSurveyStandards = mysqlTable("meal_survey_standards", {
 	deletedAt: timestamp({ mode: 'string' }),
 	isDeleted: tinyint().default(0).notNull(),
 	deletedBy: int(),
+},
+(table) => {
+  return {
+    idxScopeDeleted: index("idx_meal_survey_standards_scope_deleted").on(
+      table.organizationId,
+      table.operatingUnitId,
+      table.isDeleted
+    ),
+  };
 });
 
 export const mealSurveySubmissions = mysqlTable("meal_survey_submissions", {
 	id: int().autoincrement().primaryKey().notNull(),
 	surveyId: int().notNull(),
 	organizationId: int().notNull(),
-	operatingUnitId: int(),
+	operatingUnitId: int().notNull(),
 	projectId: int(),
 	submissionCode: varchar({ length: 50 }).notNull(),
 	respondentName: varchar({ length: 255 }),
@@ -3624,17 +3645,33 @@ export const mealSurveySubmissions = mysqlTable("meal_survey_submissions", {
 	longitude: decimal({ precision: 11, scale: 8 }),
 	locationName: varchar({ length: 255 }),
 	deviceInfo: json(),
+	createdBy: int(),
+	updatedBy: int(),
 	isDeleted: tinyint().default(0).notNull(),
 	deletedAt: timestamp({ mode: 'string' }),
 	deletedBy: int(),
 	createdAt: timestamp({ mode: 'string' }).defaultNow().notNull(),
 	updatedAt: timestamp({ mode: 'string' }).defaultNow().onUpdateNow().notNull(),
+},
+(table) => {
+  return {
+    idxScopeDeleted: index("idx_meal_survey_submissions_scope_deleted").on(
+      table.organizationId,
+      table.operatingUnitId,
+      table.isDeleted
+    ),
+    idxSurveyScope: index("idx_meal_survey_submissions_survey_scope").on(
+      table.surveyId,
+      table.organizationId,
+      table.operatingUnitId
+    ),
+  };
 });
 
 export const mealSurveys = mysqlTable("meal_surveys", {
 	id: int().autoincrement().primaryKey().notNull(),
 	organizationId: int().notNull(),
-	operatingUnitId: int(),
+	operatingUnitId: int().notNull(),
 	projectId: int(),
 	surveyCode: varchar({ length: 50 }).notNull(),
 	title: varchar({ length: 255 }).notNull(),
@@ -3658,6 +3695,19 @@ export const mealSurveys = mysqlTable("meal_surveys", {
 	updatedAt: timestamp({ mode: 'string' }).defaultNow().onUpdateNow().notNull(),
 	createdBy: int(),
 	updatedBy: int(),
+},
+(table) => {
+  return {
+    idxScopeDeleted: index("idx_meal_surveys_scope_deleted").on(
+      table.organizationId,
+      table.operatingUnitId,
+      table.isDeleted
+    ),
+    idxScope: index("idx_meal_surveys_scope").on(
+      table.organizationId,
+      table.operatingUnitId
+    ),
+  };
 });
 
 export const microsoftIntegrations = mysqlTable("microsoft_integrations", {
