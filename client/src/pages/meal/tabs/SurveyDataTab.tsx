@@ -24,6 +24,8 @@ import { useTranslation } from '@/i18n/useTranslation';
 
 interface Props {
  survey: any;
+ projectId?: string;
+ projectName?: string;
 }
 
 type DataSubTab = 'table' | 'reports' | 'gallery' | 'files' | 'downloads' | 'map';
@@ -54,12 +56,12 @@ export function SurveyDataTab({
  };
 
  const subTabs: Array<{ key: DataSubTab; label: string; icon: any }> = [
- { key: 'table', label: t.table, icon: Table },
- { key: 'reports', label: t.reports, icon: BarChart3 },
- { key: 'gallery', label: t.gallery, icon: Image },
- { key: 'files', label: t.files, icon: FileText },
- { key: 'downloads', label: t.downloads, icon: Download },
- { key: 'map', label: t.map, icon: Map },
+ { key: 'table', label: localT.table, icon: Table },
+ { key: 'reports', label: localT.reports, icon: BarChart3 },
+ { key: 'gallery', label: localT.gallery, icon: Image },
+ { key: 'files', label: localT.files, icon: FileText },
+ { key: 'downloads', label: localT.downloads, icon: Download },
+ { key: 'map', label: localT.map, icon: Map },
  ];
 
  // ✅ RTL: Reverse sub-tab order for Arabic
