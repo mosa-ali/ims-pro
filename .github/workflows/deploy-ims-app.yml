@@ -221,7 +221,7 @@ jobs:
           echo "IMPORTANT: Azure App Service Configuration"
           echo "============================================="
           echo "Please ensure these App Settings are configured in Azure:"
-          echo "1. SCM_DO_BUILD_DURING_DEPLOYMENT = false"
+          echo "1. SCM_DO_BUILD_DURING_DEPLOYMENT = true"
           echo "2. WEBSITE_NODE_DEFAULT_VERSION = ~22"
           echo "3. All required environment variables are set"
           echo "4. PDF_ENABLED = true (for PDF generation)"
