@@ -19,9 +19,9 @@
 import { useNavigate } from '@/lib/router-compat';
 import { useSearch } from 'wouter';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from '@/_core/hooks/useAuth';
 import { useState, useEffect } from 'react';
-import { Loader2, AlertCircle } from 'lucide-react';
+import { Loader2, AlertCircle, Plus } from 'lucide-react';
 import { surveyService, type SurveyType, type SurveyLanguage, type SurveyStatus } from '@/services/mealService';
 import { trpc } from '@/lib/trpc';
 import { Button } from '@/components/ui/button';
@@ -161,29 +161,32 @@ export function SurveyCreateForm() {
 
  setSaving(true);
  try {
- const data = {
- projectId,
- name: formName.trim(),
- description: description.trim(),
- type: surveyType,
- language: formLanguage,
- targetGroup: targetGroup.trim() || undefined,
- consentRequired,
- status,
- };
+ // ✅ CORRECT - Matches mealService Survey interface
+  const data = {
+  projectId: projectId ? String(projectId) : undefined,
+  surveyCode: `SRV-${Date.now()}`,
+  title: formName.trim(),
+  description: description?.trim() || undefined,
+  surveyType: surveyType,
+  status: status || "draft",
+  isAnonymous: false,
+  allowMultipleSubmissions: false,
+  requiresApproval: false,
+};
+
 
  let savedSurvey;
  if (isEditing) {
- savedSurvey = surveyService.updateSurvey(formId, data, user?.userId || 'system');
+savedSurvey = surveyService.updateSurvey(formId, data, String(user?.id) || 'system');
  } else {
- savedSurvey = surveyService.createSurvey(data, user?.userId || 'system');
+savedSurvey = surveyService.createSurvey(data, String(user?.id) || 'system');
  }
 
  setSuccess(labels.formSaved);
  
  // Navigate to Survey Editor after short delay
  setTimeout(() => {
- navigate(`/organization/meal/survey/editor?formId=${savedSurvey.id}&projectId=${projectId}&title=${encodeURIComponent(savedSurvey.title)}`);
+ navigate(`/organization/meal/survey/editor?formId=${savedSurvey.id}&projectId=${projectId}&title=${encodeURIComponent(savedSurvey.id)}`);
  }, 500);
  } catch (err: any) {
  setError(err.message || labels.saveError);
@@ -214,9 +217,9 @@ export function SurveyCreateForm() {
  };
 
  if (isEditing) {
- surveyService.updateSurvey(formId, data, user?.userId || 'system');
+surveyService.updateSurvey(formId, data, String(user?.id) || 'system');
  } else {
- surveyService.createSurvey(data, user?.userId || 'system');
+surveyService.createSurvey(data, String(user?.id) || 'system');
  }
 
  setSuccess(labels.draftSaved);

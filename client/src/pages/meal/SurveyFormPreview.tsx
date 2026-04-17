@@ -27,7 +27,7 @@ import { FormPreview } from '@/components/FormPreview';
 import { Button } from '@/components/ui/button';
 import { useTranslation } from '@/i18n/useTranslation';
 import { BackButton } from "@/components/BackButton";
-import { trpc } from '@/lib/trpc';
+import { trpc } from "@/lib/trpc";
 
 export function SurveyFormPreview() {
  const { t } = useTranslation();
@@ -53,16 +53,15 @@ export function SurveyFormPreview() {
  };
 
  // ✅ TRPC: Load survey data from backend
- const { data: survey, isLoading: surveyLoading, error: surveyError } = trpc.survey.getById.useQuery(
+ const { data: survey, isLoading: surveyLoading, error: surveyError } = trpc.mealSurveys.getById.useQuery(
    { id: surveyId! },
    { enabled: !!surveyId }
  );
 
  // ✅ TRPC: Load survey questions from backend
- const { data: questions, isLoading: questionsLoading } = trpc.survey.getQuestions.useQuery(
-   { surveyId: surveyId! },
-   { enabled: !!surveyId }
- );
+  const { data: questions, isLoading: questionsLoading } = surveyId
+  ? trpc.mealSurveys.questions.getBySurvey.useQuery({ surveyId })
+  : { data: [], isLoading: false };
 
  // ✅ Build survey data from tRPC responses
  useEffect(() => {

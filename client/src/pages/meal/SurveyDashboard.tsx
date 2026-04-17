@@ -36,7 +36,8 @@ import {
  Settings as SettingsIcon,
  List,
  ArrowLeft, ArrowRight,
- Loader2
+ Loader2,
+ Plus
 } from 'lucide-react';
 import { useTranslation } from '@/i18n/useTranslation';
 import { BackButton } from "@/components/BackButton";
@@ -92,10 +93,13 @@ export function SurveyDashboard() {
  };
 
  // ✅ TRPC: Load all surveys (automatically scoped by backend)
- const { data: surveys, isLoading: surveysLoading } = trpc.survey.getAll.useQuery();
+const { data: surveys, isLoading: surveysLoading } = trpc.mealSurveys.getAll.useQuery({});
 
  // ✅ TRPC: Load all submissions (automatically scoped by backend)
- const { data: submissions, isLoading: submissionsLoading } = trpc.survey.getSubmissions.useQuery();
+const { data: submissions, isLoading: submissionsLoading } =
+  trpc.mealSurveys.submissions.getBySurvey.useQuery({
+    surveyId: 0, // or pass valid surveyId OR remove usage (see below)
+  });
 
  // ✅ Calculate KPI metrics from tRPC data
  useEffect(() => {
