@@ -22,7 +22,9 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/_core/hooks/useAuth';
 import { useState, useEffect } from 'react';
 import { Loader2, AlertCircle, Plus } from 'lucide-react';
-import { surveyService, type SurveyType, type SurveyLanguage, type SurveyStatus } from '@/services/mealService';
+import { type SurveyType, type SurveyLanguage, type SurveyStatus } from '@/services/mealService';
+import { useOrganization } from '@/contexts/OrganizationContext';
+import { useOperatingUnit } from '@/contexts/OperatingUnitContext';
 import { trpc } from '@/lib/trpc';
 import { Button } from '@/components/ui/button';
 import { useTranslation } from '@/i18n/useTranslation';
@@ -35,9 +37,13 @@ export function SurveyCreateForm() {
  const searchParams = new URLSearchParams(searchString);
  const { language, isRTL } = useLanguage();
  const { user } = useAuth();
+ const { currentOrganizationId } = useOrganization();
+ const { currentOperatingUnitId } = useOperatingUnit();
  
- const projectId = searchParams.get('projectId') || '';
- const projectName = searchParams.get('projectName') || '';
+ const rawProjectId = searchParams.get('projectId');
+ const projectId = (rawProjectId && rawProjectId !== 'undefined') ? rawProjectId : '';
+ const rawProjectName = searchParams.get('projectName');
+ const projectName = (rawProjectName && rawProjectName !== 'undefined') ? rawProjectName : '';
  const formId = searchParams.get('formId') || '';
  const isEditing = !!formId;
 
@@ -64,6 +70,7 @@ export function SurveyCreateForm() {
  const [saving, setSaving] = useState(false);
  const [error, setError] = useState('');
  const [success, setSuccess] = useState('');
+ const [surveyCode, setSurveyCode] = useState('');
 
  const labels = {
  titleCreate: t.mealSurvey.createSurveyForm,
@@ -127,21 +134,25 @@ export function SurveyCreateForm() {
  title: p.title || ''
  }));
 
- // Load existing survey if editing
+ // Load existing survey if editing using tRPC
+ const { data: existingSurvey } = trpc.mealSurveys.getById.useQuery(
+ { id: formId ? parseInt(formId) : 0 },
+ { enabled: !!formId }
+ );
+
  useEffect(() => {
- if (formId) {
- const survey = surveyService.getSurveyById(formId);
- if (survey) {
- setFormName(survey.name);
- setDescription(survey.description);
- setSurveyType(survey.type);
- setFormLanguage(survey.language);
- setConsentRequired(survey.consentRequired);
- setStatus(survey.status);
- setTargetGroup(survey.targetGroup || '');
+ if (existingSurvey) {
+ setFormName(existingSurvey.title || '');
+ setDescription(existingSurvey.description || '');
+ setSurveyType(existingSurvey.surveyType as SurveyType);
+ setStatus(existingSurvey.status as SurveyStatus);
+ // Note: language, consentRequired, targetGroup are not in database schema
  }
- }
- }, [formId]);
+ }, [existingSurvey]);
+
+ // ✅ tRPC mutations for create/update
+ const createMutation = trpc.mealSurveys.create.useMutation();
+ const updateMutation = trpc.mealSurveys.update.useMutation();
 
  const validateForm = (): boolean => {
  if (!formName.trim()) {
@@ -161,32 +172,32 @@ export function SurveyCreateForm() {
 
  setSaving(true);
  try {
- // ✅ CORRECT - Matches mealService Survey interface
-  const data = {
-  projectId: projectId ? String(projectId) : undefined,
-  surveyCode: `SRV-${Date.now()}`,
+ // Generate surveyCode if not provided
+ const generatedSurveyCode = surveyCode || `SURVEY-${Date.now()}`;
+
+ const data = {
+  surveyCode: generatedSurveyCode,
   title: formName.trim(),
   description: description?.trim() || undefined,
-  surveyType: surveyType,
-  status: status || "draft",
-  isAnonymous: false,
-  allowMultipleSubmissions: false,
-  requiresApproval: false,
-};
-
+  surveyType: surveyType as 'baseline' | 'endline' | 'monitoring' | 'assessment' | 'feedback' | 'custom',
+  projectId: selectedProjectId ? parseInt(selectedProjectId) : undefined,
+  status: status || 'draft' as SurveyStatus,
+ };
 
  let savedSurvey;
  if (isEditing) {
-savedSurvey = surveyService.updateSurvey(formId, data, String(user?.id) || 'system');
+   await updateMutation.mutateAsync({ id: parseInt(formId), ...data });
+   savedSurvey = { id: parseInt(formId) }; // Use existing ID for update
  } else {
-savedSurvey = surveyService.createSurvey(data, String(user?.id) || 'system');
+   const response = await createMutation.mutateAsync(data);
+   savedSurvey = { id: response.id }; // Get ID from create response
  }
 
  setSuccess(labels.formSaved);
  
  // Navigate to Survey Editor after short delay
  setTimeout(() => {
- navigate(`/organization/meal/survey/editor?formId=${savedSurvey.id}&projectId=${projectId}&title=${encodeURIComponent(savedSurvey.id)}`);
+ navigate(`/organization/meal/survey/editor?formId=${savedSurvey.id}&projectId=${selectedProjectId}&title=${encodeURIComponent(formName)}`);
  }, 500);
  } catch (err: any) {
  setError(err.message || labels.saveError);
@@ -205,22 +216,22 @@ savedSurvey = surveyService.createSurvey(data, String(user?.id) || 'system');
 
  setSaving(true);
  try {
- const data = {
- projectId,
- name: formName.trim(),
- description: description.trim(),
- type: surveyType,
- language: formLanguage,
- targetGroup: targetGroup.trim() || undefined,
- consentRequired,
- status: 'draft' as SurveyStatus,
+  const data = {
+  surveyCode: `SURVEY-${Date.now()}`,
+  title: formName.trim(),
+  description: description?.trim() || undefined,
+  surveyType: surveyType as 'baseline' | 'endline' | 'monitoring' | 'assessment' | 'feedback' | 'custom',
+  projectId: selectedProjectId ? parseInt(selectedProjectId) : undefined,
+  status: status || 'draft' as SurveyStatus,
  };
 
+ let savedSurvey;
  if (isEditing) {
-surveyService.updateSurvey(formId, data, String(user?.id) || 'system');
+   await updateMutation.mutateAsync({ id: parseInt(formId), ...data });
+   savedSurvey = { id: parseInt(formId) }; // Use existing ID for update
  } else {
-surveyService.createSurvey(data, String(user?.id) || 'system');
- }
+    await createMutation.mutateAsync(data);
+  }
 
  setSuccess(labels.draftSaved);
  

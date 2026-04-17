@@ -38,7 +38,7 @@ export type QuestionType = 'text' | 'textarea' | 'number' | 'select' | 'multisel
 
 export interface Survey {
  id: string;
- projectId: string;
+projectId?: string;
  name: string;
  nameAr?: string;
  description: string;
@@ -85,7 +85,7 @@ export interface SurveyQuestion {
 export interface SurveySubmission {
  id: string;
  surveyId: string;
- projectId: string;
+ projectId?: string;
  submittedBy: string;
  submittedAt: string;
  responses: SurveyResponse[];
@@ -114,7 +114,7 @@ export type DisaggregationType = 'gender' | 'age' | 'location' | 'disability' | 
 
 export interface Indicator {
  id: string;
- projectId: string;
+ projectId?: string;
  code: string;
  name: string;
  nameAr?: string;
@@ -140,7 +140,7 @@ export interface Indicator {
 export interface IndicatorDataEntry {
  id: string;
  indicatorId: string;
- projectId: string;
+ projectId?: string;
  period: string; // YYYY-MM format
  value: number;
  disaggregatedData?: {

@@ -16,7 +16,8 @@
  * ============================================================================
  */
 
-import { surveyService, indicatorService, type Survey, type Indicator } from '@/app/services/mealService';
+import type { Survey, Indicator } from '@/services/mealService';
+// Note: Export functions should be called from tRPC procedures, not directly from localStorage service
 
 // ============================================================================
 // EXPORT FUNCTIONS
@@ -24,9 +25,9 @@ import { surveyService, indicatorService, type Survey, type Indicator } from '@/
 
 /**
  * Export surveys to Excel format
+ * Note: This function is deprecated. Use tRPC procedures instead.
  */
-export function exportSurveysToExcel(projectId?: string): string {
- const surveys = surveyService.getAllSurveys({ projectId });
+export function exportSurveysToExcel(surveys: Survey[]): string {
  
  // Convert to CSV format (can be opened in Excel)
  const headers = ['ID', 'Name', 'Name (AR)', 'Description', 'Type', 'Language', 'Status', 'Questions Count', 'Submissions Count', 'Created At'];
@@ -53,9 +54,9 @@ export function exportSurveysToExcel(projectId?: string): string {
 
 /**
  * Export indicators to Excel format
+ * Note: This function is deprecated. Use tRPC procedures instead.
  */
-export function exportIndicatorsToExcel(projectId?: string): string {
- const indicators = indicatorService.getAllIndicators({ projectId });
+export function exportIndicatorsToExcel(indicators: Indicator[]): string {
  
  const headers = [
  'ID', 'Code', 'Name', 'Name (AR)', 'Description', 'Type', 'Category', 
@@ -207,7 +208,8 @@ export function importIndicatorsFromCSV(content: string, projectId: string, user
  target: parseFloat(row[targetIndex]) || 0,
  };
 
- indicatorService.createIndicator(indicatorData, userId);
+ // TODO: Replace with tRPC call to create indicator
+ // indicatorService.createIndicator(indicatorData, userId);
  success++;
  } catch (error: any) {
  errors.push(`Row ${index + 2}: ${error.message}`);

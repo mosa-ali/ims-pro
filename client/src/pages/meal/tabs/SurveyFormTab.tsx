@@ -74,11 +74,11 @@ export function SurveyFormTab({
 
  // ✅ Calculate deployment status
  useEffect(() => {
- if (survey.status === 'published' && survey.publishedAt) {
+ if (survey?.status === 'published' && survey?.publishedAt) {
  const lastDeployed = new Date(survey.publishedAt).getTime();
  const lastModified = new Date(survey.updatedAt).getTime();
  setHasUndeployedChanges(lastModified > lastDeployed);
- } else if (survey.status === 'draft') {
+ } else if (survey?.status === 'draft') {
  setHasUndeployedChanges(true);
  }
  }, [survey]);
@@ -122,27 +122,27 @@ export function SurveyFormTab({
  const collectionModes = [
  { 
  value: 'offline-online-multi' as CollectionMode, 
- label: t.onlineOfflineMulti,
- description: t.onlineOfflineDesc
+ label: localT.onlineOfflineMulti,
+ description: localT.onlineOfflineDesc
  },
  { 
  value: 'online-multi' as CollectionMode, 
- label: t.onlineMulti,
+ label: localT.onlineMulti,
  description: null
  },
  { 
  value: 'online-single' as CollectionMode, 
- label: t.onlineSingle,
+ label: localT.onlineSingle,
  description: null
  },
  { 
  value: 'online-once' as CollectionMode, 
- label: t.onlineOnce,
+ label: localT.onlineOnce,
  description: null
  },
  { 
  value: 'embeddable' as CollectionMode, 
- label: t.embeddable,
+ label: localT.embeddable,
  description: null
  },
  ];
@@ -207,14 +207,14 @@ export function SurveyFormTab({
  <AlertCircle className="w-5 h-5 text-orange-600 flex-shrink-0 mt-0.5" />
  <div className="flex-1">
  <p className={`text-sm text-orange-800 text-start`}>
- {t.warningMessage}
+ {localT.warningMessage}
  </p>
  </div>
  <button 
  onClick={handleDeploy}
  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium text-sm transition-colors"
  >
- {t.redeploy}
+ {localT.redeploy}
  </button>
  </div>
  )}
@@ -224,10 +224,10 @@ export function SurveyFormTab({
  <div className={`flex items-start justify-between mb-4`}>
  <div className={'text-start'}>
  <h2 className="text-lg font-bold text-gray-900">
- {t.currentVersion}
+ {localT.currentVersion}
  </h2>
  <p className="text-sm text-gray-600 mt-1">
- <strong>v{surveyVersion}</strong> <span className={deploymentStatus === 'published' ? 'text-green-600' : 'text-gray-600'}>({deploymentStatus === 'published' ? t.deployed : t.undeployed})</span> · {t.lastModified}: {formatDate(survey.updatedAt || survey.createdAt)} · {questionCount} {t.questions}
+ <strong>v{surveyVersion}</strong> <span className={deploymentStatus === 'published' ? 'text-green-600' : 'text-gray-600'}>({deploymentStatus === 'published' ? localT.deployed : localT.undeployed})</span> · {localT.lastModified}: {formatDate(survey.updatedAt || survey.createdAt)} · {questionCount} {localT.questions}
  </p>
  </div>
  
@@ -235,14 +235,14 @@ export function SurveyFormTab({
  <div className={`flex items-center gap-2`}>
  <button 
  className="p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
- title={t.edit}
+ title={localT.edit}
  onClick={handleEdit}
  >
  <Edit className="w-5 h-5" />
  </button>
  <button 
  className="p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
- title={t.preview}
+ title={localT.preview}
  onClick={handlePreview}
  >
  <Eye className="w-5 h-5" />
@@ -265,10 +265,10 @@ export function SurveyFormTab({
  {/* Language Display */}
  <div className={`flex items-center gap-2 mb-4`}>
  <span className={`text-sm font-medium text-gray-700 text-start`}>
- {t.languages}
+ {localT.languages}
  </span>
  <span className="text-sm text-gray-900">
- {`${t.arabic} (ara), ${t.english} (en)`}
+ {`${localT.arabic} (ara), ${localT.english} (en)`}
  </span>
  </div>
 
@@ -277,14 +277,14 @@ export function SurveyFormTab({
  onClick={() => setShowVersionHistory(!showVersionHistory)}
  className="text-sm text-blue-600 hover:text-blue-800 font-medium"
  >
- {showVersionHistory ? t.hideHistory : t.showFullHistory}
+ {showVersionHistory ? t.mealTabs.hideHistory : t.mealTabs.showFullHistory}
  </button>
 
  {/* ✅ VERSION HISTORY (Expandable) */}
  {showVersionHistory && (
  <div className="mt-4 border-t border-gray-200 pt-4">
  <h3 className={`text-sm font-bold text-gray-900 mb-3 text-start`}>
- {t.versionHistory}
+ {localT.versionHistory}
  </h3>
  <div className="space-y-2">
  {Array.from({ length: survey.version }).reverse().map((_, index) => {
@@ -307,7 +307,7 @@ export function SurveyFormTab({
  )}
  {isPreviouslyDeployed && (
  <span className="px-2 py-0.5 bg-green-100 text-green-700 rounded text-xs font-medium">
- {t.deployed}
+ {localT.deployed}
  </span>
  )}
  </div>
@@ -326,7 +326,7 @@ export function SurveyFormTab({
  {/* ✅ COLLECT DATA SECTION */}
  <div className="bg-white rounded-lg border border-gray-200 p-6">
  <h3 className={`text-base font-bold text-gray-900 mb-4 text-start`}>
- {t.collectData}
+ {localT.collectData}
  </h3>
 
  <div className="space-y-4">
@@ -374,13 +374,13 @@ export function SurveyFormTab({
  className={`flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors text-sm font-medium text-gray-700`}
  >
  <Copy className="w-4 h-4" />
- {t.copy}
+ {localT.copy}
  </button>
  <button 
  onClick={handleOpenForm}
  className={`flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium`}
  >
- {t.open}
+ {localT.open}
  </button>
  </div>
 
@@ -394,7 +394,7 @@ export function SurveyFormTab({
  className="w-5 h-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500 mt-0.5"
  />
  <label htmlFor="anonymous" className={`text-sm text-gray-900 cursor-pointer flex-1 text-start`}>
- {t.allowAnonymous}
+ {localT.allowAnonymous}
  </label>
  </div>
  </div>
@@ -405,10 +405,10 @@ export function SurveyFormTab({
  <div className="text-center py-12">
  <Edit className="w-12 h-12 text-gray-400 mx-auto mb-4" />
  <p className="text-gray-500 text-base font-medium">
- {t.formBuilder}
+ {localT.formBuilder}
  </p>
  <p className="text-gray-400 text-sm mt-2">
- {t.questionEditor}
+ {localT.questionEditor}
  </p>
  </div>
  </div>

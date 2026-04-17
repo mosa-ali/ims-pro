@@ -22,7 +22,9 @@ import { useSearch } from 'wouter';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useState, useEffect } from 'react';
 import { Search, Plus, Edit, Play } from 'lucide-react';
-import { surveyService } from '@/services/mealService';
+import { trpc } from '@/lib/trpc';
+import { useOrganization } from '@/contexts/OrganizationContext';
+import { useOperatingUnit } from '@/contexts/OperatingUnitContext';
 import { Button } from '@/components/ui/button';
 import { useTranslation } from '@/i18n/useTranslation';
 import { BackButton } from "@/components/BackButton";
@@ -33,11 +35,19 @@ export function SurveyTemplates() {
  const { language, isRTL } = useLanguage();
  const searchString = useSearch();
  const searchParams = new URLSearchParams(searchString);
+ const { currentOrganizationId } = useOrganization();
+ const { currentOperatingUnitId } = useOperatingUnit();
  const [searchQuery, setSearchQuery] = useState('');
  const [templates, setTemplates] = useState<any[]>([]);
 
  const projectId = searchParams.get('projectId') || '';
  const projectName = searchParams.get('projectName') || '';
+
+ // ✅ Use tRPC query for templates
+ const { data: templatesData = [], isLoading } = trpc.mealSurveys.getAll.useQuery(
+   { isTemplate: true },
+   { enabled: !!currentOrganizationId && !!currentOperatingUnitId }
+ );
 
  const labels = {
  title: t.mealSurvey.surveyDataCollection,
@@ -52,23 +62,15 @@ export function SurveyTemplates() {
  createFirst: t.mealSurvey.createYourFirstSurveyTemplateTo,
  };
 
- // Load templates
+ // ✅ Update templates from tRPC data
  useEffect(() => {
- const loadTemplates = () => {
- try {
- const allTemplates = surveyService.getAllTemplates();
- setTemplates(allTemplates);
- } catch (error) {
- console.error('Error loading templates:', error);
- }
- };
- loadTemplates();
- }, []);
+ setTemplates(templatesData);
+ }, [templatesData]);
 
  const filteredTemplates = templates.filter(
  (t) =>
- t.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
- t.description?.toLowerCase().includes(searchQuery.toLowerCase())
+ (t.title || t.name || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
+ (t.description || '').toLowerCase().includes(searchQuery.toLowerCase())
  );
 
  const handleUseTemplate = (templateId: string) => {

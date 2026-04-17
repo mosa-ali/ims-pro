@@ -11,7 +11,7 @@
 import { useNavigate } from '@/lib/router-compat';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Eye, Share2, Edit as EditIcon, FileDown, Calendar, Users, MapPin, FileText, BarChart3, Image, Download, Copy, ExternalLink, ChevronDown, QrCode, Smartphone, Monitor, Code } from 'lucide-react';
-import { submissionService } from '@/services/mealService';
+// Removed submissionService import - using tRPC instead
 import { useEffect, useState } from 'react';
 import { QRCodeSVG } from 'qrcode.react';
 import { useTranslation } from '@/i18n/useTranslation';
@@ -96,7 +96,7 @@ export function SurveySummaryTab({
  data: t.mealTabs.data,
  };
 
- const statusBadge = survey.status === 'published' ? t.deployed : survey.status === 'archived' ? t.archived : t.draft;
+ const statusBadge = survey.status === 'published' ? t.mealTabs.deployed : survey.status === 'archived' ? t.mealTabs.archived : t.mealTabs.draft;
  const statusColor = survey.status === 'published' ? 'bg-blue-100 text-blue-700' : survey.status === 'archived' ? 'bg-orange-100 text-orange-700' : 'bg-gray-100 text-gray-700';
 
  // ✅ Real submission data from service
@@ -106,14 +106,16 @@ export function SurveySummaryTab({
  latestSubmission: null as string | null,
  });
 
+
  useEffect(() => {
  const fetchSubmissionStats = () => {
  try {
- const allSubmissions = submissionService.getAllSubmissions({ surveyId: survey.id });
+ // TODO: Replace with tRPC call to fetch actual submissions
+ const allSubmissions: any[] = [];
  const now = new Date();
  const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
  
- const past7DaysSubmissions = allSubmissions.filter(sub => {
+ const past7DaysSubmissions = allSubmissions.filter((sub: any) => {
  const subDate = new Date(sub.submittedAt);
  return subDate >= sevenDaysAgo;
  });
@@ -207,7 +209,7 @@ export function SurveySummaryTab({
  const handleCopyFormLink = async () => {
  try {
  await navigator.clipboard.writeText(surveyFormLink);
- alert(t.linkCopied);
+ alert(t.mealTabs.surveyLinkCopiedToClipboard);
  } catch (err) {
  // Fallback
  const textArea = document.createElement('textarea');
@@ -219,7 +221,7 @@ export function SurveySummaryTab({
  try {
  document.execCommand('copy');
  textArea.remove();
- alert(t.linkCopied);
+ alert(t.mealTabs.surveyLinkCopiedToClipboard);
  } catch (err2) {
  textArea.remove();
  prompt(t.mealTabs.copyThisLink, surveyFormLink);
@@ -239,7 +241,7 @@ export function SurveySummaryTab({
 
  const svgData = new XMLSerializer().serializeToString(svg);
  const canvas = document.createElement('canvas');
- const ctx = canvas.getContext('2d');
+ const ctx = canvas.getContext('2d') as CanvasRenderingContext2D | null;
  const img = new Image();
 
  canvas.width = 256;
@@ -267,7 +269,7 @@ export function SurveySummaryTab({
  const embedCode = `<iframe src="${surveyFormLink}" width="100%" height="600" frameborder="0" style="border:0"></iframe>`;
  try {
  await navigator.clipboard.writeText(embedCode);
- alert(t.embedCopied);
+ alert(t.mealTabs.embedCodeCopiedToClipboard);
  } catch (err) {
  prompt(t.mealTabs.copyThisEmbedCode, embedCode);
  }
@@ -278,15 +280,15 @@ export function SurveySummaryTab({
  {/* ===== COLLECT DATA SECTION ===== */}
  <div className="bg-white rounded-lg border border-gray-200 p-6">
  <h2 className={`text-lg font-bold text-gray-900 mb-4 text-start`}>
- {t.collectDataTitle}
+ {localT.collectDataTitle}
  </h2>
  
  {/* Online-Offline Card */}
  <div className={`border border-gray-300 rounded-lg p-4 mb-3 text-start`}>
  <div className={`flex items-start justify-between mb-2`}>
  <div className="flex-1">
- <h3 className="text-sm font-bold text-gray-900 mb-1">{t.onlineOffline}</h3>
- <p className="text-xs text-blue-600">{t.onlineOfflineDesc}</p>
+ <h3 className="text-sm font-bold text-gray-900 mb-1">{localT.onlineOffline}</h3>
+ <p className="text-xs text-blue-600">{localT.onlineOfflineDesc}</p>
  </div>
  <ChevronDown className="w-5 h-5 text-gray-400" />
  </div>
@@ -299,14 +301,14 @@ export function SurveySummaryTab({
  className={`flex items-center gap-2 px-4 py-2 rounded-lg border border-gray-300 bg-white hover:bg-gray-50 transition-colors`}
  >
  <Copy className="w-4 h-4 text-gray-700" />
- <span className="text-sm font-medium text-gray-700">{t.copy}</span>
+ <span className="text-sm font-medium text-gray-700">{localT.copy}</span>
  </button>
  <button
  onClick={handleOpenFormLink}
  className={`flex items-center gap-2 px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white transition-colors`}
  >
  <ExternalLink className="w-4 h-4" />
- <span className="text-sm font-medium">{t.open}</span>
+ <span className="text-sm font-medium">{localT.open}</span>
  </button>
  </div>
 
@@ -320,7 +322,7 @@ export function SurveySummaryTab({
  className="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
  />
  <label htmlFor="allow-anonymous" className="text-sm text-gray-700">
- {t.allowSubmissionsNoAuth}
+ {localT.allowSubmissionsNoAuth}
  </label>
  </div>
 
@@ -336,25 +338,25 @@ export function SurveySummaryTab({
  className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${ activeDeployTab === 'web' ? 'bg-cyan-100 text-cyan-700' : 'bg-gray-100 text-gray-600 hover:bg-gray-200' }`}
  onClick={() => setActiveDeployTab('web')}
  >
- {t.webDeploy}
+ {localT.webDeploy}
  </button>
  <button
  className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${ activeDeployTab === 'android' ? 'bg-cyan-100 text-cyan-700' : 'bg-gray-100 text-gray-600 hover:bg-gray-200' }`}
  onClick={() => setActiveDeployTab('android')}
  >
- {t.androidDeploy}
+ {localT.androidDeploy}
  </button>
  <button
  className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${ activeDeployTab === 'ios' ? 'bg-cyan-100 text-cyan-700' : 'bg-gray-100 text-gray-600 hover:bg-gray-200' }`}
  onClick={() => setActiveDeployTab('ios')}
  >
- {t.iosDeploy}
+ {localT.iosDeploy}
  </button>
  <button
  className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${ activeDeployTab === 'embed' ? 'bg-cyan-100 text-cyan-700' : 'bg-gray-100 text-gray-600 hover:bg-gray-200' }`}
  onClick={() => setActiveDeployTab('embed')}
  >
- {t.embedDeploy}
+ {localT.embedDeploy}
  </button>
  </div>
 
@@ -362,43 +364,43 @@ export function SurveySummaryTab({
  <div className="mt-4">
  {activeDeployTab === 'web' && (
  <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
- <p className="text-sm text-gray-500 mb-1">{t.webDesc}</p>
+ <p className="text-sm text-gray-500 mb-1">{localT.webDesc}</p>
  <p className="text-sm font-mono text-blue-600 break-all">{surveyFormLink}</p>
  </div>
  )}
  {activeDeployTab === 'android' && (
  <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
- <p className="text-sm text-gray-500 mb-1">{t.androidDesc}</p>
+ <p className="text-sm text-gray-500 mb-1">{localT.androidDesc}</p>
  <button
  className="flex items-center gap-2 px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white transition-colors"
  onClick={() => window.open('https://example.com/android-apk', '_blank')}
  >
  <Download className="w-4 h-4" />
- <span className="text-sm font-medium">{t.downloadAPK}</span>
+ <span className="text-sm font-medium">{localT.downloadAPK}</span>
  </button>
  </div>
  )}
  {activeDeployTab === 'ios' && (
  <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
- <p className="text-sm text-gray-500 mb-1">{t.iosDesc}</p>
+ <p className="text-sm text-gray-500 mb-1">{localT.iosDesc}</p>
  <button
  className="flex items-center gap-2 px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white transition-colors"
  onClick={() => window.open('https://example.com/testflight', '_blank')}
  >
  <ExternalLink className="w-4 h-4" />
- <span className="text-sm font-medium">{t.openTestFlight}</span>
+ <span className="text-sm font-medium">{localT.openTestFlight}</span>
  </button>
  </div>
  )}
  {activeDeployTab === 'embed' && (
  <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
- <p className="text-sm text-gray-500 mb-1">{t.embedDesc}</p>
+ <p className="text-sm text-gray-500 mb-1">{localT.embedDesc}</p>
  <button
  className="flex items-center gap-2 px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white transition-colors"
  onClick={handleCopyEmbedCode}
  >
  <Copy className="w-4 h-4" />
- <span className="text-sm font-medium">{t.copyEmbed}</span>
+ <span className="text-sm font-medium">{localT.copyEmbed}</span>
  </button>
  </div>
  )}
@@ -411,7 +413,7 @@ export function SurveySummaryTab({
  onClick={() => setShowQRCode(!showQRCode)}
  >
  <QrCode className="w-4 h-4" />
- <span className="text-sm font-medium">{t.qrCode}</span>
+ <span className="text-sm font-medium">{localT.qrCode}</span>
  </button>
  {showQRCode && (
  <div className="mt-4">
@@ -421,7 +423,7 @@ export function SurveySummaryTab({
  onClick={handleDownloadQR}
  >
  <Download className="w-4 h-4" />
- <span className="text-sm font-medium">{t.downloadQR}</span>
+ <span className="text-sm font-medium">{localT.downloadQR}</span>
  </button>
  </div>
  )}
@@ -435,14 +437,14 @@ export function SurveySummaryTab({
  {/* Project Information Card */}
  <div className="bg-white rounded-lg border border-gray-200 p-6">
  <h2 className={`text-lg font-bold text-gray-900 mb-4 text-start`}>
- {t.projectInfo}
+ {localT.projectInfo}
  </h2>
 
  <div className="space-y-4">
  {/* Description */}
  <div>
  <label className={`text-sm font-semibold text-gray-700 text-start block mb-1`}>
- {t.description}
+ {localT.description}
  </label>
  <p className={`text-base text-gray-900 text-start`}>
  {survey.description || '—'}
@@ -453,7 +455,7 @@ export function SurveySummaryTab({
  <div className="grid grid-cols-2 gap-4 pt-4 border-t border-gray-200">
  <div>
  <label className={`text-sm font-medium text-gray-600 text-start block mb-1`}>
- {t.status}
+ {localT.status}
  </label>
  <span className={`inline-block px-3 py-1 rounded-full text-sm font-medium ${statusColor}`}>
  {statusBadge}
@@ -461,7 +463,7 @@ export function SurveySummaryTab({
  </div>
  <div>
  <label className={`text-sm font-medium text-gray-600 text-start block mb-1`}>
- {t.questions}
+ {localT.questions}
  </label>
  <p className={`text-base font-semibold text-gray-900 text-start`}>
  {survey.questions?.length || 0}
@@ -469,7 +471,7 @@ export function SurveySummaryTab({
  </div>
  <div>
  <label className={`text-sm font-medium text-gray-600 text-start block mb-1`}>
- {t.owner}
+ {localT.owner}
  </label>
  <p className={`text-base text-gray-900 text-start`}>
  {survey.createdBy || 'me'}
@@ -477,7 +479,7 @@ export function SurveySummaryTab({
  </div>
  <div>
  <label className={`text-sm font-medium text-gray-600 text-start block mb-1`}>
- {t.lastModified}
+ {localT.lastModified}
  </label>
  <p className={`text-base text-gray-900 text-start`}>
  {new Date(survey.updatedAt || survey.createdAt).toLocaleDateString(t.mealTabs.enus, {
@@ -489,7 +491,7 @@ export function SurveySummaryTab({
  </div>
  <div>
  <label className={`text-sm font-medium text-gray-600 text-start block mb-1`}>
- {t.lastDeployed}
+ {localT.lastDeployed}
  </label>
  <p className={`text-base text-gray-900 text-start`}>
  {survey.publishedAt ? new Date(survey.publishedAt).toLocaleDateString(t.mealTabs.enus, {
@@ -501,7 +503,7 @@ export function SurveySummaryTab({
  </div>
  <div>
  <label className={`text-sm font-medium text-gray-600 text-start block mb-1`}>
- {t.latestSubmission}
+ {localT.latestSubmission}
  </label>
  <p className={`text-base text-gray-900 text-start`}>
  {submissionStats.latestSubmission ? new Date(submissionStats.latestSubmission).toLocaleDateString(t.mealTabs.enus, {
@@ -513,7 +515,7 @@ export function SurveySummaryTab({
  </div>
  <div>
  <label className={`text-sm font-medium text-gray-600 text-start block mb-1`}>
- {t.sector}
+ {localT.sector}
  </label>
  <p className={`text-base text-gray-900 text-start`}>
  <span className="bg-red-100 text-red-700 px-2 py-1 rounded text-xs font-medium">Humanitarian</span>
@@ -522,7 +524,7 @@ export function SurveySummaryTab({
  </div>
  <div>
  <label className={`text-sm font-medium text-gray-600 text-start block mb-1`}>
- {t.country}
+ {localT.country}
  </label>
  <p className={`text-base text-gray-900 text-start`}>
  Yemen
@@ -535,16 +537,16 @@ export function SurveySummaryTab({
  {/* Submissions Card */}
  <div className="bg-white rounded-lg border border-gray-200 p-6">
  <h2 className={`text-lg font-bold text-gray-900 mb-4 text-start`}>
- {t.submissions}
+ {localT.submissions}
  </h2>
 
  {/* Period Tabs */}
  <div className={`flex gap-2 mb-6`}>
  {[
- { label: t.past7Days, active: true },
- { label: t.past31Days, active: false },
- { label: t.past3Months, active: false },
- { label: t.past12Months, active: false },
+ { label: t.mealTabs.past7Days, active: true },
+ { label: t.mealTabs.past31Days, active: false },
+ { label: t.mealTabs.past3Months, active: false },
+ { label: t.mealTabs.past31Days, active: false },
  ].map((tab, index) => (
  <button
  key={index}
@@ -557,7 +559,7 @@ export function SurveySummaryTab({
 
  {/* No Data Message */}
  <div className="text-center py-8 border border-gray-200 rounded-lg bg-gray-50">
- <p className="text-gray-500">{t.noData}</p>
+ <p className="text-gray-500">{localT.noData}</p>
  </div>
 
  {/* Stats */}
@@ -572,7 +574,7 @@ export function SurveySummaryTab({
  </div>
  <div className="bg-blue-50 rounded-lg p-4 border border-blue-200">
  <p className={`text-sm text-blue-700 mb-1 text-start`}>
- {t.total}
+ {localT.total}
  </p>
  <p className={`text-3xl font-bold text-blue-900 text-start`}>
  {submissionStats.total}
@@ -586,32 +588,32 @@ export function SurveySummaryTab({
  <div className="lg:col-span-1">
  <div className="bg-white rounded-lg border border-gray-200 p-6 sticky top-6">
  <h2 className={`text-lg font-bold text-gray-900 mb-4 text-start`}>
- {t.quickLinks}
+ {localT.quickLinks}
  </h2>
 
  <div className="space-y-2">
  <button className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors text-start`} onClick={handleCollectData}>
  <Eye className="w-5 h-5 text-gray-600" />
- <span className="text-sm font-medium text-gray-900">{t.collectData}</span>
+ <span className="text-sm font-medium text-gray-900">{localT.collectData}</span>
  </button>
  <button className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors text-start`} onClick={handleShareProject}>
  <Share2 className="w-5 h-5 text-gray-600" />
- <span className="text-sm font-medium text-gray-900">{t.shareProject}</span>
+ <span className="text-sm font-medium text-gray-900">{localT.shareProject}</span>
  </button>
  <button className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors text-start`} onClick={handleEditForm}>
  <EditIcon className="w-5 h-5 text-gray-600" />
- <span className="text-sm font-medium text-gray-900">{t.editForm}</span>
+ <span className="text-sm font-medium text-gray-900">{localT.editForm}</span>
  </button>
  <button className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors text-start`} onClick={handlePreviewForm}>
  <Eye className="w-5 h-5 text-gray-600" />
- <span className="text-sm font-medium text-gray-900">{t.previewForm}</span>
+ <span className="text-sm font-medium text-gray-900">{localT.previewForm}</span>
  </button>
  </div>
 
  {/* Data Links */}
  <div className="mt-6 pt-6 border-t border-gray-200">
  <h3 className={`text-sm font-bold text-gray-700 mb-3 text-start`}>
- {t.data}
+ {localT.data}
  </h3>
  <div className="space-y-2">
  {[

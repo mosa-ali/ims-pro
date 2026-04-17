@@ -1,10 +1,6 @@
-/**
- * ============================================================================
- * SERVICES INDEX
- * Central export point for all data services
- * ============================================================================
- */
-
 export * from './caseManagementService';
 export * from './dataInitializationService';
-export * from './mealService';
+// mealService is deprecated - use tRPC instead
+// export * from './mealService';
+// Only export types if needed:
+// export type { Survey, SurveyQuestion, SurveySubmission } from './mealService';
