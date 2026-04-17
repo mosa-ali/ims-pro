@@ -50,7 +50,7 @@ export default function PurchaseRequestPrint() {
  <div className="flex"><span className="text-sm text-muted-foreground w-32">Department:</span><span className="text-sm font-medium">{pr.department || "-"}</span></div>
  </div>
  <div className="space-y-2">
- <div className="flex"><span className="text-sm text-muted-foreground w-32">Donor:</span><span className="text-sm font-medium">{pr.donor || "-"}</span></div>
+ <div className="flex"><span className="text-sm text-muted-foreground w-32">Donor:</span><span className="text-sm font-medium">{pr.donorId || "-"}</span></div>
  <div className="flex"><span className="text-sm text-muted-foreground w-32">{isRTL ? 'رمز الميزانية:' : 'Budget Code:'}</span><span className="text-sm font-medium">{pr.budgetCode || "-"}</span></div>
  <div className="flex"><span className="text-sm text-muted-foreground w-32">{isRTL ? 'مطلوب بحلول:' : 'Needed By:'}</span><span className="text-sm font-medium">{pr.neededByDate ? format(new Date(pr.neededByDate), "yyyy-MM-dd") : "-"}</span></div>
  <div className="flex"><span className="text-sm text-muted-foreground w-32">{isRTL ? 'المبلغ الإجمالي:' : 'Total Amount:'}</span><span className="text-sm font-bold">{pr.currency} {parseFloat(pr.totalAmount || "0").toLocaleString()}</span></div>
@@ -95,6 +95,63 @@ export default function PurchaseRequestPrint() {
  <p className="text-sm text-muted-foreground">{pr.justificationEn}</p>
  </div>
  )}
+
+ {/* Digital Signatures Audit Trail */}
+ <div className="mt-8 pt-6 border-t border-gray-300">
+ <h3 className="text-sm font-bold mb-4">{isRTL ? 'التوقيعات الرقمية' : 'Digital Signatures'}</h3>
+ <div className="grid grid-cols-3 gap-4">
+ {/* Logistics Officer Signature */}
+ <div className="border border-gray-300 p-4 rounded">
+ <div className="text-xs font-semibold mb-2">{isRTL ? 'ضابط الخدمات اللوجستية' : 'Logistics Officer'}</div>
+ {pr.logisticsSignatureDataUrl ? (
+ <>
+ <img src={pr.logisticsSignatureDataUrl} alt="Logistics Signature" className="w-full h-16 object-contain mb-2" />
+ <div className="text-xs text-muted-foreground">
+ <div>{pr.logisticsSignerName || '-'}</div>
+ <div>{pr.logisticsSignerTitle || '-'}</div>
+ <div>{pr.logValidatedOn ? format(new Date(pr.logValidatedOn), 'yyyy-MM-dd HH:mm') : '-'}</div>
+ </div>
+ </>
+ ) : (
+ <div className="text-xs text-muted-foreground italic">{isRTL ? 'لم يتم التوقيع بعد' : 'Not signed yet'}</div>
+ )}
+ </div>
+
+ {/* Finance Officer Signature */}
+ <div className="border border-gray-300 p-4 rounded">
+ <div className="text-xs font-semibold mb-2">{isRTL ? 'ضابط المالية' : 'Finance Officer'}</div>
+ {pr.financeSignatureDataUrl ? (
+ <>
+ <img src={pr.financeSignatureDataUrl} alt="Finance Signature" className="w-full h-16 object-contain mb-2" />
+ <div className="text-xs text-muted-foreground">
+ <div>{pr.financeSignerName || '-'}</div>
+ <div>{pr.financeSignerTitle || '-'}</div>
+ <div>{pr.finValidatedOn ? format(new Date(pr.finValidatedOn), 'yyyy-MM-dd HH:mm') : '-'}</div>
+ </div>
+ </>
+ ) : (
+ <div className="text-xs text-muted-foreground italic">{isRTL ? 'لم يتم التوقيع بعد' : 'Not signed yet'}</div>
+ )}
+ </div>
+
+ {/* Office Manager (PM) Signature */}
+ <div className="border border-gray-300 p-4 rounded">
+ <div className="text-xs font-semibold mb-2">{isRTL ? 'مدير المكتب' : 'Office Manager'}</div>
+ {pr.pmSignatureDataUrl ? (
+ <>
+ <img src={pr.pmSignatureDataUrl} alt="PM Signature" className="w-full h-16 object-contain mb-2" />
+ <div className="text-xs text-muted-foreground">
+ <div>{pr.pmSignerName || '-'}</div>
+ <div>{pr.pmSignerTitle || '-'}</div>
+ <div>{pr.approvedOn ? format(new Date(pr.approvedOn), 'yyyy-MM-dd HH:mm') : '-'}</div>
+ </div>
+ </>
+ ) : (
+ <div className="text-xs text-muted-foreground italic">{isRTL ? 'لم يتم التوقيع بعد' : 'Not signed yet'}</div>
+ )}
+ </div>
+ </div>
+ </div>
  </OfficialPrintTemplate>
  );
 }

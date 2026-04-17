@@ -23,6 +23,8 @@ import {
   performSoftDelete,
 } from "../../db/deletionGovernance";
 
+const nowSql = new Date().toISOString().slice(0, 19).replace('T', ' ');
+
 export const purchaseRequestRouter = router({
   /**
    * List all PRs with pagination and filters
@@ -1017,8 +1019,8 @@ export const purchaseRequestRouter = router({
         .update(purchaseRequests)
         .set({
           status: "submitted",
-          submittedAt: new Date(),
-          updatedAt: new Date(),
+          submittedAt: nowSql,
+          updatedAt: nowSql,
         })
         .where(
           and(
@@ -1041,6 +1043,9 @@ export const purchaseRequestRouter = router({
       id: z.number(),
       financeEmail: z.string().email(),
       comments: z.string().optional(),
+      signerName: z.string(),
+      signerTitle: z.string(),
+      signatureDataUrl: z.string(),
     }))
     .mutation(async ({ ctx, input }) => {
       const db = await getDb();
@@ -1054,7 +1059,10 @@ export const purchaseRequestRouter = router({
           logisticsValidatedAt: new Date(),
           logisticsValidatedBy: ctx.user?.id,
           logisticsComments: input.comments,
-          updatedAt: new Date(),
+          logisticsSignerName: input.signerName,
+          logisticsSignerTitle: input.signerTitle,
+          logisticsSignatureDataUrl: input.signatureDataUrl,
+          updatedAt: nowSql,
         })
         .where(
           and(
@@ -1077,6 +1085,9 @@ export const purchaseRequestRouter = router({
       id: z.number(),
       pmEmail: z.string().email(),
       comments: z.string().optional(),
+      signerName: z.string(),
+      signerTitle: z.string(),
+      signatureDataUrl: z.string(),
     }))
     .mutation(async ({ ctx, input }) => {
       const db = await getDb();
@@ -1090,7 +1101,10 @@ export const purchaseRequestRouter = router({
           financeValidatedAt: new Date(),
           financeValidatedBy: ctx.user?.id,
           financeComments: input.comments,
-          updatedAt: new Date(),
+          financeSignerName: input.signerName,
+          financeSignerTitle: input.signerTitle,
+          financeSignatureDataUrl: input.signatureDataUrl,
+          updatedAt: nowSql,
         })
         .where(
           and(
@@ -1112,6 +1126,9 @@ export const purchaseRequestRouter = router({
     .input(z.object({
       id: z.number(),
       comments: z.string().optional(),
+      signerName: z.string(),
+      signerTitle: z.string(),
+      signatureDataUrl: z.string(),
     }))
     .mutation(async ({ ctx, input }) => {
       const db = await getDb();
@@ -1125,7 +1142,10 @@ export const purchaseRequestRouter = router({
           approvedAt: new Date(),
           approvedBy: ctx.user?.id,
           pmComments: input.comments,
-          updatedAt: new Date(),
+          pmSignerName: input.signerName,
+          pmSignerTitle: input.signerTitle,
+          pmSignatureDataUrl: input.signatureDataUrl,
+          updatedAt: nowSql,
         })
         .where(
           and(
@@ -1208,7 +1228,7 @@ export const purchaseRequestRouter = router({
           rejectedAt: new Date(),
           rejectedBy: ctx.user?.id,
           rejectionReason: input.reason,
-          updatedAt: new Date(),
+          updatedAt: nowSql,
         })
         .where(
           and(

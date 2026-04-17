@@ -4810,6 +4810,15 @@ export const purchaseRequests = mysqlTable("purchase_requests", {
 	serviceType: varchar({ length: 50 }),
 	serviceTypeOther: varchar({ length: 255 }),
 	categoryLegacy: varchar({ length: 50 }),
+		logisticsSignerName: varchar({ length: 255 }),
+		logisticsSignerTitle: varchar({ length: 255 }),
+		logisticsSignatureDataUrl: longtextString(),
+		financeSignerName: varchar({ length: 255 }),
+		financeSignerTitle: varchar({ length: 255 }),
+		financeSignatureDataUrl: longtextString(),
+		pmSignerName: varchar({ length: 255 }),
+		pmSignerTitle: varchar({ length: 255 }),
+		pmSignatureDataUrl: longtextString(),
 });
 
 export const purgeNotifications = mysqlTable("purge_notifications", {

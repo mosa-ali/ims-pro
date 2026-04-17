@@ -21,6 +21,12 @@ interface PREmailData {
   department: string;
   neededBy?: Date;
   organizationId: number;
+  logisticsSignerName?: string;
+  logisticsSignerTitle?: string;
+  financeSignerName?: string;
+  financeSignerTitle?: string;
+  pmSignerName?: string;
+  pmSignerTitle?: string;
 }
 
 /**
@@ -118,6 +124,12 @@ async function getPRData(prId: number): Promise<PREmailData | null> {
       organizationId: purchaseRequests.organizationId,
       requesterName: users.name,
       requesterEmail: users.email,
+      logisticsSignerName: purchaseRequests.logisticsSignerName,
+      logisticsSignerTitle: purchaseRequests.logisticsSignerTitle,
+      financeSignerName: purchaseRequests.financeSignerName,
+      financeSignerTitle: purchaseRequests.financeSignerTitle,
+      pmSignerName: purchaseRequests.pmSignerName,
+      pmSignerTitle: purchaseRequests.pmSignerTitle,
     })
     .from(purchaseRequests)
     .leftJoin(users, eq(purchaseRequests.requesterId, users.id))
@@ -140,6 +152,12 @@ async function getPRData(prId: number): Promise<PREmailData | null> {
     department: pr.department || '',
     neededBy: pr.neededBy || undefined,
     organizationId: pr.organizationId,
+    logisticsSignerName: pr.logisticsSignerName || undefined,
+    logisticsSignerTitle: pr.logisticsSignerTitle || undefined,
+    financeSignerName: pr.financeSignerName || undefined,
+    financeSignerTitle: pr.financeSignerTitle || undefined,
+    pmSignerName: pr.pmSignerName || undefined,
+    pmSignerTitle: pr.pmSignerTitle || undefined,
   };
 }
 
@@ -235,6 +253,8 @@ export async function notifyFinanceOfLogisticsValidation(
     currency: prData.currency,
     urgency: prData.urgency,
     neededBy: prData.neededBy ? prData.neededBy.toLocaleDateString() : 'N/A',
+    logisticsSignerName: prData.logisticsSignerName || 'N/A',
+    logisticsSignerTitle: prData.logisticsSignerTitle || 'N/A',
     actionUrl: `${process.env.VITE_APP_URL || 'https://app.example.com'}/logistics/purchase-requests/${prData.prId}`,
   };
   
@@ -280,6 +300,10 @@ export async function notifyPMOfFinanceValidation(
     currency: prData.currency,
     urgency: prData.urgency,
     neededBy: prData.neededBy ? prData.neededBy.toLocaleDateString() : 'N/A',
+    logisticsSignerName: prData.logisticsSignerName || 'N/A',
+    logisticsSignerTitle: prData.logisticsSignerTitle || 'N/A',
+    financeSignerName: prData.financeSignerName || 'N/A',
+    financeSignerTitle: prData.financeSignerTitle || 'N/A',
     actionUrl: `${process.env.VITE_APP_URL || 'https://app.example.com'}/logistics/purchase-requests/${prData.prId}`,
   };
   
@@ -320,6 +344,12 @@ export async function notifyRequesterOfApproval(prId: number): Promise<boolean> 
     projectTitle: prData.projectTitle,
     totalAmount: prData.totalAmount.toLocaleString(),
     currency: prData.currency,
+    logisticsSignerName: prData.logisticsSignerName || 'N/A',
+    logisticsSignerTitle: prData.logisticsSignerTitle || 'N/A',
+    financeSignerName: prData.financeSignerName || 'N/A',
+    financeSignerTitle: prData.financeSignerTitle || 'N/A',
+    pmSignerName: prData.pmSignerName || 'N/A',
+    pmSignerTitle: prData.pmSignerTitle || 'N/A',
     actionUrl: `${process.env.VITE_APP_URL || 'https://app.example.com'}/logistics/purchase-requests/${prData.prId}`,
   };
   

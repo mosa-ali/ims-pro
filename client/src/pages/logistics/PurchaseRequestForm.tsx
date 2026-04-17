@@ -28,7 +28,7 @@ import {
  TableHeader,
  TableRow,
 } from "@/components/ui/table";
-import { Plus, Trash2, Save, Send, AlertTriangle, CheckCircle, XCircle, Clock, Loader2 } from "lucide-react";
+import { Plus, Trash2, Save, Send, AlertTriangle, CheckCircle, XCircle, Clock, Loader2, Pen } from "lucide-react";
 import { Link, useLocation, useParams } from "wouter";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { toast } from "sonner";
@@ -46,6 +46,7 @@ import {
 } from "@/components/ui/dialog";
 import { useTranslation } from '@/i18n/useTranslation';
 import { BackButton } from "@/components/BackButton";
+import SignatureCapture from "@/components/SignatureCapture";
 
 interface LineItem {
  id?: number;
@@ -120,6 +121,11 @@ export default function PurchaseRequestForm() {
  const [pmEmail, setPmEmail] = useState("");
  const [rejectionReason, setRejectionReason] = useState("");
  const [selectedBudgetId, setSelectedBudgetId] = useState<number | undefined>(undefined);
+
+ // Digital Signature Dialog states
+ const [showLogisticSignatureDialog, setShowLogisticSignatureDialog] = useState(false);
+ const [showFinanceSignatureDialog, setShowFinanceSignatureDialog] = useState(false);
+ const [showPMSignatureDialog, setShowPMSignatureDialog] = useState(false);
 
  const [lineItems, setLineItems] = useState<LineItem[]>([
  { budgetLine: "", description: "", descriptionAr: "", specifications: "", quantity: "1", unit: "", unitPrice: "0" },
@@ -405,18 +411,72 @@ export default function PurchaseRequestForm() {
  }
  };
 
- const handleValidateLogistics = async () => {
- if (!financeEmail) {
- toast.error(t.logistics.pleaseEnterFinanceEmail);
- return;
- }
+ // Signature approval handlers
+ const handleLogisticSignatureApproval = async (data: {
+ signerName: string;
+ signerTitle: string;
+ signatureDataUrl: string;
+ }) => {
  try {
- await validateLogisticsMutation.mutateAsync({ id: parseInt(params.id!), financeEmail });
+ await validateLogisticsMutation.mutateAsync({
+ id: parseInt(params.id!),
+ financeEmail,
+ signerName: data.signerName,
+ signerTitle: data.signerTitle,
+ signatureDataUrl: data.signatureDataUrl,
+ });
  toast.success(t.logistics.validatedByLogistics);
+ setShowLogisticSignatureDialog(false);
+ refetchPR();
+ } catch (error: any) {
+ toast.error(error.message);
+ }
+ };
+
+ const handleFinanceSignatureApproval = async (data: {
+ signerName: string;
+ signerTitle: string;
+ signatureDataUrl: string;
+ }) => {
+ try {
+ await validateFinanceMutation.mutateAsync({
+ id: parseInt(params.id!),
+ pmEmail,
+ signerName: data.signerName,
+ signerTitle: data.signerTitle,
+ signatureDataUrl: data.signatureDataUrl,
+ });
+ toast.success(t.logistics.validatedByFinance);
+ setShowFinanceSignatureDialog(false);
+ refetchPR();
+ } catch (error: any) {
+ toast.error(error.message);
+ }
+ };
+
+ const handlePMSignatureApproval = async (data: {
+ signerName: string;
+ signerTitle: string;
+ signatureDataUrl: string;
+ }) => {
+ try {
+ await approvePMMutation.mutateAsync({
+ id: parseInt(params.id!),
+ signerName: data.signerName,
+ signerTitle: data.signerTitle,
+ signatureDataUrl: data.signatureDataUrl,
+ });
+ toast.success(t.logistics.prApproved);
+ setShowPMSignatureDialog(false);
  navigate("/organization/logistics/purchase-requests");
  } catch (error: any) {
  toast.error(error.message);
  }
+ };
+
+ // Refetch PR data after signature
+ const refetchPR = () => {
+ trpcUtils.logistics.purchaseRequests.getById.invalidate();
  };
 
  const handleValidateFinance = async () => {
@@ -595,12 +655,9 @@ export default function PurchaseRequestForm() {
  <XCircle className="h-4 w-4 me-2" />
  {t.logistics.reject}
  </Button>
- <Button onClick={() => {
- const email = prompt(t.logistics.enterFinanceEmail);
- if (email) { setFinanceEmail(email); handleValidateLogistics(); }
- }}>
- <CheckCircle className="h-4 w-4 me-2" />
- {t.logistics.validateLogistics}
+ <Button onClick={() => setShowLogisticSignatureDialog(true)}>
+ <Pen className="h-4 w-4 me-2" />
+ {t.logistics.signAndValidateLogistics}
  </Button>
  </>
  )}
@@ -610,12 +667,9 @@ export default function PurchaseRequestForm() {
  <XCircle className="h-4 w-4 me-2" />
  {t.logistics.reject}
  </Button>
- <Button onClick={() => {
- const email = prompt(t.logistics.enterPmEmail);
- if (email) { setPmEmail(email); handleValidateFinance(); }
- }}>
- <CheckCircle className="h-4 w-4 me-2" />
- {t.logistics.validateFinance}
+ <Button onClick={() => setShowFinanceSignatureDialog(true)}>
+ <Pen className="h-4 w-4 me-2" />
+ {t.logistics.signAndValidateFinance}
  </Button>
  </>
  )}
@@ -625,9 +679,9 @@ export default function PurchaseRequestForm() {
  <XCircle className="h-4 w-4 me-2" />
  {t.logistics.reject}
  </Button>
- <Button onClick={handleApprovePM}>
- <CheckCircle className="h-4 w-4 me-2" />
- {t.logistics.approvePm}
+ <Button onClick={() => setShowPMSignatureDialog(true)}>
+ <Pen className="h-4 w-4 me-2" />
+ {t.logistics.signAndApprovePm}
  </Button>
  </>
  )}
@@ -944,6 +998,81 @@ export default function PurchaseRequestForm() {
  </DialogFooter>
  </DialogContent>
  </Dialog>
+
+ {/* Logistic Officer Signature Dialog */}
+ <SignatureCapture
+ open={showLogisticSignatureDialog}
+ onClose={() => setShowLogisticSignatureDialog(false)}
+ onSave={handleLogisticSignatureApproval}
+ defaultName={user?.name || ""}
+ defaultTitle={isRTL ? "مسؤول اللوجستيات" : "Logistics Officer"}
+ isRTL={isRTL}
+ saving={validateLogisticsMutation.isPending}
+ labels={{
+ title: isRTL ? 'التوقيع الرقمي - التحقق من اللوجستيات' : 'Digital Signature - Logistics Validation',
+ description: isRTL ? 'ارسم توقيعك للتحقق من طلب الشراء. سيتم إنشاء رمز تحقق QR تلقائياً.' : 'Draw your signature to validate this purchase request. A QR verification code will be generated automatically.',
+ nameLabel: isRTL ? 'اسم الموقّع' : 'Signer Name',
+ titleLabel: isRTL ? 'المسمى الوظيفي' : 'Title / Role',
+ namePlaceholder: isRTL ? 'أدخل اسمك الكامل' : 'Enter your full name',
+ titlePlaceholder: isRTL ? 'مسؤول اللوجستيات' : 'Logistics Officer',
+ drawSignature: isRTL ? 'ارسم توقيعك أدناه' : 'Draw your signature below',
+ clearSignature: isRTL ? 'مسح' : 'Clear',
+ saveSignature: isRTL ? 'توقيع والتحقق من اللوجستيات' : 'Sign & Validate Logistics',
+ cancel: isRTL ? 'إلغاء' : 'Cancel',
+ signatureRequired: isRTL ? 'يرجى رسم التوقيع' : 'Please draw your signature',
+ nameRequired: isRTL ? 'يرجى إدخال الاسم' : 'Please enter your name',
+ }}
+ />
+
+ {/* Finance Officer Signature Dialog */}
+ <SignatureCapture
+ open={showFinanceSignatureDialog}
+ onClose={() => setShowFinanceSignatureDialog(false)}
+ onSave={handleFinanceSignatureApproval}
+ defaultName={user?.name || ""}
+ defaultTitle={isRTL ? "مسؤول المالية" : "Finance Officer"}
+ isRTL={isRTL}
+ saving={validateFinanceMutation.isPending}
+ labels={{
+ title: isRTL ? 'التوقيع الرقمي - التحقق من المالية' : 'Digital Signature - Finance Validation',
+ description: isRTL ? 'ارسم توقيعك للتحقق من طلب الشراء. سيتم إنشاء رمز تحقق QR تلقائياً.' : 'Draw your signature to validate this purchase request. A QR verification code will be generated automatically.',
+ nameLabel: isRTL ? 'اسم الموقّع' : 'Signer Name',
+ titleLabel: isRTL ? 'المسمى الوظيفي' : 'Title / Role',
+ namePlaceholder: isRTL ? 'أدخل اسمك الكامل' : 'Enter your full name',
+ titlePlaceholder: isRTL ? 'مسؤول المالية' : 'Finance Officer',
+ drawSignature: isRTL ? 'ارسم توقيعك أدناه' : 'Draw your signature below',
+ clearSignature: isRTL ? 'مسح' : 'Clear',
+ saveSignature: isRTL ? 'توقيع والتحقق من المالية' : 'Sign & Validate Finance',
+ cancel: isRTL ? 'إلغاء' : 'Cancel',
+ signatureRequired: isRTL ? 'يرجى رسم التوقيع' : 'Please draw your signature',
+ nameRequired: isRTL ? 'يرجى إدخال الاسم' : 'Please enter your name',
+ }}
+ />
+
+ {/* Office Manager (PM) Signature Dialog */}
+ <SignatureCapture
+ open={showPMSignatureDialog}
+ onClose={() => setShowPMSignatureDialog(false)}
+ onSave={handlePMSignatureApproval}
+ defaultName={user?.name || ""}
+ defaultTitle={isRTL ? "مدير المكتب" : "Office Manager"}
+ isRTL={isRTL}
+ saving={approvePMMutation.isPending}
+ labels={{
+ title: isRTL ? 'التوقيع الرقمي - اعتماد المدير' : 'Digital Signature - Manager Approval',
+ description: isRTL ? 'ارسم توقيعك لاعتماد طلب الشراء. سيتم إنشاء رمز تحقق QR تلقائياً.' : 'Draw your signature to approve this purchase request. A QR verification code will be generated automatically.',
+ nameLabel: isRTL ? 'اسم الموقّع' : 'Signer Name',
+ titleLabel: isRTL ? 'المسمى الوظيفي' : 'Title / Role',
+ namePlaceholder: isRTL ? 'أدخل اسمك الكامل' : 'Enter your full name',
+ titlePlaceholder: isRTL ? 'مدير المكتب' : 'Office Manager',
+ drawSignature: isRTL ? 'ارسم توقيعك أدناه' : 'Draw your signature below',
+ clearSignature: isRTL ? 'مسح' : 'Clear',
+ saveSignature: isRTL ? 'توقيع واعتماد طلب الشراء' : 'Sign & Approve Purchase Request',
+ cancel: isRTL ? 'إلغاء' : 'Cancel',
+ signatureRequired: isRTL ? 'يرجى رسم التوقيع' : 'Please draw your signature',
+ nameRequired: isRTL ? 'يرجى إدخال الاسم' : 'Please enter your name',
+ }}
+ />
  </div>
  );
 }
