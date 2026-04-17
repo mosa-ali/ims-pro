@@ -128,13 +128,13 @@ export default function PurchaseRequestForm() {
  const [showPMSignatureDialog, setShowPMSignatureDialog] = useState(false);
 
  const [lineItems, setLineItems] = useState<LineItem[]>([
- { budgetLine: "", description: "", descriptionAr: "", specifications: "", quantity: "1", unit: "", unitPrice: "0" },
+ { budgetLine: "", description: "", descriptionAr: "", specifications: "", quantity: "1", unit: "", unitPrice: "0", recurrence: "" },
  ]);
 
  // Initialize line items with first unit type once data loads
  useEffect(() => {
  if (unitTypesData && unitTypesData.length > 0 && lineItems[0].unit === "") {
- setLineItems([{ budgetLine: "", description: "", descriptionAr: "", specifications: "", quantity: "1", unit: unitTypesData[0].name, unitPrice: "0" }]);
+ setLineItems([{ budgetLine: "", description: "", descriptionAr: "", specifications: "", quantity: "1", unit: unitTypesData[0].name, unitPrice: "0", recurrence: "" }]);
  }
  }, [unitTypesData]);
 

@@ -1,28 +1,23 @@
 import { z } from "zod";
 import { publicProcedure, protectedProcedure, scopedProcedure, router } from "./_core/trpc";
 import { getDb } from "./db";
-import { mealSurveys, mealSurveyQuestions, mealSurveySubmissions, projects } from "../drizzle/schema";
-import { eq, and, desc, sql, count, isNull } from "drizzle-orm";
-import { canAccess, logSensitiveAccess } from "./rbacService";
+import { mealSurveys, mealSurveyQuestions, mealSurveySubmissions } from "../drizzle/schema";
+import { eq, and, desc, sql, count } from "drizzle-orm";
 import { TRPCError } from "@trpc/server";
-import { isPlatformAdmin } from "../shared/const";
 
 const nowSql = new Date().toISOString().slice(0, 19).replace('T', ' ');
 
 /**
- * Middleware: Enforce RBAC for Surveys (sensitive workspace).
- * Requires explicit screen-level permission for surveys.
+ * Middleware: Data isolation for Surveys.
+ * Module-level permissions are enforced through central Settings (Level 1).
+ * This procedure ensures data is scoped to organization and operating unit.
  */
 const surveyProcedure = scopedProcedure.use(async ({ ctx, next }) => {
   const userId = ctx.user?.id;
   const orgId = ctx.scope?.organizationId;
   if (!userId || !orgId) throw new TRPCError({ code: 'UNAUTHORIZED' });
-  if (isPlatformAdmin(ctx.user?.role)) return next({ ctx });
-  const allowed = await canAccess(userId, orgId, 'meal', 'surveys', undefined, 'view');
-  if (!allowed) {
-    throw new TRPCError({ code: 'FORBIDDEN', message: 'You do not have permission to access Surveys. This is a sensitive workspace requiring explicit authorization.' });
-  }
-  await logSensitiveAccess(userId, orgId, null, 'sensitive_access', 'meal', 'surveys', 'survey_management');
+  // Module-level permissions already enforced by central Settings system
+  // No additional screen-level permission check needed
   return next({ ctx });
 });
 

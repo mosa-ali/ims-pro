@@ -285,17 +285,13 @@ export const purchaseRequestRouter = router({
         projectTitle: input.projectTitle,
         donorId: input.donorId,
         donorName: input.donorName,
-        budgetId: input.budgetId,
         budgetCode: input.budgetCode,
         budgetTitle: input.budgetTitle,
         budgetLineId: input.budgetLineId,
         subBudgetLine: input.subBudgetLine,
         activityName: input.activityName,
-        totalBudgetLine: input.totalBudgetLine?.toString(),
-        exchangeRateToUsd: input.exchangeRateToUsd?.toString(),
-        totalBudgetLineUsd: input.totalBudgetLineUsd?.toString(),
         currency: input.currency,
-        prTotalUSD: prTotalUSD.toString(),
+        prTotalUSD: prTotalUSD,
         department: input.department,
         requesterName: input.requesterName,
         requesterEmail: input.requesterEmail,
@@ -308,7 +304,6 @@ export const purchaseRequestRouter = router({
         operatingUnitId: ctx.scope.operatingUnitId,
         organizationId: ctx.scope.organizationId,
         createdBy: ctx.user.id,
-        isDeleted: 0,  // Explicitly set to 0 for dual-column synchronization
       });
 
       const prId = result.insertId;
@@ -328,6 +323,7 @@ export const purchaseRequestRouter = router({
             unit: item.unit,
             unitPrice: item.unitPrice.toString(),
             totalPrice: item.totalPrice.toString(),
+            recurrence: 'one-time',
           }))
         );
       }
@@ -435,10 +431,10 @@ export const purchaseRequestRouter = router({
             descriptionAr: item.descriptionAr,
             specifications: item.specifications,
             specificationsAr: item.specificationsAr,
-            quantity: item.quantity.toString(),
+            quantity: item.quantity,
             unit: item.unit,
-            unitPrice: item.unitPrice.toString(),
-            totalPrice: item.totalPrice.toString(),
+            unitPrice: item.unitPrice,
+            totalPrice: item.totalPrice,
           }))
         );
       }
@@ -1019,7 +1015,7 @@ export const purchaseRequestRouter = router({
         .update(purchaseRequests)
         .set({
           status: "submitted",
-          submittedAt: nowSql,
+          submittedAt: new Date(),
           updatedAt: nowSql,
         })
         .where(
