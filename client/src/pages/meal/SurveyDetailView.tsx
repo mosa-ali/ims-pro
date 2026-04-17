@@ -19,9 +19,11 @@
 import { useNavigate, useParams } from '@/lib/router-compat';
 import { useSearch } from 'wouter';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { useOrganization } from '@/contexts/OrganizationContext';
+import { useOperatingUnit } from '@/contexts/OperatingUnitContext';
 import { useState, useEffect } from 'react';
-import { FileText, Edit, Database, Settings as SettingsIcon } from 'lucide-react';
-import { surveyService } from '@/services/mealService';
+import { FileText, Edit, Database, Settings as SettingsIcon, AlertCircle, Loader2 } from 'lucide-react';
+import { trpc } from '@/lib/trpc';
 
 // Import tab components
 import { SurveySummaryTab } from './tabs/SurveySummaryTab';
@@ -41,13 +43,14 @@ export function SurveyDetailView() {
  const searchString = useSearch();
  const searchParams = new URLSearchParams(searchString);
  const { language, isRTL } = useLanguage();
+ const { currentOrganizationId } = useOrganization();
+ const { currentOperatingUnitId } = useOperatingUnit();
 
  const projectId = searchParams.get('projectId') || '';
  const projectName = searchParams.get('projectName') || '';
  const initialTab = (searchParams.get('tab') as TabKey) || 'summary';
 
  const [activeTab, setActiveTab] = useState<TabKey>(initialTab);
- const [survey, setSurvey] = useState<any>(null);
 
  const labels = {
  back: t.mealSurvey.backToSurveys3,
@@ -57,6 +60,7 @@ export function SurveyDetailView() {
  settings: t.mealSurvey.settings,
  loading: t.mealSurvey.loading,
  notFound: t.mealSurvey.surveyNotFound,
+ missingScope: t.mealSurvey.missingScopeContext || 'Missing scope context. Organization and Operating Unit must be selected.',
  };
 
  const tabs: Array<{ key: TabKey; label: string; icon: any }> = [
@@ -69,12 +73,13 @@ export function SurveyDetailView() {
  // ✅ RTL: Reverse tab order for Arabic
  const displayTabs = isRTL ? [...tabs].reverse() : tabs;
 
- useEffect(() => {
- if (surveyId) {
- const loadedSurvey = surveyService.getSurveyById(surveyId);
- setSurvey(loadedSurvey);
- }
- }, [surveyId]);
+ // ✅ FIXED: Use tRPC query with scope validation
+ const { data: survey, isLoading: surveyLoading, error: surveyError } = trpc.mealSurveys.getById.useQuery(
+   { id: surveyId ? parseInt(surveyId) : 0 },
+   { 
+     enabled: !!surveyId && !!currentOrganizationId && !!currentOperatingUnitId,
+   }
+ );
 
  const handleTabChange = (tabKey: TabKey) => {
  setActiveTab(tabKey);
@@ -82,12 +87,54 @@ export function SurveyDetailView() {
  navigate(`/organization/meal/survey/detail/${surveyId}?projectId=${projectId}&projectName=${projectName}&tab=${tabKey}`, { replace: true });
  };
 
- if (!survey) {
- return (
- <div className="flex items-center justify-center min-h-screen" dir={isRTL ? 'rtl' : 'ltr'}>
- <p className="text-gray-500">{labels.loading}</p>
- </div>
- );
+ // ✅ Show error if scope context is missing
+ if (!currentOrganizationId || !currentOperatingUnitId) {
+   return (
+     <div className={`min-h-screen bg-gray-50 flex items-center justify-center ${isRTL ? 'rtl' : 'ltr'}`}>
+       <div className="max-w-md w-full">
+         <div className="bg-white rounded-lg shadow-lg p-6">
+           <div className="flex items-start gap-4">
+             <AlertCircle className="w-6 h-6 text-red-600 flex-shrink-0 mt-0.5" />
+             <div>
+               <h2 className="text-lg font-semibold text-gray-900 mb-2">{labels.notFound}</h2>
+               <p className="text-sm text-gray-600">{labels.missingScope}</p>
+             </div>
+           </div>
+         </div>
+       </div>
+     </div>
+   );
+ }
+
+ // ✅ Show loading state
+ if (surveyLoading) {
+   return (
+     <div className="flex items-center justify-center min-h-screen" dir={isRTL ? 'rtl' : 'ltr'}>
+       <div className="text-center">
+         <Loader2 className="w-8 h-8 animate-spin text-blue-600 mx-auto mb-4" />
+         <p className="text-gray-600">{labels.loading}</p>
+       </div>
+     </div>
+   );
+ }
+
+ // ✅ Show error if survey not found
+ if (surveyError || !survey) {
+   return (
+     <div className={`min-h-screen bg-gray-50 flex items-center justify-center ${isRTL ? 'rtl' : 'ltr'}`}>
+       <div className="max-w-md w-full">
+         <div className="bg-white rounded-lg shadow-lg p-6">
+           <div className="flex items-start gap-4">
+             <AlertCircle className="w-6 h-6 text-red-600 flex-shrink-0 mt-0.5" />
+             <div>
+               <h2 className="text-lg font-semibold text-gray-900 mb-2">{labels.notFound}</h2>
+               <p className="text-sm text-gray-600">The survey you are looking for does not exist or you do not have access to it.</p>
+             </div>
+           </div>
+         </div>
+       </div>
+     </div>
+   );
  }
 
  return (
@@ -100,7 +147,7 @@ export function SurveyDetailView() {
  <div className={`flex items-center justify-between`}>
  <div className={`flex items-center gap-4`}>
  <div className={'text-start'}>
- <h1 className="text-xl font-bold text-gray-900">{survey.name}</h1>
+ <h1 className="text-xl font-bold text-gray-900">{survey.title}</h1>
  <p className="text-sm text-gray-600">{projectName}</p>
  </div>
  </div>

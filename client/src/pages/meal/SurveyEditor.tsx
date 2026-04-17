@@ -20,6 +20,8 @@
 import { useNavigate } from '@/lib/router-compat';
 import { useSearch } from 'wouter';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { useOrganization } from '@/contexts/OrganizationContext';
+import { useOperatingUnit } from '@/contexts/OperatingUnitContext';
 import { useState, useCallback, useEffect } from 'react';
 import { 
  Loader2, Plus, Edit, Trash2, Save, Wifi, WifiOff, 
@@ -34,6 +36,7 @@ import { FormStylePanel } from '@/components/FormStylePanel';
 import { Button } from '@/components/ui/button';
 import { useTranslation } from '@/i18n/useTranslation';
 import { BackButton } from "@/components/BackButton";
+import { AlertCircle } from 'lucide-react';
 
 type QuestionType =
  | 'select_one'
@@ -164,6 +167,8 @@ export function SurveyEditor() {
  const searchParams = new URLSearchParams(searchString);
  const { language, isRTL } = useLanguage();
  const { t } = useTranslation();
+ const { currentOrganizationId } = useOrganization();
+ const { currentOperatingUnitId } = useOperatingUnit();
  const [questions, setQuestions] = useState<Question[]>([]);
  const [showAddQuestionModal, setShowAddQuestionModal] = useState(false);
  const [newQuestion, setNewQuestion] = useState<Question | null>(null);
@@ -187,9 +192,20 @@ export function SurveyEditor() {
  const formId = searchParams.get('formId') || '';
  const projectId = searchParams.get('projectId') || '';
  const [surveyTitle, setSurveyTitle] = useState(searchParams.get('title') || 'Untitled Survey');
+ const [scopeError, setScopeError] = useState(false);
 
- // ✅ Load saved questions on mount
+ // ✅ FIXED: Check scope context on mount
  useEffect(() => {
+   if (!currentOrganizationId || !currentOperatingUnitId) {
+     setScopeError(true);
+   } else {
+     setScopeError(false);
+   }
+ }, [currentOrganizationId, currentOperatingUnitId]);
+
+ // ✅ Load saved questions on mount (only if scope is valid)
+ useEffect(() => {
+ if (!currentOrganizationId || !currentOperatingUnitId) return;
  if (formId) {
  const surveyKey = `survey_questions_${formId}`;
  const storedData = localStorage.getItem(surveyKey);
@@ -394,6 +410,25 @@ export function SurveyEditor() {
  setSaving(false);
  }
  }, [questions, t, navigate, formId, projectId, surveyTitle]);
+
+ // ✅ Show error if scope context is missing
+ if (scopeError) {
+   return (
+     <div className={`min-h-screen bg-gray-50 flex items-center justify-center ${isRTL ? 'rtl' : 'ltr'}`}>
+       <div className="max-w-md w-full">
+         <div className="bg-white rounded-lg shadow-lg p-6">
+           <div className="flex items-start gap-4">
+             <AlertCircle className="w-6 h-6 text-red-600 flex-shrink-0 mt-0.5" />
+             <div>
+               <h2 className="text-lg font-semibold text-gray-900 mb-2">Missing Scope Context</h2>
+               <p className="text-sm text-gray-600">Organization and Operating Unit must be selected.</p>
+             </div>
+           </div>
+         </div>
+       </div>
+     </div>
+   );
+ }
 
  if (loading) {
  return (
@@ -1031,10 +1066,11 @@ export function SurveyEditor() {
  question={currentQuestion}
  allQuestions={questions}
  onUpdate={(updatedQuestion) => {
- const updatedQuestions = questions.map(q => 
- q.id === updatedQuestion.id ? updatedQuestion : q
- );
- setQuestions(updatedQuestions);
+const updatedQuestions: Question[] = questions.map(q =>
+  q.id === updatedQuestion.id
+    ? (updatedQuestion as Question)
+    : q
+);
  }}
  onClose={() => setShowSettingsPanel(false)}
  />
