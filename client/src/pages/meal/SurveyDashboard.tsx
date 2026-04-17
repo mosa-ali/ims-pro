@@ -65,24 +65,26 @@ export function SurveyDashboard() {
 
  const projectId = searchParams.get('projectId') || '';
  const projectName = searchParams.get('projectName') || '';
- const ngoName = searchParams.get('ngoName') || '';
+ const organizationId = searchParams.get('organizationId') || '';
 
  // ✅ FIXED: Use scoped tRPC queries instead of localStorage
  const { data: surveys = [], isLoading: surveysLoading } = trpc.mealSurveys.getAll.useQuery(
- {
- projectId: projectId ? parseInt(projectId) : undefined,
- },
- { 
- enabled: !!currentOrganizationId && !!currentOperatingUnitId,
- }
- );
+{
+  projectId: projectId ? parseInt(projectId) : undefined,
+},
+{ 
+  enabled: !!currentOrganizationId && !!currentOperatingUnitId,
+  refetchOnMount: true,
+}
+);
 
- const { data: statistics, isLoading: statsLoading } = trpc.mealSurveys.getStatistics.useQuery(
- {},
- { 
- enabled: !!currentOrganizationId && !!currentOperatingUnitId,
- }
- );
+const { data: statistics, isLoading: statsLoading } = trpc.mealSurveys.getStatistics.useQuery(
+{},
+{ 
+  enabled: !!currentOrganizationId && !!currentOperatingUnitId,
+  refetchOnMount: true,
+}
+);
 
  const labels = {
  title: t.mealSurvey.surveyDataCollection,
@@ -197,7 +199,7 @@ export function SurveyDashboard() {
  {projectName && (
  <p className="text-base text-gray-600 mt-2">
  {labels.projectLabel}: {projectName}
- {ngoName && ` • ${labels.ngoLabel}: ${ngoName}`}
+ {organizationId && ` • ${labels.ngoLabel}: ${organizationId}`}
  </p>
  )}
  </div>
