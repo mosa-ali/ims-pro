@@ -35,7 +35,8 @@ interface PRSignaturePanelProps {
   financeSignature?: SignatureData | null;
   pmSignature?: SignatureData | null;
   onSignatureSubmit?: (role: "logistics" | "finance" | "pm", signature: SignatureData) => void;
-  currentUserRole?: "logistics" | "finance" | "pm" | "requester";
+  currentUserRole?: string;
+  isAdmin?: boolean;
 }
 
 export function PRSignaturePanel({
@@ -53,6 +54,26 @@ export function PRSignaturePanel({
   const [signerName, setSignerName] = useState("");
   const [signerTitle, setSignerTitle] = useState("");
   const [activeRole, setActiveRole] = useState<"logistics" | "finance" | "pm" | null>(null);
+
+  // Determine which signatures to display based on user role
+  const getVisibleSignatures = () => {
+    // Admin users see all signatures
+    if (isAdmin) {
+      return ["logistics", "finance", "pm"];
+    }
+
+    // Role-based visibility
+    const roleMap: { [key: string]: string[] } = {
+      logistics: ["logistics"],
+      finance: ["finance"],
+      pm: ["pm"],
+      requester: [],
+    };
+
+    return roleMap[currentUserRole?.toLowerCase() || ""] || [];
+  };
+
+  const visibleSignatures = getVisibleSignatures();
 
   // Determine which signature section to show based on PR status
   const canLogisticsSign = prStatus === "submitted";
@@ -295,24 +316,30 @@ export function PRSignaturePanel({
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <SignatureCard
-          role="logistics"
-          title="Logistics Validation"
-          signature={logisticsSignature}
-          canSign={canLogisticsSign}
-        />
-        <SignatureCard
-          role="finance"
-          title="Finance Validation"
-          signature={financeSignature}
-          canSign={canFinanceSign}
-        />
-        <SignatureCard
-          role="pm"
-          title="PM Approval"
-          signature={pmSignature}
-          canSign={canPMSign}
-        />
+        {visibleSignatures.includes("logistics") && (
+          <SignatureCard
+            role="logistics"
+            title="Logistics Validation"
+            signature={logisticsSignature}
+            canSign={canLogisticsSign}
+          />
+        )}
+        {visibleSignatures.includes("finance") && (
+          <SignatureCard
+            role="finance"
+            title="Finance Validation"
+            signature={financeSignature}
+            canSign={canFinanceSign}
+          />
+        )}
+        {visibleSignatures.includes("pm") && (
+          <SignatureCard
+            role="pm"
+            title="PM Approval"
+            signature={pmSignature}
+            canSign={canPMSign}
+          />
+        )}
       </div>
     </div>
   );

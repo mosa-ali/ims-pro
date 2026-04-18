@@ -17,6 +17,7 @@ import { purchaseRequests, purchaseRequestLineItems, bidAnalyses } from "../../.
 import { eq, and, desc, isNull } from "drizzle-orm";
 import { TRPCError } from "@trpc/server";
 import { generatePRNumber } from "../../services/procurementNumbering";
+import { sql } from 'drizzle-orm';
 import {
   checkDeletionGovernance,
   performHardDelete,
@@ -217,7 +218,26 @@ export const purchaseRequestRouter = router({
         lineItems,
         totalAmount: authorativeTotal,
         prTotalUSD: authorativeTotal,
-        bidAnalysisId: bidAnalysis?.id || null
+        bidAnalysisId: bidAnalysis?.id || null,
+        // Signature fields
+        logisticsSignature: {
+          signerName: pr.logisticsSignerName,
+          signerTitle: pr.logisticsSignerTitle,
+          signatureDataUrl: pr.logisticsSignatureDataUrl,
+          signedAt: pr.logisticsSignedAt
+        },
+        financeSignature: {
+          signerName: pr.financeSignerName,
+          signerTitle: pr.financeSignerTitle,
+          signatureDataUrl: pr.financeSignatureDataUrl,
+          signedAt: pr.financeSignedAt
+        },
+        pmSignature: {
+          signerName: pr.pmSignerName,
+          signerTitle: pr.pmSignerTitle,
+          signatureDataUrl: pr.pmSignatureDataUrl,
+          signedAt: pr.pmSignedAt
+        }
       };
     }),
 
@@ -238,8 +258,8 @@ export const purchaseRequestRouter = router({
         subBudgetLine: z.string().optional(),
         activityName: z.string().optional(),
         totalBudgetLine: z.number().optional(),
-        exchangeRateToUsd: z.number().optional(),
-        totalBudgetLineUsd: z.number().optional(),
+        exchangeRate: z.number().optional(),
+        totalBudgetLine: z.number().optional(),
         currency: z.string().default("USD"),
         department: z.string().optional(),
         requesterName: z.string(),
@@ -297,7 +317,7 @@ export const purchaseRequestRouter = router({
         requesterEmail: input.requesterEmail,
         requesterId: ctx.user.id,
         urgency: input.urgency,
-        neededBy: input.neededBy,
+        neededBy: input.neededBy ? new Date(input.neededBy).toISOString() : undefined,
         justification: input.justification,
         procurementLadder: input.procurementLadder,
         status: "draft",
@@ -350,8 +370,7 @@ export const purchaseRequestRouter = router({
         subBudgetLine: z.string().optional(),
         activityName: z.string().optional(),
         totalBudgetLine: z.number().optional(),
-        exchangeRateToUsd: z.number().optional(),
-        totalBudgetLineUsd: z.number().optional(),
+        exchangeRate: z.number().optional(),
         currency: z.string().default("USD"),
         department: z.string().optional(),
         requesterName: z.string(),
@@ -379,7 +398,7 @@ export const purchaseRequestRouter = router({
     )
     .mutation(async ({ input, ctx }) => {
       const db = await getDb();
-      const prTotalUSD = input.lineItems.reduce((sum, item) => sum + item.totalPrice, 0);
+      const prTotalUsd = input.lineItems.reduce((sum, item) => sum + item.totalPrice, 0);
 
       await db
         .update(purchaseRequests)
@@ -396,15 +415,14 @@ export const purchaseRequestRouter = router({
           subBudgetLine: input.subBudgetLine,
           activityName: input.activityName,
           totalBudgetLine: input.totalBudgetLine?.toString(),
-          exchangeRateToUsd: input.exchangeRateToUsd?.toString(),
-          totalBudgetLineUsd: input.totalBudgetLineUsd?.toString(),
+          exchangeRate: input.exchangeRate?.toString(),
           currency: input.currency,
-          prTotalUSD: prTotalUSD.toString(),
+          prTotalUsd: prTotalUsd.toString(),
           department: input.department,
           requesterName: input.requesterName,
           requesterEmail: input.requesterEmail,
           urgency: input.urgency,
-          neededBy: input.neededBy,
+          neededBy: input.neededBy ? new Date(input.neededBy).toISOString() : undefined,
           justification: input.justification,
           procurementLadder: input.procurementLadder,
         })
@@ -431,10 +449,11 @@ export const purchaseRequestRouter = router({
             descriptionAr: item.descriptionAr,
             specifications: item.specifications,
             specificationsAr: item.specificationsAr,
-            quantity: item.quantity,
+            quantity: item.quantity.toString(),
             unit: item.unit,
-            unitPrice: item.unitPrice,
-            totalPrice: item.totalPrice,
+            unitPrice: item.unitPrice.toString(),
+            totalPrice: item.totalPrice.toString(),
+            recurrence: 'one-time',
           }))
         );
       }
@@ -502,7 +521,7 @@ export const purchaseRequestRouter = router({
           .limit(1);
 
         if (pr) {
-          const prTotal = parseFloat(pr.totalEstimatedCost || "0");
+          const prTotal = parseFloat(pr.prTotalUsd || "0");
           
           // **CRITICAL: System-decided procurement method based on threshold**
           // PR ≤ $25K → RFQ → QA (QA created when RFQ is sent/received)
@@ -747,8 +766,8 @@ export const purchaseRequestRouter = router({
           neededBy: pr.neededBy,
           justification: pr.justification,
           procurementLadder: pr.procurementLadder,
-          exchangeRateToUSD: pr.exchangeRateToUSD,
-          prTotalUSD: pr.prTotalUSD,
+          exchangeRate: pr.exchangeRate,
+          prTotalUsd: pr.prTotalUsd,
           status: pr.status,
         },
         lineItems: lineItems.map((item) => ({
@@ -788,7 +807,7 @@ export const purchaseRequestRouter = router({
           neededBy: z.string().optional(),
           justification: z.string().optional(),
           procurementLadder: z.enum(["one_quotation", "three_quotations", "public_tender", "tender"]),
-          exchangeRateToUSD: z.number().optional(),
+          exchangeRate: z.number().optional(),
         }),
         lineItems: z.array(
           z.object({
@@ -814,7 +833,7 @@ export const purchaseRequestRouter = router({
 
       // Calculate totals
       const prTotal = input.lineItems.reduce((sum, item) => sum + item.totalPrice, 0);
-      const prTotalUSD = prTotal * (input.pr.exchangeRateToUSD || 1);
+      const prTotalUsd = prTotal * (input.pr.exchangeRate || 1);
 
       // Insert PR
       const [newPR] = await db
@@ -837,9 +856,9 @@ export const purchaseRequestRouter = router({
           neededBy: input.pr.neededBy ? new Date(input.pr.neededBy) : null,
           justification: input.pr.justification,
           procurementLadder: input.pr.procurementLadder,
-          exchangeRateToUSD: input.pr.exchangeRateToUSD || 1,
+          exchangeRate: input.pr.exchangeRate || 1,
           prTotal,
-          prTotalUSD,
+          prTotalUsd,
           status: "draft", // Always import as draft
           createdBy: ctx.user.id,
         })
@@ -1015,7 +1034,7 @@ export const purchaseRequestRouter = router({
         .update(purchaseRequests)
         .set({
           status: "submitted",
-          submittedAt: new Date(),
+          submittedAt: nowSql,
           updatedAt: nowSql,
         })
         .where(
@@ -1052,9 +1071,8 @@ export const purchaseRequestRouter = router({
         .update(purchaseRequests)
         .set({
           status: "validated_by_logistic",
-          logisticsValidatedAt: new Date(),
-          logisticsValidatedBy: ctx.user?.id,
-          logisticsComments: input.comments,
+          logValidatedOn: nowSql,
+          logValidatedBy: ctx.user?.id,
           logisticsSignerName: input.signerName,
           logisticsSignerTitle: input.signerTitle,
           logisticsSignatureDataUrl: input.signatureDataUrl,
@@ -1094,9 +1112,8 @@ export const purchaseRequestRouter = router({
         .update(purchaseRequests)
         .set({
           status: "validated_by_finance",
-          financeValidatedAt: new Date(),
-          financeValidatedBy: ctx.user?.id,
-          financeComments: input.comments,
+          finValidatedOn: nowSql,
+          finValidatedBy: ctx.user?.id,
           financeSignerName: input.signerName,
           financeSignerTitle: input.signerTitle,
           financeSignatureDataUrl: input.signatureDataUrl,
@@ -1135,9 +1152,8 @@ export const purchaseRequestRouter = router({
         .update(purchaseRequests)
         .set({
           status: "approved",
-          approvedAt: new Date(),
+          approvedOn: nowSql,
           approvedBy: ctx.user?.id,
-          pmComments: input.comments,
           pmSignerName: input.signerName,
           pmSignerTitle: input.signerTitle,
           pmSignatureDataUrl: input.signatureDataUrl,
@@ -1162,7 +1178,7 @@ export const purchaseRequestRouter = router({
           .limit(1);
         
         if (pr) {
-          const prTotal = parseFloat(pr.prTotalUSD || "0");
+          const prTotal = parseFloat(pr.prTotalUsd || "0");
           
           if (prTotal <= 25000) {
             // Auto-create RFQ for PR ≤ $25K (vendor quotation workflow)
@@ -1221,9 +1237,13 @@ export const purchaseRequestRouter = router({
         .update(purchaseRequests)
         .set({
           status: statusMap[input.rejectedBy] as any,
-          rejectedAt: new Date(),
-          rejectedBy: ctx.user?.id,
-          rejectionReason: input.reason,
+          logRejectedBy: ctx.user?.id,
+          logRejectedOn: nowSql,
+          finRejectedBy: ctx.user?.id,
+          finRejectedOn: nowSql,
+          pmRejectedBy: ctx.user?.id,
+          pmRejectedOn: nowSql,
+          rejectReason: input.reason,
           updatedAt: nowSql,
         })
         .where(

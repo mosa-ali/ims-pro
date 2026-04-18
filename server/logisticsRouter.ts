@@ -52,8 +52,6 @@ import { prWorkflowDashboardRouter } from "./routers/logistics/prWorkflowDashboa
 import { supplierQuotationRouter } from "./routers/procurement/supplierQuotation";
 import { stockManagementRouter } from "./routers/logistics/stockManagementRouter";
 
-const nowSql = new Date().toISOString().slice(0, 19).replace('T', ' ');
-
 // ============================================================================
 // PURCHASE REQUESTS ROUTER
 // ============================================================================
@@ -398,7 +396,7 @@ const purchaseRequestsRouter = router({
       const { organizationId } = ctx.scope;
       
       await db.update(purchaseRequests).set({
-        isDeleted: 1, deletedAt: nowSql, deletedBy: ctx.user.id,
+        isDeleted: true, deletedAt: new Date(), deletedBy: ctx.user.id,
       }).where(and(eq(purchaseRequests.id, input.id), eq(purchaseRequests.organizationId, organizationId)));
       return { success: true };
     }),
@@ -860,7 +858,7 @@ const purchaseRequestsRouter = router({
         .set({
           status: "submitted",
           submittedAt: new Date(),
-          updatedAt: nowSql,
+          updatedAt: new Date(),
         })
         .where(
           and(
@@ -914,6 +912,225 @@ const purchaseRequestsRouter = router({
         );
       
       return { success: true, message: `${input.role} signature saved successfully.` };
+    }),
+
+  validateByLogistics: scopedProcedure
+    .input(z.object({
+      id: z.number(),
+      financeEmail: z.string().email(),
+      comments: z.string().optional(),
+      signerName: z.string(),
+      signerTitle: z.string(),
+      signatureDataUrl: z.string(),
+    }))
+    .mutation(async ({ ctx, input }) => {
+      const db = await getDb();
+      const { notifyFinanceOfLogisticsValidation } = await import("./services/prNotificationService");
+      
+      // Update PR status
+      await db
+        .update(purchaseRequests)
+        .set({
+          status: "validated_by_logistic",
+          logValidatedOn: new Date(),
+          logValidatedBy: ctx.user?.id,
+          logValidatorEmail: ctx.user?.email,
+          logisticsSignerName: input.signerName,
+          logisticsSignerTitle: input.signerTitle,
+          logisticsSignatureDataUrl: input.signatureDataUrl,
+          updatedAt: new Date(),
+        })
+        .where(
+          and(
+            eq(purchaseRequests.id, input.id),
+            eq(purchaseRequests.organizationId, ctx.scope.organizationId)
+          )
+        );
+      
+      // Send email notification to Finance
+      await notifyFinanceOfLogisticsValidation(input.id, input.financeEmail);
+      
+      return { success: true, message: "PR validated by Logistics. Finance team has been notified." };
+    }),
+
+  validateByFinance: scopedProcedure
+    .input(z.object({
+      id: z.number(),
+      pmEmail: z.string().email(),
+      comments: z.string().optional(),
+      signerName: z.string(),
+      signerTitle: z.string(),
+      signatureDataUrl: z.string(),
+    }))
+    .mutation(async ({ ctx, input }) => {
+      const db = await getDb();
+      const { notifyPMOfFinanceValidation } = await import("./services/prNotificationService");
+      
+      // Update PR status
+      await db
+        .update(purchaseRequests)
+        .set({
+          status: "validated_by_finance",
+          finValidatedOn: new Date(),
+          finValidatedBy: ctx.user?.id,
+          finValidatorEmail: ctx.user?.email,
+          financeSignerName: input.signerName,
+          financeSignerTitle: input.signerTitle,
+          financeSignatureDataUrl: input.signatureDataUrl,
+          updatedAt: new Date(),
+        })
+        .where(
+          and(
+            eq(purchaseRequests.id, input.id),
+            eq(purchaseRequests.organizationId, ctx.scope.organizationId)
+          )
+        );
+      
+      // Send email notification to PM
+      await notifyPMOfFinanceValidation(input.id, input.pmEmail);
+      
+      return { success: true, message: "PR validated by Finance. Program Manager has been notified." };
+    }),
+
+  validateByPM: scopedProcedure
+    .input(z.object({
+      id: z.number(),
+      requesterEmail: z.string().email(),
+      comments: z.string().optional(),
+      signerName: z.string(),
+      signerTitle: z.string(),
+      signatureDataUrl: z.string(),
+    }))
+    .mutation(async ({ ctx, input }) => {
+      const db = await getDb();
+      const { notifyRequesterOfApproval } = await import("./services/prNotificationService");
+      
+      // Update PR status to approved
+      await db
+        .update(purchaseRequests)
+        .set({
+          status: "approved",
+          approvedOn: new Date(),
+          approvedBy: ctx.user?.id,
+          approverEmail: ctx.user?.email,
+          pmSignerName: input.signerName,
+          pmSignerTitle: input.signerTitle,
+          pmSignatureDataUrl: input.signatureDataUrl,
+          updatedAt: new Date(),
+        })
+        .where(
+          and(
+            eq(purchaseRequests.id, input.id),
+            eq(purchaseRequests.organizationId, ctx.scope.organizationId)
+          )
+        );
+      
+      // Send email notification to Requester
+      await notifyRequesterOfApproval(input.id, input.requesterEmail);
+      
+      return { success: true, message: "PR approved by PM. Requester has been notified." };
+    }),
+
+  rejectByLogistics: scopedProcedure
+    .input(z.object({
+      id: z.number(),
+      requesterEmail: z.string().email(),
+      rejectReason: z.string(),
+    }))
+    .mutation(async ({ ctx, input }) => {
+      const db = await getDb();
+      const { notifyRequesterOfRejection } = await import("./services/prNotificationService");
+      
+      // Update PR status to rejected
+      await db
+        .update(purchaseRequests)
+        .set({
+          status: "rejected_by_logistic",
+          logRejectedOn: new Date(),
+          logRejectedBy: ctx.user?.id,
+          rejectReason: input.rejectReason,
+          rejectionStage: "logistics",
+          updatedAt: new Date(),
+        })
+        .where(
+          and(
+            eq(purchaseRequests.id, input.id),
+            eq(purchaseRequests.organizationId, ctx.scope.organizationId)
+          )
+        );
+      
+      // Send email notification to Requester
+      await notifyRequesterOfRejection(input.id, input.requesterEmail, "Logistics", input.rejectReason);
+      
+      return { success: true, message: "PR rejected by Logistics. Requester has been notified." };
+    }),
+
+  rejectByFinance: scopedProcedure
+    .input(z.object({
+      id: z.number(),
+      requesterEmail: z.string().email(),
+      rejectReason: z.string(),
+    }))
+    .mutation(async ({ ctx, input }) => {
+      const db = await getDb();
+      const { notifyRequesterOfRejection } = await import("./services/prNotificationService");
+      
+      // Update PR status to rejected
+      await db
+        .update(purchaseRequests)
+        .set({
+          status: "rejected_by_finance",
+          finRejectedOn: new Date(),
+          finRejectedBy: ctx.user?.id,
+          rejectReason: input.rejectReason,
+          rejectionStage: "finance",
+          updatedAt: new Date(),
+        })
+        .where(
+          and(
+            eq(purchaseRequests.id, input.id),
+            eq(purchaseRequests.organizationId, ctx.scope.organizationId)
+          )
+        );
+      
+      // Send email notification to Requester
+      await notifyRequesterOfRejection(input.id, input.requesterEmail, "Finance", input.rejectReason);
+      
+      return { success: true, message: "PR rejected by Finance. Requester has been notified." };
+    }),
+
+  rejectByPM: scopedProcedure
+    .input(z.object({
+      id: z.number(),
+      requesterEmail: z.string().email(),
+      rejectReason: z.string(),
+    }))
+    .mutation(async ({ ctx, input }) => {
+      const db = await getDb();
+      const { notifyRequesterOfRejection } = await import("./services/prNotificationService");
+      
+      // Update PR status to rejected
+      await db
+        .update(purchaseRequests)
+        .set({
+          status: "rejected_by_pm",
+          pmRejectedOn: new Date(),
+          pmRejectedBy: ctx.user?.id,
+          rejectReason: input.rejectReason,
+          rejectionStage: "pm",
+          updatedAt: new Date(),
+        })
+        .where(
+          and(
+            eq(purchaseRequests.id, input.id),
+            eq(purchaseRequests.organizationId, ctx.scope.organizationId)
+          )
+        );
+      
+      // Send email notification to Requester
+      await notifyRequesterOfRejection(input.id, input.requesterEmail, "PM", input.rejectReason);
+      
+      return { success: true, message: "PR rejected by PM. Requester has been notified." };
     }),
 });
 
@@ -1160,7 +1377,7 @@ const purchaseOrdersRouter = router({
       const { organizationId } = ctx.scope;
       
       await db.update(purchaseOrders).set({
-        isDeleted: 1, deletedAt: nowSql, deletedBy: ctx.user.id,
+        isDeleted: true, deletedAt: new Date(), deletedBy: ctx.user.id,
       }).where(and(eq(purchaseOrders.id, input.id), eq(purchaseOrders.organizationId, organizationId)));
       return { success: true };
     }),
@@ -1306,7 +1523,7 @@ const grnRouter = router({
       const { organizationId } = ctx.scope;
       
       await db.update(goodsReceiptNotes).set({
-        isDeleted: 1, deletedAt: nowSql, deletedBy: ctx.user.id,
+        isDeleted: true, deletedAt: new Date(), deletedBy: ctx.user.id,
       }).where(and(eq(goodsReceiptNotes.id, input.id), eq(goodsReceiptNotes.organizationId, organizationId)));
       return { success: true };
     }),
@@ -1448,7 +1665,7 @@ const stockRouter = router({
       const { organizationId } = ctx.scope;
       
       await db.update(stockItems).set({
-        isDeleted: 1, deletedAt: nowSql, deletedBy: ctx.user.id,
+        isDeleted: true, deletedAt: new Date(), deletedBy: ctx.user.id,
       }).where(and(eq(stockItems.id, input.id), eq(stockItems.organizationId, organizationId)));
       return { success: true };
     }),
@@ -1697,8 +1914,8 @@ const stockIssuedRouter = router({
       const { organizationId } = ctx.scope;
       
       await db.update(stockIssued).set({
-        isDeleted: 1,
-        deletedAt: nowSql,
+        isDeleted: true,
+        deletedAt: new Date(),
         deletedBy: ctx.user.id,
       }).where(and(eq(stockIssued.id, input.id), eq(stockIssued.organizationId, organizationId)));
       
@@ -1910,8 +2127,8 @@ const returnedItemsRouter = router({
       const { organizationId } = ctx.scope;
       
       await db.update(returnedItems).set({
-        isDeleted: 1,
-        deletedAt: nowSql,
+        isDeleted: true,
+        deletedAt: new Date(),
         deletedBy: ctx.user.id,
       }).where(and(eq(returnedItems.id, input.id), eq(returnedItems.organizationId, organizationId)));
       
@@ -2050,7 +2267,7 @@ const vehiclesRouter = router({
       const { organizationId } = ctx.scope;
       
       await db.update(vehicles).set({
-        isDeleted: 1, deletedAt: nowSql, deletedBy: ctx.user.id,
+        isDeleted: true, deletedAt: new Date(), deletedBy: ctx.user.id,
       }).where(and(eq(vehicles.id, input.id), eq(vehicles.organizationId, organizationId)));
       return { success: true };
     }),
@@ -2169,7 +2386,7 @@ const driversRouter = router({
       const { organizationId } = ctx.scope;
       
       await db.update(drivers).set({
-        isDeleted: 1, deletedAt: nowSql, deletedBy: ctx.user.id,
+        isDeleted: true, deletedAt: new Date(), deletedBy: ctx.user.id,
       }).where(and(eq(drivers.id, input.id), eq(drivers.organizationId, organizationId)));
       return { success: true };
     }),
@@ -2250,7 +2467,7 @@ const tripLogsRouter = router({
       const { organizationId } = ctx.scope;
       
       await db.update(tripLogs).set({
-        isDeleted: 1, deletedAt: nowSql, deletedBy: ctx.user.id,
+        isDeleted: true, deletedAt: new Date(), deletedBy: ctx.user.id,
       }).where(and(eq(tripLogs.id, input.id), eq(tripLogs.organizationId, organizationId)));
       return { success: true };
     }),
@@ -2325,7 +2542,7 @@ const fuelLogsRouter = router({
       const { organizationId } = ctx.scope;
       
       await db.update(fuelLogs).set({
-        isDeleted: 1, deletedAt: nowSql, deletedBy: ctx.user.id,
+        isDeleted: true, deletedAt: new Date(), deletedBy: ctx.user.id,
       }).where(and(eq(fuelLogs.id, input.id), eq(fuelLogs.organizationId, organizationId)));
       return { success: true };
     }),

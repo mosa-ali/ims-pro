@@ -22,8 +22,10 @@ import { Badge } from "@/components/ui/badge";
 import { CheckCircle2, Circle, Clock, XCircle, FolderOpen } from "lucide-react";
 import { EvidencePanel } from "@/components/EvidencePanel";
 import { PRPaymentCard } from "@/components/procurement/PRPaymentCard";
+import { PRSignaturePanel } from "@/components/procurement/PRSignaturePanel";
 import { useState } from "react";
 import { BackButton } from "@/components/BackButton";
+import { useAuth } from "@/_core/hooks/useAuth";
 
 type WorkflowStage = {
  id: string;
@@ -39,6 +41,28 @@ export default function PRWorkspacePage() {
  const { language, isRTL} = useLanguage();
   const { t } = useTranslation();
  const [activeTab, setActiveTab] = useState("pr");
+ const { user } = useAuth();
+
+ // Determine if user is admin - Organization Admin or Platform Admin
+ const isAdmin = user?.role?.toLowerCase().includes('organization admin') || 
+                user?.role?.toLowerCase().includes('platform admin') ||
+                user?.role === 'admin' || 
+                user?.role === 'platform_admin';
+
+ // Map user role to signature role based on exact role names from Settings
+ const getUserSignatureRole = () => {
+   const role = user?.role?.toLowerCase() || '';
+   // Logistics roles
+   if (role.includes('logistic manager') || role.includes('logistic officer')) return 'logistics';
+   // Finance roles
+   if (role.includes('finance manager')) return 'finance';
+   // PM/Program Manager roles
+   if (role.includes('program manager')) return 'pm';
+   // Default
+   return 'requester';
+ };
+
+ const currentUserRole = getUserSignatureRole();
 
  const prId = parseInt(id || "0");
 
@@ -270,6 +294,17 @@ export default function PRWorkspacePage() {
  )}
  </div>
  </Card>
+
+ {/* Digital Signatures Section */}
+ <PRSignaturePanel
+ prId={prId}
+ prStatus={pr.status}
+ logisticsSignature={pr.logisticsSignature}
+ financeSignature={pr.financeSignature}
+ pmSignature={pr.pmSignature}
+ currentUserRole={currentUserRole}
+ isAdmin={isAdmin}
+ />
 
  {/* Line Items */}
  {pr.lineItems && pr.lineItems.length > 0 && (
