@@ -15,6 +15,8 @@ import { getDb } from "../db";
 import { procurementNumberSequences, operatingUnits } from "../../drizzle/schema";
 import { eq, and } from "drizzle-orm";
 
+const nowSql = new Date().toISOString().slice(0, 19).replace('T', ' ');
+
 type DocumentType = "PR" | "RFQ" | "PO" | "GRN" | "BA" | "QA" | "CON";
 
 interface NumberingContext {
@@ -56,7 +58,7 @@ async function getOrCreateSequence(
       .update(procurementNumberSequences)
       .set({
         currentSequence: newSequence,
-        lastGeneratedAt: new Date(),
+        lastGeneratedAt: nowSql,
       })
       .where(eq(procurementNumberSequences.id, existing[0].id));
     
@@ -70,7 +72,7 @@ async function getOrCreateSequence(
     documentType,
     year,
     currentSequence: 1,
-    lastGeneratedAt: new Date(),
+    lastGeneratedAt: nowSql,
   });
 
   return 1;
@@ -78,6 +80,7 @@ async function getOrCreateSequence(
 
 /**
  * Get Operating Unit code (short code for numbering)
+ * Falls back to OU ID if code doesn't exist
  */
 async function getOperatingUnitCode(operatingUnitId: number): Promise<string> {
   const db = await getDb();
@@ -87,8 +90,14 @@ async function getOperatingUnitCode(operatingUnitId: number): Promise<string> {
     .where(eq(operatingUnits.id, operatingUnitId))
     .limit(1);
 
-  if (!ou || !ou.code) {
-    throw new Error(`Operating Unit with ID ${operatingUnitId} not found or has no code`);
+  // If OU not found, use OU ID as fallback
+  if (!ou) {
+    return `OU${operatingUnitId}`;
+  }
+
+  // If OU found but has no code, use OU ID as fallback
+  if (!ou.code) {
+    return `OU${operatingUnitId}`;
   }
 
   // Extract short code from full code (e.g., "YDH-01" -> "YDH01" or "HQ" -> "HQ")
