@@ -259,7 +259,6 @@ export const purchaseRequestRouter = router({
         activityName: z.string().optional(),
         totalBudgetLine: z.number().optional(),
         exchangeRate: z.number().optional(),
-        totalBudgetLine: z.number().optional(),
         currency: z.string().default("USD"),
         department: z.string().optional(),
         requesterName: z.string(),
