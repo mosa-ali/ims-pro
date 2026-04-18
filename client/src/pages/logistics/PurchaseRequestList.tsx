@@ -238,7 +238,7 @@ export default function PurchaseRequestList() {
  category: pr.category,
  requesterName: pr.requesterName || "-",
  currency: pr.currency,
- totalAmount: pr.totalAmount || 0,
+ totalAmount: parseFloat(pr.prTotalUsd?.toString() || "0"),
  status: isRTL ? statusLabels[pr.status]?.ar || pr.status : statusLabels[pr.status]?.en || pr.status,
  prDate: pr.prDate ? format(new Date(pr.prDate), "yyyy-MM-dd") : "-",
  procurementStage: pr.currentStageLabel || "-",
@@ -500,7 +500,13 @@ export default function PurchaseRequestList() {
  </TableCell>
  <TableCell>{pr.requesterName || "-"}</TableCell>
  <TableCell>
- USD {pr.totalAmount?.toLocaleString() || "0"}
+ {pr.currency} {Number(pr.totalAmount || 0).toLocaleString(undefined, { minimumFractionDigits: 2 })}
+ {pr.exchangeTo && pr.exchangeTo !== pr.currency && (
+   <>
+     {" "}
+     ({pr.exchangeTo} {Number(pr.convertedAmount || 0).toLocaleString(undefined, { minimumFractionDigits: 2 })})
+   </>
+ )}
  </TableCell>
  <TableCell>
  <Badge className={statusColors[pr.status] || "bg-gray-500"}>

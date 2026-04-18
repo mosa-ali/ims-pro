@@ -93,30 +93,24 @@ export const purchaseRequestRouter = router({
         .limit(input.limit)
         .offset(input.offset);
 
-      // Calculate totalAmount from line items for each PR
-      const prsWithTotals = await Promise.all(
-        prs.map(async (pr) => {
-          const lineItems = await db
-            .select()
-            .from(purchaseRequestLineItems)
-            .where(eq(purchaseRequestLineItems.purchaseRequestId, pr.id));
+      // Use prTotalUsd as authoritative source (sum of line items in USD)
+      // Apply currency conversion ONLY when currencies differ
+      const prsWithTotals = prs.map((pr) => {
+        const prTotal = parseFloat(pr.prTotalUsd?.toString() || "0");
+        const exchangeRate = parseFloat(pr.exchangeRate?.toString() || "1");
+        const isSameCurrency = pr.currency === pr.exchangeTo;
 
-          const totalAmount = lineItems.reduce((sum, item) => {
-            const quantity = parseFloat(item.quantity?.toString() || "0");
-            const unitPrice = parseFloat(item.unitPrice?.toString() || "0");
-            const lineTotal = quantity * unitPrice;
-            console.log(`[PR ${pr.prNumber}] Line: qty=${quantity}, price=${unitPrice}, total=${lineTotal}`);
-            return sum + lineTotal;
-          }, 0);
+        // Only convert if currencies are different
+        const finalAmount = isSameCurrency
+          ? prTotal
+          : prTotal * exchangeRate;
 
-          console.log(`[PR ${pr.prNumber}] Final totalAmount: ${totalAmount}`);
-
-          return {
-            ...pr,
-            totalAmount,
-          };
-        })
-      );
+        return {
+          ...pr,
+          totalAmount: finalAmount,  // ✅ Amount in exchangeTo currency (converted if needed)
+          exchangeTo: pr.exchangeTo,  // ✅ Display currency
+        };
+      });
 
       return { items: prsWithTotals };
     }),
