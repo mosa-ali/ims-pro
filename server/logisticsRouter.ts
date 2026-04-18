@@ -852,7 +852,7 @@ const purchaseRequestsRouter = router({
     }))
     .mutation(async ({ ctx, input }) => {
       const db = await getDb();
-      const { notifyLogisticsOfPRSubmission } = await import("../../services/prNotificationService");
+      const { notifyLogisticsOfPRSubmission } = await import("./services/prNotificationService");
       
       // Update PR status to submitted
       await db
