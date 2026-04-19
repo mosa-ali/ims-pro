@@ -5953,6 +5953,54 @@ export interface Translations {
   };
   manualDocumentsSubtitle: string,
   documentsSubtitle: string,
+  logisticsWorkspace: {
+    active: string;
+    activeVendors: string;
+    addStockItem: string;
+    addStockItemDesc: string;
+    approved: string;
+    availableVehicles: string;
+    completed: string;
+    createPurchaseRequest: string;
+    createPurchaseRequestDesc: string;
+    dashboards: string;
+    draft: string;
+    drivers: string;
+    fleetManagement: string;
+    fleetManagementDesc: string;
+    inStock: string;
+    logisticsSubtitle: string;
+    logisticsTitle: string;
+    lowStock: string;
+    lowStockItems: string;
+    modules: string;
+    myPrs: string;
+    newPurchaseRequest: string;
+    openPOs: string;
+    pending: string;
+    pendingPRs: string;
+    prWorkflowDashboard: string;
+    prWorkflowDashboardDesc: string;
+    procurementTracker: string;
+    procurementTrackerDesc: string;
+    purchaseRequests: string;
+    purchaseRequestsDesc: string;
+    quickActions: string;
+    rejected: string;
+    reports: string;
+    reportsAnalytics: string;
+    reportsAnalyticsDesc: string;
+    settings: string;
+    stockManagement: string;
+    stockManagementDesc: string;
+    submitted: string;
+    total: string;
+    totalVendors: string;
+    vehicles: string;
+    vendorManagement: string;
+    vendorManagementDesc: string;
+    viewDetails: string;
+  };
   logistics: {
     accept: string;
     accepted: string;

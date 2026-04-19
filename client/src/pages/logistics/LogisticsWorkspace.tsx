@@ -50,13 +50,13 @@ const { language, isRTL} = useLanguage();
  // Fetch dashboard stats from the database
  const { data: stats, isLoading } = trpc.logistics.dashboard.getStats.useQuery(
  { organizationId },
- { enabled: !!user && !!organizationId }
+ { enabled: Boolean(user && organizationId) }
  );
-
+ 
  // Fetch PR Workflow status counts from real DB
  const { data: prStatusCounts, isLoading: prCountsLoading } = trpc.logistics.prWorkflowDashboard.getStatusCounts.useQuery(
  {},
- { enabled: !!user && !!organizationId }
+ { enabled: !!(user && organizationId) }
  );
 
  const ArrowIcon = isRTL ? ArrowLeft : ArrowRight;
@@ -82,8 +82,8 @@ const { language, isRTL} = useLanguage();
  href: "/organization/logistics/vendors",
  color: "bg-green-500",
  stats: [
- { label: t.logisticsWorkspace.totalVendors, value: stats?.vendors?.total || 0 },
- { label: t.logisticsWorkspace.activeVendors, value: stats?.vendors?.active || 0 },
+ { label: t.logisticsWorkspace.totalVendors, value: stats?.totalVendors || 0 },
+ { label: t.logisticsWorkspace.activeVendors, value: stats?.activeVendors || 0 },
  ],
  },
  {
