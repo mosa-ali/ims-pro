@@ -6412,6 +6412,33 @@ export interface Translations {
     works: string;
     year: string;
   };
+  myPRs: {
+    allStatuses: string;
+    allTypes: string;
+    approved: string;
+    consultancy: string;
+    draft: string;
+    error: string;
+    goods: string;
+    myPrs: string;
+    newRequest: string;
+    noPRsFound: string;
+    prNumber: string;
+    prStatus: string;
+    prWorkflowDashboardDesc: string;
+    procurementProgress: string;
+    procurementType: string;
+    project: string;
+    rejected: string;
+    requestDate: string;
+    requesterName: string;
+    searchPRs: string;
+    services: string;
+    stockRequest: string;
+    submitted: string;
+    totalCost: string;
+    works: string;
+  };
   hrStaff: {
     accountNumber: string;
     actions: string;

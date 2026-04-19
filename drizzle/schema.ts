@@ -4735,7 +4735,7 @@ export const purchaseOrders = mysqlTable("purchase_orders", {
 
 export const purchaseRequestLineItems = mysqlTable("purchase_request_line_items", {
 	id: int().autoincrement().primaryKey().notNull(),
-	purchaseRequestId: int().notNull(),
+	purchaseRequestId: int().notNull().references(() => purchaseRequests.id, { onDelete: "cascade" }),
 	lineNumber: int().notNull(),
 	budgetLine: varchar({ length: 50 }),
 	description: text().notNull(),
@@ -4746,9 +4746,10 @@ export const purchaseRequestLineItems = mysqlTable("purchase_request_line_items"
 	unit: varchar({ length: 50 }).default('Piece'),
 	unitPrice: decimal({ precision: 15, scale: 2 }).default('0'),
 	totalPrice: decimal({ precision: 15, scale: 2 }).default('0'),
-	recurrence: varchar({ length: 50 }).default('one-time'),
+	recurrence: int().default(1),  // ✅ FIXED: int with numeric default
 	createdAt: timestamp({ mode: 'string' }).defaultNow().notNull(),
 	updatedAt: timestamp({ mode: 'string' }).defaultNow().onUpdateNow().notNull(),
+	deletedAt: timestamp({ mode: 'string' }),  // ✅ ADDED: soft delete support
 });
 
 export const purchaseRequests = mysqlTable("purchase_requests", {

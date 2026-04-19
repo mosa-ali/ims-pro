@@ -93,24 +93,39 @@ export const purchaseRequestRouter = router({
         .limit(input.limit)
         .offset(input.offset);
 
-      // Use prTotalUsd as authoritative source (sum of line items in USD)
-      // Apply currency conversion ONLY when currencies differ
-      const prsWithTotals = prs.map((pr) => {
-        const prTotal = parseFloat(pr.prTotalUsd?.toString() || "0");
-        const exchangeRate = parseFloat(pr.exchangeRate?.toString() || "1");
-        const isSameCurrency = pr.currency === pr.exchangeTo;
+      // Recalculate total from line items with recurrence multiplier
+      // Formula: Sum of (Quantity x Unit Price x Recurrence) for all line items
+      const prsWithTotals = await Promise.all(
+        prs.map(async (pr) => {
+          const lineItems = await db
+            .select()
+            .from(purchaseRequestLineItems)
+            .where(eq(purchaseRequestLineItems.purchaseRequestId, pr.id));
 
-        // Only convert if currencies are different
-        const finalAmount = isSameCurrency
-          ? prTotal
-          : prTotal * exchangeRate;
+          // Calculate total with recurrence multiplier
+          const prTotalWithRecurrence = lineItems.reduce((sum, item) => {
+            const quantity = parseFloat(item.quantity?.toString() || "0");
+            const unitPrice = parseFloat(item.unitPrice?.toString() || "0");
+            // Recurrence is now INT, so parse as number (default 1 if missing)
+            const recurrence = Number(item.recurrence) || 1;
+            const lineTotal = quantity * unitPrice * recurrence;
+            return sum + lineTotal;
+          }, 0);
 
-        return {
-          ...pr,
-          totalAmount: finalAmount,  // ✅ Amount in exchangeTo currency (converted if needed)
-          exchangeTo: pr.exchangeTo,  // ✅ Display currency
-        };
-      });
+          // Apply currency conversion ONLY when currencies differ
+          const exchangeRate = parseFloat(pr.exchangeRate?.toString() || "1");
+          const isSameCurrency = pr.currency === pr.exchangeTo;
+          const finalAmount = isSameCurrency
+            ? prTotalWithRecurrence
+            : prTotalWithRecurrence * exchangeRate;
+
+          return {
+            ...pr,
+            totalAmount: finalAmount,
+            exchangeTo: pr.exchangeTo,
+          };
+        })
+      );
 
       return { items: prsWithTotals };
     }),
@@ -179,16 +194,13 @@ export const purchaseRequestRouter = router({
         .from(purchaseRequestLineItems)
         .where(eq(purchaseRequestLineItems.purchaseRequestId, input.id));
 
-      // Calculate total from line items (use stored totalPrice which includes recurrence multiplier)
-      // totalPrice = quantity × unitPrice × recurrence (stored correctly in DB)
+      // Calculate total from line items with recurrence multiplier
+      // Formula: Quantity × Unit Price × Recurrence
       const calculatedTotal = lineItems.reduce((sum, item) => {
-        // Use stored totalPrice if available (it already includes recurrence)
-        const storedTotal = parseFloat(item.totalPrice?.toString() || "0");
-        if (storedTotal > 0) return sum + storedTotal;
-        // Fallback: compute from qty × unitPrice × recurrence
         const quantity = parseFloat(item.quantity?.toString() || "0");
         const unitPrice = parseFloat(item.unitPrice?.toString() || "0");
-        const recurrence = parseFloat(item.recurrence?.toString() || "1") || 1;
+        // Recurrence is now INT, so parse as number (default 1 if missing)
+        const recurrence = Number(item.recurrence) || 1;
         return sum + (quantity * unitPrice * recurrence);
       }, 0);
 
@@ -263,6 +275,7 @@ export const purchaseRequestRouter = router({
         totalBudgetLine: z.number().optional(),
         exchangeRate: z.number().optional(),
         currency: z.string().default("USD"),
+        exchangeTo: z.string().default("USD"),
         department: z.string().optional(),
         requesterName: z.string(),
         requesterEmail: z.string().optional(),
@@ -284,6 +297,7 @@ export const purchaseRequestRouter = router({
             unit: z.string().default("Piece"),
             unitPrice: z.number().default(0),
             totalPrice: z.number().default(0),
+            recurrence: z.number().default(1),
           })
         ),
       })
@@ -295,8 +309,15 @@ export const purchaseRequestRouter = router({
         ctx.scope.operatingUnitId
       );
 
-      // Calculate total
-      const prTotalUSD = input.lineItems.reduce((sum, item) => sum + item.totalPrice, 0);
+      // Calculate total with recurrence multiplier
+      // Formula: Quantity × Unit Price × Recurrence
+      const prTotalUSD = input.lineItems.reduce((sum, item) => {
+        const quantity = item.quantity || 0;
+        const unitPrice = item.unitPrice || 0;
+        const recurrence = item.recurrence || 1;
+        const lineTotal = quantity * unitPrice * recurrence;
+        return sum + lineTotal;
+      }, 0);
 
       // Create PR
       const db = await getDb();
@@ -313,7 +334,9 @@ export const purchaseRequestRouter = router({
         subBudgetLine: input.subBudgetLine,
         activityName: input.activityName,
         currency: input.currency,
-        prTotalUsd: prTotalUSD,
+        exchangeTo: input.exchangeTo,
+        exchangeRate: input.exchangeRate || 1,
+        prTotalUsd: prTotalUSD.toString(),
         department: input.department,
         requesterName: input.requesterName,
         requesterEmail: input.requesterEmail,
@@ -345,7 +368,7 @@ export const purchaseRequestRouter = router({
             unit: item.unit,
             unitPrice: item.unitPrice.toString(),
             totalPrice: item.totalPrice.toString(),
-            recurrence: 'one-time',
+            recurrence: Math.max(1, Math.floor(item.recurrence || 1)), // Store as int (1-100)
           }))
         );
       }
@@ -374,6 +397,7 @@ export const purchaseRequestRouter = router({
         totalBudgetLine: z.number().optional(),
         exchangeRate: z.number().optional(),
         currency: z.string().default("USD"),
+        exchangeTo: z.string().default("USD"),
         department: z.string().optional(),
         requesterName: z.string(),
         requesterEmail: z.string().optional(),
@@ -394,13 +418,22 @@ export const purchaseRequestRouter = router({
             unit: z.string().default("Piece"),
             unitPrice: z.number().default(0),
             totalPrice: z.number().default(0),
+            recurrence: z.number().default(1),
           })
         ),
       })
     )
     .mutation(async ({ input, ctx }) => {
       const db = await getDb();
-      const prTotalUsd = input.lineItems.reduce((sum, item) => sum + item.totalPrice, 0);
+      // Calculate total with recurrence multiplier
+      // Formula: Quantity × Unit Price × Recurrence
+      const prTotalUsd = input.lineItems.reduce((sum, item) => {
+        const quantity = item.quantity || 0;
+        const unitPrice = item.unitPrice || 0;
+        const recurrence = item.recurrence || 1;
+        const lineTotal = quantity * unitPrice * recurrence;
+        return sum + lineTotal;
+      }, 0);
 
       await db
         .update(purchaseRequests)
@@ -416,9 +449,10 @@ export const purchaseRequestRouter = router({
           budgetLineId: input.budgetLineId,
           subBudgetLine: input.subBudgetLine,
           activityName: input.activityName,
-          totalBudgetLine: input.totalBudgetLine?.toString(),
-          exchangeRate: input.exchangeRate?.toString(),
+          totalBudgetLine: input.totalBudgetLine || 0,
+          exchangeRate: input.exchangeRate || 1,
           currency: input.currency,
+          exchangeTo: input.exchangeTo,
           prTotalUsd: prTotalUsd.toString(),
           department: input.department,
           requesterName: input.requesterName,
@@ -455,9 +489,9 @@ export const purchaseRequestRouter = router({
             unit: item.unit,
             unitPrice: item.unitPrice.toString(),
             totalPrice: item.totalPrice.toString(),
-            recurrence: 'one-time',
-          }))
-        );
+            recurrence: Math.max(1, Math.floor(item.recurrence || 1)), // Store as int (1-100)
+          })
+        ))
       }
 
       return { id: input.id, success: true };
@@ -511,6 +545,7 @@ export const purchaseRequestRouter = router({
         updateData.approvedOn = new Date();
 
         // Get PR details to determine procurement method
+        const db = await getDb();
         const [pr] = await db
           .select()
           .from(purchaseRequests)
@@ -871,7 +906,6 @@ export const purchaseRequestRouter = router({
         await db.insert(purchaseRequestLineItems).values(
           input.lineItems.map((item) => ({
             purchaseRequestId: newPR.id,
-            organizationId: ctx.scope.organizationId,
             lineNumber: item.lineNumber,
             budgetLine: item.budgetLine,
             description: item.description,
@@ -882,7 +916,6 @@ export const purchaseRequestRouter = router({
             unit: item.unit,
             unitPrice: item.unitPrice,
             totalPrice: item.totalPrice,
-            createdBy: ctx.user.id,
           }))
         );
       }
