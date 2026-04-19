@@ -118,7 +118,7 @@ export function AppraisalFormModal({
  // Validation
  if (!formData.reviewPeriod || !formData.reviewerName || !formData.reviewerPosition ||
  !formData.strengths || !formData.areasForImprovement) {
- alert(t.required);
+ alert(localT.required);
  return;
  }
  
@@ -150,7 +150,7 @@ export function AppraisalFormModal({
  createdBy: 'Current User' // TODO: Replace with actual user
  });
  
- alert(t.success);
+ alert(localT.success);
  onSave(appraisal);
  onClose();
  };
@@ -163,8 +163,8 @@ export function AppraisalFormModal({
  <div className="flex items-center gap-3">
  <Award className="w-6 h-6 text-blue-600" />
  <div>
- <h2 className="text-xl font-bold text-gray-900">{t.title}</h2>
- <p className="text-sm text-gray-500">{t.subtitle}</p>
+ <h2 className="text-xl font-bold text-gray-900">{localT.title}</h2>
+ <p className="text-sm text-gray-500">{localT.subtitle}</p>
  </div>
  </div>
  <button onClick={onClose} className="text-gray-400 hover:text-gray-600">
@@ -177,22 +177,22 @@ export function AppraisalFormModal({
  <div className="space-y-6">
  {/* Employee Information (Read-only) */}
  <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
- <h3 className="text-sm font-semibold text-blue-900 mb-3">{t.employeeInfo}</h3>
+ <h3 className="text-sm font-semibold text-blue-900 mb-3">{localT.employeeInfo}</h3>
  <div className="grid grid-cols-2 gap-3 text-sm">
  <div>
- <span className="text-gray-600">{t.staffId}:</span>
+ <span className="text-gray-600">{t.hrModals.staffId}:</span>
  <span className="ms-2 font-medium text-gray-900">{employee.staffId}</span>
  </div>
  <div>
- <span className="text-gray-600">{t.fullName}:</span>
+ <span className="text-gray-600">{t.hrModals.fullName}:</span>
  <span className="ms-2 font-medium text-gray-900">{employee.fullName}</span>
  </div>
  <div>
- <span className="text-gray-600">{t.position}:</span>
+ <span className="text-gray-600">{t.hrModals.position}:</span>
  <span className="ms-2 font-medium text-gray-900">{employee.position}</span>
  </div>
  <div>
- <span className="text-gray-600">{t.department}:</span>
+ <span className="text-gray-600">{t.hrModals.department}:</span>
  <span className="ms-2 font-medium text-gray-900">{employee.department}</span>
  </div>
  </div>
@@ -201,7 +201,7 @@ export function AppraisalFormModal({
  {/* Review Period */}
  <div>
  <label className="block text-sm font-medium text-gray-700 mb-2">
- {t.reviewPeriod} *
+ {t.hrModals.reviewPeriod} *
  </label>
  <input
  type="text"
@@ -216,7 +216,7 @@ export function AppraisalFormModal({
  <div className="grid grid-cols-2 gap-4">
  <div>
  <label className="block text-sm font-medium text-gray-700 mb-2">
- {t.reviewerName} *
+ {t.hrModals.reviewerName} *
  </label>
  <input
  type="text"
@@ -227,7 +227,7 @@ export function AppraisalFormModal({
  </div>
  <div>
  <label className="block text-sm font-medium text-gray-700 mb-2">
- {t.reviewerPosition} *
+ {t.hrModals.reviewerPosition} *
  </label>
  <input
  type="text"
@@ -241,7 +241,7 @@ export function AppraisalFormModal({
  {/* Overall Rating */}
  <div>
  <label className="block text-sm font-medium text-gray-700 mb-2">
- {t.overallRating} *
+ {t.hrModals.overallRating} *
  </label>
  <div className="flex items-center gap-4">
  {[1, 2, 3, 4, 5].map(rating => (
@@ -262,7 +262,7 @@ export function AppraisalFormModal({
  {/* Strengths */}
  <div>
  <label className="block text-sm font-medium text-gray-700 mb-2">
- {t.strengths} *
+ {t.hrModals.strengths} *
  </label>
  <textarea
  value={formData.strengths}
@@ -275,7 +275,7 @@ export function AppraisalFormModal({
  {/* Areas for Improvement */}
  <div>
  <label className="block text-sm font-medium text-gray-700 mb-2">
- {t.areasForImprovement} *
+ {t.hrModals.areasForImprovement} *
  </label>
  <textarea
  value={formData.areasForImprovement}
@@ -288,17 +288,17 @@ export function AppraisalFormModal({
  {/* Recommendation */}
  <div>
  <label className="block text-sm font-medium text-gray-700 mb-2">
- {t.recommendation} *
+ {localT.recommendation} *
  </label>
  <select
  value={formData.recommendation}
  onChange={(e) => setFormData({ ...formData, recommendation: e.target.value as any })}
  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
  >
- <option value="Continue">{t.continue}</option>
- <option value="Promote">{t.promote}</option>
- <option value="Training Required">{t.trainingRequired}</option>
- <option value="Performance Improvement Plan">{t.pip}</option>
+ <option value="Continue">{t.hrModals.continue}</option>
+ <option value="Promote">{t.hrModals.promote}</option>
+ <option value="Training Required">{t.hrModals.trainingRequired}</option>
+ <option value="Performance Improvement Plan">{localT.pip}</option>
  </select>
  </div>
 
@@ -312,14 +312,14 @@ export function AppraisalFormModal({
  className="mt-1"
  />
  <label htmlFor="acknowledge" className="text-sm text-gray-700">
- {t.acknowledgeText}
+ {localT.acknowledgeText}
  </label>
  </div>
 
  {/* Notes */}
  <div>
  <label className="block text-sm font-medium text-gray-700 mb-2">
- {t.notes}
+ {t.hrModals.notes}
  </label>
  <textarea
  value={formData.notes}
@@ -337,14 +337,14 @@ export function AppraisalFormModal({
  onClick={onClose}
  className="px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
  >
- {t.cancel}
+ {localT.cancel}
  </button>
  <button
  onClick={handleSave}
  className={`flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700`}
  >
  <Save className="w-5 h-5" />
- <span>{t.save}</span>
+ <span>{localT.save}</span>
  </button>
  </div>
  </div>

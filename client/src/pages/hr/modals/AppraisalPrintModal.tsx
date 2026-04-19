@@ -109,14 +109,14 @@ export function AppraisalPrintModal({
  >
  {/* Header (Print Hidden) */}
  <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between bg-blue-50 print:hidden">
- <h2 className="text-xl font-bold text-gray-900">{t.title}</h2>
+ <h2 className="text-xl font-bold text-gray-900">{localT.title}</h2>
  <div className="flex items-center gap-2">
  <button
  onClick={handlePrint}
  className="flex items-center gap-2 px-3 py-2 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700"
  >
  <Printer className="w-4 h-4" />
- <span>{t.print}</span>
+ <span>{localT.print}</span>
  </button>
  <button onClick={onClose} className="text-gray-400 hover:text-gray-600">
  <X className="w-6 h-6" />
@@ -133,19 +133,19 @@ export function AppraisalPrintModal({
  <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 mb-6">
  <div className="grid grid-cols-2 gap-4 text-sm">
  <div>
- <span className="font-medium text-gray-700">{t.appraisalPeriod}:</span>
+ <span className="font-medium text-gray-700">{t.hrModals.appraisalPeriod}:</span>
  <p className="text-gray-900">{appraisal.reviewPeriodStart} - {appraisal.reviewPeriodEnd}</p>
  </div>
  <div>
- <span className="font-medium text-gray-700">{t.reviewDate}:</span>
+ <span className="font-medium text-gray-700">{t.hrModals.reviewDate}:</span>
  <p className="text-gray-900">{formatDate(appraisal.reviewDate)}</p>
  </div>
  <div>
- <span className="font-medium text-gray-700">{t.reviewer}:</span>
+ <span className="font-medium text-gray-700">{t.hrModals.reviewer}:</span>
  <p className="text-gray-900">{appraisal.reviewerName}</p>
  </div>
  <div>
- <span className="font-medium text-gray-700">{t.overallRating}:</span>
+ <span className="font-medium text-gray-700">{t.hrModals.overallRating}:</span>
  <div className="flex items-center gap-2 mt-1">
  <span className={`px-3 py-1 rounded font-bold text-lg ${getRatingColor(appraisal.overallRating)}`}>
  {appraisal.overallRating.toFixed(1)} / 5.0
@@ -158,7 +158,7 @@ export function AppraisalPrintModal({
 
  {/* Competency Ratings */}
  <div className="mb-6">
- <h3 className="text-lg font-semibold text-gray-900 mb-3">{t.competencies}</h3>
+ <h3 className="text-lg font-semibold text-gray-900 mb-3">{localT.competencies}</h3>
  <div className="border border-gray-200 rounded-lg overflow-hidden">
  <table className="w-full">
  <thead className="bg-gray-50">
@@ -173,7 +173,7 @@ export function AppraisalPrintModal({
  </thead>
  <tbody>
  <tr className="border-t border-gray-200">
- <td className="px-4 py-2 text-sm text-gray-900">{t.technical}</td>
+ <td className="px-4 py-2 text-sm text-gray-900">{t.hrModals.technical}</td>
  <td className="px-4 py-2 text-center">
  <span className={`px-2 py-1 rounded font-medium ${getRatingColor(appraisal.technicalSkills)}`}>
  {appraisal.technicalSkills.toFixed(1)}
@@ -181,7 +181,7 @@ export function AppraisalPrintModal({
  </td>
  </tr>
  <tr className="border-t border-gray-200">
- <td className="px-4 py-2 text-sm text-gray-900">{t.communication}</td>
+ <td className="px-4 py-2 text-sm text-gray-900">{localT.communication}</td>
  <td className="px-4 py-2 text-center">
  <span className={`px-2 py-1 rounded font-medium ${getRatingColor(appraisal.communication)}`}>
  {appraisal.communication.toFixed(1)}
@@ -189,7 +189,7 @@ export function AppraisalPrintModal({
  </td>
  </tr>
  <tr className="border-t border-gray-200">
- <td className="px-4 py-2 text-sm text-gray-900">{t.teamwork}</td>
+ <td className="px-4 py-2 text-sm text-gray-900">{t.hrModals.teamwork}</td>
  <td className="px-4 py-2 text-center">
  <span className={`px-2 py-1 rounded font-medium ${getRatingColor(appraisal.teamwork)}`}>
  {appraisal.teamwork.toFixed(1)}
@@ -197,7 +197,7 @@ export function AppraisalPrintModal({
  </td>
  </tr>
  <tr className="border-t border-gray-200">
- <td className="px-4 py-2 text-sm text-gray-900">{t.leadership}</td>
+ <td className="px-4 py-2 text-sm text-gray-900">{t.hrModals.leadership}</td>
  <td className="px-4 py-2 text-center">
  <span className={`px-2 py-1 rounded font-medium ${getRatingColor(appraisal.leadership)}`}>
  {appraisal.leadership.toFixed(1)}
@@ -205,7 +205,7 @@ export function AppraisalPrintModal({
  </td>
  </tr>
  <tr className="border-t border-gray-200">
- <td className="px-4 py-2 text-sm text-gray-900">{t.problemSolving}</td>
+ <td className="px-4 py-2 text-sm text-gray-900">{t.hrModals.problemSolving}</td>
  <td className="px-4 py-2 text-center">
  <span className={`px-2 py-1 rounded font-medium ${getRatingColor(appraisal.problemSolving)}`}>
  {appraisal.problemSolving.toFixed(1)}
@@ -220,21 +220,21 @@ export function AppraisalPrintModal({
  {/* Narrative Sections */}
  <div className="space-y-4 mb-6">
  <div>
- <h3 className="text-sm font-semibold text-gray-900 mb-2">{t.achievements}</h3>
+ <h3 className="text-sm font-semibold text-gray-900 mb-2">{localT.achievements}</h3>
  <div className="bg-gray-50 border border-gray-200 rounded-lg p-3 text-sm text-gray-700 whitespace-pre-wrap">
  {appraisal.achievements || '-'}
  </div>
  </div>
 
  <div>
- <h3 className="text-sm font-semibold text-gray-900 mb-2">{t.areasForDevelopment}</h3>
+ <h3 className="text-sm font-semibold text-gray-900 mb-2">{t.hrModals.areasForDevelopment}</h3>
  <div className="bg-gray-50 border border-gray-200 rounded-lg p-3 text-sm text-gray-700 whitespace-pre-wrap">
  {appraisal.areasForDevelopment || '-'}
  </div>
  </div>
 
  <div>
- <h3 className="text-sm font-semibold text-gray-900 mb-2">{t.goals}</h3>
+ <h3 className="text-sm font-semibold text-gray-900 mb-2">{localT.goals}</h3>
  <div className="bg-gray-50 border border-gray-200 rounded-lg p-3 text-sm text-gray-700 whitespace-pre-wrap">
  {appraisal.goals || '-'}
  </div>
@@ -242,7 +242,7 @@ export function AppraisalPrintModal({
 
  {appraisal.employeeComments && (
  <div>
- <h3 className="text-sm font-semibold text-gray-900 mb-2">{t.employeeComments}</h3>
+ <h3 className="text-sm font-semibold text-gray-900 mb-2">{t.hrModals.employeeComments}</h3>
  <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 text-sm text-gray-700 whitespace-pre-wrap">
  {appraisal.employeeComments}
  </div>
@@ -252,30 +252,30 @@ export function AppraisalPrintModal({
 
  {/* Signatures */}
  <div className="mt-8 pt-6 border-t-2 border-gray-300">
- <h3 className="text-sm font-semibold text-gray-900 mb-4">{t.signatures}</h3>
+ <h3 className="text-sm font-semibold text-gray-900 mb-4">{t.hrModals.signatures}</h3>
  <div className="grid grid-cols-3 gap-8">
  <div>
  <div className="h-16 mb-2"></div>
  <div className="border-t-2 border-gray-400 pt-2">
- <p className="text-xs font-semibold text-gray-900">{t.employeeSignature}</p>
+ <p className="text-xs font-semibold text-gray-900">{t.hrModals.employeeSignature}</p>
  <p className="text-xs text-gray-600 mt-1">{employee.fullName}</p>
- <p className="text-xs text-gray-500">{t.date}: _______________</p>
+ <p className="text-xs text-gray-500">{t.hrModals.date}: _______________</p>
  </div>
  </div>
  <div>
  <div className="h-16 mb-2"></div>
  <div className="border-t-2 border-gray-400 pt-2">
- <p className="text-xs font-semibold text-gray-900">{t.reviewerSignature}</p>
+ <p className="text-xs font-semibold text-gray-900">{t.hrModals.reviewerSignature}</p>
  <p className="text-xs text-gray-600 mt-1">{appraisal.reviewerName}</p>
- <p className="text-xs text-gray-500">{t.date}: {formatDate(appraisal.reviewDate)}</p>
+ <p className="text-xs text-gray-500">{t.hrModals.date}: {formatDate(appraisal.reviewDate)}</p>
  </div>
  </div>
  <div>
  <div className="h-16 mb-2"></div>
  <div className="border-t-2 border-gray-400 pt-2">
- <p className="text-xs font-semibold text-gray-900">{t.hrSignature}</p>
+ <p className="text-xs font-semibold text-gray-900">{localT.hrSignature}</p>
  <p className="text-xs text-gray-600 mt-1">{t.hrModals.hrManager}</p>
- <p className="text-xs text-gray-500">{t.date}: _______________</p>
+ <p className="text-xs text-gray-500">{t.hrModals.date}: _______________</p>
  </div>
  </div>
  </div>
@@ -290,13 +290,13 @@ export function AppraisalPrintModal({
  className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
  >
  <Printer className="w-5 h-5" />
- <span>{t.print}</span>
+ <span>{t.hrModals.print}</span>
  </button>
  <button
  onClick={onClose}
  className="px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
  >
- {t.close}
+ {t.hrModals.close}
  </button>
  </div>
  </div>

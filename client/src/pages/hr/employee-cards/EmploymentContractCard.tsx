@@ -202,7 +202,7 @@ export function EmploymentContractCard({
  <button
  onClick={() => fileStorageService.downloadFile(contract.signedDocumentId!)}
  className="p-2 text-blue-600 hover:bg-blue-50 rounded"
- title={localT.download || 'Download'}
+ title={t.download || 'Download'}
  >
  <Download className="w-4 h-4" />
  </button>
