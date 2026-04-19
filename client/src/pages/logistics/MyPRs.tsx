@@ -371,7 +371,12 @@ export default function MyPRs() {
  <CategoryBadge category={pr.category || "goods"} t={t} />
  </TableCell>
  <TableCell className="text-center text-xs">
- <div className="truncate">{formatCurrency(pr.totalAmount, pr.currency)}</div>
+ <div className="truncate">
+  {formatCurrency(
+    Number(pr.totalAmount || 0),
+    pr.exchangeTo || "USD"
+  )}
+</div>
  </TableCell>
  <TableCell className="text-center text-xs truncate">
  {formatDate(pr.prDate || pr.createdAt)}

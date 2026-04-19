@@ -238,7 +238,7 @@ export default function PurchaseRequestList() {
  category: pr.category,
  requesterName: pr.requesterName || "-",
  currency: pr.currency,
- totalAmount: parseFloat(pr.prTotalUsd?.toString() || "0"),
+ totalAmount: Number(pr.totalAmount || 0), exchangeTo: pr.exchangeTo,
  status: isRTL ? statusLabels[pr.status]?.ar || pr.status : statusLabels[pr.status]?.en || pr.status,
  prDate: pr.prDate ? format(new Date(pr.prDate), "yyyy-MM-dd") : "-",
  procurementStage: pr.currentStageLabel || "-",

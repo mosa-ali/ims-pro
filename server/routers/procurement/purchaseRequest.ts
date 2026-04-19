@@ -207,11 +207,20 @@ export const purchaseRequestRouter = router({
         )
         .limit(1);
 
+      // Apply currency conversion in getById
+      const exchangeRate = parseFloat(pr.exchangeRate?.toString() || "1");
+      const isSameCurrency = pr.currency === pr.exchangeTo;
+
+      const finalAmount = isSameCurrency
+        ? authorativeTotal
+        : authorativeTotal * exchangeRate;
+
       return { 
         ...pr, 
         lineItems,
-        totalAmount: authorativeTotal,
-        prTotalUSD: authorativeTotal,
+        totalAmount: finalAmount,
+        prTotalUsd: authorativeTotal,
+        exchangeTo: pr.exchangeTo,
         bidAnalysisId: bidAnalysis?.id || null,
         // Signature fields
         logisticsSignature: {
@@ -304,7 +313,7 @@ export const purchaseRequestRouter = router({
         subBudgetLine: input.subBudgetLine,
         activityName: input.activityName,
         currency: input.currency,
-        prTotalUSD: prTotalUSD,
+        prTotalUsd: prTotalUSD,
         department: input.department,
         requesterName: input.requesterName,
         requesterEmail: input.requesterEmail,
