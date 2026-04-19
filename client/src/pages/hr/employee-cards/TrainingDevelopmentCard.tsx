@@ -140,7 +140,7 @@ export function TrainingDevelopmentCard({
  };
 
  const handleDelete = (id: string) => {
- if (!confirm(t.deleteConfirm)) return;
+ if (!confirm(localT.deleteConfirm)) return;
  trainingService.delete(id);
  loadTrainings();
  };
@@ -192,10 +192,10 @@ export function TrainingDevelopmentCard({
 
  const getStatusLabel = (status: string) => {
  switch (status) {
- case 'Completed': return t.completed;
- case 'Ongoing': return t.ongoing;
- case 'Planned': return t.planned;
- case 'Cancelled': return t.cancelled;
+ case 'Completed': return localT.completed;
+ case 'Ongoing': return localT.ongoing;
+ case 'Planned': return localT.planned;
+ case 'Cancelled': return localT.cancelled;
  default: return status;
  }
  };
@@ -214,15 +214,15 @@ export function TrainingDevelopmentCard({
  {/* Header */}
  <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
  <div className={'text-start'}>
- <h3 className="text-lg font-semibold text-gray-900">{t.title}</h3>
- <p className="text-sm text-gray-600 mt-1">{t.subtitle}</p>
+ <h3 className="text-lg font-semibold text-gray-900">{localT.title}</h3>
+ <p className="text-sm text-gray-600 mt-1">{localT.subtitle}</p>
  </div>
  <button 
  onClick={() => { setEditingRecord(null); setShowAddModal(true); }}
  className={`flex items-center gap-2 px-3 py-2 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700`}
  >
  <Plus className="w-4 h-4" />
- <span>{t.addTraining}</span>
+ <span>{localT.addTraining}</span>
  </button>
  </div>
 
@@ -231,22 +231,22 @@ export function TrainingDevelopmentCard({
  {trainings.length === 0 ? (
  <div className="text-center py-12">
  <GraduationCap className="w-12 h-12 text-gray-300 mx-auto mb-3" />
- <p className="text-gray-500">{t.noTrainings}</p>
+ <p className="text-gray-500">{localT.noTrainings}</p>
  </div>
  ) : (
  <div className="overflow-x-auto">
  <table className="w-full">
  <thead className="bg-gray-50 border-b border-gray-200">
  <tr>
- <th className={`px-4 py-3 text-xs font-semibold text-gray-700 text-start`}>{t.trainingTitle}</th>
- <th className={`px-4 py-3 text-xs font-semibold text-gray-700 text-start`}>{t.type}</th>
- <th className={`px-4 py-3 text-xs font-semibold text-gray-700 text-start`}>{t.provider}</th>
- <th className="px-4 py-3 text-xs font-semibold text-gray-700 text-center">{t.dates}</th>
- <th className="px-4 py-3 text-xs font-semibold text-gray-700 text-center">{t.duration}</th>
- <th className="px-4 py-3 text-xs font-semibold text-gray-700 text-center">{t.status}</th>
- <th className="px-4 py-3 text-xs font-semibold text-gray-700 text-end">{t.cost}</th>
- <th className="px-4 py-3 text-xs font-semibold text-gray-700 text-center">{t.certificate}</th>
- <th className="px-4 py-3 text-xs font-semibold text-gray-700 text-center">{t.actions}</th>
+ <th className={`px-4 py-3 text-xs font-semibold text-gray-700 text-start`}>{localT.trainingTitle}</th>
+ <th className={`px-4 py-3 text-xs font-semibold text-gray-700 text-start`}>{localT.type}</th>
+ <th className={`px-4 py-3 text-xs font-semibold text-gray-700 text-start`}>{localT.provider}</th>
+ <th className="px-4 py-3 text-xs font-semibold text-gray-700 text-center">{localT.dates}</th>
+ <th className="px-4 py-3 text-xs font-semibold text-gray-700 text-center">{localT.duration}</th>
+ <th className="px-4 py-3 text-xs font-semibold text-gray-700 text-center">{localT.status}</th>
+ <th className="px-4 py-3 text-xs font-semibold text-gray-700 text-end">{localT.cost}</th>
+ <th className="px-4 py-3 text-xs font-semibold text-gray-700 text-center">{localT.certificate}</th>
+ <th className="px-4 py-3 text-xs font-semibold text-gray-700 text-center">{localT.actions}</th>
  </tr>
  </thead>
  <tbody className="divide-y divide-gray-200">
@@ -258,7 +258,7 @@ export function TrainingDevelopmentCard({
  <td className="px-4 py-3 text-sm text-gray-700 text-center">
  {formatDate(training.startDate)} - {formatDate(training.endDate)}
  </td>
- <td className="px-4 py-3 text-sm text-gray-700 text-center">{training.duration} {t.hours}</td>
+ <td className="px-4 py-3 text-sm text-gray-700 text-center">{training.duration} {localT.hours}</td>
  <td className="px-4 py-3 text-sm text-center">
  <span className={`inline-block px-2 py-1 rounded text-xs font-medium border ${getStatusColor(training.status)}`}>
  {getStatusLabel(training.status)}
@@ -269,7 +269,7 @@ export function TrainingDevelopmentCard({
  </td>
  <td className="px-4 py-3 text-sm text-center">
  <span className={`inline-block px-2 py-1 rounded text-xs ${training.certificateIssued ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'}`}>
- {training.certificateIssued ? t.issued : t.notIssued}
+ {training.certificateIssued ? localT.issued : localT.notIssued}
  </span>
  </td>
  <td className="px-4 py-3 text-sm text-center">
@@ -277,14 +277,14 @@ export function TrainingDevelopmentCard({
  <button
  onClick={() => { setEditingRecord(training); setShowAddModal(true); }}
  className="text-blue-600 hover:text-blue-700 p-1 hover:bg-blue-50 rounded"
- title={t.edit}
+ title={localT.edit}
  >
  <Edit2 className="w-4 h-4" />
  </button>
  <button
  onClick={() => handleDelete(training.id)}
  className="text-red-600 hover:text-red-700 p-1 hover:bg-red-50 rounded"
- title={t.delete}
+ title={localT.delete}
  >
  <Trash2 className="w-4 h-4" />
  </button>

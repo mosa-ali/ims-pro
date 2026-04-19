@@ -209,7 +209,7 @@ export function SanctionsDisciplinaryCard({
 
  // Validate file size (max 5MB)
  if (file.size > 5 * 1024 * 1024) {
- alert(t.fileTooLarge);
+ alert(t.hrModals.fileTooLargeMaximumSizeIs);
  return;
  }
 
@@ -230,7 +230,7 @@ export function SanctionsDisciplinaryCard({
  });
  
  loadData(); // Reload to show uploaded document
- alert(t.uploadSuccess);
+ alert(t.hr.uploadSuccess);
  }
  
  setUploadingCaseId(null);

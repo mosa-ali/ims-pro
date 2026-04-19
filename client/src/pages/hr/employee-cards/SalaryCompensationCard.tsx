@@ -115,7 +115,7 @@ export function SalaryCompensationCard({
  <div className="bg-white rounded-lg border border-gray-200 p-8" dir={isRTL ? 'rtl' : 'ltr'}>
  <div className="flex items-center justify-center gap-3 text-gray-500">
  <Loader2 className="w-6 h-6 animate-spin" />
- <span>{t.loading}</span>
+ <span>{localT.loading}</span>
  </div>
  </div>
  );
@@ -128,16 +128,16 @@ export function SalaryCompensationCard({
  <div className="bg-white rounded-lg border border-gray-200">
  <div className="px-6 py-4 border-b border-gray-200">
  <div className={'text-start'}>
- <h3 className="text-lg font-semibold text-gray-900">{t.currentSalary}</h3>
- <p className="text-sm text-gray-600 mt-1">{t.subtitle}</p>
+ <h3 className="text-lg font-semibold text-gray-900">{localT.currentSalary}</h3>
+ <p className="text-sm text-gray-600 mt-1">{localT.subtitle}</p>
  </div>
  </div>
 
  <div className="p-6">
  <div className={`flex flex-col items-center justify-center py-8 text-center text-start`}>
  <AlertCircle className="w-12 h-12 text-yellow-500 mb-4" />
- <h4 className="text-lg font-medium text-gray-900 mb-2">{t.noSalaryData}</h4>
- <p className="text-sm text-gray-600 max-w-md">{t.noSalaryDataHint}</p>
+ <h4 className="text-lg font-medium text-gray-900 mb-2">{localT.noSalaryData}</h4>
+ <p className="text-sm text-gray-600 max-w-md">{localT.noSalaryDataHint}</p>
  </div>
  </div>
  </div>
@@ -154,15 +154,15 @@ export function SalaryCompensationCard({
  <div className="bg-white rounded-lg border border-gray-200">
  <div className="px-6 py-4 border-b border-gray-200">
  <div className={'text-start'}>
- <h3 className="text-lg font-semibold text-gray-900">{t.currentSalary}</h3>
- <p className="text-sm text-gray-600 mt-1">{t.subtitle}</p>
+ <h3 className="text-lg font-semibold text-gray-900">{localT.currentSalary}</h3>
+ <p className="text-sm text-gray-600 mt-1">{localT.subtitle}</p>
  </div>
  </div>
 
  {/* Read-Only Notice */}
  <div className="px-6 pt-4">
  <div className={`p-3 bg-blue-50 border border-blue-200 rounded-lg text-start`}>
- <p className="text-sm text-blue-900 font-medium">{t.readOnlyNotice}</p>
+ <p className="text-sm text-blue-900 font-medium">{localT.readOnlyNotice}</p>
  </div>
  </div>
 
@@ -170,7 +170,7 @@ export function SalaryCompensationCard({
  {salaryRecord.status === 'draft' && (
  <div className="px-6 pt-4">
  <div className={`p-3 bg-yellow-50 border border-yellow-200 rounded-lg text-start`}>
- <p className="text-sm text-yellow-800 font-medium">⚠️ {t.draftStatus}</p>
+ <p className="text-sm text-yellow-800 font-medium">⚠️ {localT.draftStatus}</p>
  </div>
  </div>
  )}
@@ -178,37 +178,37 @@ export function SalaryCompensationCard({
  <div className="p-6 space-y-4">
  {/* Base Salary */}
  <div className={`p-4 bg-blue-50 border border-blue-200 rounded-lg text-start`}>
- <p className="text-sm text-blue-900 font-semibold mb-2">{t.baseSalary}</p>
+ <p className="text-sm text-blue-900 font-semibold mb-2">{localT.baseSalary}</p>
  <p className="text-3xl font-bold text-blue-600">
  {formatCurrency(salaryRecord.approvedGrossSalary, currency)}
  </p>
  <p className="text-xs text-blue-700 mt-1">
- {t.grade}: {salaryRecord.gradeCode} | {t.step}: {salaryRecord.step}
+ {localT.grade}: {salaryRecord.gradeCode} | {localT.step}: {salaryRecord.step}
  </p>
  </div>
 
  {/* Allowances Grid */}
  <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
  <div className={`p-3 bg-gray-50 rounded-lg text-start`}>
- <p className="text-xs text-gray-500">{t.housing}</p>
+ <p className="text-xs text-gray-500">{localT.housing}</p>
  <p className="text-sm font-semibold text-gray-900">
  {formatCurrency(salaryRecord.housingAllowance, currency)}
  </p>
  </div>
  <div className={`p-3 bg-gray-50 rounded-lg text-start`}>
- <p className="text-xs text-gray-500">{t.transport}</p>
+ <p className="text-xs text-gray-500">{localT.transport}</p>
  <p className="text-sm font-semibold text-gray-900">
  {formatCurrency(salaryRecord.transportAllowance, currency)}
  </p>
  </div>
  <div className={`p-3 bg-gray-50 rounded-lg text-start`}>
- <p className="text-xs text-gray-500">{t.representation}</p>
+ <p className="text-xs text-gray-500">{localT.representation}</p>
  <p className="text-sm font-semibold text-gray-900">
  {formatCurrency(salaryRecord.representationAllowance, currency)}
  </p>
  </div>
  <div className={`p-3 bg-gray-50 rounded-lg text-start`}>
- <p className="text-xs text-gray-500">{t.other}</p>
+ <p className="text-xs text-gray-500">{localT.other}</p>
  <p className="text-sm font-semibold text-gray-900">
  {formatCurrency(salaryRecord.otherAllowances, currency)}
  </p>
@@ -217,7 +217,7 @@ export function SalaryCompensationCard({
 
  {/* Gross Salary */}
  <div className={`p-4 bg-green-50 border border-green-200 rounded-lg text-start`}>
- <p className="text-xs text-green-700">{t.grossSalary}</p>
+ <p className="text-xs text-green-700">{localT.grossSalary}</p>
  <p className="text-2xl font-bold text-green-600">
  {formatCurrency(grossSalary, currency)}
  </p>
@@ -229,23 +229,23 @@ export function SalaryCompensationCard({
  <div className="bg-white rounded-lg border border-gray-200">
  <div className="px-6 py-4 border-b border-gray-200">
  <h3 className={`text-lg font-semibold text-gray-900 text-start`}>
- {t.payrollSlips}
+ {localT.payrollSlips}
  </h3>
  <p className={`text-sm text-gray-500 text-start`}>
- {t.payrollSlipsSubtitle}
+ {localT.payrollSlipsSubtitle}
  </p>
  </div>
  <div className="p-6">
  <div className={`text-center py-8 text-gray-500 text-start`}>
  <FileText className="w-12 h-12 mx-auto text-gray-300 mb-4" />
- <p>{t.noPayrollSlips}</p>
+ <p>{localT.noPayrollSlips}</p>
  </div>
  </div>
  </div>
 
  {/* Note */}
  <div className={`p-3 bg-gray-50 border border-gray-200 rounded-lg text-start`}>
- <p className="text-xs text-gray-600">{t.note}</p>
+ <p className="text-xs text-gray-600">{localT.note}</p>
  </div>
  </div>
  );

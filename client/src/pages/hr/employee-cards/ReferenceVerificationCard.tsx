@@ -93,8 +93,8 @@ export function ReferenceVerificationCard({
  <div className="bg-white rounded-lg border border-gray-200" dir={isRTL ? 'rtl' : 'ltr'}>
  <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
  <div className={'text-start'}>
- <h3 className="text-lg font-semibold text-gray-900">{t.title}</h3>
- <p className="text-sm text-gray-600 mt-1">{t.subtitle}</p>
+ <h3 className="text-lg font-semibold text-gray-900">{localT.title}</h3>
+ <p className="text-sm text-gray-600 mt-1">{localT.subtitle}</p>
  </div>
  <div className={`flex items-center gap-2`}>
  <button 
@@ -102,14 +102,14 @@ export function ReferenceVerificationCard({
  onClick={() => setShowUploadModal(true)}
  >
  <Upload className="w-4 h-4" />
- <span>{t.uploadReference}</span>
+ <span>{localT.uploadReference}</span>
  </button>
  <button 
  className={`flex items-center gap-2 px-3 py-2 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700`}
  onClick={() => setIsPrinting(true)}
  >
  <Printer className="w-4 h-4" />
- <span>{t.generateReference}</span>
+ <span>{localT.generateReference}</span>
  </button>
  </div>
  </div>
@@ -117,30 +117,30 @@ export function ReferenceVerificationCard({
  <div className="p-6 space-y-6">
  {/* Employment History Summary */}
  <div className={`p-4 bg-gray-50 rounded-lg text-start`}>
- <h4 className="text-sm font-semibold text-gray-900 mb-3">{t.employmentHistory}</h4>
+ <h4 className="text-sm font-semibold text-gray-900 mb-3">{localT.employmentHistory}</h4>
  <div className="space-y-2">
  <div className={`flex justify-between`}>
- <span className="text-sm text-gray-600">{t.employmentPeriod}:</span>
+ <span className="text-sm text-gray-600">{localT.employmentPeriod}:</span>
  <span className="text-sm font-medium text-gray-900">
  {formatDate(employee.hireDate)} - {formatDate(employee.contractEndDate)}
  </span>
  </div>
  <div className={`flex justify-between`}>
- <span className="text-sm text-gray-600">{t.lastPosition}:</span>
+ <span className="text-sm text-gray-600">{localT.lastPosition}:</span>
  <span className="text-sm font-medium text-gray-900">{employee.position}</span>
  </div>
  <div className={`flex justify-between`}>
- <span className="text-sm text-gray-600">{t.department}:</span>
+ <span className="text-sm text-gray-600">{localT.department}:</span>
  <span className="text-sm font-medium text-gray-900">{employee.department}</span>
  </div>
  <div className={`flex justify-between`}>
- <span className="text-sm text-gray-600">{t.supervisor}:</span>
+ <span className="text-sm text-gray-600">{localT.supervisor}:</span>
  <span className="text-sm font-medium text-gray-900">
  {employee.supervisor || (t.hrEmployeeCards.notAssigned)}
  </span>
  </div>
  <div className={`flex justify-between`}>
- <span className="text-sm text-gray-600">{t.finalStatus}:</span>
+ <span className="text-sm text-gray-600">{localT.finalStatus}:</span>
  <span className="text-sm font-medium text-green-600">
  {employee.status === 'active' ? (t.hrEmployeeCards.currentlyActive) : employee.status}
  </span>
@@ -150,11 +150,11 @@ export function ReferenceVerificationCard({
 
  {/* Uploaded Reference Forms */}
  <div>
- <h4 className="text-sm font-semibold text-gray-900 mb-3">{t.uploadedReferences}</h4>
+ <h4 className="text-sm font-semibold text-gray-900 mb-3">{localT.uploadedReferences}</h4>
  {uploads.length === 0 ? (
  <div className="text-center py-8 bg-gray-50 rounded-lg border border-gray-200">
  <FileText className="w-12 h-12 text-gray-400 mx-auto mb-2" />
- <p className="text-sm text-gray-500">{t.noUploads}</p>
+ <p className="text-sm text-gray-500">{localT.noUploads}</p>
  </div>
  ) : (
  <div className="space-y-3">
@@ -170,21 +170,21 @@ export function ReferenceVerificationCard({
  </span>
  </div>
  <p className="text-sm text-gray-700 mb-1">
- <span className="font-medium">{t.requestingOrg}:</span> {upload.requestingOrganization}
+ <span className="font-medium">{localT.requestingOrg}:</span> {upload.requestingOrganization}
  </p>
  <div className="flex items-center gap-4 text-xs text-gray-500">
- <span>{t.dateRequested}: {formatDate(upload.dateRequested)}</span>
+ <span>{localT.dateRequested}: {formatDate(upload.dateRequested)}</span>
  {upload.dateIssued && (
- <span>{t.dateIssued}: {formatDate(upload.dateIssued)}</span>
+ <span>{localT.dateIssued}: {formatDate(upload.dateIssued)}</span>
  )}
  </div>
  <p className="text-xs text-gray-400 mt-1">
- {t.uploadedBy}: {upload.uploadedBy} • {formatDate(upload.uploadDate)}
+ {localT.uploadedBy}: {upload.uploadedBy} • {formatDate(upload.uploadDate)}
  </p>
  </div>
  <button
  className="text-blue-600 hover:text-blue-700 p-2 hover:bg-blue-50 rounded"
- title={t.download}
+ title={localT.download}
  >
  <Download className="w-5 h-5" />
  </button>
@@ -198,7 +198,7 @@ export function ReferenceVerificationCard({
  {/* Note */}
  <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
  <p className={`text-sm text-blue-800 text-start`}>
- {t.note}
+ {localT.note}
  </p>
  </div>
  </div>

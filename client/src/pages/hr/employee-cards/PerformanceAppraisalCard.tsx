@@ -160,7 +160,7 @@ export function PerformanceAppraisalCard({
  };
 
  const handleDelete = (id: string) => {
- if (!confirm(t.deleteConfirm)) return;
+ if (!confirm(localT.deleteConfirm)) return;
  performanceService.delete(id);
  loadReviews();
  };
@@ -213,9 +213,9 @@ export function PerformanceAppraisalCard({
 
  const getStatusLabel = (status: string) => {
  switch (status) {
- case 'Completed': return t.completed;
- case 'Acknowledged': return t.acknowledged;
- case 'Draft': return t.draft;
+ case 'Completed': return localT.completed;
+ case 'Acknowledged': return localT.acknowledged;
+ case 'Draft': return localT.draft;
  default: return status;
  }
  };
@@ -241,14 +241,14 @@ export function PerformanceAppraisalCard({
  <div className={'text-start'}>
  <div className="flex items-center gap-3">
  <div>
- <h3 className="text-lg font-semibold text-gray-900">{t.title}</h3>
- <p className="text-sm text-gray-600 mt-1">{t.subtitle}</p>
+ <h3 className="text-lg font-semibold text-gray-900">{localT.title}</h3>
+ <p className="text-sm text-gray-600 mt-1">{localT.subtitle}</p>
  </div>
  {reviews.length > 0 && (
  <div className="flex items-center gap-2 px-3 py-1 bg-blue-50 rounded-lg">
  <Trophy className="w-4 h-4 text-blue-600" />
  <span className="text-sm font-semibold text-blue-600">
- Avg: {averageRating} {t.outOf5}
+ Avg: {averageRating} {localT.outOf5}
  </span>
  </div>
  )}
@@ -260,14 +260,14 @@ export function PerformanceAppraisalCard({
  className={`flex items-center gap-2 px-3 py-2 text-sm bg-green-600 text-white rounded-lg hover:bg-green-700`}
  >
  <Award className="w-4 h-4" />
- <span>{t.addAppraisalForm}</span>
+ <span>{localT.addAppraisalForm}</span>
  </button>
  <button 
  onClick={() => { setEditingRecord(null); setShowAddModal(true); }}
  className={`flex items-center gap-2 px-3 py-2 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700`}
  >
  <Plus className="w-4 h-4" />
- <span>{t.addReview}</span>
+ <span>{localT.addReview}</span>
  </button>
  </div>
  </div>
@@ -315,20 +315,20 @@ export function PerformanceAppraisalCard({
  {reviews.length === 0 ? (
  <div className="text-center py-12">
  <BarChart3 className="w-12 h-12 text-gray-300 mx-auto mb-3" />
- <p className="text-gray-500">{t.noReviews}</p>
+ <p className="text-gray-500">{localT.noReviews}</p>
  </div>
  ) : (
  <div className="overflow-x-auto">
  <table className="w-full">
  <thead className="bg-gray-50 border-b border-gray-200">
  <tr>
- <th className={`px-4 py-3 text-xs font-semibold text-gray-700 text-start`}>{t.reviewPeriod}</th>
- <th className={`px-4 py-3 text-xs font-semibold text-gray-700 text-start`}>{t.type}</th>
- <th className="px-4 py-3 text-xs font-semibold text-gray-700 text-center">{t.reviewDate}</th>
- <th className={`px-4 py-3 text-xs font-semibold text-gray-700 text-start`}>{t.reviewedBy}</th>
- <th className="px-4 py-3 text-xs font-semibold text-gray-700 text-center">{t.overallRating}</th>
- <th className="px-4 py-3 text-xs font-semibold text-gray-700 text-center">{t.status}</th>
- <th className="px-4 py-3 text-xs font-semibold text-gray-700 text-center">{t.actions}</th>
+ <th className={`px-4 py-3 text-xs font-semibold text-gray-700 text-start`}>{localT.reviewPeriod}</th>
+ <th className={`px-4 py-3 text-xs font-semibold text-gray-700 text-start`}>{localT.type}</th>
+ <th className="px-4 py-3 text-xs font-semibold text-gray-700 text-center">{localT.reviewDate}</th>
+ <th className={`px-4 py-3 text-xs font-semibold text-gray-700 text-start`}>{localT.reviewedBy}</th>
+ <th className="px-4 py-3 text-xs font-semibold text-gray-700 text-center">{localT.overallRating}</th>
+ <th className="px-4 py-3 text-xs font-semibold text-gray-700 text-center">{localT.status}</th>
+ <th className="px-4 py-3 text-xs font-semibold text-gray-700 text-center">{localT.actions}</th>
  </tr>
  </thead>
  <tbody className="divide-y divide-gray-200">
@@ -345,7 +345,7 @@ export function PerformanceAppraisalCard({
  </td>
  <td className="px-4 py-3 text-sm text-center">
  <span className={`text-lg font-bold ${getRatingColor(review.overallRating)}`}>
- {review.overallRating.toFixed(1)} {t.outOf5}
+ {review.overallRating.toFixed(1)} {localT.outOf5}
  </span>
  <div className="text-xs text-gray-500 mt-1">{review.ratingLabel}</div>
  </td>
@@ -359,14 +359,14 @@ export function PerformanceAppraisalCard({
  <button
  onClick={() => { setEditingRecord(review); setShowAddModal(true); }}
  className="text-blue-600 hover:text-blue-700 p-1 hover:bg-blue-50 rounded"
- title={t.edit}
+ title={localT.edit}
  >
  <Edit2 className="w-4 h-4" />
  </button>
  <button
  onClick={() => handleDelete(review.id)}
  className="text-red-600 hover:text-red-700 p-1 hover:bg-red-50 rounded"
- title={t.delete}
+ title={localT.delete}
  >
  <Trash2 className="w-4 h-4" />
  </button>
