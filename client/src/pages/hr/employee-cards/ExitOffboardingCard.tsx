@@ -174,8 +174,8 @@ export function ExitOffboardingCard({
  {/* Header */}
  <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
  <div className={'text-start'}>
- <h3 className="text-lg font-semibold text-gray-900">{t.title}</h3>
- <p className="text-sm text-gray-600 mt-1">{t.subtitle}</p>
+ <h3 className="text-lg font-semibold text-gray-900">{localT.title}</h3>
+ <p className="text-sm text-gray-600 mt-1">{localT.subtitle}</p>
  </div>
  <div className="flex items-center gap-2">
  <button 
@@ -207,8 +207,8 @@ export function ExitOffboardingCard({
  {!exitData?.resignation && !exitData?.clearance && !exitData?.exitInterview ? (
  <div className="text-center py-12">
  <DoorOpen className="w-12 h-12 text-gray-300 mx-auto mb-3" />
- <p className="text-gray-500">{t.noExit}</p>
- <p className="text-sm text-green-600 mt-2">{t.employeeActive}</p>
+ <p className="text-gray-500">{localT.noExit}</p>
+ <p className="text-sm text-green-600 mt-2">{localT.employeeActive}</p>
  </div>
  ) : (
  <div className="space-y-4">
@@ -311,7 +311,7 @@ export function ExitOffboardingCard({
  {completion > 0 && (
  <div>
  <div className="flex items-center justify-between mb-2">
- <span className="text-sm font-medium text-gray-700">{t.completionRate}</span>
+ <span className="text-sm font-medium text-gray-700">{localT.completionRate}</span>
  <span className="text-sm font-bold text-blue-600">{completion}%</span>
  </div>
  <div className="w-full h-3 bg-gray-200 rounded-full overflow-hidden">
