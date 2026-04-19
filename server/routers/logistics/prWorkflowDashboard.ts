@@ -109,11 +109,8 @@ export const prWorkflowDashboardRouter = router({
 
       const baseConditions = [
         eq(purchaseRequests.organizationId, organizationId),
+        eq(purchaseRequests.operatingUnitId, operatingUnitId),
         isNull(purchaseRequests.deletedAt),
-        or(
-          eq(purchaseRequests.operatingUnitId, operatingUnitId),
-          isNull(purchaseRequests.operatingUnitId)
-        )!,
       ];
 
       const draftResult = await db.select({ count: sql<number>`count(*)` })
@@ -163,7 +160,7 @@ export const prWorkflowDashboardRouter = router({
         "validated_by_finance", "rejected_by_finance", "rejected_by_pm"
       ]).default("all"),
       search: z.string().optional(),
-      category: z.enum(["all", "goods", "services", "works", "consultancy"]).default("all"),
+      category: z.enum(["all", "goods", "services", "works"]).default("all"),
       limit: z.number().default(50),
       offset: z.number().default(0),
     }))
@@ -173,11 +170,8 @@ export const prWorkflowDashboardRouter = router({
 
       const conditions: any[] = [
         eq(purchaseRequests.organizationId, organizationId),
+        eq(purchaseRequests.operatingUnitId, operatingUnitId),
         isNull(purchaseRequests.deletedAt),
-        or(
-          eq(purchaseRequests.operatingUnitId, operatingUnitId),
-          isNull(purchaseRequests.operatingUnitId)
-        )!,
       ];
 
       if (input.status === "submitted") {
