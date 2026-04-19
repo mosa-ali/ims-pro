@@ -180,7 +180,7 @@ function WCardUI({ card, onClick, lockReason, isRTL }: { card: WCard; onClick: (
 export default function ProcurementWorkspace() {
  const { prId } = useParams<{ prId: string }>();
  const navigate = useNavigate();
- const { organizationId } = useOrganization();
+ const { currentOrganizationId } = useOrganization();
  const { language, isRTL} = useLanguage();
  const { t } = useTranslation();
 
@@ -199,7 +199,7 @@ export default function ProcurementWorkspace() {
  if (pr) {
  console.log('[ProcurementWorkspace] PR data:', pr);
  console.log('[ProcurementWorkspace] totalAmount:', pr.totalAmount);
- console.log('[ProcurementWorkspace] prTotalUSD:', pr.prTotalUSD);
+ console.log('[ProcurementWorkspace] prTotalUSD:', pr.prTotalUsd);
  }
  }, [pr]);
 
@@ -294,7 +294,7 @@ export default function ProcurementWorkspace() {
  // Goods >= $25K (Tender) also requires Contract Management before PO
  const isServices = pr?.category === 'services';
  const isWorks = pr?.category === 'works';
- const prTotalUSD = parseFloat(String(pr?.prTotalUSD || pr?.prTotalUsd || pr?.totalAmount || '0'));
+ const prTotalUSD = parseFloat(String(pr?.prTotalUsd || pr?.prTotalUsd || pr?.totalAmount || '0'));
  const isGoodsContractRequired = pr?.category === 'goods' && prTotalUSD >= 25000;
  const isContractChain = isServices || isWorks; // Services/Works: full contract chain (Contract → SAC → Payment)
  const needsContract = isContractChain || isGoodsContractRequired; // Any category that needs contract data
@@ -423,7 +423,7 @@ export default function ProcurementWorkspace() {
  }
 
  // Determine process type
- const processInfo = determineProcessType(parseFloat(String(pr.prTotalUSD || pr.prTotalUsd || pr.totalAmount || '0')));
+ const processInfo = determineProcessType(parseFloat(String(pr.prTotalUsd || pr.prTotalUsd || pr.totalAmount || '0')));
 
  // ============================================================================
  // WORKFLOW VALIDATION (Tender Governance Rules)
@@ -459,7 +459,7 @@ export default function ProcurementWorkspace() {
  }
 
  // ── Supplier Quotation state (Goods > $25K) ──
- const isGoodsAbove25K = pr?.category === 'goods' && parseFloat(String(pr?.prTotalUSD || pr?.prTotalUsd || pr?.totalAmount || '0')) > 25000;
+ const isGoodsAbove25K = pr?.category === 'goods' && parseFloat(String(pr?.prTotalUsd || pr?.prTotalUsd || pr?.totalAmount || '0')) > 25000;
  const sqCount = sqData?.length || 0;
  const sqHasQuotations = sqCount > 0;
  const sqCompleted = sqCount >= 3; // At least 3 quotations for formal tender
@@ -480,7 +480,7 @@ export default function ProcurementWorkspace() {
  // For Services ≤ $1,000 (single quotation): Contract enabled when RFQ has received quotes (no QA needed)
  // For Services > $1,000 to $25,000: Contract enabled when QA is approved
  // For Services > $25,000: Contract enabled when CBA is awarded
- const totalUSD = parseFloat(String(pr?.prTotalUSD || pr?.prTotalUsd || pr?.totalAmount || '0'));
+ const totalUSD = parseFloat(String(pr?.prTotalUsd || pr?.prTotalUsd || pr?.totalAmount || '0'));
  const isSingleQuotation = totalUSD <= 1000;
  const rfqReceived = rfqData?.status === 'received' && rfqData?.suppliers?.length > 0;
  // For Goods PRs ≤ $1,000 (single quotation): PO unlocks when RFQ is received (no QA needed)
@@ -507,7 +507,7 @@ export default function ProcurementWorkspace() {
  color: pr.status === "approved" ? "green" : "blue",
  meta: [
  { label: t.procurement.reqDate, value: new Date(pr.prDate).toLocaleDateString() },
- { label: t.procurement.totalCost, value: `${pr.exchangeTo || pr.currency || 'USD'} ${Number(pr.prTotalUSD || pr.prTotalUsd || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` },
+ { label: t.procurement.totalCost, value: `${pr.exchangeTo || pr.currency || 'USD'} ${Number(pr.prTotalUsd || pr.prTotalUsd || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` },
  ],
  enabled: true,
  section: "primary",
@@ -911,7 +911,7 @@ export default function ProcurementWorkspace() {
  {activeTab === "tender-info" && <TenderInformationTab purchaseRequestId={numericPrId} prNumber={pr?.prNumber} />}
  {activeTab === "eval-criteria" && <BidEvaluationCriteriaTab purchaseRequestId={numericPrId} prNumber={pr?.prNumber} />}
  {activeTab === "analysis" && (
- pr && parseFloat(pr.prTotalUSD || pr.prTotalUsd || "0") > 5000 && parseFloat(pr.prTotalUSD || pr.prTotalUsd || "0") <= 25000 ? (
+ pr && parseFloat(pr.prTotalUsd || pr.prTotalUsd || "0") > 5000 && parseFloat(pr.prTotalUsd || pr.prTotalUsd || "0") <= 25000 ? (
  <QuotationAnalysisExtendedTab 
  qaId={qaData?.id || ""} 
  purchaseRequestId={numericPrId} 

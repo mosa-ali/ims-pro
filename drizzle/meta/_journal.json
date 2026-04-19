@@ -43,6 +43,13 @@
       "when": 1776467075777,
       "tag": "0005_flowery_black_widow",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "5",
+      "when": 1776614879524,
+      "tag": "0006_shocking_magdalene",
+      "breakpoints": true
     }
   ]
 }
