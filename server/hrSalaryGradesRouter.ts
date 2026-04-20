@@ -155,7 +155,6 @@ export const hrSalaryGradesRouter = router({
         expiryDate: input.expiryDate,
         status: input.status,
         notes: input.notes,
-        createdAt: new Date().toISOString(),
       });
 
       return { id: result.insertId, success: true };
@@ -218,7 +217,7 @@ export const hrSalaryGradesRouter = router({
       if (updateData.expiryDate) updateValues.expiryDate = updateData.expiryDate;
       if (updateData.status) updateValues.status = updateData.status;
       if (updateData.notes) updateValues.notes = updateData.notes;
-      updateValues.updatedAt = new Date().toISOString();
+      // updatedAt is auto-updated by database onUpdateNow()
 
       await db
         .update(hrSalaryGrades)
