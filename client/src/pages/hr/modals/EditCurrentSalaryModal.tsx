@@ -241,6 +241,7 @@ export function EditCurrentSalaryModal({
  const finalTransport = calculateAllowanceValue(formData.transportAllowance, formData.transportIsPercentage);
  const finalRepresentation = calculateAllowanceValue(formData.representationAllowance, formData.representationIsPercentage);
  const finalOther = calculateAllowanceValue(formData.otherAllowances, formData.otherIsPercentage);
+ const nowSql = new Date().toISOString().slice(0, 19).replace('T', ' ');
 
  // Update ONLY salary fields
  const updatedEmployee: StaffMember = {
@@ -252,7 +253,7 @@ export function EditCurrentSalaryModal({
  transportAllowance: finalTransport,
  representationAllowance: finalRepresentation,
  otherAllowances: finalOther,
- updatedAt: new Date()
+ updatedAt: nowSql
  };
  
  
@@ -262,7 +263,6 @@ export function EditCurrentSalaryModal({
   try {
     await updateMutation.mutateAsync({
       id: salaryRecordId,
-      employeeId: Number(employee.id),
       gradeCode: formData.grade.trim(),
       step: formData.step.trim(),
       approvedGrossSalary: calculateTotalGross(),
@@ -271,7 +271,6 @@ export function EditCurrentSalaryModal({
       representationAllowance: finalRepresentation,
       otherAllowances: finalOther,
       effectiveStartDate: formData.effectiveDate,
-      status: "active"
     });
 
     toast.success('Salary saved successfully!');
