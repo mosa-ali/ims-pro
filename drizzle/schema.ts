@@ -2983,49 +2983,97 @@ export const hrSalaryGrades = mysqlTable("hr_salary_grades", {
 	updatedAt: timestamp({ mode: 'string' }).defaultNow().onUpdateNow().notNull(),
 });
 
-export const hrSalaryScale = mysqlTable("hr_salary_scale", {
-	id: int().autoincrement().primaryKey().notNull(),
-	organizationId: int().notNull(),
-	operatingUnitId: int(),
-	employeeId: int().notNull(),
-	staffId: varchar({ length: 50 }).notNull(),
-	staffFullName: varchar({ length: 255 }).notNull(),
-	position: varchar({ length: 100 }),
-	department: varchar({ length: 100 }),
-	contractType: varchar({ length: 50 }),
-	gradeId: int(),
-	gradeCode: varchar({ length: 50 }).notNull(),
-	step: varchar({ length: 50 }).notNull(),
-	minSalary: decimal({ precision: 15, scale: 2 }).default('0'),
-	maxSalary: decimal({ precision: 15, scale: 2 }).default('0'),
-	approvedGrossSalary: decimal({ precision: 15, scale: 2 }).notNull(),
-	housingAllowance: decimal({ precision: 15, scale: 2 }).default('0'),
-	housingAllowanceType: mysqlEnum(['value','percentage']).default('value'),
-	transportAllowance: decimal({ precision: 15, scale: 2 }).default('0'),
-	transportAllowanceType: mysqlEnum(['value','percentage']).default('value'),
-	representationAllowance: decimal({ precision: 15, scale: 2 }).default('0'),
-	representationAllowanceType: mysqlEnum(['value','percentage']).default('value'),
-	annualAllowance: decimal({ precision: 15, scale: 2 }).default('0'),
-	bonus: decimal({ precision: 15, scale: 2 }).default('0'),
-	otherAllowances: decimal({ precision: 15, scale: 2 }).default('0'),
-	currency: varchar({ length: 10 }).default('USD'),
-	version: int().default(1).notNull(),
-	// you can use { mode: 'date' }, if you want to have Date as type for this column
-	effectiveStartDate: date({ mode: 'string' }).notNull(),
-	// you can use { mode: 'date' }, if you want to have Date as type for this column
-	effectiveEndDate: date({ mode: 'string' }),
-	status: mysqlEnum(['draft','active','superseded']).default('draft').notNull(),
-	isLocked: tinyint().default(0).notNull(),
-	usedInPayroll: tinyint().default(0).notNull(),
-	lastApprovedBy: int(),
-	lastApprovedAt: timestamp({ mode: 'string' }),
-	createdBy: int(),
-	isDeleted: tinyint().default(0).notNull(),
-	deletedAt: timestamp({ mode: 'string' }),
-	deletedBy: int(),
-	createdAt: timestamp({ mode: 'string' }).defaultNow().notNull(),
-	updatedAt: timestamp({ mode: 'string' }).defaultNow().onUpdateNow().notNull(),
-});
+export const hrSalaryScale = mysqlTable(
+  "hr_salary_scale",
+  {
+    id: int().autoincrement().primaryKey().notNull(),
+    
+    // Multi-tenant scoping
+    organizationId: int().notNull(),
+    operatingUnitId: int(), // Nullable for backward compatibility
+    
+    // Employee reference
+    employeeId: int().notNull(),
+    staffId: varchar({ length: 50 }).notNull(),
+    staffFullName: varchar({ length: 255 }).notNull(), // ✅ CHANGED from staffFullName
+    position: varchar({ length: 100 }),
+    department: varchar({ length: 100 }),
+    contractType: varchar({ length: 50 }),
+    
+    // Grade & Step
+    gradeId: int(),
+    gradeCode: varchar({ length: 50 }).notNull(),
+    step: varchar({ length: 50 }).notNull(),
+    
+    // Salary boundaries
+    minSalary: decimal({ precision: 15, scale: 2 }).default('0'),
+    maxSalary: decimal({ precision: 15, scale: 2 }).default('0'),
+    
+    // Approved salary
+    approvedGrossSalary: decimal({ precision: 15, scale: 2 }).notNull(),
+    
+    // Allowances
+    housingAllowance: decimal({ precision: 15, scale: 2 }).default('0'),
+    housingAllowanceType: mysqlEnum(['value','percentage']).default('value'),
+    transportAllowance: decimal({ precision: 15, scale: 2 }).default('0'),
+    transportAllowanceType: mysqlEnum(['value','percentage']).default('value'),
+    representationAllowance: decimal({ precision: 15, scale: 2 }).default('0'),
+    representationAllowanceType: mysqlEnum(['value','percentage']).default('value'),
+    annualAllowance: decimal({ precision: 15, scale: 2 }).default('0'),
+    bonus: decimal({ precision: 15, scale: 2 }).default('0'),
+    otherAllowances: decimal({ precision: 15, scale: 2 }).default('0'),
+    
+    // Currency
+    currency: varchar({ length: 10 }).default('USD'),
+    
+    // Versioning
+    version: int().default(1).notNull(),
+    
+    // Effective dates
+    effectiveStartDate: date({ mode: 'string' }).notNull(),
+    effectiveEndDate: date({ mode: 'string' }),
+    
+    // Status
+    status: mysqlEnum(['draft','active','superseded']).default('draft').notNull(),
+    
+    // Locking
+    isLocked: tinyint().default(0).notNull(),
+    
+    // Payroll integration
+    usedInPayroll: tinyint().default(0).notNull(),
+    
+    // Approval tracking
+    lastApprovedBy: int(),
+    lastApprovedAt: timestamp({ mode: 'string' }),
+    
+    // Audit trail
+    createdBy: int(),
+    updatedBy: int(), // ✅ NEW: Track who updates records
+    deletedBy: int(),
+    
+    // Soft delete
+    isDeleted: tinyint().default(0).notNull(),
+    deletedAt: timestamp({ mode: 'string' }),
+    
+    // Timestamps
+    createdAt: timestamp({ mode: 'string' }).defaultNow().notNull(),
+    updatedAt: timestamp({ mode: 'string' }).defaultNow().onUpdateNow().notNull(),
+  },
+  (table) => ({
+    // Strategic indexes for performance
+    employeeIdx: index('idx_salary_employee_id').on(table.employeeId),
+    orgIdx: index('idx_salary_org_id').on(table.organizationId),
+    ouIdx: index('idx_salary_ou_id').on(table.operatingUnitId),
+    statusIdx: index('idx_salary_status').on(table.status),
+    deletedIdx: index('idx_salary_deleted_at').on(table.deletedAt),
+    effectiveIdx: index('idx_salary_effective_start_date').on(table.effectiveStartDate),
+    compositeIdx: index('idx_salary_org_ou_employee').on(
+      table.organizationId,
+      table.operatingUnitId,
+      table.employeeId
+    ),
+  })
+);
 
 export const hrSanctions = mysqlTable("hr_sanctions", {
 	id: int().autoincrement().primaryKey().notNull(),

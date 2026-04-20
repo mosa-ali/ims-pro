@@ -381,8 +381,9 @@ export const hrSalaryScaleRouter = router({
       const [record] = await db.select().from(hrSalaryScale).where(and(eq(hrSalaryScale.id, input.id), eq(hrSalaryScale.organizationId, organizationId)));
       if (!record) throw new TRPCError({ code: "NOT_FOUND", message: "Record not found" });
 
-      await db.update(hrSalaryScale).set({ isLocked: 1 }).where(eq(hrSalaryScale.id, input.id));
-      return { success: true, isLocked: !record.isLocked };
+      const newLockedState = !record.isLocked;
+      await db.update(hrSalaryScale).set({ isLocked: newLockedState ? 1 : 0 }).where(eq(hrSalaryScale.id, input.id));
+      return { success: true, isLocked: newLockedState };
     }),
 
   /**

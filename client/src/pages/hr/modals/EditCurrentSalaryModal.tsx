@@ -18,6 +18,7 @@ import { StaffMember } from '../types/hrTypes';
 import { useTranslation } from '@/i18n/useTranslation';
 import { trpc } from '@/lib/trpc';
 import { toast } from 'sonner';
+import { SalaryHistoryModal } from './SalaryHistoryModal';
 
 interface Props {
  employee: StaffMember;
@@ -56,6 +57,7 @@ export function EditCurrentSalaryModal({
  const [grades, setGrades] = useState<any[]>([]);
  const [loadingGrades, setLoadingGrades] = useState(false);
  const [salaryWarning, setSalaryWarning] = useState<string>('');
+ const [showHistoryModal, setShowHistoryModal] = useState(false);
 
  // Fetch grades on component mount
  const { data: gradesData, isLoading: isLoadingGrades } = trpc.hrSalaryGrades.getAll.useQuery();
@@ -545,7 +547,15 @@ const salaryRecordId = Number(employee.id); // ✅ FIX ERROR 1
  </form>
 
  {/* Footer */}
- <div className="px-6 py-4 border-t border-gray-200 flex items-center justify-end gap-3 bg-gray-50">
+ <div className="px-6 py-4 border-t border-gray-200 flex items-center justify-between bg-gray-50">
+ <button
+ type="button"
+ onClick={() => setShowHistoryModal(true)}
+ className="text-sm text-blue-600 hover:text-blue-700 underline"
+ >
+ View Salary History
+ </button>
+ <div className="flex items-center gap-3">
  <button
  type="button"
  onClick={onClose}
@@ -558,10 +568,19 @@ const salaryRecordId = Number(employee.id); // ✅ FIX ERROR 1
  className="flex items-center gap-2 px-4 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700"
  >
  <Save className="w-4 h-4" />
- {t.hrModals.save}
+ {localT.save}
  </button>
  </div>
  </div>
+ </div>
+
+ {/* Salary History Modal */}
+ <SalaryHistoryModal
+ isOpen={showHistoryModal}
+ onClose={() => setShowHistoryModal(false)}
+ employeeId={Number(employee.id)}
+ employeeName={employee.fullName}
+ />
  </div>
  );
 }
