@@ -97,19 +97,19 @@ export function SalaryScaleTableTab() {
  const [filterStatus, setFilterStatus] = useState<string>('all');
 
  // Get organization context from user
- const organizationId = currentOrganizationId!;
- const operatingUnitId = user?.operatingUnitId;
+ const organizationId = currentOrganizationId || 0;
+ const operatingUnitId = currentOperatingUnitId || user?.operatingUnitId || undefined;
 
  // tRPC queries
  const { data: records = [], isLoading, refetch } = trpc.hrSalaryScale.getAll.useQuery({
- organizationId,
- operatingUnitId: operatingUnitId || undefined,
- status: filterStatus === 'all' ? undefined : filterStatus as 'draft' | 'active' | 'superseded',
+ organizationId: organizationId || 0,
+ operatingUnitId: operatingUnitId || null,
+ status: filterStatus === 'all' ? undefined : (filterStatus as 'draft' | 'active' | 'superseded' | undefined),
  });
 
  const { data: stats } = trpc.hrSalaryScale.getStatistics.useQuery({
- organizationId,
- operatingUnitId: operatingUnitId || undefined,
+ organizationId: organizationId || 0,
+ operatingUnitId: operatingUnitId || null,
  });
 
  // tRPC mutations
@@ -596,10 +596,14 @@ export function SalaryScaleTableTab() {
  effectiveEndDate: selectedRecord.effectiveEndDate || undefined,
  status: selectedRecord.status,
  lastApprovedBy: undefined,
- lastUpdatedDate: selectedRecord.updatedAt.toISOString(),
- createdDate: selectedRecord.createdAt.toISOString(),
+ lastUpdatedDate: typeof selectedRecord.updatedAt === 'string' 
+   ? selectedRecord.updatedAt 
+   : selectedRecord.updatedAt?.toISOString?.() || new Date().toISOString(),
+ createdDate: typeof selectedRecord.createdAt === 'string'
+   ? selectedRecord.createdAt
+   : selectedRecord.createdAt?.toISOString?.() || new Date().toISOString(),
  createdBy: 'System',
- isLocked: selectedRecord.isLocked,
+ isLocked: Boolean(selectedRecord.isLocked),
  usedInPayroll: selectedRecord.usedInPayroll,
  currency: selectedRecord.currency || 'USD',
  }}
@@ -619,6 +623,8 @@ export function SalaryScaleTableTab() {
  <SalaryHistoryModal
  staffId={selectedRecord.staffId}
  staffName={selectedRecord.staffFullName}
+ language={language}
+ isRTL={isRTL}
  onClose={() => {
  setShowHistoryModal(false);
  setSelectedRecord(null);

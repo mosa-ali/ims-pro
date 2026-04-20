@@ -155,7 +155,7 @@ export function StaffDictionary() {
 
  // Handle View (Navigate to Employee Profile in Employees Directory)
  const handleView = (staffMember: StaffMember) => {
- navigate(`employees-profiles/directory/${staffMember.id}`);
+ navigate(`employees-profiles/directory`);
  };
 
  // Get status color
