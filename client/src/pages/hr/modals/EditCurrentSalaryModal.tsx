@@ -134,7 +134,7 @@ export function EditCurrentSalaryModal({
 
  const updateMutation = trpc.hrSalaryScale.update.useMutation({
  onSuccess: () => {
- toast.success(t.hrModals.salaryRecordUpdated || 'Salary record updated successfully');
+ toast.success('Salary record updated successfully');
  onSave(employee);
  onClose();
  },
@@ -161,11 +161,11 @@ export function EditCurrentSalaryModal({
  id: employee.id,
  gradeCode: formData.grade.trim(),
  step: formData.step.trim(),
- approvedGrossSalary: formData.basicSalary,
- housingAllowance: finalHousing || undefined,
- transportAllowance: finalTransport || undefined,
- representationAllowance: finalRepresentation || undefined,
- otherAllowances: finalOther || undefined,
+ approvedGrossSalary: parseFloat(String(formData.basicSalary)),
+ housingAllowance: finalHousing > 0 ? finalHousing : undefined,
+ transportAllowance: finalTransport > 0 ? finalTransport : undefined,
+ representationAllowance: finalRepresentation > 0 ? finalRepresentation : undefined,
+ otherAllowances: finalOther > 0 ? finalOther : undefined,
  effectiveStartDate: formData.effectiveDate,
  });
  };
@@ -211,7 +211,7 @@ export function EditCurrentSalaryModal({
  </div>
 
  {/* Form */}
- <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto p-6">
+ <form id="salary-form" onSubmit={handleSubmit} className="flex-1 overflow-y-auto p-6">
  <div className="space-y-6">
  {/* Version Warning */}
  {showVersionWarning && (
@@ -452,7 +452,7 @@ export function EditCurrentSalaryModal({
  </h3>
  <div className="bg-gradient-to-r from-yellow-50 to-green-50 border border-yellow-200 rounded-lg p-6">
  <div className="flex items-center justify-between">
- <span className="text-lg font-semibold text-gray-700">{t.hrModals.totalGross}:</span>
+ <span className="text-lg font-semibold text-gray-700">{localT.totalGross}:</span>
  <span className="text-3xl font-bold text-green-700">{formatCurrency(calculateTotalGross())}</span>
  </div>
  </div>
@@ -460,7 +460,7 @@ export function EditCurrentSalaryModal({
  </div>
  </form>
 
- {/* Footer */}
+ {/* Footer - Inside Form */}
  <div className="px-6 py-4 border-t border-gray-200 flex items-center justify-end gap-3 bg-gray-50">
  <button
  type="button"
@@ -471,6 +471,7 @@ export function EditCurrentSalaryModal({
  </button>
  <button
  type="submit"
+ form="salary-form"
  disabled={updateMutation.isPending}
  className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium disabled:opacity-50 flex items-center gap-2"
  >

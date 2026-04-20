@@ -68,7 +68,7 @@ export const hrSalaryScaleRouter = router({
 
       const conditions: ReturnType<typeof eq>[] = [
         eq(hrSalaryScale.organizationId, organizationId),
-        eq(hrSalaryScale.isDeleted, false),
+        eq(hrSalaryScale.isDeleted, 0),
       ];
 
       if (operatingUnitId) {
@@ -104,7 +104,7 @@ export const hrSalaryScaleRouter = router({
         .where(and(
           eq(hrSalaryScale.id, input.id),
           eq(hrSalaryScale.organizationId, organizationId),
-          eq(hrSalaryScale.isDeleted, false)
+          eq(hrSalaryScale.isDeleted, 0)
         ));
 
       if (!record) {
@@ -133,7 +133,7 @@ export const hrSalaryScaleRouter = router({
           eq(hrSalaryScale.employeeId, input.employeeId),
           eq(hrSalaryScale.organizationId, organizationId),
           eq(hrSalaryScale.status, "active"),
-          eq(hrSalaryScale.isDeleted, false)
+          eq(hrSalaryScale.isDeleted, 0)
         ))
         .orderBy(desc(hrSalaryScale.version))
         .limit(1);
@@ -147,7 +147,7 @@ export const hrSalaryScaleRouter = router({
           eq(hrSalaryScale.employeeId, input.employeeId),
           eq(hrSalaryScale.organizationId, organizationId),
           eq(hrSalaryScale.status, "draft"),
-          eq(hrSalaryScale.isDeleted, false)
+          eq(hrSalaryScale.isDeleted, 0)
         ))
         .orderBy(desc(hrSalaryScale.version))
         .limit(1);
@@ -174,7 +174,7 @@ export const hrSalaryScaleRouter = router({
           eq(hrSalaryScale.staffId, input.staffId),
           eq(hrSalaryScale.organizationId, organizationId),
           eq(hrSalaryScale.status, "active"),
-          eq(hrSalaryScale.isDeleted, false)
+          eq(hrSalaryScale.isDeleted, 0)
         ))
         .orderBy(desc(hrSalaryScale.version))
         .limit(1);
@@ -200,7 +200,7 @@ export const hrSalaryScaleRouter = router({
         .where(and(
           eq(hrSalaryScale.employeeId, input.employeeId),
           eq(hrSalaryScale.organizationId, organizationId),
-          eq(hrSalaryScale.isDeleted, false)
+          eq(hrSalaryScale.isDeleted, 0)
         ))
         .orderBy(desc(hrSalaryScale.version));
 
@@ -360,10 +360,10 @@ export const hrSalaryScaleRouter = router({
         eq(hrSalaryScale.employeeId, record.employeeId),
         eq(hrSalaryScale.organizationId, organizationId),
         eq(hrSalaryScale.status, "active"),
-        eq(hrSalaryScale.isDeleted, false)
+        eq(hrSalaryScale.isDeleted, 0)
       ));
-
-      await db.update(hrSalaryScale).set({ status: "active", lastApprovedBy: ctx.user?.id, lastApprovedAt: new Date() }).where(eq(hrSalaryScale.id, input.id));
+      const nowSql = new Date().toISOString().slice(0, 19).replace('T', ' ');
+      await db.update(hrSalaryScale).set({ status: "active", lastApprovedBy: ctx.user?.id, lastApprovedAt: nowSql }).where(eq(hrSalaryScale.id, input.id));
 
       return { success: true };
     }),
@@ -398,8 +398,8 @@ export const hrSalaryScaleRouter = router({
       const [record] = await db.select().from(hrSalaryScale).where(and(eq(hrSalaryScale.id, input.id), eq(hrSalaryScale.organizationId, organizationId)));
       if (!record) throw new TRPCError({ code: "NOT_FOUND", message: "Record not found" });
       if (record.usedInPayroll) throw new TRPCError({ code: "FORBIDDEN", message: "Cannot delete record used in payroll" });
-
-      await db.update(hrSalaryScale).set({ isDeleted: true, deletedAt: new Date(), deletedBy: ctx.user?.id }).where(eq(hrSalaryScale.id, input.id));
+      const nowSql = new Date().toISOString().slice(0, 19).replace('T', ' ');
+      await db.update(hrSalaryScale).set({ isDeleted: 1, deletedAt: nowSql, deletedBy: ctx.user?.id }).where(eq(hrSalaryScale.id, input.id));
       return { success: true };
     }),
 
@@ -415,14 +415,14 @@ export const hrSalaryScaleRouter = router({
 
       const employeeConditions: ReturnType<typeof eq>[] = [
         eq(hrEmployees.organizationId, organizationId),
-        eq(hrEmployees.isDeleted, false),
+        eq(hrEmployees.isDeleted, 0),
         eq(hrEmployees.status, "active"),
       ];
 
       if (operatingUnitId) employeeConditions.push(eq(hrEmployees.operatingUnitId, operatingUnitId));
 
       const employees = await db.select().from(hrEmployees).where(and(...employeeConditions));
-      const existingRecords = await db.select({ employeeId: hrSalaryScale.employeeId }).from(hrSalaryScale).where(and(eq(hrSalaryScale.organizationId, organizationId), eq(hrSalaryScale.isDeleted, false)));
+      const existingRecords = await db.select({ employeeId: hrSalaryScale.employeeId }).from(hrSalaryScale).where(and(eq(hrSalaryScale.organizationId, organizationId), eq(hrSalaryScale.isDeleted, 0)));
       const existingEmployeeIds = new Set(existingRecords.map(r => r.employeeId));
 
       let createdCount = 0;
@@ -463,7 +463,7 @@ export const hrSalaryScaleRouter = router({
       const db = await getDb();
       if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Database not available" });
 
-      const conditions: ReturnType<typeof eq>[] = [eq(hrSalaryScale.organizationId, organizationId), eq(hrSalaryScale.isDeleted, false)];
+      const conditions: ReturnType<typeof eq>[] = [eq(hrSalaryScale.organizationId, organizationId), eq(hrSalaryScale.isDeleted, 0)];
       if (operatingUnitId) conditions.push(eq(hrSalaryScale.operatingUnitId, operatingUnitId));
 
       const records = await db.select().from(hrSalaryScale).where(and(...conditions));
