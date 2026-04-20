@@ -19,13 +19,13 @@ import { eq, and, desc } from "drizzle-orm";
 // ============================================================================
 
 const salaryScaleCreateSchema = z.object({
-  employeeId: z.number(),
+  employeeId: z.coerce.number(),
   staffId: z.string(),
   staffFullName: z.string(),
   position: z.string().optional(),
   department: z.string().optional(),
   contractType: z.string().optional(),
-  gradeId: z.number().optional(),
+  gradeId: z.coerce.number().optional(),
   gradeCode: z.string(),
   step: z.string(),
   minSalary: z.number().optional(),
@@ -46,7 +46,7 @@ const salaryScaleCreateSchema = z.object({
 });
 
 const salaryScaleUpdateSchema = salaryScaleCreateSchema.partial().extend({
-  id: z.number(),
+  id: z.coerce.number(),
 });
 
 // ============================================================================
@@ -116,6 +116,7 @@ export const hrSalaryScaleRouter = router({
 
   /**
    * Get latest salary record for a specific employee
+   * CRITICAL: Returns ACTIVE salary first, then DRAFT as fallback
    */
   getActiveByEmployeeId: scopedProcedure
     .input(z.object({
@@ -126,6 +127,7 @@ export const hrSalaryScaleRouter = router({
       const db = await getDb();
       if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Database not available" });
 
+      // Try to get active salary first
       const [activeRecord] = await db
         .select()
         .from(hrSalaryScale)
@@ -140,6 +142,7 @@ export const hrSalaryScaleRouter = router({
 
       if (activeRecord) return activeRecord;
 
+      // Fallback to draft if no active record
       const [draftRecord] = await db
         .select()
         .from(hrSalaryScale)
@@ -157,6 +160,7 @@ export const hrSalaryScaleRouter = router({
 
   /**
    * Get active salary record by staff ID
+   * CRITICAL: Only returns ACTIVE salaries (used by payroll)
    */
   getActiveByStaffId: scopedProcedure
     .input(z.object({
@@ -184,6 +188,7 @@ export const hrSalaryScaleRouter = router({
 
   /**
    * Get salary history for an employee
+   * Returns all versions (active, superseded, draft) for audit trail
    */
   getHistoryByEmployeeId: scopedProcedure
     .input(z.object({
@@ -209,6 +214,7 @@ export const hrSalaryScaleRouter = router({
 
   /**
    * Create a new salary scale record
+   * New records are created as DRAFT by default
    */
   create: scopedProcedure
     .input(salaryScaleCreateSchema)
@@ -233,6 +239,7 @@ export const hrSalaryScaleRouter = router({
         status: "draft",
         version: 1,
         createdBy: ctx.user?.id,
+        updatedBy: ctx.user?.id,
       });
 
       return { id: result.insertId, success: true };
@@ -240,6 +247,17 @@ export const hrSalaryScaleRouter = router({
 
   /**
    * Update a salary scale record
+   * ========================================================================
+   * CRITICAL LOGIC:
+   * If updating an ACTIVE salary:
+   *   1. Mark existing active salary as 'superseded'
+   *   2. Create NEW salary record as 'active' (version + 1)
+   *   3. Return newVersion: true
+   *
+   * If updating a DRAFT salary:
+   *   1. Update the draft record in-place
+   *   2. Return newVersion: false
+   * ========================================================================
    */
   update: scopedProcedure
     .input(salaryScaleUpdateSchema)
@@ -250,6 +268,7 @@ export const hrSalaryScaleRouter = router({
 
       const { id, ...updateData } = input;
 
+      // Fetch the existing record
       const [existing] = await db
         .select()
         .from(hrSalaryScale)
@@ -266,12 +285,17 @@ export const hrSalaryScaleRouter = router({
         throw new TRPCError({ code: "FORBIDDEN", message: "Record is locked" });
       }
 
+      // ====================================================================
+      // CASE 1: Updating an ACTIVE salary
+      // ====================================================================
       if (existing.status === "active") {
+        // Step 1: Mark previous active as superseded
         await db
           .update(hrSalaryScale)
-          .set({ status: "superseded" })
+          .set({ status: "superseded", updatedBy: ctx.user?.id })
           .where(eq(hrSalaryScale.id, id));
 
+        // Step 2: Create NEW active salary record
         const [result] = await db.insert(hrSalaryScale).values({
           organizationId,
           operatingUnitId: operatingUnitId || existing.operatingUnitId,
@@ -298,15 +322,26 @@ export const hrSalaryScaleRouter = router({
           otherAllowances: updateData.otherAllowances ? String(updateData.otherAllowances) : existing.otherAllowances,
           currency: updateData.currency || existing.currency,
           effectiveStartDate: updateData.effectiveStartDate || new Date().toISOString().split("T")[0],
-          status: "draft",
+          // ================================================================
+          // CRITICAL: New salary is ACTIVE, not draft
+          // Payroll will immediately read this record
+          // ================================================================
+          status: "active",
           version: existing.version + 1,
           createdBy: ctx.user?.id,
+          updatedBy: ctx.user?.id,
         });
 
         return { id: result.insertId, success: true, newVersion: true };
       }
 
-      const updateValues: Record<string, unknown> = {};
+      // ====================================================================
+      // CASE 2: Updating a DRAFT salary
+      // ====================================================================
+      const updateValues: Record<string, unknown> = {
+        updatedBy: ctx.user?.id,
+      };
+
       if (updateData.staffFullName) updateValues.staffFullName = updateData.staffFullName;
       if (updateData.position) updateValues.position = updateData.position;
       if (updateData.department) updateValues.department = updateData.department;
@@ -340,6 +375,7 @@ export const hrSalaryScaleRouter = router({
 
   /**
    * Activate a draft salary record
+   * Marks all other active salaries for this employee as superseded
    */
   activate: scopedProcedure
     .input(z.object({ id: z.number() }))
@@ -356,14 +392,21 @@ export const hrSalaryScaleRouter = router({
       if (!record) throw new TRPCError({ code: "NOT_FOUND", message: "Record not found" });
       if (record.status !== "draft") throw new TRPCError({ code: "BAD_REQUEST", message: "Only draft records can be activated" });
 
-      await db.update(hrSalaryScale).set({ status: "superseded" }).where(and(
+      // Mark all other active salaries as superseded
+      await db.update(hrSalaryScale).set({ status: "superseded", updatedBy: ctx.user?.id }).where(and(
         eq(hrSalaryScale.employeeId, record.employeeId),
         eq(hrSalaryScale.organizationId, organizationId),
         eq(hrSalaryScale.status, "active"),
         eq(hrSalaryScale.isDeleted, 0)
       ));
-      const nowSql = new Date().toISOString().slice(0, 19).replace('T', ' ');
-      await db.update(hrSalaryScale).set({ status: "active", lastApprovedBy: ctx.user?.id, lastApprovedAt: nowSql }).where(eq(hrSalaryScale.id, input.id));
+
+      // Activate this draft record
+      await db.update(hrSalaryScale).set({
+        status: "active",
+        lastApprovedBy: ctx.user?.id,
+        lastApprovedAt: new Date().toISOString(),
+        updatedBy: ctx.user?.id,
+      }).where(eq(hrSalaryScale.id, input.id));
 
       return { success: true };
     }),
@@ -382,7 +425,10 @@ export const hrSalaryScaleRouter = router({
       if (!record) throw new TRPCError({ code: "NOT_FOUND", message: "Record not found" });
 
       const newLockedState = !record.isLocked;
-      await db.update(hrSalaryScale).set({ isLocked: newLockedState ? 1 : 0 }).where(eq(hrSalaryScale.id, input.id));
+      await db.update(hrSalaryScale).set({
+        isLocked: newLockedState ? 1 : 0,
+        updatedBy: ctx.user?.id,
+      }).where(eq(hrSalaryScale.id, input.id));
       return { success: true, isLocked: newLockedState };
     }),
 
@@ -399,83 +445,13 @@ export const hrSalaryScaleRouter = router({
       const [record] = await db.select().from(hrSalaryScale).where(and(eq(hrSalaryScale.id, input.id), eq(hrSalaryScale.organizationId, organizationId)));
       if (!record) throw new TRPCError({ code: "NOT_FOUND", message: "Record not found" });
       if (record.usedInPayroll) throw new TRPCError({ code: "FORBIDDEN", message: "Cannot delete record used in payroll" });
-      const nowSql = new Date().toISOString().slice(0, 19).replace('T', ' ');
-      await db.update(hrSalaryScale).set({ isDeleted: 1, deletedAt: nowSql, deletedBy: ctx.user?.id }).where(eq(hrSalaryScale.id, input.id));
+
+      await db.update(hrSalaryScale).set({
+        isDeleted: 1,
+        deletedAt: new Date().toISOString(),
+        deletedBy: ctx.user?.id,
+        updatedBy: ctx.user?.id,
+      }).where(eq(hrSalaryScale.id, input.id));
       return { success: true };
     }),
-
-  /**
-   * Sync with Staff Dictionary
-   */
-  syncWithStaff: scopedProcedure
-    .input(z.object({}).optional())
-    .mutation(async ({ ctx }) => {
-      const { organizationId, operatingUnitId } = ctx.scope;
-      const db = await getDb();
-      if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Database not available" });
-
-      const employeeConditions: ReturnType<typeof eq>[] = [
-        eq(hrEmployees.organizationId, organizationId),
-        eq(hrEmployees.isDeleted, 0),
-        eq(hrEmployees.status, "active"),
-      ];
-
-      if (operatingUnitId) employeeConditions.push(eq(hrEmployees.operatingUnitId, operatingUnitId));
-
-      const employees = await db.select().from(hrEmployees).where(and(...employeeConditions));
-      const existingRecords = await db.select({ employeeId: hrSalaryScale.employeeId }).from(hrSalaryScale).where(and(eq(hrSalaryScale.organizationId, organizationId), eq(hrSalaryScale.isDeleted, 0)));
-      const existingEmployeeIds = new Set(existingRecords.map(r => r.employeeId));
-
-      let createdCount = 0;
-      for (const emp of employees) {
-        if (!existingEmployeeIds.has(emp.id)) {
-          const fullName = `${emp.firstName || ''} ${emp.lastName || ''}`.trim() || `Employee ${emp.id}`;
-          await db.insert(hrSalaryScale).values({
-            organizationId,
-            operatingUnitId: operatingUnitId || emp.operatingUnitId,
-            employeeId: emp.id,
-            staffId: emp.employeeCode || `EMP${emp.id}`,
-            staffFullName: fullName,
-            position: emp.position || "",
-            department: emp.department || "",
-            contractType: emp.employmentType || "full_time",
-            gradeCode: emp.gradeLevel || "G1",
-            step: "Step 1",
-            approvedGrossSalary: "0",
-            effectiveStartDate: new Date().toISOString().split("T")[0],
-            status: "draft",
-            version: 1,
-            createdBy: ctx.user?.id,
-          });
-          createdCount++;
-        }
-      }
-
-      return { success: true, createdCount, totalEmployees: employees.length };
-    }),
-
-  /**
-   * Get statistics
-   */
-  getStatistics: scopedProcedure
-    .input(z.object({}).optional())
-    .query(async ({ ctx }) => {
-      const { organizationId, operatingUnitId } = ctx.scope;
-      const db = await getDb();
-      if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Database not available" });
-
-      const conditions: ReturnType<typeof eq>[] = [eq(hrSalaryScale.organizationId, organizationId), eq(hrSalaryScale.isDeleted, 0)];
-      if (operatingUnitId) conditions.push(eq(hrSalaryScale.operatingUnitId, operatingUnitId));
-
-      const records = await db.select().from(hrSalaryScale).where(and(...conditions));
-
-      return {
-        total: records.length,
-        draft: records.filter(r => r.status === "draft").length,
-        active: records.filter(r => r.status === "active").length,
-        superseded: records.filter(r => r.status === "superseded").length,
-      };
-    }),
 });
-
-export type HrSalaryScaleRouter = typeof hrSalaryScaleRouter;
