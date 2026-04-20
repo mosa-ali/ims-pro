@@ -62,6 +62,12 @@ export function EditCurrentSalaryModal({
  // Fetch grades on component mount
  const { data: gradesData, isLoading: isLoadingGrades } = trpc.hrSalaryGrades.getAll.useQuery();
  
+ // Fetch current salary data for this employee
+ const { data: currentSalary, isLoading: isLoadingCurrentSalary } = trpc.hrSalaryScale.getActiveByEmployeeId.useQuery(
+ { employeeId: Number(employee.id) },
+ { enabled: !!employee.id }
+ );
+ 
  useEffect(() => {
  if (gradesData) {
  setGrades(gradesData || []);
@@ -70,6 +76,32 @@ export function EditCurrentSalaryModal({
  setLoadingGrades(true);
  }
  }, [gradesData, isLoadingGrades]);
+
+ // Helper function to convert string | number to number
+ const toNumber = (value: string | number | null | undefined, defaultValue: number = 0): number => {
+ if (value === null || value === undefined) return defaultValue;
+ if (typeof value === 'string') {
+ const parsed = parseFloat(value);
+ return isNaN(parsed) ? defaultValue : parsed;
+ }
+ return value;
+ };
+
+ // Pre-populate form with current salary data when it loads
+ useEffect(() => {
+ if (currentSalary) {
+ setFormData(prev => ({
+ ...prev,
+ grade: currentSalary.gradeCode || prev.grade,
+ step: currentSalary.step || prev.step,
+ basicSalary: toNumber(currentSalary.approvedGrossSalary, prev.basicSalary),
+ housingAllowance: toNumber(currentSalary.housingAllowance, prev.housingAllowance),
+ transportAllowance: toNumber(currentSalary.transportAllowance, prev.transportAllowance),
+ representationAllowance: toNumber(currentSalary.representationAllowance, prev.representationAllowance),
+ otherAllowances: toNumber(currentSalary.otherAllowances, prev.otherAllowances),
+ }));
+ }
+ }, [currentSalary]);
 
  // Get available steps for selected grade
  const getAvailableSteps = (): string[] => {
