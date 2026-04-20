@@ -91,15 +91,15 @@ export function EditEmploymentContractModal({
  const newErrors: Record<string, string> = {};
  
  if (!formData.position.trim()) {
- newErrors.position = t.required;
+ newErrors.position = localT.required;
  }
  
  if (!formData.department.trim()) {
- newErrors.department = t.required;
+ newErrors.department = localT.required;
  }
  
  if (!formData.contractStartDate) {
- newErrors.contractStartDate = t.required;
+ newErrors.contractStartDate = localT.required;
  }
  
  setErrors(newErrors);
@@ -152,9 +152,9 @@ export function EditEmploymentContractModal({
  <div>
  <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
  <Briefcase className="w-5 h-5 text-green-600" />
- {t.title}
+ {localT.title}
  </h2>
- <p className="text-sm text-gray-600 mt-1">{t.subtitle}</p>
+ <p className="text-sm text-gray-600 mt-1">{localT.subtitle}</p>
  </div>
  <button onClick={onClose} className="text-gray-400 hover:text-gray-600">
  <X className="w-6 h-6" />
@@ -167,19 +167,19 @@ export function EditEmploymentContractModal({
  {/* Read-Only Employee Info */}
  <div>
  <h3 className="text-sm font-semibold text-gray-700 mb-3 pb-2 border-b border-gray-200">
- {t.readOnlySection}
+ {localT.readOnlySection}
  </h3>
  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 bg-gray-50 p-4 rounded-lg">
  <div>
- <label className="block text-xs font-medium text-gray-500 mb-1">{t.staffId}</label>
+ <label className="block text-xs font-medium text-gray-500 mb-1">{t.hrModals.staffId}</label>
  <div className="text-sm font-mono font-bold text-gray-900">{employee.staffId}</div>
  </div>
  <div>
- <label className="block text-xs font-medium text-gray-500 mb-1">{t.fullName}</label>
+ <label className="block text-xs font-medium text-gray-500 mb-1">{t.hrModals.fullName}</label>
  <div className="text-sm text-gray-900">{employee.fullName}</div>
  </div>
  <div>
- <label className="block text-xs font-medium text-gray-500 mb-1">{t.hireDate}</label>
+ <label className="block text-xs font-medium text-gray-500 mb-1">{t.hrModals.hireDate}</label>
  <div className="text-sm text-gray-900">{formatDate(employee.hireDate)}</div>
  </div>
  </div>
@@ -188,7 +188,7 @@ export function EditEmploymentContractModal({
  {/* Contract Information */}
  <div>
  <h3 className="text-sm font-semibold text-gray-700 mb-3 pb-2 border-b border-gray-200">
- {t.contractSection}
+ {localT.contractSection}
  </h3>
  
  <div className="space-y-4">
@@ -196,7 +196,7 @@ export function EditEmploymentContractModal({
  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
  <div>
  <label className="block text-sm font-medium text-gray-700 mb-2">
- {t.contractType} <span className="text-red-500">*</span>
+ {t.hrModals.contractType} <span className="text-red-500">*</span>
  </label>
  <select
  required
@@ -217,7 +217,7 @@ export function EditEmploymentContractModal({
  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
  <div>
  <label className="block text-sm font-medium text-gray-700 mb-2">
- {t.contractStartDate} <span className="text-red-500">*</span>
+ {t.hrModals.contractStartDate} <span className="text-red-500">*</span>
  </label>
  <input
  type="date"
@@ -231,7 +231,7 @@ export function EditEmploymentContractModal({
 
  <div>
  <label className="block text-sm font-medium text-gray-700 mb-2">
- {t.contractEndDate}
+ {t.hrModals.contractEndDate}
  </label>
  <input
  type="date"
@@ -245,7 +245,7 @@ export function EditEmploymentContractModal({
  {/* Row 3: Contract Status */}
  <div>
  <label className="block text-sm font-medium text-gray-700 mb-2">
- {t.contractStatus} <span className="text-red-500">*</span>
+ {t.hrModals.contractStatus} <span className="text-red-500">*</span>
  </label>
  <select
  required
@@ -253,9 +253,9 @@ export function EditEmploymentContractModal({
  onChange={(e) => setFormData({ ...formData, contractStatus: e.target.value })}
  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
  >
- <option value="Active">{t.statusActive}</option>
- <option value="Expired">{t.statusExpired}</option>
- <option value="Renewed">{t.statusRenewed}</option>
+ <option value="Active">{localT.statusActive}</option>
+ <option value="Expired">{localT.statusExpired}</option>
+ <option value="Renewed">{localT.statusRenewed}</option>
  </select>
  </div>
  </div>
@@ -264,14 +264,14 @@ export function EditEmploymentContractModal({
  {/* Job Details */}
  <div>
  <h3 className="text-sm font-semibold text-gray-700 mb-3 pb-2 border-b border-gray-200">
- {t.jobSection}
+ {localT.jobSection}
  </h3>
  
  <div className="space-y-4">
  {/* Position */}
  <div>
  <label className="block text-sm font-medium text-gray-700 mb-2">
- {t.position} <span className="text-red-500">*</span>
+ {t.hrModals.position} <span className="text-red-500">*</span>
  </label>
  <input
  type="text"
@@ -287,7 +287,7 @@ export function EditEmploymentContractModal({
  {/* Department */}
  <div>
  <label className="block text-sm font-medium text-gray-700 mb-2">
- {t.department} <span className="text-red-500">*</span>
+ {t.hrModals.department} <span className="text-red-500">*</span>
  </label>
  <input
  type="text"
@@ -303,7 +303,7 @@ export function EditEmploymentContractModal({
  {/* Project */}
  <div>
  <label className="block text-sm font-medium text-gray-700 mb-2">
- {t.project}
+ {t.hrModals.project}
  </label>
  <input
  type="text"
@@ -319,32 +319,32 @@ export function EditEmploymentContractModal({
  {/* Contract Documents */}
  <div>
  <h3 className="text-sm font-semibold text-gray-700 mb-3 pb-2 border-b border-gray-200">
- {t.documentsSection}
+ {localT.documentsSection}
  </h3>
  <div className="space-y-3">
  <div className="flex items-center gap-3">
  <div className="flex-1">
- <label className="text-sm text-gray-700">{t.signedContract}</label>
+ <label className="text-sm text-gray-700">{t.hrModals.signedContract}</label>
  </div>
  <button
  type="button"
  className="flex items-center gap-2 px-3 py-2 text-sm border border-gray-300 rounded-lg hover:bg-gray-50"
  >
  <Upload className="w-4 h-4" />
- {t.upload}
+ {t.hrModals.upload}
  </button>
  </div>
  
  <div className="flex items-center gap-3">
  <div className="flex-1">
- <label className="text-sm text-gray-700">{t.amendments}</label>
+ <label className="text-sm text-gray-700">{localT.amendments}</label>
  </div>
  <button
  type="button"
  className="flex items-center gap-2 px-3 py-2 text-sm border border-gray-300 rounded-lg hover:bg-gray-50"
  >
  <Upload className="w-4 h-4" />
- {t.upload}
+ {t.hrModals.upload}
  </button>
  </div>
  </div>
@@ -359,14 +359,14 @@ export function EditEmploymentContractModal({
  onClick={onClose}
  className="px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
  >
- {t.cancel}
+ {t.hrModals.cancel}
  </button>
  <button
  onClick={handleSubmit}
  className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700"
  >
  <Save className="w-4 h-4" />
- {t.save}
+ {t.hrModals.save}
  </button>
  </div>
  </div>

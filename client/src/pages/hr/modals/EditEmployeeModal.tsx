@@ -71,7 +71,7 @@ export function EditEmployeeModal({
  <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
  {/* Header */}
  <div className={`flex items-center justify-between p-6 border-b border-gray-200`}>
- <h2 className="text-xl font-bold text-gray-900">{t.title}</h2>
+ <h2 className="text-xl font-bold text-gray-900">{localT.title}</h2>
  <button
  onClick={onClose}
  className="text-gray-400 hover:text-gray-600 transition-colors"
@@ -85,7 +85,7 @@ export function EditEmployeeModal({
  {/* Full Name */}
  <div>
  <label className={`block text-sm font-medium text-gray-700 mb-1 text-start`}>
- {t.fullName} *
+ {t.hrModals.fullName} *
  </label>
  <input
  type="text"
@@ -100,7 +100,7 @@ export function EditEmployeeModal({
  <div className="grid grid-cols-2 gap-4">
  <div>
  <label className={`block text-sm font-medium text-gray-700 mb-1 text-start`}>
- {t.gender} *
+ {t.hrModals.gender} *
  </label>
  <select
  value={formData.gender}
@@ -108,14 +108,14 @@ export function EditEmployeeModal({
  className={`w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-start`}
  required
  >
- <option value="Male">{t.male}</option>
- <option value="Female">{t.female}</option>
- <option value="Other">{t.other}</option>
+ <option value="Male">{t.hrModals.male}</option>
+ <option value="Female">{t.hrModals.female}</option>
+ <option value="Other">{t.hrModals.other}</option>
  </select>
  </div>
  <div>
  <label className={`block text-sm font-medium text-gray-700 mb-1 text-start`}>
- {t.nationality} *
+ {t.hrModals.nationality} *
  </label>
  <input
  type="text"
@@ -131,7 +131,7 @@ export function EditEmployeeModal({
  <div className="grid grid-cols-2 gap-4">
  <div>
  <label className={`block text-sm font-medium text-gray-700 mb-1 text-start`}>
- {t.position} *
+ {t.hrModals.position} *
  </label>
  <input
  type="text"
@@ -143,7 +143,7 @@ export function EditEmployeeModal({
  </div>
  <div>
  <label className={`block text-sm font-medium text-gray-700 mb-1 text-start`}>
- {t.department} *
+ {t.hrModals.department} *
  </label>
  <input
  type="text"
@@ -159,7 +159,7 @@ export function EditEmployeeModal({
  <div className="grid grid-cols-2 gap-4">
  <div>
  <label className={`block text-sm font-medium text-gray-700 mb-1 text-start`}>
- {t.email}
+ {t.hrModals.email}
  </label>
  <input
  type="email"
@@ -170,7 +170,7 @@ export function EditEmployeeModal({
  </div>
  <div>
  <label className={`block text-sm font-medium text-gray-700 mb-1 text-start`}>
- {t.phone}
+ {t.hrModals.phone}
  </label>
  <input
  type="tel"
@@ -184,7 +184,7 @@ export function EditEmployeeModal({
  {/* Date of Birth */}
  <div>
  <label className={`block text-sm font-medium text-gray-700 mb-1 text-start`}>
- {t.dateOfBirth}
+ {t.hrModals.dateOfBirth}
  </label>
  <input
  type="date"
@@ -197,7 +197,7 @@ export function EditEmployeeModal({
  {/* Address */}
  <div>
  <label className={`block text-sm font-medium text-gray-700 mb-1 text-start`}>
- {t.address}
+ {t.hrModals.address}
  </label>
  <textarea
  value={formData.address}
@@ -210,7 +210,7 @@ export function EditEmployeeModal({
  {/* Supervisor */}
  <div>
  <label className={`block text-sm font-medium text-gray-700 mb-1 text-start`}>
- {t.supervisor}
+ {t.hrModals.supervisor}
  </label>
  <input
  type="text"
@@ -226,14 +226,14 @@ export function EditEmployeeModal({
  type="submit"
  className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium"
  >
- {t.save}
+ {t.hrModals.save}
  </button>
  <button
  type="button"
  onClick={onClose}
  className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 font-medium"
  >
- {t.cancel}
+ {t.hrModals.cancel}
  </button>
  </div>
  </form>

@@ -119,11 +119,11 @@ export function EditCurrentSalaryModal({
  const newErrors: Record<string, string> = {};
  
  if (!formData.basicSalary || formData.basicSalary <= 0) {
- newErrors.basicSalary = t.mustBePositive;
+ newErrors.basicSalary = localT.mustBePositive;
  }
  
  if (!formData.effectiveDate) {
- newErrors.effectiveDate = t.required;
+ newErrors.effectiveDate = localT.required;
  }
  
  setErrors(newErrors);
@@ -191,9 +191,9 @@ export function EditCurrentSalaryModal({
  <div>
  <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
  <DollarSign className="w-5 h-5 text-yellow-600" />
- {t.title}
+ {localT.title}
  </h2>
- <p className="text-sm text-gray-600 mt-1">{t.subtitle}</p>
+ <p className="text-sm text-gray-600 mt-1">{localT.subtitle}</p>
  </div>
  <button onClick={onClose} className="text-gray-400 hover:text-gray-600">
  <X className="w-6 h-6" />
@@ -209,8 +209,8 @@ export function EditCurrentSalaryModal({
  <div className="flex items-start gap-3">
  <AlertTriangle className="w-5 h-5 text-orange-600 flex-shrink-0 mt-0.5" />
  <div className="flex-1">
- <h4 className="text-sm font-semibold text-orange-900 mb-1">{t.warningTitle}</h4>
- <p className="text-xs text-orange-800">{t.warningText}</p>
+ <h4 className="text-sm font-semibold text-orange-900 mb-1">{localT.warningTitle}</h4>
+ <p className="text-xs text-orange-800">{localT.warningText}</p>
  </div>
  <button
  type="button"
@@ -226,23 +226,23 @@ export function EditCurrentSalaryModal({
  {/* Read-Only Employee Info */}
  <div>
  <h3 className="text-sm font-semibold text-gray-700 mb-3 pb-2 border-b border-gray-200">
- {t.readOnlySection}
+ {localT.readOnlySection}
  </h3>
  <div className="grid grid-cols-2 md:grid-cols-4 gap-4 bg-gray-50 p-4 rounded-lg">
  <div>
- <label className="block text-xs font-medium text-gray-500 mb-1">{t.staffId}</label>
+ <label className="block text-xs font-medium text-gray-500 mb-1">{localT.staffId}</label>
  <div className="text-sm font-mono font-bold text-gray-900">{employee.staffId}</div>
  </div>
  <div>
- <label className="block text-xs font-medium text-gray-500 mb-1">{t.fullName}</label>
+ <label className="block text-xs font-medium text-gray-500 mb-1">{t.hrModals.fullName}</label>
  <div className="text-sm text-gray-900">{employee.fullName}</div>
  </div>
  <div>
- <label className="block text-xs font-medium text-gray-500 mb-1">{t.position}</label>
+ <label className="block text-xs font-medium text-gray-500 mb-1">{t.hrModals.position}</label>
  <div className="text-sm text-gray-900">{employee.position}</div>
  </div>
  <div>
- <label className="block text-xs font-medium text-gray-500 mb-1">{t.department}</label>
+ <label className="block text-xs font-medium text-gray-500 mb-1">{t.hrModals.department}</label>
  <div className="text-sm text-gray-900">{employee.department}</div>
  </div>
  </div>
@@ -251,7 +251,7 @@ export function EditCurrentSalaryModal({
  {/* Salary Structure */}
  <div>
  <h3 className="text-sm font-semibold text-gray-700 mb-3 pb-2 border-b border-gray-200">
- {t.salarySection}
+ {localT.salarySection}
  </h3>
  
  <div className="space-y-4">
@@ -259,7 +259,7 @@ export function EditCurrentSalaryModal({
  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
  <div>
  <label className="block text-sm font-medium text-gray-700 mb-2">
- {t.grade}
+ {t.hrModals.grade}
  </label>
  <input
  type="text"
@@ -272,7 +272,7 @@ export function EditCurrentSalaryModal({
 
  <div>
  <label className="block text-sm font-medium text-gray-700 mb-2">
- {t.step}
+ {t.hrModals.step}
  </label>
  <input
  type="text"
@@ -285,7 +285,7 @@ export function EditCurrentSalaryModal({
 
  <div>
  <label className="block text-sm font-medium text-gray-700 mb-2">
- {t.baseSalary} <span className="text-red-500">*</span>
+ {t.hrModals.baseSalary} <span className="text-red-500">*</span>
  </label>
  <input
  type="number"
@@ -305,7 +305,7 @@ export function EditCurrentSalaryModal({
  {/* Allowances */}
  <div>
  <h3 className="text-sm font-semibold text-gray-700 mb-3 pb-2 border-b border-gray-200">
- {t.allowancesSection}
+ {localT.allowancesSection}
  </h3>
  
  <div className="space-y-4">
@@ -313,7 +313,7 @@ export function EditCurrentSalaryModal({
  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
  <div className="md:col-span-2">
  <label className="block text-sm font-medium text-gray-700 mb-2">
- {t.housingAllowance}
+ {t.hrModals.housingAllowance}
  </label>
  <input
  type="number"
@@ -330,8 +330,8 @@ export function EditCurrentSalaryModal({
  onChange={(e) => setFormData({ ...formData, housingIsPercentage: e.target.value === 'percentage' })}
  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
  >
- <option value="fixed">{t.fixedAmount}</option>
- <option value="percentage">{t.percentage}</option>
+ <option value="fixed">{t.hrModals.fixedAmount}</option>
+ <option value="percentage">{localT.percentage}</option>
  </select>
  </div>
  </div>
@@ -340,7 +340,7 @@ export function EditCurrentSalaryModal({
  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
  <div className="md:col-span-2">
  <label className="block text-sm font-medium text-gray-700 mb-2">
- {t.transportAllowance}
+ {t.hrModals.transportAllowance}
  </label>
  <input
  type="number"
@@ -357,8 +357,8 @@ export function EditCurrentSalaryModal({
  onChange={(e) => setFormData({ ...formData, transportIsPercentage: e.target.value === 'percentage' })}
  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
  >
- <option value="fixed">{t.fixedAmount}</option>
- <option value="percentage">{t.percentage}</option>
+ <option value="fixed">{t.hrModals.fixedAmount}</option>
+ <option value="percentage">{localT.percentage}</option>
  </select>
  </div>
  </div>
@@ -367,7 +367,7 @@ export function EditCurrentSalaryModal({
  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
  <div className="md:col-span-2">
  <label className="block text-sm font-medium text-gray-700 mb-2">
- {t.representationAllowance}
+ {t.hrModals.representationAllowance}
  </label>
  <input
  type="number"
@@ -384,8 +384,8 @@ export function EditCurrentSalaryModal({
  onChange={(e) => setFormData({ ...formData, representationIsPercentage: e.target.value === 'percentage' })}
  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
  >
- <option value="fixed">{t.fixedAmount}</option>
- <option value="percentage">{t.percentage}</option>
+ <option value="fixed">{t.hrModals.fixedAmount}</option>
+ <option value="percentage">{localT.percentage}</option>
  </select>
  </div>
  </div>
@@ -394,7 +394,7 @@ export function EditCurrentSalaryModal({
  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
  <div className="md:col-span-2">
  <label className="block text-sm font-medium text-gray-700 mb-2">
- {t.otherAllowance}
+ {t.hrModals.otherAllowance}
  </label>
  <input
  type="number"
@@ -411,8 +411,8 @@ export function EditCurrentSalaryModal({
  onChange={(e) => setFormData({ ...formData, otherIsPercentage: e.target.value === 'percentage' })}
  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
  >
- <option value="fixed">{t.fixedAmount}</option>
- <option value="percentage">{t.percentage}</option>
+ <option value="fixed">{t.hrModals.fixedAmount}</option>
+ <option value="percentage">{localT.percentage}</option>
  </select>
  </div>
  </div>
@@ -422,7 +422,7 @@ export function EditCurrentSalaryModal({
  {/* Effective Date */}
  <div>
  <label className="block text-sm font-medium text-gray-700 mb-2">
- {t.effectiveDate} <span className="text-red-500">*</span>
+ {t.hrModals.effectiveDate} <span className="text-red-500">*</span>
  </label>
  <input
  type="date"
@@ -431,18 +431,18 @@ export function EditCurrentSalaryModal({
  onChange={(e) => setFormData({ ...formData, effectiveDate: e.target.value })}
  className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent ${ errors.effectiveDate ? 'border-red-500' : 'border-gray-300' }`}
  />
- <p className="text-xs text-gray-500 mt-1">{t.effectiveHelp}</p>
+ <p className="text-xs text-gray-500 mt-1">{localT.effectiveHelp}</p>
  {errors.effectiveDate && <p className="text-xs text-red-500 mt-1">{errors.effectiveDate}</p>}
  </div>
 
  {/* Total Compensation Summary */}
  <div>
  <h3 className="text-sm font-semibold text-gray-700 mb-3 pb-2 border-b border-gray-200">
- {t.summarySection}
+ {localT.summarySection}
  </h3>
  <div className="bg-gradient-to-r from-yellow-50 to-green-50 border border-yellow-200 rounded-lg p-6">
  <div className="flex items-center justify-between">
- <span className="text-lg font-semibold text-gray-700">{t.totalGross}:</span>
+ <span className="text-lg font-semibold text-gray-700">{localT.totalGross}:</span>
  <span className="text-3xl font-bold text-green-700">{formatCurrency(calculateTotalGross())}</span>
  </div>
  </div>
@@ -457,14 +457,14 @@ export function EditCurrentSalaryModal({
  onClick={onClose}
  className="px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
  >
- {t.cancel}
+ {t.hrModals.cancel}
  </button>
  <button
  onClick={handleSubmit}
  className="flex items-center gap-2 px-4 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700"
  >
  <Save className="w-4 h-4" />
- {t.save}
+ {t.hrModals.save}
  </button>
  </div>
  </div>
