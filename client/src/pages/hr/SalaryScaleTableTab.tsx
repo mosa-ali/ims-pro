@@ -99,19 +99,14 @@ export function SalaryScaleTableTab() {
 
  // Get organization context from user
  const organizationId = currentOrganizationId || 0;
- const operatingUnitId = currentOperatingUnitId || user?.operatingUnitId || undefined;
+ const operatingUnitId = currentOperatingUnitId || undefined;
 
  // tRPC queries
  const { data: records = [], isLoading, refetch } = trpc.hrSalaryScale.getAll.useQuery({
- organizationId: organizationId || 0,
- operatingUnitId: operatingUnitId || null,
  status: filterStatus === 'all' ? undefined : (filterStatus as 'draft' | 'active' | 'superseded' | undefined),
  });
 
- const { data: stats } = trpc.hrSalaryScale.getStatistics.useQuery({
- organizationId: organizationId || 0,
- operatingUnitId: operatingUnitId || null,
- });
+ const { data: stats } = trpc.hrSalaryScale.getStatistics.useQuery({});
 
  // tRPC mutations
  const syncMutation = trpc.hrSalaryScale.syncWithStaff.useMutation({
@@ -214,10 +209,7 @@ export function SalaryScaleTableTab() {
 
  // Handle sync
  const handleSync = () => {
- syncMutation.mutate({
- organizationId,
- operatingUnitId: operatingUnitId || undefined,
- });
+ syncMutation.mutate({});
  };
 
  // Handle activate
@@ -573,24 +565,24 @@ export function SalaryScaleTableTab() {
  <EditCurrentSalaryModal
  salaryRecordId={selectedRecord.id}
  employee={{
- id: selectedRecord.employeeId,
+ id: String(selectedRecord.employeeId),
  staffId: selectedRecord.staffId,
  fullName: selectedRecord.staffFullName,
  position: selectedRecord.position || '',
  department: selectedRecord.department || '',
  grade: selectedRecord.gradeCode,
  step: selectedRecord.step,
- basicSalary: parseFloat(selectedRecord.approvedGrossSalary),
- housingAllowance: parseFloat(selectedRecord.housingAllowance || '0'),
- transportAllowance: parseFloat(selectedRecord.transportAllowance || '0'),
- representationAllowance: parseFloat(selectedRecord.representationAllowance || '0'),
+ basicSalary: Number(selectedRecord.approvedGrossSalary) || 0,
+ housingAllowance: Number(selectedRecord.housingAllowance) || 0,
+ transportAllowance: Number(selectedRecord.transportAllowance) || 0,
+ representationAllowance: Number(selectedRecord.representationAllowance) || 0,
  representationAllowanceType: selectedRecord.representationAllowanceType || 'value',
- annualAllowance: parseFloat(selectedRecord.annualAllowance || '0'),
- bonus: parseFloat(selectedRecord.bonus || '0'),
- otherAllowances: parseFloat(selectedRecord.otherAllowances || '0'),
+ annualAllowance: Number(selectedRecord.annualAllowance) || 0,
+ bonus: Number(selectedRecord.bonus) || 0,
+ otherAllowances: Number(selectedRecord.otherAllowances) || 0,
  effectiveStartDate: selectedRecord.effectiveStartDate,
  effectiveEndDate: selectedRecord.effectiveEndDate || undefined,
- status: selectedRecord.status,
+ status: selectedRecord.status as 'draft' | 'active' | 'superseded',
  lastApprovedBy: undefined,
  lastUpdatedDate: typeof selectedRecord.updatedAt === 'string' 
    ? selectedRecord.updatedAt 
@@ -599,7 +591,7 @@ export function SalaryScaleTableTab() {
    ? selectedRecord.createdAt
    : selectedRecord.createdAt?.toISOString?.() || new Date().toISOString(),
  createdBy: 'System',
- isLocked: Boolean(selectedRecord.isLocked),
+ isLocked: (selectedRecord.isLocked as number) === 1,
  usedInPayroll: selectedRecord.usedInPayroll,
  currency: selectedRecord.currency || 'USD',
  }}
@@ -645,7 +637,10 @@ export function SalaryScaleTableTab() {
  language={language}
  isRTL={isRTL}
  onClose={() => setShowManageGradesModal(false)}
- onUpdate={() => refetch()}
+ onSave={() => {
+ setShowManageGradesModal(false);
+ refetch();
+ }}
  />
  )}
  </div>

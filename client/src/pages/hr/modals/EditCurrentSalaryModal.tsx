@@ -19,6 +19,9 @@ import { useTranslation } from '@/i18n/useTranslation';
 import { trpc } from '@/lib/trpc';
 import { toast } from 'sonner';
 import { SalaryHistoryModal } from './SalaryHistoryModal';
+import { useOrganization } from '@/contexts/OrganizationContext';
+import { useOperatingUnit } from '@/contexts/OperatingUnitContext';
+import { useAuth } from '@/_core/hooks/useAuth';
 
 interface Props {
  employee: StaffMember;
@@ -35,6 +38,9 @@ export function EditCurrentSalaryModal({
  employee, onClose, onSave }: Props) {
  const { t } = useTranslation();
  const { language, isRTL } = useLanguage();
+ const { currentOrganizationId } = useOrganization();
+ const { currentOperatingUnitId } = useOperatingUnit();
+ const { user } = useAuth();
  
  // ONLY salary fields (NO identity, contract, etc.)
  const [formData, setFormData] = useState({
@@ -67,6 +73,20 @@ export function EditCurrentSalaryModal({
  { employeeId: Number(employee.id) },
  { enabled: !!employee.id }
  );
+ 
+ // Get tRPC utilities for query invalidation
+ const utils = trpc.useUtils();
+ 
+ // Mutation for updating salary with automatic table refresh
+ const updateMutation = trpc.hrSalaryScale.update.useMutation({
+ onSuccess: async () => {
+ // Invalidate the salary scale table query to trigger refresh
+ await utils.hrSalaryScale.getAll.invalidate();
+ },
+ onError: (error) => {
+ toast.error('Failed to save salary: ' + (error?.message || 'Unknown error'));
+ }
+ });
  
  useEffect(() => {
  if (gradesData) {
@@ -238,8 +258,7 @@ export function EditCurrentSalaryModal({
  
  
  // Also sync to database via tRPC if salaryRecordId provided
-const updateMutation = trpc.hrSalaryScale.update.useMutation();
-const salaryRecordId = Number(employee.id); // ✅ FIX ERROR 1
+ const salaryRecordId = Number(employee.id);
  if (salaryRecordId) {
   try {
     await updateMutation.mutateAsync({
@@ -254,11 +273,13 @@ const salaryRecordId = Number(employee.id); // ✅ FIX ERROR 1
       effectiveStartDate: formData.effectiveDate
     });
 
-    toast.success('Salary saved to database');
+    toast.success('Salary saved successfully!');
+    // Close modal after successful save
+    onClose();
   } catch (error: any) {
     toast.error('Database sync failed: ' + (error?.message || 'Unknown error'));
   }
-}
+ }
  
  onSave(updatedEmployee);
  };
@@ -302,7 +323,7 @@ const salaryRecordId = Number(employee.id); // ✅ FIX ERROR 1
  </div>
 
  {/* Form */}
- <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto p-6">
+ <form id="salary-form" onSubmit={handleSubmit} className="flex-1 overflow-y-auto p-6">
  <div className="space-y-6">
  {/* Version Warning */}
  {showVersionWarning && (
@@ -581,11 +602,13 @@ const salaryRecordId = Number(employee.id); // ✅ FIX ERROR 1
  {localT.cancel}
  </button>
  <button
- onClick={handleSubmit}
- className="flex items-center gap-2 px-4 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700"
+ type="submit"
+ form="salary-form"
+ disabled={loadingGrades}
+ className="flex items-center gap-2 px-4 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 disabled:opacity-50 disabled:cursor-not-allowed"
  >
  <Save className="w-4 h-4" />
- {localT.save}
+ {t.hrModals.save}
  </button>
  </div>
  </div>
