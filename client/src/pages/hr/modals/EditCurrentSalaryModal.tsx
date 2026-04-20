@@ -22,6 +22,7 @@ import { formatCurrency, formatDate } from '@/utils/salary';
 
 interface Props {
  employee: StaffMember;
+ salaryRecordId: number; // Database ID of the salary scale record
  onClose: () => void;
  onSave: (updatedEmployee: StaffMember) => void;
 }
@@ -32,7 +33,7 @@ interface AllowanceConfig {
 }
 
 export function EditCurrentSalaryModal({
- employee, onClose, onSave }: Props) {
+ employee, salaryRecordId, onClose, onSave }: Props) {
  const { t } = useTranslation();
  const { language, isRTL } = useLanguage();
  
@@ -170,8 +171,12 @@ export function EditCurrentSalaryModal({
  };
 
  // Use tRPC to update salary scale record
+ if (!salaryRecordId) {
+ toast.error('Salary record ID is missing');
+ return;
+ }
  updateMutation.mutate({
- id: Number(employee.id),
+ id: salaryRecordId,
  gradeCode: formData.grade.trim(),
  step: formData.step.trim(),
  approvedGrossSalary: Number(formData.basicSalary),
@@ -454,7 +459,7 @@ export function EditCurrentSalaryModal({
  <div className="bg-gradient-to-r from-yellow-50 to-green-50 border border-yellow-200 rounded-lg p-6">
  <div className="flex items-center justify-between">
  <span className="text-lg font-semibold text-gray-700">{localT.totalGross}:</span>
- <span className="text-3xl font-bold text-green-700">{formatCurrency(calculateTotalGross())}</span>
+ <span className="text-3xl font-bold text-green-700">{formatCurrencyLocal(calculateTotalGross())}</span>
  </div>
  </div>
  </div>
