@@ -30,7 +30,8 @@ import { useOperatingUnit } from '@/contexts/OperatingUnitContext';
 import { useAuth } from '@/_core/hooks/useAuth';
 import { useDeletedRecords } from '@/contexts/DeletedRecordsContext';
 import { trpc } from '@/lib/trpc';
-import { EditSalaryModal, SalaryHistoryModal, AddGradeModal, ManageGradesModal } from './SalaryScaleModals';
+import { SalaryHistoryModal, AddGradeModal, ManageGradesModal } from './SalaryScaleModals';
+import { EditCurrentSalaryModal } from './modals/EditCurrentSalaryModal';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { toast } from 'sonner';
@@ -569,24 +570,19 @@ export function SalaryScaleTableTab() {
 
  {/* Modals */}
  {showEditModal && selectedRecord && (
- <EditSalaryModal
- record={{
- id: String(selectedRecord.id),
- version: selectedRecord.version,
+ <EditCurrentSalaryModal
+ salaryRecordId={selectedRecord.id}
+ employee={{
+ id: selectedRecord.employeeId,
  staffId: selectedRecord.staffId,
- staffFullName: selectedRecord.staffFullName,
+ fullName: selectedRecord.staffFullName,
  position: selectedRecord.position || '',
  department: selectedRecord.department || '',
- contractType: selectedRecord.contractType || '',
  grade: selectedRecord.gradeCode,
  step: selectedRecord.step,
- minSalary: parseFloat(selectedRecord.minSalary || '0'),
- maxSalary: parseFloat(selectedRecord.maxSalary || '0'),
- approvedGrossSalary: parseFloat(selectedRecord.approvedGrossSalary),
+ basicSalary: parseFloat(selectedRecord.approvedGrossSalary),
  housingAllowance: parseFloat(selectedRecord.housingAllowance || '0'),
- housingAllowanceType: selectedRecord.housingAllowanceType || 'value',
  transportAllowance: parseFloat(selectedRecord.transportAllowance || '0'),
- transportAllowanceType: selectedRecord.transportAllowanceType || 'value',
  representationAllowance: parseFloat(selectedRecord.representationAllowance || '0'),
  representationAllowanceType: selectedRecord.representationAllowanceType || 'value',
  annualAllowance: parseFloat(selectedRecord.annualAllowance || '0'),
