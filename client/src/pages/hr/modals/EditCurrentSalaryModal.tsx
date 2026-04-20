@@ -12,7 +12,7 @@
  */
 
 import { useState } from 'react';
-import { X, Save, DollarSign, AlertTriangle, Loader2, History } from 'lucide-react';
+import { X, Save, DollarSign, AlertTriangle } from 'lucide-react';
 import { useLanguage } from '@/app/contexts/LanguageContext';
 import { StaffMember } from '../types/hrTypes';
 import { useTranslation } from '@/i18n/useTranslation';
@@ -20,7 +20,8 @@ import { trpc } from '@/lib/trpc';
 import { toast } from 'sonner';
 
 interface Props {
- employee: StaffMember & { salaryRecordId?: number };
+ employee: StaffMember;
+ salaryRecordId?: number;
  onClose: () => void;
  onSave: (updatedEmployee: StaffMember) => void;
  onShowHistory?: () => void;
@@ -32,7 +33,7 @@ interface AllowanceConfig {
 }
 
 export function EditCurrentSalaryModal({
- employee, onClose, onSave, onShowHistory }: Props) {
+ employee, salaryRecordId, onClose, onSave, onShowHistory }: Props) {
  const { t } = useTranslation();
  const { language, isRTL } = useLanguage();
  
@@ -118,17 +119,6 @@ export function EditCurrentSalaryModal({
  return formData.basicSalary + housing + transport + representation + other;
  };
 
- const updateMutation = trpc.hrSalaryScale.update.useMutation({
- onSuccess: () => {
- toast.success('Salary record updated successfully');
- onSave(employee);
- onClose();
- },
- onError: (error) => {
- toast.error('Error saving: ' + error.message);
- },
- });
-
  const validateForm = (): boolean => {
  const newErrors: Record<string, string> = {};
  
@@ -144,7 +134,7 @@ export function EditCurrentSalaryModal({
  return Object.keys(newErrors).length === 0;
  };
 
- const handleSubmit = (e: React.FormEvent) => {
+ const handleSubmit = async (e: React.FormEvent) => {
  e.preventDefault();
  
  if (!validateForm()) {
@@ -157,26 +147,47 @@ export function EditCurrentSalaryModal({
  const finalRepresentation = calculateAllowanceValue(formData.representationAllowance, formData.representationIsPercentage);
  const finalOther = calculateAllowanceValue(formData.otherAllowances, formData.otherIsPercentage);
  
- // Use tRPC to update salary scale record
- if (!employee.salaryRecordId) {
- toast.error('Salary record ID is missing');
- return;
- }
+ // Update ONLY salary fields
+ const updatedEmployee: StaffMember = {
+ ...employee,
+ grade: formData.grade.trim(),
+ step: formData.step.trim(),
+ basicSalary: formData.basicSalary,
+ housingAllowance: finalHousing,
+ transportAllowance: finalTransport,
+ representationAllowance: finalRepresentation,
+ otherAllowances: finalOther,
+ updatedAt: new Date().toISOString()
+ };
  
- updateMutation.mutate({
- id: employee.salaryRecordId,
+ // Save to localStorage
+ const staffData = JSON.parse(localStorage.getItem('staff') || '[]');
+ const updatedStaffData = staffData.map((s: StaffMember) => s.id === employee.id ? updatedEmployee : s);
+ localStorage.setItem('staff', JSON.stringify(updatedStaffData));
+ 
+ // Also sync to database via tRPC if salaryRecordId provided
+ if (salaryRecordId) {
+ try {
+ await trpc.hrSalaryScale.update.mutate({
+ id: salaryRecordId,
  gradeCode: formData.grade.trim(),
  step: formData.step.trim(),
- approvedGrossSalary: formData.basicSalary,
- housingAllowance: finalHousing > 0 ? finalHousing : undefined,
- housingAllowanceType: formData.housingIsPercentage ? 'percentage' : 'value',
- transportAllowance: finalTransport > 0 ? finalTransport : undefined,
- transportAllowanceType: formData.transportIsPercentage ? 'percentage' : 'value',
- representationAllowance: finalRepresentation > 0 ? finalRepresentation : undefined,
- representationAllowanceType: formData.representationIsPercentage ? 'percentage' : 'value',
- otherAllowances: finalOther > 0 ? finalOther : undefined,
+ approvedGrossSalary: calculateTotalGross(),
+ housingAllowance: finalHousing,
+ transportAllowance: finalTransport,
+ representationAllowance: finalRepresentation,
+ otherAllowances: finalOther,
  effectiveStartDate: formData.effectiveDate,
+ status: 'active'
  });
+ toast.success('Salary saved to database');
+ } catch (error: any) {
+ toast.error('Database sync failed: ' + (error?.message || 'Unknown error'));
+ }
+ }
+ 
+ onSave(updatedEmployee);
+ onClose();
  };
 
  const formatCurrency = (amount: number) => {
@@ -186,6 +197,16 @@ export function EditCurrentSalaryModal({
  currency: 'USD',
  minimumFractionDigits: 2
  }).format(amount);
+ };
+
+ const formatDate = (dateString?: string) => {
+ if (!dateString) return '-';
+ const locale = language === 'ar' ? 'ar-SA' : 'en-US';
+ return new Date(dateString).toLocaleDateString(locale, {
+ year: 'numeric',
+ month: 'long',
+ day: 'numeric'
+ });
  };
 
  return (
@@ -210,7 +231,7 @@ export function EditCurrentSalaryModal({
  </div>
 
  {/* Form */}
- <form id="salary-form" onSubmit={handleSubmit} className="flex-1 overflow-y-auto p-6">
+ <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto p-6">
  <div className="space-y-6">
  {/* Version Warning */}
  {showVersionWarning && (
@@ -468,33 +489,12 @@ export function EditCurrentSalaryModal({
  >
  {localT.cancel}
  </button>
- {onShowHistory && (
  <button
- type="button"
- onClick={onShowHistory}
- className="flex items-center gap-2 px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
+ onClick={handleSubmit}
+ className="flex items-center gap-2 px-4 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700"
  >
- <History className="w-4 h-4" />
- View History
- </button>
- )}
- <button
- type="submit"
- form="salary-form"
- disabled={updateMutation.isPending}
- className="flex items-center gap-2 px-4 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 disabled:bg-gray-400"
- >
- {updateMutation.isPending ? (
- <>
- <Loader2 className="w-4 h-4 animate-spin" />
- Saving...
- </>
- ) : (
- <>
  <Save className="w-4 h-4" />
  {localT.save}
- </>
- )}
  </button>
  </div>
  </div>
