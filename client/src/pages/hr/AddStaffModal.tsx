@@ -144,10 +144,10 @@ export function AddStaffModal({
  };
 
  const tabs = [
- { id: 0, label: t.personalInfo, icon: User },
- { id: 1, label: t.employmentInfo, icon: Briefcase },
- { id: 2, label: t.projectAssignment, icon: FolderKanban },
- { id: 3, label: t.bankPayment, icon: CreditCard }
+ { id: 0, label: localT.personalInfo, icon: User },
+ { id: 1, label: localT.employmentInfo, icon: Briefcase },
+ { id: 2, label: localT.projectAssignment, icon: FolderKanban },
+ { id: 3, label: localT.bankPayment, icon: CreditCard }
  ];
 
  const handleChange = (field: string, value: any) => {
@@ -172,7 +172,7 @@ export function AddStaffModal({
  const handleSave = () => {
  // Validation
  if (!formData.fullName || !formData.position) {
- alert(t.required);
+ alert(localT.required);
  return;
  }
 
@@ -220,7 +220,7 @@ export function AddStaffModal({
  <div className="bg-white rounded-lg w-full max-w-4xl max-h-[90vh] flex flex-col" dir={isRTL ? 'rtl' : 'ltr'}>
  {/* Header */}
  <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200">
- <h2 className="text-xl font-bold text-gray-900">{t.addStaff}</h2>
+ <h2 className="text-xl font-bold text-gray-900">{localT.addStaff}</h2>
  <button onClick={onClose} className="text-gray-400 hover:text-gray-600">
  <X className="w-6 h-6" />
  </button>
@@ -250,7 +250,7 @@ export function AddStaffModal({
  <div className="space-y-4">
  <div>
  <label className="block text-sm font-medium text-gray-700 mb-1">
- {t.fullName} <span className="text-red-500">*</span>
+ {t.hrModals.fullName} <span className="text-red-500">*</span>
  </label>
  <input
  type="text"
@@ -263,20 +263,20 @@ export function AddStaffModal({
 
  <div className="grid grid-cols-2 gap-4">
  <div>
- <label className="block text-sm font-medium text-gray-700 mb-1">{t.gender}</label>
+ <label className="block text-sm font-medium text-gray-700 mb-1">{t.hrModals.gender}</label>
  <select
  value={formData.gender}
  onChange={(e) => handleChange('gender', e.target.value)}
  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
  >
- <option value="Male">{t.male}</option>
- <option value="Female">{t.female}</option>
- <option value="Other">{t.other}</option>
+ <option value="Male">{t.hrModals.male}</option>
+ <option value="Female">{t.hrModals.female}</option>
+ <option value="Other">{t.hrModals.other}</option>
  </select>
  </div>
 
  <div>
- <label className="block text-sm font-medium text-gray-700 mb-1">{t.nationality}</label>
+ <label className="block text-sm font-medium text-gray-700 mb-1">{t.hrModals.nationality}</label>
  <input
  type="text"
  value={formData.nationality}
@@ -289,7 +289,7 @@ export function AddStaffModal({
 
  <div className="grid grid-cols-2 gap-4">
  <div>
- <label className="block text-sm font-medium text-gray-700 mb-1">{t.dateOfBirth}</label>
+ <label className="block text-sm font-medium text-gray-700 mb-1">{t.hrModals.dateOfBirth}</label>
  <input
  type="date"
  value={formData.dateOfBirth}
@@ -299,7 +299,7 @@ export function AddStaffModal({
  </div>
 
  <div>
- <label className="block text-sm font-medium text-gray-700 mb-1">{t.phone}</label>
+ <label className="block text-sm font-medium text-gray-700 mb-1">{t.hrModals.phone}</label>
  <input
  type="tel"
  value={formData.phone}
@@ -311,7 +311,7 @@ export function AddStaffModal({
  </div>
 
  <div>
- <label className="block text-sm font-medium text-gray-700 mb-1">{t.email}</label>
+ <label className="block text-sm font-medium text-gray-700 mb-1">{t.hrModals.email}</label>
  <input
  type="email"
  value={formData.email}
@@ -329,7 +329,7 @@ export function AddStaffModal({
  <div className="grid grid-cols-2 gap-4">
  <div>
  <label className="block text-sm font-medium text-gray-700 mb-1">
- {t.position} <span className="text-red-500">*</span>
+ {t.hrModals.position} <span className="text-red-500">*</span>
  </label>
  <input
  type="text"
@@ -341,7 +341,7 @@ export function AddStaffModal({
  </div>
 
  <div>
- <label className="block text-sm font-medium text-gray-700 mb-1">{t.department}</label>
+ <label className="block text-sm font-medium text-gray-700 mb-1">{t.hrModals.department}</label>
  <input
  type="text"
  value={formData.department}
@@ -357,7 +357,7 @@ export function AddStaffModal({
  <h4 className="text-sm font-semibold text-gray-900 mb-3">{t.hrStaff.gradeScale}</h4>
  <div className="grid grid-cols-2 gap-4">
  <div>
- <label className="block text-sm font-medium text-gray-700 mb-1">{t.grade}</label>
+ <label className="block text-sm font-medium text-gray-700 mb-1">{t.hrStaff.grade}</label>
  <select
  value={formData.grade}
  onChange={(e) => handleGradeChange(e.target.value)}
@@ -376,7 +376,7 @@ export function AddStaffModal({
  </div>
 
  <div>
- <label className="block text-sm font-medium text-gray-700 mb-1">{t.step}</label>
+ <label className="block text-sm font-medium text-gray-700 mb-1">{t.hrStaff.step}</label>
  <select
  value={formData.step}
  onChange={(e) => handleChange('step', e.target.value)}
@@ -395,44 +395,44 @@ export function AddStaffModal({
  </div>
  {selectedGrade && (
  <div className="mt-2 text-sm text-gray-600">
- {t.salaryRange}: ${selectedGrade.minSalary.toLocaleString()} - ${selectedGrade.maxSalary.toLocaleString()}
+ {t.hrStaff.salaryRange}: ${selectedGrade.minSalary.toLocaleString()} - ${selectedGrade.maxSalary.toLocaleString()}
  </div>
  )}
  </div>
 
  <div className="grid grid-cols-2 gap-4 mt-4">
  <div>
- <label className="block text-sm font-medium text-gray-700 mb-1">{t.contractType}</label>
+ <label className="block text-sm font-medium text-gray-700 mb-1">{t.hrStaff.contractType}</label>
  <select
  value={formData.contractType}
  onChange={(e) => handleChange('contractType', e.target.value)}
  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
  >
- <option value="Fixed-Term">{t.fixedTerm}</option>
- <option value="Short-Term">{t.shortTerm}</option>
- <option value="Consultancy">{t.consultancy}</option>
- <option value="Volunteer">{t.volunteer}</option>
- <option value="Daily Worker">{t.dailyWorker}</option>
+ <option value="Fixed-Term">{localT.fixedTerm}</option>
+ <option value="Short-Term">{localT.shortTerm}</option>
+ <option value="Consultancy">{localT.consultancy}</option>
+ <option value="Volunteer">{localT.volunteer}</option>
+ <option value="Daily Worker">{localT.dailyWorker}</option>
  </select>
  </div>
 
  <div>
- <label className="block text-sm font-medium text-gray-700 mb-1">{t.status}</label>
+ <label className="block text-sm font-medium text-gray-700 mb-1">{t.hrStaff.status}</label>
  <select
  value={formData.status}
  onChange={(e) => handleChange('status', e.target.value)}
  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
  >
- <option value="active">{t.active}</option>
- <option value="archived">{t.archived}</option>
- <option value="exited">{t.exited}</option>
+ <option value="active">{t.hrStaff.active}</option>
+ <option value="archived">{t.hrStaff.archived}</option>
+ <option value="exited">{t.hrStaff.exited}</option>
  </select>
  </div>
  </div>
 
  <div className="grid grid-cols-3 gap-4">
  <div>
- <label className="block text-sm font-medium text-gray-700 mb-1">{t.hireDate}</label>
+ <label className="block text-sm font-medium text-gray-700 mb-1">{t.hrStaff.hireDate}</label>
  <input
  type="date"
  value={formData.hireDate}
@@ -442,7 +442,7 @@ export function AddStaffModal({
  </div>
 
  <div>
- <label className="block text-sm font-medium text-gray-700 mb-1">{t.contractStartDate}</label>
+ <label className="block text-sm font-medium text-gray-700 mb-1">{t.hrStaff.contractStartDate}</label>
  <input
  type="date"
  value={formData.contractStartDate}
@@ -452,7 +452,7 @@ export function AddStaffModal({
  </div>
 
  <div>
- <label className="block text-sm font-medium text-gray-700 mb-1">{t.contractEndDate}</label>
+ <label className="block text-sm font-medium text-gray-700 mb-1">{t.hrStaff.contractEndDate}</label>
  <input
  type="date"
  value={formData.contractEndDate}
@@ -468,7 +468,7 @@ export function AddStaffModal({
  
  <div className="grid grid-cols-2 gap-4">
  <div>
- <label className="block text-sm font-medium text-gray-700 mb-1">{t.basicSalary}</label>
+ <label className="block text-sm font-medium text-gray-700 mb-1">{t.hrStaff.basicSalary}</label>
  <input
  type="number"
  value={formData.basicSalary}
@@ -478,7 +478,7 @@ export function AddStaffModal({
  </div>
 
  <div>
- <label className="block text-sm font-medium text-gray-700 mb-1">{t.currency}</label>
+ <label className="block text-sm font-medium text-gray-700 mb-1">{t.hrStaff.currency}</label>
  <input
  type="text"
  value={formData.currency}
@@ -490,7 +490,7 @@ export function AddStaffModal({
 
  <div className="grid grid-cols-2 gap-4 mt-4">
  <div>
- <label className="block text-sm font-medium text-gray-700 mb-1">{t.housingAllowance}</label>
+ <label className="block text-sm font-medium text-gray-700 mb-1">{t.hrStaff.housingAllowance}</label>
  <input
  type="number"
  value={formData.housingAllowance}
@@ -500,7 +500,7 @@ export function AddStaffModal({
  </div>
 
  <div>
- <label className="block text-sm font-medium text-gray-700 mb-1">{t.transportAllowance}</label>
+ <label className="block text-sm font-medium text-gray-700 mb-1">{t.hrStaff.transportAllowance}</label>
  <input
  type="number"
  value={formData.transportAllowance}
@@ -512,7 +512,7 @@ export function AddStaffModal({
 
  <div className="grid grid-cols-3 gap-4 mt-4">
  <div>
- <label className="block text-sm font-medium text-gray-700 mb-1">{t.socialSecurityRate}</label>
+ <label className="block text-sm font-medium text-gray-700 mb-1">{t.hrStaff.socialSecurityRate}</label>
  <input
  type="number"
  value={formData.socialSecurityRate}
@@ -522,7 +522,7 @@ export function AddStaffModal({
  </div>
 
  <div>
- <label className="block text-sm font-medium text-gray-700 mb-1">{t.healthInsuranceRate}</label>
+ <label className="block text-sm font-medium text-gray-700 mb-1">{t.hrStaff.healthInsuranceRate}</label>
  <input
  type="number"
  value={formData.healthInsuranceRate}
@@ -532,7 +532,7 @@ export function AddStaffModal({
  </div>
 
  <div>
- <label className="block text-sm font-medium text-gray-700 mb-1">{t.taxRate}</label>
+ <label className="block text-sm font-medium text-gray-700 mb-1">{t.hrStaff.taxRate}</label>
  <input
  type="number"
  value={formData.taxRate}
@@ -549,14 +549,14 @@ export function AddStaffModal({
  {activeTab === 2 && (
  <div className="space-y-4">
  <div>
- <label className="block text-sm font-medium text-gray-700 mb-2">{t.projects}</label>
+ <label className="block text-sm font-medium text-gray-700 mb-2">{t.hrStaff.projects}</label>
  {formData.projects.map((project, index) => (
  <div key={index} className="flex gap-2 mb-2">
  <input
  type="text"
  value={project}
  onChange={(e) => handleProjectChange(index, e.target.value)}
- placeholder={t.projectPlaceholder}
+ placeholder={localT.projectPlaceholder}
  className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
  />
  <button
@@ -571,7 +571,7 @@ export function AddStaffModal({
  onClick={handleAddProject}
  className="mt-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
  >
- {t.addProject}
+ {t.hrStaff.addProject}
  </button>
  </div>
  </div>
@@ -581,7 +581,7 @@ export function AddStaffModal({
  {activeTab === 3 && (
  <div className="space-y-4">
  <div>
- <label className="block text-sm font-medium text-gray-700 mb-1">{t.bankName}</label>
+ <label className="block text-sm font-medium text-gray-700 mb-1">{t.hrStaff.bankName}</label>
  <input
  type="text"
  value={formData.bankName}
@@ -592,7 +592,7 @@ export function AddStaffModal({
 
  <div className="grid grid-cols-2 gap-4">
  <div>
- <label className="block text-sm font-medium text-gray-700 mb-1">{t.accountNumber}</label>
+ <label className="block text-sm font-medium text-gray-700 mb-1">{t.hrStaff.accountNumber}</label>
  <input
  type="text"
  value={formData.accountNumber}
@@ -602,7 +602,7 @@ export function AddStaffModal({
  </div>
 
  <div>
- <label className="block text-sm font-medium text-gray-700 mb-1">{t.iban}</label>
+ <label className="block text-sm font-medium text-gray-700 mb-1">{localT.iban}</label>
  <input
  type="text"
  value={formData.iban}
@@ -619,16 +619,21 @@ export function AddStaffModal({
  <div className={`flex items-center gap-3 px-6 py-4 border-t border-gray-200`}>
  <button
  onClick={handleSave}
- className={`flex items-center gap-2 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700`}
+ disabled={createStaffMutation.isPending}
+ className={`flex items-center gap-2 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50`}
  >
+ {createStaffMutation.isPending ? (
+ <Loader2 className="w-4 h-4 animate-spin" />
+ ) : (
  <Save className="w-4 h-4" />
- <span>{t.save}</span>
+ )}
+ <span>{t.hrModals.save}</span>
  </button>
  <button
  onClick={onClose}
  className="px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"
  >
- {t.cancel}
+ {t.hrModals.cancel}
  </button>
  </div>
  </div>

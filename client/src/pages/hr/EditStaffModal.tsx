@@ -6,11 +6,13 @@
 
 import { useState } from 'react';
 import { X, Save, User, Briefcase, FolderKanban, CreditCard, FileText } from 'lucide-react';
-import { StaffMember, staffService } from '@/app/services/hrService';
-import { salaryScaleService } from '@/app/services/salaryScaleService';
 import { ModalOverlay } from '@/app/components/ui/ModalOverlay';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useTranslation } from '@/i18n/useTranslation';
+import { trpc } from '@/lib/trpc';
+import { toast } from 'sonner';
+import { Loader2 } from 'lucide-react';
+import type { StaffMember } from '@/app/services/hrService';
 
 interface EditStaffModalProps {
  employee?: StaffMember;
@@ -31,8 +33,8 @@ export function EditStaffModal({
  const [activeTab, setActiveTab] = useState<number>(0);
  const [formData, setFormData] = useState<StaffMember>({ ...staff });
 
- // Load grades from salary scale service
- const grades = salaryScaleService.getAllGrades();
+ // Load grades from tRPC
+ const { data: grades = [] } = trpc.hrSalaryGrades.getAll.useQuery();
  const selectedGrade = grades.find(g => g.grade === formData.grade);
 
  // Handle grade change
@@ -120,10 +122,10 @@ export function EditStaffModal({
  };
 
  const tabs = [
- { id: 0, label: t.personalInfo, icon: User },
- { id: 1, label: t.employmentInfo, icon: Briefcase },
- { id: 2, label: t.projectAssignment, icon: FolderKanban },
- { id: 3, label: t.bankPayment, icon: CreditCard },
+ { id: 0, label: localT.personalInfo, icon: User },
+ { id: 1, label: localT.employmentInfo, icon: Briefcase },
+ { id: 2, label: localT.projectAssignment, icon: FolderKanban },
+ { id: 3, label: localT.bankPayment, icon: CreditCard },
  { id: 4, label: t.documents, icon: FileText }
  ];
 
@@ -146,19 +148,26 @@ export function EditStaffModal({
  setFormData({ ...formData, projects: newProjects });
  };
 
+ const updateStaffMutation = trpc.hrEmployees.update.useMutation({
+ onSuccess: (updated) => {
+ toast.success(t.hr.staffMemberUpdatedSuccessfully || 'Staff member updated successfully');
+ onSave(updated);
+ onClose();
+ },
+ onError: (error) => {
+ toast.error('Error updating staff: ' + error.message);
+ },
+ });
+
  const handleSave = () => {
  // Validation
  if (!formData.fullName || !formData.position) {
- alert(t.required);
+ toast.error(localT.required);
  return;
  }
 
  // Update staff member
- const updated = staffService.update(formData.id, formData);
- if (updated) {
- onSave(updated);
- }
- onClose();
+ updateStaffMutation.mutate(formData);
  };
 
  return (
@@ -166,7 +175,7 @@ export function EditStaffModal({
  <div className="bg-gray-50 rounded-lg w-full max-w-4xl max-h-[90vh] flex flex-col" dir={isRTL ? 'rtl' : 'ltr'}>
  {/* Header */}
  <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 bg-white rounded-t-lg">
- <h2 className="text-xl font-bold text-gray-900">{t.editStaff}</h2>
+ <h2 className="text-xl font-bold text-gray-900">{localT.editStaff}</h2>
  <button onClick={onClose} className="text-gray-400 hover:text-gray-600">
  <X className="w-6 h-6" />
  </button>
@@ -197,7 +206,7 @@ export function EditStaffModal({
  <div className="grid grid-cols-2 gap-4">
  <div>
  <label className="block text-sm font-medium text-gray-700 mb-1">
- {t.staffId} <span className="text-red-500">*</span>
+ {t.hrStaff.staffId} <span className="text-red-500">*</span>
  </label>
  <input
  type="text"
@@ -209,7 +218,7 @@ export function EditStaffModal({
 
  <div>
  <label className="block text-sm font-medium text-gray-700 mb-1">
- {t.fullName} <span className="text-red-500">*</span>
+ {t.hrModals.fullName} <span className="text-red-500">*</span>
  </label>
  <input
  type="text"
@@ -222,20 +231,20 @@ export function EditStaffModal({
 
  <div className="grid grid-cols-2 gap-4">
  <div>
- <label className="block text-sm font-medium text-gray-700 mb-1">{t.gender}</label>
+ <label className="block text-sm font-medium text-gray-700 mb-1">{t.hrStaff.gender}</label>
  <select
  value={formData.gender}
  onChange={(e) => handleChange('gender', e.target.value)}
  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
  >
- <option value="Male">{t.male}</option>
- <option value="Female">{t.female}</option>
- <option value="Other">{t.other}</option>
+ <option value="Male">{t.hrModals.male}</option>
+ <option value="Female">{t.hrModals.female}</option>
+ <option value="Other">{t.hrModals.other}</option>
  </select>
  </div>
 
  <div>
- <label className="block text-sm font-medium text-gray-700 mb-1">{t.nationality}</label>
+ <label className="block text-sm font-medium text-gray-700 mb-1">{t.hrModals.nationality}</label>
  <input
  type="text"
  value={formData.nationality}
@@ -247,7 +256,7 @@ export function EditStaffModal({
 
  <div className="grid grid-cols-2 gap-4">
  <div>
- <label className="block text-sm font-medium text-gray-700 mb-1">{t.dateOfBirth}</label>
+ <label className="block text-sm font-medium text-gray-700 mb-1">{t.hrModals.dateOfBirth}</label>
  <input
  type="date"
  value={formData.dateOfBirth || ''}
@@ -257,7 +266,7 @@ export function EditStaffModal({
  </div>
 
  <div>
- <label className="block text-sm font-medium text-gray-700 mb-1">{t.phone}</label>
+ <label className="block text-sm font-medium text-gray-700 mb-1">{t.hrModals.phone}</label>
  <input
  type="tel"
  value={formData.phone || ''}
@@ -268,7 +277,7 @@ export function EditStaffModal({
  </div>
 
  <div>
- <label className="block text-sm font-medium text-gray-700 mb-1">{t.email}</label>
+ <label className="block text-sm font-medium text-gray-700 mb-1">{t.hrModals.email}</label>
  <input
  type="email"
  value={formData.email || ''}
@@ -285,7 +294,7 @@ export function EditStaffModal({
  <div className="grid grid-cols-2 gap-4">
  <div>
  <label className="block text-sm font-medium text-gray-700 mb-1">
- {t.position} <span className="text-red-500">*</span>
+ {t.hrModals.position} <span className="text-red-500">*</span>
  </label>
  <input
  type="text"
@@ -296,7 +305,7 @@ export function EditStaffModal({
  </div>
 
  <div>
- <label className="block text-sm font-medium text-gray-700 mb-1">{t.department}</label>
+ <label className="block text-sm font-medium text-gray-700 mb-1">{t.hrModals.department}</label>
  <input
  type="text"
  value={formData.department}
@@ -311,7 +320,7 @@ export function EditStaffModal({
  <h4 className="text-sm font-semibold text-gray-900 mb-3">{t.hrStaff.gradeScale}</h4>
  <div className="grid grid-cols-2 gap-4">
  <div>
- <label className="block text-sm font-medium text-gray-700 mb-1">{t.grade}</label>
+ <label className="block text-sm font-medium text-gray-700 mb-1">{t.hrStaff.grade}</label>
  <select
  value={formData.grade || ''}
  onChange={(e) => handleGradeChange(e.target.value)}
@@ -330,7 +339,7 @@ export function EditStaffModal({
  </div>
 
  <div>
- <label className="block text-sm font-medium text-gray-700 mb-1">{t.step}</label>
+ <label className="block text-sm font-medium text-gray-700 mb-1">{t.hrStaff.step}</label>
  <select
  value={formData.step || 'Step 1'}
  onChange={(e) => handleChange('step', e.target.value)}
@@ -349,44 +358,44 @@ export function EditStaffModal({
  </div>
  {selectedGrade && (
  <div className="mt-2 text-sm text-gray-600">
- {t.salaryRange}: ${selectedGrade.minSalary.toLocaleString()} - ${selectedGrade.maxSalary.toLocaleString()}
+ {t.hrStaff.salaryRange}: ${selectedGrade.minSalary.toLocaleString()} - ${selectedGrade.maxSalary.toLocaleString()}
  </div>
  )}
  </div>
 
  <div className="grid grid-cols-2 gap-4 mt-4">
  <div>
- <label className="block text-sm font-medium text-gray-700 mb-1">{t.contractType}</label>
+ <label className="block text-sm font-medium text-gray-700 mb-1">{t.hrStaff.contractType}</label>
  <select
  value={formData.contractType}
  onChange={(e) => handleChange('contractType', e.target.value)}
  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
  >
- <option value="Fixed-Term">{t.fixedTerm}</option>
- <option value="Short-Term">{t.shortTerm}</option>
- <option value="Consultancy">{t.consultancy}</option>
- <option value="Volunteer">{t.volunteer}</option>
- <option value="Daily Worker">{t.dailyWorker}</option>
+ <option value="Fixed-Term">{localT.fixedTerm}</option>
+ <option value="Short-Term">{localT.shortTerm}</option>
+ <option value="Consultancy">{t.hrStaff.consultancy}</option>
+ <option value="Volunteer">{t.hrStaff.volunteer}</option>
+ <option value="Daily Worker">{t.hrStaff.dailyWorker}</option>
  </select>
  </div>
 
  <div>
- <label className="block text-sm font-medium text-gray-700 mb-1">{t.status}</label>
+ <label className="block text-sm font-medium text-gray-700 mb-1">{t.hrStaff.status}</label>
  <select
  value={formData.status}
  onChange={(e) => handleChange('status', e.target.value as any)}
  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
  >
- <option value="active">{t.active}</option>
- <option value="archived">{t.archived}</option>
- <option value="exited">{t.exited}</option>
+ <option value="active">{t.hrStaff.active}</option>
+ <option value="archived">{t.hrStaff.archived}</option>
+ <option value="exited">{t.hrStaff.exited}</option>
  </select>
  </div>
  </div>
 
  <div className="grid grid-cols-3 gap-4">
  <div>
- <label className="block text-sm font-medium text-gray-700 mb-1">{t.hireDate}</label>
+ <label className="block text-sm font-medium text-gray-700 mb-1">{t.hrStaff.hireDate}</label>
  <input
  type="date"
  value={formData.hireDate || ''}
@@ -396,7 +405,7 @@ export function EditStaffModal({
  </div>
 
  <div>
- <label className="block text-sm font-medium text-gray-700 mb-1">{t.contractStartDate}</label>
+ <label className="block text-sm font-medium text-gray-700 mb-1">{t.hrStaff.contractStartDate}</label>
  <input
  type="date"
  value={formData.contractStartDate || ''}
@@ -406,7 +415,7 @@ export function EditStaffModal({
  </div>
 
  <div>
- <label className="block text-sm font-medium text-gray-700 mb-1">{t.contractEndDate}</label>
+ <label className="block text-sm font-medium text-gray-700 mb-1">{t.hrStaff.contractEndDate}</label>
  <input
  type="date"
  value={formData.contractEndDate || ''}
@@ -422,7 +431,7 @@ export function EditStaffModal({
  
  <div className="grid grid-cols-2 gap-4">
  <div>
- <label className="block text-sm font-medium text-gray-700 mb-1">{t.basicSalary}</label>
+ <label className="block text-sm font-medium text-gray-700 mb-1">{t.hrStaff.basicSalary}</label>
  <input
  type="number"
  value={formData.basicSalary}
@@ -432,7 +441,7 @@ export function EditStaffModal({
  </div>
 
  <div>
- <label className="block text-sm font-medium text-gray-700 mb-1">{t.currency}</label>
+ <label className="block text-sm font-medium text-gray-700 mb-1">{t.hrStaff.currency}</label>
  <input
  type="text"
  value={formData.currency}
@@ -444,7 +453,7 @@ export function EditStaffModal({
 
  <div className="grid grid-cols-2 gap-4 mt-4">
  <div>
- <label className="block text-sm font-medium text-gray-700 mb-1">{t.housingAllowance}</label>
+ <label className="block text-sm font-medium text-gray-700 mb-1">{t.hrStaff.housingAllowance}</label>
  <input
  type="number"
  value={formData.housingAllowance}
@@ -454,7 +463,7 @@ export function EditStaffModal({
  </div>
 
  <div>
- <label className="block text-sm font-medium text-gray-700 mb-1">{t.transportAllowance}</label>
+ <label className="block text-sm font-medium text-gray-700 mb-1">{t.hrStaff.transportAllowance}</label>
  <input
  type="number"
  value={formData.transportAllowance}
@@ -466,7 +475,7 @@ export function EditStaffModal({
 
  <div className="grid grid-cols-2 gap-4 mt-4">
  <div>
- <label className="block text-sm font-medium text-gray-700 mb-1">{t.representationAllowance}</label>
+ <label className="block text-sm font-medium text-gray-700 mb-1">{t.hrStaff.representationAllowance}</label>
  <input
  type="number"
  value={formData.representationAllowance}
@@ -476,7 +485,7 @@ export function EditStaffModal({
  </div>
 
  <div>
- <label className="block text-sm font-medium text-gray-700 mb-1">{t.otherAllowances}</label>
+ <label className="block text-sm font-medium text-gray-700 mb-1">{t.hrStaff.otherAllowances}</label>
  <input
  type="number"
  value={formData.otherAllowances}
@@ -488,7 +497,7 @@ export function EditStaffModal({
 
  <div className="grid grid-cols-3 gap-4 mt-4">
  <div>
- <label className="block text-sm font-medium text-gray-700 mb-1">{t.socialSecurityRate}</label>
+ <label className="block text-sm font-medium text-gray-700 mb-1">{t.hrStaff.socialSecurityRate}</label>
  <input
  type="number"
  value={formData.socialSecurityRate}
@@ -498,7 +507,7 @@ export function EditStaffModal({
  </div>
 
  <div>
- <label className="block text-sm font-medium text-gray-700 mb-1">{t.healthInsuranceRate}</label>
+ <label className="block text-sm font-medium text-gray-700 mb-1">{t.hrStaff.healthInsuranceRate}</label>
  <input
  type="number"
  value={formData.healthInsuranceRate}
@@ -508,7 +517,7 @@ export function EditStaffModal({
  </div>
 
  <div>
- <label className="block text-sm font-medium text-gray-700 mb-1">{t.taxRate}</label>
+ <label className="block text-sm font-medium text-gray-700 mb-1">{t.hrStaff.taxRate}</label>
  <input
  type="number"
  value={formData.taxRate}
@@ -525,14 +534,14 @@ export function EditStaffModal({
  {activeTab === 2 && (
  <div className="space-y-4">
  <div>
- <label className="block text-sm font-medium text-gray-700 mb-2">{t.projects}</label>
+ <label className="block text-sm font-medium text-gray-700 mb-2">{t.hrStaff.projects}</label>
  {formData.projects.map((project, index) => (
  <div key={index} className="flex gap-2 mb-2">
  <input
  type="text"
  value={project}
  onChange={(e) => handleProjectChange(index, e.target.value)}
- placeholder={t.projectPlaceholder}
+ placeholder={localT.projectPlaceholder}
  className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
  />
  <button
@@ -547,7 +556,7 @@ export function EditStaffModal({
  onClick={handleAddProject}
  className="mt-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
  >
- {t.addProject}
+ {t.hrStaff.addProject}
  </button>
  </div>
  </div>
@@ -557,7 +566,7 @@ export function EditStaffModal({
  {activeTab === 3 && (
  <div className="space-y-4">
  <div>
- <label className="block text-sm font-medium text-gray-700 mb-1">{t.bankName}</label>
+ <label className="block text-sm font-medium text-gray-700 mb-1">{t.hrStaff.bankName}</label>
  <input
  type="text"
  value={formData.bankName || ''}
@@ -568,7 +577,7 @@ export function EditStaffModal({
 
  <div className="grid grid-cols-2 gap-4">
  <div>
- <label className="block text-sm font-medium text-gray-700 mb-1">{t.accountNumber}</label>
+ <label className="block text-sm font-medium text-gray-700 mb-1">{t.hrStaff.accountNumber}</label>
  <input
  type="text"
  value={formData.accountNumber || ''}
@@ -578,7 +587,7 @@ export function EditStaffModal({
  </div>
 
  <div>
- <label className="block text-sm font-medium text-gray-700 mb-1">{t.iban}</label>
+ <label className="block text-sm font-medium text-gray-700 mb-1">{t.hrStaff.iban}</label>
  <input
  type="text"
  value={formData.iban || ''}
@@ -594,7 +603,7 @@ export function EditStaffModal({
  {activeTab === 4 && (
  <div className="py-12 text-center text-gray-500">
  <FileText className="w-12 h-12 mx-auto mb-3 text-gray-400" />
- <p>{t.documentsNote}</p>
+ <p>{localT.documentsNote}</p>
  </div>
  )}
  </div>
@@ -603,16 +612,21 @@ export function EditStaffModal({
  <div className={`flex items-center gap-3 px-6 py-4 border-t border-gray-200`}>
  <button
  onClick={handleSave}
- className={`flex items-center gap-2 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700`}
+ disabled={updateStaffMutation.isPending}
+ className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 flex items-center gap-2"
  >
+ {updateStaffMutation.isPending ? (
+ <Loader2 className="w-4 h-4 animate-spin" />
+ ) : (
  <Save className="w-4 h-4" />
- <span>{t.save}</span>
+ )}
+ {localT.save}
  </button>
  <button
  onClick={onClose}
  className="px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"
  >
- {t.cancel}
+ {t.hrStaff.cancel}
  </button>
  </div>
  </div>

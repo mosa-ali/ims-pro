@@ -5,17 +5,17 @@
  */
 
 import { useState } from 'react';
-import { X, Save, AlertTriangle, Clock, CheckCircle, Trash2 } from 'lucide-react';
-import { 
- SalaryScaleRecord, 
- GradeDefinition, 
- salaryScaleService,
- calculateAllowanceValue,
- calculateTotalCompensation
-} from '@/app/services/salaryScaleService';
+import { X, Save, AlertTriangle, Clock, CheckCircle, Trash2, Loader2 } from 'lucide-react';
 import { ModalOverlay } from '@/app/components/ui/ModalOverlay';
+
 import { useTranslation } from '@/i18n/useTranslation';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { trpc } from '@/lib/trpc';
+import { toast } from 'sonner';
+
+// Types - data now comes from tRPC instead of localStorage
+type SalaryScaleRecord = any;
+type GradeDefinition = any;
 
 // ============================================================================
 // EDIT SALARY MODAL
@@ -23,7 +23,6 @@ import { useLanguage } from '@/contexts/LanguageContext';
 
 interface EditSalaryModalProps {
  record: SalaryScaleRecord;
- grades?: GradeDefinition[];
  language?: string;
  isRTL?: boolean;
  onClose: () => void;
@@ -32,10 +31,10 @@ interface EditSalaryModalProps {
 }
 
 export function EditSalaryModal({
- record, grades: propGrades, language = 'en', isRTL = false, onClose, onSave, userName = 'System' }: EditSalaryModalProps) {
+ record, language = 'en', isRTL = false, onClose, onSave, userName = 'System' }: EditSalaryModalProps) {
  const { t } = useTranslation();
- // Get grades from service if not provided as prop
- const grades = propGrades || salaryScaleService.getAllGrades();
+ // Fetch grades from tRPC
+ const { data: grades = [] } = trpc.hrSalaryGrades.getAll.useQuery();
  const [formData, setFormData] = useState({
  grade: record.grade,
  step: record.step,
@@ -91,14 +90,34 @@ export function EditSalaryModal({
  versionNote: 'Saving will create a new version and mark the current record as superseded'
  };
 
- const handleSave = () => {
- try {
- salaryScaleService.createNewVersion(record.staffId, formData, userName);
+ const updateMutation = trpc.hrSalaryScale.update.useMutation({
+ onSuccess: () => {
+ toast.success(t.hrStaff.salaryRecordUpdated || 'Salary record updated successfully');
  onSave();
  onClose();
- } catch (error) {
- alert('Error saving: ' + (error as Error).message);
- }
+ },
+ onError: (error) => {
+ toast.error('Error saving: ' + error.message);
+ },
+ });
+
+ const handleSave = () => {
+ updateMutation.mutate({
+ id: record.id,
+ gradeCode: formData.grade,
+ step: formData.step,
+ approvedGrossSalary: parseFloat(String(formData.approvedGrossSalary)),
+ housingAllowance: formData.housingAllowance ? parseFloat(String(formData.housingAllowance)) : undefined,
+ housingAllowanceType: formData.housingAllowanceType,
+ transportAllowance: formData.transportAllowance ? parseFloat(String(formData.transportAllowance)) : undefined,
+ transportAllowanceType: formData.transportAllowanceType,
+ representationAllowance: formData.representationAllowance ? parseFloat(String(formData.representationAllowance)) : undefined,
+ representationAllowanceType: formData.representationAllowanceType,
+ annualAllowance: formData.annualAllowance ? parseFloat(String(formData.annualAllowance)) : undefined,
+ bonus: formData.bonus ? parseFloat(String(formData.bonus)) : undefined,
+ otherAllowances: formData.otherAllowances ? parseFloat(String(formData.otherAllowances)) : undefined,
+ effectiveStartDate: formData.effectiveStartDate,
+ });
  };
 
  return (
@@ -264,9 +283,14 @@ export function EditSalaryModal({
  </button>
  <button
  onClick={handleSave}
- className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700"
+ disabled={updateMutation.isPending}
+ className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50 flex items-center gap-2"
  >
+ {updateMutation.isPending ? (
+ <Loader2 className="w-4 h-4 animate-spin" />
+ ) : (
  <Save className="w-4 h-4" />
+ )}
  {localT.save}
  </button>
  </div>
@@ -290,7 +314,10 @@ interface HistoryModalProps {
 export function SalaryHistoryModal({
  staffId, staffName, language, isRTL, onClose }: HistoryModalProps) {
  const { t } = useTranslation();
- const history = salaryScaleService.getByStaffId(staffId);
+ const { data: history = [], isLoading } = trpc.hrSalaryScale.getHistoryByStaffId.useQuery(
+ { staffId },
+ { enabled: !!staffId }
+ );
 
  const localT = {
  title: t.hr.salaryHistory,
@@ -325,7 +352,11 @@ export function SalaryHistoryModal({
  </div>
 
  <div className="px-6 py-4">
- {history.length === 0 ? (
+ {isLoading ? (
+ <div className="text-center py-12">
+ <Loader2 className="w-12 h-12 mx-auto animate-spin text-gray-400" />
+ </div>
+ ) : history.length === 0 ? (
  <div className="text-center py-12 text-gray-500">
  <Clock className="w-12 h-12 mx-auto mb-3 text-gray-400" />
  <p>{localT.noHistory}</p>
@@ -432,15 +463,31 @@ export function AddGradeModal({
  }
  };
 
+ const createGradeMutation = trpc.hrSalaryGrades.create.useMutation({
+ onSuccess: () => {
+ toast.success(localT.gradeAddedSuccessfully || 'Grade added successfully');
+ onSave();
+ onClose();
+ },
+ onError: (error) => {
+ toast.error('Error adding grade: ' + error.message);
+ },
+ });
+
  const handleSave = () => {
  if (!formData.grade || !formData.description) {
- alert(t.hr.pleaseFillAllRequiredFields9);
+ toast.error(t.hr.pleaseFillAllRequiredFields9);
  return;
  }
  
- salaryScaleService.addGrade(formData);
- onSave();
- onClose();
+ createGradeMutation.mutate({
+ grade: formData.grade,
+ description: formData.description,
+ minSalary: formData.minSalary,
+ maxSalary: formData.maxSalary,
+ steps: formData.steps,
+ currency: formData.currency
+ });
  };
 
  return (
@@ -507,8 +554,14 @@ export function AddGradeModal({
  </button>
  <button
  onClick={handleSave}
- className="px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-lg hover:bg-green-700"
+ disabled={createGradeMutation.isPending}
+ className="px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-lg hover:bg-green-700 disabled:opacity-50 flex items-center gap-2"
  >
+ {createGradeMutation.isPending ? (
+ <Loader2 className="w-4 h-4 animate-spin" />
+ ) : (
+ <Save className="w-4 h-4" />
+ )}
  {localT.save}
  </button>
  </div>
@@ -531,11 +584,18 @@ interface ManageGradesModalProps {
 export function ManageGradesModal({
  language, isRTL, onClose, onUpdate }: ManageGradesModalProps) {
  const { t } = useTranslation();
- const [grades, setGrades] = useState<GradeDefinition[]>(salaryScaleService.getAllGrades());
+ const { data: grades = [], isLoading, refetch } = trpc.hrSalaryGrades.getAll.useQuery();
 
- const loadGrades = () => {
- setGrades(salaryScaleService.getAllGrades());
- };
+ const deleteGradeMutation = trpc.hrSalaryGrades.delete.useMutation({
+ onSuccess: () => {
+ toast.success(t.hrModals.gradeDeletedSuccessfully || 'Grade deleted successfully');
+ refetch();
+ onUpdate();
+ },
+ onError: (error) => {
+ toast.error('Error deleting grade: ' + error.message);
+ },
+ });
 
  const localT = {
  title: t.hr.manageSalaryGrades,
@@ -556,9 +616,7 @@ export function ManageGradesModal({
  return;
  }
 
- salaryScaleService.deleteGrade(grade.id);
- loadGrades();
- onUpdate();
+ deleteGradeMutation.mutate({ id: grade.id });
  };
 
  return (
@@ -575,7 +633,11 @@ export function ManageGradesModal({
  </div>
 
  <div className="px-6 py-4">
- {grades.length === 0 ? (
+ {isLoading ? (
+ <div className="text-center py-12">
+ <Loader2 className="w-12 h-12 mx-auto animate-spin text-gray-400" />
+ </div>
+ ) : grades.length === 0 ? (
  <div className="text-center py-12 text-gray-500">
  <p>{localT.noGrades}</p>
  </div>

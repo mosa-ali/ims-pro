@@ -12,10 +12,12 @@
  */
 
 import { useState } from 'react';
-import { X, Save, DollarSign, AlertTriangle } from 'lucide-react';
+import { X, Save, DollarSign, AlertTriangle, Loader2 } from 'lucide-react';
 import { useLanguage } from '@/app/contexts/LanguageContext';
 import { StaffMember } from '../types/hrTypes';
 import { useTranslation } from '@/i18n/useTranslation';
+import { trpc } from '@/lib/trpc';
+import { toast } from 'sonner';
 
 interface Props {
  employee: StaffMember;
@@ -130,6 +132,17 @@ export function EditCurrentSalaryModal({
  return Object.keys(newErrors).length === 0;
  };
 
+ const updateMutation = trpc.hrSalaryScale.update.useMutation({
+ onSuccess: () => {
+ toast.success(t.hrModals.salaryRecordUpdated || 'Salary record updated successfully');
+ onSave(employee);
+ onClose();
+ },
+ onError: (error) => {
+ toast.error('Error saving: ' + error.message);
+ },
+ });
+
  const handleSubmit = (e: React.FormEvent) => {
  e.preventDefault();
  
@@ -143,27 +156,23 @@ export function EditCurrentSalaryModal({
  const finalRepresentation = calculateAllowanceValue(formData.representationAllowance, formData.representationIsPercentage);
  const finalOther = calculateAllowanceValue(formData.otherAllowances, formData.otherIsPercentage);
  
- // Update ONLY salary fields
- const updatedEmployee: StaffMember = {
- ...employee,
- grade: formData.grade.trim(),
+ // Use tRPC to update salary scale record
+ updateMutation.mutate({
+ id: employee.id,
+ gradeCode: formData.grade.trim(),
  step: formData.step.trim(),
- basicSalary: formData.basicSalary,
- housingAllowance: finalHousing,
- transportAllowance: finalTransport,
- representationAllowance: finalRepresentation,
- otherAllowances: finalOther,
- updatedAt: new Date().toISOString()
- };
- 
- // Save to localStorage
- staffService.update(employee.id, updatedEmployee);
- 
- onSave(updatedEmployee);
+ approvedGrossSalary: formData.basicSalary,
+ housingAllowance: finalHousing || undefined,
+ transportAllowance: finalTransport || undefined,
+ representationAllowance: finalRepresentation || undefined,
+ otherAllowances: finalOther || undefined,
+ effectiveStartDate: formData.effectiveDate,
+ });
  };
 
  const formatCurrency = (amount: number) => {
- return new Intl.NumberFormat(t.hrModals.en, {
+ const locale = language === 'ar' ? 'ar-SA' : 'en-US';
+ return new Intl.NumberFormat(locale, {
  style: 'currency',
  currency: 'USD',
  minimumFractionDigits: 2
@@ -172,7 +181,8 @@ export function EditCurrentSalaryModal({
 
  const formatDate = (dateString?: string) => {
  if (!dateString) return '-';
- return new Date(dateString).toLocaleDateString(t.hrModals.en, {
+ const locale = language === 'ar' ? 'ar-SA' : 'en-US';
+ return new Date(dateString).toLocaleDateString(locale, {
  year: 'numeric',
  month: 'long',
  day: 'numeric'
@@ -230,7 +240,7 @@ export function EditCurrentSalaryModal({
  </h3>
  <div className="grid grid-cols-2 md:grid-cols-4 gap-4 bg-gray-50 p-4 rounded-lg">
  <div>
- <label className="block text-xs font-medium text-gray-500 mb-1">{localT.staffId}</label>
+ <label className="block text-xs font-medium text-gray-500 mb-1">{t.hrModals.staffId}</label>
  <div className="text-sm font-mono font-bold text-gray-900">{employee.staffId}</div>
  </div>
  <div>
@@ -259,7 +269,7 @@ export function EditCurrentSalaryModal({
  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
  <div>
  <label className="block text-sm font-medium text-gray-700 mb-2">
- {t.hrModals.grade}
+ {localT.grade}
  </label>
  <input
  type="text"
@@ -272,7 +282,7 @@ export function EditCurrentSalaryModal({
 
  <div>
  <label className="block text-sm font-medium text-gray-700 mb-2">
- {t.hrModals.step}
+ {localT.step}
  </label>
  <input
  type="text"
@@ -285,7 +295,7 @@ export function EditCurrentSalaryModal({
 
  <div>
  <label className="block text-sm font-medium text-gray-700 mb-2">
- {t.hrModals.baseSalary} <span className="text-red-500">*</span>
+ {localT.baseSalary} <span className="text-red-500">*</span>
  </label>
  <input
  type="number"
@@ -313,7 +323,7 @@ export function EditCurrentSalaryModal({
  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
  <div className="md:col-span-2">
  <label className="block text-sm font-medium text-gray-700 mb-2">
- {t.hrModals.housingAllowance}
+ {localT.housingAllowance}
  </label>
  <input
  type="number"
@@ -394,7 +404,7 @@ export function EditCurrentSalaryModal({
  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
  <div className="md:col-span-2">
  <label className="block text-sm font-medium text-gray-700 mb-2">
- {t.hrModals.otherAllowance}
+ {localT.otherAllowance}
  </label>
  <input
  type="number"
@@ -422,7 +432,7 @@ export function EditCurrentSalaryModal({
  {/* Effective Date */}
  <div>
  <label className="block text-sm font-medium text-gray-700 mb-2">
- {t.hrModals.effectiveDate} <span className="text-red-500">*</span>
+ {localT.effectiveDate} <span className="text-red-500">*</span>
  </label>
  <input
  type="date"
@@ -442,7 +452,7 @@ export function EditCurrentSalaryModal({
  </h3>
  <div className="bg-gradient-to-r from-yellow-50 to-green-50 border border-yellow-200 rounded-lg p-6">
  <div className="flex items-center justify-between">
- <span className="text-lg font-semibold text-gray-700">{localT.totalGross}:</span>
+ <span className="text-lg font-semibold text-gray-700">{t.hrModals.totalGross}:</span>
  <span className="text-3xl font-bold text-green-700">{formatCurrency(calculateTotalGross())}</span>
  </div>
  </div>
@@ -457,14 +467,19 @@ export function EditCurrentSalaryModal({
  onClick={onClose}
  className="px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
  >
- {t.hrModals.cancel}
+ {localT.cancel}
  </button>
  <button
- onClick={handleSubmit}
- className="flex items-center gap-2 px-4 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700"
+ type="submit"
+ disabled={updateMutation.isPending}
+ className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium disabled:opacity-50 flex items-center gap-2"
  >
+ {updateMutation.isPending ? (
+ <Loader2 className="w-4 h-4 animate-spin" />
+ ) : (
  <Save className="w-4 h-4" />
- {t.hrModals.save}
+ )}
+ {localT.save}
  </button>
  </div>
  </div>
