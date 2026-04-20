@@ -56,7 +56,7 @@ export function EditCurrentSalaryModal({
  const [showVersionWarning, setShowVersionWarning] = useState(true);
  const [grades, setGrades] = useState<any[]>([]);
  const [loadingGrades, setLoadingGrades] = useState(false);
- const [salaryWarning, setSalaryWarning] = useState<string>('');
+
  const [showHistoryModal, setShowHistoryModal] = useState(false);
 
  // Fetch grades on component mount
@@ -89,28 +89,14 @@ export function EditCurrentSalaryModal({
  grade: selectedGradeCode,
  step: ''
  }));
- setSalaryWarning('');
  };
 
- // Handle salary change with validation
+ // Handle salary change
  const handleSalaryChange = (newSalary: number) => {
  setFormData(prev => ({
  ...prev,
  basicSalary: newSalary
  }));
-
- const selectedGrade = grades.find(g => g.gradeCode === formData.grade);
- if (selectedGrade) {
- if (newSalary < selectedGrade.minSalary) {
- setSalaryWarning(`Salary is below minimum ($${selectedGrade.minSalary}) for grade ${formData.grade}`);
- } else if (newSalary > selectedGrade.maxSalary) {
- setSalaryWarning(`Salary exceeds maximum ($${selectedGrade.maxSalary}) for grade ${formData.grade}`);
- } else {
- setSalaryWarning('');
- }
- } else {
- setSalaryWarning('');
- }
  };
 
  const localT = {
@@ -389,10 +375,9 @@ const salaryRecordId = Number(employee.id); // ✅ FIX ERROR 1
  min="0"
  value={formData.basicSalary}
  onChange={(e) => handleSalaryChange(parseFloat(e.target.value) || 0)}
- className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent ${ errors.basicSalary || salaryWarning ? 'border-red-500' : 'border-gray-300' }`}
+ className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent ${ errors.basicSalary ? 'border-red-500' : 'border-gray-300' }`}
  />
  {errors.basicSalary && <p className="text-xs text-red-500 mt-1">{errors.basicSalary}</p>}
- {salaryWarning && <p className="text-xs text-orange-600 mt-1 font-medium">{salaryWarning}</p>}
  </div>
  </div>
  </div>
