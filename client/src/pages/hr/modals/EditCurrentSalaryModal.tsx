@@ -12,7 +12,7 @@
  */
 
 import { useState } from 'react';
-import { X, Save, DollarSign, AlertTriangle, Loader2 } from 'lucide-react';
+import { X, Save, DollarSign, AlertTriangle, Loader2, History } from 'lucide-react';
 import { useLanguage } from '@/app/contexts/LanguageContext';
 import { StaffMember } from '../types/hrTypes';
 import { useTranslation } from '@/i18n/useTranslation';
@@ -20,11 +20,11 @@ import { trpc } from '@/lib/trpc';
 import { toast } from 'sonner';
 
 interface Props {
- employee: StaffMember & { id: string | number };
- salaryRecordId?: number; // Optional: Database ID of the salary scale record
+ employee: StaffMember & { salaryRecordId?: number };
  onClose: () => void;
  onSave: (updatedEmployee: StaffMember) => void;
- }
+ onShowHistory?: () => void;
+}
 
 interface AllowanceConfig {
  value: number;
@@ -32,7 +32,7 @@ interface AllowanceConfig {
 }
 
 export function EditCurrentSalaryModal({
- employee, salaryRecordId, onClose, onSave }: Props) {
+ employee, onClose, onSave, onShowHistory }: Props) {
  const { t } = useTranslation();
  const { language, isRTL } = useLanguage();
  
@@ -118,6 +118,17 @@ export function EditCurrentSalaryModal({
  return formData.basicSalary + housing + transport + representation + other;
  };
 
+ const updateMutation = trpc.hrSalaryScale.update.useMutation({
+ onSuccess: () => {
+ toast.success('Salary record updated successfully');
+ onSave(employee);
+ onClose();
+ },
+ onError: (error) => {
+ toast.error('Error saving: ' + error.message);
+ },
+ });
+
  const validateForm = (): boolean => {
  const newErrors: Record<string, string> = {};
  
@@ -133,17 +144,6 @@ export function EditCurrentSalaryModal({
  return Object.keys(newErrors).length === 0;
  };
 
- const updateMutation = trpc.hrSalaryScale.update.useMutation({
- onSuccess: () => {
- toast.success('Salary record updated successfully');
- onSave(employee);
- onClose();
- },
- onError: (error) => {
- toast.error('Error saving: ' + error.message);
- },
- });
-
  const handleSubmit = (e: React.FormEvent) => {
  e.preventDefault();
  
@@ -158,21 +158,22 @@ export function EditCurrentSalaryModal({
  const finalOther = calculateAllowanceValue(formData.otherAllowances, formData.otherIsPercentage);
  
  // Use tRPC to update salary scale record
- const recordId = salaryRecordId || (typeof employee.id === 'string' ? parseInt(employee.id, 10) : (employee.id ?? 0));
- 
- if (!recordId) {
+ if (!employee.salaryRecordId) {
  toast.error('Salary record ID is missing');
  return;
  }
  
  updateMutation.mutate({
- id: recordId,
+ id: employee.salaryRecordId,
  gradeCode: formData.grade.trim(),
  step: formData.step.trim(),
- approvedGrossSalary: parseFloat(String(formData.basicSalary)),
+ approvedGrossSalary: formData.basicSalary,
  housingAllowance: finalHousing > 0 ? finalHousing : undefined,
+ housingAllowanceType: formData.housingIsPercentage ? 'percentage' : 'value',
  transportAllowance: finalTransport > 0 ? finalTransport : undefined,
+ transportAllowanceType: formData.transportIsPercentage ? 'percentage' : 'value',
  representationAllowance: finalRepresentation > 0 ? finalRepresentation : undefined,
+ representationAllowanceType: formData.representationIsPercentage ? 'percentage' : 'value',
  otherAllowances: finalOther > 0 ? finalOther : undefined,
  effectiveStartDate: formData.effectiveDate,
  });
@@ -185,16 +186,6 @@ export function EditCurrentSalaryModal({
  currency: 'USD',
  minimumFractionDigits: 2
  }).format(amount);
- };
-
- const formatDate = (dateString?: string) => {
- if (!dateString) return '-';
- const locale = language === 'ar' ? 'ar-SA' : 'en-US';
- return new Date(dateString).toLocaleDateString(locale, {
- year: 'numeric',
- month: 'long',
- day: 'numeric'
- });
  };
 
  return (
@@ -248,19 +239,19 @@ export function EditCurrentSalaryModal({
  </h3>
  <div className="grid grid-cols-2 md:grid-cols-4 gap-4 bg-gray-50 p-4 rounded-lg">
  <div>
- <label className="block text-xs font-medium text-gray-500 mb-1">{t.hrModals.staffId}</label>
+ <label className="block text-xs font-medium text-gray-500 mb-1">{localT.staffId}</label>
  <div className="text-sm font-mono font-bold text-gray-900">{employee.staffId}</div>
  </div>
  <div>
- <label className="block text-xs font-medium text-gray-500 mb-1">{t.hrModals.fullName}</label>
+ <label className="block text-xs font-medium text-gray-500 mb-1">{localT.fullName}</label>
  <div className="text-sm text-gray-900">{employee.fullName}</div>
  </div>
  <div>
- <label className="block text-xs font-medium text-gray-500 mb-1">{t.hrModals.position}</label>
+ <label className="block text-xs font-medium text-gray-500 mb-1">{localT.position}</label>
  <div className="text-sm text-gray-900">{employee.position}</div>
  </div>
  <div>
- <label className="block text-xs font-medium text-gray-500 mb-1">{t.hrModals.department}</label>
+ <label className="block text-xs font-medium text-gray-500 mb-1">{localT.department}</label>
  <div className="text-sm text-gray-900">{employee.department}</div>
  </div>
  </div>
@@ -284,7 +275,7 @@ export function EditCurrentSalaryModal({
  value={formData.grade}
  onChange={(e) => setFormData({ ...formData, grade: e.target.value })}
  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
- placeholder={t.placeholders.eGG5G6G7}
+ placeholder="e.g. G5, G6, G7"
  />
  </div>
 
@@ -297,7 +288,7 @@ export function EditCurrentSalaryModal({
  value={formData.step}
  onChange={(e) => setFormData({ ...formData, step: e.target.value })}
  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
- placeholder={t.placeholders.eG123}
+ placeholder="e.g. 1, 2, 3"
  />
  </div>
 
@@ -312,7 +303,7 @@ export function EditCurrentSalaryModal({
  min="0"
  value={formData.basicSalary}
  onChange={(e) => setFormData({ ...formData, basicSalary: parseFloat(e.target.value) || 0 })}
- className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent ${ errors.basicSalary ? 'border-red-500' : 'border-gray-300' }`}
+ className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent ${errors.basicSalary ? 'border-red-500' : 'border-gray-300'}`}
  />
  {errors.basicSalary && <p className="text-xs text-red-500 mt-1">{errors.basicSalary}</p>}
  </div>
@@ -348,7 +339,7 @@ export function EditCurrentSalaryModal({
  onChange={(e) => setFormData({ ...formData, housingIsPercentage: e.target.value === 'percentage' })}
  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
  >
- <option value="fixed">{t.hrModals.fixedAmount}</option>
+ <option value="fixed">{localT.fixedAmount}</option>
  <option value="percentage">{localT.percentage}</option>
  </select>
  </div>
@@ -358,7 +349,7 @@ export function EditCurrentSalaryModal({
  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
  <div className="md:col-span-2">
  <label className="block text-sm font-medium text-gray-700 mb-2">
- {t.hrModals.transportAllowance}
+ {localT.transportAllowance}
  </label>
  <input
  type="number"
@@ -375,7 +366,7 @@ export function EditCurrentSalaryModal({
  onChange={(e) => setFormData({ ...formData, transportIsPercentage: e.target.value === 'percentage' })}
  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
  >
- <option value="fixed">{t.hrModals.fixedAmount}</option>
+ <option value="fixed">{localT.fixedAmount}</option>
  <option value="percentage">{localT.percentage}</option>
  </select>
  </div>
@@ -385,7 +376,7 @@ export function EditCurrentSalaryModal({
  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
  <div className="md:col-span-2">
  <label className="block text-sm font-medium text-gray-700 mb-2">
- {t.hrModals.representationAllowance}
+ {localT.representationAllowance}
  </label>
  <input
  type="number"
@@ -402,7 +393,7 @@ export function EditCurrentSalaryModal({
  onChange={(e) => setFormData({ ...formData, representationIsPercentage: e.target.value === 'percentage' })}
  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
  >
- <option value="fixed">{t.hrModals.fixedAmount}</option>
+ <option value="fixed">{localT.fixedAmount}</option>
  <option value="percentage">{localT.percentage}</option>
  </select>
  </div>
@@ -429,7 +420,7 @@ export function EditCurrentSalaryModal({
  onChange={(e) => setFormData({ ...formData, otherIsPercentage: e.target.value === 'percentage' })}
  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
  >
- <option value="fixed">{t.hrModals.fixedAmount}</option>
+ <option value="fixed">{localT.fixedAmount}</option>
  <option value="percentage">{localT.percentage}</option>
  </select>
  </div>
@@ -447,7 +438,7 @@ export function EditCurrentSalaryModal({
  required
  value={formData.effectiveDate}
  onChange={(e) => setFormData({ ...formData, effectiveDate: e.target.value })}
- className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent ${ errors.effectiveDate ? 'border-red-500' : 'border-gray-300' }`}
+ className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent ${errors.effectiveDate ? 'border-red-500' : 'border-gray-300'}`}
  />
  <p className="text-xs text-gray-500 mt-1">{localT.effectiveHelp}</p>
  {errors.effectiveDate && <p className="text-xs text-red-500 mt-1">{errors.effectiveDate}</p>}
@@ -468,7 +459,7 @@ export function EditCurrentSalaryModal({
  </div>
  </form>
 
- {/* Footer - Inside Form */}
+ {/* Footer */}
  <div className="px-6 py-4 border-t border-gray-200 flex items-center justify-end gap-3 bg-gray-50">
  <button
  type="button"
@@ -477,18 +468,33 @@ export function EditCurrentSalaryModal({
  >
  {localT.cancel}
  </button>
+ {onShowHistory && (
+ <button
+ type="button"
+ onClick={onShowHistory}
+ className="flex items-center gap-2 px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
+ >
+ <History className="w-4 h-4" />
+ View History
+ </button>
+ )}
  <button
  type="submit"
  form="salary-form"
  disabled={updateMutation.isPending}
- className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium disabled:opacity-50 flex items-center gap-2"
+ className="flex items-center gap-2 px-4 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 disabled:bg-gray-400"
  >
  {updateMutation.isPending ? (
+ <>
  <Loader2 className="w-4 h-4 animate-spin" />
+ Saving...
+ </>
  ) : (
+ <>
  <Save className="w-4 h-4" />
- )}
  {localT.save}
+ </>
+ )}
  </button>
  </div>
  </div>
