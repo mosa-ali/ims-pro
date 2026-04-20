@@ -156,9 +156,22 @@ export function EditCurrentSalaryModal({
  const finalRepresentation = calculateAllowanceValue(formData.representationAllowance, formData.representationIsPercentage);
  const finalOther = calculateAllowanceValue(formData.otherAllowances, formData.otherIsPercentage);
  
+  // Update ONLY salary fields
+ const updatedEmployee: StaffMember = {
+ ...employee,
+ grade: formData.grade.trim(),
+ step: formData.step.trim(),
+ basicSalary: formData.basicSalary,
+ housingAllowance: finalHousing,
+ transportAllowance: finalTransport,
+ representationAllowance: finalRepresentation,
+ otherAllowances: finalOther,
+ updatedAt: new Date().toISOString()
+ };
+ 
  // Use tRPC to update salary scale record
  updateMutation.mutate({
- id: employee.id,
+ id: Number(employee.id) || 0,
  gradeCode: formData.grade.trim(),
  step: formData.step.trim(),
  approvedGrossSalary: parseFloat(String(formData.basicSalary)),
