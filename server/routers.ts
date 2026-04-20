@@ -41,6 +41,7 @@ import { hrAnnualPlanRouter } from "./hrAnnualPlanRouter";
 import { hrDocumentsRouter } from "./hrDocumentsRouter";
 import { hrRecruitmentRouter } from "./hrRecruitmentRouter";
 import { hrSalaryScaleRouter } from "./hrSalaryScaleRouter";
+import { hrSalaryGradesRouter } from "./hrSalaryGradesRouter";
 import { chartOfAccountsRouter } from "./chartOfAccountsRouter";
 import { fiscalPeriodLockingRouter } from "./fiscalPeriodLockingEngine";
 import { immutableJournalsRouter } from "./immutableJournalsEngine";
@@ -336,6 +337,8 @@ export const appRouter = router({
   hrDocuments: hrDocumentsRouter,
   hrRecruitment: hrRecruitmentRouter,
   hrSalaryScale: hrSalaryScaleRouter,
+  hrSalaryGrades: hrSalaryGradesRouter,
+
 
   // Finance Module
   chartOfAccounts: chartOfAccountsRouter,

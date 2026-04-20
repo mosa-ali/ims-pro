@@ -357,14 +357,14 @@ export function SalaryHistoryModal({
   const localT = {
     title: t.hr?.salaryHistory || 'Salary History',
     for: t.hr?.for || 'for',
-    noHistory: t.hr?.noSalaryHistory || 'No salary history found',
+    noHistory: t.hr?.salaryHistory || 'No salary history found',
     version: t.hr?.version || 'Version',
     current: t.hr?.current || 'Current',
     effectiveDate: t.hr?.effectiveDate || 'Effective Date',
     endDate: t.hr?.endDate || 'End Date',
     grade: t.hr?.grade || 'Grade',
     step: t.hr?.step || 'Step',
-    salary: t.hr?.salary || 'Salary',
+    salary: t.hrModals.salary || 'Salary',
     approvedBy: t.hr?.approvedBy || 'Approved By',
     close: t.hr?.close || 'Close'
   };
@@ -662,7 +662,7 @@ export function ManageGradesModal({
     gradeName: t.hrModals.gradeName || 'Grade Name',
     minSalary: t.hr?.minimumSalary || 'Min Salary',
     maxSalary: t.hr?.maximumSalary || 'Max Salary',
-    action: localT.action || 'Action',
+    action: t.hr?.actions || 'Action',
     delete: t.hr?.delete || 'Delete',
     close: t.hr?.close || 'Close'
   };
