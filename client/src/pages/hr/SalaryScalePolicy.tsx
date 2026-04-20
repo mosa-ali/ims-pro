@@ -115,7 +115,7 @@ export function SalaryScalePolicy({
 
  // Handle archive
  const handleArchive = (id: string) => {
- if (!confirm(t.confirmArchive)) return;
+ if (!confirm(localT.confirmArchive)) return;
  
  setDocuments(documents.map(doc =>
  doc.id === id ? { ...doc, status: 'archived' as const } : doc
@@ -124,7 +124,7 @@ export function SalaryScalePolicy({
 
  // Handle delete
  const handleDelete = (id: string) => {
- if (!confirm(t.confirmDelete)) return;
+ if (!confirm(localT.confirmDelete)) return;
  
  setDocuments(documents.filter(doc => doc.id !== id));
  };
@@ -157,8 +157,8 @@ export function SalaryScalePolicy({
  {/* Header */}
  <div className={`flex items-start justify-between gap-4`}>
  <div className={'text-start'}>
- <h3 className="text-xl font-bold text-gray-900">{t.title}</h3>
- <p className="text-sm text-gray-600 mt-1">{t.subtitle}</p>
+ <h3 className="text-xl font-bold text-gray-900">{localT.title}</h3>
+ <p className="text-sm text-gray-600 mt-1">{localT.subtitle}</p>
  </div>
 
  <button
@@ -166,7 +166,7 @@ export function SalaryScalePolicy({
  className={`flex items-center gap-2 px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors`}
  >
  <Upload className="w-4 h-4" />
- <span>{t.upload}</span>
+ <span>{localT.upload}</span>
  </button>
  </div>
 
@@ -175,8 +175,8 @@ export function SalaryScalePolicy({
  <div className={`flex items-center gap-3`}>
  <AlertCircle className="w-5 h-5 text-blue-600" />
  <div className={`flex-1 text-start`}>
- <p className="text-sm font-medium text-blue-900">{t.businessRule}</p>
- <p className="text-xs text-blue-700 mt-1">{t.warningNote}</p>
+ <p className="text-sm font-medium text-blue-900">{localT.businessRule}</p>
+ <p className="text-xs text-blue-700 mt-1">{localT.warningNote}</p>
  </div>
  </div>
  </div>
@@ -186,21 +186,21 @@ export function SalaryScalePolicy({
  {documents.length === 0 ? (
  <div className="px-6 py-12 text-center text-gray-500">
  <FileText className="w-12 h-12 mx-auto mb-3 text-gray-400" />
- <p>{t.noDocuments}</p>
+ <p>{localT.noDocuments}</p>
  </div>
  ) : (
  <div className="overflow-x-auto">
  <table className="w-full">
  <thead className="bg-gray-50 border-b border-gray-200">
  <tr>
- <th className={`px-4 py-3 text-sm font-semibold text-gray-700 text-start`}>{t.policyName}</th>
- <th className={`px-4 py-3 text-sm font-semibold text-gray-700 text-start`}>{t.version}</th>
- <th className={`px-4 py-3 text-sm font-semibold text-gray-700 text-start`}>{t.effectiveDate}</th>
- <th className={`px-4 py-3 text-sm font-semibold text-gray-700 text-start`}>{t.uploadedBy}</th>
- <th className={`px-4 py-3 text-sm font-semibold text-gray-700 text-start`}>{t.uploadDate}</th>
- <th className={`px-4 py-3 text-sm font-semibold text-gray-700 text-start`}>{t.fileSize}</th>
- <th className="px-4 py-3 text-sm font-semibold text-gray-700 text-center">{t.status}</th>
- <th className="px-4 py-3 text-sm font-semibold text-gray-700 text-center">{t.actions}</th>
+ <th className={`px-4 py-3 text-sm font-semibold text-gray-700 text-start`}>{localT.policyName}</th>
+ <th className={`px-4 py-3 text-sm font-semibold text-gray-700 text-start`}>{localT.version}</th>
+ <th className={`px-4 py-3 text-sm font-semibold text-gray-700 text-start`}>{localT.effectiveDate}</th>
+ <th className={`px-4 py-3 text-sm font-semibold text-gray-700 text-start`}>{localT.uploadedBy}</th>
+ <th className={`px-4 py-3 text-sm font-semibold text-gray-700 text-start`}>{localT.uploadDate}</th>
+ <th className={`px-4 py-3 text-sm font-semibold text-gray-700 text-start`}>{localT.fileSize}</th>
+ <th className="px-4 py-3 text-sm font-semibold text-gray-700 text-center">{localT.status}</th>
+ <th className="px-4 py-3 text-sm font-semibold text-gray-700 text-center">{localT.actions}</th>
  </tr>
  </thead>
  <tbody className="divide-y divide-gray-200">
@@ -225,10 +225,10 @@ export function SalaryScalePolicy({
  {doc.status === 'active' ? (
  <span className="flex items-center gap-1">
  <CheckCircle className="w-3 h-3" />
- {t.active}
+ {localT.active}
  </span>
  ) : (
- t.archived
+ localT.archived
  )}
  </span>
  </td>
@@ -236,7 +236,7 @@ export function SalaryScalePolicy({
  <div className="flex items-center justify-center gap-2">
  <button
  className="text-blue-600 hover:text-blue-700 p-1"
- title={t.download}
+ title={localT.download}
  >
  <Download className="w-4 h-4" />
  </button>
@@ -244,7 +244,7 @@ export function SalaryScalePolicy({
  <button
  onClick={() => handleArchive(doc.id)}
  className="text-amber-600 hover:text-amber-700 p-1"
- title={t.archive}
+ title={localT.archive}
  >
  <FileText className="w-4 h-4" />
  </button>
@@ -252,7 +252,7 @@ export function SalaryScalePolicy({
  <button
  onClick={() => handleDelete(doc.id)}
  className="text-red-600 hover:text-red-700 p-1"
- title={t.delete}
+ title={localT.delete}
  >
  <Trash2 className="w-4 h-4" />
  </button>

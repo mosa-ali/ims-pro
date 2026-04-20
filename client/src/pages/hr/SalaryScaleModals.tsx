@@ -106,7 +106,7 @@ export function EditSalaryModal({
  <div className="bg-white rounded-lg max-w-3xl w-full max-h-[90vh] overflow-hidden flex flex-col shadow-xl">
  {/* Header */}
  <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200">
- <h3 className="text-lg font-semibold text-gray-900">{t.title}</h3>
+ <h3 className="text-lg font-semibold text-gray-900">{localT.title}</h3>
  <button onClick={onClose} className="text-gray-400 hover:text-gray-600">
  <X className="w-5 h-5" />
  </button>
@@ -115,7 +115,7 @@ export function EditSalaryModal({
  <div className="px-6 py-4 space-y-6">
  {/* Staff Info */}
  <div className="bg-gray-50 p-4 rounded">
- <h4 className="font-semibold text-gray-900 mb-2">{t.staffInfo}</h4>
+ <h4 className="font-semibold text-gray-900 mb-2">{localT.staffInfo}</h4>
  <div className="grid grid-cols-2 gap-4 text-sm">
  <div><span className="text-gray-600">ID:</span> <span className="font-medium">{record.staffId}</span></div>
  <div><span className="text-gray-600">{t.hr.name}:</span> <span className="font-medium">{record.staffFullName}</span></div>
@@ -126,10 +126,10 @@ export function EditSalaryModal({
 
  {/* Grade & Scale */}
  <div>
- <h4 className="font-semibold text-gray-900 mb-3">{t.gradeScale}</h4>
+ <h4 className="font-semibold text-gray-900 mb-3">{localT.gradeScale}</h4>
  <div className="grid grid-cols-2 gap-4">
  <div>
- <label className="block text-sm font-medium text-gray-700 mb-1">{t.grade}</label>
+ <label className="block text-sm font-medium text-gray-700 mb-1">{localT.grade}</label>
  <select
  value={formData.grade}
  onChange={(e) => handleGradeChange(e.target.value)}
@@ -147,7 +147,7 @@ export function EditSalaryModal({
  </select>
  </div>
  <div>
- <label className="block text-sm font-medium text-gray-700 mb-1">{t.step}</label>
+ <label className="block text-sm font-medium text-gray-700 mb-1">{localT.step}</label>
  <select
  value={formData.step}
  onChange={(e) => setFormData({ ...formData, step: e.target.value })}
@@ -166,14 +166,14 @@ export function EditSalaryModal({
  </div>
  {selectedGrade && (
  <div className="mt-2 text-sm text-gray-600">
- {t.salaryRange}: ${minSalary.toLocaleString()} - ${maxSalary.toLocaleString()}
+ {localT.salaryRange}: ${minSalary.toLocaleString()} - ${maxSalary.toLocaleString()}
  </div>
  )}
  </div>
 
  {/* Approved Salary */}
  <div>
- <label className="block text-sm font-medium text-gray-700 mb-1">{t.approvedSalary}</label>
+ <label className="block text-sm font-medium text-gray-700 mb-1">{localT.approvedSalary}</label>
  <input
  type="number"
  value={formData.approvedGrossSalary}
@@ -184,12 +184,12 @@ export function EditSalaryModal({
 
  {/* Allowances */}
  <div>
- <h4 className="font-semibold text-gray-900 mb-3">{t.allowances}</h4>
+ <h4 className="font-semibold text-gray-900 mb-3">{localT.allowances}</h4>
  <div className="space-y-3">
  {[
- { key: 'housingAllowance', label: t.housing, typeKey: 'housingAllowanceType' },
- { key: 'transportAllowance', label: t.transport, typeKey: 'transportAllowanceType' },
- { key: 'representationAllowance', label: t.representation, typeKey: 'representationAllowanceType' }
+ { key: 'housingAllowance', label: localT.housing, typeKey: 'housingAllowanceType' },
+ { key: 'transportAllowance', label: localT.transport, typeKey: 'transportAllowanceType' },
+ { key: 'representationAllowance', label: localT.representation, typeKey: 'representationAllowanceType' }
  ].map(item => {
  const allowanceValue = formData[item.key as keyof typeof formData] as number;
  const allowanceType = formData[item.typeKey as keyof typeof formData] as 'value' | 'percentage';
@@ -218,8 +218,8 @@ export function EditSalaryModal({
  onChange={(e) => setFormData({ ...formData, [item.typeKey]: e.target.value })}
  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
  >
- <option value="value">{t.value}</option>
- <option value="percentage">{t.percentage}</option>
+ <option value="value">{localT.value}</option>
+ <option value="percentage">{localT.percentage}</option>
  </select>
  </div>
  </div>
@@ -237,7 +237,7 @@ export function EditSalaryModal({
 
  {/* Effective Date */}
  <div>
- <label className="block text-sm font-medium text-gray-700 mb-1">{t.effectiveDate}</label>
+ <label className="block text-sm font-medium text-gray-700 mb-1">{localT.effectiveDate}</label>
  <input
  type="date"
  value={formData.effectiveStartDate}
@@ -250,7 +250,7 @@ export function EditSalaryModal({
  <div className="bg-blue-50 border border-blue-200 rounded p-3 text-sm text-blue-800">
  <div className="flex items-center gap-2">
  <AlertTriangle className="w-4 h-4" />
- <span>{t.versionNote}</span>
+ <span>{localT.versionNote}</span>
  </div>
  </div>
  </div>
@@ -260,14 +260,14 @@ export function EditSalaryModal({
  onClick={onClose}
  className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
  >
- {t.cancel}
+ {localT.cancel}
  </button>
  <button
  onClick={handleSave}
  className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700"
  >
  <Save className="w-4 h-4" />
- {t.save}
+ {localT.save}
  </button>
  </div>
  </div>
@@ -289,6 +289,7 @@ interface HistoryModalProps {
 
 export function SalaryHistoryModal({
  staffId, staffName, language, isRTL, onClose }: HistoryModalProps) {
+ const { t } = useTranslation();
  const history = salaryScaleService.getByStaffId(staffId);
 
  const localT = {
@@ -315,8 +316,8 @@ export function SalaryHistoryModal({
  <div className="bg-white rounded-lg shadow-xl max-w-5xl w-full max-h-[90vh] overflow-y-auto">
  <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between sticky top-0 bg-white z-10">
  <div>
- <h3 className="text-lg font-semibold text-gray-900">{t.title}</h3>
- <p className="text-sm text-gray-600">{t.for} {staffName}</p>
+ <h3 className="text-lg font-semibold text-gray-900">{localT.title}</h3>
+ <p className="text-sm text-gray-600">{localT.for} {staffName}</p>
  </div>
  <button onClick={onClose} className="text-gray-400 hover:text-gray-600">
  <X className="w-5 h-5" />
@@ -327,7 +328,7 @@ export function SalaryHistoryModal({
  {history.length === 0 ? (
  <div className="text-center py-12 text-gray-500">
  <Clock className="w-12 h-12 mx-auto mb-3 text-gray-400" />
- <p>{t.noHistory}</p>
+ <p>{localT.noHistory}</p>
  </div>
  ) : (
  <div className="space-y-4">
@@ -339,16 +340,16 @@ export function SalaryHistoryModal({
  <div className="flex items-start justify-between mb-3">
  <div>
  <div className="flex items-center gap-2">
- <span className="font-semibold text-gray-900">{t.version} {record.version}</span>
+ <span className="font-semibold text-gray-900">{localT.version} {record.version}</span>
  {record.status === 'active' && (
  <span className="px-2 py-0.5 bg-green-600 text-white text-xs rounded font-medium">
- {t.current}
+ {localT.current}
  </span>
  )}
  </div>
  <div className="text-sm text-gray-600 mt-1">
- {t.effectiveDate}: {record.effectiveStartDate}
- {record.effectiveEndDate && ` → ${t.endDate}: ${record.effectiveEndDate}`}
+ {localT.effectiveDate}: {record.effectiveStartDate}
+ {record.effectiveEndDate && ` → ${localT.endDate}: ${record.effectiveEndDate}`}
  </div>
  </div>
  <span className={`px-2 py-1 rounded text-xs font-medium ${ record.status === 'draft' ? 'bg-yellow-100 text-yellow-700' : record.status === 'active' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-600' }`}>
@@ -358,19 +359,19 @@ export function SalaryHistoryModal({
 
  <div className="grid grid-cols-4 gap-4 text-sm">
  <div>
- <span className="text-gray-600">{t.grade}:</span>
+ <span className="text-gray-600">{localT.grade}:</span>
  <span className="font-medium ms-2">{record.grade}</span>
  </div>
  <div>
- <span className="text-gray-600">{t.step}:</span>
+ <span className="text-gray-600">{localT.step}:</span>
  <span className="font-medium ms-2">{record.step}</span>
  </div>
  <div>
- <span className="text-gray-600">{t.salary}:</span>
+ <span className="text-gray-600">{localT.salary}:</span>
  <span className="font-medium ms-2">${record.approvedGrossSalary.toLocaleString()}</span>
  </div>
  <div>
- <span className="text-gray-600">{t.approvedBy}:</span>
+ <span className="text-gray-600">{localT.approvedBy}:</span>
  <span className="font-medium ms-2">{record.lastApprovedBy || '-'}</span>
  </div>
  </div>
@@ -385,7 +386,7 @@ export function SalaryHistoryModal({
  onClick={onClose}
  className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
  >
- {t.close}
+ {localT.close}
  </button>
  </div>
  </div>
@@ -406,6 +407,7 @@ interface AddGradeModalProps {
 
 export function AddGradeModal({
  language, isRTL, onClose, onSave }: AddGradeModalProps) {
+ const { t } = useTranslation();
  const [formData, setFormData] = useState({
  grade: '',
  description: '',
@@ -445,7 +447,7 @@ export function AddGradeModal({
  <ModalOverlay onClose={onClose}>
  <div className="bg-white rounded-lg shadow-xl max-w-md w-full">
  <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
- <h3 className="text-lg font-semibold text-gray-900">{t.title}</h3>
+ <h3 className="text-lg font-semibold text-gray-900">{localT.title}</h3>
  <button onClick={onClose} className="text-gray-400 hover:text-gray-600">
  <X className="w-5 h-5" />
  </button>
@@ -453,30 +455,30 @@ export function AddGradeModal({
 
  <div className="px-6 py-4 space-y-4">
  <div>
- <label className="block text-sm font-medium text-gray-700 mb-1">{t.grade} *</label>
+ <label className="block text-sm font-medium text-gray-700 mb-1">{localT.grade} *</label>
  <input
  type="text"
  value={formData.grade}
  onChange={(e) => setFormData({ ...formData, grade: e.target.value })}
- placeholder={t.placeholder.grade}
+ placeholder={localT.placeholder.grade}
  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
  />
  </div>
 
  <div>
- <label className="block text-sm font-medium text-gray-700 mb-1">{t.description} *</label>
+ <label className="block text-sm font-medium text-gray-700 mb-1">{localT.description} *</label>
  <input
  type="text"
  value={formData.description}
  onChange={(e) => setFormData({ ...formData, description: e.target.value })}
- placeholder={t.placeholder.description}
+ placeholder={localT.placeholder.description}
  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
  />
  </div>
 
  <div className="grid grid-cols-2 gap-4">
  <div>
- <label className="block text-sm font-medium text-gray-700 mb-1">{t.minSalary}</label>
+ <label className="block text-sm font-medium text-gray-700 mb-1">{localT.minSalary}</label>
  <input
  type="number"
  value={formData.minSalary}
@@ -485,7 +487,7 @@ export function AddGradeModal({
  />
  </div>
  <div>
- <label className="block text-sm font-medium text-gray-700 mb-1">{t.maxSalary}</label>
+ <label className="block text-sm font-medium text-gray-700 mb-1">{localT.maxSalary}</label>
  <input
  type="number"
  value={formData.maxSalary}
@@ -501,13 +503,13 @@ export function AddGradeModal({
  onClick={onClose}
  className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
  >
- {t.cancel}
+ {localT.cancel}
  </button>
  <button
  onClick={handleSave}
  className="px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-lg hover:bg-green-700"
  >
- {t.save}
+ {localT.save}
  </button>
  </div>
  </div>
@@ -528,6 +530,7 @@ interface ManageGradesModalProps {
 
 export function ManageGradesModal({
  language, isRTL, onClose, onUpdate }: ManageGradesModalProps) {
+ const { t } = useTranslation();
  const [grades, setGrades] = useState<GradeDefinition[]>(salaryScaleService.getAllGrades());
 
  const loadGrades = () => {
@@ -549,7 +552,7 @@ export function ManageGradesModal({
  };
 
  const handleDelete = (grade: GradeDefinition) => {
- if (!confirm(`${t.confirmDelete}\n\n${grade.grade} - ${grade.description}`)) {
+ if (!confirm(`${localT.confirmDelete}\n\n${grade.grade} - ${grade.description}`)) {
  return;
  }
 
@@ -563,8 +566,8 @@ export function ManageGradesModal({
  <div className="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
  <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between sticky top-0 bg-white z-10">
  <div>
- <h3 className="text-lg font-semibold text-gray-900">{t.title}</h3>
- <p className="text-sm text-gray-600">{t.subtitle}</p>
+ <h3 className="text-lg font-semibold text-gray-900">{localT.title}</h3>
+ <p className="text-sm text-gray-600">{localT.subtitle}</p>
  </div>
  <button onClick={onClose} className="text-gray-400 hover:text-gray-600">
  <X className="w-5 h-5" />
@@ -574,18 +577,18 @@ export function ManageGradesModal({
  <div className="px-6 py-4">
  {grades.length === 0 ? (
  <div className="text-center py-12 text-gray-500">
- <p>{t.noGrades}</p>
+ <p>{localT.noGrades}</p>
  </div>
  ) : (
  <div className="overflow-x-auto">
  <table className="w-full">
  <thead className="bg-gray-50 border-b border-gray-200">
  <tr>
- <th className={`px-4 py-3 text-sm font-semibold text-gray-700 text-start`}>{t.grade}</th>
- <th className={`px-4 py-3 text-sm font-semibold text-gray-700 text-start`}>{t.description}</th>
- <th className={`px-4 py-3 text-sm font-semibold text-gray-700 text-start`}>{t.salaryRange}</th>
- <th className={`px-4 py-3 text-sm font-semibold text-gray-700 text-start`}>{t.steps}</th>
- <th className="px-4 py-3 text-center text-sm font-semibold text-gray-700">{t.actions}</th>
+ <th className={`px-4 py-3 text-sm font-semibold text-gray-700 text-start`}>{localT.grade}</th>
+ <th className={`px-4 py-3 text-sm font-semibold text-gray-700 text-start`}>{localT.description}</th>
+ <th className={`px-4 py-3 text-sm font-semibold text-gray-700 text-start`}>{localT.salaryRange}</th>
+ <th className={`px-4 py-3 text-sm font-semibold text-gray-700 text-start`}>{localT.steps}</th>
+ <th className="px-4 py-3 text-center text-sm font-semibold text-gray-700">{localT.actions}</th>
  </tr>
  </thead>
  <tbody className="divide-y divide-gray-200">
@@ -601,7 +604,7 @@ export function ManageGradesModal({
  <button
  onClick={() => handleDelete(grade)}
  className="text-red-600 hover:text-red-700 p-1"
- title={t.delete}
+ title={localT.delete}
  >
  <Trash2 className="w-4 h-4" />
  </button>
@@ -619,7 +622,7 @@ export function ManageGradesModal({
  onClick={onClose}
  className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
  >
- {t.close}
+ {localT.close}
  </button>
  </div>
  </div>
