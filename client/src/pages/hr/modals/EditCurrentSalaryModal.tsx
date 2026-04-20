@@ -135,7 +135,6 @@ export function EditCurrentSalaryModal({
  const updateMutation = trpc.hrSalaryScale.update.useMutation({
  onSuccess: () => {
  toast.success('Salary record updated successfully');
- onSave(employee);
  onClose();
  },
  onError: (error) => {
@@ -156,7 +155,7 @@ export function EditCurrentSalaryModal({
  const finalRepresentation = calculateAllowanceValue(formData.representationAllowance, formData.representationIsPercentage);
  const finalOther = calculateAllowanceValue(formData.otherAllowances, formData.otherIsPercentage);
  
-  // Update ONLY salary fields
+ // Update ONLY salary fields
  const updatedEmployee: StaffMember = {
  ...employee,
  grade: formData.grade.trim(),
@@ -168,19 +167,22 @@ export function EditCurrentSalaryModal({
  otherAllowances: finalOther,
  updatedAt: new Date().toISOString()
  };
- 
+
  // Use tRPC to update salary scale record
  updateMutation.mutate({
- id: Number(employee.id) || 0,
+ id: Number(employee.id),
  gradeCode: formData.grade.trim(),
  step: formData.step.trim(),
- approvedGrossSalary: parseFloat(String(formData.basicSalary)),
+ approvedGrossSalary: Number(formData.basicSalary),
  housingAllowance: finalHousing > 0 ? finalHousing : undefined,
  transportAllowance: finalTransport > 0 ? finalTransport : undefined,
  representationAllowance: finalRepresentation > 0 ? finalRepresentation : undefined,
  otherAllowances: finalOther > 0 ? finalOther : undefined,
  effectiveStartDate: formData.effectiveDate,
  });
+ 
+ // Update UI instantly with optimistic update
+ onSave(updatedEmployee);
  };
 
  const formatCurrency = (amount: number) => {
@@ -207,7 +209,6 @@ export function EditCurrentSalaryModal({
  <div 
  className="bg-white rounded-lg w-full max-w-4xl max-h-[90vh] overflow-hidden flex flex-col"
  onClick={(e) => e.stopPropagation()}
- 
  >
  {/* Header */}
  <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between bg-yellow-50">
@@ -473,7 +474,7 @@ export function EditCurrentSalaryModal({
  </div>
  </form>
 
- {/* Footer - Inside Form */}
+ {/* Footer */}
  <div className="px-6 py-4 border-t border-gray-200 flex items-center justify-end gap-3 bg-gray-50">
  <button
  type="button"
