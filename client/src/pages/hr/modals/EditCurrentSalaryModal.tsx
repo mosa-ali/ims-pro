@@ -151,14 +151,6 @@ export function EditCurrentSalaryModal({
  return;
  }
  
- // Determine the ID to use for mutation
- const recordId = salaryRecordId || (typeof employee.id === 'string' ? parseInt(employee.id, 10) : (employee.id ?? 0));
- 
- if (!recordId) {
- toast.error('Salary record ID is missing');
- return;
- }
- 
  // Calculate final allowance values (convert percentages)
  const finalHousing = calculateAllowanceValue(formData.housingAllowance, formData.housingIsPercentage);
  const finalTransport = calculateAllowanceValue(formData.transportAllowance, formData.transportIsPercentage);
@@ -166,6 +158,13 @@ export function EditCurrentSalaryModal({
  const finalOther = calculateAllowanceValue(formData.otherAllowances, formData.otherIsPercentage);
  
  // Use tRPC to update salary scale record
+ const recordId = salaryRecordId || (typeof employee.id === 'string' ? parseInt(employee.id, 10) : (employee.id ?? 0));
+ 
+ if (!recordId) {
+ toast.error('Salary record ID is missing');
+ return;
+ }
+ 
  updateMutation.mutate({
  id: recordId,
  gradeCode: formData.grade.trim(),
@@ -304,16 +303,19 @@ export function EditCurrentSalaryModal({
 
  <div>
  <label className="block text-sm font-medium text-gray-700 mb-2">
- {localT.baseSalary}
+ {localT.baseSalary} <span className="text-red-500">*</span>
  </label>
  <input
  type="number"
+ required
+ step="0.01"
+ min="0"
  value={formData.basicSalary}
  onChange={(e) => setFormData({ ...formData, basicSalary: parseFloat(e.target.value) || 0 })}
- className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent ${errors.basicSalary ? 'border-red-500' : 'border-gray-300'}`}
- placeholder="0.00"
+ className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent ${ errors.basicSalary ? 'border-red-500' : 'border-gray-300' }`}
  />
- {errors.basicSalary && <p className="text-xs text-red-600 mt-1">{errors.basicSalary}</p>}
+ {errors.basicSalary && <p className="text-xs text-red-500 mt-1">{errors.basicSalary}</p>}
+ </div>
  </div>
  </div>
  </div>
@@ -326,108 +328,108 @@ export function EditCurrentSalaryModal({
  
  <div className="space-y-4">
  {/* Housing Allowance */}
- <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+ <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
  <div className="md:col-span-2">
  <label className="block text-sm font-medium text-gray-700 mb-2">
  {localT.housingAllowance}
  </label>
  <input
  type="number"
+ step="0.01"
+ min="0"
  value={formData.housingAllowance}
  onChange={(e) => setFormData({ ...formData, housingAllowance: parseFloat(e.target.value) || 0 })}
  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
- placeholder="0.00"
  />
  </div>
  <div>
- <label className="block text-sm font-medium text-gray-700 mb-2">Type</label>
  <select
  value={formData.housingIsPercentage ? 'percentage' : 'fixed'}
  onChange={(e) => setFormData({ ...formData, housingIsPercentage: e.target.value === 'percentage' })}
  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
  >
- <option value="fixed">{localT.fixedAmount}</option>
+ <option value="fixed">{t.hrModals.fixedAmount}</option>
  <option value="percentage">{localT.percentage}</option>
  </select>
  </div>
  </div>
 
  {/* Transport Allowance */}
- <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+ <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
  <div className="md:col-span-2">
  <label className="block text-sm font-medium text-gray-700 mb-2">
- {localT.transportAllowance}
+ {t.hrModals.transportAllowance}
  </label>
  <input
  type="number"
+ step="0.01"
+ min="0"
  value={formData.transportAllowance}
  onChange={(e) => setFormData({ ...formData, transportAllowance: parseFloat(e.target.value) || 0 })}
  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
- placeholder="0.00"
  />
  </div>
  <div>
- <label className="block text-sm font-medium text-gray-700 mb-2">Type</label>
  <select
  value={formData.transportIsPercentage ? 'percentage' : 'fixed'}
  onChange={(e) => setFormData({ ...formData, transportIsPercentage: e.target.value === 'percentage' })}
  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
  >
- <option value="fixed">{localT.fixedAmount}</option>
+ <option value="fixed">{t.hrModals.fixedAmount}</option>
  <option value="percentage">{localT.percentage}</option>
  </select>
  </div>
  </div>
 
  {/* Representation Allowance */}
- <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+ <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
  <div className="md:col-span-2">
  <label className="block text-sm font-medium text-gray-700 mb-2">
- {localT.representationAllowance}
+ {t.hrModals.representationAllowance}
  </label>
  <input
  type="number"
+ step="0.01"
+ min="0"
  value={formData.representationAllowance}
  onChange={(e) => setFormData({ ...formData, representationAllowance: parseFloat(e.target.value) || 0 })}
  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
- placeholder="0.00"
  />
  </div>
  <div>
- <label className="block text-sm font-medium text-gray-700 mb-2">Type</label>
  <select
  value={formData.representationIsPercentage ? 'percentage' : 'fixed'}
  onChange={(e) => setFormData({ ...formData, representationIsPercentage: e.target.value === 'percentage' })}
  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
  >
- <option value="fixed">{localT.fixedAmount}</option>
+ <option value="fixed">{t.hrModals.fixedAmount}</option>
  <option value="percentage">{localT.percentage}</option>
  </select>
  </div>
  </div>
 
- {/* Other Allowances */}
- <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+ {/* Other Allowance */}
+ <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
  <div className="md:col-span-2">
  <label className="block text-sm font-medium text-gray-700 mb-2">
  {localT.otherAllowance}
  </label>
  <input
  type="number"
+ step="0.01"
+ min="0"
  value={formData.otherAllowances}
  onChange={(e) => setFormData({ ...formData, otherAllowances: parseFloat(e.target.value) || 0 })}
  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
- placeholder="0.00"
  />
  </div>
  <div>
- <label className="block text-sm font-medium text-gray-700 mb-2">Type</label>
  <select
  value={formData.otherIsPercentage ? 'percentage' : 'fixed'}
  onChange={(e) => setFormData({ ...formData, otherIsPercentage: e.target.value === 'percentage' })}
  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
  >
- <option value="fixed">{localT.fixedAmount}</option>
+ <option value="fixed">{t.hrModals.fixedAmount}</option>
  <option value="percentage">{localT.percentage}</option>
  </select>
  </div>
@@ -438,57 +440,40 @@ export function EditCurrentSalaryModal({
  {/* Effective Date */}
  <div>
  <label className="block text-sm font-medium text-gray-700 mb-2">
- {localT.effectiveDate}
+ {localT.effectiveDate} <span className="text-red-500">*</span>
  </label>
  <input
  type="date"
+ required
  value={formData.effectiveDate}
  onChange={(e) => setFormData({ ...formData, effectiveDate: e.target.value })}
- className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent ${errors.effectiveDate ? 'border-red-500' : 'border-gray-300'}`}
+ className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent ${ errors.effectiveDate ? 'border-red-500' : 'border-gray-300' }`}
  />
  <p className="text-xs text-gray-500 mt-1">{localT.effectiveHelp}</p>
- {errors.effectiveDate && <p className="text-xs text-red-600 mt-1">{errors.effectiveDate}</p>}
+ {errors.effectiveDate && <p className="text-xs text-red-500 mt-1">{errors.effectiveDate}</p>}
  </div>
 
- {/* Summary */}
- <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
- <h3 className="text-sm font-semibold text-gray-700 mb-3">{localT.summarySection}</h3>
- <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+ {/* Total Compensation Summary */}
  <div>
- <p className="text-xs text-gray-600">Base Salary</p>
- <p className="text-lg font-bold text-gray-900">{formatCurrency(formData.basicSalary)}</p>
- </div>
- <div>
- <p className="text-xs text-gray-600">Housing</p>
- <p className="text-sm text-gray-900">{formatCurrency(calculateAllowanceValue(formData.housingAllowance, formData.housingIsPercentage))}</p>
- </div>
- <div>
- <p className="text-xs text-gray-600">Transport</p>
- <p className="text-sm text-gray-900">{formatCurrency(calculateAllowanceValue(formData.transportAllowance, formData.transportIsPercentage))}</p>
- </div>
- <div>
- <p className="text-xs text-gray-600">Representation</p>
- <p className="text-sm text-gray-900">{formatCurrency(calculateAllowanceValue(formData.representationAllowance, formData.representationIsPercentage))}</p>
- </div>
- <div>
- <p className="text-xs text-gray-600">Other</p>
- <p className="text-sm text-gray-900">{formatCurrency(calculateAllowanceValue(formData.otherAllowances, formData.otherIsPercentage))}</p>
- </div>
- <div className="border-t border-yellow-300 pt-2">
- <p className="text-xs font-semibold text-gray-700">{localT.totalGross}</p>
- <p className="text-xl font-bold text-yellow-700">{formatCurrency(calculateTotalGross())}</p>
+ <h3 className="text-sm font-semibold text-gray-700 mb-3 pb-2 border-b border-gray-200">
+ {localT.summarySection}
+ </h3>
+ <div className="bg-gradient-to-r from-yellow-50 to-green-50 border border-yellow-200 rounded-lg p-6">
+ <div className="flex items-center justify-between">
+ <span className="text-lg font-semibold text-gray-700">{localT.totalGross}:</span>
+ <span className="text-3xl font-bold text-green-700">{formatCurrency(calculateTotalGross())}</span>
  </div>
  </div>
  </div>
  </div>
  </form>
 
- {/* Footer */}
+ {/* Footer - Inside Form */}
  <div className="px-6 py-4 border-t border-gray-200 flex items-center justify-end gap-3 bg-gray-50">
  <button
  type="button"
  onClick={onClose}
- className="px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+ className="px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
  >
  {localT.cancel}
  </button>
@@ -496,19 +481,14 @@ export function EditCurrentSalaryModal({
  type="submit"
  form="salary-form"
  disabled={updateMutation.isPending}
- className="px-4 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 disabled:bg-gray-400 transition-colors flex items-center gap-2"
+ className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium disabled:opacity-50 flex items-center gap-2"
  >
  {updateMutation.isPending ? (
- <>
  <Loader2 className="w-4 h-4 animate-spin" />
- Saving...
- </>
  ) : (
- <>
  <Save className="w-4 h-4" />
- {localT.save}
- </>
  )}
+ {localT.save}
  </button>
  </div>
  </div>
