@@ -11,7 +11,7 @@
  * ============================================================================
  */
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { X, Save, DollarSign, AlertTriangle } from 'lucide-react';
 import { useLanguage } from '@/app/contexts/LanguageContext';
 import { StaffMember } from '../types/hrTypes';
@@ -53,6 +53,63 @@ export function EditCurrentSalaryModal({
 
  const [errors, setErrors] = useState<Record<string, string>>({});
  const [showVersionWarning, setShowVersionWarning] = useState(true);
+ const [grades, setGrades] = useState<any[]>([]);
+ const [loadingGrades, setLoadingGrades] = useState(false);
+ const [salaryWarning, setSalaryWarning] = useState<string>('');
+
+ // Fetch grades on component mount
+ const { data: gradesData, isLoading: isLoadingGrades } = trpc.hrSalaryGrades.getAll.useQuery();
+ 
+ useEffect(() => {
+ if (gradesData) {
+ setGrades(gradesData || []);
+ setLoadingGrades(false);
+ } else if (isLoadingGrades) {
+ setLoadingGrades(true);
+ }
+ }, [gradesData, isLoadingGrades]);
+
+ // Get available steps for selected grade
+ const getAvailableSteps = (): string[] => {
+ const selectedGrade = grades.find(g => g.gradeCode === formData.grade);
+ if (!selectedGrade) return [];
+ const steps = [];
+ for (let i = 1; i <= (selectedGrade.maxSteps || 5); i++) {
+ steps.push(`Step ${i}`);
+ }
+ return steps;
+ };
+
+ // Handle grade selection
+ const handleGradeChange = (selectedGradeCode: string) => {
+ setFormData(prev => ({
+ ...prev,
+ grade: selectedGradeCode,
+ step: ''
+ }));
+ setSalaryWarning('');
+ };
+
+ // Handle salary change with validation
+ const handleSalaryChange = (newSalary: number) => {
+ setFormData(prev => ({
+ ...prev,
+ basicSalary: newSalary
+ }));
+
+ const selectedGrade = grades.find(g => g.gradeCode === formData.grade);
+ if (selectedGrade) {
+ if (newSalary < selectedGrade.minSalary) {
+ setSalaryWarning(`Salary is below minimum ($${selectedGrade.minSalary}) for grade ${formData.grade}`);
+ } else if (newSalary > selectedGrade.maxSalary) {
+ setSalaryWarning(`Salary exceeds maximum ($${selectedGrade.maxSalary}) for grade ${formData.grade}`);
+ } else {
+ setSalaryWarning('');
+ }
+ } else {
+ setSalaryWarning('');
+ }
+ };
 
  const localT = {
  title: t.hrModals.editCurrentSalaryStructure,
@@ -285,26 +342,38 @@ const salaryRecordId = Number(employee.id); // ✅ FIX ERROR 1
  <label className="block text-sm font-medium text-gray-700 mb-2">
  {localT.grade}
  </label>
- <input
- type="text"
+ <select
  value={formData.grade}
- onChange={(e) => setFormData({ ...formData, grade: e.target.value })}
- className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
- placeholder={t.placeholders.eGG5G6G7}
- />
+ onChange={(e) => handleGradeChange(e.target.value)}
+ disabled={loadingGrades}
+ className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent bg-white"
+ >
+ <option value="">{loadingGrades ? 'Loading grades...' : 'Select a grade'}</option>
+ {grades.map((grade) => (
+ <option key={grade.id} value={grade.gradeCode}>
+ {grade.gradeCode} - {grade.gradeName} (${grade.minSalary} - ${grade.maxSalary})
+ </option>
+ ))}
+ </select>
  </div>
 
  <div>
  <label className="block text-sm font-medium text-gray-700 mb-2">
  {localT.step}
  </label>
- <input
- type="text"
+ <select
  value={formData.step}
  onChange={(e) => setFormData({ ...formData, step: e.target.value })}
- className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
- placeholder={t.placeholders.eG123}
- />
+ disabled={!formData.grade}
+ className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent bg-white"
+ >
+ <option value="">{formData.grade ? 'Select a step' : 'Select grade first'}</option>
+ {getAvailableSteps().map((step) => (
+ <option key={step} value={step}>
+ {step}
+ </option>
+ ))}
+ </select>
  </div>
 
  <div>
@@ -317,10 +386,11 @@ const salaryRecordId = Number(employee.id); // ✅ FIX ERROR 1
  step="0.01"
  min="0"
  value={formData.basicSalary}
- onChange={(e) => setFormData({ ...formData, basicSalary: parseFloat(e.target.value) || 0 })}
- className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent ${ errors.basicSalary ? 'border-red-500' : 'border-gray-300' }`}
+ onChange={(e) => handleSalaryChange(parseFloat(e.target.value) || 0)}
+ className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent ${ errors.basicSalary || salaryWarning ? 'border-red-500' : 'border-gray-300' }`}
  />
  {errors.basicSalary && <p className="text-xs text-red-500 mt-1">{errors.basicSalary}</p>}
+ {salaryWarning && <p className="text-xs text-orange-600 mt-1 font-medium">{salaryWarning}</p>}
  </div>
  </div>
  </div>
@@ -488,7 +558,7 @@ const salaryRecordId = Number(employee.id); // ✅ FIX ERROR 1
  className="flex items-center gap-2 px-4 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700"
  >
  <Save className="w-4 h-4" />
- {localT.save}
+ {t.hrModals.save}
  </button>
  </div>
  </div>
