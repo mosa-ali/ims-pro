@@ -18,6 +18,7 @@ import { StaffMember } from '../types/hrTypes';
 import { useTranslation } from '@/i18n/useTranslation';
 import { trpc } from '@/lib/trpc';
 import { toast } from 'sonner';
+import { formatCurrency, formatDate } from '@/utils/salary';
 
 interface Props {
  employee: StaffMember;
@@ -185,24 +186,10 @@ export function EditCurrentSalaryModal({
  onSave(updatedEmployee);
  };
 
- const formatCurrency = (amount: number) => {
- const locale = language === 'ar' ? 'ar-SA' : 'en-US';
- return new Intl.NumberFormat(locale, {
- style: 'currency',
- currency: 'USD',
- minimumFractionDigits: 2
- }).format(amount);
- };
-
- const formatDate = (dateString?: string) => {
- if (!dateString) return '-';
- const locale = language === 'ar' ? 'ar-SA' : 'en-US';
- return new Date(dateString).toLocaleDateString(locale, {
- year: 'numeric',
- month: 'long',
- day: 'numeric'
- });
- };
+ // formatCurrency and formatDate are imported from @/utils/salary
+ // Create local wrappers to use language from context
+ const formatCurrencyLocal = (amount: number) => formatCurrency(amount, language);
+ const formatDateLocal = (dateString?: string) => formatDate(dateString, language);
 
  return (
  <div className="fixed inset-0 bg-gray-900/60 backdrop-blur-sm flex items-center justify-center z-50 p-4" onClick={onClose} dir={isRTL ? 'rtl' : 'ltr'}>

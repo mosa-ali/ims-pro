@@ -12,6 +12,7 @@ import { useTranslation } from '@/i18n/useTranslation';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { trpc } from '@/lib/trpc';
 import { toast } from 'sonner';
+import { calculateAllowanceValue } from '@/utils/salary';
 
 // Types - data now comes from tRPC instead of localStorage
 type SalaryScaleRecord = any;
@@ -64,6 +65,8 @@ export function EditSalaryModal({
  step: grade?.steps[0] || 'Step 1' // Default to first step when grade changes
  });
  };
+
+ // calculateAllowanceValue is imported from @/utils/salary
 
  const localT = {
  title: t.hr.editSalaryRecord,
