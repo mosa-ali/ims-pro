@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { useLanguage } from '@/contexts/LanguageContext';
 import { trpc } from '@/lib/trpc';
 import {
   Dialog,
@@ -23,11 +22,16 @@ interface SalaryVersion {
   version: number;
   gradeCode: string;
   step: string;
+  basicSalary: string | number; // ✅ NEW: Base salary field
   approvedGrossSalary: string | number;
   housingAllowance: string | number;
   transportAllowance: string | number;
   representationAllowance: string | number;
   otherAllowances: string | number;
+  // ✅ NEW: Social Security fields
+  employerContribution?: string | number;
+  employeeContribution?: string | number;
+  socialSecurityDeduction?: string | number;
   effectiveStartDate: string;
   status: 'active' | 'draft' | 'superseded';
   createdAt: string;
@@ -67,13 +71,15 @@ export function SalaryHistoryModal({
   employeeId,
   employeeName = 'Employee',
 }: SalaryHistoryModalProps) {
-  const { language, isRTL } = useLanguage();
   const [expandedVersions, setExpandedVersions] = useState<Set<number>>(new Set());
 
-  // Fetch salary history
+  // ✅ FIXED: Fetch salary history with proper enabled condition
   const { data: salaryHistory, isLoading, error } = trpc.hrSalaryScale.getHistoryByEmployeeId.useQuery(
     { employeeId: employeeId || 0 },
-    { enabled: isOpen && !!employeeId }
+    { 
+      enabled: isOpen && !!employeeId,
+      staleTime: 1000 * 60 * 5, // 5 minutes
+    }
   );
 
   const translations = {
@@ -98,10 +104,14 @@ export function SalaryHistoryModal({
       superseded: 'Superseded',
       noHistory: 'No salary history found',
       close: 'Close',
-      details: 'Details',
+      details: 'Salary Details',
       auditTrail: 'Audit Trail',
       created: 'Created',
       updated: 'Updated',
+      socialSecurity: 'Social Security',
+      employerContribution: 'Employer Contribution',
+      employeeContribution: 'Employee Contribution',
+      totalDeduction: 'Total Deduction',
     },
     ar: {
       title: 'سجل الرواتب',
@@ -124,14 +134,18 @@ export function SalaryHistoryModal({
       superseded: 'ملغى',
       noHistory: 'لا يوجد سجل رواتب',
       close: 'إغلاق',
-      details: 'التفاصيل',
+      details: 'تفاصيل الراتب',
       auditTrail: 'سجل التدقيق',
       created: 'تم الإنشاء',
       updated: 'تم التحديث',
+      socialSecurity: 'الضمان الاجتماعي',
+      employerContribution: 'مساهمة صاحب العمل',
+      employeeContribution: 'مساهمة الموظف',
+      totalDeduction: 'إجمالي الخصم',
     },
   };
 
-  const t = translations[language as 'en' | 'ar'];
+  const t = translations['en']; // Default to English; can be made dynamic if LanguageContext is available
 
   const toggleExpanded = (versionId: number) => {
     const newExpanded = new Set(expandedVersions);
@@ -170,28 +184,35 @@ export function SalaryHistoryModal({
   };
 
   const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString(language === 'ar' ? 'ar-SA' : 'en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-    });
+    try {
+      const date = new Date(dateString);
+      return date.toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+      });
+    } catch {
+      return dateString;
+    }
   };
 
-  const formatCurrency = (amount: number | string) => {
+  const formatCurrency = (amount: number | string | undefined) => {
+    if (amount === undefined || amount === null) return '$0.00';
     const num = typeof amount === 'string' ? parseFloat(amount) : amount;
-    return new Intl.NumberFormat(language === 'ar' ? 'ar-SA' : 'en-US', {
+    return new Intl.NumberFormat('en-US', {
       style: 'currency',
       currency: 'USD',
     }).format(num);
   };
 
+  const parseAmount = (amount: string | number | undefined): number => {
+    if (amount === undefined || amount === null) return 0;
+    return typeof amount === 'string' ? parseFloat(amount) : amount;
+  };
+
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent
-        className="max-w-2xl max-h-[80vh] overflow-y-auto"
-        dir={isRTL ? 'rtl' : 'ltr'}
-      >
+      <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Clock className="w-5 h-5" />
@@ -211,7 +232,7 @@ export function SalaryHistoryModal({
 
           {error && (
             <div className="bg-red-50 border border-red-200 rounded-lg p-4 text-red-700">
-              Failed to load salary history
+              Failed to load salary history: {error.message}
             </div>
           )}
 
@@ -222,6 +243,7 @@ export function SalaryHistoryModal({
           {!isLoading &&
             !error &&
             salaryHistory &&
+            salaryHistory.length > 0 &&
             salaryHistory.map((record: SalaryVersion) => (
               <div
                 key={record.id}
@@ -233,7 +255,7 @@ export function SalaryHistoryModal({
                   className="w-full px-4 py-3 bg-gray-50 hover:bg-gray-100 flex items-center justify-between cursor-pointer"
                 >
                   <div className="flex items-center gap-3 flex-1">
-                    <div className={expandedVersions.has(record.id) ? '' : ''}>
+                    <div>
                       {expandedVersions.has(record.id) ? (
                         <ChevronUp className="w-4 h-4" />
                       ) : (
@@ -279,15 +301,23 @@ export function SalaryHistoryModal({
                       <h4 className="font-semibold mb-3 text-sm uppercase text-gray-700">
                         {t.details}
                       </h4>
-                      <div className="grid grid-cols-2 gap-3 text-sm">
+                      <div className="grid grid-cols-2 gap-4 text-sm">
+                        {/* ✅ NEW: Display Base Salary */}
+                        <div>
+                          <span className="text-gray-600">{t.basicSalary}:</span>
+                          <div className="font-semibold text-lg">
+                            {formatCurrency(record.basicSalary)}
+                          </div>
+                        </div>
+
                         <div>
                           <span className="text-gray-600">{t.grossSalary}:</span>
-                          <div className="font-semibold">
+                          <div className="font-semibold text-lg">
                             {formatCurrency(record.approvedGrossSalary)}
                           </div>
                         </div>
 
-                        {(typeof record.housingAllowance === 'string' ? parseFloat(record.housingAllowance) : record.housingAllowance) > 0 && (
+                        {parseAmount(record.housingAllowance) > 0 && (
                           <div>
                             <span className="text-gray-600">{t.housing}:</span>
                             <div className="font-semibold">
@@ -296,7 +326,7 @@ export function SalaryHistoryModal({
                           </div>
                         )}
 
-                        {(typeof record.transportAllowance === 'string' ? parseFloat(record.transportAllowance) : record.transportAllowance) > 0 && (
+                        {parseAmount(record.transportAllowance) > 0 && (
                           <div>
                             <span className="text-gray-600">{t.transport}:</span>
                             <div className="font-semibold">
@@ -305,7 +335,7 @@ export function SalaryHistoryModal({
                           </div>
                         )}
 
-                        {(typeof record.representationAllowance === 'string' ? parseFloat(record.representationAllowance) : record.representationAllowance) > 0 && (
+                        {parseAmount(record.representationAllowance) > 0 && (
                           <div>
                             <span className="text-gray-600">{t.representation}:</span>
                             <div className="font-semibold">
@@ -314,7 +344,7 @@ export function SalaryHistoryModal({
                           </div>
                         )}
 
-                        {(typeof record.otherAllowances === 'string' ? parseFloat(record.otherAllowances) : record.otherAllowances) > 0 && (
+                        {parseAmount(record.otherAllowances) > 0 && (
                           <div>
                             <span className="text-gray-600">{t.other}:</span>
                             <div className="font-semibold">
@@ -324,6 +354,43 @@ export function SalaryHistoryModal({
                         )}
                       </div>
                     </div>
+
+                    {/* ✅ NEW: Social Security Section */}
+                    {(parseAmount(record.employerContribution) > 0 || parseAmount(record.employeeContribution) > 0) && (
+                      <div className="border-t pt-4">
+                        <h4 className="font-semibold mb-3 text-sm uppercase text-gray-700">
+                          {t.socialSecurity}
+                        </h4>
+                        <div className="grid grid-cols-2 gap-4 text-sm">
+                          {parseAmount(record.employerContribution) > 0 && (
+                            <div>
+                              <span className="text-gray-600">{t.employerContribution}:</span>
+                              <div className="font-semibold">
+                                {formatCurrency(record.employerContribution)}
+                              </div>
+                            </div>
+                          )}
+
+                          {parseAmount(record.employeeContribution) > 0 && (
+                            <div>
+                              <span className="text-gray-600">{t.employeeContribution}:</span>
+                              <div className="font-semibold">
+                                {formatCurrency(record.employeeContribution)}
+                              </div>
+                            </div>
+                          )}
+
+                          {parseAmount(record.socialSecurityDeduction) > 0 && (
+                            <div className="col-span-2 bg-blue-50 p-2 rounded">
+                              <span className="text-gray-600">{t.totalDeduction}:</span>
+                              <div className="font-semibold text-blue-600">
+                                {formatCurrency(record.socialSecurityDeduction)}
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    )}
 
                     {/* Audit Trail Section */}
                     <div className="border-t pt-4">
