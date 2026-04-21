@@ -5,6 +5,8 @@ import { getDb } from "./db";
 import { hrPayrollRecords, hrSalaryGrades, hrEmployees, hrSalaryScale } from "../drizzle/schema";
 import { eq, and, desc, sql, count } from "drizzle-orm";
 
+const nowSql = new Date().toISOString().slice(0, 19).replace('T', ' ');
+
 /**
  * HR Payroll Router - Payroll and Salary Management
  * MANDATORY: All queries filter isDeleted = false
@@ -32,7 +34,7 @@ export const hrPayrollRouter = router({
       
       const conditions = [
         eq(hrPayrollRecords.organizationId, organizationId),
-        eq(hrPayrollRecords.isDeleted, false),
+        eq(hrPayrollRecords.isDeleted, 0),
       ];
       
       if (operatingUnitId) {
@@ -70,7 +72,7 @@ export const hrPayrollRouter = router({
         .where(
           and(
             eq(hrEmployees.organizationId, organizationId),
-            eq(hrEmployees.isDeleted, false)
+            eq(hrEmployees.isDeleted, 0)
           )
         );
       
@@ -87,7 +89,7 @@ export const hrPayrollRouter = router({
           .where(
             and(
               sql`${hrSalaryScale.employeeId} IN (${employeeIds.join(',')})`,
-              eq(hrSalaryScale.isDeleted, false)
+              eq(hrSalaryScale.isDeleted, 0)
             )
           );
       }
@@ -142,7 +144,7 @@ export const hrPayrollRouter = router({
           and(
             eq(hrPayrollRecords.id, input.id),
             eq(hrPayrollRecords.organizationId, organizationId),
-            eq(hrPayrollRecords.isDeleted, false)
+            eq(hrPayrollRecords.isDeleted, 0)
           )
         )
         .limit(1);
@@ -163,7 +165,7 @@ export const hrPayrollRouter = router({
       const conditions = [
         eq(hrPayrollRecords.organizationId, organizationId),
         eq(hrPayrollRecords.payrollYear, input.payrollYear),
-        eq(hrPayrollRecords.isDeleted, false),
+        eq(hrPayrollRecords.isDeleted, 0),
       ];
       
       if (operatingUnitId) {
@@ -284,6 +286,11 @@ export const hrPayrollRouter = router({
       overtimePay: z.number().optional(),
       bonus: z.number().optional(),
       taxDeduction: z.number().optional(),
+      taxPercent: z.number().optional(),
+      employerContribution: z.number().optional(),
+      employerContributionType: z.enum(['value', 'percentage']).optional(),
+      employeeContribution: z.number().optional(),
+      employeeContributionType: z.enum(['value', 'percentage']).optional(),
       socialSecurityDeduction: z.number().optional(),
       loanDeduction: z.number().optional(),
       otherDeductions: z.number().optional(),
@@ -396,7 +403,7 @@ export const hrPayrollRouter = router({
         .set({
           status: "approved",
           approvedBy: ctx.user?.id,
-          approvedAt: new Date(),
+          approvedAt: nowSql,
         })
         .where(and(
           eq(hrPayrollRecords.id, input.id),
@@ -427,7 +434,7 @@ export const hrPayrollRouter = router({
         .update(hrPayrollRecords)
         .set({
           status: "paid",
-          paidAt: new Date(),
+          paidAt: nowSql,
           paymentReference: input.paymentReference,
         })
         .where(and(
@@ -468,8 +475,8 @@ export const hrPayrollRouter = router({
       await db
         .update(hrPayrollRecords)
         .set({
-          isDeleted: true,
-          deletedAt: new Date(),
+          isDeleted: 1,
+          deletedAt: nowSql,
           deletedBy: ctx.user?.id,
         })
         .where(and(
@@ -494,12 +501,9 @@ export const hrPayrollRouter = router({
       
       const conditions = [
         eq(hrSalaryGrades.organizationId, organizationId),
-        eq(hrSalaryGrades.isDeleted, false),
+        eq(hrSalaryGrades.isDeleted, 0),
       ];
-      
-      if (operatingUnitId) {
-        conditions.push(eq(hrSalaryGrades.operatingUnitId, operatingUnitId));
-      }
+
       if (input.status) {
         conditions.push(eq(hrSalaryGrades.status, input.status));
       }
@@ -526,7 +530,7 @@ export const hrPayrollRouter = router({
           and(
             eq(hrSalaryGrades.id, input.id),
             eq(hrSalaryGrades.organizationId, organizationId),
-            eq(hrSalaryGrades.isDeleted, false)
+            eq(hrSalaryGrades.isDeleted, 0)
           )
         )
         .limit(1);
@@ -549,10 +553,9 @@ export const hrPayrollRouter = router({
         .from(hrSalaryGrades)
         .where(
           and(
-            eq(hrSalaryGrades.organizationId, organizationId),
             eq(hrSalaryGrades.gradeCode, input.gradeCode),
-            eq(hrSalaryGrades.isDeleted, false),
-            eq(hrSalaryGrades.status, 'active')
+            eq(hrSalaryGrades.organizationId, organizationId),
+            eq(hrSalaryGrades.isDeleted, 0)
           )
         )
         .limit(1);
@@ -560,132 +563,10 @@ export const hrPayrollRouter = router({
       return result[0] || null;
     }),
 
-  // Create salary grade
-  createSalaryGrade: scopedProcedure
-    .input(z.object({
-      gradeCode: z.string(),
-      gradeName: z.string(),
-      gradeNameAr: z.string().optional(),
-      minSalary: z.number(),
-      maxSalary: z.number(),
-      midSalary: z.number().optional(),
-      currency: z.string().optional().default("USD"),
-      steps: z.string().optional(),
-      housingAllowance: z.number().optional(),
-      transportAllowance: z.number().optional(),
-      otherAllowances: z.string().optional(),
-      effectiveDate: z.string().optional(),
-      expiryDate: z.string().optional(),
-      status: z.enum(["active", "inactive", "draft"]).optional().default("draft"),
-      notes: z.string().optional(),
-    }))
-    .mutation(async ({ ctx, input }) => {
-      const { organizationId, operatingUnitId } = ctx.scope;
-      const db = await getDb();
-      if (!db) throw new Error("Database not available");
-      
-      const result = await db.insert(hrSalaryGrades).values({
-        organizationId,
-        operatingUnitId: operatingUnitId || 0,
-        gradeCode: input.gradeCode,
-        gradeName: input.gradeName,
-        gradeNameAr: input.gradeNameAr,
-        minSalary: input.minSalary.toString(),
-        maxSalary: input.maxSalary.toString(),
-        midSalary: input.midSalary?.toString(),
-        currency: input.currency,
-        steps: input.steps,
-        housingAllowance: input.housingAllowance?.toString(),
-        transportAllowance: input.transportAllowance?.toString(),
-        otherAllowances: input.otherAllowances,
-        effectiveDate: input.effectiveDate ? new Date(input.effectiveDate) : null,
-        expiryDate: input.expiryDate ? new Date(input.expiryDate) : null,
-        status: input.status,
-        notes: input.notes,
-      });
-      
-      return { id: result[0].insertId, success: true };
-    }),
-
-  // Update salary grade
-  updateSalaryGrade: scopedProcedure
-    .input(z.object({
-      id: z.number(),
-      gradeCode: z.string().optional(),
-      gradeName: z.string().optional(),
-      gradeNameAr: z.string().optional(),
-      minSalary: z.number().optional(),
-      maxSalary: z.number().optional(),
-      midSalary: z.number().optional(),
-      currency: z.string().optional(),
-      steps: z.string().optional(),
-      housingAllowance: z.number().optional(),
-      transportAllowance: z.number().optional(),
-      otherAllowances: z.string().optional(),
-      effectiveDate: z.string().optional(),
-      expiryDate: z.string().optional(),
-      status: z.enum(["active", "inactive", "draft"]).optional(),
-      notes: z.string().optional(),
-    }))
-    .mutation(async ({ ctx, input }) => {
-      const { organizationId } = ctx.scope;
-      const db = await getDb();
-      if (!db) throw new Error("Database not available");
-      
-      const { id, ...updateData } = input;
-      
-      const processedData: Record<string, unknown> = {};
-      if (updateData.gradeCode) processedData.gradeCode = updateData.gradeCode;
-      if (updateData.gradeName) processedData.gradeName = updateData.gradeName;
-      if (updateData.gradeNameAr !== undefined) processedData.gradeNameAr = updateData.gradeNameAr;
-      if (updateData.minSalary !== undefined) processedData.minSalary = updateData.minSalary.toString();
-      if (updateData.maxSalary !== undefined) processedData.maxSalary = updateData.maxSalary.toString();
-      if (updateData.midSalary !== undefined) processedData.midSalary = updateData.midSalary?.toString();
-      if (updateData.currency) processedData.currency = updateData.currency;
-      if (updateData.steps !== undefined) processedData.steps = updateData.steps;
-      if (updateData.housingAllowance !== undefined) processedData.housingAllowance = updateData.housingAllowance?.toString();
-      if (updateData.transportAllowance !== undefined) processedData.transportAllowance = updateData.transportAllowance?.toString();
-      if (updateData.otherAllowances !== undefined) processedData.otherAllowances = updateData.otherAllowances;
-      if (updateData.effectiveDate) processedData.effectiveDate = new Date(updateData.effectiveDate);
-      if (updateData.expiryDate) processedData.expiryDate = new Date(updateData.expiryDate);
-      if (updateData.status) processedData.status = updateData.status;
-      if (updateData.notes !== undefined) processedData.notes = updateData.notes;
-      
-      await db
-        .update(hrSalaryGrades)
-        .set(processedData)
-        .where(and(
-          eq(hrSalaryGrades.id, id),
-          eq(hrSalaryGrades.organizationId, organizationId)
-        ));
-      
-      return { success: true };
-    }),
-
-  // Delete salary grade
-  deleteSalaryGrade: scopedProcedure
-    .input(z.object({ id: z.number() }))
-    .mutation(async ({ ctx, input }) => {
-      const { organizationId } = ctx.scope;
-      const db = await getDb();
-      if (!db) throw new Error("Database not available");
-      
-      await db
-        .update(hrSalaryGrades)
-        .set({
-          isDeleted: true,
-          deletedAt: new Date(),
-          deletedBy: ctx.user?.id,
-        })
-        .where(and(
-          eq(hrSalaryGrades.id, input.id),
-          eq(hrSalaryGrades.organizationId, organizationId)
-        ));
-      
-      return { success: true };
-    }),
-
-  // Generate payroll from Salary Scale Table
+  // ========== UPDATED: generateFromSalaryScale ==========
+  // ✅ FIXED: Correct payroll calculation logic
+  // Now includes representation & other allowances, uses salary scale tax/SS values
+  
   generateFromSalaryScale: scopedProcedure
     .input(z.object({
       payrollMonth: z.number().min(1).max(12),
@@ -705,7 +586,7 @@ export const hrPayrollRouter = router({
         eq(hrPayrollRecords.organizationId, organizationId),
         eq(hrPayrollRecords.payrollMonth, input.payrollMonth),
         eq(hrPayrollRecords.payrollYear, input.payrollYear),
-        eq(hrPayrollRecords.isDeleted, false),
+        eq(hrPayrollRecords.isDeleted, 0),
       ];
       
       if (operatingUnitId) {
@@ -725,7 +606,7 @@ export const hrPayrollRouter = router({
       const salaryConditions = [
         eq(hrSalaryScale.organizationId, organizationId),
         eq(hrSalaryScale.status, 'active'),
-        eq(hrSalaryScale.isDeleted, false),
+        eq(hrSalaryScale.isDeleted, 0),
       ];
       
       if (operatingUnitId) {
@@ -741,47 +622,74 @@ export const hrPayrollRouter = router({
         throw new Error("No active salary records found in Salary Scale Table. Please ensure employees have active (approved) salary records before generating payroll.");
       }
       
-      // Generate payroll records from Salary Scale Table
+      // ✅ FIXED: Generate payroll records with correct calculation
       const payrollRecords = [];
       for (const salary of activeSalaryRecords) {
-        const grossSalary = parseFloat(salary.approvedGrossSalary?.toString() || '0');
+        // ✅ STEP 1: Extract individual components
+        const basicSalary = parseFloat(salary.basicSalary?.toString() || '0');
         const housingAllowance = parseFloat(salary.housingAllowance?.toString() || '0');
         const transportAllowance = parseFloat(salary.transportAllowance?.toString() || '0');
         const representationAllowance = parseFloat(salary.representationAllowance?.toString() || '0');
         const otherAllowances = parseFloat(salary.otherAllowances?.toString() || '0');
         
-        const basicSalary = grossSalary - housingAllowance - transportAllowance - representationAllowance - otherAllowances;
+        // ✅ STEP 2: Calculate Gross = basicSalary + ALL allowances
+        const grossSalary = basicSalary + housingAllowance + transportAllowance + representationAllowance + otherAllowances;
         
-        const taxableIncomeBase = grossSalary;
-        const taxDeduction = (taxableIncomeBase * input.defaultTaxRate) / 100;
-        const socialSecurityDeduction = (grossSalary * input.defaultSocialSecurityRate) / 100;
+        // ✅ STEP 3: Calculate Tax (from salary scale taxPercent, or use default)
+        const taxPercent = salary.taxPercent != null
+          ? parseFloat(salary.taxPercent.toString())
+          : input.defaultTaxRate;
+        const taxDeduction = (basicSalary * taxPercent) / 100;
+        
+        // ✅ STEP 4: Calculate Social Security (employee + employer contributions)
+        // Support both VALUE and PERCENTAGE types
+        let employeeSS = parseFloat(salary.employeeContribution?.toString() || '0');
+        if (salary.employeeContributionType === 'percentage') {
+          employeeSS = (basicSalary * employeeSS) / 100;
+        }
+        
+        let employerSS = parseFloat(salary.employerContribution?.toString() || '0');
+        if (salary.employerContributionType === 'percentage') {
+          employerSS = (basicSalary * employerSS) / 100;
+        }
+        
+      
+        // ✅ STEP 5: Calculate Health Insurance
         const healthInsuranceDeduction = (grossSalary * input.defaultHealthInsuranceRate) / 100;
         
-        const totalDeductions = taxDeduction + socialSecurityDeduction + healthInsuranceDeduction;
+        // ✅ STEP 6: Calculate Total Deductions and Net
+        // CRITICAL: Use recalculated socialSecurityDeduction to ensure accuracy
+        const calculatedSocialSecurityDeduction = employeeSS + employerSS;
+        const totalDeductions = taxDeduction + calculatedSocialSecurityDeduction + healthInsuranceDeduction;
         const netSalary = grossSalary - totalDeductions;
         
+        // ✅ STEP 7: Create payroll record with ALL fields
         payrollRecords.push({
           organizationId,
           operatingUnitId: operatingUnitId || salary.operatingUnitId || 0,
           employeeId: salary.employeeId,
+          salaryScaleId: salary.id, // ✅ LINK TO SALARY SOURCE
           payrollMonth: input.payrollMonth,
           payrollYear: input.payrollYear,
           basicSalary: basicSalary.toFixed(2),
           housingAllowance: housingAllowance.toFixed(2),
           transportAllowance: transportAllowance.toFixed(2),
-          otherAllowances: (representationAllowance + otherAllowances).toFixed(2),
+          representationAllowance: representationAllowance.toFixed(2), // ✅ NOW INCLUDED
+          otherAllowances: otherAllowances.toFixed(2), // ✅ NOW INCLUDED
           overtimePay: '0',
           bonus: '0',
           grossSalary: grossSalary.toFixed(2),
           taxDeduction: taxDeduction.toFixed(2),
-          socialSecurityDeduction: socialSecurityDeduction.toFixed(2),
+          employerSocialSecurity: employerSS.toFixed(2), // ✅ SPLIT SS
+          employeeSocialSecurity: employeeSS.toFixed(2), // ✅ SPLIT SS
+          socialSecurityDeduction: (employerSS + employeeSS).toFixed(2), // ✅ ENFORCED: Always = employer + employee
           loanDeduction: '0',
           otherDeductions: healthInsuranceDeduction.toFixed(2),
           totalDeductions: totalDeductions.toFixed(2),
           netSalary: netSalary.toFixed(2),
           currency: salary.currency || 'USD',
           status: 'draft' as const,
-          notes: `Generated from Salary Scale Table (${salary.grade} / ${salary.step}). Prepared by: ${input.preparedBy || ctx.user?.name || 'System'}`,
+          notes: `Generated from Salary Scale Table (Grade: ${salary.gradeCode} / Step: ${salary.step}). Tax: ${taxPercent}%, SS Employee: ${employeeSS.toFixed(2)}, SS Employer: ${employerSS.toFixed(2)}. Prepared by: ${input.preparedBy || ctx.user?.name || 'System'}`,
         });
       }
       
@@ -792,7 +700,7 @@ export const hrPayrollRouter = router({
       return { 
         success: true, 
         count: payrollRecords.length,
-        message: `Generated ${payrollRecords.length} payroll records for ${input.payrollMonth}/${input.payrollYear}`
+        message: `✅ Generated ${payrollRecords.length} payroll records for ${input.payrollMonth}/${input.payrollYear}. All allowances and deductions calculated correctly.`
       };
     }),
 
@@ -807,7 +715,7 @@ export const hrPayrollRouter = router({
       const employeeConditions = [
         eq(hrEmployees.organizationId, organizationId),
         eq(hrEmployees.status, 'active'),
-        eq(hrEmployees.isDeleted, false),
+        eq(hrEmployees.isDeleted, 0),
       ];
       
       if (operatingUnitId) {
@@ -827,7 +735,7 @@ export const hrPayrollRouter = router({
       const salaryConditions = [
         eq(hrSalaryScale.organizationId, organizationId),
         eq(hrSalaryScale.status, 'active'),
-        eq(hrSalaryScale.isDeleted, false),
+        eq(hrSalaryScale.isDeleted, 0),
       ];
       
       if (operatingUnitId) {

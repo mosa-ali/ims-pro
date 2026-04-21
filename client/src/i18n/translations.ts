@@ -4020,6 +4020,20 @@ export interface Translations {
       annualAllowance: 'البدل السنوي',
       bonus: 'المكافأة',
       otherAllowances: 'بدلات أخرى',
+      // ✅ NEW: Tax & Social Security Fields
+      deductionsAndTaxes: 'الخصومات والضرائب',
+      taxPercent: 'نسبة الضريبة',
+      taxPercentLabel: 'نسبة الضريبة على الراتب الأساسي',
+      taxAmount: 'مبلغ الضريبة',
+      taxableBaseSalary: 'الراتب الأساسي الخاضع للضريبة',
+      socialSecurityContributions: 'مساهمات الضمان الاجتماعي',
+      socialSecurityEmployeePercent: 'نسبة مساهمة الموظف',
+      socialSecurityEmployeePercentLabel: 'نسبة مساهمة الموظف في الضمان الاجتماعي',
+      socialSecurityEmployerPercent: 'نسبة مساهمة صاحب العمل',
+      socialSecurityEmployerPercentLabel: 'نسبة مساهمة صاحب العمل في الضمان الاجتماعي',
+      socialSecurityDeduction: 'خصم الضمان الاجتماعي',
+      employeeContribution: 'مساهمة الموظف',
+      employerContribution: 'مساهمة صاحب العمل',
       effectiveStartDate: 'تاريخ البدء الفعلي',
       value: 'القيمة',
       percentage: 'النسبة المئوية',
@@ -10301,6 +10315,20 @@ export interface Translations {
       annualAllowance: string;
       bonus: string;
       otherAllowances: string;
+      // ✅ NEW: Tax & Social Security Fields
+      deductionsAndTaxes: string;
+      taxPercent: string;
+      taxPercentLabel: string;
+      taxAmount: string;
+      taxableBaseSalary: string;
+      socialSecurityContributions: string;
+      socialSecurityEmployeePercent: string;
+      socialSecurityEmployeePercentLabel: string;
+      socialSecurityEmployerPercent: string;
+      socialSecurityEmployerPercentLabel: string;
+      socialSecurityDeduction: string;
+      employeeContribution: string;
+      employerContribution: string;
       effectiveStartDate: string;
       value: string;
       percentage: string;
@@ -23892,6 +23920,20 @@ export const en: Translations = {
       annualAllowance: 'Annual Allowance',
       bonus: 'Bonus',
       otherAllowances: 'Other Allowances',
+      // ✅ NEW: Tax & Social Security Fields
+      deductionsAndTaxes: 'Deductions & Taxes',
+      taxPercent: 'Tax Percentage',
+      taxPercentLabel: 'Tax Percentage on Basic Salary',
+      taxAmount: 'Tax Amount',
+      taxableBaseSalary: 'Taxable Base Salary',
+      socialSecurityContributions: 'Social Security Contributions',
+      socialSecurityEmployeePercent: 'Employee Contribution %',
+      socialSecurityEmployeePercentLabel: 'Employee Social Security Contribution %',
+      socialSecurityEmployerPercent: 'Employer Contribution %',
+      socialSecurityEmployerPercentLabel: 'Employer Social Security Contribution %',
+      socialSecurityDeduction: 'Social Security Deduction',
+      employeeContribution: 'Employee Contribution',
+      employerContribution: 'Employer Contribution',
       effectiveStartDate: 'Effective Start Date',
       value: 'Value',
       percentage: 'Percentage',
@@ -37429,6 +37471,20 @@ export const ar: Translations = {
       annualAllowance: 'Annual Allowance',
       bonus: 'Bonus',
       otherAllowances: 'Other Allowances',
+      // ✅ NEW: Tax & Social Security Fields
+      deductionsAndTaxes: 'Deductions & Taxes',
+      taxPercent: 'Tax Percentage',
+      taxPercentLabel: 'Tax Percentage on Basic Salary',
+      taxAmount: 'Tax Amount',
+      taxableBaseSalary: 'Taxable Base Salary',
+      socialSecurityContributions: 'Social Security Contributions',
+      socialSecurityEmployeePercent: 'Employee Contribution %',
+      socialSecurityEmployeePercentLabel: 'Employee Social Security Contribution %',
+      socialSecurityEmployerPercent: 'Employer Contribution %',
+      socialSecurityEmployerPercentLabel: 'Employer Social Security Contribution %',
+      socialSecurityDeduction: 'Social Security Deduction',
+      employeeContribution: 'Employee Contribution',
+      employerContribution: 'Employer Contribution',
       effectiveStartDate: 'Effective Start Date',
       value: 'Value',
       percentage: 'Percentage',

@@ -1,9 +1,14 @@
 /**
  * ============================================================================
- * EDIT CURRENT SALARY STRUCTURE MODAL
+ * EDIT CURRENT SALARY STRUCTURE MODAL - CORRECTED FOR tRPC
  * ============================================================================
  * DEDICATED FORM - Updates ONLY salary data
  * Does NOT touch: Identity, Contract, Performance, Exit data
+ *
+ * NEW FIELDS:
+ * - Social Security: Employee %, Employer %
+ * - Tax: Tax % on basic salary
+ * - These values are auto-loaded by payroll generation
  *
  * CRITICAL RULE: Saving creates NEW salary version
  * Previous salary is marked "Superseded" - NOT deleted
@@ -14,7 +19,6 @@
 import { useState, useEffect } from "react";
 import { X, Save, DollarSign, AlertTriangle } from "lucide-react";
 import { useLanguage } from "@/app/contexts/LanguageContext";
-import { StaffMember } from "../types/hrTypes";
 import { useTranslation } from "@/i18n/useTranslation";
 import { trpc } from "@/lib/trpc";
 import { toast } from "sonner";
@@ -24,14 +28,9 @@ import { useOperatingUnit } from "@/contexts/OperatingUnitContext";
 import { useAuth } from "@/_core/hooks/useAuth";
 
 interface Props {
-  employee: StaffMember;
+  employee: any; // tRPC employee record
   onClose: () => void;
-  onSave: (updatedEmployee: StaffMember) => void;
-}
-
-interface AllowanceConfig {
-  value: number;
-  isPercentage: boolean;
+  onSave: (updatedEmployee: any) => void;
 }
 
 export function EditCurrentSalaryModal({ employee, onClose, onSave }: Props) {
@@ -54,6 +53,12 @@ export function EditCurrentSalaryModal({ employee, onClose, onSave }: Props) {
     representationIsPercentage: false,
     otherAllowances: employee.otherAllowances || 0,
     otherIsPercentage: false,
+    // ✅ NEW: Social Security & Tax Fields
+    employeeContribution: 0,
+    employeeContributionType: 'value' as 'value' | 'percentage',
+    employerContribution: 0,
+    employerContributionType: 'value' as 'value' | 'percentage',
+    taxPercent: 0,
     effectiveDate: new Date().toISOString().split("T")[0],
   });
 
@@ -116,46 +121,54 @@ export function EditCurrentSalaryModal({ employee, onClose, onSave }: Props) {
     return value;
   };
 
+  // Pre-populate form with current salary data when it loads
   useEffect(() => {
     if (currentSalary) {
       setFormData(prev => ({
         ...prev,
         grade: currentSalary.gradeCode || prev.grade,
         step: currentSalary.step || prev.step,
-
         basicSalary: toNumber(
           currentSalary.basicSalary,
           prev.basicSalary
         ),
-
         housingAllowance: toNumber(
           currentSalary.housingAllowance,
           prev.housingAllowance
         ),
-
         transportAllowance: toNumber(
           currentSalary.transportAllowance,
           prev.transportAllowance
         ),
-
         representationAllowance: toNumber(
           currentSalary.representationAllowance,
           prev.representationAllowance
         ),
-
         otherAllowances: toNumber(
           currentSalary.otherAllowances,
           prev.otherAllowances
         ),
-
-        // ✅ FIX HERE (INSIDE OBJECT)
+        // ✅ NEW: Load Social Security & Tax from database
+        employeeContribution: toNumber(
+          (currentSalary as any).employeeContribution,
+          prev.employeeContribution
+        ),
+        employeeContributionType: (currentSalary as any).employeeContributionType || prev.employeeContributionType,
+        employerContribution: toNumber(
+          (currentSalary as any).employerContribution,
+          prev.employerContribution
+        ),
+        employerContributionType: (currentSalary as any).employerContributionType || prev.employerContributionType,
+        taxPercent: toNumber(
+          (currentSalary as any).taxPercent,
+          prev.taxPercent
+        ),
         effectiveDate: currentSalary.effectiveStartDate
           ? currentSalary.effectiveStartDate.split("T")[0]
           : prev.effectiveDate,
-        }));
-      }
-    }, [currentSalary]);
-
+      }));
+    }
+  }, [currentSalary]);
 
   // Get available steps for selected grade
   const getAvailableSteps = (): string[] => {
@@ -218,6 +231,14 @@ export function EditCurrentSalaryModal({ employee, onClose, onSave }: Props) {
     fixedAmount: t.hrModals.fixedAmount,
     percentage: t.hrModals.ofBase,
 
+    // ✅ NEW: Social Security & Tax Labels
+    deductionsSection: language === "en" ? "Deductions & Taxes" : "الخصومات والضرائب",
+    socialSecuritySection: language === "en" ? "Social Security Contributions" : "مساهمات الضمان الاجتماعي",
+    socialSecurityEmployeePercent: language === "en" ? "Employee Contribution %" : "نسبة مساهمة الموظف %",
+    socialSecurityEmployerPercent: language === "en" ? "Employer Contribution %" : "نسبة مساهمة صاحب العمل %",
+    taxSection: language === "en" ? "Income Tax" : "ضريبة الدخل",
+    taxPercent: language === "en" ? "Tax % (on Basic Salary)" : "نسبة الضريبة % (على الراتب الأساسي)",
+
     // Effective Date
     effectiveDate: t.hrModals.effectiveStartDate,
     effectiveHelp: t.hrModals.whenDoesThisNewSalaryTake,
@@ -264,6 +285,22 @@ export function EditCurrentSalaryModal({ employee, onClose, onSave }: Props) {
     return formData.basicSalary + housing + transport + representation + other;
   };
 
+  // ✅ NEW: Calculate Social Security Deduction (Employee + Employer)
+  const calculateSocialSecurityDeduction = (): number => {
+    const employeeSS = formData.employeeContributionType === 'percentage'
+      ? (formData.basicSalary * formData.employeeContribution) / 100
+      : formData.employeeContribution;
+    const employerSS = formData.employerContributionType === 'percentage'
+      ? (formData.basicSalary * formData.employerContribution) / 100
+      : formData.employerContribution;
+    return employeeSS + employerSS;
+  };
+
+  // ✅ NEW: Calculate Tax Amount
+  const calculateTaxAmount = (): number => {
+    return (formData.basicSalary * formData.taxPercent) / 100;
+  };
+
   const validateForm = (): boolean => {
     const newErrors: Record<string, string> = {};
 
@@ -303,20 +340,6 @@ export function EditCurrentSalaryModal({ employee, onClose, onSave }: Props) {
       formData.otherAllowances,
       formData.otherIsPercentage
     );
-    const nowSql = new Date().toISOString().slice(0, 19).replace("T", " ");
-
-    // Update ONLY salary fields
-    const updatedEmployee: StaffMember = {
-      ...employee,
-      grade: formData.grade.trim(),
-      step: formData.step.trim(),
-      basicSalary: formData.basicSalary,
-      housingAllowance: finalHousing,
-      transportAllowance: finalTransport,
-      representationAllowance: finalRepresentation,
-      otherAllowances: finalOther,
-      updatedAt: nowSql,
-    };
 
     // CRITICAL FIX: Use currentSalary.id (salary record ID), NOT employee.id
     const salaryRecordId = currentSalary?.id;
@@ -326,10 +349,7 @@ export function EditCurrentSalaryModal({ employee, onClose, onSave }: Props) {
     }
 
     try {
-      // NOTE: Do NOT include 'status' field here
-      // Server automatically handles status transitions:
-      // 1. Marks previous active salary as 'superseded'
-      // 2. Creates new salary as 'active' (not draft)
+      // ✅ NEW: Include Social Security & Tax fields
       await updateMutation.mutateAsync({
         id: salaryRecordId,
         gradeCode: formData.grade.trim(),
@@ -340,18 +360,24 @@ export function EditCurrentSalaryModal({ employee, onClose, onSave }: Props) {
         transportAllowance: finalTransport,
         representationAllowance: finalRepresentation,
         otherAllowances: finalOther,
+        // ✅ NEW: Send Social Security & Tax to server
+        employeeContribution: formData.employeeContribution,
+        employeeContributionType: formData.employeeContributionType,
+        employerContribution: formData.employerContribution,
+        employerContributionType: formData.employerContributionType,
+        taxPercent: formData.taxPercent,
         effectiveStartDate: formData.effectiveDate,
       });
       toast.success("Salary saved successfully and activated!");
-      // Close modal after successful save
       onClose();
     } catch (error: any) {
       toast.error(
         "Database sync failed: " + (error?.message || "Unknown error")
       );
+      return;
     }
 
-    onSave(updatedEmployee);
+    onSave(employee);
   };
 
   const formatCurrency = (amount: number) => {
@@ -360,15 +386,6 @@ export function EditCurrentSalaryModal({ employee, onClose, onSave }: Props) {
       currency: "USD",
       minimumFractionDigits: 2,
     }).format(amount);
-  };
-
-  const formatDate = (dateString?: string) => {
-    if (!dateString) return "-";
-    return new Date(dateString).toLocaleDateString(t.hrModals.en, {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    });
   };
 
   return (
@@ -716,6 +733,144 @@ export function EditCurrentSalaryModal({ employee, onClose, onSave }: Props) {
                       <option value="fixed">{t.hrModals.fixedAmount}</option>
                       <option value="percentage">{localT.percentage}</option>
                     </select>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* ✅ NEW: Deductions & Taxes Section */}
+            <div>
+              <h3 className="text-sm font-semibold text-gray-700 mb-3 pb-2 border-b border-gray-200">
+                {localT.deductionsSection}
+              </h3>
+
+              <div className="space-y-4">
+                {/* Social Security Section */}
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                  <h4 className="text-sm font-semibold text-blue-900 mb-3">
+                    {localT.socialSecuritySection}
+                  </h4>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        {localT.socialSecurityEmployeePercent}
+                      </label>
+                      <div className="flex items-center gap-2">
+                        <input
+                          type="number"
+                          step="0.01"
+                          min="0"
+                          value={formData.employeeContribution}
+                          onChange={e =>
+                            setFormData({
+                              ...formData,
+                              employeeContribution: parseFloat(e.target.value) || 0,
+                            })
+                          }
+                          className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        />
+                        <select
+                          value={formData.employeeContributionType}
+                          onChange={e =>
+                            setFormData({
+                              ...formData,
+                              employeeContributionType: e.target.value as 'value' | 'percentage',
+                            })
+                          }
+                          className="px-2 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        >
+                          <option value="value">{t.hrModals.fixedAmount}</option>
+                          <option value="percentage">%</option>
+                        </select>
+                      </div>
+                      <p className="text-xs text-gray-500 mt-1">
+                        {language === "en" ? "Amount: " : "المبلغ: "}
+                        {formatCurrency(
+                          formData.employeeContributionType === 'percentage'
+                            ? (formData.basicSalary * formData.employeeContribution) / 100
+                            : formData.employeeContribution
+                        )}
+                      </p>
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        {localT.socialSecurityEmployerPercent}
+                      </label>
+                      <div className="flex items-center gap-2">
+                        <input
+                          type="number"
+                          step="0.01"
+                          min="0"
+                          value={formData.employerContribution}
+                          onChange={e =>
+                            setFormData({
+                              ...formData,
+                              employerContribution: parseFloat(e.target.value) || 0,
+                            })
+                          }
+                          className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        />
+                        <select
+                          value={formData.employerContributionType}
+                          onChange={e =>
+                            setFormData({
+                              ...formData,
+                              employerContributionType: e.target.value as 'value' | 'percentage',
+                            })
+                          }
+                          className="px-2 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        >
+                          <option value="value">{t.hrModals.fixedAmount}</option>
+                          <option value="percentage">%</option>
+                        </select>
+                      </div>
+                      <p className="text-xs text-gray-500 mt-1">
+                        {language === "en" ? "Employer pays: " : "يدفع صاحب العمل: "}
+                        {formatCurrency(
+                          formData.employerContributionType === 'percentage'
+                            ? (formData.basicSalary * formData.employerContribution) / 100
+                            : formData.employerContribution
+                        )}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Tax Section */}
+                <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+                  <h4 className="text-sm font-semibold text-red-900 mb-3">
+                    {localT.taxSection}
+                  </h4>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        {localT.taxPercent}
+                      </label>
+                      <div className="flex items-center gap-2">
+                        <input
+                          type="number"
+                          step="0.01"
+                          min="0"
+                          max="100"
+                          value={formData.taxPercent}
+                          onChange={e =>
+                            setFormData({
+                              ...formData,
+                              taxPercent: parseFloat(e.target.value) || 0,
+                            })
+                          }
+                          className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                        />
+                        <span className="text-gray-600 font-medium">%</span>
+                      </div>
+                      <p className="text-xs text-gray-500 mt-1">
+                        {language === "en" ? "Tax Amount: " : "مبلغ الضريبة: "}
+                        <span className="font-semibold text-red-600">
+                          {formatCurrency(calculateTaxAmount())}
+                        </span>
+                      </p>
+                    </div>
                   </div>
                 </div>
               </div>
