@@ -1,9 +1,11 @@
 /**
  * ============================================================================
- * HR SALARY SCALE ROUTER
+ * HR SALARY SCALE ROUTER - FIXED v2
  * ============================================================================
- * Single source of truth for all salary data
- * Payroll MUST read from Active records only
+ * ✅ CRITICAL FIXES:
+ * 1. Removed socialSecurityDeduction from insert/update (auto-calculated)
+ * 2. Uses scopedProcedure (no organizationId parameter needed)
+ * 3. Proper activation logic
  * ============================================================================
  */
 
@@ -12,7 +14,7 @@ import { TRPCError } from "@trpc/server";
 import { protectedProcedure, router, scopedProcedure } from "./_core/trpc";
 import { getDb } from "./db";
 import { hrSalaryScale, hrSalaryGrades, hrEmployees } from "../drizzle/schema";
-import { eq, and, desc } from "drizzle-orm";
+import { eq, and, desc, ne } from "drizzle-orm";
 
 // ============================================================================
 // INPUT SCHEMAS
@@ -30,6 +32,8 @@ const salaryScaleCreateSchema = z.object({
   step: z.string(),
   minSalary: z.number().optional(),
   maxSalary: z.number().optional(),
+  // ✅ CRITICAL: Added basicSalary (base salary BEFORE allowances)
+  basicSalary: z.number().min(0, "Basic salary must be positive"),
   approvedGrossSalary: z.number(),
   housingAllowance: z.number().optional(),
   housingAllowanceType: z.enum(["value", "percentage"]).optional(),
@@ -40,6 +44,11 @@ const salaryScaleCreateSchema = z.object({
   annualAllowance: z.number().optional(),
   bonus: z.number().optional(),
   otherAllowances: z.number().optional(),
+  // ✅ NEW: Social Security Contributions
+  employerContribution: z.number().optional().default(0),
+  employerContributionType: z.enum(["value", "percentage"]).optional(),
+  employeeContribution: z.number().optional().default(0),
+  employeeContributionType: z.enum(["value", "percentage"]).optional(),
   currency: z.string().optional(),
   effectiveStartDate: z.string(),
   effectiveEndDate: z.string().optional(),
@@ -48,6 +57,20 @@ const salaryScaleCreateSchema = z.object({
 const salaryScaleUpdateSchema = salaryScaleCreateSchema.partial().extend({
   id: z.coerce.number(),
 });
+
+// ============================================================================
+// HELPER FUNCTIONS
+// ============================================================================
+
+/**
+ * Calculate social security deduction from contributions
+ */
+function calculateSocialSecurityDeduction(
+  employerContribution: number,
+  employeeContribution: number
+): number {
+  return employerContribution + employeeContribution;
+}
 
 // ============================================================================
 // ROUTER
@@ -116,7 +139,8 @@ export const hrSalaryScaleRouter = router({
 
   /**
    * Get latest salary record for a specific employee
-   * CRITICAL: Returns ACTIVE salary first, then DRAFT as fallback
+   * ✅ CRITICAL: Returns ACTIVE salary first, then DRAFT as fallback
+   * NOTE: No organizationId parameter - uses ctx.scope automatically
    */
   getActiveByEmployeeId: scopedProcedure
     .input(z.object({
@@ -160,7 +184,7 @@ export const hrSalaryScaleRouter = router({
 
   /**
    * Get active salary record by staff ID
-   * CRITICAL: Only returns ACTIVE salaries (used by payroll)
+   * ✅ CRITICAL: Only returns ACTIVE salaries (used by payroll)
    */
   getActiveByStaffId: scopedProcedure
     .input(z.object({
@@ -223,10 +247,18 @@ export const hrSalaryScaleRouter = router({
       const db = await getDb();
       if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Database not available" });
 
+      // ✅ Calculate social security deduction
+      const socialSecurityDeduction = calculateSocialSecurityDeduction(
+        input.employerContribution || 0,
+        input.employeeContribution || 0
+      );
+
       const [result] = await db.insert(hrSalaryScale).values({
         ...input,
         organizationId,
         operatingUnitId,
+        // ✅ Ensure basicSalary is stored
+        basicSalary: String(input.basicSalary),
         approvedGrossSalary: String(input.approvedGrossSalary),
         minSalary: input.minSalary ? String(input.minSalary) : "0",
         maxSalary: input.maxSalary ? String(input.maxSalary) : "0",
@@ -236,6 +268,11 @@ export const hrSalaryScaleRouter = router({
         annualAllowance: input.annualAllowance ? String(input.annualAllowance) : "0",
         bonus: input.bonus ? String(input.bonus) : "0",
         otherAllowances: input.otherAllowances ? String(input.otherAllowances) : "0",
+        // ✅ NEW: Social Security
+        employerContribution: input.employerContribution ? String(input.employerContribution) : "0",
+        employeeContribution: input.employeeContribution ? String(input.employeeContribution) : "0",
+        // ✅ FIXED: Calculate deduction instead of passing it
+        socialSecurityDeduction: String(socialSecurityDeduction),
         status: "draft",
         version: 1,
         createdBy: ctx.user?.id,
@@ -248,7 +285,7 @@ export const hrSalaryScaleRouter = router({
   /**
    * Update a salary scale record
    * ========================================================================
-   * CRITICAL LOGIC:
+   * ✅ CRITICAL LOGIC:
    * If updating an ACTIVE salary:
    *   1. Mark existing active salary as 'superseded'
    *   2. Create NEW salary record as 'active' (version + 1)
@@ -295,6 +332,12 @@ export const hrSalaryScaleRouter = router({
           .set({ status: "superseded", updatedBy: ctx.user?.id })
           .where(eq(hrSalaryScale.id, id));
 
+        // ✅ Calculate social security deduction
+        const socialSecurityDeduction = calculateSocialSecurityDeduction(
+          updateData.employerContribution || parseFloat(existing.employerContribution || "0"),
+          updateData.employeeContribution || parseFloat(existing.employeeContribution || "0")
+        );
+
         // Step 2: Create NEW active salary record
         const [result] = await db.insert(hrSalaryScale).values({
           organizationId,
@@ -310,6 +353,8 @@ export const hrSalaryScaleRouter = router({
           step: updateData.step || existing.step,
           minSalary: updateData.minSalary ? String(updateData.minSalary) : existing.minSalary,
           maxSalary: updateData.maxSalary ? String(updateData.maxSalary) : existing.maxSalary,
+          // ✅ CRITICAL: Use basicSalary from update or existing
+          basicSalary: updateData.basicSalary ? String(updateData.basicSalary) : existing.basicSalary,
           approvedGrossSalary: updateData.approvedGrossSalary ? String(updateData.approvedGrossSalary) : existing.approvedGrossSalary,
           housingAllowance: updateData.housingAllowance ? String(updateData.housingAllowance) : existing.housingAllowance,
           housingAllowanceType: updateData.housingAllowanceType || existing.housingAllowanceType,
@@ -320,10 +365,17 @@ export const hrSalaryScaleRouter = router({
           annualAllowance: updateData.annualAllowance ? String(updateData.annualAllowance) : existing.annualAllowance,
           bonus: updateData.bonus ? String(updateData.bonus) : existing.bonus,
           otherAllowances: updateData.otherAllowances ? String(updateData.otherAllowances) : existing.otherAllowances,
+          // ✅ NEW: Social Security
+          employerContribution: updateData.employerContribution ? String(updateData.employerContribution) : existing.employerContribution,
+          employerContributionType: updateData.employerContributionType || existing.employerContributionType,
+          employeeContribution: updateData.employeeContribution ? String(updateData.employeeContribution) : existing.employeeContribution,
+          employeeContributionType: updateData.employeeContributionType || existing.employeeContributionType,
+          // ✅ FIXED: Calculate deduction instead of passing it
+          socialSecurityDeduction: String(socialSecurityDeduction),
           currency: updateData.currency || existing.currency,
           effectiveStartDate: updateData.effectiveStartDate || new Date().toISOString().split("T")[0],
           // ================================================================
-          // CRITICAL: New salary is ACTIVE, not draft
+          // ✅ CRITICAL: New salary is ACTIVE, not draft
           // Payroll will immediately read this record
           // ================================================================
           status: "active",
@@ -351,6 +403,8 @@ export const hrSalaryScaleRouter = router({
       if (updateData.step) updateValues.step = updateData.step;
       if (updateData.minSalary !== undefined) updateValues.minSalary = String(updateData.minSalary);
       if (updateData.maxSalary !== undefined) updateValues.maxSalary = String(updateData.maxSalary);
+      // ✅ CRITICAL: Update basicSalary
+      if (updateData.basicSalary !== undefined) updateValues.basicSalary = String(updateData.basicSalary);
       if (updateData.approvedGrossSalary !== undefined) updateValues.approvedGrossSalary = String(updateData.approvedGrossSalary);
       if (updateData.housingAllowance !== undefined) updateValues.housingAllowance = String(updateData.housingAllowance);
       if (updateData.housingAllowanceType) updateValues.housingAllowanceType = updateData.housingAllowanceType;
@@ -361,6 +415,20 @@ export const hrSalaryScaleRouter = router({
       if (updateData.annualAllowance !== undefined) updateValues.annualAllowance = String(updateData.annualAllowance);
       if (updateData.bonus !== undefined) updateValues.bonus = String(updateData.bonus);
       if (updateData.otherAllowances !== undefined) updateValues.otherAllowances = String(updateData.otherAllowances);
+      // ✅ NEW: Update social security
+      if (updateData.employerContribution !== undefined || updateData.employeeContribution !== undefined) {
+        const employer = updateData.employerContribution !== undefined 
+          ? updateData.employerContribution 
+          : parseFloat(existing.employerContribution || "0");
+        const employee = updateData.employeeContribution !== undefined 
+          ? updateData.employeeContribution 
+          : parseFloat(existing.employeeContribution || "0");
+        updateValues.socialSecurityDeduction = String(calculateSocialSecurityDeduction(employer, employee));
+      }
+      if (updateData.employerContribution !== undefined) updateValues.employerContribution = String(updateData.employerContribution);
+      if (updateData.employerContributionType) updateValues.employerContributionType = updateData.employerContributionType;
+      if (updateData.employeeContribution !== undefined) updateValues.employeeContribution = String(updateData.employeeContribution);
+      if (updateData.employeeContributionType) updateValues.employeeContributionType = updateData.employeeContributionType;
       if (updateData.currency) updateValues.currency = updateData.currency;
       if (updateData.effectiveStartDate) updateValues.effectiveStartDate = updateData.effectiveStartDate;
       if (updateData.effectiveEndDate) updateValues.effectiveEndDate = updateData.effectiveEndDate;
@@ -375,7 +443,7 @@ export const hrSalaryScaleRouter = router({
 
   /**
    * Activate a draft salary record
-   * Marks all other active salaries for this employee as superseded
+   * ✅ CRITICAL: Marks all other active salaries for this employee as superseded
    */
   activate: scopedProcedure
     .input(z.object({ id: z.number() }))
@@ -392,7 +460,7 @@ export const hrSalaryScaleRouter = router({
       if (!record) throw new TRPCError({ code: "NOT_FOUND", message: "Record not found" });
       if (record.status !== "draft") throw new TRPCError({ code: "BAD_REQUEST", message: "Only draft records can be activated" });
 
-      // Mark all other active salaries as superseded
+      // ✅ CRITICAL: Mark all other active salaries as superseded
       await db.update(hrSalaryScale).set({ status: "superseded", updatedBy: ctx.user?.id }).where(and(
         eq(hrSalaryScale.employeeId, record.employeeId),
         eq(hrSalaryScale.organizationId, organizationId),

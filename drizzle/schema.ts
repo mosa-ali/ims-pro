@@ -2849,44 +2849,6 @@ export const hrLeaveRequests = mysqlTable("hr_leave_requests", {
 	updatedAt: timestamp({ mode: 'string' }).defaultNow().onUpdateNow().notNull(),
 });
 
-export const hrPayrollRecords = mysqlTable("hr_payroll_records", {
-	id: int().autoincrement().primaryKey().notNull(),
-	organizationId: int().notNull(),
-	operatingUnitId: int(),
-	employeeId: int().notNull(),
-	payrollMonth: int().notNull(),
-	payrollYear: int().notNull(),
-	basicSalary: decimal({ precision: 15, scale: 2 }).notNull(),
-	housingAllowance: decimal({ precision: 15, scale: 2 }).default('0'),
-	transportAllowance: decimal({ precision: 15, scale: 2 }).default('0'),
-	otherAllowances: decimal({ precision: 15, scale: 2 }).default('0'),
-	overtimePay: decimal({ precision: 15, scale: 2 }).default('0'),
-	bonus: decimal({ precision: 15, scale: 2 }).default('0'),
-	grossSalary: decimal({ precision: 15, scale: 2 }).notNull(),
-	taxDeduction: decimal({ precision: 15, scale: 2 }).default('0'),
-	socialSecurityDeduction: decimal({ precision: 15, scale: 2 }).default('0'),
-	loanDeduction: decimal({ precision: 15, scale: 2 }).default('0'),
-	otherDeductions: decimal({ precision: 15, scale: 2 }).default('0'),
-	totalDeductions: decimal({ precision: 15, scale: 2 }).default('0'),
-	netSalary: decimal({ precision: 15, scale: 2 }).notNull(),
-	currency: varchar({ length: 10 }).default('USD'),
-	status: mysqlEnum(['draft','pending_approval','approved','paid','cancelled']).default('draft').notNull(),
-	approvedBy: int(),
-	approvedAt: timestamp({ mode: 'string' }),
-	paidAt: timestamp({ mode: 'string' }),
-	paymentMethod: mysqlEnum(['bank_transfer','cash','check']).default('bank_transfer'),
-	paymentReference: varchar({ length: 255 }),
-	notes: text(),
-	isDeleted: tinyint().default(0).notNull(),
-	deletedAt: timestamp({ mode: 'string' }),
-	deletedBy: int(),
-	createdAt: timestamp({ mode: 'string' }).defaultNow().notNull(),
-	updatedAt: timestamp({ mode: 'string' }).defaultNow().onUpdateNow().notNull(),
-},
-(table) => [
-	index("hr_payroll_records_employeeId_payrollMonth_payrollYear_unique").on(table.employeeId, table.payrollMonth, table.payrollYear),
-]);
-
 export const hrRecruitmentCandidates = mysqlTable("hr_recruitment_candidates", {
 	id: int().autoincrement().primaryKey().notNull(),
 	organizationId: int().notNull(),
@@ -2995,7 +2957,7 @@ export const hrSalaryScale = mysqlTable(
     // Employee reference
     employeeId: int().notNull(),
     staffId: varchar({ length: 50 }).notNull(),
-    staffFullName: varchar({ length: 255 }).notNull(), // ✅ CHANGED from staffFullName
+    staffFullName: varchar({ length: 255 }).notNull(),
     position: varchar({ length: 100 }),
     department: varchar({ length: 100 }),
     contractType: varchar({ length: 50 }),
@@ -3005,14 +2967,19 @@ export const hrSalaryScale = mysqlTable(
     gradeCode: varchar({ length: 50 }).notNull(),
     step: varchar({ length: 50 }).notNull(),
     
+    // ✅ CRITICAL: basicSalary (base salary BEFORE allowances)
+    // This is the foundation for all calculations
+    basicSalary: decimal({ precision: 15, scale: 2 }).notNull().default('0'),
+    
     // Salary boundaries
     minSalary: decimal({ precision: 15, scale: 2 }).default('0'),
     maxSalary: decimal({ precision: 15, scale: 2 }).default('0'),
     
-    // Approved salary
+    // ✅ approvedGrossSalary = basicSalary + all allowances
+    // This is the TOTAL salary (base + allowances)
     approvedGrossSalary: decimal({ precision: 15, scale: 2 }).notNull(),
     
-    // Allowances
+    // Allowances (all deducted from gross to calculate base)
     housingAllowance: decimal({ precision: 15, scale: 2 }).default('0'),
     housingAllowanceType: mysqlEnum(['value','percentage']).default('value'),
     transportAllowance: decimal({ precision: 15, scale: 2 }).default('0'),
@@ -3022,6 +2989,19 @@ export const hrSalaryScale = mysqlTable(
     annualAllowance: decimal({ precision: 15, scale: 2 }).default('0'),
     bonus: decimal({ precision: 15, scale: 2 }).default('0'),
     otherAllowances: decimal({ precision: 15, scale: 2 }).default('0'),
+    
+    // ✅ NEW: Social Security Contributions
+    // Employer contribution (can be fixed value or percentage of basicSalary)
+    employerContribution: decimal({ precision: 15, scale: 2 }).default('0'),
+    employerContributionType: mysqlEnum(['value','percentage']).default('value'),
+    
+    // Employee contribution (can be fixed value or percentage of basicSalary)
+    employeeContribution: decimal({ precision: 15, scale: 2 }).default('0'),
+    employeeContributionType: mysqlEnum(['value','percentage']).default('value'),
+    
+    // ✅ NEW: Auto-calculated total social security deduction
+    // socialSecurityDeduction = employerContribution + employeeContribution
+    socialSecurityDeduction: decimal({ precision: 15, scale: 2 }).default('0'),
     
     // Currency
     currency: varchar({ length: 10 }).default('USD'),
@@ -3033,7 +3013,7 @@ export const hrSalaryScale = mysqlTable(
     effectiveStartDate: date({ mode: 'string' }).notNull(),
     effectiveEndDate: date({ mode: 'string' }),
     
-    // Status
+    // Status: draft -> active -> superseded
     status: mysqlEnum(['draft','active','superseded']).default('draft').notNull(),
     
     // Locking
@@ -3048,7 +3028,7 @@ export const hrSalaryScale = mysqlTable(
     
     // Audit trail
     createdBy: int(),
-    updatedBy: int(), // ✅ NEW: Track who updates records
+    updatedBy: int(),
     deletedBy: int(),
     
     // Soft delete
@@ -3072,8 +3052,68 @@ export const hrSalaryScale = mysqlTable(
       table.operatingUnitId,
       table.employeeId
     ),
+    socialSecurityIdx: index('idx_salary_social_security_deduction').on(table.socialSecurityDeduction),
   })
 );
+
+/**
+ * ============================================================================
+ * HR PAYROLL RECORDS TABLE SCHEMA
+ * ============================================================================
+ * Reads from hrSalaryScale:
+ * - basicSalary from hrSalaryScale.basicSalary
+ * - grossSalary calculated from basicSalary + allowances
+ * - socialSecurityDeduction from hrSalaryScale.socialSecurityDeduction
+ */
+
+export const hrPayrollRecords = mysqlTable("hr_payroll_records", {
+    id: int().autoincrement().primaryKey().notNull(),
+    organizationId: int().notNull(),
+    operatingUnitId: int(),
+    employeeId: int().notNull(),
+    payrollMonth: int().notNull(),
+    payrollYear: int().notNull(),
+    
+    // ✅ CONSISTENT: basicSalary from hrSalaryScale.basicSalary
+    basicSalary: decimal({ precision: 15, scale: 2 }).notNull(),
+    
+    // Allowances
+    housingAllowance: decimal({ precision: 15, scale: 2 }).default('0'),
+    transportAllowance: decimal({ precision: 15, scale: 2 }).default('0'),
+    otherAllowances: decimal({ precision: 15, scale: 2 }).default('0'),
+    overtimePay: decimal({ precision: 15, scale: 2 }).default('0'),
+    bonus: decimal({ precision: 15, scale: 2 }).default('0'),
+    
+    // Gross salary (basicSalary + all allowances)
+    grossSalary: decimal({ precision: 15, scale: 2 }).notNull(),
+    
+    // Deductions
+    taxDeduction: decimal({ precision: 15, scale: 2 }).default('0'),
+    socialSecurityDeduction: decimal({ precision: 15, scale: 2 }).default('0'),
+    loanDeduction: decimal({ precision: 15, scale: 2 }).default('0'),
+    otherDeductions: decimal({ precision: 15, scale: 2 }).default('0'),
+    totalDeductions: decimal({ precision: 15, scale: 2 }).default('0'),
+    
+    // Net salary (grossSalary - totalDeductions)
+    netSalary: decimal({ precision: 15, scale: 2 }).notNull(),
+    
+    currency: varchar({ length: 10 }).default('USD'),
+    status: mysqlEnum(['draft','pending_approval','approved','paid','cancelled']).default('draft').notNull(),
+    approvedBy: int(),
+    approvedAt: timestamp({ mode: 'string' }),
+    paidAt: timestamp({ mode: 'string' }),
+    paymentMethod: mysqlEnum(['bank_transfer','cash','check']).default('bank_transfer'),
+    paymentReference: varchar({ length: 255 }),
+    notes: varchar({ length: 1000 }),
+    isDeleted: tinyint().default(0).notNull(),
+    deletedAt: timestamp({ mode: 'string' }),
+    deletedBy: int(),
+    createdAt: timestamp({ mode: 'string' }).defaultNow().notNull(),
+    updatedAt: timestamp({ mode: 'string' }).defaultNow().onUpdateNow().notNull(),
+},
+(table) => [
+	index("hr_payroll_records_employeeId_payrollMonth_payrollYear_unique").on(table.employeeId, table.payrollMonth, table.payrollYear),
+]);
 
 export const hrSanctions = mysqlTable("hr_sanctions", {
 	id: int().autoincrement().primaryKey().notNull(),

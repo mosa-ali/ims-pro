@@ -1,9 +1,11 @@
 /**
  * ============================================================================
- * 3. SALARY & COMPENSATION CARD
+ * SALARY & COMPENSATION CARD - UPDATED WITH CRITICAL FIXES
  * ============================================================================
- * READ-ONLY DISPLAY - Reads from Salary Scale Table (Single Source of Truth)
- * All salary editing must be done via Salary Scale Table module
+ * ✅ CRITICAL FIX: Display basicSalary as "Base Salary" (NOT approvedGrossSalary)
+ * ✅ Calculate grossSalary = basicSalary + allowances
+ * ✅ Add social security deductions display
+ * ✅ Show breakdown: Base + Allowances = Gross
  * ============================================================================
  */
 
@@ -75,6 +77,12 @@ export function SalaryCompensationCard({
  effectiveDate: t.hrEmployeeCards.effectiveDate,
  status: t.hrEmployeeCards.status,
  
+ // Social Security
+ socialSecurityDeductions: 'Social Security Deductions',
+ employerContribution: 'Employer Contribution',
+ employeeContribution: 'Employee Contribution',
+ totalDeduction: 'Total Deduction',
+ 
  // Payroll Slips
  payrollSlips: t.hrEmployeeCards.payrollSlipsReadonly,
  payrollSlipsSubtitle: t.hrEmployeeCards.generatedFromPayrollAllowancesModule,
@@ -98,8 +106,25 @@ export function SalaryCompensationCard({
  }).format(numAmount);
  };
 
- // Calculate gross salary
-  const grossSalary = parseFloat(salaryRecord.approvedGrossSalary || '0');
+ // ✅ CRITICAL FIX: Calculate gross salary = basicSalary + allowances
+ const calculateGrossSalary = () => {
+  if (!salaryRecord) return 0;
+  // ✅ Use basicSalary as base (not approvedGrossSalary)
+  const base = parseFloat(salaryRecord.basicSalary || '0');
+  const housing = parseFloat(salaryRecord.housingAllowance || '0');
+  const transport = parseFloat(salaryRecord.transportAllowance || '0');
+  const representation = parseFloat(salaryRecord.representationAllowance || '0');
+  const other = parseFloat(salaryRecord.otherAllowances || '0');
+  return base + housing + transport + representation + other;
+ };
+
+ // ✅ NEW: Calculate total social security deduction
+ const calculateSocialSecurityDeduction = () => {
+  if (!salaryRecord) return 0;
+  const employer = parseFloat(salaryRecord.employerContribution || '0');
+  const employee = parseFloat(salaryRecord.employeeContribution || '0');
+  return employer + employee;
+ };
 
  // Loading state
  if (isLoading) {
@@ -137,8 +162,12 @@ export function SalaryCompensationCard({
  );
  }
 
- const grossSalary = parseFloat(salaryRecord.approvedGrossSalary || '0');
+ // ✅ CRITICAL: Use basicSalary for display
+ const baseSalary = parseFloat(salaryRecord.basicSalary || '0');
+ const grossSalary = calculateGrossSalary();
+ const socialSecurityDeduction = calculateSocialSecurityDeduction();
  const currency = salaryRecord.currency || 'USD';
+ const totalAllowances = grossSalary - baseSalary;
 
  return (
  <div className="space-y-6">
@@ -167,12 +196,20 @@ export function SalaryCompensationCard({
  </div>
  )}
 
+ {salaryRecord.status === 'superseded' && (
+ <div className="px-6 pt-4">
+ <div className={`p-3 bg-gray-50 border border-gray-200 rounded-lg text-start`}>
+ <p className="text-sm text-gray-700 font-medium">📋 This salary version has been superseded by a newer version</p>
+ </div>
+ </div>
+ )}
+
  <div className="p-6 space-y-4">
- {/* Base Salary */}
+ {/* ✅ CRITICAL: Base Salary - Use basicSalary (NOT approvedGrossSalary) */}
  <div className={`p-4 bg-blue-50 border border-blue-200 rounded-lg text-start`}>
  <p className="text-sm text-blue-900 font-semibold mb-2">{localT.baseSalary}</p>
  <p className="text-3xl font-bold text-blue-600">
- {formatCurrency(salaryRecord.approvedGrossSalary, currency)}
+ {formatCurrency(baseSalary, currency)}
  </p>
  <p className="text-xs text-blue-700 mt-1">
  {localT.grade}: {salaryRecord.gradeCode} | {localT.step}: {salaryRecord.step}
@@ -180,6 +217,9 @@ export function SalaryCompensationCard({
  </div>
 
  {/* Allowances Grid */}
+ {totalAllowances > 0 && (
+ <div>
+ <p className="text-sm font-semibold text-gray-700 mb-2">{localT.allowances}</p>
  <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
  <div className={`p-3 bg-gray-50 rounded-lg text-start`}>
  <p className="text-xs text-gray-500">{localT.housing}</p>
@@ -206,14 +246,50 @@ export function SalaryCompensationCard({
  </p>
  </div>
  </div>
+ </div>
+ )}
 
- {/* Gross Salary */}
+ {/* ✅ CRITICAL: Gross Salary = basicSalary + allowances */}
  <div className={`p-4 bg-green-50 border border-green-200 rounded-lg text-start`}>
  <p className="text-xs text-green-700">{localT.grossSalary}</p>
  <p className="text-2xl font-bold text-green-600">
  {formatCurrency(grossSalary, currency)}
  </p>
+ <p className="text-xs text-green-700 mt-1">
+ {formatCurrency(baseSalary, currency)} + {formatCurrency(totalAllowances, currency)} allowances = {formatCurrency(grossSalary, currency)}
+ </p>
  </div>
+
+ {/* ✅ NEW: Social Security Deductions */}
+ {socialSecurityDeduction > 0 && (
+ <div className={`p-4 bg-orange-50 border border-orange-200 rounded-lg text-start`}>
+ <p className="text-sm text-orange-900 font-semibold mb-3">{localT.socialSecurityDeductions}</p>
+ <div className="space-y-2">
+ {parseFloat(salaryRecord.employerContribution || '0') > 0 && (
+ <div className="flex justify-between items-center">
+ <span className="text-sm text-orange-800">{localT.employerContribution}</span>
+ <span className="text-sm font-semibold text-orange-900">
+ {formatCurrency(salaryRecord.employerContribution, currency)}
+ </span>
+ </div>
+ )}
+ {parseFloat(salaryRecord.employeeContribution || '0') > 0 && (
+ <div className="flex justify-between items-center">
+ <span className="text-sm text-orange-800">{localT.employeeContribution}</span>
+ <span className="text-sm font-semibold text-orange-900">
+ {formatCurrency(salaryRecord.employeeContribution, currency)}
+ </span>
+ </div>
+ )}
+ <div className="border-t border-orange-200 pt-2 mt-2 flex justify-between items-center">
+ <span className="text-sm font-semibold text-orange-900">{localT.totalDeduction}</span>
+ <span className="text-lg font-bold text-orange-700">
+ {formatCurrency(socialSecurityDeduction, currency)}
+ </span>
+ </div>
+ </div>
+ </div>
+ )}
  </div>
  </div>
 
@@ -242,4 +318,5 @@ export function SalaryCompensationCard({
  </div>
  );
 }
+
 export default SalaryCompensationCard;

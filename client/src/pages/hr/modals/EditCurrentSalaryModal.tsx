@@ -81,8 +81,11 @@ export function EditCurrentSalaryModal({ employee, onClose, onSave }: Props) {
   // Mutation for updating salary with automatic table refresh
   const updateMutation = trpc.hrSalaryScale.update.useMutation({
     onSuccess: async () => {
-      // Invalidate the salary scale table query to trigger refresh
+      // Invalidate ALL salary-related queries to propagate changes across system
       await utils.hrSalaryScale.getAll.invalidate();
+      await utils.hrSalaryScale.getActiveByEmployeeId.invalidate();
+      await utils.hrSalaryScale.getActiveByStaffId.invalidate();
+      await utils.hrSalaryScale.getHistoryByEmployeeId.invalidate();
     },
     onError: error => {
       toast.error(
@@ -290,6 +293,7 @@ export function EditCurrentSalaryModal({ employee, onClose, onSave }: Props) {
       formData.otherAllowances,
       formData.otherIsPercentage
     );
+    const nowSql = new Date().toISOString().slice(0, 19).replace("T", " ");
 
     // Update ONLY salary fields
     const updatedEmployee: StaffMember = {
@@ -301,36 +305,39 @@ export function EditCurrentSalaryModal({ employee, onClose, onSave }: Props) {
       transportAllowance: finalTransport,
       representationAllowance: finalRepresentation,
       otherAllowances: finalOther,
-      updatedAt: new Date().toISOString(),
+      updatedAt: nowSql,
     };
 
-    // Also sync to database via tRPC if salaryRecordId provided
-    const salaryRecordId = Number(employee.id);
-    if (salaryRecordId) {
-      try {
-        // NOTE: Do NOT include 'status' field here
-        // Server automatically handles status transitions:
-        // 1. Marks previous active salary as 'superseded'
-        // 2. Creates new salary as 'active' (not draft)
-        await updateMutation.mutateAsync({
-          id: salaryRecordId,
-          gradeCode: formData.grade.trim(),
-          step: formData.step.trim(),
-          approvedGrossSalary: calculateTotalGross(),
-          housingAllowance: finalHousing,
-          transportAllowance: finalTransport,
-          representationAllowance: finalRepresentation,
-          otherAllowances: finalOther,
-          effectiveStartDate: formData.effectiveDate,
-        });
-        toast.success("Salary saved successfully and activated!");
-        // Close modal after successful save
-        onClose();
-      } catch (error: any) {
-        toast.error(
-          "Database sync failed: " + (error?.message || "Unknown error")
-        );
-      }
+    // CRITICAL FIX: Use currentSalary.id (salary record ID), NOT employee.id
+    const salaryRecordId = currentSalary?.id;
+    if (!salaryRecordId) {
+      toast.error("No active salary record found. Please create one first.");
+      return;
+    }
+
+    try {
+      // NOTE: Do NOT include 'status' field here
+      // Server automatically handles status transitions:
+      // 1. Marks previous active salary as 'superseded'
+      // 2. Creates new salary as 'active' (not draft)
+      await updateMutation.mutateAsync({
+        id: salaryRecordId,
+        gradeCode: formData.grade.trim(),
+        step: formData.step.trim(),
+        approvedGrossSalary: calculateTotalGross(),
+        housingAllowance: finalHousing,
+        transportAllowance: finalTransport,
+        representationAllowance: finalRepresentation,
+        otherAllowances: finalOther,
+        effectiveStartDate: formData.effectiveDate,
+      });
+      toast.success("Salary saved successfully and activated!");
+      // Close modal after successful save
+      onClose();
+    } catch (error: any) {
+      toast.error(
+        "Database sync failed: " + (error?.message || "Unknown error")
+      );
     }
 
     onSave(updatedEmployee);
