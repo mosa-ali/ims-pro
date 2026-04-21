@@ -122,14 +122,14 @@ export function ExitInterviewPrintModal({
  >
  {/* Header (Print Hidden) */}
  <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between bg-purple-50 print:hidden">
- <h2 className="text-xl font-bold text-gray-900">{t.title}</h2>
+ <h2 className="text-xl font-bold text-gray-900">{localT.title}</h2>
  <div className="flex items-center gap-2">
  <button
  onClick={handlePrint}
  className="flex items-center gap-2 px-3 py-2 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700"
  >
  <Printer className="w-4 h-4" />
- <span>{t.print}</span>
+ <span>{localT.print}</span>
  </button>
  <button onClick={onClose} className="text-gray-400 hover:text-gray-600">
  <X className="w-6 h-6" />
@@ -143,42 +143,42 @@ export function ExitInterviewPrintModal({
  
  {/* Confidential Banner */}
  <div className="mb-6 bg-red-100 border-s-4 border-red-500 p-3">
- <p className="text-sm font-bold text-red-900 text-center">{t.confidential}</p>
+ <p className="text-sm font-bold text-red-900 text-center">{localT.confidential}</p>
  </div>
 
  {/* Report Header */}
  <div className="mb-8">
  <div className="flex justify-between items-start mb-4 text-sm">
  <div>
- <strong>{t.ref}:</strong> EXIT-{exitInterview.id}-{new Date(exitInterview.interviewDate).getFullYear()}
+ <strong>{localT.ref}:</strong> EXIT-{exitInterview.id}-{new Date(exitInterview.interviewDate).getFullYear()}
  </div>
  <div>
- <strong>{t.interviewDate}:</strong> {formatDate(exitInterview.interviewDate)}
+ <strong>{localT.interviewDate}:</strong> {formatDate(exitInterview.interviewDate)}
  </div>
  </div>
  <div className="text-sm">
- <strong>{t.conductedBy}:</strong> {exitInterview.conductedBy}
+ <strong>{localT.conductedBy}:</strong> {exitInterview.conductedBy}
  </div>
  </div>
 
  {/* Employee Information */}
  <div className="mb-8 border border-gray-300 rounded-lg p-4 bg-gray-50">
- <h3 className="text-base font-bold text-gray-900 mb-3">{t.employeeInfo}</h3>
+ <h3 className="text-base font-bold text-gray-900 mb-3">{localT.employeeInfo}</h3>
  <div className="grid grid-cols-2 gap-4 text-sm">
  <div>
- <span className="font-medium text-gray-700">{t.staffId}:</span>
+ <span className="font-medium text-gray-700">{localT.staffId}:</span>
  <p className="text-gray-900">{employee.staffId}</p>
  </div>
  <div>
- <span className="font-medium text-gray-700">{t.fullName}:</span>
+ <span className="font-medium text-gray-700">{localT.fullName}:</span>
  <p className="text-gray-900">{employee.fullName}</p>
  </div>
  <div>
- <span className="font-medium text-gray-700">{t.position}:</span>
+ <span className="font-medium text-gray-700">{localT.position}:</span>
  <p className="text-gray-900">{employee.position}</p>
  </div>
  <div>
- <span className="font-medium text-gray-700">{t.department}:</span>
+ <span className="font-medium text-gray-700">{localT.department}:</span>
  <p className="text-gray-900">{employee.department}</p>
  </div>
  </div>
@@ -186,21 +186,21 @@ export function ExitInterviewPrintModal({
 
  {/* Exit Details */}
  <div className="mb-8">
- <h3 className="text-base font-bold text-gray-900 mb-4">{t.exitDetails}</h3>
+ <h3 className="text-base font-bold text-gray-900 mb-4">{localT.exitDetails}</h3>
  
  <div className="space-y-4">
  <div className="border border-gray-200 rounded-lg p-4 bg-blue-50">
- <h4 className="text-sm font-semibold text-gray-900 mb-2">{t.reasonForLeaving}:</h4>
+ <h4 className="text-sm font-semibold text-gray-900 mb-2">{localT.reasonForLeaving}:</h4>
  <p className="text-sm text-gray-800">{exitInterview.reasonForLeaving}</p>
  </div>
  
  <div className="grid grid-cols-2 gap-4">
  <div className="border border-gray-200 rounded-lg p-3 bg-white">
- <h4 className="text-xs font-semibold text-gray-700 mb-1">{t.wouldRecommend}</h4>
+ <h4 className="text-xs font-semibold text-gray-700 mb-1">{localT.wouldRecommend}</h4>
  <p className="text-sm font-bold text-gray-900">{exitInterview.wouldRecommend}</p>
  </div>
  <div className="border border-gray-200 rounded-lg p-3 bg-white">
- <h4 className="text-xs font-semibold text-gray-700 mb-1">{t.wouldRejoin}</h4>
+ <h4 className="text-xs font-semibold text-gray-700 mb-1">{localT.wouldRejoin}</h4>
  <p className="text-sm font-bold text-gray-900">{exitInterview.wouldRejoin}</p>
  </div>
  </div>
@@ -209,7 +209,7 @@ export function ExitInterviewPrintModal({
 
  {/* Satisfaction Ratings */}
  <div className="mb-8">
- <h3 className="text-base font-bold text-gray-900 mb-4">{t.satisfactionRatings}</h3>
+ <h3 className="text-base font-bold text-gray-900 mb-4">{localT.satisfactionRatings}</h3>
  
  <div className="border border-gray-200 rounded-lg overflow-hidden">
  <table className="w-full">
@@ -225,31 +225,31 @@ export function ExitInterviewPrintModal({
  </thead>
  <tbody>
  <tr className="border-t border-gray-200">
- <td className="px-4 py-3 text-sm text-gray-900">{t.workEnvironment}</td>
+ <td className="px-4 py-3 text-sm text-gray-900">{localT.workEnvironment}</td>
  <td className="px-4 py-3 text-center text-yellow-500 text-lg">
  {getRatingStars(exitInterview.satisfactionRatings.workEnvironment)}
  </td>
  </tr>
  <tr className="border-t border-gray-200">
- <td className="px-4 py-3 text-sm text-gray-900">{t.management}</td>
+ <td className="px-4 py-3 text-sm text-gray-900">{localT.management}</td>
  <td className="px-4 py-3 text-center text-yellow-500 text-lg">
  {getRatingStars(exitInterview.satisfactionRatings.management)}
  </td>
  </tr>
  <tr className="border-t border-gray-200">
- <td className="px-4 py-3 text-sm text-gray-900">{t.compensation}</td>
+ <td className="px-4 py-3 text-sm text-gray-900">{localT.compensation}</td>
  <td className="px-4 py-3 text-center text-yellow-500 text-lg">
  {getRatingStars(exitInterview.satisfactionRatings.compensation)}
  </td>
  </tr>
  <tr className="border-t border-gray-200">
- <td className="px-4 py-3 text-sm text-gray-900">{t.careerGrowth}</td>
+ <td className="px-4 py-3 text-sm text-gray-900">{localT.careerGrowth}</td>
  <td className="px-4 py-3 text-center text-yellow-500 text-lg">
  {getRatingStars(exitInterview.satisfactionRatings.careerGrowth)}
  </td>
  </tr>
  <tr className="border-t border-gray-200">
- <td className="px-4 py-3 text-sm text-gray-900">{t.workLifeBalance}</td>
+ <td className="px-4 py-3 text-sm text-gray-900">{localT.workLifeBalance}</td>
  <td className="px-4 py-3 text-center text-yellow-500 text-lg">
  {getRatingStars(exitInterview.satisfactionRatings.workLifeBalance)}
  </td>
@@ -261,12 +261,12 @@ export function ExitInterviewPrintModal({
 
  {/* Feedback */}
  <div className="mb-8">
- <h3 className="text-base font-bold text-gray-900 mb-4">{t.feedback}</h3>
+ <h3 className="text-base font-bold text-gray-900 mb-4">{localT.feedback}</h3>
  
  <div className="space-y-4">
  {exitInterview.strengths && (
  <div>
- <h4 className="text-sm font-semibold text-gray-900 mb-2">{t.strengths}:</h4>
+ <h4 className="text-sm font-semibold text-gray-900 mb-2">{localT.strengths}:</h4>
  <div className="border border-green-200 rounded-lg p-3 bg-green-50 text-sm text-gray-800 whitespace-pre-wrap">
  {exitInterview.strengths}
  </div>
@@ -275,7 +275,7 @@ export function ExitInterviewPrintModal({
  
  {exitInterview.improvements && (
  <div>
- <h4 className="text-sm font-semibold text-gray-900 mb-2">{t.improvements}:</h4>
+ <h4 className="text-sm font-semibold text-gray-900 mb-2">{localT.improvements}:</h4>
  <div className="border border-orange-200 rounded-lg p-3 bg-orange-50 text-sm text-gray-800 whitespace-pre-wrap">
  {exitInterview.improvements}
  </div>
@@ -284,7 +284,7 @@ export function ExitInterviewPrintModal({
  
  {exitInterview.comments && (
  <div>
- <h4 className="text-sm font-semibold text-gray-900 mb-2">{t.additionalComments}:</h4>
+ <h4 className="text-sm font-semibold text-gray-900 mb-2">{localT.additionalComments}:</h4>
  <div className="border border-gray-200 rounded-lg p-3 bg-gray-50 text-sm text-gray-800 whitespace-pre-wrap">
  {exitInterview.comments}
  </div>
@@ -295,22 +295,22 @@ export function ExitInterviewPrintModal({
 
  {/* Signatures */}
  <div className="mt-12 pt-8 border-t-2 border-gray-300">
- <h3 className="text-sm font-bold text-gray-900 mb-6">{t.signatures}</h3>
+ <h3 className="text-sm font-bold text-gray-900 mb-6">{localT.signatures}</h3>
  <div className="grid grid-cols-2 gap-12">
  <div>
  <div className="h-16 mb-2"></div>
  <div className="border-t-2 border-gray-400 pt-2">
- <p className="text-xs font-semibold text-gray-900">{t.employee}</p>
+ <p className="text-xs font-semibold text-gray-900">{localT.employee}</p>
  <p className="text-xs text-gray-600 mt-1">{employee.fullName}</p>
- <p className="text-xs text-gray-500">{t.date}: _______________</p>
+ <p className="text-xs text-gray-500">{localT.date}: _______________</p>
  </div>
  </div>
  <div>
  <div className="h-16 mb-2"></div>
  <div className="border-t-2 border-gray-400 pt-2">
- <p className="text-xs font-semibold text-gray-900">{t.interviewer}</p>
+ <p className="text-xs font-semibold text-gray-900">{localT.interviewer}</p>
  <p className="text-xs text-gray-600 mt-1">{exitInterview.conductedBy}</p>
- <p className="text-xs text-gray-500">{t.date}: {formatDate(exitInterview.interviewDate)}</p>
+ <p className="text-xs text-gray-500">{localT.date}: {formatDate(exitInterview.interviewDate)}</p>
  </div>
  </div>
  </div>
@@ -325,13 +325,13 @@ export function ExitInterviewPrintModal({
  className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
  >
  <Printer className="w-5 h-5" />
- <span>{t.print}</span>
+ <span>{localT.print}</span>
  </button>
  <button
  onClick={onClose}
  className="px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
  >
- {t.close}
+ {localT.close}
  </button>
  </div>
  </div>

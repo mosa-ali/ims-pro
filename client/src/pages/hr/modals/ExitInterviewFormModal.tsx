@@ -83,7 +83,7 @@ export function ExitInterviewFormModal({
  const handleSave = () => {
  if (!formData.interviewedBy || !formData.interviewedByRole || 
  !formData.primaryReasonForLeaving || !formData.whatWorkedWell || !formData.areasForImprovement) {
- alert(t.required);
+ alert(localT.required);
  return;
  }
  
@@ -111,7 +111,7 @@ export function ExitInterviewFormModal({
  createdBy: 'Current User'
  });
  
- alert(t.success);
+ alert(localT.success);
  onSave(record);
  onClose();
  };
@@ -123,8 +123,8 @@ export function ExitInterviewFormModal({
  <div className="flex items-center gap-3">
  <MessageSquare className="w-6 h-6 text-purple-600" />
  <div>
- <h2 className="text-xl font-bold text-gray-900">{t.title}</h2>
- <p className="text-sm text-gray-500">{t.subtitle}</p>
+ <h2 className="text-xl font-bold text-gray-900">{localT.title}</h2>
+ <p className="text-sm text-gray-500">{localT.subtitle}</p>
  </div>
  </div>
  <button onClick={onClose} className="text-gray-400 hover:text-gray-600">
@@ -135,18 +135,18 @@ export function ExitInterviewFormModal({
  <div className="flex-1 overflow-y-auto px-6 py-4">
  <div className="space-y-4">
  <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
- <h3 className="text-sm font-semibold text-blue-900 mb-2">{t.employeeInfo}</h3>
+ <h3 className="text-sm font-semibold text-blue-900 mb-2">{localT.employeeInfo}</h3>
  <div className="grid grid-cols-2 gap-2 text-sm">
- <div><span className="text-gray-600">{t.staffId}:</span> <span className="font-medium">{employee.staffId}</span></div>
- <div><span className="text-gray-600">{t.fullName}:</span> <span className="font-medium">{employee.fullName}</span></div>
- <div><span className="text-gray-600">{t.position}:</span> <span className="font-medium">{employee.position}</span></div>
- <div><span className="text-gray-600">{t.department}:</span> <span className="font-medium">{employee.department}</span></div>
+ <div><span className="text-gray-600">{localT.staffId}:</span> <span className="font-medium">{employee.staffId}</span></div>
+ <div><span className="text-gray-600">{localT.fullName}:</span> <span className="font-medium">{employee.fullName}</span></div>
+ <div><span className="text-gray-600">{localT.position}:</span> <span className="font-medium">{employee.position}</span></div>
+ <div><span className="text-gray-600">{localT.department}:</span> <span className="font-medium">{employee.department}</span></div>
  </div>
  </div>
 
  <div className="grid grid-cols-3 gap-4">
  <div>
- <label className="block text-sm font-medium text-gray-700 mb-2">{t.interviewDate} *</label>
+ <label className="block text-sm font-medium text-gray-700 mb-2">{localT.interviewDate} *</label>
  <input
  type="date"
  value={formData.interviewDate}
@@ -155,7 +155,7 @@ export function ExitInterviewFormModal({
  />
  </div>
  <div>
- <label className="block text-sm font-medium text-gray-700 mb-2">{t.interviewedBy} *</label>
+ <label className="block text-sm font-medium text-gray-700 mb-2">{localT.interviewedBy} *</label>
  <input
  type="text"
  value={formData.interviewedBy}
@@ -164,7 +164,7 @@ export function ExitInterviewFormModal({
  />
  </div>
  <div>
- <label className="block text-sm font-medium text-gray-700 mb-2">{t.interviewedByRole} *</label>
+ <label className="block text-sm font-medium text-gray-700 mb-2">{localT.interviewedByRole} *</label>
  <input
  type="text"
  value={formData.interviewedByRole}
@@ -175,20 +175,20 @@ export function ExitInterviewFormModal({
  </div>
 
  <div>
- <label className="block text-sm font-medium text-gray-700 mb-2">{t.exitType} *</label>
+ <label className="block text-sm font-medium text-gray-700 mb-2">{localT.exitType} *</label>
  <select
  value={formData.exitType}
  onChange={(e) => setFormData({ ...formData, exitType: e.target.value as any })}
  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
  >
- <option value="Resignation">{t.resignation}</option>
- <option value="End of Contract">{t.endOfContract}</option>
- <option value="Termination">{t.termination}</option>
+ <option value="Resignation">{localT.resignation}</option>
+ <option value="End of Contract">{localT.endOfContract}</option>
+ <option value="Termination">{localT.termination}</option>
  </select>
  </div>
 
  <div>
- <label className="block text-sm font-medium text-gray-700 mb-2">{t.primaryReasonForLeaving} *</label>
+ <label className="block text-sm font-medium text-gray-700 mb-2">{localT.primaryReasonForLeaving} *</label>
  <textarea
  value={formData.primaryReasonForLeaving}
  onChange={(e) => setFormData({ ...formData, primaryReasonForLeaving: e.target.value })}
@@ -198,7 +198,7 @@ export function ExitInterviewFormModal({
  </div>
 
  <div>
- <label className="block text-sm font-medium text-gray-700 mb-2">{t.whatWorkedWell} *</label>
+ <label className="block text-sm font-medium text-gray-700 mb-2">{localT.whatWorkedWell} *</label>
  <textarea
  value={formData.whatWorkedWell}
  onChange={(e) => setFormData({ ...formData, whatWorkedWell: e.target.value })}
@@ -208,7 +208,7 @@ export function ExitInterviewFormModal({
  </div>
 
  <div>
- <label className="block text-sm font-medium text-gray-700 mb-2">{t.areasForImprovement} *</label>
+ <label className="block text-sm font-medium text-gray-700 mb-2">{localT.areasForImprovement} *</label>
  <textarea
  value={formData.areasForImprovement}
  onChange={(e) => setFormData({ ...formData, areasForImprovement: e.target.value })}
@@ -219,13 +219,13 @@ export function ExitInterviewFormModal({
 
  {/* Ratings */}
  <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 space-y-3">
- <h3 className="text-sm font-semibold text-gray-900">{t.ratings}</h3>
+ <h3 className="text-sm font-semibold text-gray-900">{localT.ratings}</h3>
  
  {[
- { key: 'workEnvironmentRating', label: t.workEnvironment },
- { key: 'managementRating', label: t.management },
- { key: 'compensationRating', label: t.compensation },
- { key: 'careerDevelopmentRating', label: t.careerDevelopment }
+ { key: 'workEnvironmentRating', label: localT.workEnvironment },
+ { key: 'managementRating', label: localT.management },
+ { key: 'compensationRating', label: localT.compensation },
+ { key: 'careerDevelopmentRating', label: localT.careerDevelopment }
  ].map(({ key, label }) => (
  <div key={key} className="flex items-center justify-between">
  <span className="text-sm text-gray-700">{label}</span>
@@ -251,11 +251,11 @@ export function ExitInterviewFormModal({
  checked={formData.wouldReturn}
  onChange={(e) => setFormData({ ...formData, wouldReturn: e.target.checked })}
  />
- <label htmlFor="wouldReturn" className="text-sm text-gray-700">{t.wouldReturn}</label>
+ <label htmlFor="wouldReturn" className="text-sm text-gray-700">{localT.wouldReturn}</label>
  </div>
 
  <div>
- <label className="block text-sm font-medium text-gray-700 mb-2">{t.additionalComments}</label>
+ <label className="block text-sm font-medium text-gray-700 mb-2">{localT.additionalComments}</label>
  <textarea
  value={formData.additionalComments}
  onChange={(e) => setFormData({ ...formData, additionalComments: e.target.value })}
@@ -265,7 +265,7 @@ export function ExitInterviewFormModal({
  </div>
 
  <div>
- <label className="block text-sm font-medium text-gray-700 mb-2">{t.notes}</label>
+ <label className="block text-sm font-medium text-gray-700 mb-2">{localT.notes}</label>
  <textarea
  value={formData.notes}
  onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
@@ -281,14 +281,14 @@ export function ExitInterviewFormModal({
  onClick={onClose}
  className="px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
  >
- {t.cancel}
+ {localT.cancel}
  </button>
  <button
  onClick={handleSave}
  className={`flex items-center gap-2 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700`}
  >
  <Save className="w-5 h-5" />
- <span>{t.save}</span>
+ <span>{localT.save}</span>
  </button>
  </div>
  </div>

@@ -106,11 +106,11 @@ export function DisciplinaryFormModal({
  const handleSave = () => {
  // Validation
  if (!formData.actionDescription || !formData.issuedBy || !formData.issuedByRole) {
- alert(t.required);
+ alert(localT.required);
  return;
  }
  
- if (!confirm(t.warning)) return;
+ if (!confirm(localT.warning)) return;
  
  const record = disciplinaryService.add({
  staffId: employee.staffId,
@@ -140,7 +140,7 @@ export function DisciplinaryFormModal({
  createdBy: 'Current User' // TODO: Replace with actual user
  });
  
- alert(t.success);
+ alert(localT.success);
  onSave(record);
  onClose();
  };
@@ -155,8 +155,8 @@ export function DisciplinaryFormModal({
  <div className="flex items-center gap-3">
  <AlertTriangle className="w-6 h-6 text-red-600" />
  <div>
- <h2 className="text-xl font-bold text-gray-900">{t.title}</h2>
- <p className="text-sm text-red-600">{t.subtitle}</p>
+ <h2 className="text-xl font-bold text-gray-900">{localT.title}</h2>
+ <p className="text-sm text-red-600">{localT.subtitle}</p>
  </div>
  </div>
  <button onClick={onClose} className="text-gray-400 hover:text-gray-600">
@@ -168,18 +168,18 @@ export function DisciplinaryFormModal({
  <div className="space-y-4">
  {/* Employee Info */}
  <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
- <h3 className="text-sm font-semibold text-blue-900 mb-2">{t.employeeInfo}</h3>
+ <h3 className="text-sm font-semibold text-blue-900 mb-2">{localT.employeeInfo}</h3>
  <div className="grid grid-cols-2 gap-2 text-sm">
- <div><span className="text-gray-600">{t.staffId}:</span> <span className="font-medium">{employee.staffId}</span></div>
- <div><span className="text-gray-600">{t.fullName}:</span> <span className="font-medium">{employee.fullName}</span></div>
- <div><span className="text-gray-600">{t.position}:</span> <span className="font-medium">{employee.position}</span></div>
- <div><span className="text-gray-600">{t.department}:</span> <span className="font-medium">{employee.department}</span></div>
+ <div><span className="text-gray-600">{localT.staffId}:</span> <span className="font-medium">{employee.staffId}</span></div>
+ <div><span className="text-gray-600">{localT.fullName}:</span> <span className="font-medium">{employee.fullName}</span></div>
+ <div><span className="text-gray-600">{localT.position}:</span> <span className="font-medium">{employee.position}</span></div>
+ <div><span className="text-gray-600">{localT.department}:</span> <span className="font-medium">{employee.department}</span></div>
  </div>
  </div>
 
  <div className="grid grid-cols-2 gap-4">
  <div>
- <label className="block text-sm font-medium text-gray-700 mb-2">{t.actionDate} *</label>
+ <label className="block text-sm font-medium text-gray-700 mb-2">{localT.actionDate} *</label>
  <input
  type="date"
  value={formData.actionDate}
@@ -190,32 +190,32 @@ export function DisciplinaryFormModal({
  
  {/* ✅ NEW: Disciplinary Stage (Process) */}
  <div>
- <label className="block text-sm font-medium text-gray-700 mb-2">{t.disciplinaryStage} *</label>
+ <label className="block text-sm font-medium text-gray-700 mb-2">{localT.disciplinaryStage} *</label>
  <select
  value={formData.disciplinaryStage}
  onChange={(e) => setFormData({ ...formData, disciplinaryStage: e.target.value as any })}
  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
  >
- <option value="Observation / Note">{t.stageObservation}</option>
- <option value="Investigation Initiated">{t.stageInvestigation}</option>
- <option value="Verbal Warning">{t.stageVerbalWarning}</option>
- <option value="Written Warning">{t.stageWrittenWarning}</option>
- <option value="Final Warning">{t.stageFinalWarning}</option>
- <option value="Escalated">{t.stageEscalated}</option>
- <option value="Closed (No Action)">{t.stageClosedNoAction}</option>
- <option value="Closed (Action Taken)">{t.stageClosedAction}</option>
+ <option value="Observation / Note">{localT.stageObservation}</option>
+ <option value="Investigation Initiated">{localT.stageInvestigation}</option>
+ <option value="Verbal Warning">{localT.stageVerbalWarning}</option>
+ <option value="Written Warning">{localT.stageWrittenWarning}</option>
+ <option value="Final Warning">{localT.stageFinalWarning}</option>
+ <option value="Escalated">{localT.stageEscalated}</option>
+ <option value="Closed (No Action)">{localT.stageClosedNoAction}</option>
+ <option value="Closed (Action Taken)">{localT.stageClosedAction}</option>
  </select>
  </div>
  </div>
 
  {/* ✅ NEW: Action Description (Free Text - REQUIRED) */}
  <div>
- <label className="block text-sm font-medium text-gray-700 mb-2">{t.actionDescription} *</label>
+ <label className="block text-sm font-medium text-gray-700 mb-2">{localT.actionDescription} *</label>
  <textarea
  value={formData.actionDescription}
  onChange={(e) => setFormData({ ...formData, actionDescription: e.target.value })}
  rows={4}
- placeholder={t.actionDescriptionPlaceholder}
+ placeholder={localT.actionDescriptionPlaceholder}
  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
  />
  <p className="text-xs text-gray-500 mt-1">
@@ -229,31 +229,31 @@ export function DisciplinaryFormModal({
  <div className="flex items-start gap-2">
  <AlertTriangle className="w-5 h-5 text-yellow-600 mt-0.5" />
  <div>
- <h3 className="text-sm font-semibold text-yellow-900">{t.finalActionSection}</h3>
- <p className="text-xs text-yellow-700 mt-1">{t.finalActionNote}</p>
+ <h3 className="text-sm font-semibold text-yellow-900">{localT.finalActionSection}</h3>
+ <p className="text-xs text-yellow-700 mt-1">{localT.finalActionNote}</p>
  </div>
  </div>
  
  <div className="grid grid-cols-2 gap-3">
  <div>
- <label className="block text-sm font-medium text-gray-700 mb-2">{t.finalActionType}</label>
+ <label className="block text-sm font-medium text-gray-700 mb-2">{localT.finalActionType}</label>
  <select
  value={formData.finalActionType}
  onChange={(e) => setFormData({ ...formData, finalActionType: e.target.value as any })}
  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
  >
  <option value="">-- Select --</option>
- <option value="Warning">{t.finalActionWarning}</option>
- <option value="Suspension">{t.finalActionSuspension}</option>
- <option value="Salary Deduction">{t.finalActionSalaryDeduction}</option>
- <option value="Termination">{t.finalActionTermination}</option>
- <option value="Other">{t.finalActionOther}</option>
+ <option value="Warning">{localT.finalActionWarning}</option>
+ <option value="Suspension">{localT.finalActionSuspension}</option>
+ <option value="Salary Deduction">{localT.finalActionSalaryDeduction}</option>
+ <option value="Termination">{localT.finalActionTermination}</option>
+ <option value="Other">{localT.finalActionOther}</option>
  </select>
  </div>
  
  {formData.finalActionType === 'Other' && (
  <div>
- <label className="block text-sm font-medium text-gray-700 mb-2">{t.finalActionDetails}</label>
+ <label className="block text-sm font-medium text-gray-700 mb-2">{localT.finalActionDetails}</label>
  <input
  type="text"
  value={formData.finalActionDetails}
@@ -268,7 +268,7 @@ export function DisciplinaryFormModal({
 
  <div className="grid grid-cols-2 gap-4">
  <div>
- <label className="block text-sm font-medium text-gray-700 mb-2">{t.issuedBy} *</label>
+ <label className="block text-sm font-medium text-gray-700 mb-2">{localT.issuedBy} *</label>
  <input
  type="text"
  value={formData.issuedBy}
@@ -277,7 +277,7 @@ export function DisciplinaryFormModal({
  />
  </div>
  <div>
- <label className="block text-sm font-medium text-gray-700 mb-2">{t.issuedByRole} *</label>
+ <label className="block text-sm font-medium text-gray-700 mb-2">{localT.issuedByRole} *</label>
  <input
  type="text"
  value={formData.issuedByRole}
@@ -294,12 +294,12 @@ export function DisciplinaryFormModal({
  checked={formData.hasPayrollImpact}
  onChange={(e) => setFormData({ ...formData, hasPayrollImpact: e.target.checked })}
  />
- <label htmlFor="payrollImpact" className="text-sm text-gray-700">{t.payrollImpact}</label>
+ <label htmlFor="payrollImpact" className="text-sm text-gray-700">{localT.payrollImpact}</label>
  </div>
 
  {formData.hasPayrollImpact && (
  <div>
- <label className="block text-sm font-medium text-gray-700 mb-2">{t.payrollImpactDescription}</label>
+ <label className="block text-sm font-medium text-gray-700 mb-2">{localT.payrollImpactDescription}</label>
  <input
  type="text"
  value={formData.payrollImpactDescription}
@@ -316,14 +316,14 @@ export function DisciplinaryFormModal({
  onClick={onClose}
  className="px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
  >
- {t.cancel}
+ {localT.cancel}
  </button>
  <button
  onClick={handleSave}
  className={`flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700`}
  >
  <Save className="w-5 h-5" />
- <span>{t.save}</span>
+ <span>{localT.save}</span>
  </button>
  </div>
  </div>
