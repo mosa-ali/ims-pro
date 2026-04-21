@@ -101,7 +101,7 @@ export function SalaryCompensationCard({
  // Calculate gross salary
  const calculateGrossSalary = () => {
  if (!salaryRecord) return 0;
- const base = parseFloat(salaryRecord.approvedGrossSalary || '0');
+ const base = parseFloat(salaryRecord.baseSalary || '0');
  const housing = parseFloat(salaryRecord.housingAllowance || '0');
  const transport = parseFloat(salaryRecord.transportAllowance || '0');
  const representation = parseFloat(salaryRecord.representationAllowance || '0');
