@@ -44,6 +44,7 @@ const salaryScaleCreateSchema = z.object({
   annualAllowance: z.number().optional(),
   bonus: z.number().optional(),
   otherAllowances: z.number().optional(),
+  taxPercent: z.number().optional().default(0),
   // ✅ NEW: Social Security Contributions
   employerContribution: z.number().optional().default(0),
   employerContributionType: z.enum(["value", "percentage"]).optional(),
@@ -268,6 +269,7 @@ export const hrSalaryScaleRouter = router({
         annualAllowance: input.annualAllowance ? String(input.annualAllowance) : "0",
         bonus: input.bonus ? String(input.bonus) : "0",
         otherAllowances: input.otherAllowances ? String(input.otherAllowances) : "0",
+        taxPercent: String(input.taxPercent || 0),
         // ✅ NEW: Social Security
         employerContribution: input.employerContribution ? String(input.employerContribution) : "0",
         employeeContribution: input.employeeContribution ? String(input.employeeContribution) : "0",
@@ -365,6 +367,9 @@ export const hrSalaryScaleRouter = router({
           annualAllowance: updateData.annualAllowance ? String(updateData.annualAllowance) : existing.annualAllowance,
           bonus: updateData.bonus ? String(updateData.bonus) : existing.bonus,
           otherAllowances: updateData.otherAllowances ? String(updateData.otherAllowances) : existing.otherAllowances,
+          taxPercent: updateData.taxPercent !== undefined
+            ? String(updateData.taxPercent)
+            : existing.taxPercent,
           // ✅ NEW: Social Security
           employerContribution: updateData.employerContribution ? String(updateData.employerContribution) : existing.employerContribution,
           employerContributionType: updateData.employerContributionType || existing.employerContributionType,
@@ -393,7 +398,9 @@ export const hrSalaryScaleRouter = router({
       const updateValues: Record<string, unknown> = {
         updatedBy: ctx.user?.id,
       };
-
+      if (updateData.taxPercent !== undefined) {
+        updateValues.taxPercent = String(updateData.taxPercent);
+      }
       if (updateData.staffFullName) updateValues.staffFullName = updateData.staffFullName;
       if (updateData.position) updateValues.position = updateData.position;
       if (updateData.department) updateValues.department = updateData.department;
@@ -432,7 +439,7 @@ export const hrSalaryScaleRouter = router({
       if (updateData.currency) updateValues.currency = updateData.currency;
       if (updateData.effectiveStartDate) updateValues.effectiveStartDate = updateData.effectiveStartDate;
       if (updateData.effectiveEndDate) updateValues.effectiveEndDate = updateData.effectiveEndDate;
-
+      
       await db
         .update(hrSalaryScale)
         .set(updateValues)
