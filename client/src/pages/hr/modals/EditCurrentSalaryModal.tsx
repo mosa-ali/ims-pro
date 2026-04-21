@@ -116,36 +116,46 @@ export function EditCurrentSalaryModal({ employee, onClose, onSave }: Props) {
     return value;
   };
 
-  // Pre-populate form with current salary data when it loads
   useEffect(() => {
     if (currentSalary) {
       setFormData(prev => ({
         ...prev,
         grade: currentSalary.gradeCode || prev.grade,
         step: currentSalary.step || prev.step,
+
         basicSalary: toNumber(
           currentSalary.basicSalary,
           prev.basicSalary
         ),
+
         housingAllowance: toNumber(
           currentSalary.housingAllowance,
           prev.housingAllowance
         ),
+
         transportAllowance: toNumber(
           currentSalary.transportAllowance,
           prev.transportAllowance
         ),
+
         representationAllowance: toNumber(
           currentSalary.representationAllowance,
           prev.representationAllowance
         ),
+
         otherAllowances: toNumber(
           currentSalary.otherAllowances,
           prev.otherAllowances
         ),
-      }));
-    }
-  }, [currentSalary]);
+
+        // ✅ FIX HERE (INSIDE OBJECT)
+        effectiveDate: currentSalary.effectiveStartDate
+          ? currentSalary.effectiveStartDate.split("T")[0]
+          : prev.effectiveDate,
+        }));
+      }
+    }, [currentSalary]);
+
 
   // Get available steps for selected grade
   const getAvailableSteps = (): string[] => {
