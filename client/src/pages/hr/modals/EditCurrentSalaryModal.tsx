@@ -124,7 +124,7 @@ export function EditCurrentSalaryModal({ employee, onClose, onSave }: Props) {
         grade: currentSalary.gradeCode || prev.grade,
         step: currentSalary.step || prev.step,
         basicSalary: toNumber(
-          currentSalary.approvedGrossSalary,
+          currentSalary.basicSalary,
           prev.basicSalary
         ),
         housingAllowance: toNumber(
@@ -324,6 +324,7 @@ export function EditCurrentSalaryModal({ employee, onClose, onSave }: Props) {
         id: salaryRecordId,
         gradeCode: formData.grade.trim(),
         step: formData.step.trim(),
+        basicSalary: formData.basicSalary,
         approvedGrossSalary: calculateTotalGross(),
         housingAllowance: finalHousing,
         transportAllowance: finalTransport,
