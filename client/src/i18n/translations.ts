@@ -7343,7 +7343,6 @@ export interface Translations {
     areasForImprovement: string;
     authorizedSignature: string;
     bankName: string;
-    baseSalary: string;
     basicSalary: string;
     cancel: string;
     cancelled: string;
@@ -7866,7 +7865,7 @@ export interface Translations {
     approvedBy: string;
     areYouSureYouWantTo: string;
     areYouSureYouWantTo3: string;
-    baseSalary: string;
+    basicSalary: string;
     cancelled: string;
     caseReference: string;
     certificate: string;
@@ -17575,7 +17574,6 @@ export const en: Translations = {
     areasForImprovement: 'Areas for Improvement',
     authorizedSignature: 'Authorized Signature',
     bankName: 'Bank Name',
-    baseSalary: 'Base Salary',
     basicSalary: 'Basic Salary',
     cancel: 'Cancel',
     cancelled: 'Cancelled',
@@ -18098,7 +18096,7 @@ export const en: Translations = {
     approvedBy: 'Approved By',
     areYouSureYouWantTo: 'Are you sure you want to delete this performance review?',
     areYouSureYouWantTo3: 'Are you sure you want to delete this training record?',
-    baseSalary: 'Base Salary',
+    basicSalary: 'Base Salary',
     cancelled: 'Cancelled',
     caseReference: 'Case Reference',
     certificate: 'Certificate',
@@ -31105,7 +31103,6 @@ export const ar: Translations = {
     areasForImprovement: 'مجالات التحسين',
     authorizedSignature: 'التوقيع المعتمد',
     bankName: 'اسم البنك',
-    baseSalary: 'الراتب الأساسي',
     basicSalary: 'الراتب الأساسي',
     cancel: 'إلغاء',
     cancelled: 'ملغي',
@@ -31628,7 +31625,7 @@ export const ar: Translations = {
     approvedBy: 'اعتمد من قبل',
     areYouSureYouWantTo: 'هل أنت متأكد من حذف تقييم الأداء هذا؟',
     areYouSureYouWantTo3: 'هل أنت متأكد من حذف سجل التدريب هذا؟',
-    baseSalary: 'الراتب الأساسي',
+    basicSalary: 'الراتب الأساسي',
     cancelled: 'ملغي',
     caseReference: 'مرجع القضية',
     certificate: 'الشهادة',

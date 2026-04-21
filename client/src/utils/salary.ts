@@ -8,30 +8,30 @@
 
 /**
  * Calculate allowance value based on type (fixed amount or percentage)
- * @param baseSalary - Base salary amount
+ * @param basicSalary - Base salary amount
  * @param allowance - Allowance value (either fixed amount or percentage)
  * @param type - Type of allowance: 'value' (fixed) or 'percentage'
  * @returns Calculated allowance value
  */
 export const calculateAllowanceValue = (
-  baseSalary: number,
+  basicSalary: number,
   allowance: number,
   type: 'value' | 'percentage'
 ): number => {
   if (type === 'percentage') {
-    return (baseSalary * allowance) / 100;
+    return (basicSalary * allowance) / 100;
   }
   return allowance || 0;
 };
 
 /**
  * Calculate total gross salary including all allowances
- * @param baseSalary - Base salary
+ * @param basicSalary - Base salary
  * @param allowances - Object containing all allowances with their types
  * @returns Total gross salary
  */
 export const calculateTotalGross = (
-  baseSalary: number,
+  basicSalary: number,
   allowances: {
     housing?: { value: number; type: 'value' | 'percentage' };
     transport?: { value: number; type: 'value' | 'percentage' };
@@ -39,19 +39,19 @@ export const calculateTotalGross = (
     other?: { value: number; type: 'value' | 'percentage' };
   }
 ): number => {
-  let total = baseSalary;
+  let total = basicSalary;
 
   if (allowances.housing) {
-    total += calculateAllowanceValue(baseSalary, allowances.housing.value, allowances.housing.type);
+    total += calculateAllowanceValue(basicSalary, allowances.housing.value, allowances.housing.type);
   }
   if (allowances.transport) {
-    total += calculateAllowanceValue(baseSalary, allowances.transport.value, allowances.transport.type);
+    total += calculateAllowanceValue(basicSalary, allowances.transport.value, allowances.transport.type);
   }
   if (allowances.representation) {
-    total += calculateAllowanceValue(baseSalary, allowances.representation.value, allowances.representation.type);
+    total += calculateAllowanceValue(basicSalary, allowances.representation.value, allowances.representation.type);
   }
   if (allowances.other) {
-    total += calculateAllowanceValue(baseSalary, allowances.other.value, allowances.other.type);
+    total += calculateAllowanceValue(basicSalary, allowances.other.value, allowances.other.type);
   }
 
   return total;

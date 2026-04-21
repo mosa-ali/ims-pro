@@ -67,7 +67,7 @@ export function SalaryCompensationCard({
  readOnlyNotice: '🔒 ' + t.hr.salaryDataManagedCentrally,
  grade: t.hrEmployeeCards.grade,
  step: t.hrEmployeeCards.step,
- baseSalary: t.hrEmployeeCards.baseSalary,
+ basicSalary: t.hrEmployeeCards.basicSalary,
  allowances: t.hrEmployeeCards.allowances,
  housing: t.hrEmployeeCards.housing,
  transport: t.hrEmployeeCards.transport,
@@ -163,11 +163,11 @@ export function SalaryCompensationCard({
  }
 
  // ✅ CRITICAL: Use basicSalary for display
- const baseSalary = parseFloat(salaryRecord.basicSalary || '0');
+ const basicSalary = parseFloat(salaryRecord.basicSalary || '0');
  const grossSalary = calculateGrossSalary();
  const socialSecurityDeduction = calculateSocialSecurityDeduction();
  const currency = salaryRecord.currency || 'USD';
- const totalAllowances = grossSalary - baseSalary;
+ const totalAllowances = grossSalary - basicSalary;
 
  return (
  <div className="space-y-6">
@@ -207,9 +207,9 @@ export function SalaryCompensationCard({
  <div className="p-6 space-y-4">
  {/* ✅ CRITICAL: Base Salary - Use basicSalary (NOT approvedGrossSalary) */}
  <div className={`p-4 bg-blue-50 border border-blue-200 rounded-lg text-start`}>
- <p className="text-sm text-blue-900 font-semibold mb-2">{localT.baseSalary}</p>
+ <p className="text-sm text-blue-900 font-semibold mb-2">{localT.basicSalary}</p>
  <p className="text-3xl font-bold text-blue-600">
- {formatCurrency(baseSalary, currency)}
+ {formatCurrency(basicSalary, currency)}
  </p>
  <p className="text-xs text-blue-700 mt-1">
  {localT.grade}: {salaryRecord.gradeCode} | {localT.step}: {salaryRecord.step}
@@ -256,7 +256,7 @@ export function SalaryCompensationCard({
  {formatCurrency(grossSalary, currency)}
  </p>
  <p className="text-xs text-green-700 mt-1">
- {formatCurrency(baseSalary, currency)} + {formatCurrency(totalAllowances, currency)} allowances = {formatCurrency(grossSalary, currency)}
+ {formatCurrency(basicSalary, currency)} + {formatCurrency(totalAllowances, currency)} allowances = {formatCurrency(grossSalary, currency)}
  </p>
  </div>
 

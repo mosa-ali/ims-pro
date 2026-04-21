@@ -196,7 +196,7 @@ export function EditCurrentSalaryModal({ employee, onClose, onSave }: Props) {
     salarySection: t.hrModals.salaryStructure,
     grade: t.hrModals.grade,
     step: t.hrModals.step,
-    baseSalary: t.hrModals.baseSalary,
+    basicSalary: t.hrModals.basicSalary,
 
     // Allowances
     allowancesSection: t.hrModals.allowances,
@@ -517,7 +517,7 @@ export function EditCurrentSalaryModal({ employee, onClose, onSave }: Props) {
 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      {localT.baseSalary}{" "}
+                      {localT.basicSalary}{" "}
                       <span className="text-red-500">*</span>
                     </label>
                     <input

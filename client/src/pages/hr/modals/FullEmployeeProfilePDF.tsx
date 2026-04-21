@@ -77,7 +77,7 @@ export function FullEmployeeProfilePDF({
  
  grade: t.hrModals.grade,
  step: t.hrModals.step,
- baseSalary: t.hrModals.baseSalary,
+ basicSalary: t.hrModals.basicSalary,
  housing: t.hrModals.housingAllowance,
  transport: t.hrModals.transportAllowance,
  representation: t.hrModals.representationAllowance,
@@ -382,7 +382,7 @@ export function FullEmployeeProfilePDF({
  <div className="bg-blue-50 border border-blue-200 rounded p-4">
  <div className="grid grid-cols-1 gap-2">
  <div className="flex justify-between">
- <p className="text-xs text-gray-600">{localT.baseSalary}</p>
+ <p className="text-xs text-gray-600">{localT.basicSalary}</p>
  <p className="text-sm font-bold text-blue-900">
  {formatCurrency(activeSalaryRecord.approvedGrossSalary, activeSalaryRecord.currency)}
  </p>
