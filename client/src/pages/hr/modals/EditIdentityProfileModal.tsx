@@ -78,17 +78,17 @@ export function EditIdentityProfileModal({
  const newErrors: Record<string, string> = {};
  
  if (!formData.fullName.trim()) {
- newErrors.fullName = t.required;
+ newErrors.fullName = localT.required;
  }
  
  if (!formData.email.trim()) {
- newErrors.email = t.required;
+ newErrors.email = localT.required;
  } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
- newErrors.email = t.invalidEmail;
+ newErrors.email = localT.invalidEmail;
  }
  
  if (!formData.nationality.trim()) {
- newErrors.nationality = t.required;
+ newErrors.nationality = localT.required;
  }
  
  setErrors(newErrors);
@@ -152,9 +152,9 @@ export function EditIdentityProfileModal({
  <div>
  <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
  <User className="w-5 h-5 text-blue-600" />
- {t.title}
+ {localT.title}
  </h2>
- <p className="text-sm text-gray-600 mt-1">{t.subtitle}</p>
+ <p className="text-sm text-gray-600 mt-1">{localT.subtitle}</p>
  </div>
  <button onClick={onClose} className="text-gray-400 hover:text-gray-600">
  <X className="w-6 h-6" />
@@ -167,19 +167,19 @@ export function EditIdentityProfileModal({
  {/* Read-Only Section */}
  <div>
  <h3 className="text-sm font-semibold text-gray-700 mb-3 pb-2 border-b border-gray-200">
- {t.readOnlySection}
+ {localT.readOnlySection}
  </h3>
  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 bg-gray-50 p-4 rounded-lg">
  <div>
- <label className="block text-xs font-medium text-gray-500 mb-1">{t.staffId}</label>
+ <label className="block text-xs font-medium text-gray-500 mb-1">{localT.staffId}</label>
  <div className="text-sm font-mono font-bold text-gray-900">{employee.staffId}</div>
  </div>
  <div>
- <label className="block text-xs font-medium text-gray-500 mb-1">{t.hireDate}</label>
+ <label className="block text-xs font-medium text-gray-500 mb-1">{localT.hireDate}</label>
  <div className="text-sm text-gray-900">{formatDate(employee.hireDate)}</div>
  </div>
  <div>
- <label className="block text-xs font-medium text-gray-500 mb-1">{t.status}</label>
+ <label className="block text-xs font-medium text-gray-500 mb-1">{localT.status}</label>
  <div className={`inline-flex px-2 py-1 rounded-full text-xs font-medium ${ employee.status === 'active' ? 'bg-green-100 text-green-800' : employee.status === 'archived' ? 'bg-yellow-100 text-yellow-800' : 'bg-gray-100 text-gray-800' }`}>
  {getStatusLabel(employee.status)}
  </div>
@@ -190,7 +190,7 @@ export function EditIdentityProfileModal({
  {/* Editable Section */}
  <div>
  <h3 className="text-sm font-semibold text-gray-700 mb-3 pb-2 border-b border-gray-200">
- {t.editableSection}
+ {localT.editableSection}
  </h3>
  
  <div className="space-y-4">
@@ -198,7 +198,7 @@ export function EditIdentityProfileModal({
  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
  <div>
  <label className="block text-sm font-medium text-gray-700 mb-2">
- {t.fullName} <span className="text-red-500">*</span>
+ {localT.fullName} <span className="text-red-500">*</span>
  </label>
  <input
  type="text"
@@ -212,7 +212,7 @@ export function EditIdentityProfileModal({
 
  <div>
  <label className="block text-sm font-medium text-gray-700 mb-2">
- {t.gender} <span className="text-red-500">*</span>
+ {localT.gender} <span className="text-red-500">*</span>
  </label>
  <select
  required
@@ -220,8 +220,8 @@ export function EditIdentityProfileModal({
  onChange={(e) => setFormData({ ...formData, gender: e.target.value })}
  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
  >
- <option value="Male">{t.male}</option>
- <option value="Female">{t.female}</option>
+ <option value="Male">{localT.male}</option>
+ <option value="Female">{localT.female}</option>
  </select>
  </div>
  </div>
@@ -230,7 +230,7 @@ export function EditIdentityProfileModal({
  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
  <div>
  <label className="block text-sm font-medium text-gray-700 mb-2">
- {t.nationality} <span className="text-red-500">*</span>
+ {localT.nationality} <span className="text-red-500">*</span>
  </label>
  <input
  type="text"
@@ -244,7 +244,7 @@ export function EditIdentityProfileModal({
 
  <div>
  <label className="block text-sm font-medium text-gray-700 mb-2">
- {t.dateOfBirth}
+ {localT.dateOfBirth}
  </label>
  <input
  type="date"
@@ -259,7 +259,7 @@ export function EditIdentityProfileModal({
  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
  <div>
  <label className="block text-sm font-medium text-gray-700 mb-2">
- {t.phone}
+ {localT.phone}
  </label>
  <input
  type="tel"
@@ -271,7 +271,7 @@ export function EditIdentityProfileModal({
 
  <div>
  <label className="block text-sm font-medium text-gray-700 mb-2">
- {t.email} <span className="text-red-500">*</span>
+ {localT.email} <span className="text-red-500">*</span>
  </label>
  <input
  type="email"
@@ -287,7 +287,7 @@ export function EditIdentityProfileModal({
  {/* Row 4: Address */}
  <div>
  <label className="block text-sm font-medium text-gray-700 mb-2">
- {t.address}
+ {localT.address}
  </label>
  <textarea
  rows={2}
@@ -300,7 +300,7 @@ export function EditIdentityProfileModal({
  {/* Row 5: Supervisor */}
  <div>
  <label className="block text-sm font-medium text-gray-700 mb-2">
- {t.supervisor}
+ {localT.supervisor}
  </label>
  <input
  type="text"
@@ -316,32 +316,32 @@ export function EditIdentityProfileModal({
  {/* Document Uploads Section */}
  <div>
  <h3 className="text-sm font-semibold text-gray-700 mb-3 pb-2 border-b border-gray-200">
- {t.uploadsSection}
+ {localT.uploadsSection}
  </h3>
  <div className="space-y-3">
  <div className="flex items-center gap-3">
  <div className="flex-1">
- <label className="text-sm text-gray-700">{t.identification}</label>
+ <label className="text-sm text-gray-700">{localT.identification}</label>
  </div>
  <button
  type="button"
  className="flex items-center gap-2 px-3 py-2 text-sm border border-gray-300 rounded-lg hover:bg-gray-50"
  >
  <Upload className="w-4 h-4" />
- {t.upload}
+ {localT.upload}
  </button>
  </div>
  
  <div className="flex items-center gap-3">
  <div className="flex-1">
- <label className="text-sm text-gray-700">{t.cv}</label>
+ <label className="text-sm text-gray-700">{localT.cv}</label>
  </div>
  <button
  type="button"
  className="flex items-center gap-2 px-3 py-2 text-sm border border-gray-300 rounded-lg hover:bg-gray-50"
  >
  <Upload className="w-4 h-4" />
- {t.upload}
+ {localT.upload}
  </button>
  </div>
  </div>
@@ -356,14 +356,14 @@ export function EditIdentityProfileModal({
  onClick={onClose}
  className="px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
  >
- {t.cancel}
+ {localT.cancel}
  </button>
  <button
  onClick={handleSubmit}
  className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
  >
  <Save className="w-4 h-4" />
- {t.save}
+ {localT.save}
  </button>
  </div>
  </div>

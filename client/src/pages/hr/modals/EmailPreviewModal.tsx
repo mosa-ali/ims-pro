@@ -59,7 +59,7 @@ export function EmailPreviewModal({
  <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200">
  <div className="flex items-center gap-3">
  <Mail className="w-6 h-6 text-blue-600" />
- <h2 className="text-lg font-semibold text-gray-900">{t.title}</h2>
+ <h2 className="text-lg font-semibold text-gray-900">{localT.title}</h2>
  </div>
  <button
  onClick={onClose}
@@ -75,10 +75,10 @@ export function EmailPreviewModal({
  <AlertCircle className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" />
  <div>
  <div className="font-semibold text-amber-900 text-sm">
- {t.simulatedLabel}
+ {localT.simulatedLabel}
  </div>
  <div className="text-amber-700 text-xs mt-1">
- {t.simulatedDesc}
+ {localT.simulatedDesc}
  </div>
  </div>
  </div>
@@ -90,7 +90,7 @@ export function EmailPreviewModal({
  {/* From */}
  <div className="flex items-start gap-3">
  <div className="text-sm font-semibold text-gray-600 w-20">
- {t.from}:
+ {localT.from}:
  </div>
  <div className="text-sm text-gray-900">
  HR Management System &lt;noreply@hrms.org&gt;
@@ -100,7 +100,7 @@ export function EmailPreviewModal({
  {/* To */}
  <div className="flex items-start gap-3">
  <div className="text-sm font-semibold text-gray-600 w-20">
- {t.to}:
+ {localT.to}:
  </div>
  <div className="text-sm text-gray-900">
  <div className="flex items-center gap-2">
@@ -119,7 +119,7 @@ export function EmailPreviewModal({
  {/* Subject */}
  <div className="flex items-start gap-3">
  <div className="text-sm font-semibold text-gray-600 w-20">
- {t.subject}:
+ {localT.subject}:
  </div>
  <div className="text-sm font-semibold text-gray-900">
  {notification.subject}
@@ -129,7 +129,7 @@ export function EmailPreviewModal({
  {/* Sent At */}
  <div className="flex items-start gap-3">
  <div className="text-sm font-semibold text-gray-600 w-20">
- {t.sentAt}:
+ {localT.sentAt}:
  </div>
  <div className="text-sm text-gray-900 flex items-center gap-2">
  <Clock className="w-4 h-4 text-gray-400" />
@@ -140,11 +140,11 @@ export function EmailPreviewModal({
  {/* Status */}
  <div className="flex items-start gap-3">
  <div className="text-sm font-semibold text-gray-600 w-20">
- {t.status}:
+ {localT.status}:
  </div>
  <div>
  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-800">
- {t.simulated}
+ {localT.simulated}
  </span>
  </div>
  </div>
@@ -154,7 +154,7 @@ export function EmailPreviewModal({
  {/* Email Body */}
  <div className="flex-1 overflow-y-auto px-6 py-4">
  <div className="text-sm font-semibold text-gray-700 mb-3">
- {t.messageBody}
+ {localT.messageBody}
  </div>
  <div 
  className="bg-white border border-gray-200 rounded-lg p-6 font-mono text-sm text-gray-800 whitespace-pre-wrap"
@@ -170,7 +170,7 @@ export function EmailPreviewModal({
  onClick={onClose}
  className="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700"
  >
- {t.close}
+ {localT.close}
  </button>
  </div>
  </div>

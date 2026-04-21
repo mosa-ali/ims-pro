@@ -89,7 +89,7 @@ export function TrainingFormModal({
 
  const handleSave = () => {
  if (!formData.trainingTitle || !formData.provider || !formData.startDate || !formData.endDate) {
- alert(t.required);
+ alert(localT.required);
  return;
  }
  
@@ -99,7 +99,7 @@ export function TrainingFormModal({
  lastModifiedBy: 'Current User'
  });
  if (updated) {
- alert(t.success);
+ alert(localT.success);
  onSave(updated);
  }
  } else {
@@ -118,7 +118,7 @@ export function TrainingFormModal({
  createdBy: 'Current User'
  });
  
- alert(t.success);
+ alert(localT.success);
  onSave(record);
  }
  
@@ -131,7 +131,7 @@ export function TrainingFormModal({
  <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200">
  <div className="flex items-center gap-3">
  <GraduationCap className="w-6 h-6 text-blue-600" />
- <h2 className="text-xl font-bold text-gray-900">{isEdit ? t.titleEdit : t.titleAdd}</h2>
+ <h2 className="text-xl font-bold text-gray-900">{isEdit ? localT.titleEdit : localT.titleAdd}</h2>
  </div>
  <button onClick={onClose} className="text-gray-400 hover:text-gray-600">
  <X className="w-6 h-6" />
@@ -142,16 +142,16 @@ export function TrainingFormModal({
  <div className="space-y-4">
  {!isEdit && (
  <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
- <h3 className="text-sm font-semibold text-blue-900 mb-2">{t.employeeInfo}</h3>
+ <h3 className="text-sm font-semibold text-blue-900 mb-2">{localT.employeeInfo}</h3>
  <div className="grid grid-cols-2 gap-2 text-sm">
- <div><span className="text-gray-600">{t.staffId}:</span> <span className="font-medium">{employee.staffId}</span></div>
- <div><span className="text-gray-600">{t.fullName}:</span> <span className="font-medium">{employee.fullName}</span></div>
+ <div><span className="text-gray-600">{localT.staffId}:</span> <span className="font-medium">{employee.staffId}</span></div>
+ <div><span className="text-gray-600">{localT.fullName}:</span> <span className="font-medium">{employee.fullName}</span></div>
  </div>
  </div>
  )}
 
  <div>
- <label className="block text-sm font-medium text-gray-700 mb-2">{t.trainingTitle} *</label>
+ <label className="block text-sm font-medium text-gray-700 mb-2">{localT.trainingTitle} *</label>
  <input
  type="text"
  value={formData.trainingTitle}
@@ -162,7 +162,7 @@ export function TrainingFormModal({
 
  <div className="grid grid-cols-2 gap-4">
  <div>
- <label className="block text-sm font-medium text-gray-700 mb-2">{t.provider} *</label>
+ <label className="block text-sm font-medium text-gray-700 mb-2">{localT.provider} *</label>
  <input
  type="text"
  value={formData.provider}
@@ -171,25 +171,25 @@ export function TrainingFormModal({
  />
  </div>
  <div>
- <label className="block text-sm font-medium text-gray-700 mb-2">{t.trainingType} *</label>
+ <label className="block text-sm font-medium text-gray-700 mb-2">{localT.trainingType} *</label>
  <select
  value={formData.trainingType}
  onChange={(e) => setFormData({ ...formData, trainingType: e.target.value as any })}
  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
  >
- <option value="Technical">{t.technical}</option>
- <option value="Soft Skills">{t.softSkills}</option>
- <option value="Management">{t.management}</option>
- <option value="Compliance">{t.compliance}</option>
- <option value="Safety">{t.safety}</option>
- <option value="Other">{t.other}</option>
+ <option value="Technical">{localT.technical}</option>
+ <option value="Soft Skills">{localT.softSkills}</option>
+ <option value="Management">{localT.management}</option>
+ <option value="Compliance">{localT.compliance}</option>
+ <option value="Safety">{localT.safety}</option>
+ <option value="Other">{localT.other}</option>
  </select>
  </div>
  </div>
 
  <div className="grid grid-cols-3 gap-4">
  <div>
- <label className="block text-sm font-medium text-gray-700 mb-2">{t.startDate} *</label>
+ <label className="block text-sm font-medium text-gray-700 mb-2">{localT.startDate} *</label>
  <input
  type="date"
  value={formData.startDate}
@@ -198,7 +198,7 @@ export function TrainingFormModal({
  />
  </div>
  <div>
- <label className="block text-sm font-medium text-gray-700 mb-2">{t.endDate} *</label>
+ <label className="block text-sm font-medium text-gray-700 mb-2">{localT.endDate} *</label>
  <input
  type="date"
  value={formData.endDate}
@@ -207,28 +207,28 @@ export function TrainingFormModal({
  />
  </div>
  <div>
- <label className="block text-sm font-medium text-gray-700 mb-2">{t.duration}</label>
+ <label className="block text-sm font-medium text-gray-700 mb-2">{localT.duration}</label>
  <input
  type="text"
  value={formData.duration}
  onChange={(e) => setFormData({ ...formData, duration: e.target.value })}
- placeholder={t.durationPlaceholder}
+ placeholder={localT.durationPlaceholder}
  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
  />
  </div>
  </div>
 
  <div>
- <label className="block text-sm font-medium text-gray-700 mb-2">{t.status} *</label>
+ <label className="block text-sm font-medium text-gray-700 mb-2">{localT.status} *</label>
  <select
  value={formData.status}
  onChange={(e) => setFormData({ ...formData, status: e.target.value as any })}
  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
  >
- <option value="Scheduled">{t.scheduled}</option>
- <option value="In Progress">{t.inProgress}</option>
- <option value="Completed">{t.completed}</option>
- <option value="Cancelled">{t.cancelled}</option>
+ <option value="Scheduled">{localT.scheduled}</option>
+ <option value="In Progress">{localT.inProgress}</option>
+ <option value="Completed">{localT.completed}</option>
+ <option value="Cancelled">{localT.cancelled}</option>
  </select>
  </div>
 
@@ -239,12 +239,12 @@ export function TrainingFormModal({
  checked={formData.certificateIssued}
  onChange={(e) => setFormData({ ...formData, certificateIssued: e.target.checked })}
  />
- <label htmlFor="certificateIssued" className="text-sm text-gray-700">{t.certificateIssued}</label>
+ <label htmlFor="certificateIssued" className="text-sm text-gray-700">{localT.certificateIssued}</label>
  </div>
 
  {formData.certificateIssued && (
  <div>
- <label className="block text-sm font-medium text-gray-700 mb-2">{t.certificateNumber}</label>
+ <label className="block text-sm font-medium text-gray-700 mb-2">{localT.certificateNumber}</label>
  <input
  type="text"
  value={formData.certificateNumber}
@@ -256,7 +256,7 @@ export function TrainingFormModal({
 
  <div className="grid grid-cols-3 gap-4">
  <div>
- <label className="block text-sm font-medium text-gray-700 mb-2">{t.cost}</label>
+ <label className="block text-sm font-medium text-gray-700 mb-2">{localT.cost}</label>
  <input
  type="number"
  value={formData.cost}
@@ -265,7 +265,7 @@ export function TrainingFormModal({
  />
  </div>
  <div>
- <label className="block text-sm font-medium text-gray-700 mb-2">{t.currency}</label>
+ <label className="block text-sm font-medium text-gray-700 mb-2">{localT.currency}</label>
  <select
  value={formData.currency}
  onChange={(e) => setFormData({ ...formData, currency: e.target.value })}
@@ -277,7 +277,7 @@ export function TrainingFormModal({
  </select>
  </div>
  <div>
- <label className="block text-sm font-medium text-gray-700 mb-2">{t.fundedBy}</label>
+ <label className="block text-sm font-medium text-gray-700 mb-2">{localT.fundedBy}</label>
  <input
  type="text"
  value={formData.fundedBy}
@@ -288,7 +288,7 @@ export function TrainingFormModal({
  </div>
 
  <div>
- <label className="block text-sm font-medium text-gray-700 mb-2">{t.notes}</label>
+ <label className="block text-sm font-medium text-gray-700 mb-2">{localT.notes}</label>
  <textarea
  value={formData.notes}
  onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
@@ -304,14 +304,14 @@ export function TrainingFormModal({
  onClick={onClose}
  className="px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
  >
- {t.cancel}
+ {localT.cancel}
  </button>
  <button
  onClick={handleSave}
  className={`flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700`}
  >
  <Save className="w-5 h-5" />
- <span>{t.save}</span>
+ <span>{localT.save}</span>
  </button>
  </div>
  </div>

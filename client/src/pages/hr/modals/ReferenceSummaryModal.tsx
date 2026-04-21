@@ -96,14 +96,14 @@ export function ReferenceSummaryModal({
  >
  {/* Header */}
  <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between bg-blue-50 print:hidden">
- <h2 className="text-xl font-bold text-gray-900">{t.title}</h2>
+ <h2 className="text-xl font-bold text-gray-900">{localT.title}</h2>
  <div className="flex items-center gap-2">
  <button
  onClick={handlePrint}
  className="flex items-center gap-2 px-3 py-2 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700"
  >
  <Printer className="w-4 h-4" />
- <span>{t.print}</span>
+ <span>{localT.print}</span>
  </button>
  <button onClick={onClose} className="text-gray-400 hover:text-gray-600">
  <X className="w-6 h-6" />
@@ -116,7 +116,7 @@ export function ReferenceSummaryModal({
  <div className="max-w-3xl mx-auto space-y-6">
  {/* Letterhead */}
  <div className="text-center border-b-2 border-blue-600 pb-6 mb-8">
- <h1 className="text-3xl font-bold text-blue-900 mb-2">{t.orgName}</h1>
+ <h1 className="text-3xl font-bold text-blue-900 mb-2">{localT.orgName}</h1>
  <p className="text-sm text-gray-600">
  {t.hrModals.humanResourcesDepartment}
  </p>
@@ -125,7 +125,7 @@ export function ReferenceSummaryModal({
  {/* Document Info */}
  <div className="flex justify-between items-start mb-6 text-sm text-gray-600">
  <div>
- <strong>{t.issuedDate}:</strong> {formatDate(new Date().toISOString())}
+ <strong>{localT.issuedDate}:</strong> {formatDate(new Date().toISOString())}
  </div>
  <div className="text-end">
  <strong>Ref:</strong> EMP-REF-{employee.staffId}-{new Date().getFullYear()}
@@ -142,7 +142,7 @@ export function ReferenceSummaryModal({
  {t.hrModals.thisIsToCertifyThat}{' '}
  <strong className="text-blue-900 text-lg">{employee.fullName}</strong>{' '}
  {t.hrModals.staffId13} <strong>{employee.staffId}</strong>){' '}
- {t.workedWith}
+ {localT.workedWith}
  </p>
  </div>
 
@@ -151,27 +151,27 @@ export function ReferenceSummaryModal({
  <table className="w-full">
  <tbody>
  <tr className="border-b border-gray-200">
- <td className="px-4 py-3 bg-gray-50 font-medium text-sm text-gray-700 w-1/3">{t.fullName}</td>
+ <td className="px-4 py-3 bg-gray-50 font-medium text-sm text-gray-700 w-1/3">{localT.fullName}</td>
  <td className="px-4 py-3 text-sm text-gray-900">{employee.fullName}</td>
  </tr>
  <tr className="border-b border-gray-200">
- <td className="px-4 py-3 bg-gray-50 font-medium text-sm text-gray-700">{t.staffId}</td>
+ <td className="px-4 py-3 bg-gray-50 font-medium text-sm text-gray-700">{localT.staffId}</td>
  <td className="px-4 py-3 text-sm text-gray-900 font-mono">{employee.staffId}</td>
  </tr>
  <tr className="border-b border-gray-200">
- <td className="px-4 py-3 bg-gray-50 font-medium text-sm text-gray-700">{t.position}</td>
+ <td className="px-4 py-3 bg-gray-50 font-medium text-sm text-gray-700">{localT.position}</td>
  <td className="px-4 py-3 text-sm text-gray-900">{employee.position}</td>
  </tr>
  <tr className="border-b border-gray-200">
- <td className="px-4 py-3 bg-gray-50 font-medium text-sm text-gray-700">{t.department}</td>
+ <td className="px-4 py-3 bg-gray-50 font-medium text-sm text-gray-700">{localT.department}</td>
  <td className="px-4 py-3 text-sm text-gray-900">{employee.department}</td>
  </tr>
  <tr className="border-b border-gray-200">
- <td className="px-4 py-3 bg-gray-50 font-medium text-sm text-gray-700">{t.startDate}</td>
+ <td className="px-4 py-3 bg-gray-50 font-medium text-sm text-gray-700">{localT.startDate}</td>
  <td className="px-4 py-3 text-sm text-gray-900">{formatDate(employee.hireDate)}</td>
  </tr>
  <tr className="border-b border-gray-200">
- <td className="px-4 py-3 bg-gray-50 font-medium text-sm text-gray-700">{t.endDate}</td>
+ <td className="px-4 py-3 bg-gray-50 font-medium text-sm text-gray-700">{localT.endDate}</td>
  <td className="px-4 py-3 text-sm text-gray-900">
  {employee.status === 'exited' 
  ? formatDate(employee.contractEndDate) 
@@ -179,11 +179,11 @@ export function ReferenceSummaryModal({
  </td>
  </tr>
  <tr className="border-b border-gray-200">
- <td className="px-4 py-3 bg-gray-50 font-medium text-sm text-gray-700">{t.totalDuration}</td>
+ <td className="px-4 py-3 bg-gray-50 font-medium text-sm text-gray-700">{localT.totalDuration}</td>
  <td className="px-4 py-3 text-sm text-gray-900 font-semibold">{calculateTotalDuration()}</td>
  </tr>
  <tr>
- <td className="px-4 py-3 bg-gray-50 font-medium text-sm text-gray-700">{t.employmentType}</td>
+ <td className="px-4 py-3 bg-gray-50 font-medium text-sm text-gray-700">{localT.employmentType}</td>
  <td className="px-4 py-3 text-sm text-gray-900">{employee.employmentType || '-'}</td>
  </tr>
  </tbody>
@@ -192,10 +192,10 @@ export function ReferenceSummaryModal({
 
  {/* Closing Statement */}
  <div className="mt-8 space-y-4">
- <p className="text-sm leading-relaxed">{t.closingText}</p>
+ <p className="text-sm leading-relaxed">{localT.closingText}</p>
  
  <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mt-4">
- <p className="text-xs text-yellow-800">{t.disclaimer}</p>
+ <p className="text-xs text-yellow-800">{localT.disclaimer}</p>
  </div>
  </div>
 
@@ -205,15 +205,15 @@ export function ReferenceSummaryModal({
  <div>
  <div className="h-16 mb-2"></div>
  <div className="border-t-2 border-gray-400 pt-2">
- <p className="text-sm font-semibold text-gray-900">{t.authorizedSignature}</p>
- <p className="text-xs text-gray-600">{t.hrManager}</p>
+ <p className="text-sm font-semibold text-gray-900">{localT.authorizedSignature}</p>
+ <p className="text-xs text-gray-600">{localT.hrManager}</p>
  <p className="text-xs text-gray-500 mt-1">{formatDate(new Date().toISOString())}</p>
  </div>
  </div>
  <div className="flex items-end justify-center">
  <div className="text-center">
  <div className="w-32 h-32 border-2 border-dashed border-gray-400 rounded-lg flex items-center justify-center mb-2">
- <span className="text-xs text-gray-400">{t.stamp}</span>
+ <span className="text-xs text-gray-400">{localT.stamp}</span>
  </div>
  </div>
  </div>
@@ -237,13 +237,13 @@ export function ReferenceSummaryModal({
  className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
  >
  <Printer className="w-5 h-5" />
- <span>{t.print}</span>
+ <span>{localT.print}</span>
  </button>
  <button
  onClick={onClose}
  className="px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
  >
- {t.close}
+ {localT.close}
  </button>
  </div>
  </div>

@@ -105,14 +105,14 @@ export function PayrollSlipPrintModal({
  >
  {/* Header (Print Hidden) */}
  <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between bg-green-50 print:hidden">
- <h2 className="text-xl font-bold text-gray-900">{t.title}</h2>
+ <h2 className="text-xl font-bold text-gray-900">{localT.title}</h2>
  <div className="flex items-center gap-2">
  <button
  onClick={handlePrint}
  className="flex items-center gap-2 px-3 py-2 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700"
  >
  <Printer className="w-4 h-4" />
- <span>{t.print}</span>
+ <span>{localT.print}</span>
  </button>
  <button onClick={onClose} className="text-gray-400 hover:text-gray-600">
  <X className="w-6 h-6" />
@@ -141,7 +141,7 @@ export function PayrollSlipPrintModal({
  <div className="text-center mb-6">
  <div className="inline-flex items-center gap-2 px-4 py-2 bg-blue-100 rounded-lg">
  <DollarSign className="w-6 h-6 text-blue-600" />
- <h2 className="text-xl font-bold text-blue-900">{t.title}</h2>
+ <h2 className="text-xl font-bold text-blue-900">{localT.title}</h2>
  </div>
  </div>
 
@@ -149,11 +149,11 @@ export function PayrollSlipPrintModal({
  <div className="mb-8 bg-gray-50 border border-gray-200 rounded-lg p-4">
  <div className="grid grid-cols-2 gap-4 text-sm">
  <div>
- <span className="font-medium text-gray-700">{t.payPeriod}:</span>
+ <span className="font-medium text-gray-700">{localT.payPeriod}:</span>
  <p className="text-lg font-bold text-gray-900">{payPeriod}</p>
  </div>
  <div>
- <span className="font-medium text-gray-700">{t.payDate}:</span>
+ <span className="font-medium text-gray-700">{localT.payDate}:</span>
  <p className="text-lg font-bold text-gray-900">{formatDate(new Date().toISOString())}</p>
  </div>
  </div>
@@ -162,27 +162,27 @@ export function PayrollSlipPrintModal({
  {/* Employee Information */}
  <div className="mb-6 border border-gray-300 rounded-lg p-4">
  <h3 className="text-sm font-bold text-gray-900 mb-3 uppercase bg-gray-100 px-3 py-2 rounded">
- {t.employeeInfo}
+ {localT.employeeInfo}
  </h3>
  <div className="grid grid-cols-2 gap-3 text-sm">
  <div className="flex justify-between">
- <span className="text-gray-600">{t.staffId}:</span>
+ <span className="text-gray-600">{localT.staffId}:</span>
  <span className="font-semibold text-gray-900">{employee.staffId}</span>
  </div>
  <div className="flex justify-between">
- <span className="text-gray-600">{t.fullName}:</span>
+ <span className="text-gray-600">{localT.fullName}:</span>
  <span className="font-semibold text-gray-900">{employee.fullName}</span>
  </div>
  <div className="flex justify-between">
- <span className="text-gray-600">{t.position}:</span>
+ <span className="text-gray-600">{localT.position}:</span>
  <span className="font-semibold text-gray-900">{employee.position}</span>
  </div>
  <div className="flex justify-between">
- <span className="text-gray-600">{t.department}:</span>
+ <span className="text-gray-600">{localT.department}:</span>
  <span className="font-semibold text-gray-900">{employee.department}</span>
  </div>
  <div className="flex justify-between col-span-2">
- <span className="text-gray-600">{t.project}:</span>
+ <span className="text-gray-600">{localT.project}:</span>
  <span className="font-semibold text-gray-900">{payrollRecord.project}</span>
  </div>
  </div>
@@ -191,33 +191,33 @@ export function PayrollSlipPrintModal({
  {/* Earnings Section */}
  <div className="mb-6">
  <h3 className="text-sm font-bold text-green-900 mb-3 uppercase bg-green-100 px-3 py-2 rounded">
- {t.earnings}
+ {localT.earnings}
  </h3>
  <div className="border border-green-300 rounded-lg overflow-hidden">
  <table className="w-full text-sm">
  <tbody>
  <tr className="border-b border-green-200">
- <td className="px-4 py-2 text-gray-700">{t.basicSalary}</td>
+ <td className="px-4 py-2 text-gray-700">{localT.basicSalary}</td>
  <td className="px-4 py-2 text-end font-semibold text-gray-900">{formatCurrency(payrollRecord.basicSalary)}</td>
  </tr>
  <tr className="border-b border-green-200 bg-green-50">
- <td className="px-4 py-2 text-gray-700">{t.housingAllowance}</td>
+ <td className="px-4 py-2 text-gray-700">{localT.housingAllowance}</td>
  <td className="px-4 py-2 text-end font-semibold text-gray-900">{formatCurrency(payrollRecord.housingAllowance)}</td>
  </tr>
  <tr className="border-b border-green-200">
- <td className="px-4 py-2 text-gray-700">{t.transportAllowance}</td>
+ <td className="px-4 py-2 text-gray-700">{localT.transportAllowance}</td>
  <td className="px-4 py-2 text-end font-semibold text-gray-900">{formatCurrency(payrollRecord.transportAllowance)}</td>
  </tr>
  <tr className="border-b border-green-200 bg-green-50">
- <td className="px-4 py-2 text-gray-700">{t.representationAllowance}</td>
+ <td className="px-4 py-2 text-gray-700">{localT.representationAllowance}</td>
  <td className="px-4 py-2 text-end font-semibold text-gray-900">{formatCurrency(payrollRecord.representationAllowance)}</td>
  </tr>
  <tr className="border-b-2 border-green-400">
- <td className="px-4 py-2 text-gray-700">{t.otherAllowances}</td>
+ <td className="px-4 py-2 text-gray-700">{localT.otherAllowances}</td>
  <td className="px-4 py-2 text-end font-semibold text-gray-900">{formatCurrency(payrollRecord.otherAllowances)}</td>
  </tr>
  <tr className="bg-green-100">
- <td className="px-4 py-3 font-bold text-green-900">{t.grossSalary}</td>
+ <td className="px-4 py-3 font-bold text-green-900">{localT.grossSalary}</td>
  <td className="px-4 py-3 text-end font-bold text-lg text-green-900">{formatCurrency(payrollRecord.grossSalary)}</td>
  </tr>
  </tbody>
@@ -228,29 +228,29 @@ export function PayrollSlipPrintModal({
  {/* Deductions Section */}
  <div className="mb-6">
  <h3 className="text-sm font-bold text-red-900 mb-3 uppercase bg-red-100 px-3 py-2 rounded">
- {t.deductions}
+ {localT.deductions}
  </h3>
  <div className="border border-red-300 rounded-lg overflow-hidden">
  <table className="w-full text-sm">
  <tbody>
  <tr className="border-b border-red-200">
- <td className="px-4 py-2 text-gray-700">{t.tax}</td>
+ <td className="px-4 py-2 text-gray-700">{localT.tax}</td>
  <td className="px-4 py-2 text-end font-semibold text-gray-900">{formatCurrency(payrollRecord.taxAmount)}</td>
  </tr>
  <tr className="border-b border-red-200 bg-red-50">
- <td className="px-4 py-2 text-gray-700">{t.socialSecurity}</td>
+ <td className="px-4 py-2 text-gray-700">{localT.socialSecurity}</td>
  <td className="px-4 py-2 text-end font-semibold text-gray-900">{formatCurrency(payrollRecord.socialSecurityAmount)}</td>
  </tr>
  <tr className="border-b border-red-200">
- <td className="px-4 py-2 text-gray-700">{t.healthInsurance}</td>
+ <td className="px-4 py-2 text-gray-700">{localT.healthInsurance}</td>
  <td className="px-4 py-2 text-end font-semibold text-gray-900">{formatCurrency(payrollRecord.healthInsuranceAmount)}</td>
  </tr>
  <tr className="border-b-2 border-red-400 bg-red-50">
- <td className="px-4 py-2 text-gray-700">{t.otherDeductions}</td>
+ <td className="px-4 py-2 text-gray-700">{localT.otherDeductions}</td>
  <td className="px-4 py-2 text-end font-semibold text-gray-900">{formatCurrency(payrollRecord.otherDeductions)}</td>
  </tr>
  <tr className="bg-red-100">
- <td className="px-4 py-3 font-bold text-red-900">{t.totalDeductions}</td>
+ <td className="px-4 py-3 font-bold text-red-900">{localT.totalDeductions}</td>
  <td className="px-4 py-3 text-end font-bold text-lg text-red-900">{formatCurrency(payrollRecord.totalDeductions)}</td>
  </tr>
  </tbody>
@@ -261,7 +261,7 @@ export function PayrollSlipPrintModal({
  {/* Net Salary */}
  <div className="mb-8 bg-gradient-to-r from-blue-600 to-blue-700 rounded-lg p-6 text-white">
  <div className="flex justify-between items-center">
- <span className="text-xl font-bold uppercase">{t.netSalary}</span>
+ <span className="text-xl font-bold uppercase">{localT.netSalary}</span>
  <span className="text-3xl font-bold">{formatCurrency(payrollRecord.netSalary)}</span>
  </div>
  </div>
@@ -269,23 +269,23 @@ export function PayrollSlipPrintModal({
  {/* Payment Details */}
  {(employee.bankName || employee.accountNumber || employee.iban) && (
  <div className="mb-6 border border-gray-300 rounded-lg p-4 bg-blue-50">
- <h3 className="text-sm font-bold text-blue-900 mb-3">{t.paymentDetails}</h3>
+ <h3 className="text-sm font-bold text-blue-900 mb-3">{localT.paymentDetails}</h3>
  <div className="grid grid-cols-2 gap-3 text-sm">
  {employee.bankName && (
  <div className="flex justify-between">
- <span className="text-gray-700">{t.bankName}:</span>
+ <span className="text-gray-700">{localT.bankName}:</span>
  <span className="font-semibold text-gray-900">{employee.bankName}</span>
  </div>
  )}
  {employee.accountNumber && (
  <div className="flex justify-between">
- <span className="text-gray-700">{t.accountNumber}:</span>
+ <span className="text-gray-700">{localT.accountNumber}:</span>
  <span className="font-semibold text-gray-900">{employee.accountNumber}</span>
  </div>
  )}
  {employee.iban && (
  <div className="flex justify-between col-span-2">
- <span className="text-gray-700">{t.iban}:</span>
+ <span className="text-gray-700">{localT.iban}:</span>
  <span className="font-semibold text-gray-900">{employee.iban}</span>
  </div>
  )}
@@ -295,13 +295,13 @@ export function PayrollSlipPrintModal({
 
  {/* Confidential Notice */}
  <div className="mb-6 bg-yellow-50 border-s-4 border-yellow-500 p-3">
- <p className="text-xs text-yellow-900 font-medium">{t.confidential}</p>
+ <p className="text-xs text-yellow-900 font-medium">{localT.confidential}</p>
  </div>
 
  {/* Footer */}
  <div className="mt-8 pt-4 border-t border-gray-200 text-xs text-gray-500 text-center">
- <p>{t.generatedBy}: {orgName}</p>
- <p>{t.generatedOn}: {formatDate(new Date().toISOString())}</p>
+ <p>{localT.generatedBy}: {orgName}</p>
+ <p>{localT.generatedOn}: {formatDate(new Date().toISOString())}</p>
  </div>
  </div>
  </div>
@@ -313,13 +313,13 @@ export function PayrollSlipPrintModal({
  className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
  >
  <Printer className="w-5 h-5" />
- <span>{t.print}</span>
+ <span>{localT.print}</span>
  </button>
  <button
  onClick={onClose}
  className="px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
  >
- {t.close}
+ {localT.close}
  </button>
  </div>
  </div>

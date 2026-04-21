@@ -140,8 +140,8 @@ export function PerformanceReviewModal({
  {/* Header */}
  <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between bg-blue-50">
  <div>
- <h2 className="text-xl font-bold text-gray-900">{t.title}</h2>
- <p className="text-sm text-gray-600 mt-1">{t.subtitle}</p>
+ <h2 className="text-xl font-bold text-gray-900">{localT.title}</h2>
+ <p className="text-sm text-gray-600 mt-1">{localT.subtitle}</p>
  <p className="text-sm text-blue-600 font-medium mt-1">
  {employee.fullName} - {employee.position}
  </p>
@@ -158,7 +158,7 @@ export function PerformanceReviewModal({
  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
  <div>
  <label className="block text-sm font-medium text-gray-700 mb-2">
- {t.reviewDate} *
+ {localT.reviewDate} *
  </label>
  <input
  type="date"
@@ -171,7 +171,7 @@ export function PerformanceReviewModal({
 
  <div>
  <label className="block text-sm font-medium text-gray-700 mb-2">
- {t.reviewPeriod} *
+ {localT.reviewPeriod} *
  </label>
  <input
  type="text"
@@ -185,7 +185,7 @@ export function PerformanceReviewModal({
 
  <div>
  <label className="block text-sm font-medium text-gray-700 mb-2">
- {t.reviewType} *
+ {localT.reviewType} *
  </label>
  <select
  required
@@ -203,7 +203,7 @@ export function PerformanceReviewModal({
  {/* Overall Rating */}
  <div>
  <label className="block text-sm font-medium text-gray-700 mb-2">
- {t.overallRating} *
+ {localT.overallRating} *
  </label>
  <div className="flex items-center gap-2">
  {[1, 2, 3, 4, 5].map(rating => (
@@ -227,7 +227,7 @@ export function PerformanceReviewModal({
  {/* Strengths */}
  <div>
  <label className="block text-sm font-medium text-gray-700 mb-2">
- {t.strengths} *
+ {localT.strengths} *
  </label>
  <textarea
  required
@@ -242,7 +242,7 @@ export function PerformanceReviewModal({
  {/* Areas for Improvement */}
  <div>
  <label className="block text-sm font-medium text-gray-700 mb-2">
- {t.areasForImprovement}
+ {localT.areasForImprovement}
  </label>
  <textarea
  rows={3}
@@ -256,7 +256,7 @@ export function PerformanceReviewModal({
  {/* Goals */}
  <div>
  <label className="block text-sm font-medium text-gray-700 mb-2">
- {t.goals}
+ {localT.goals}
  </label>
  <textarea
  rows={3}
@@ -270,7 +270,7 @@ export function PerformanceReviewModal({
  {/* Comments */}
  <div>
  <label className="block text-sm font-medium text-gray-700 mb-2">
- {t.comments}
+ {localT.comments}
  </label>
  <textarea
  rows={2}
@@ -284,7 +284,7 @@ export function PerformanceReviewModal({
  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
  <div>
  <label className="block text-sm font-medium text-gray-700 mb-2">
- {t.reviewedBy} *
+ {localT.reviewedBy} *
  </label>
  <input
  type="text"
@@ -297,7 +297,7 @@ export function PerformanceReviewModal({
 
  <div>
  <label className="block text-sm font-medium text-gray-700 mb-2">
- {t.reviewerTitle} *
+ {localT.reviewerTitle} *
  </label>
  <input
  type="text"
@@ -318,14 +318,14 @@ export function PerformanceReviewModal({
  onClick={onClose}
  className="px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
  >
- {t.cancel}
+ {localT.cancel}
  </button>
  <button
  onClick={handleSubmit}
  className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
  >
  <Save className="w-4 h-4" />
- {existingReview ? t.update : t.save}
+ {existingReview ? localT.update : localT.save}
  </button>
  </div>
  </div>

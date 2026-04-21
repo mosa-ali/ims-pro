@@ -110,14 +110,14 @@ export function ClearancePrintModal({
  >
  {/* Header (Print Hidden) */}
  <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between bg-blue-50 print:hidden">
- <h2 className="text-xl font-bold text-gray-900">{t.title}</h2>
+ <h2 className="text-xl font-bold text-gray-900">{localT.title}</h2>
  <div className="flex items-center gap-2">
  <button
  onClick={handlePrint}
  className="flex items-center gap-2 px-3 py-2 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700"
  >
  <Printer className="w-4 h-4" />
- <span>{t.print}</span>
+ <span>{localT.print}</span>
  </button>
  <button onClick={onClose} className="text-gray-400 hover:text-gray-600">
  <X className="w-6 h-6" />
@@ -133,32 +133,32 @@ export function ClearancePrintModal({
  <div className="mb-8">
  <div className="flex justify-between items-start mb-4 text-sm">
  <div>
- <strong>{t.ref}:</strong> CLR-{clearance.id}-{new Date(clearance.exitDate).getFullYear()}
+ <strong>{localT.ref}:</strong> CLR-{clearance.id}-{new Date(clearance.exitDate).getFullYear()}
  </div>
  <div>
- <strong>{t.exitDate}:</strong> {formatDate(clearance.exitDate)}
+ <strong>{localT.exitDate}:</strong> {formatDate(clearance.exitDate)}
  </div>
  </div>
  </div>
 
  {/* Employee Information */}
  <div className="mb-8 border border-gray-300 rounded-lg p-4 bg-gray-50">
- <h3 className="text-base font-bold text-gray-900 mb-3">{t.employeeInfo}</h3>
+ <h3 className="text-base font-bold text-gray-900 mb-3">{localT.employeeInfo}</h3>
  <div className="grid grid-cols-2 gap-4 text-sm">
  <div>
- <span className="font-medium text-gray-700">{t.staffId}:</span>
+ <span className="font-medium text-gray-700">{localT.staffId}:</span>
  <p className="text-gray-900">{employee.staffId}</p>
  </div>
  <div>
- <span className="font-medium text-gray-700">{t.fullName}:</span>
+ <span className="font-medium text-gray-700">{localT.fullName}:</span>
  <p className="text-gray-900">{employee.fullName}</p>
  </div>
  <div>
- <span className="font-medium text-gray-700">{t.position}:</span>
+ <span className="font-medium text-gray-700">{localT.position}:</span>
  <p className="text-gray-900">{employee.position}</p>
  </div>
  <div>
- <span className="font-medium text-gray-700">{t.department}:</span>
+ <span className="font-medium text-gray-700">{localT.department}:</span>
  <p className="text-gray-900">{employee.department}</p>
  </div>
  </div>
@@ -166,31 +166,31 @@ export function ClearancePrintModal({
 
  {/* Instructions */}
  <div className="mb-8 bg-blue-50 border border-blue-300 rounded-lg p-4">
- <p className="text-sm text-blue-900 font-medium">{t.instructions}</p>
+ <p className="text-sm text-blue-900 font-medium">{localT.instructions}</p>
  </div>
 
  {/* Department Clearances Table */}
  <div className="mb-8">
- <h3 className="text-base font-bold text-gray-900 mb-4">{t.deptClearances}</h3>
+ <h3 className="text-base font-bold text-gray-900 mb-4">{localT.deptClearances}</h3>
  
  <div className="border border-gray-300 rounded-lg overflow-hidden">
  <table className="w-full">
  <thead className="bg-gray-100">
  <tr>
  <th className={`px-4 py-3 text-xs font-semibold text-gray-700 border-b border-gray-300 text-start`}>
- {t.deptName}
+ {localT.deptName}
  </th>
  <th className="px-4 py-3 text-center text-xs font-semibold text-gray-700 border-b border-gray-300">
- {t.status}
+ {localT.status}
  </th>
  <th className={`px-4 py-3 text-xs font-semibold text-gray-700 border-b border-gray-300 text-start`}>
- {t.clearedBy}
+ {localT.clearedBy}
  </th>
  <th className={`px-4 py-3 text-xs font-semibold text-gray-700 border-b border-gray-300 text-start`}>
- {t.signature}
+ {localT.signature}
  </th>
  <th className="px-4 py-3 text-center text-xs font-semibold text-gray-700 border-b border-gray-300">
- {t.clearedDate}
+ {localT.clearedDate}
  </th>
  </tr>
  </thead>
@@ -202,7 +202,7 @@ export function ClearancePrintModal({
  </td>
  <td className="px-4 py-4 text-center">
  <span className={`inline-block px-2 py-1 rounded text-xs font-medium border ${getStatusColor(dept.status)}`}>
- {dept.status === 'Pending' ? t.pending : dept.status === 'Cleared' ? t.cleared : t.notApplicable}
+ {dept.status === 'Pending' ? localT.pending : dept.status === 'Cleared' ? localT.cleared : localT.notApplicable}
  </span>
  </td>
  <td className="px-4 py-4 text-sm text-gray-800">
@@ -227,12 +227,12 @@ export function ClearancePrintModal({
 
  {/* Final Approval */}
  <div className="mt-12 pt-8 border-t-2 border-gray-300">
- <h3 className="text-base font-bold text-gray-900 mb-6">{t.finalApproval}</h3>
+ <h3 className="text-base font-bold text-gray-900 mb-6">{localT.finalApproval}</h3>
  
  <div className="border-2 border-green-500 rounded-lg p-6 bg-green-50">
  <div className="flex items-center gap-3 mb-4">
  <CheckCircle className="w-6 h-6 text-green-600" />
- <h4 className="text-sm font-bold text-green-900">{t.hrApproval}</h4>
+ <h4 className="text-sm font-bold text-green-900">{localT.hrApproval}</h4>
  </div>
  
  <div className="grid grid-cols-2 gap-8 mt-6">
@@ -275,13 +275,13 @@ export function ClearancePrintModal({
  className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
  >
  <Printer className="w-5 h-5" />
- <span>{t.print}</span>
+ <span>{localT.print}</span>
  </button>
  <button
  onClick={onClose}
  className="px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
  >
- {t.close}
+ {localT.close}
  </button>
  </div>
  </div>

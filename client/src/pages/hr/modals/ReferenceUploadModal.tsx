@@ -100,7 +100,7 @@ export function ReferenceUploadModal({
  const handleUpload = async () => {
  // Validation
  if (!formData.requestingOrganization || !selectedFile) {
- alert(t.required);
+ alert(localT.required);
  return;
  }
  
@@ -127,7 +127,7 @@ export function ReferenceUploadModal({
  expiryDate: formData.expiryDate || undefined
  });
  
- alert(t.success);
+ alert(localT.success);
  onUpload();
  onClose();
  } catch (error) {
@@ -145,8 +145,8 @@ export function ReferenceUploadModal({
  <div className="flex items-center gap-3">
  <Upload className="w-6 h-6 text-blue-600" />
  <div>
- <h2 className="text-xl font-bold text-gray-900">{t.title}</h2>
- <p className="text-sm text-blue-600">{t.subtitle}</p>
+ <h2 className="text-xl font-bold text-gray-900">{localT.title}</h2>
+ <p className="text-sm text-blue-600">{localT.subtitle}</p>
  </div>
  </div>
  <button onClick={onClose} className="text-gray-400 hover:text-gray-600">
@@ -160,26 +160,26 @@ export function ReferenceUploadModal({
  {/* Info Note */}
  <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 flex items-start gap-2">
  <AlertCircle className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
- <p className="text-sm text-blue-800">{t.infoNote}</p>
+ <p className="text-sm text-blue-800">{localT.infoNote}</p>
  </div>
 
  {/* Employee Info */}
  <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
- <h3 className="text-sm font-semibold text-gray-900 mb-2">{t.employeeInfo}</h3>
+ <h3 className="text-sm font-semibold text-gray-900 mb-2">{localT.employeeInfo}</h3>
  <div className="grid grid-cols-2 gap-2 text-sm">
- <div><span className="text-gray-600">{t.staffId}:</span> <span className="font-medium">{employee.staffId}</span></div>
- <div><span className="text-gray-600">{t.fullName}:</span> <span className="font-medium">{employee.fullName}</span></div>
+ <div><span className="text-gray-600">{localT.staffId}:</span> <span className="font-medium">{employee.staffId}</span></div>
+ <div><span className="text-gray-600">{localT.fullName}:</span> <span className="font-medium">{employee.fullName}</span></div>
  </div>
  </div>
 
  {/* Requesting Organization */}
  <div>
- <label className="block text-sm font-medium text-gray-700 mb-2">{t.requestingOrganization} *</label>
+ <label className="block text-sm font-medium text-gray-700 mb-2">{localT.requestingOrganization} *</label>
  <input
  type="text"
  value={formData.requestingOrganization}
  onChange={(e) => setFormData({ ...formData, requestingOrganization: e.target.value })}
- placeholder={t.requestingOrgPlaceholder}
+ placeholder={localT.requestingOrgPlaceholder}
  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
  />
  </div>
@@ -187,20 +187,20 @@ export function ReferenceUploadModal({
  {/* Reference Type & Date Requested */}
  <div className="grid grid-cols-2 gap-4">
  <div>
- <label className="block text-sm font-medium text-gray-700 mb-2">{t.referenceType} *</label>
+ <label className="block text-sm font-medium text-gray-700 mb-2">{localT.referenceType} *</label>
  <select
  value={formData.referenceType}
  onChange={(e) => setFormData({ ...formData, referenceType: e.target.value as ReferenceType })}
  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
  >
- <option value="Employment">{t.employment}</option>
- <option value="Salary">{t.salary}</option>
- <option value="Conduct">{t.conduct}</option>
- <option value="General">{t.general}</option>
+ <option value="Employment">{localT.employment}</option>
+ <option value="Salary">{localT.salary}</option>
+ <option value="Conduct">{localT.conduct}</option>
+ <option value="General">{localT.general}</option>
  </select>
  </div>
  <div>
- <label className="block text-sm font-medium text-gray-700 mb-2">{t.dateRequested} *</label>
+ <label className="block text-sm font-medium text-gray-700 mb-2">{localT.dateRequested} *</label>
  <input
  type="date"
  value={formData.dateRequested}
@@ -213,7 +213,7 @@ export function ReferenceUploadModal({
  {/* Date Issued & Expiry Date */}
  <div className="grid grid-cols-2 gap-4">
  <div>
- <label className="block text-sm font-medium text-gray-700 mb-2">{t.dateIssued}</label>
+ <label className="block text-sm font-medium text-gray-700 mb-2">{localT.dateIssued}</label>
  <input
  type="date"
  value={formData.dateIssued}
@@ -222,7 +222,7 @@ export function ReferenceUploadModal({
  />
  </div>
  <div>
- <label className="block text-sm font-medium text-gray-700 mb-2">{t.expiryDate}</label>
+ <label className="block text-sm font-medium text-gray-700 mb-2">{localT.expiryDate}</label>
  <input
  type="date"
  value={formData.expiryDate}
@@ -234,7 +234,7 @@ export function ReferenceUploadModal({
 
  {/* File Upload */}
  <div>
- <label className="block text-sm font-medium text-gray-700 mb-2">{t.uploadFile} *</label>
+ <label className="block text-sm font-medium text-gray-700 mb-2">{localT.uploadFile} *</label>
  <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 hover:border-blue-400 transition-colors">
  <div className="flex flex-col items-center gap-3">
  <FileText className="w-12 h-12 text-gray-400" />
@@ -242,7 +242,7 @@ export function ReferenceUploadModal({
  <div className="text-center">
  <label className="cursor-pointer">
  <span className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 inline-block">
- {t.selectFile}
+ {localT.selectFile}
  </span>
  <input
  type="file"
@@ -251,7 +251,7 @@ export function ReferenceUploadModal({
  className="hidden"
  />
  </label>
- <p className="text-xs text-gray-500 mt-2">{t.fileFormats}</p>
+ <p className="text-xs text-gray-500 mt-2">{localT.fileFormats}</p>
  </div>
  
  {selectedFile ? (
@@ -260,7 +260,7 @@ export function ReferenceUploadModal({
  <p className="text-xs text-gray-500">{(selectedFile.size / 1024).toFixed(2)} KB</p>
  </div>
  ) : (
- <p className="text-sm text-gray-500">{t.noFileSelected}</p>
+ <p className="text-sm text-gray-500">{localT.noFileSelected}</p>
  )}
  </div>
  </div>
@@ -268,7 +268,7 @@ export function ReferenceUploadModal({
 
  {/* Notes */}
  <div>
- <label className="block text-sm font-medium text-gray-700 mb-2">{t.notes}</label>
+ <label className="block text-sm font-medium text-gray-700 mb-2">{localT.notes}</label>
  <textarea
  value={formData.notes}
  onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
@@ -286,7 +286,7 @@ export function ReferenceUploadModal({
  className="px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
  disabled={uploading}
  >
- {t.cancel}
+ {localT.cancel}
  </button>
  <button
  onClick={handleUpload}
@@ -294,7 +294,7 @@ export function ReferenceUploadModal({
  className={`flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed`}
  >
  <Upload className="w-5 h-5" />
- <span>{uploading ? t.uploading : t.uploadBtn}</span>
+ <span>{uploading ? localT.uploading : localT.uploadBtn}</span>
  </button>
  </div>
  </div>
