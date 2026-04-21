@@ -16,6 +16,8 @@ import { getDb } from "./db";
 import { hrSalaryScale, hrSalaryGrades, hrEmployees } from "../drizzle/schema";
 import { eq, and, desc, ne } from "drizzle-orm";
 
+const nowSql = new Date().toISOString().slice(0, 19).replace('T', ' ');
+
 // ============================================================================
 // INPUT SCHEMAS
 // ============================================================================
@@ -479,7 +481,7 @@ export const hrSalaryScaleRouter = router({
       await db.update(hrSalaryScale).set({
         status: "active",
         lastApprovedBy: ctx.user?.id,
-        lastApprovedAt: new Date().toISOString(),
+        lastApprovedAt: nowSql,
         updatedBy: ctx.user?.id,
       }).where(eq(hrSalaryScale.id, input.id));
 
@@ -523,7 +525,7 @@ export const hrSalaryScaleRouter = router({
 
       await db.update(hrSalaryScale).set({
         isDeleted: 1,
-        deletedAt: new Date().toISOString(),
+        deletedAt: nowSql,
         deletedBy: ctx.user?.id,
         updatedBy: ctx.user?.id,
       }).where(eq(hrSalaryScale.id, input.id));
