@@ -5,6 +5,7 @@
  * 
  * Main hub for attendance management
  * - KPI cards (Present, Absent, Late, Overtime, etc.)
+ * - Drill-down modals for detailed views
  * - Quick actions
  * - Navigation to sub-modules
  * 
@@ -30,14 +31,29 @@ import {
 , ArrowLeft, ArrowRight} from 'lucide-react';
 import { useNavigate } from '@/lib/router-compat';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { AttendanceStats, AttendancePeriod } from '@/app/services/attendanceService';
+import { attendanceService, AttendanceStats, AttendancePeriod } from '@/app/services/attendanceService';
+import { seedAttendanceData } from '@/app/utils/seedAttendanceData';
 import { trpc } from '@/lib/trpc';
 import { useOrganization } from '@/contexts/OrganizationContext';
 import { useOperatingUnit } from '@/contexts/OperatingUnitContext';
 import { useTranslation } from '@/i18n/useTranslation';
 import { BackButton } from "@/components/BackButton";
+import { KPIDrillDownModal } from './KPIDrillDownModal';
 
-const nowSql = new Date().toISOString().slice(0, 19).replace('T', ' ');
+interface KPIRecord {
+  id: number;
+  employeeId: number;
+  staffName: string;
+  staffId: string;
+  date: string;
+  status: string;
+  checkIn?: string;
+  checkOut?: string;
+  workHours?: number;
+  overtimeHours?: number;
+  approvalStatus?: string;
+  notes?: string;
+}
 
 export function AttendanceDashboard() {
  const { t } = useTranslation();
@@ -52,6 +68,25 @@ export function AttendanceDashboard() {
  { enabled: !!currentOrganizationId && !!currentOperatingUnitId }
  );
 
+ // Get dashboard metrics
+ const { data: dashboardMetrics, isLoading: metricsLoading } = trpc.hrAttendance.getDashboardMetrics.useQuery(
+   {
+     organizationId: currentOrganizationId || 0,
+     operatingUnitId: currentOperatingUnitId,
+   },
+   { enabled: !!currentOrganizationId, refetchInterval: 30000 } // Refetch every 30 seconds
+ );
+
+ // Get attendance records for drill-down
+ const { data: attendanceRecords = [] } = trpc.hrAttendance.getAll.useQuery(
+   {
+     organizationId: currentOrganizationId || 0,
+     operatingUnitId: currentOperatingUnitId,
+     limit: 1000,
+   },
+   { enabled: !!currentOrganizationId }
+ );
+
  const [stats, setStats] = useState<AttendanceStats>({
  totalStaff: 0,
  presentToday: 0,
@@ -64,39 +99,64 @@ export function AttendanceDashboard() {
  });
 
  const [currentPeriod, setCurrentPeriod] = useState<AttendancePeriod | null>(null);
+ 
+ // Drill-down modal state
+ const [drillDownModal, setDrillDownModal] = useState<{
+   isOpen: boolean;
+   type: 'pending_approvals' | 'overtime' | 'attendance_rate' | 'late_arrivals' | 'absent_count' | 'on_leave_count' | null;
+   title: string;
+ }>({
+   isOpen: false,
+   type: null,
+   title: '',
+ });
 
  useEffect(() => {
- // Load real data from database
+ // Seed data on first load
+ seedAttendanceData();
  loadDashboardData();
  }, []);
 
- // Update stats when employee counts change
+ // Update stats when dashboard metrics or employee counts change
  useEffect(() => {
- if (employeeCounts) {
+ if (dashboardMetrics || employeeCounts) {
  loadDashboardData();
  }
- }, [employeeCounts]);
+ }, [dashboardMetrics, employeeCounts]);
 
  const loadDashboardData = () => {
- // Use real employee count from database (source of truth)
- setStats({
- totalStaff: employeeCounts?.active ?? 0,
- presentToday: 0,
- absentToday: 0,
- lateArrivals: 0,
- overtimeHoursToday: 0,
- overtimeHoursPeriod: 0,
- pendingApprovals: 0,
- flaggedRecords: 0
- });
+ // Use real data from tRPC if available
+ if (dashboardMetrics) {
+   setStats({
+     totalStaff: employeeCounts?.active ?? 0,
+     presentToday: dashboardMetrics.presentToday || 0,
+     absentToday: dashboardMetrics.absentToday || 0,
+     lateArrivals: dashboardMetrics.lateArrivals || 0,
+     overtimeHoursToday: dashboardMetrics.overtimeHoursToday || 0,
+     overtimeHoursPeriod: dashboardMetrics.overtimeHoursPeriod || 0,
+     pendingApprovals: dashboardMetrics.pendingApprovals || 0,
+     flaggedRecords: dashboardMetrics.flaggedRecords || 0,
+   });
+ } else {
+   // Fallback to local service
+   const dashboardStats = attendanceService.getStats();
+   setStats({
+     ...dashboardStats,
+     totalStaff: employeeCounts?.active ?? 0
+   });
+ }
 
  // Load current period
  const now = new Date();
- setCurrentPeriod({
- monthName: new Date(now.getFullYear(), now.getMonth()).toLocaleString('default', { month: 'long' }),
- year: now.getFullYear(),
- status: 'open',
- lockDeadline: new Date(now.getFullYear(), now.getMonth() + 1, 4).toLocaleDateString() });
+ const periodMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+ let period = attendanceService.getPeriod(periodMonth);
+ 
+ // Create period if it doesn't exist
+ if (!period) {
+ period = attendanceService.createOrUpdatePeriod(periodMonth);
+ }
+ 
+ setCurrentPeriod(period);
  };
 
  const labels = {
@@ -134,6 +194,57 @@ export function AttendanceDashboard() {
  // Quick Stats
  quickStats: t.hrAttendance.quickStatistics,
  viewDetails: t.hrAttendance.viewDetails
+ };
+
+ const openDrillDown = (type: 'pending_approvals' | 'overtime' | 'attendance_rate' | 'late_arrivals' | 'absent_count' | 'on_leave_count', title: string) => {
+   setDrillDownModal({
+     isOpen: true,
+     type,
+     title,
+   });
+ };
+
+ const closeDrillDown = () => {
+   setDrillDownModal({
+     isOpen: false,
+     type: null,
+     title: '',
+   });
+ };
+
+ // Filter records for drill-down based on KPI type
+ const getDrillDownRecords = (): KPIRecord[] => {
+   if (!drillDownModal.type) return [];
+   
+   const records: KPIRecord[] = (attendanceRecords as any[]).map(r => ({
+     id: r.id,
+     employeeId: r.employeeId,
+     staffName: r.staffName || '',
+     staffId: r.staffId || '',
+     date: r.date,
+     status: r.status,
+     checkIn: r.checkIn,
+     checkOut: r.checkOut,
+     workHours: r.workHours,
+     overtimeHours: r.overtimeHours,
+     approvalStatus: r.approvalStatus,
+     notes: r.notes,
+   }));
+
+   switch (drillDownModal.type) {
+     case 'pending_approvals':
+       return records.filter(r => r.approvalStatus === 'pending');
+     case 'overtime':
+       return records.filter(r => (r.overtimeHours || 0) > 0);
+     case 'late_arrivals':
+       return records.filter(r => r.status === 'late');
+     case 'absent_count':
+       return records.filter(r => r.status === 'absent');
+     case 'on_leave_count':
+       return records.filter(r => r.status === 'on_leave');
+     default:
+       return records;
+   }
  };
 
  return (
@@ -185,7 +296,7 @@ export function AttendanceDashboard() {
  {/* KPI Cards - Row 1 */}
  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
  {/* Total Staff */}
- <div className="bg-white rounded-lg border border-gray-200 p-6">
+ <div className="bg-white rounded-lg border border-gray-200 p-6 cursor-pointer hover:shadow-lg transition-shadow">
  <div className="flex items-center justify-between mb-4">
  <div className="p-3 bg-gray-50 rounded-lg">
  <Users className="w-6 h-6 text-gray-600" />
@@ -198,7 +309,10 @@ export function AttendanceDashboard() {
  </div>
 
  {/* Present Today */}
- <div className="bg-white rounded-lg border border-gray-200 p-6">
+ <div 
+   className="bg-white rounded-lg border border-gray-200 p-6 cursor-pointer hover:shadow-lg transition-shadow"
+   onClick={() => openDrillDown('attendance_rate', labels.presentToday)}
+ >
  <div className="flex items-center justify-between mb-4">
  <div className="p-3 bg-green-50 rounded-lg">
  <UserCheck className="w-6 h-6 text-green-600" />
@@ -207,11 +321,15 @@ export function AttendanceDashboard() {
  <div className={'text-start'}>
  <p className="text-sm text-gray-600 mb-1">{labels.presentToday}</p>
  <p className="text-3xl font-bold text-green-600">{stats.presentToday}</p>
+ <p className="text-xs text-gray-500 mt-1">{labels.viewDetails}</p>
  </div>
  </div>
 
  {/* Absent Today */}
- <div className="bg-white rounded-lg border border-gray-200 p-6">
+ <div 
+   className="bg-white rounded-lg border border-gray-200 p-6 cursor-pointer hover:shadow-lg transition-shadow"
+   onClick={() => openDrillDown('absent_count', labels.absentToday)}
+ >
  <div className="flex items-center justify-between mb-4">
  <div className="p-3 bg-red-50 rounded-lg">
  <UserX className="w-6 h-6 text-red-600" />
@@ -220,11 +338,15 @@ export function AttendanceDashboard() {
  <div className={'text-start'}>
  <p className="text-sm text-gray-600 mb-1">{labels.absentToday}</p>
  <p className="text-3xl font-bold text-red-600">{stats.absentToday}</p>
+ <p className="text-xs text-gray-500 mt-1">{labels.viewDetails}</p>
  </div>
  </div>
 
  {/* Late Arrivals */}
- <div className="bg-white rounded-lg border border-gray-200 p-6">
+ <div 
+   className="bg-white rounded-lg border border-gray-200 p-6 cursor-pointer hover:shadow-lg transition-shadow"
+   onClick={() => openDrillDown('late_arrivals', labels.lateArrivals)}
+ >
  <div className="flex items-center justify-between mb-4">
  <div className="p-3 bg-yellow-50 rounded-lg">
  <Clock className="w-6 h-6 text-yellow-600" />
@@ -233,6 +355,7 @@ export function AttendanceDashboard() {
  <div className={'text-start'}>
  <p className="text-sm text-gray-600 mb-1">{labels.lateArrivals}</p>
  <p className="text-3xl font-bold text-yellow-600">{stats.lateArrivals}</p>
+ <p className="text-xs text-gray-500 mt-1">{labels.viewDetails}</p>
  </div>
  </div>
  </div>
@@ -240,7 +363,10 @@ export function AttendanceDashboard() {
  {/* KPI Cards - Row 2 */}
  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
  {/* Overtime Today */}
- <div className="bg-white rounded-lg border border-gray-200 p-6">
+ <div 
+   className="bg-white rounded-lg border border-gray-200 p-6 cursor-pointer hover:shadow-lg transition-shadow"
+   onClick={() => openDrillDown('overtime', labels.overtimeToday)}
+ >
  <div className="flex items-center justify-between mb-4">
  <div className="p-3 bg-purple-50 rounded-lg">
  <Timer className="w-6 h-6 text-purple-600" />
@@ -254,7 +380,10 @@ export function AttendanceDashboard() {
  </div>
 
  {/* Overtime This Month */}
- <div className="bg-white rounded-lg border border-gray-200 p-6">
+ <div 
+   className="bg-white rounded-lg border border-gray-200 p-6 cursor-pointer hover:shadow-lg transition-shadow"
+   onClick={() => openDrillDown('overtime', labels.overtimePeriod)}
+ >
  <div className="flex items-center justify-between mb-4">
  <div className="p-3 bg-indigo-50 rounded-lg">
  <Timer className="w-6 h-6 text-indigo-600" />
@@ -268,7 +397,10 @@ export function AttendanceDashboard() {
  </div>
 
  {/* Pending Approvals */}
- <div className="bg-white rounded-lg border border-gray-200 p-6">
+ <div 
+   className="bg-white rounded-lg border border-gray-200 p-6 cursor-pointer hover:shadow-lg transition-shadow"
+   onClick={() => openDrillDown('pending_approvals', labels.pendingApprovals)}
+ >
  <div className="flex items-center justify-between mb-4">
  <div className="p-3 bg-orange-50 rounded-lg">
  <AlertCircle className="w-6 h-6 text-orange-600" />
@@ -277,7 +409,7 @@ export function AttendanceDashboard() {
  <div className={'text-start'}>
  <p className="text-sm text-gray-600 mb-1">{labels.pendingApprovals}</p>
  <p className="text-3xl font-bold text-orange-600">{stats.pendingApprovals}</p>
- <p className="text-xs text-gray-500 mt-1">{labels.records}</p>
+ <p className="text-xs text-gray-500 mt-1">{labels.viewDetails}</p>
  </div>
  </div>
 
@@ -382,6 +514,18 @@ export function AttendanceDashboard() {
  </div>
  </button>
  </div>
+
+ {/* Drill-Down Modal */}
+ {drillDownModal.type && (
+   <KPIDrillDownModal
+     isOpen={drillDownModal.isOpen}
+     onClose={closeDrillDown}
+     title={drillDownModal.title}
+     kpiType={drillDownModal.type}
+     records={getDrillDownRecords()}
+     isLoading={metricsLoading}
+   />
+ )}
  </div>
  );
 }

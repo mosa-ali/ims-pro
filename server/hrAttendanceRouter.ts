@@ -31,7 +31,8 @@ const formatSqlDateTime = (dateValue?: string | Date | null) => {
     .slice(0, 19)
     .replace("T", " "); // YYYY-MM-DD HH:mm:ss
 };
-  const nowSql = new Date().toISOString().slice(0, 19).replace('T', ' ');
+
+const nowSql = new Date().toISOString().slice(0, 19).replace('T', ' ');
 
 /**
  * HR Attendance Router - Attendance Tracking
@@ -219,6 +220,8 @@ export const hrAttendanceRouter = router({
       z.object({
         employeeId: z.number(),
         date: z.string(),
+        staffName: z.string().optional(),
+        staffId: z.string().optional(),
         checkIn: z.string().optional(),
         checkOut: z.string().optional(),
         status: z.enum([
@@ -234,6 +237,8 @@ export const hrAttendanceRouter = router({
         overtimeHours: z.number().optional(),
         location: z.string().optional(),
         notes: z.string().optional(),
+        source: z.enum(['microsoft_teams_shifts', 'microsoft_teams_presence', 'manual_hr_entry']).optional(),
+        approvalStatus: z.enum(['pending', 'approved', 'rejected']).optional(),
       })
     )
     .mutation(async ({ ctx, input }) => {
@@ -258,6 +263,8 @@ export const hrAttendanceRouter = router({
         await db
           .update(hrAttendanceRecords)
           .set({
+            staffName: input.staffName || existing[0].staffName,
+            staffId: input.staffId || existing[0].staffId,
             checkIn: formatSqlDateTime(input.checkIn),
             checkOut: formatSqlDateTime(input.checkOut),
             status: input.status,
@@ -265,6 +272,8 @@ export const hrAttendanceRouter = router({
             overtimeHours: input.overtimeHours?.toString(),
             location: input.location,
             notes: input.notes,
+            source: input.source || existing[0].source,
+            approvalStatus: input.approvalStatus || existing[0].approvalStatus,
             isDeleted: 0,
             deletedAt: nowSql,
             deletedBy: ctx.user?.id,
@@ -278,6 +287,8 @@ export const hrAttendanceRouter = router({
           organizationId,
           operatingUnitId: operatingUnitId || 0,
           employeeId: input.employeeId,
+          staffName: input.staffName,
+          staffId: input.staffId,
           date: formatSqlDate(input.date),
           checkIn: formatSqlDateTime(input.checkIn),
           checkOut: formatSqlDateTime(input.checkOut),
@@ -286,6 +297,8 @@ export const hrAttendanceRouter = router({
           overtimeHours: input.overtimeHours?.toString(),
           location: input.location,
           notes: input.notes,
+          source: input.source || 'manual_hr_entry',
+          approvalStatus: input.approvalStatus || 'pending',
         });
 
         return { id: result[0].insertId, success: true, updated: false };
@@ -344,8 +357,8 @@ export const hrAttendanceRouter = router({
           await db
             .update(hrAttendanceRecords)
             .set({
-              checkIn: formatSqlDateTime(record.checkIn),
-              checkOut: formatSqlDateTime(record.checkOut),
+              checkIn: record.checkIn ? formatSqlDateTime(record.checkIn) : null,
+              checkOut: record.checkOut ? formatSqlDateTime(record.checkOut) : null,
               status: record.status,
               workHours: record.workHours?.toString(),
               overtimeHours: record.overtimeHours?.toString(),
@@ -361,8 +374,8 @@ export const hrAttendanceRouter = router({
             operatingUnitId: operatingUnitId || 0,
             employeeId: record.employeeId,
             date: formatSqlDate(record.date),
-            checkIn: formatSqlDateTime(record.checkIn),
-            checkOut: formatSqlDateTime(record.checkOut),
+            checkIn: record.checkIn ? formatSqlDateTime(record.checkIn) : null,
+            checkOut: record.checkOut ? formatSqlDateTime(record.checkOut) : null,
             status: record.status,
             workHours: record.workHours?.toString(),
             overtimeHours: record.overtimeHours?.toString(),
@@ -511,7 +524,7 @@ export const hrAttendanceRouter = router({
           workHours: hrAttendanceRecords.workHours,
           overtimeHours: hrAttendanceRecords.overtimeHours,
           status: hrAttendanceRecords.status,
-          employeeName: hrEmployees.firstName,
+          employeeName: hrEmployees.staffName,
           employeeCode: hrEmployees.employeeCode,
         })
         .from(hrAttendanceRecords)
@@ -592,5 +605,150 @@ export const hrAttendanceRouter = router({
       });
 
       return pdfResult;
+    }),
+  // Submit explanation for flagged attendance record
+  submitExplanation: protectedProcedure
+    .input(
+      z.object({
+        recordId: z.number(),
+        explanation: z.string().min(10).max(1000),
+        attachmentUrls: z.array(z.string()).optional().default([]),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const { recordId, explanation, attachmentUrls } = input;
+      const userId = ctx.user?.id;
+      const db = await getDb();
+      if (!db) throw new Error("Database not available");
+
+      // Verify the record belongs to the current user
+      const record = await db
+        .select()
+        .from(hrAttendanceRecords)
+        .where(
+          and(
+            eq(hrAttendanceRecords.id, recordId),
+            eq(hrAttendanceRecords.employeeId, userId),
+            eq(hrAttendanceRecords.isDeleted, 0)
+          )
+        )
+        .limit(1);
+
+      if (!record || record.length === 0) {
+        throw new Error("Attendance record not found or unauthorized");
+      }
+
+      // Update the record with explanation in notes field
+      const timestamp = new Date().toISOString();
+      const explanationText = `[EXPLANATION ${timestamp}]: ${explanation}`;
+      const newNotes = record[0].notes ? `${record[0].notes}\n${explanationText}` : explanationText;
+
+      await db
+        .update(hrAttendanceRecords)
+        .set({
+          notes: newNotes,
+          updatedAt: nowSql,
+        })
+        .where(eq(hrAttendanceRecords.id, recordId));
+
+      return {
+        success: true,
+        message: "Explanation submitted successfully",
+        recordId,
+      };
+    }),
+
+  // Get dashboard metrics for KPI cards
+  getDashboardMetrics: scopedProcedure
+    .input(
+      z.object({
+        startDate: z.string(),
+        endDate: z.string(),
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      const { organizationId, operatingUnitId } = ctx.scope;
+      const db = await getDb();
+      if (!db) throw new Error("Database not available");
+
+      // Build base conditions
+      const conditions = [
+        eq(hrAttendanceRecords.organizationId, organizationId),
+        gte(hrAttendanceRecords.date, input.startDate),
+        lte(hrAttendanceRecords.date, input.endDate),
+        eq(hrAttendanceRecords.isDeleted, 0),
+      ];
+
+      if (operatingUnitId) {
+        conditions.push(eq(hrAttendanceRecords.operatingUnitId, operatingUnitId));
+      }
+
+      // Count pending approvals
+      const pendingApprovalsResult = await db
+        .select({ count: count() })
+        .from(hrAttendanceRecords)
+        .where(and(...conditions, eq(hrAttendanceRecords.approvalStatus, "pending")));
+      const pendingApprovalsCount = pendingApprovalsResult[0]?.count || 0;
+
+      // Sum overtime hours
+      const overtimeResult = await db
+        .select({ total: sql`SUM(${hrAttendanceRecords.overtimeHours})` })
+        .from(hrAttendanceRecords)
+        .where(and(...conditions));
+      const overtimeHours = overtimeResult[0]?.total ? parseFloat(overtimeResult[0].total) : 0;
+
+      // Count late arrivals
+      const lateResult = await db
+        .select({ count: count() })
+        .from(hrAttendanceRecords)
+        .where(and(...conditions, eq(hrAttendanceRecords.status, "late")));
+      const lateArrivalsCount = lateResult[0]?.count || 0;
+
+      // Count absences
+      const absentResult = await db
+        .select({ count: count() })
+        .from(hrAttendanceRecords)
+        .where(and(...conditions, eq(hrAttendanceRecords.status, "absent")));
+      const absentCount = absentResult[0]?.count || 0;
+
+      // Count on-leave
+      const onLeaveResult = await db
+        .select({ count: count() })
+        .from(hrAttendanceRecords)
+        .where(and(...conditions, eq(hrAttendanceRecords.status, "on_leave")));
+      const onLeaveCount = onLeaveResult[0]?.count || 0;
+
+      // Count present and half-day
+      const presentResult = await db
+        .select({ count: count() })
+        .from(hrAttendanceRecords)
+        .where(
+          and(
+            ...conditions,
+            sql`${hrAttendanceRecords.status} IN ('present', 'half_day')`
+          )
+        );
+      const presentCount = presentResult[0]?.count || 0;
+
+      // Total records
+      const totalResult = await db
+        .select({ count: count() })
+        .from(hrAttendanceRecords)
+        .where(and(...conditions));
+      const totalRecords = totalResult[0]?.count || 0;
+
+      // Calculate attendance rate
+      const attendanceRate = totalRecords > 0 ? (presentCount / totalRecords) * 100 : 0;
+
+      return {
+        pendingApprovalsCount,
+        overtimeHours: Math.round(overtimeHours * 100) / 100,
+        attendanceRate: Math.round(attendanceRate * 100) / 100,
+        lateArrivalsCount,
+        absentCount,
+        onLeaveCount,
+        totalRecords,
+        presentCount,
+      };
     }),
 });
