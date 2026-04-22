@@ -8193,7 +8193,6 @@ export interface Translations {
     totalStaff: string;
     tue: string;
     unlockPeriod: string;
-    update: string;
     view: string;
     viewAllRecords: string;
     viewCalendar: string;
@@ -8206,6 +8205,24 @@ export interface Translations {
     week: string;
     yes: string;
     yourExplanation: string;
+    halfDay: string;
+    holiday: string;
+    weekend: string;
+    filterByApprovalStatus: string;
+    workHours: string;
+    approvalStatus: string;
+    location: string;
+    loading: string;
+    overtimeHours: string;
+    noRecordsFound: string;
+    approveOvertime: string;
+    rejectOvertime: string;
+    reason: string;
+    enterReason: string;
+    successMessage: string;
+    update: string;
+    errorMessage: string;
+    filtered: string;
   };
   hrAnnualPlan: {
     actions: string;
@@ -18451,6 +18468,23 @@ export const en: Translations = {
     week: 'Week',
     yes: 'Yes',
     yourExplanation: 'Your Explanation',
+    halfDay: "Half Day",
+    holiday: "Holiday",
+    weekend: "Weekend",
+    filterByApprovalStatus: "Filter by Approval Status",
+    workHours: "Work Hours",
+    approvalStatus: "Approval Status",
+    location: "Location",
+    loading: "Loading...",
+    overtimeHours: "Overtime Hours",
+    noRecordsFound: "No records found",
+    approveOvertime: "Approve Overtime",
+    rejectOvertime: "Reject Overtime",
+    reason: "Reason",
+    enterReason: "Enter reason",
+    successMessage: "Operation completed successfully",
+    errorMessage: "An error occurred while processing",
+    filtered: "Filtered",
   },
   hrAnnualPlan: {
     actions: 'Actions',
@@ -31994,6 +32028,23 @@ export const ar: Translations = {
     week: 'أسبوع',
     yes: 'نعم',
     yourExplanation: 'توضيحك',
+    halfDay: "نصف يوم",
+    holiday: "إجازة رسمية",
+    weekend: "عطلة أسبوعية",
+    filterByApprovalStatus: "تصفية حسب حالة الموافقة",
+    workHours: "ساعات العمل",
+    approvalStatus: "حالة الموافقة",
+    location: "الموقع",
+    loading: "جاري التحميل...",
+    overtimeHours: "ساعات العمل الإضافي",
+    noRecordsFound: "لم يتم العثور على سجلات",
+    approveOvertime: "اعتماد العمل الإضافي",
+    rejectOvertime: "رفض العمل الإضافي",
+    reason: "السبب",
+    enterReason: "أدخل السبب",
+    successMessage: "تمت العملية بنجاح",
+    errorMessage: "حدث خطأ أثناء تنفيذ العملية",
+    filtered: "مفلتر",
   },
   hrAnnualPlan: {
     actions: 'الإجراءات',

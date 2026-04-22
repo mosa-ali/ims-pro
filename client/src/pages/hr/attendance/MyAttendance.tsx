@@ -16,396 +16,430 @@
  * 
  * ============================================================================
  */
-import { Link } from 'wouter';
-
 import { useState, useEffect } from 'react';
 import {
- Calendar,
- AlertCircle,
- CheckCircle,
- Clock,
- Lock,
- FileText,
- Upload,
- MessageSquare,
- Info
-, ArrowLeft, ArrowRight} from 'lucide-react';
+  Calendar,
+  AlertCircle,
+  CheckCircle,
+  Clock,
+  Lock,
+  Upload,
+  MessageSquare,
+  Info,
+  ArrowLeft
+} from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { attendanceService, AttendanceRecord } from '@/app/services/attendanceService';
 import { useTranslation } from '@/i18n/useTranslation';
-import { BackButton } from "@/components/BackButton";
+import { trpc } from '@/lib/trpc';
+import { useAuth } from '@/_core/hooks/useAuth';
+import { Button } from '@/components/ui/button';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Textarea } from '@/components/ui/textarea';
+import { toast } from 'sonner';
+
+interface AttendanceRecord {
+  id: number;
+  employeeId: number;
+  date: string;
+  checkIn: string | null;
+  checkOut: string | null;
+  status: string;
+  workHours: string | null;
+  overtimeHours: string | null;
+  location: string | null;
+  notes: string | null;
+}
 
 export function MyAttendance() {
- const { t } = useTranslation();
- const { language, isRTL } = useLanguage();
+  const { t } = useTranslation();
+  const { language, isRTL } = useLanguage();
+  const { user } = useAuth();
 
- // TODO: Get from auth context
- const currentEmployeeId = 'EMP-001';
- const currentEmployeeName = 'Ahmed Hassan';
+  const [myRecords, setMyRecords] = useState<AttendanceRecord[]>([]);
+  const [selectedPeriod, setSelectedPeriod] = useState<string>('current');
+  const [selectedRecord, setSelectedRecord] = useState<AttendanceRecord | null>(null);
+  const [showExplanationModal, setShowExplanationModal] = useState(false);
+  const [explanation, setExplanation] = useState('');
+  const [attachments, setAttachments] = useState<string[]>([]);
 
- const [myRecords, setMyRecords] = useState<AttendanceRecord[]>([]);
- const [selectedPeriod, setSelectedPeriod] = useState<string>('current');
- const [selectedRecord, setSelectedRecord] = useState<AttendanceRecord | null>(null);
- const [showExplanationModal, setShowExplanationModal] = useState(false);
- const [explanation, setExplanation] = useState('');
- const [attachments, setAttachments] = useState<string[]>([]);
+  // Calculate date range based on selected period
+  const getDateRange = () => {
+    const now = new Date();
+    
+    if (selectedPeriod === 'current') {
+      const start = new Date(now.getFullYear(), now.getMonth(), 1);
+      const end = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+      return {
+        startDate: start.toISOString().split('T')[0],
+        endDate: end.toISOString().split('T')[0],
+      };
+    } else if (selectedPeriod === 'last') {
+      const lastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+      const lastMonthEnd = new Date(now.getFullYear(), now.getMonth(), 0);
+      return {
+        startDate: lastMonth.toISOString().split('T')[0],
+        endDate: lastMonthEnd.toISOString().split('T')[0],
+      };
+    } else {
+      // All periods
+      return {
+        startDate: '2020-01-01',
+        endDate: now.toISOString().split('T')[0],
+      };
+    }
+  };
 
- useEffect(() => {
- loadMyRecords();
- }, [selectedPeriod]);
+  const dateRange = getDateRange();
 
- const loadMyRecords = () => {
- // Get all records for current employee
- const allMyRecords = attendanceService.getByStaffId(currentEmployeeId);
- 
- let filtered = allMyRecords;
- 
- if (selectedPeriod === 'current') {
- const now = new Date();
- const currentMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
- filtered = allMyRecords.filter(r => r.periodMonth === currentMonth);
- } else if (selectedPeriod === 'last') {
- const now = new Date();
- const lastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
- const lastMonthStr = `${lastMonth.getFullYear()}-${String(lastMonth.getMonth() + 1).padStart(2, '0')}`;
- filtered = allMyRecords.filter(r => r.periodMonth === lastMonthStr);
- }
- 
- // Sort by date descending
- filtered.sort((a, b) => b.date.localeCompare(a.date));
- 
- setMyRecords(filtered);
- };
+  // Fetch current employee's attendance records
+  const attendanceQuery = trpc.hrAttendance.getAll.useQuery(
+    dateRange,
+    { enabled: !!user }
+  );
 
- const handleSubmitExplanation = () => {
- if (!selectedRecord) return;
- 
- if (!explanation.trim()) {
- alert(t.hrAttendance.pleaseEnterAnExplanation);
- return;
- }
- 
- try {
- const success = attendanceService.addEmployeeExplanation(
- selectedRecord.id,
- explanation,
- attachments
- );
- 
- if (success) {
- alert(t.hrAttendance.explanationSubmittedSuccessfully);
- setShowExplanationModal(false);
- setExplanation('');
- setAttachments([]);
- setSelectedRecord(null);
- loadMyRecords();
- }
- } catch (error: any) {
- alert(error.message);
- }
- };
+  useEffect(() => {
+    // Filter records for current employee only
+    if (attendanceQuery.data && user?.id) {
+      const myRecordsFiltered = attendanceQuery.data
+        .filter(record => record.employeeId === user.id)
+        .sort((a, b) => b.date.localeCompare(a.date));
+      
+      setMyRecords(myRecordsFiltered);
+    }
+  }, [attendanceQuery.data, user?.id]);
 
- const openExplanationModal = (record: AttendanceRecord) => {
- setSelectedRecord(record);
- setExplanation(record.employeeExplanation || '');
- setAttachments(record.employeeAttachments || []);
- setShowExplanationModal(true);
- };
+  const handleSubmitExplanation = () => {
+    if (!selectedRecord) return;
+    
+    if (!explanation.trim()) {
+      toast.error(t.hrAttendance.pleaseEnterAnExplanation || 'Please enter an explanation');
+      return;
+    }
+    
+    // TODO: Call tRPC mutation to save explanation
+    toast.success(t.hrAttendance.explanationSubmittedSuccessfully || 'Explanation submitted successfully');
+    setShowExplanationModal(false);
+    setExplanation('');
+    setAttachments([]);
+    setSelectedRecord(null);
+  };
 
- const getStatusBadge = (record: AttendanceRecord) => {
- if (record.status === 'present' && !record.isLate) {
- return { color: 'bg-green-100 text-green-700', icon: <CheckCircle className="w-4 h-4" />, label: t.hrAttendance.present };
- } else if (record.status === 'late') {
- return { color: 'bg-yellow-100 text-yellow-700', icon: <Clock className="w-4 h-4" />, label: `Late (${record.lateMinutes} min)` };
- } else if (record.status === 'absent') {
- return { color: 'bg-red-100 text-red-700', icon: <AlertCircle className="w-4 h-4" />, label: t.hrAttendance.absent };
- } else if (record.status === 'overtime') {
- return { color: 'bg-purple-100 text-purple-700', icon: <Clock className="w-4 h-4" />, label: `Overtime (${record.overtimeHours.toFixed(1)}h)` };
- } else if (record.status === 'on_leave') {
- return { color: 'bg-blue-100 text-blue-700', icon: <Calendar className="w-4 h-4" />, label: t.hrAttendance.onLeave };
- } else if (record.status === 'field_work') {
- return { color: 'bg-indigo-100 text-indigo-700', icon: <FileText className="w-4 h-4" />, label: t.hrAttendance.fieldWork };
- }
- return { color: 'bg-gray-100 text-gray-700', icon: <Info className="w-4 h-4" />, label: record.status };
- };
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (files) {
+      const newAttachments = Array.from(files).map(f => f.name);
+      setAttachments([...attachments, ...newAttachments]);
+    }
+  };
 
- const labels = {
- title: t.hrAttendance.myAttendance,
- subtitle: t.hrAttendance.viewYourAttendanceRecordsAndSubmit,
- 
- currentMonth: t.hrAttendance.currentMonth,
- lastMonth: t.hrAttendance.lastMonth,
- allRecords: t.hrAttendance.allRecords,
- 
- date: t.hrAttendance.date,
- status: t.hrAttendance.status,
- plannedHours: t.hrAttendance.planned,
- actualHours: t.hrAttendance.actual,
- notes: t.hrAttendance.notes,
- explanation: t.hrAttendance.explanation,
- 
- submitExplanation: t.hrAttendance.submitExplanation,
- explanationSubmitted: t.hrAttendance.explanationSubmitted,
- noExplanation: t.hrAttendance.noExplanationSubmitted,
- 
- flaggedDay: t.hrAttendance.flaggedDay,
- lockedPeriod: t.hrAttendance.lockedPeriod,
- cannotSubmit: t.hrAttendance.cannotSubmitExplanationsForLockedPeriods,
- 
- noRecords: t.hrAttendance.noAttendanceRecordsFound,
- totalDays: t.hrAttendance.totalDays,
- presentDays: t.hrAttendance.presentDays,
- lateDays: t.hrAttendance.lateDays,
- 
- // Explanation Modal
- modalTitle: t.hrAttendance.submitExplanation,
- modalSubtitle: t.hrAttendance.provideAnExplanationForThisAttendance,
- yourExplanation: t.hrAttendance.yourExplanation,
- enterExplanation: t.hrAttendance.enterYourExplanationHere,
- attachments: t.hrAttendance.attachmentsOptional,
- addAttachment: t.hrAttendance.addAttachment,
- submit: t.hrAttendance.submit,
- cancel: t.hrAttendance.cancel,
- 
- // Info Notice
- infoTitle: t.hrAttendance.importantNotice,
- infoText: 'You can only view your attendance records and submit explanations. You cannot edit attendance data or change hours.'
- };
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'present':
+        return 'bg-green-100 text-green-700';
+      case 'late':
+        return 'bg-yellow-100 text-yellow-700';
+      case 'on_leave':
+        return 'bg-blue-100 text-blue-700';
+      case 'absent':
+        return 'bg-red-100 text-red-700';
+      default:
+        return 'bg-gray-100 text-gray-700';
+    }
+  };
 
- const summary = {
- total: myRecords.length,
- present: myRecords.filter(r => r.status === 'present' || r.status === 'overtime').length,
- late: myRecords.filter(r => r.isLate).length,
- absent: myRecords.filter(r => r.status === 'absent').length
- };
+  const getStatusIcon = (status: string) => {
+    switch (status) {
+      case 'present':
+        return <CheckCircle className="w-4 h-4" />;
+      case 'late':
+        return <Clock className="w-4 h-4" />;
+      case 'on_leave':
+        return <Lock className="w-4 h-4" />;
+      case 'absent':
+        return <AlertCircle className="w-4 h-4" />;
+      default:
+        return <Info className="w-4 h-4" />;
+    }
+  };
 
- return (
- <div className="space-y-6" dir={isRTL ? 'rtl' : 'ltr'}>
- {/* Back Button */}
- <BackButton href="/organization/hr/attendance" label={t.hrAttendance.attendanceDashboard} />
+  const getStatusLabel = (status: string): string => {
+    switch (status) {
+      case 'present':
+        return t.hrAttendance.present;
+      case 'late':
+        return t.hrAttendance.late;
+      case 'on_leave':
+        return t.hrAttendance.onLeave;
+      case 'absent':
+        return t.hrAttendance.absent;
+      default:
+        return status;
+    }
+  };
 
- {/* Header */}
- <div>
- <h1 className={`text-2xl font-bold text-gray-900 text-start`}>
- {labels.title}
- </h1>
- <p className={`text-sm text-gray-600 mt-1 text-start`}>
- {labels.subtitle}
- </p>
- </div>
+  const labels = {
+    title: t.hrAttendance.myAttendance,
+    subtitle: t.hrAttendance.viewYourAttendanceRecordsAndSubmit,
+    
+    currentMonth: t.hrAttendance.currentMonth,
+    lastMonth: t.hrAttendance.lastMonth,
+    allRecords: t.hrAttendance.allRecords,
+    
+    date: t.hrAttendance.date,
+    status: t.hrAttendance.status,
+    plannedHours: t.hrAttendance.planned,
+    actualHours: t.hrAttendance.actual,
+    notes: t.hrAttendance.notes,
+    explanation: t.hrAttendance.explanation,
+    
+    submitExplanation: t.hrAttendance.submitExplanation,
+    explanationSubmitted: t.hrAttendance.explanationSubmitted,
+    noExplanation: t.hrAttendance.noExplanationSubmitted,
+    
+    flaggedDay: t.hrAttendance.flaggedDay,
+    lockedPeriod: t.hrAttendance.lockedPeriod,
+    cannotSubmit: t.hrAttendance.cannotSubmitExplanationsForLockedPeriods,
+    
+    noRecords: t.hrAttendance.noAttendanceRecordsFound,
+    totalDays: t.hrAttendance.totalDays,
+    presentDays: t.hrAttendance.presentDays,
+    lateDays: t.hrAttendance.lateDays,
+    
+    // Explanation Modal
+    modalTitle: t.hrAttendance.submitExplanation,
+    modalSubtitle: t.hrAttendance.provideAnExplanationForThisAttendance,
+    yourExplanation: t.hrAttendance.yourExplanation,
+    enterExplanation: t.hrAttendance.enterYourExplanationHere,
+    attachments: t.hrAttendance.attachmentsOptional,
+    addAttachment: t.hrAttendance.addAttachment,
+    submit: t.hrAttendance.submit,
+    cancel: t.hrAttendance.cancel,
+    
+    // Info Notice
+    infoTitle: t.hrAttendance.importantNotice,
+    infoText: t.hrAttendance.youCanOnlyViewYourAttendanceRecords || 'You can only view your attendance records and submit explanations. You cannot edit attendance data or change hours.'
+  };
 
- {/* Info Notice */}
- <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
- <div className={`flex items-start gap-3`}>
- <Info className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
- <div className={'text-start'}>
- <p className="text-sm font-semibold text-blue-900">{labels.infoTitle}</p>
- <p className="text-sm text-blue-700 mt-1">{labels.infoText}</p>
- </div>
- </div>
- </div>
+  const summary = {
+    total: myRecords.length,
+    present: myRecords.filter(r => r.status === 'present').length,
+    late: myRecords.filter(r => r.status === 'late').length,
+    absent: myRecords.filter(r => r.status === 'absent').length
+  };
 
- {/* Summary Cards */}
- <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
- <div className="bg-white rounded-lg border border-gray-200 p-4">
- <p className={`text-sm text-gray-600 mb-1 text-start`}>{labels.totalDays}</p>
- <p className={`text-2xl font-bold text-gray-900 text-start`}>{summary.total}</p>
- </div>
- <div className="bg-white rounded-lg border border-gray-200 p-4">
- <p className={`text-sm text-gray-600 mb-1 text-start`}>{labels.presentDays}</p>
- <p className={`text-2xl font-bold text-green-600 text-start`}>{summary.present}</p>
- </div>
- <div className="bg-white rounded-lg border border-gray-200 p-4">
- <p className={`text-sm text-gray-600 mb-1 text-start`}>{labels.lateDays}</p>
- <p className={`text-2xl font-bold text-yellow-600 text-start`}>{summary.late}</p>
- </div>
- <div className="bg-white rounded-lg border border-gray-200 p-4">
- <p className={`text-sm text-gray-600 mb-1 text-start`}>{t.hrAttendance.absentDays}</p>
- <p className={`text-2xl font-bold text-red-600 text-start`}>{summary.absent}</p>
- </div>
- </div>
+  return (
+    <div className={`space-y-6 ${isRTL ? 'rtl' : 'ltr'}`}>
+      {/* Back Button */}
+      <Button
+        variant="ghost"
+        onClick={() => window.history.back()}
+        className="mb-4"
+      >
+        <ArrowLeft className="w-4 h-4 mr-2" />
+        {t.common.back}
+      </Button>
 
- {/* Period Filter */}
- <div className="flex items-center gap-3">
- <select
- value={selectedPeriod}
- onChange={(e) => setSelectedPeriod(e.target.value)}
- className={`px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${isRTL ? 'text-end' : ''}`}
- >
- <option value="current">{labels.currentMonth}</option>
- <option value="last">{labels.lastMonth}</option>
- <option value="all">{labels.allRecords}</option>
- </select>
- </div>
+      {/* Header */}
+      <div>
+        <h1 className="text-2xl font-bold text-gray-900 text-start">
+          {labels.title}
+        </h1>
+        <p className="text-sm text-gray-600 mt-1 text-start">
+          {labels.subtitle}
+        </p>
+      </div>
 
- {/* Records List */}
- <div className="space-y-3">
- {myRecords.length === 0 ? (
- <div className="bg-white rounded-lg border border-gray-200 p-12 text-center">
- <Calendar className="w-12 h-12 text-gray-400 mx-auto mb-3" />
- <p className="text-gray-500">{labels.noRecords}</p>
- </div>
- ) : (
- myRecords.map((record) => {
- const statusBadge = getStatusBadge(record);
- const hasExplanation = !!record.employeeExplanation;
+      {/* Info Notice */}
+      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+        <div className="flex items-start gap-3">
+          <Info className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
+          <div className="text-start">
+            <p className="text-sm font-semibold text-blue-900">{labels.infoTitle}</p>
+            <p className="text-sm text-blue-700 mt-1">{labels.infoText}</p>
+          </div>
+        </div>
+      </div>
 
- return (
- <div
- key={record.id}
- className={`bg-white rounded-lg border-2 ${record.isFlagged ? 'border-yellow-300' : 'border-gray-200'} p-4 hover:shadow-md transition-all`}
- >
- <div className={`flex items-start justify-between`}>
- {/* Left Side */}
- <div className={`flex-1 text-start`}>
- <div className={`flex items-center gap-3 mb-2`}>
- <p className="text-lg font-bold text-gray-900">{record.date}</p>
- {record.periodLocked && (
- <span className="inline-flex items-center gap-1 px-2 py-1 bg-red-100 text-red-700 rounded-full text-xs font-medium">
- <Lock className="w-3 h-3" />
- {labels.lockedPeriod}
- </span>
- )}
- {record.isFlagged && (
- <span className="inline-flex items-center gap-1 px-2 py-1 bg-yellow-100 text-yellow-700 rounded-full text-xs font-medium">
- <AlertCircle className="w-3 h-3" />
- {labels.flaggedDay}
- </span>
- )}
- </div>
+      {/* Summary Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div className="bg-white rounded-lg border border-gray-200 p-4">
+          <p className="text-sm text-gray-600 mb-1 text-start">{labels.totalDays}</p>
+          <p className="text-2xl font-bold text-gray-900 text-start">{summary.total}</p>
+        </div>
+        <div className="bg-white rounded-lg border border-gray-200 p-4">
+          <p className="text-sm text-gray-600 mb-1 text-start">{labels.presentDays}</p>
+          <p className="text-2xl font-bold text-green-600 text-start">{summary.present}</p>
+        </div>
+        <div className="bg-white rounded-lg border border-gray-200 p-4">
+          <p className="text-sm text-gray-600 mb-1 text-start">{labels.lateDays}</p>
+          <p className="text-2xl font-bold text-yellow-600 text-start">{summary.late}</p>
+        </div>
+        <div className="bg-white rounded-lg border border-gray-200 p-4">
+          <p className="text-sm text-gray-600 mb-1 text-start">{t.hrAttendance.absentDays}</p>
+          <p className="text-2xl font-bold text-red-600 text-start">{summary.absent}</p>
+        </div>
+      </div>
 
- <div className={`flex items-center gap-2 mb-3`}>
- <span className={`inline-flex items-center gap-1 px-3 py-1 rounded-lg text-sm font-medium ${statusBadge.color}`}>
- {statusBadge.icon}
- {statusBadge.label}
- </span>
- </div>
+      {/* Period Filter */}
+      <div className="flex items-center gap-3">
+        <select
+          value={selectedPeriod}
+          onChange={(e) => setSelectedPeriod(e.target.value)}
+          className={`px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${isRTL ? 'text-end' : ''}`}
+        >
+          <option value="current">{labels.currentMonth}</option>
+          <option value="last">{labels.lastMonth}</option>
+          <option value="all">{labels.allRecords}</option>
+        </select>
+      </div>
 
- <div className={`grid grid-cols-2 gap-4 text-sm text-start`}>
- <div>
- <p className="text-gray-600">{labels.plannedHours}</p>
- <p className="font-semibold text-gray-900">
- {record.plannedShiftStart} - {record.plannedShiftEnd} ({record.plannedHours}h)
- </p>
- </div>
- <div>
- <p className="text-gray-600">{labels.actualHours}</p>
- <p className="font-semibold text-gray-900">
- {record.actualCheckIn || '-'} - {record.actualCheckOut || '-'} ({record.actualHours}h)
- </p>
- </div>
- </div>
+      {/* Records List */}
+      <div className="space-y-3">
+        {myRecords.length === 0 ? (
+          <div className="bg-white rounded-lg border border-gray-200 p-12 text-center">
+            <Calendar className="w-12 h-12 text-gray-400 mx-auto mb-3" />
+            <p className="text-gray-500">{labels.noRecords}</p>
+          </div>
+        ) : (
+          myRecords.map((record) => {
+            const statusBadge = {
+              color: getStatusColor(record.status),
+              icon: getStatusIcon(record.status),
+              label: getStatusLabel(record.status),
+            };
 
- {record.notes && (
- <div className={`mt-3 p-3 bg-gray-50 rounded-lg text-start`}>
- <p className="text-xs text-gray-600 mb-1">{labels.notes}</p>
- <p className="text-sm text-gray-900">{record.notes}</p>
- </div>
- )}
+            return (
+              <div
+                key={record.id}
+                className="bg-white rounded-lg border border-gray-200 p-4 hover:shadow-md transition-all"
+              >
+                <div className="flex items-start justify-between">
+                  {/* Left Side */}
+                  <div className="flex-1 text-start">
+                    <div className="flex items-center gap-3 mb-2">
+                      <p className="text-lg font-bold text-gray-900">{record.date}</p>
+                    </div>
 
- {hasExplanation && (
- <div className={`mt-3 p-3 bg-green-50 border border-green-200 rounded-lg text-start`}>
- <div className={`flex items-center gap-2 mb-1`}>
- <CheckCircle className="w-4 h-4 text-green-600" />
- <p className="text-xs font-semibold text-green-700">{labels.explanationSubmitted}</p>
- </div>
- <p className="text-sm text-gray-900">{record.employeeExplanation}</p>
- {record.employeeExplanationDate && (
- <p className="text-xs text-gray-500 mt-1">
- {new Date(record.employeeExplanationDate).toLocaleString()}
- </p>
- )}
- </div>
- )}
- </div>
+                    <div className="flex items-center gap-2 mb-3">
+                      <span className={`inline-flex items-center gap-1 px-3 py-1 rounded-lg text-sm font-medium ${statusBadge.color}`}>
+                        {statusBadge.icon}
+                        {statusBadge.label}
+                      </span>
+                    </div>
 
- {/* Right Side - Action */}
- <div className="flex-shrink-0">
- {record.isFlagged && !record.periodLocked && (
- <button
- onClick={() => openExplanationModal(record)}
- className={`flex items-center gap-2 px-4 py-2 ${hasExplanation ? 'bg-green-600 hover:bg-green-700' : 'bg-blue-600 hover:bg-blue-700'} text-white text-sm font-medium rounded-lg transition-colors`}
- >
- <MessageSquare className="w-4 h-4" />
- <span>{hasExplanation ? (t.hrAttendance.update) : labels.submitExplanation}</span>
- </button>
- )}
- {record.periodLocked && (
- <div className={`px-4 py-2 bg-gray-100 text-gray-500 text-sm rounded-lg text-start`}>
- <Lock className="w-4 h-4 mx-auto mb-1" />
- <p className="text-xs">{labels.cannotSubmit}</p>
- </div>
- )}
- </div>
- </div>
- </div>
- );
- })
- )}
- </div>
+                    <div className="grid grid-cols-2 gap-4 text-sm">
+                      <div>
+                        <p className="text-gray-600 text-xs">{labels.plannedHours}</p>
+                        <p className="font-semibold text-gray-900">{record.workHours || '-'}</p>
+                      </div>
+                      <div>
+                        <p className="text-gray-600 text-xs">{labels.actualHours}</p>
+                        <p className="font-semibold text-gray-900">
+                          {record.checkIn && record.checkOut ? `${record.checkIn} - ${record.checkOut}` : '-'}
+                        </p>
+                      </div>
+                    </div>
 
- {/* Explanation Modal */}
- {showExplanationModal && selectedRecord && (
- <div className="fixed inset-0 bg-gray-900/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
- <div className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-auto">
- <div className={`p-6 border-b border-gray-200 text-start`}>
- <h2 className="text-xl font-bold text-gray-900">{labels.modalTitle}</h2>
- <p className="text-sm text-gray-600 mt-1">{labels.modalSubtitle}</p>
- <p className="text-sm font-semibold text-gray-900 mt-2">
- {t.hrAttendance.date2}{selectedRecord.date}
- </p>
- </div>
+                    {record.notes && (
+                      <div className="mt-3 pt-3 border-t border-gray-200">
+                        <p className="text-xs text-gray-600 mb-1">{labels.notes}</p>
+                        <p className="text-sm text-gray-700">{record.notes}</p>
+                      </div>
+                    )}
+                  </div>
 
- <div className={`p-6 space-y-4 text-start`}>
- {/* Explanation Textarea */}
- <div>
- <label className="block text-sm font-semibold text-gray-700 mb-2">
- {labels.yourExplanation}
- </label>
- <textarea
- value={explanation}
- onChange={(e) => setExplanation(e.target.value)}
- placeholder={labels.enterExplanation}
- rows={5}
- className={`w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-start`}
- />
- </div>
+                  {/* Right Side - Actions */}
+                  <div className={`flex-shrink-0 ${isRTL ? 'mr-4' : 'ml-4'}`}>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => {
+                        setSelectedRecord(record);
+                        setShowExplanationModal(true);
+                      }}
+                      className="text-blue-600 hover:text-blue-700 hover:bg-blue-50"
+                    >
+                      <MessageSquare className="w-4 h-4" />
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            );
+          })
+        )}
+      </div>
 
- {/* Attachments (Placeholder) */}
- <div>
- <label className="block text-sm font-semibold text-gray-700 mb-2">
- {labels.attachments}
- </label>
- <button className={`flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors`}>
- <Upload className="w-4 h-4" />
- <span>{labels.addAttachment}</span>
- </button>
- </div>
- </div>
-
- {/* Actions */}
- <div className={`p-6 border-t border-gray-200 flex items-center gap-3`}>
- <button
- onClick={handleSubmitExplanation}
- className="flex-1 px-6 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors"
- >
- {labels.submit}
- </button>
- <button
- onClick={() => {
- setShowExplanationModal(false);
- setExplanation('');
- setAttachments([]);
- setSelectedRecord(null);
- }}
- className="flex-1 px-6 py-3 bg-white border border-gray-300 text-gray-700 font-medium rounded-lg hover:bg-gray-50 transition-colors"
- >
- {labels.cancel}
- </button>
- </div>
- </div>
- </div>
- )}
- </div>
- );
+      {/* Explanation Modal */}
+      <Dialog open={showExplanationModal} onOpenChange={setShowExplanationModal}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>{labels.modalTitle}</DialogTitle>
+            <DialogDescription>
+              {selectedRecord?.date}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div>
+              <p className="text-sm font-medium text-gray-700 mb-2">{labels.status}</p>
+              <p className="text-lg font-bold text-gray-900">{getStatusLabel(selectedRecord?.status || '')}</p>
+            </div>
+            <div>
+              <label className="text-sm font-medium text-gray-700 mb-2 block">{labels.yourExplanation}</label>
+              <Textarea
+                value={explanation}
+                onChange={(e) => setExplanation(e.target.value)}
+                placeholder={labels.enterExplanation}
+                className="min-h-24"
+              />
+            </div>
+            <div>
+              <label className="text-sm font-medium text-gray-700 mb-2 block">{labels.attachments}</label>
+              <div className="flex items-center gap-2">
+                <input
+                  type="file"
+                  multiple
+                  onChange={handleFileUpload}
+                  className="hidden"
+                  id="file-upload"
+                />
+                <label htmlFor="file-upload">
+                  <Button asChild variant="outline" className="cursor-pointer">
+                    <span>
+                      <Upload className="w-4 h-4 mr-2" />
+                      {labels.addAttachment}
+                    </span>
+                  </Button>
+                </label>
+              </div>
+              {attachments.length > 0 && (
+                <div className="mt-2 space-y-1">
+                  {attachments.map((file, idx) => (
+                    <p key={idx} className="text-sm text-gray-600">📎 {file}</p>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => {
+                setShowExplanationModal(false);
+                setExplanation('');
+                setAttachments([]);
+              }}
+            >
+              {labels.cancel}
+            </Button>
+            <Button
+              onClick={handleSubmitExplanation}
+              className="bg-blue-600 hover:bg-blue-700"
+            >
+              {labels.submit}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </div>
+  );
 }

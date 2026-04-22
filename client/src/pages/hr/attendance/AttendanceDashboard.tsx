@@ -37,6 +37,8 @@ import { useOperatingUnit } from '@/contexts/OperatingUnitContext';
 import { useTranslation } from '@/i18n/useTranslation';
 import { BackButton } from "@/components/BackButton";
 
+const nowSql = new Date().toISOString().slice(0, 19).replace('T', ' ');
+
 export function AttendanceDashboard() {
  const { t } = useTranslation();
  const { language, isRTL } = useLanguage();

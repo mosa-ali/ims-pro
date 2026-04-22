@@ -17,66 +17,162 @@
  * 
  * ============================================================================
  */
-import { Link } from 'wouter';
-
 import { useState, useEffect } from 'react';
+import { useLocation } from 'wouter';
 import {
  FileText,
  Download,
  Printer,
  Calendar,
  Clock,
- Users
-, ArrowLeft, ArrowRight} from 'lucide-react';
+ Users,
+ ArrowLeft
+} from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { attendanceService, AttendanceRecord } from '@/app/services/attendanceService';
 import { useTranslation } from '@/i18n/useTranslation';
+import { trpc } from '@/lib/trpc';
+import { useAuth } from '@/_core/hooks/useAuth';
+import { Button } from '@/components/ui/button';
+// PDF export handled via tRPC mutation with OfficialPdfEngine
 
 type ReportType = 'monthly_sheet' | 'adjustment_form' | 'overtime_sheet';
+
+interface AttendanceWithEmployee {
+  id: number;
+  employeeId: number;
+  date: string;
+  checkIn: string | null;
+  checkOut: string | null;
+  status: string;
+  workHours: string | null;
+  overtimeHours: string | null;
+  location: string | null;
+  notes: string | null;
+  employeeName: string;
+  employeeCode: string;
+}
 
 export function AttendanceReports() {
  const { t } = useTranslation();
  const { language, isRTL } = useLanguage();
+ const { user } = useAuth();
+ const [, setLocation] = useLocation();
 
  const [selectedReport, setSelectedReport] = useState<ReportType>('monthly_sheet');
  const [selectedMonth, setSelectedMonth] = useState<string>('');
- const [records, setRecords] = useState<AttendanceRecord[]>([]);
+ const [records, setRecords] = useState<AttendanceWithEmployee[]>([]);
  const [showPreview, setShowPreview] = useState(false);
+ const [currentOrganization, setCurrentOrganization] = useState<string>('');
 
+ // Get current organization from context or localStorage
  useEffect(() => {
- // Set default month to current month
- const now = new Date();
- const currentMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
- setSelectedMonth(currentMonth);
+   const orgName = localStorage.getItem('current_org_name') || 'Organization';
+   setCurrentOrganization(orgName);
  }, []);
 
  useEffect(() => {
- if (selectedMonth) {
- loadRecords();
- }
- }, [selectedMonth]);
+   // Set default month to current month
+   const now = new Date();
+   const currentMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+   setSelectedMonth(currentMonth);
+ }, []);
 
- const loadRecords = () => {
- const periodRecords = attendanceService.getByPeriod(selectedMonth);
- setRecords(periodRecords);
+ // Calculate date range from selected month
+ const getDateRange = () => {
+   if (!selectedMonth) return null;
+   const [year, month] = selectedMonth.split('-');
+   const start = new Date(parseInt(year), parseInt(month) - 1, 1);
+   const end = new Date(parseInt(year), parseInt(month), 0);
+   return {
+     startDate: start.toISOString().split('T')[0],
+     endDate: end.toISOString().split('T')[0],
+   };
  };
+
+ const dateRange = getDateRange();
+
+ // Fetch attendance records via tRPC
+ const attendanceQuery = trpc.hrAttendance.getAll.useQuery(
+   dateRange || { startDate: '', endDate: '' },
+   { enabled: !!user && !!dateRange }
+ );
+
+ // Fetch employees to map names
+ const employeesQuery = trpc.hrEmployees.getAll.useQuery(
+   { limit: 1000, offset: 0 },
+   { enabled: !!user }
+ );
+
+ useEffect(() => {
+   // Merge attendance with employee data
+   if (attendanceQuery.data && employeesQuery.data) {
+     const employeeMap = new Map(
+       employeesQuery.data.map(emp => [emp.id, emp])
+     );
+
+     const mergedRecords = attendanceQuery.data.map(record => ({
+       ...record,
+       employeeName: (employeeMap.get(record.employeeId)?.firstName || '') + ' ' + (employeeMap.get(record.employeeId)?.lastName || ''),
+       employeeCode: employeeMap.get(record.employeeId)?.employeeCode || '',
+     }));
+
+     setRecords(mergedRecords);
+   }
+ }, [attendanceQuery.data, employeesQuery.data]);
 
  const handlePrint = () => {
- window.print();
+   window.print();
  };
 
- const handleExport = () => {
- alert('Export to Excel/PDF will be implemented with backend integration');
+ const exportPdfMutation = trpc.hrAttendance.exportToPdf.useMutation();
+
+ const handleExport = async () => {
+   try {
+     const startDate = new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString().split('T')[0];
+     const endDate = new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0).toISOString().split('T')[0];
+     
+     const result = await exportPdfMutation.mutateAsync({
+       startDate,
+       endDate,
+       language: language as 'en' | 'ar',
+     });
+     
+     // Open PDF in new tab
+     if (result.url) {
+       window.open(result.url, '_blank');
+     }
+   } catch (error) {
+     console.error('Export error:', error);
+     alert(t.common?.error || 'Failed to export report');
+   }
  };
 
  const getMonthName = () => {
- if (!selectedMonth) return '';
- const [year, month] = selectedMonth.split('-');
- const monthNames = language === 'en'
- ? ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
- : ['يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو', 'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر'];
- return `${monthNames[parseInt(month) - 1]} ${year}`;
+   if (!selectedMonth) return '';
+   const [year, month] = selectedMonth.split('-');
+   const monthNames = language === 'en'
+     ? ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
+     : ['يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو', 'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر'];
+   return `${monthNames[parseInt(month) - 1]} ${year}`;
  };
+
+ const stats = {
+   totalStaff: new Set(records.map(r => r.employeeId)).size,
+   totalDays: records.length,
+   totalOvertimeHours: records.reduce((sum, r) => sum + parseFloat(r.overtimeHours?.toString() || '0'), 0).toFixed(1),
+ };
+
+ // Fetch organization name from tRPC if available
+ const organizationQuery = trpc.organizations.getCurrent.useQuery(
+   undefined,
+   { enabled: !!user }
+ );
+
+ useEffect(() => {
+   if (organizationQuery.data?.name) {
+     setCurrentOrganization(organizationQuery.data.name);
+   }
+ }, [organizationQuery.data]);
 
  const labels = {
  title: t.hrAttendance.attendanceReports,
@@ -150,41 +246,39 @@ export function AttendanceReports() {
  ];
 
  const renderMonthlySheet = () => {
- const uniqueStaff = Array.from(new Set(records.map(r => r.staffId)));
- const totalOvertimeHours = records.reduce((sum, r) => sum + r.overtimeHours, 0);
 
  return (
  <div className="bg-white p-8 rounded-lg border border-gray-200 print:border-0" dir={isRTL ? 'rtl' : 'ltr'}>
  {/* Header */}
  <div className={`text-center mb-8 text-start`}>
- <h1 className="text-2xl font-bold text-gray-900 mb-2">{labels.organizationName}</h1>
- <h2 className="text-xl font-semibold text-gray-700 mb-4">{labels.monthlySheet}</h2>
- <div className="flex justify-between items-center border-t border-b border-gray-300 py-2 mt-4">
- <div>
- <span className="font-semibold">{labels.period}: </span>
- <span>{getMonthName()}</span>
- </div>
- <div>
- <span className="font-semibold">{labels.generatedOn}: </span>
- <span>{new Date().toLocaleDateString()}</span>
- </div>
- </div>
+   <h1 className="text-2xl font-bold text-gray-900 mb-2">{currentOrganization || labels.organizationName}</h1>
+   <h2 className="text-xl font-semibold text-gray-700 mb-4">{labels.monthlySheet}</h2>
+   <div className="flex justify-between items-center border-t border-b border-gray-300 py-2 mt-4">
+     <div>
+       <span className="font-semibold">{labels.period}: </span>
+       <span>{getMonthName()}</span>
+     </div>
+     <div>
+       <span className="font-semibold">{labels.generatedOn}: </span>
+       <span>{new Date().toLocaleDateString()}</span>
+     </div>
+   </div>
  </div>
 
  {/* Summary */}
  <div className="grid grid-cols-3 gap-4 mb-6 bg-gray-50 p-4 rounded-lg">
- <div className={'text-start'}>
- <p className="text-sm text-gray-600">{labels.totalStaff}</p>
- <p className="text-xl font-bold text-gray-900">{uniqueStaff.length}</p>
- </div>
- <div className={'text-start'}>
- <p className="text-sm text-gray-600">{labels.totalDays}</p>
- <p className="text-xl font-bold text-gray-900">{records.length}</p>
- </div>
- <div className={'text-start'}>
- <p className="text-sm text-gray-600">{labels.totalOvertimeHours}</p>
- <p className="text-xl font-bold text-gray-900">{totalOvertimeHours.toFixed(1)}</p>
- </div>
+   <div className={'text-start'}>
+     <p className="text-sm text-gray-600">{labels.totalStaff}</p>
+     <p className="text-xl font-bold text-gray-900">{stats.totalStaff}</p>
+   </div>
+   <div className={'text-start'}>
+     <p className="text-sm text-gray-600">{labels.totalDays}</p>
+     <p className="text-xl font-bold text-gray-900">{stats.totalDays}</p>
+   </div>
+   <div className={'text-start'}>
+     <p className="text-sm text-gray-600">{labels.totalOvertimeHours}</p>
+     <p className="text-xl font-bold text-gray-900">{stats.totalOvertimeHours}</p>
+   </div>
  </div>
 
  {/* Table */}
@@ -203,24 +297,24 @@ export function AttendanceReports() {
  </thead>
  <tbody>
  {records.length === 0 ? (
- <tr>
- <td colSpan={8} className="border border-gray-300 px-4 py-8 text-center text-gray-500">
- {labels.noRecords}
- </td>
- </tr>
+   <tr>
+     <td colSpan={8} className="border border-gray-300 px-4 py-8 text-center text-gray-500">
+       {labels.noRecords}
+     </td>
+   </tr>
  ) : (
- records.map((record, index) => (
- <tr key={record.id}>
- <td className={`border border-gray-300 px-2 py-2 text-sm text-start`}>{index + 1}</td>
- <td className={`border border-gray-300 px-2 py-2 text-sm text-start`}>{record.staffName}</td>
- <td className={`border border-gray-300 px-2 py-2 text-sm text-start`}>{record.date}</td>
- <td className={`border border-gray-300 px-2 py-2 text-sm text-start`}>{record.actualCheckIn || '-'}</td>
- <td className={`border border-gray-300 px-2 py-2 text-sm text-start`}>{record.actualCheckOut || '-'}</td>
- <td className={`border border-gray-300 px-2 py-2 text-sm text-start`}>{record.actualHours.toFixed(1)}</td>
- <td className={`border border-gray-300 px-2 py-2 text-sm text-start`}>{record.overtimeHours > 0 ? record.overtimeHours.toFixed(1) : '-'}</td>
- <td className={`border border-gray-300 px-2 py-2 text-sm text-start`}>{record.status}</td>
- </tr>
- ))
+   records.map((record, index) => (
+     <tr key={record.id}>
+       <td className={`border border-gray-300 px-2 py-2 text-sm text-start`}>{index + 1}</td>
+       <td className={`border border-gray-300 px-2 py-2 text-sm text-start`}>{record.employeeName}</td>
+       <td className={`border border-gray-300 px-2 py-2 text-sm text-start`}>{record.date}</td>
+       <td className={`border border-gray-300 px-2 py-2 text-sm text-start`}>{record.checkIn || '-'}</td>
+       <td className={`border border-gray-300 px-2 py-2 text-sm text-start`}>{record.checkOut || '-'}</td>
+       <td className={`border border-gray-300 px-2 py-2 text-sm text-start`}>{record.workHours || '-'}</td>
+       <td className={`border border-gray-300 px-2 py-2 text-sm text-start`}>{record.overtimeHours ? parseFloat(record.overtimeHours) > 0 ? record.overtimeHours : '-' : '-'}</td>
+       <td className={`border border-gray-300 px-2 py-2 text-sm text-start`}>{record.status}</td>
+     </tr>
+   ))
  )}
  </tbody>
  </table>
@@ -267,7 +361,7 @@ export function AttendanceReports() {
  <div className="bg-white p-8 rounded-lg border border-gray-200 print:border-0">
  {/* Header */}
  <div className={`text-center mb-8 text-start`}>
- <h1 className="text-2xl font-bold text-gray-900 mb-2">{labels.organizationName}</h1>
+ <h1 className="text-2xl font-bold text-gray-900 mb-2">{currentOrganization || labels.organizationName}</h1>
  <h2 className="text-xl font-semibold text-gray-700 mb-4">{labels.overtimeSheet}</h2>
  <div className="flex justify-between items-center border-t border-b border-gray-300 py-2 mt-4">
  <div>
@@ -319,7 +413,7 @@ export function AttendanceReports() {
  {record.overtimeHours.toFixed(1)}h
  </td>
  <td className={`border border-gray-300 px-2 py-2 text-sm text-start`}>
- {record.overtimeApprovalStatus}
+ {record.approvalStatus}
  </td>
  <td className={`border border-gray-300 px-2 py-2 text-sm text-start`}>
  {record.notes || '-'}
