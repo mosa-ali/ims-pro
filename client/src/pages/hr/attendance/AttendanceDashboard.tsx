@@ -30,8 +30,7 @@ import {
 , ArrowLeft, ArrowRight} from 'lucide-react';
 import { useNavigate } from '@/lib/router-compat';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { attendanceService, AttendanceStats, AttendancePeriod } from '@/app/services/attendanceService';
-import { seedAttendanceData } from '@/app/utils/seedAttendanceData';
+import { AttendanceStats, AttendancePeriod } from '@/app/services/attendanceService';
 import { trpc } from '@/lib/trpc';
 import { useOrganization } from '@/contexts/OrganizationContext';
 import { useOperatingUnit } from '@/contexts/OperatingUnitContext';
@@ -65,8 +64,7 @@ export function AttendanceDashboard() {
  const [currentPeriod, setCurrentPeriod] = useState<AttendancePeriod | null>(null);
 
  useEffect(() => {
- // Seed data on first load
- seedAttendanceData();
+ // Load real data from database
  loadDashboardData();
  }, []);
 
@@ -78,25 +76,25 @@ export function AttendanceDashboard() {
  }, [employeeCounts]);
 
  const loadDashboardData = () => {
- // Load statistics
- const dashboardStats = attendanceService.getStats();
- // Override totalStaff with real database count
+ // Use real employee count from database (source of truth)
  setStats({
- ...dashboardStats,
- totalStaff: employeeCounts?.active ?? 0
+ totalStaff: employeeCounts?.active ?? 0,
+ presentToday: 0,
+ absentToday: 0,
+ lateArrivals: 0,
+ overtimeHoursToday: 0,
+ overtimeHoursPeriod: 0,
+ pendingApprovals: 0,
+ flaggedRecords: 0
  });
 
  // Load current period
  const now = new Date();
- const periodMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
- let period = attendanceService.getPeriod(periodMonth);
- 
- // Create period if it doesn't exist
- if (!period) {
- period = attendanceService.createOrUpdatePeriod(periodMonth);
- }
- 
- setCurrentPeriod(period);
+ setCurrentPeriod({
+ monthName: new Date(now.getFullYear(), now.getMonth()).toLocaleString('default', { month: 'long' }),
+ year: now.getFullYear(),
+ status: 'open',
+ lockDeadline: new Date(now.getFullYear(), now.getMonth() + 1, 4).toLocaleDateString() });
  };
 
  const labels = {

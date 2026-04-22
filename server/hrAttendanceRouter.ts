@@ -27,7 +27,7 @@ export const hrAttendanceRouter = router({
       
       const conditions = [
         eq(hrAttendanceRecords.organizationId, organizationId),
-        eq(hrAttendanceRecords.isDeleted, false),
+        eq(hrAttendanceRecords.isDeleted, 0),
         gte(hrAttendanceRecords.date, new Date(input.startDate)),
         lte(hrAttendanceRecords.date, new Date(input.endDate)),
       ];
@@ -64,7 +64,7 @@ export const hrAttendanceRouter = router({
       const conditions = [
         eq(hrAttendanceRecords.organizationId, organizationId),
         eq(hrAttendanceRecords.date, new Date(input.date)),
-        eq(hrAttendanceRecords.isDeleted, false),
+        eq(hrAttendanceRecords.isDeleted, 0),
       ];
       
       if (operatingUnitId) {
@@ -92,7 +92,7 @@ export const hrAttendanceRouter = router({
           and(
             eq(hrAttendanceRecords.id, input.id),
             eq(hrAttendanceRecords.organizationId, organizationId),
-            eq(hrAttendanceRecords.isDeleted, false)
+            eq(hrAttendanceRecords.isDeleted, 0)
           )
         )
         .limit(1);
@@ -113,7 +113,7 @@ export const hrAttendanceRouter = router({
       
       const conditions = [
         eq(hrAttendanceRecords.organizationId, organizationId),
-        eq(hrAttendanceRecords.isDeleted, false),
+        eq(hrAttendanceRecords.isDeleted, 0),
         gte(hrAttendanceRecords.date, new Date(input.startDate)),
         lte(hrAttendanceRecords.date, new Date(input.endDate)),
       ];
@@ -355,7 +355,7 @@ export const hrAttendanceRouter = router({
       await db
         .update(hrAttendanceRecords)
         .set({
-          periodLocked: false,
+          periodLocked: 0,
           lockedBy: null,
           lockedAt: null,
         })
@@ -375,7 +375,7 @@ export const hrAttendanceRouter = router({
       await db
         .update(hrAttendanceRecords)
         .set({
-          isDeleted: true,
+          isDeleted: 1,
           deletedAt: new Date(),
           deletedBy: ctx.user?.id,
         })
