@@ -58,6 +58,7 @@ export function EditCurrentSalaryModal({ employee, onClose, onSave }: Props) {
     employeeContributionType: 'value' as 'value' | 'percentage',
     employerContribution: 0,
     employerContributionType: 'value' as 'value' | 'percentage',
+    healthInsuranceAmount: 0,
     taxPercent: 0,
     effectiveDate: new Date().toISOString().split("T")[0],
   });
@@ -162,6 +163,10 @@ export function EditCurrentSalaryModal({ employee, onClose, onSave }: Props) {
         taxPercent: toNumber(
           (currentSalary as any).taxPercent,
           prev.taxPercent
+        ),
+        healthInsuranceAmount: toNumber(
+          (currentSalary as any).healthInsuranceAmount,
+          prev.healthInsuranceAmount
         ),
         effectiveDate: currentSalary.effectiveStartDate
           ? currentSalary.effectiveStartDate.split("T")[0]
@@ -366,6 +371,7 @@ export function EditCurrentSalaryModal({ employee, onClose, onSave }: Props) {
         employerContribution: formData.employerContribution,
         employerContributionType: formData.employerContributionType,
         taxPercent: formData.taxPercent,
+        healthInsuranceAmount: formData.healthInsuranceAmount,
         effectiveStartDate: formData.effectiveDate,
       });
       toast.success("Salary saved successfully and activated!");
@@ -873,6 +879,37 @@ export function EditCurrentSalaryModal({ employee, onClose, onSave }: Props) {
                     </div>
                   </div>
                 </div>
+              </div>
+            </div>
+            <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+              <h4 className="text-sm font-semibold text-green-900 mb-3">
+                {language === "en" ? "Health Insurance" : "التأمين الصحي"}
+              </h4>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  {language === "en" ? "Health Insurance Amount" : "مبلغ التأمين الصحي"}
+                </label>
+
+                <input
+                  type="number"
+                  step="0.01"
+                  min="0"
+                  value={formData.healthInsuranceAmount}
+                  onChange={e =>
+                    setFormData({
+                      ...formData,
+                      healthInsuranceAmount: parseFloat(e.target.value) || 0,
+                    })
+                  }
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                />
+
+                <p className="text-xs text-gray-500 mt-1">
+                  {language === "en"
+                    ? "Fixed deduction amount (no percentage)"
+                    : "مبلغ ثابت (بدون نسبة)"}
+                </p>
               </div>
             </div>
 

@@ -229,6 +229,7 @@ export const hrPayrollRouter = router({
       overtimePay: z.number().optional().default(0),
       bonus: z.number().optional().default(0),
       taxDeduction: z.number().optional().default(0),
+      healthInsuranceAmount: z.number().optional(),
       socialSecurityDeduction: z.number().optional().default(0),
       loanDeduction: z.number().optional().default(0),
       otherDeductions: z.number().optional().default(0),
@@ -261,6 +262,7 @@ export const hrPayrollRouter = router({
         bonus: input.bonus.toString(),
         grossSalary: grossSalary.toString(),
         taxDeduction: input.taxDeduction.toString(),
+        healthInsuranceAmount: String(input.healthInsuranceAmount || 0),
         socialSecurityDeduction: input.socialSecurityDeduction.toString(),
         loanDeduction: input.loanDeduction.toString(),
         otherDeductions: input.otherDeductions.toString(),
@@ -287,6 +289,7 @@ export const hrPayrollRouter = router({
       bonus: z.number().optional(),
       taxDeduction: z.number().optional(),
       taxPercent: z.number().optional(),
+      healthInsuranceAmount: z.number().optional(),
       employerContribution: z.number().optional(),
       employerContributionType: z.enum(['value', 'percentage']).optional(),
       employeeContribution: z.number().optional(),
@@ -327,9 +330,11 @@ export const hrPayrollRouter = router({
       const socialSecurityDeduction = input.socialSecurityDeduction ?? parseFloat(current.socialSecurityDeduction?.toString() || "0");
       const loanDeduction = input.loanDeduction ?? parseFloat(current.loanDeduction?.toString() || "0");
       const otherDeductions = input.otherDeductions ?? parseFloat(current.otherDeductions?.toString() || "0");
-      
       const grossSalary = basicSalary + housingAllowance + transportAllowance + otherAllowances + overtimePay + bonus;
-      const totalDeductions = taxDeduction + socialSecurityDeduction + loanDeduction + otherDeductions;
+      const healthInsuranceDeduction =
+      input.healthInsuranceAmount ??
+      parseFloat(current.healthInsuranceAmount?.toString() || "0");
+      const totalDeductions = taxDeduction + socialSecurityDeduction + loanDeduction + otherDeductions + healthInsuranceDeduction;
       const netSalary = grossSalary - totalDeductions;
       
       await db
@@ -343,6 +348,7 @@ export const hrPayrollRouter = router({
           bonus: bonus.toString(),
           grossSalary: grossSalary.toString(),
           taxDeduction: taxDeduction.toString(),
+          healthInsuranceAmount: healthInsuranceDeduction.toString(),
           socialSecurityDeduction: socialSecurityDeduction.toString(),
           loanDeduction: loanDeduction.toString(),
           otherDeductions: otherDeductions.toString(),
@@ -572,9 +578,9 @@ export const hrPayrollRouter = router({
       payrollMonth: z.number().min(1).max(12),
       payrollYear: z.number(),
       preparedBy: z.string().optional(),
-      defaultTaxRate: z.number().default(15),
-      defaultSocialSecurityRate: z.number().default(7),
-      defaultHealthInsuranceRate: z.number().default(5),
+      taxDeduction: z.number().default(15),
+      socialSecurityDeduction: z.number().default(7),
+      healthInsuranceAmount: z.number().optional(),
     }))
     .mutation(async ({ ctx, input }) => {
       const { organizationId, operatingUnitId } = ctx.scope;
@@ -638,7 +644,7 @@ export const hrPayrollRouter = router({
         // ✅ STEP 3: Calculate Tax (from salary scale taxPercent, or use default)
         const taxPercent = salary.taxPercent != null
           ? parseFloat(salary.taxPercent.toString())
-          : input.defaultTaxRate;
+          : input.taxDeduction;
         const taxDeduction = (basicSalary * taxPercent) / 100;
         
         // ✅ STEP 4: Calculate Social Security (employee + employer contributions)
@@ -652,11 +658,12 @@ export const hrPayrollRouter = router({
         if (salary.employerContributionType === 'percentage') {
           employerSS = (basicSalary * employerSS) / 100;
         }
-        
-      
-        // ✅ STEP 5: Calculate Health Insurance
-        const healthInsuranceDeduction = (grossSalary * input.defaultHealthInsuranceRate) / 100;
-        
+
+        // ✅ STEP 5: Health Insurance (FINAL → fixed amount ONLY)
+          let healthInsuranceDeduction = parseFloat(
+              (salary as any).healthInsuranceAmount?.toString() || "0"
+            );
+               
         // ✅ STEP 6: Calculate Total Deductions and Net
         // CRITICAL: Use recalculated socialSecurityDeduction to ensure accuracy
         const calculatedSocialSecurityDeduction = employeeSS + employerSS;
@@ -684,7 +691,7 @@ export const hrPayrollRouter = router({
           employeeSocialSecurity: employeeSS.toFixed(2), // ✅ SPLIT SS
           socialSecurityDeduction: (employerSS + employeeSS).toFixed(2), // ✅ ENFORCED: Always = employer + employee
           loanDeduction: '0',
-          otherDeductions: healthInsuranceDeduction.toFixed(2),
+          healthInsuranceAmount: healthInsuranceDeduction.toFixed(2),
           totalDeductions: totalDeductions.toFixed(2),
           netSalary: netSalary.toFixed(2),
           currency: salary.currency || 'USD',

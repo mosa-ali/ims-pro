@@ -2989,6 +2989,8 @@ export const hrSalaryScale = mysqlTable("hr_salary_scale", {
   // ✅ TAX INPUT (ONLY PERCENT)
   taxPercent: decimal({ precision: 5, scale: 2 }).default('0'),
 
+  healthInsuranceAmount: decimal("healthInsuranceAmount", { precision: 10, scale: 2 }).default("0"),
+
   // ✅ SOCIAL SECURITY INPUT
   employerContribution: decimal({ precision: 15, scale: 2 }).default('0'),
   employerContributionType: mysqlEnum(['value','percentage']).default('value'),
@@ -3057,6 +3059,7 @@ export const hrPayrollRecords = mysqlTable("hr_payroll_records", {
 
   // ✅ DEDUCTIONS
   taxDeduction: decimal({ precision: 15, scale: 2 }).default('0'),
+  healthInsuranceAmount: decimal("healthInsuranceAmount", { precision: 10, scale: 2 }).default("0"),
 
   // 🔥 SPLIT SOCIAL SECURITY (IMPORTANT)
   employerSocialSecurity: decimal({ precision: 15, scale: 2 }).default('0'),
