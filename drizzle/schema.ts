@@ -2693,7 +2693,12 @@ export const hrAttendanceRecords = mysqlTable("hr_attendance_records", {
 	organizationId: int().notNull(),
 	operatingUnitId: int(),
 	employeeId: int().notNull(),
-	// you can use { mode: 'date' }, if you want to have Date as type for this column
+	
+	// ✅ NEW: Staff details (denormalized for performance)
+	staffName: varchar({ length: 255 }),
+	staffId: varchar({ length: 50 }),
+	
+	// Attendance tracking
 	date: date({ mode: 'string' }).notNull(),
 	checkIn: timestamp({ mode: 'string' }),
 	checkOut: timestamp({ mode: 'string' }),
@@ -2702,17 +2707,36 @@ export const hrAttendanceRecords = mysqlTable("hr_attendance_records", {
 	overtimeHours: decimal({ precision: 5, scale: 2 }),
 	location: varchar({ length: 255 }),
 	notes: text(),
+	
+	// ✅ NEW: Data source tracking
+	source: mysqlEnum(['microsoft_teams_shifts', 'microsoft_teams_presence', 'manual_hr_entry']).default('manual_hr_entry'),
+	
+	// ✅ NEW: Approval workflow
+	approvalStatus: mysqlEnum(['pending', 'approved', 'rejected']).default('pending'),
+	approvedBy: int(),
+	approvedAt: timestamp({ mode: 'string' }),
+	rejectionReason: text(),
+	
+	// Period locking
 	periodLocked: tinyint().default(0).notNull(),
 	lockedBy: int(),
 	lockedAt: timestamp({ mode: 'string' }),
+	
+	// Soft delete
 	isDeleted: tinyint().default(0).notNull(),
 	deletedAt: timestamp({ mode: 'string' }),
 	deletedBy: int(),
+	
+	// Audit
 	createdAt: timestamp({ mode: 'string' }).defaultNow().notNull(),
 	updatedAt: timestamp({ mode: 'string' }).defaultNow().onUpdateNow().notNull(),
 },
 (table) => [
 	index("hr_attendance_records_employeeId_date_unique").on(table.employeeId, table.date),
+	// ✅ NEW: Indexes for filtering
+	index("idx_hr_attendance_source").on(table.source),
+	index("idx_hr_attendance_approvalStatus").on(table.approvalStatus),
+	index("idx_hr_attendance_staffId").on(table.staffId),
 ]);
 
 export const hrDocuments = mysqlTable("hr_documents", {
