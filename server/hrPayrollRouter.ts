@@ -666,7 +666,7 @@ export const hrPayrollRouter = router({
                
         // ✅ STEP 6: Calculate Total Deductions and Net
         // CRITICAL: Use recalculated socialSecurityDeduction to ensure accuracy
-        const calculatedSocialSecurityDeduction = employeeSS + employerSS;
+        const calculatedSocialSecurityDeduction = employeeSS;
         const totalDeductions = taxDeduction + calculatedSocialSecurityDeduction + healthInsuranceDeduction;
         const netSalary = grossSalary - totalDeductions;
         
