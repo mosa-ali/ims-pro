@@ -256,7 +256,7 @@ export function AttendanceCalendar() {
  return (
  <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
  <div className="grid grid-cols-7 border-b border-gray-200 bg-gray-50">
- {dayNames.map((day, idx) => (
+ {days.map((day, idx) => (
  <div key={idx} className={`p-3 text-center font-semibold text-sm text-gray-700 text-start`}>
  {day}
  </div>
@@ -397,7 +397,7 @@ export function AttendanceCalendar() {
  <h2 className="text-xl font-bold text-gray-900">
  {t.hrAttendance.attendanceDetail}
  </h2>
- <p className="text-sm text-gray-600 mt-1">{selectedRecord.staffName} - {selectedRecord.date}</p>
+ <p className="text-sm text-gray-600 mt-1">{t.hrAttendance.staffName} - {selectedRecord.date}</p>
  </div>
 
  <div className={`p-6 space-y-4 text-start`}>
