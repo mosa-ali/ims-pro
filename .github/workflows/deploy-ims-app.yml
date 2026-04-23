@@ -40,240 +40,296 @@ jobs:
           npm -v
           pnpm -v
 
-      ######################################################################
-      # Install dependencies
-      ######################################################################
       - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      
+      - name: Install Puppeteer Chrome
+        run: npx puppeteer browsers install chrome
+
+      - name: Verify Chrome installation
+        run: find node_modules -name chrome | head -20
+      
+      - name: Verify Puppeteer Chromium
         run: |
-          pnpm install --frozen-lockfile
-          echo "✓ Dependencies installed"
-
-      ######################################################################
-      # Install Chromium in ROOT (for build validation)
-      ######################################################################
-      - name: Install Chromium for Puppeteer (root)
-        run: |
-          npx puppeteer browsers install chrome
-          echo "✓ Root Chromium installed"
-
-      ######################################################################
-      # Verify root Chromium
-      ######################################################################
-      - name: Verify root Chromium installation
-        run: |
-          echo "Searching root Chromium..."
-
-          find node_modules -name chrome | head -20 || true
-          find node_modules -name chromium | head -20 || true
-          find node_modules -name "*chrome-linux*" | head -20 || true
-
-      ######################################################################
-      # Validate environment file
-      ######################################################################
-      - name: Validate environment configuration
-        run: |
-          test -f server/env.ts || exit 1
-          echo "✓ env.ts exists"
-
-      ######################################################################
-      # Validate package.json
-      ######################################################################
-      - name: Validate package.json
-        run: |
-          test -f package.json || exit 1
-          echo "✓ package.json exists"
-
-      ######################################################################
-      # Validate drizzle schema
-      ######################################################################
-      - name: Validate database schema
-        run: |
-          test -f shared/schema.ts || exit 1
-          echo "✓ schema exists"
-
-      ######################################################################
-      # Validate Vite config
-      ######################################################################
-      - name: Validate Vite config
-        run: |
-          test -f vite.config.ts || exit 1
-          echo "✓ vite config exists"
-
-      ######################################################################
-      # Build app
-      ######################################################################
+          echo "Checking Puppeteer cache..."
+          ls -la node_modules/.cache || true
+          ls -la node_modules/.cache/puppeteer || true
+      
       - name: Build application
+        run: pnpm build
+      - name: Ensure Puppeteer is in package.json
         run: |
-          pnpm build
-          echo "✓ Application built"
+          echo "=== Checking for Puppeteer dependency ==="
+          if grep -q '"puppeteer"' package.json; then
+            echo "✓ Puppeteer found in package.json"
+          else
+            echo "WARNING: Puppeteer not found in package.json"
+            echo "Please add: pnpm add puppeteer"
+          fi
 
-      ######################################################################
-      # Validate dist folder
-      ######################################################################
-      - name: Validate dist output
+      - name: Build deployment artifact
+        run: pnpm run build:deploy
+
+      - name: Show artifact structure after build
         run: |
-          test -d dist || exit 1
-          echo "✓ dist folder exists"
-
-      ######################################################################
-      # Build deploy package
-      ######################################################################
-      - name: Build deployment package
-        run: |
-          pnpm run build:deploy
-          echo "✓ Deployment package built"
-
-      ######################################################################
-      # Validate deploy folder
-      ######################################################################
-      - name: Validate deploy folder
-        run: |
-          test -d deploy || exit 1
-          test -d deploy/dist || exit 1
-
-          echo "Deploy folder:"
+          echo "=== project root ==="
+          ls -la
+          echo "=== deploy ==="
           ls -la deploy
+          echo "=== deploy/dist ==="
+          ls -la deploy/dist
 
-      ######################################################################
-      # Install production dependencies
-      ######################################################################
-      - name: Install production dependencies
+      - name: Validate no forbidden Drizzle import path
+        run: |
+          echo "=== Checking for forbidden Drizzle import path ==="
+          if grep -RIn 'drizzle-orm/mysql-core/index.js' deploy/dist 2>/dev/null; then
+            echo "ERROR: forbidden Drizzle import path found in deploy/dist"
+            exit 1
+          fi
+          echo "✓ No forbidden Drizzle import path found"
+
+      - name: Validate deploy/dist/index.js contains NO dev-only Vite references
+        run: |
+          echo "=== Checking for dev-only package references in deploy/dist/index.js ==="
+
+          if grep -E '@builder.io/vite-plugin-jsx-loc' deploy/dist/index.js; then
+            echo "ERROR: @builder.io/vite-plugin-jsx-loc found in production deploy/dist/index.js"
+            exit 1
+          fi
+
+          if grep -E 'from "vite"|from '\''vite'\''|import\("vite"\)|import\('\''vite'\''\)|defineConfig\(' deploy/dist/index.js; then
+            echo "ERROR: vite import/reference found in production deploy/dist/index.js"
+            exit 1
+          fi
+
+          echo "✓ No dev-only Vite references found in production deploy/dist/index.js"
+
+      - name: Install PRODUCTION ONLY dependencies using pnpm
         run: |
           cd deploy
           pnpm install --prod --frozen-lockfile
           echo "✓ Production dependencies installed"
-
-      ######################################################################
-      # VERY IMPORTANT:
-      # Install Chromium inside DEPLOY package
-      ######################################################################
-      - name: Install Chromium inside deploy package
+        
+      - name: Install Puppeteer Chrome inside deploy package
         run: |
           cd deploy
           npx puppeteer browsers install chrome
-          echo "✓ Chromium installed inside deploy package"
+      
+      - name: Verify Puppeteer cache inside deploy package
+        run: |
+          cd deploy
+          ls -la node_modules/.cache || true
+          ls -la node_modules/.cache/puppeteer || true
 
-      ######################################################################
-      # Verify Chromium inside deploy package
-      ######################################################################
-      - name: Verify Chromium in deploy package
+      - name: Validate deploy package structure
         run: |
           cd deploy
 
-          echo "Searching deploy Chromium..."
+          [ -f package.json ] || (echo "ERROR: package.json not found in deploy" && exit 1)
+          [ -f dist/index.js ] || (echo "ERROR: dist/index.js not found in deploy" && exit 1)
+          [ -d node_modules ] || (echo "ERROR: node_modules not found in deploy" && exit 1)
 
-          find node_modules -name chrome | head -20 || true
-          find node_modules -name chromium | head -20 || true
-          find node_modules -name "*chrome-linux*" | head -20 || true
+          [ -d node_modules/express ] || (echo "ERROR: express not found in production node_modules" && exit 1)
+          [ -d node_modules/drizzle-orm ] || (echo "ERROR: drizzle-orm not found in production node_modules" && exit 1)
+          [ -d node_modules/mysql2 ] || (echo "ERROR: mysql2 not found in production node_modules" && exit 1)
+          [ -d node_modules/axios ] || (echo "ERROR: axios not found in production node_modules" && exit 1)
+          [ -d node_modules/cookie ] || (echo "ERROR: cookie not found in production node_modules" && exit 1)
+          [ -d node_modules/bcryptjs ] || (echo "ERROR: bcryptjs not found in production node_modules" && exit 1)
+          [ -d node_modules/puppeteer ] || (echo "ERROR: puppeteer not found in production node_modules" && exit 1)
 
-      ######################################################################
-      # Validate Puppeteer executable path
-      ######################################################################
-      - name: Validate Puppeteer executable path
+          if [ -d patches ]; then
+            [ -f patches/wouter@3.7.1.patch ] || (echo "ERROR: required patch file missing in deploy/patches" && exit 1)
+          fi
+
+          echo "✓ Deploy package structure verified"
+
+      - name: Verify PRODUCTION runtime dependencies are installed
         run: |
           cd deploy
+          pnpm list express drizzle-orm mysql2 axios cookie bcryptjs puppeteer --depth 0
 
-          node -e "
-            import('puppeteer')
-              .then(p => {
-                console.log('Resolved executable path:')
-                console.log(p.default.executablePath())
-              })
-              .catch(err => {
-                console.error(err)
-                process.exit(1)
-              })
-          "
-
-      ######################################################################
-      # Validate critical runtime dependencies
-      ######################################################################
-      - name: Validate runtime dependencies
-        run: |
-          cd deploy
-
-          test -d node_modules/express || exit 1
-          test -d node_modules/mysql2 || exit 1
-          test -d node_modules/drizzle-orm || exit 1
-          test -d node_modules/axios || exit 1
-          test -d node_modules/bcryptjs || exit 1
-          test -d node_modules/puppeteer || exit 1
-
-          echo "✓ Runtime dependencies verified"
-
-      ######################################################################
-      # Ensure dev dependencies removed
-      ######################################################################
-      - name: Validate no dev dependencies
+      - name: Verify devDependencies are NOT installed
         run: |
           cd deploy
 
           if [ -d node_modules/vite ]; then
-            echo "ERROR: vite found in production package"
+            echo "ERROR: vite found in production node_modules"
+            exit 1
+          fi
+
+          if [ -d node_modules/@builder.io ]; then
+            echo "ERROR: @builder.io found in production node_modules"
             exit 1
           fi
 
           if [ -d node_modules/typescript ]; then
-            echo "ERROR: typescript found in production package"
+            echo "ERROR: typescript found in production node_modules"
             exit 1
           fi
 
-          echo "✓ Production package clean"
+          echo "✓ Verified: no devDependencies installed in production"
 
-      ######################################################################
-      # Validate required runtime files
-      ######################################################################
-      - name: Validate runtime files
+      - name: Validate runtime imports
         run: |
           cd deploy
+          node --input-type=module -e "import('drizzle-orm/mysql-core').then(()=>console.log('✓ drizzle mysql-core import OK')).catch(err=>{console.error(err); process.exit(1)})"
+          node --input-type=module -e "import('express').then(()=>console.log('✓ express import OK')).catch(err=>{console.error(err); process.exit(1)})"
+          node --input-type=module -e "import('mysql2').then(()=>console.log('✓ mysql2 import OK')).catch(err=>{console.error(err); process.exit(1)})"
+          node --input-type=module -e "import('axios').then(()=>console.log('✓ axios import OK')).catch(err=>{console.error(err); process.exit(1)})"
+          node --input-type=module -e "import('cookie').then(()=>console.log('✓ cookie import OK')).catch(err=>{console.error(err); process.exit(1)})"
+          node --input-type=module -e "import('bcryptjs').then(()=>console.log('✓ bcryptjs import OK')).catch(err=>{console.error(err); process.exit(1)})"
+          node --input-type=module -e "import('puppeteer').then(()=>console.log('✓ puppeteer import OK')).catch(err=>{console.error(err); process.exit(1)})"
 
-          test -f package.json || exit 1
-          test -f dist/index.js || exit 1
-
-          echo "✓ Runtime files validated"
-
-      ######################################################################
-      # Test startup
-      ######################################################################
-      - name: Validate production startup
+      - name: Validate production server startup
         run: |
           cd deploy
 
           export NODE_ENV=production
           export PORT=3001
-          export PDF_ENABLED=true
-          export JWT_SECRET=test_secret
-          export DATABASE_URL=mysql://test:test@localhost:3306/test
+          export APP_BASE_URL="${APP_BASE_URL:-http://localhost:3001}"
+          export OAUTH_SERVER_URL="${OAUTH_SERVER_URL:-http://localhost:3001}"
+          export JWT_SECRET="${JWT_SECRET:-ci_dummy_jwt_secret_123456789}"
+          export DATABASE_URL="${DATABASE_URL:-mysql://test:test@127.0.0.1:3306/testdb}"
 
           set +e
-          timeout 20s node dist/index.js > startup.log 2>&1
+          timeout 20s sh -c 'node dist/index.js' > startup.log 2>&1
           EXIT_CODE=$?
           set -e
 
+          echo "=== Startup log ==="
           cat startup.log || true
 
           if [ "$EXIT_CODE" -eq 124 ]; then
-            echo "✓ Startup validation passed"
+            echo "✓ Server started successfully and was stopped by timeout"
             exit 0
           fi
 
-      ######################################################################
-      # Validate Azure secret
-      ######################################################################
-      - name: Validate Azure publish profile
-        run: |
-          if [ -z "$AZURE_WEBAPP_PUBLISH_PROFILE" ]; then
-            echo "Azure publish profile missing"
+          if grep -Ei 'ERR_MODULE_NOT_FOUND|Cannot find package|Cannot find module|ERR_PACKAGE_PATH_NOT_EXPORTED|ERR_UNSUPPORTED_DIR_IMPORT' startup.log; then
+            echo "ERROR: production startup failed due to missing package or invalid runtime import"
             exit 1
           fi
 
-          echo "✓ Azure secret exists"
+          echo "✓ Startup validation completed without packaging/runtime import errors"
+
+      - name: Show deploy package contents
+        run: |
+          echo "==== deploy root ===="
+          ls -la deploy
+
+          echo "==== deploy dist ===="
+          ls -la deploy/dist
+
+          echo "==== deploy patches ===="
+          ls -la deploy/patches || true
+
+          echo "==== key runtime packages ===="
+          ls -la deploy/node_modules/drizzle-orm || true
+          ls -la deploy/node_modules/mysql2 || true
+          ls -la deploy/node_modules/axios || true
+          ls -la deploy/node_modules/cookie || true
+          ls -la deploy/node_modules/bcryptjs || true
+          ls -la deploy/node_modules/puppeteer || true
+
+      - name: Check publish profile exists
+        run: |
+          if [ -z "$AZURE_WEBAPP_PUBLISH_PROFILE" ]; then
+            echo "ERROR: AZURE_WEBAPP_PUBLISH_PROFILE secret is missing"
+            exit 1
+          fi
+          echo "✓ AZURE_WEBAPP_PUBLISH_PROFILE secret is available"
         env:
           AZURE_WEBAPP_PUBLISH_PROFILE: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
 
-      ######################################################################
-      # Deploy to Azure
-      ######################################################################
+      - name: Azure Configuration Requirements
+        run: |
+          echo "============================================="
+          echo "IMPORTANT: Azure App Service Configuration"
+          echo "============================================="
+          echo "Please ensure these App Settings are configured in Azure:"
+          echo "1. SCM_DO_BUILD_DURING_DEPLOYMENT = false"
+          echo "2. WEBSITE_NODE_DEFAULT_VERSION = ~22"
+          echo "3. All required environment variables are set"
+          echo "4. PDF_ENABLED = true (for PDF generation)"
+          echo ""
+          echo "For PDF generation:"
+          echo "Set Azure Startup Command to:"
+          echo "/home/site/wwwroot/.azure/startup.sh"
+          echo "============================================="
+
+      - name: Create Azure startup script for PDF dependencies
+        run: |
+          mkdir -p deploy/.azure
+
+          cat > deploy/.azure/startup.sh << 'STARTUPEOF'
+          #!/bin/bash
+          set -e
+
+          echo "======================================"
+          echo "IMS Application Startup"
+          echo "======================================"
+
+          cd /home/site/wwwroot
+
+          echo "Checking Puppeteer browser..."
+
+          CHROME_PATH=$(find /home/site/wwwroot/node_modules/.cache/puppeteer -type f -name chrome | head -1)
+
+          if [ -z "$CHROME_PATH" ]; then
+            echo "WARNING: Packaged Puppeteer Chrome not found"
+
+            if [ -f /usr/bin/chromium-browser ]; then
+              export PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
+              echo "Using fallback system chromium:"
+              echo "$PUPPETEER_EXECUTABLE_PATH"
+            else
+              echo "ERROR: No Chrome executable found"
+              echo "PDF generation will fail"
+              exit 1
+            fi
+          else
+            export PUPPETEER_EXECUTABLE_PATH="$CHROME_PATH"
+            echo "Using packaged Puppeteer Chrome:"
+            echo "$PUPPETEER_EXECUTABLE_PATH"
+          fi
+
+          echo "Verifying production files..."
+
+          if [ ! -f dist/index.js ]; then
+            echo "ERROR: dist/index.js not found"
+            exit 1
+          fi
+
+          if [ ! -d node_modules ]; then
+            echo "ERROR: node_modules folder not found"
+            exit 1
+          fi
+
+          echo "Environment validation..."
+
+          echo "NODE_ENV=$NODE_ENV"
+          echo "PDF_ENABLED=$PDF_ENABLED"
+          echo "APP_BASE_URL=$APP_BASE_URL"
+
+          echo "Starting IMS application..."
+          node dist/index.js
+          STARTUPEOF
+
+          chmod +x deploy/.azure/startup.sh
+
+          echo "✓ Azure startup script created successfully"
+
+      - name: Show startup script
+        run: |
+          echo "======================================"
+          echo "Generated startup script:"
+          echo "======================================"
+          cat deploy/.azure/startup.sh
+          echo ""
+          echo "Azure Portal Configuration:"
+          echo "App Service → Configuration → General Settings"
+          echo "Startup Command:"
+          echo "/home/site/wwwroot/.azure/startup.sh"
+
       - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v3
         with:
