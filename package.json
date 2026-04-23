@@ -10,6 +10,7 @@
     "db:push:no-migrate": "drizzle-kit generate",
     "build:esbuild": "node scripts/build-esbuild.mjs",
     "build:deploy": "node scripts/build-for-deployment.mjs",
+    "postinstall": "npx puppeteer browsers install chrome",
     "start": "NODE_ENV=production node dist/index.js",
     "check": "tsc --noEmit",
     "format": "prettier --write .",

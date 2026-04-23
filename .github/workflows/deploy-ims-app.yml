@@ -43,6 +43,12 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Install Chromium for Puppeteer
+        run: npx puppeteer browsers install chrome
+
+      - name: Build project
+        run: pnpm build
+
       - name: Ensure Puppeteer is in package.json
         run: |
           echo "=== Checking for Puppeteer dependency ==="
@@ -161,8 +167,8 @@ jobs:
 
           export NODE_ENV=production
           export PORT=3001
-          export APP_BASE_URL="${APP_BASE_URL:-http://localhost:3001}"
-          export OAUTH_SERVER_URL="${OAUTH_SERVER_URL:-http://localhost:3001}"
+          export APP_BASE_URL="${APP_BASE_URL:-http://localhost:8080}"
+          export OAUTH_SERVER_URL="${OAUTH_SERVER_URL:-http://localhost:8080}"
           export JWT_SECRET="${JWT_SECRET:-ci_dummy_jwt_secret_123456789}"
           export DATABASE_URL="${DATABASE_URL:-mysql://test:test@127.0.0.1:3306/testdb}"
 

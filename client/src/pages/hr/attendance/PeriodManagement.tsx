@@ -219,7 +219,7 @@ export function PeriodManagement() {
       {/* Period list */}
       {!isLoading &&
         periods.map((period: AttendancePeriod) => {
-          const isLocked = period.status === "locked";
+          const isLocked = period.status === "1";
 
           const approvalProgress =
             period.totalRecords > 0

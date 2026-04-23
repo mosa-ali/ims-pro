@@ -36,10 +36,13 @@ export const ENV = {
     return 'https://platform.imserp.org';
   },
 
+  // Optional Chromium path override for Puppeteer PDF generation
+  PUPPETEER_EXECUTABLE_PATH: process.env.PUPPETEER_EXECUTABLE_PATH ?? "",
+
   // Storage mode: "manus" (default), "local" (filesystem), "s3" (MinIO/AWS S3)
   STORAGE_MODE: (process.env.STORAGE_MODE ?? "manus") as "manus" | "local" | "s3",
   LOCAL_STORAGE_PATH: process.env.LOCAL_STORAGE_PATH ?? "./local-storage",
-  LOCAL_STORAGE_BASE_URL: process.env.LOCAL_STORAGE_BASE_URL ?? "http://localhost:3000",
+  LOCAL_STORAGE_BASE_URL: process.env.LOCAL_STORAGE_BASE_URL ?? "http://localhost:8080",
 
   // S3-compatible storage (MinIO or AWS S3)
   S3_ENDPOINT: process.env.S3_ENDPOINT ?? "",
