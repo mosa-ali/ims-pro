@@ -57,22 +57,33 @@ export async function generateOfficialPdf(
     //-----------------------------------
     // Resolve executable path safely
     //-----------------------------------
-    //-----------------------------------
-// Resolve executable path safely
-//-----------------------------------
-const possibleChromePaths = [
-  process.env.PUPPETEER_EXECUTABLE_PATH,
-    ENV.PUPPETEER_EXECUTABLE_PATH,
+    let dynamicPuppeteerPath: string | null = null;
 
-    // Azure existing installed Chrome
-    "/home/.cache/puppeteer/chrome/linux-146.0.7680.153/chrome-linux64/chrome",
+      try {
+        const chromeRoot = "/home/.cache/puppeteer/chrome";
 
-    // Future-proof fallback (search newer versions manually if upgraded)
-    "/usr/bin/chromium-browser",
-    "/usr/bin/google-chrome",
+        if (fs.existsSync(chromeRoot)) {
+          const versions = fs
+            .readdirSync(chromeRoot)
+            .filter((folder) => folder.startsWith("linux-"))
+            .sort()
+            .reverse();
 
-    // Puppeteer default
-    puppeteer.executablePath(),
+          if (versions.length > 0) {
+            dynamicPuppeteerPath = `${chromeRoot}/${versions[0]}/chrome-linux64/chrome`;
+          }
+        }
+      } catch (error) {
+        console.error("Failed to detect Puppeteer Chrome version:", error);
+      }
+
+      const possibleChromePaths = [
+        process.env.PUPPETEER_EXECUTABLE_PATH,
+        ENV.PUPPETEER_EXECUTABLE_PATH,
+        dynamicPuppeteerPath,
+        "/usr/bin/chromium-browser",
+        "/usr/bin/google-chrome",
+        puppeteer.executablePath(),
       ].filter(Boolean) as string[];
 
       const executablePath = possibleChromePaths.find((path) => {

@@ -43,23 +43,6 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
       
-      - name: Install Puppeteer Chrome
-        run: |
-          echo "Installing Chrome in project-local cache..."
-
-          export PUPPETEER_CACHE_DIR=$(pwd)/node_modules/.cache/puppeteer
-
-          npx puppeteer browsers install chrome
-
-          echo "Verifying browser install..."
-          find node_modules/.cache/puppeteer -type f | head -20
-      
-      - name: Verify Puppeteer Chromium
-        run: |
-          echo "Checking Puppeteer cache..."
-          ls -la node_modules/.cache || true
-          ls -la node_modules/.cache/puppeteer || true
-      
       - name: Build application
         run: pnpm build
       - name: Ensure Puppeteer is in package.json
@@ -114,25 +97,6 @@ jobs:
           cd deploy
           pnpm install --prod --frozen-lockfile
           echo "✓ Production dependencies installed"
-        
-      - name: Install Puppeteer Chrome inside deploy package
-        run: |
-          cd deploy
-
-          echo "Installing Chrome inside deploy package..."
-
-          export PUPPETEER_CACHE_DIR=$(pwd)/node_modules/.cache/puppeteer
-
-          npx puppeteer browsers install chrome
-
-          echo "Verifying deploy Chrome install..."
-          find node_modules/.cache/puppeteer -type f | head -20
-      
-      - name: Verify Puppeteer cache inside deploy package
-        run: |
-          cd deploy
-          ls -la node_modules/.cache || true
-          ls -la node_modules/.cache/puppeteer || true
 
       - name: Validate deploy package structure
         run: |
@@ -285,13 +249,20 @@ jobs:
 
           echo "Checking Puppeteer browser..."
 
-          CHROME_PATH=$(find /home/site/wwwroot/node_modules/.cache/puppeteer -type f -name chrome | head -1)
+          CHROME_PATH=$(find /home/.cache/puppeteer -type f \( -name chrome -o -name chrome-headless-shell \) | head -1)
 
           if [ -z "$CHROME_PATH" ]; then
             echo "WARNING: Packaged Puppeteer Chrome not found"
 
-            if [ -f /usr/bin/chromium-browser ]; then
+            if [ -f /usr/bin/chromium-browser ] || [ -f /usr/bin/google-chrome ]; then
+              if [ -f /usr/bin/chromium-browser ]; then
               export PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
+            elif [ -f /usr/bin/google-chrome ]; then
+              export PUPPETEER_EXECUTABLE_PATH=/usr/bin/google-chrome
+            else
+              echo "ERROR: No Chrome executable found"
+              exit 1
+            fi
               echo "Using fallback system chromium:"
               echo "$PUPPETEER_EXECUTABLE_PATH"
             else
