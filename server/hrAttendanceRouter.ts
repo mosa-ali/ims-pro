@@ -1,754 +1,998 @@
 import { z } from "zod";
 import {
-  publicProcedure,
   protectedProcedure,
   router,
   scopedProcedure,
 } from "./_core/trpc";
+
 import { getDb } from "./db";
+
 import {
   hrAttendanceRecords,
+  hrAttendancePeriods,
   hrEmployees,
   organizations,
 } from "../drizzle/schema";
-import { eq, and, desc, gte, lte, sql, count } from "drizzle-orm";
+
+import {
+  eq,
+  and,
+  desc,
+  gte,
+  lte,
+  sql,
+  count,
+  isNull,
+} from "drizzle-orm";
+
 import { generateOfficialPdf } from "./services/pdf/OfficialPdfEngine";
 import { generateAttendanceReportHtml } from "./services/pdf/templates/AttendanceReportTemplate";
 
-const formatSqlDate = (dateValue?: string | Date | null) => {
+
+/* =========================================================
+   DATE HELPERS
+========================================================= */
+
+const formatSqlDate = (
+  dateValue?: string | Date | null
+) => {
   if (!dateValue) return null;
 
   return new Date(dateValue)
     .toISOString()
-    .split("T")[0]; // YYYY-MM-DD
+    .split("T")[0];
 };
 
-const formatSqlDateTime = (dateValue?: string | Date | null) => {
+const formatSqlDateTime = (
+  dateValue?: string | Date | null
+) => {
   if (!dateValue) return null;
 
   return new Date(dateValue)
     .toISOString()
     .slice(0, 19)
-    .replace("T", " "); // YYYY-MM-DD HH:mm:ss
+    .replace("T", " ");
 };
 
-const nowSql = new Date().toISOString().slice(0, 19).replace('T', ' ');
+const nowSql = new Date()
+  .toISOString()
+  .slice(0, 19)
+  .replace("T", " ");
 
-/**
- * HR Attendance Router - Attendance Tracking
- * MANDATORY: All queries filter isDeleted = false
- * MANDATORY: Delete operations use soft delete only (no hard delete)
- */
+/* =========================================================
+   PERIOD LOCK VALIDATION
+========================================================= */
+
+const validatePeriodLock = async ({
+  db,
+  organizationId,
+  operatingUnitId,
+  attendanceDate,
+}: {
+  db: any;
+  organizationId: number;
+  operatingUnitId?: number | null;
+  attendanceDate: string;
+}) => {
+  const dateObj = new Date(attendanceDate);
+
+  const month = dateObj.getMonth() + 1;
+  const year = dateObj.getFullYear();
+
+  const conditions = [
+    eq(hrAttendancePeriods.organizationId, organizationId),
+    eq(hrAttendancePeriods.periodMonth, month),
+    eq(hrAttendancePeriods.periodYear, year),
+    eq(hrAttendancePeriods.status, "locked"),
+    eq(hrAttendancePeriods.isDeleted, 0),
+  ];
+
+  if (operatingUnitId) {
+    conditions.push(
+      eq(
+        hrAttendancePeriods.operatingUnitId,
+        operatingUnitId
+      )
+    );
+  }
+
+  const lockedPeriod = await db
+    .select()
+    .from(hrAttendancePeriods)
+    .where(and(...conditions))
+    .limit(1);
+
+  if (lockedPeriod.length > 0) {
+    throw new Error(
+      `Attendance period ${month}/${year} is locked`
+    );
+  }
+};
+
+  const validatePeriodUnlocked = async (
+  organizationId: number,
+  operatingUnitId: number | null,
+  attendanceDate: string
+) => {
+  const date = new Date(attendanceDate);
+
+  const month = date.getMonth() + 1;
+  const year = date.getFullYear();
+
+  const db = await getDb();
+  const lockedPeriod = await db
+    .select()
+    .from(hrAttendancePeriods)
+    .where(
+      and(
+        eq(hrAttendancePeriods.organizationId, organizationId),
+        eq(hrAttendancePeriods.periodMonth, month),
+        eq(hrAttendancePeriods.periodYear, year),
+        eq(hrAttendancePeriods.status, "locked"),
+        operatingUnitId
+          ? eq(
+              hrAttendancePeriods.operatingUnitId,
+              operatingUnitId
+            )
+          : isNull(hrAttendancePeriods.operatingUnitId)
+      )
+    )
+    .limit(1);
+
+  if (lockedPeriod.length > 0) {
+    throw new Error(
+      "This attendance period is locked and cannot be modified."
+    );
+  }
+};
+
+/* =========================================================
+   ROUTER
+========================================================= */
+
 export const hrAttendanceRouter = router({
-  // Get attendance records for a date range
-  getAll: scopedProcedure
-    .input(
-      z.object({
-        employeeId: z.number().optional(),
-        startDate: z.string(),
-        endDate: z.string(),
-        status: z
-          .enum([
-            "present",
-            "absent",
-            "late",
-            "half_day",
-            "on_leave",
-            "holiday",
-            "weekend",
-          ])
-          .optional(),
-        limit: z.number().optional().default(1000),
-        offset: z.number().optional().default(0),
-      })
-    )
-    .query(async ({ ctx, input }) => {
-      const { organizationId, operatingUnitId } = ctx.scope;
+
+  /* =====================================
+     ATTENDANCE PERIODS
+  ===================================== */
+
+  getAttendancePeriods: scopedProcedure
+    .query(async ({ ctx }) => {
+      const { organizationId, operatingUnitId } =
+        ctx.scope;
+
       const db = await getDb();
-      if (!db) throw new Error("Database not available");
+      if (!db)
+        throw new Error("Database not available");
 
       const conditions = [
-        eq(hrAttendanceRecords.organizationId, organizationId),
-        eq(hrAttendanceRecords.isDeleted, 0),
-        gte(hrAttendanceRecords.date, formatSqlDate(input.startDate)!),
-        lte(hrAttendanceRecords.date, formatSqlDate(input.endDate)!),
+        eq(
+          hrAttendancePeriods.organizationId,
+          organizationId
+        ),
+        eq(hrAttendancePeriods.isDeleted, 0),
       ];
 
       if (operatingUnitId) {
         conditions.push(
-          eq(hrAttendanceRecords.operatingUnitId, operatingUnitId)
+          eq(
+            hrAttendancePeriods.operatingUnitId,
+            operatingUnitId
+          )
         );
-      }
-      if (input.employeeId) {
-        conditions.push(eq(hrAttendanceRecords.employeeId, input.employeeId));
-      }
-      if (input.status) {
-        conditions.push(eq(hrAttendanceRecords.status, input.status));
       }
 
       return await db
         .select()
-        .from(hrAttendanceRecords)
+        .from(hrAttendancePeriods)
         .where(and(...conditions))
-        .orderBy(desc(hrAttendanceRecords.date))
-        .limit(input.limit)
-        .offset(input.offset);
+        .orderBy(
+          desc(hrAttendancePeriods.periodYear),
+          desc(hrAttendancePeriods.periodMonth)
+        );
     }),
 
-  // Get attendance for a specific date
-  getByDate: scopedProcedure
-    .input(
-      z.object({
-        date: z.string(),
-      })
-    )
-    .query(async ({ ctx, input }) => {
-      const { organizationId, operatingUnitId } = ctx.scope;
+  getCurrentPeriod: scopedProcedure
+    .query(async ({ ctx }) => {
+      const { organizationId, operatingUnitId } =
+        ctx.scope;
+
       const db = await getDb();
-      if (!db) throw new Error("Database not available");
+      if (!db)
+        throw new Error("Database not available");
+
+      const now = new Date();
+      const month = now.getMonth() + 1;
+      const year = now.getFullYear();
 
       const conditions = [
-        eq(hrAttendanceRecords.organizationId, organizationId),
-        eq(hrAttendanceRecords.date, formatSqlDate(input.date)!),
-        eq(hrAttendanceRecords.isDeleted, 0),
+        eq(
+          hrAttendancePeriods.organizationId,
+          organizationId
+        ),
+        eq(
+          hrAttendancePeriods.periodMonth,
+          month
+        ),
+        eq(
+          hrAttendancePeriods.periodYear,
+          year
+        ),
+        eq(hrAttendancePeriods.isDeleted, 0),
       ];
 
       if (operatingUnitId) {
         conditions.push(
-          eq(hrAttendanceRecords.operatingUnitId, operatingUnitId)
+          eq(
+            hrAttendancePeriods.operatingUnitId,
+            operatingUnitId
+          )
         );
       }
-
-      return await db
-        .select()
-        .from(hrAttendanceRecords)
-        .where(and(...conditions));
-    }),
-
-  // Get single attendance record
-  getById: scopedProcedure
-    .input(z.object({ id: z.number() }))
-    .query(async ({ ctx, input }) => {
-      const { organizationId } = ctx.scope;
-      const db = await getDb();
-      if (!db) throw new Error("Database not available");
 
       const result = await db
         .select()
-        .from(hrAttendanceRecords)
-        .where(
-          and(
-            eq(hrAttendanceRecords.id, input.id),
-            eq(hrAttendanceRecords.organizationId, organizationId),
-            eq(hrAttendanceRecords.isDeleted, 0)
-          )
-        )
+        .from(hrAttendancePeriods)
+        .where(and(...conditions))
         .limit(1);
 
       return result[0] || null;
     }),
 
-  // Get attendance statistics
-  getStatistics: scopedProcedure
-    .input(
-      z.object({
-        startDate: z.string(),
-        endDate: z.string(),
-      })
-    )
-    .query(async ({ ctx, input }) => {
-      const { organizationId, operatingUnitId } = ctx.scope;
-      const db = await getDb();
-      if (!db) throw new Error("Database not available");
-
-      const conditions = [
-        eq(hrAttendanceRecords.organizationId, organizationId),
-        eq(hrAttendanceRecords.isDeleted, 0),
-        gte(hrAttendanceRecords.date, formatSqlDate(input.startDate)!),
-        lte(hrAttendanceRecords.date, formatSqlDate(input.endDate)!),
-      ];
-
-      if (operatingUnitId) {
-        conditions.push(
-          eq(hrAttendanceRecords.operatingUnitId, operatingUnitId)
-        );
-      }
-
-      const allRecords = await db
-        .select()
-        .from(hrAttendanceRecords)
-        .where(and(...conditions));
-
-      const present = allRecords.filter(r => r.status === "present").length;
-      const absent = allRecords.filter(r => r.status === "absent").length;
-      const late = allRecords.filter(r => r.status === "late").length;
-      const halfDay = allRecords.filter(r => r.status === "half_day").length;
-      const onLeave = allRecords.filter(r => r.status === "on_leave").length;
-      const holiday = allRecords.filter(r => r.status === "holiday").length;
-      const weekend = allRecords.filter(r => r.status === "weekend").length;
-
-      const totalWorkHours = allRecords.reduce((sum, r) => {
-        return sum + parseFloat(r.workHours?.toString() || "0");
-      }, 0);
-
-      const totalOvertimeHours = allRecords.reduce((sum, r) => {
-        return sum + parseFloat(r.overtimeHours?.toString() || "0");
-      }, 0);
-
-      const uniqueEmployees = new Set(allRecords.map(r => r.employeeId)).size;
-
-      return {
-        total: allRecords.length,
-        byStatus: { present, absent, late, halfDay, onLeave, holiday, weekend },
-        totalWorkHours,
-        totalOvertimeHours,
-        uniqueEmployees,
-        attendanceRate:
-          allRecords.length > 0
-            ? (
-                ((present + late + halfDay) /
-                  (present + absent + late + halfDay)) *
-                100
-              ).toFixed(1)
-            : "0",
-      };
-    }),
-
-  // Create or update attendance record
-  upsert: scopedProcedure
-    .input(
-      z.object({
-        employeeId: z.number(),
-        date: z.string(),
-        staffName: z.string().optional(),
-        staffId: z.string().optional(),
-        checkIn: z.string().optional(),
-        checkOut: z.string().optional(),
-        status: z.enum([
-          "present",
-          "absent",
-          "late",
-          "half_day",
-          "on_leave",
-          "holiday",
-          "weekend",
-        ]),
-        workHours: z.number().optional(),
-        overtimeHours: z.number().optional(),
-        location: z.string().optional(),
-        notes: z.string().optional(),
-        source: z.enum(['microsoft_teams_shifts', 'microsoft_teams_presence', 'manual_hr_entry']).optional(),
-        approvalStatus: z.enum(['pending', 'approved', 'rejected']).optional(),
-      })
-    )
-    .mutation(async ({ ctx, input }) => {
-      const { organizationId, operatingUnitId } = ctx.scope;
-      const db = await getDb();
-      if (!db) throw new Error("Database not available");
-
-      // Check if record exists
-      const existing = await db
-        .select()
-        .from(hrAttendanceRecords)
-        .where(
-          and(
-            eq(hrAttendanceRecords.employeeId, input.employeeId),
-            eq(hrAttendanceRecords.date, formatSqlDate(input.date)!)
-          )
-        )
-        .limit(1);
-
-      if (existing[0]) {
-        // Update existing
-        await db
-          .update(hrAttendanceRecords)
-          .set({
-            staffName: input.staffName || existing[0].staffName,
-            staffId: input.staffId || existing[0].staffId,
-            checkIn: formatSqlDateTime(input.checkIn),
-            checkOut: formatSqlDateTime(input.checkOut),
-            status: input.status,
-            workHours: input.workHours?.toString(),
-            overtimeHours: input.overtimeHours?.toString(),
-            location: input.location,
-            notes: input.notes,
-            source: input.source || existing[0].source,
-            approvalStatus: input.approvalStatus || existing[0].approvalStatus,
-            isDeleted: 0,
-            deletedAt: nowSql,
-            deletedBy: ctx.user?.id,
-          })
-          .where(eq(hrAttendanceRecords.id, existing[0].id));
-
-        return { id: existing[0].id, success: true, updated: true };
-      } else {
-        // Create new
-        const result = await db.insert(hrAttendanceRecords).values({
+  createOrUpdateAttendancePeriod:
+    scopedProcedure
+      .input(
+        z.object({
+          periodMonth: z.number(),
+          periodYear: z.number(),
+        })
+      )
+      .mutation(async ({ ctx, input }) => {
+        const {
           organizationId,
-          operatingUnitId: operatingUnitId || 0,
-          employeeId: input.employeeId,
-          staffName: input.staffName,
-          staffId: input.staffId,
-          date: formatSqlDate(input.date),
-          checkIn: formatSqlDateTime(input.checkIn),
-          checkOut: formatSqlDateTime(input.checkOut),
-          status: input.status,
-          workHours: input.workHours?.toString(),
-          overtimeHours: input.overtimeHours?.toString(),
-          location: input.location,
-          notes: input.notes,
-          source: input.source || 'manual_hr_entry',
-          approvalStatus: input.approvalStatus || 'pending',
-        });
+          operatingUnitId,
+        } = ctx.scope;
 
-        return { id: result[0].insertId, success: true, updated: false };
-      }
-    }),
+        const db = await getDb();
+        if (!db)
+          throw new Error(
+            "Database not available"
+          );
 
-  // Bulk create attendance records
-  bulkCreate: scopedProcedure
-    .input(
-      z.object({
-        records: z.array(
-          z.object({
-            employeeId: z.number(),
-            date: z.string(),
-            checkIn: z.string().optional(),
-            checkOut: z.string().optional(),
-            status: z.enum([
-              "present",
-              "absent",
-              "late",
-              "half_day",
-              "on_leave",
-              "holiday",
-              "weekend",
-            ]),
-            workHours: z.number().optional(),
-            overtimeHours: z.number().optional(),
-            location: z.string().optional(),
-            notes: z.string().optional(),
-          })
-        ),
-      })
-    )
-    .mutation(async ({ ctx, input }) => {
-      const { organizationId, operatingUnitId } = ctx.scope;
-      const db = await getDb();
-      if (!db) throw new Error("Database not available");
-
-      let created = 0;
-      let updated = 0;
-
-      for (const record of input.records) {
-        // Check if record exists
         const existing = await db
           .select()
-          .from(hrAttendanceRecords)
+          .from(hrAttendancePeriods)
           .where(
             and(
-              eq(hrAttendanceRecords.employeeId, record.employeeId),
-              eq(hrAttendanceRecords.date, formatSqlDate(record.date)!)
+              eq(
+                hrAttendancePeriods.organizationId,
+                organizationId
+              ),
+              eq(
+                hrAttendancePeriods.periodMonth,
+                input.periodMonth
+              ),
+              eq(
+                hrAttendancePeriods.periodYear,
+                input.periodYear
+              )
             )
           )
           .limit(1);
 
-        if (existing[0]) {
-          await db
-            .update(hrAttendanceRecords)
-            .set({
-              checkIn: record.checkIn ? formatSqlDateTime(record.checkIn) : null,
-              checkOut: record.checkOut ? formatSqlDateTime(record.checkOut) : null,
-              status: record.status,
-              workHours: record.workHours?.toString(),
-              overtimeHours: record.overtimeHours?.toString(),
-              location: record.location,
-              notes: record.notes,
-              isDeleted: 0,
-            })
-            .where(eq(hrAttendanceRecords.id, existing[0].id));
-          updated++;
-        } else {
-          await db.insert(hrAttendanceRecords).values({
-            organizationId,
-            operatingUnitId: operatingUnitId || 0,
-            employeeId: record.employeeId,
-            date: formatSqlDate(record.date),
-            checkIn: record.checkIn ? formatSqlDateTime(record.checkIn) : null,
-            checkOut: record.checkOut ? formatSqlDateTime(record.checkOut) : null,
-            status: record.status,
-            workHours: record.workHours?.toString(),
-            overtimeHours: record.overtimeHours?.toString(),
-            location: record.location,
-            notes: record.notes,
-          });
-          created++;
+        if (existing.length > 0) {
+          return existing[0];
         }
-      }
 
-      return { success: true, created, updated };
-    }),
+        const monthName = new Date(
+          input.periodYear,
+          input.periodMonth - 1
+        ).toLocaleString("en", {
+          month: "long",
+        });
 
-  // Lock attendance period
-  lockPeriod: scopedProcedure
-    .input(
-      z.object({
-        startDate: z.string(),
-        endDate: z.string(),
-      })
-    )
-    .mutation(async ({ ctx, input }) => {
-      const { organizationId, operatingUnitId } = ctx.scope;
-      const db = await getDb();
-      if (!db) throw new Error("Database not available");
-
-      const conditions = [
-        eq(hrAttendanceRecords.organizationId, organizationId),
-        gte(hrAttendanceRecords.date, formatSqlDate(input.startDate)!),
-        lte(hrAttendanceRecords.date, formatSqlDate(input.endDate)!),
-      ];
-
-      if (operatingUnitId) {
-        conditions.push(
-          eq(hrAttendanceRecords.operatingUnitId, operatingUnitId)
-        );
-      }
-
-      await db
-        .update(hrAttendanceRecords)
-        .set({
-          periodLocked: 1,
-          lockedBy: ctx.user?.id,
-          lockedAt: nowSql,
-        })
-        .where(and(...conditions));
-
-      return { success: true };
-    }),
-
-  // Unlock attendance period
-  unlockPeriod: scopedProcedure
-    .input(
-      z.object({
-        startDate: z.string(),
-        endDate: z.string(),
-      })
-    )
-    .mutation(async ({ ctx, input }) => {
-      const { organizationId, operatingUnitId } = ctx.scope;
-      const db = await getDb();
-      if (!db) throw new Error("Database not available");
-
-      const conditions = [
-        eq(hrAttendanceRecords.organizationId, organizationId),
-        gte(hrAttendanceRecords.date, formatSqlDate(input.startDate)!),
-        lte(hrAttendanceRecords.date, formatSqlDate(input.endDate)!),
-      ];
-
-      if (operatingUnitId) {
-        conditions.push(
-          eq(hrAttendanceRecords.operatingUnitId, operatingUnitId)
-        );
-      }
-
-      await db
-        .update(hrAttendanceRecords)
-        .set({
-          periodLocked: 0,
-          lockedBy: null,
-          lockedAt: null,
-        })
-        .where(and(...conditions));
-
-      return { success: true };
-    }),
-
-  // Soft delete attendance record
-  delete: scopedProcedure
-    .input(z.object({ id: z.number() }))
-    .mutation(async ({ ctx, input }) => {
-      const { organizationId } = ctx.scope;
-      const db = await getDb();
-      if (!db) throw new Error("Database not available");
-
-      await db
-        .update(hrAttendanceRecords)
-        .set({
-          isDeleted: 1,
-          deletedAt: nowSql,
-          deletedBy: ctx.user?.id,
-        })
-        .where(
-          and(
-            eq(hrAttendanceRecords.id, input.id),
-            eq(hrAttendanceRecords.organizationId, organizationId)
-          )
+        const lockDeadline = new Date(
+          input.periodYear,
+          input.periodMonth,
+          4
         );
 
-      return { success: true };
-    }),
+        await db
+          .insert(hrAttendancePeriods)
+          .values({
+            organizationId,
+            operatingUnitId,
+            periodMonth:
+              input.periodMonth,
+            periodYear:
+              input.periodYear,
+            monthName,
+            status: "open",
+            lockDeadline,
+            createdBy:
+              ctx.user?.id,
+          });
 
-  // Export attendance report to PDF using OfficialPdfEngine
-  exportToPdf: scopedProcedure
+        return {
+          success: true,
+        };
+      }),
+
+  lockAttendancePeriod:
+    scopedProcedure
+      .input(
+        z.object({
+          periodMonth:
+            z.number(),
+          periodYear:
+            z.number(),
+        })
+      )
+      .mutation(async ({ ctx, input }) => {
+        const {
+          organizationId,
+          operatingUnitId,
+        } = ctx.scope;
+
+        const db = await getDb();
+
+        await db
+          .update(
+            hrAttendancePeriods
+          )
+          .set({
+            status:
+              "locked",
+            lockedBy:
+              ctx.user?.id,
+            lockedAt:
+              nowSql,
+            updatedBy:
+              ctx.user?.id,
+          })
+          .where(
+            and(
+              eq(
+                hrAttendancePeriods.organizationId,
+                organizationId
+              ),
+              eq(
+                hrAttendancePeriods.periodMonth,
+                input.periodMonth
+              ),
+              eq(
+                hrAttendancePeriods.periodYear,
+                input.periodYear
+              ),
+              operatingUnitId
+                ? eq(
+                    hrAttendancePeriods.operatingUnitId,
+                    operatingUnitId
+                  )
+                : undefined
+            )
+          );
+
+        return {
+          success: true,
+        };
+      }),
+
+  unlockAttendancePeriod:
+    scopedProcedure
+      .input(
+        z.object({
+          periodMonth:
+            z.number(),
+          periodYear:
+            z.number(),
+        })
+      )
+      .mutation(async ({ ctx, input }) => {
+        const {
+          organizationId,
+          operatingUnitId,
+        } = ctx.scope;
+
+        const db = await getDb();
+
+        await db
+          .update(
+            hrAttendancePeriods
+          )
+          .set({
+            status:
+              "open",
+            unlockedBy:
+              ctx.user?.id,
+            unlockedAt:
+              nowSql,
+            updatedBy:
+              ctx.user?.id,
+          })
+          .where(
+            and(
+              eq(
+                hrAttendancePeriods.organizationId,
+                organizationId
+              ),
+              eq(
+                hrAttendancePeriods.periodMonth,
+                input.periodMonth
+              ),
+              eq(
+                hrAttendancePeriods.periodYear,
+                input.periodYear
+              ),
+              operatingUnitId
+                ? eq(
+                    hrAttendancePeriods.operatingUnitId,
+                    operatingUnitId
+                  )
+                : undefined
+            )
+          );
+
+        return {
+          success: true,
+        };
+      }),
+
+  /* =====================================
+     ATTENDANCE RECORDS
+  ===================================== */
+
+  getAll: scopedProcedure
     .input(
       z.object({
         startDate: z.string(),
         endDate: z.string(),
-        language: z.enum(["en", "ar"]).default("en"),
-      })
-    )
-    .mutation(async ({ ctx, input }) => {
-      const { organizationId, operatingUnitId } = ctx.scope;
-      const db = await getDb();
-      if (!db) throw new Error("Database not available");
-
-      // Fetch organization details
-      const org = await db
-        .select()
-        .from(organizations)
-        .where(eq(organizations.id, organizationId))
-        .limit(1);
-
-      if (!org || org.length === 0) {
-        throw new Error("Organization not found");
-      }
-
-      // Fetch attendance records for the period
-      const records = await db
-        .select({
-          id: hrAttendanceRecords.id,
-          employeeId: hrAttendanceRecords.employeeId,
-          date: hrAttendanceRecords.date,
-          checkIn: hrAttendanceRecords.checkIn,
-          checkOut: hrAttendanceRecords.checkOut,
-          workHours: hrAttendanceRecords.workHours,
-          overtimeHours: hrAttendanceRecords.overtimeHours,
-          status: hrAttendanceRecords.status,
-          employeeName: hrEmployees.staffName,
-          employeeCode: hrEmployees.employeeCode,
-        })
-        .from(hrAttendanceRecords)
-        .leftJoin(
-          hrEmployees,
-          eq(hrAttendanceRecords.employeeId, hrEmployees.id)
-        )
-        .where(
-          and(
-            eq(hrAttendanceRecords.organizationId, organizationId),
-            eq(hrAttendanceRecords.isDeleted, 0),
-            gte(hrAttendanceRecords.date, formatSqlDate(input.startDate)!),
-            lte(hrAttendanceRecords.date, formatSqlDate(input.endDate)!),
-            operatingUnitId
-              ? eq(hrAttendanceRecords.operatingUnitId, operatingUnitId)
-              : undefined
-          )
-        )
-        .orderBy(desc(hrAttendanceRecords.date));
-
-      // Calculate statistics
-      const totalStaff = new Set(records.map(r => r.employeeId)).size;
-      const totalDays = records.length;
-      const totalOvertimeHours = records.reduce(
-        (sum, r) => sum + (r.overtimeHours || 0),
-        0
-      );
-
-      // Format records for template
-      const formattedRecords = records.map(r => ({
-        staffName: r.employeeName || "Unknown",
-        staffId: r.employeeCode || "-",
-        date: new Date(r.date).toLocaleDateString(
-          input.language === "ar" ? "ar-SA" : "en-US"
-        ),
-        checkIn: r.checkIn
-          ? new Date(r.checkIn).toLocaleTimeString("en-US", {
-              hour: "2-digit",
-              minute: "2-digit",
-            })
-          : null,
-        checkOut: r.checkOut
-          ? new Date(r.checkOut).toLocaleTimeString("en-US", {
-              hour: "2-digit",
-              minute: "2-digit",
-            })
-          : null,
-        workHours: r.workHours || 0,
-        overtimeHours: r.overtimeHours || 0,
-        status: r.status || "unknown",
-      }));
-
-      // Generate HTML body
-      const bodyHtml = generateAttendanceReportHtml({
-        organizationName: org[0].name,
-        period: `${input.startDate} to ${input.endDate}`,
-        totalStaff,
-        totalDays,
-        totalOvertimeHours,
-        records: formattedRecords,
-        language: input.language,
-      });
-
-      // Generate official PDF
-      const pdfResult = await generateOfficialPdf({
-        organizationName: org[0].name,
-        department:
-          input.language === "ar" ? "إدارة الموارد البشرية" : "Human Resources",
-        documentTitle:
-          input.language === "ar" ? "تقرير الحضور" : "Attendance Report",
-        formNumber: `ATT-${Date.now()}`,
-        formDate: new Date().toLocaleDateString(
-          input.language === "ar" ? "ar-SA" : "en-US"
-        ),
-        bodyHtml,
-        direction: input.language === "ar" ? "rtl" : "ltr",
-        language: input.language,
-      });
-
-      return pdfResult;
-    }),
-  // Submit explanation for flagged attendance record
-  submitExplanation: protectedProcedure
-    .input(
-      z.object({
-        recordId: z.number(),
-        explanation: z.string().min(10).max(1000),
-        attachmentUrls: z.array(z.string()).optional().default([]),
-      })
-    )
-    .mutation(async ({ ctx, input }) => {
-      const { recordId, explanation, attachmentUrls } = input;
-      const userId = ctx.user?.id;
-      const db = await getDb();
-      if (!db) throw new Error("Database not available");
-
-      // Verify the record belongs to the current user
-      const record = await db
-        .select()
-        .from(hrAttendanceRecords)
-        .where(
-          and(
-            eq(hrAttendanceRecords.id, recordId),
-            eq(hrAttendanceRecords.employeeId, userId),
-            eq(hrAttendanceRecords.isDeleted, 0)
-          )
-        )
-        .limit(1);
-
-      if (!record || record.length === 0) {
-        throw new Error("Attendance record not found or unauthorized");
-      }
-
-      // Update the record with explanation in notes field
-      const timestamp = new Date().toISOString();
-      const explanationText = `[EXPLANATION ${timestamp}]: ${explanation}`;
-      const newNotes = record[0].notes ? `${record[0].notes}\n${explanationText}` : explanationText;
-
-      await db
-        .update(hrAttendanceRecords)
-        .set({
-          notes: newNotes,
-          updatedAt: nowSql,
-        })
-        .where(eq(hrAttendanceRecords.id, recordId));
-
-      return {
-        success: true,
-        message: "Explanation submitted successfully",
-        recordId,
-      };
-    }),
-
-  // Get dashboard metrics for KPI cards
-  getDashboardMetrics: scopedProcedure
-    .input(
-      z.object({
-        startDate: z.string(),
-        endDate: z.string(),
+        employeeId:
+          z.number().optional(),
       })
     )
     .query(async ({ ctx, input }) => {
-      const { organizationId, operatingUnitId } = ctx.scope;
-      const db = await getDb();
-      if (!db) throw new Error("Database not available");
+      const {
+        organizationId,
+        operatingUnitId,
+      } = ctx.scope;
 
-      // Build base conditions
+      const db = await getDb();
+
       const conditions = [
-        eq(hrAttendanceRecords.organizationId, organizationId),
-        gte(hrAttendanceRecords.date, input.startDate),
-        lte(hrAttendanceRecords.date, input.endDate),
-        eq(hrAttendanceRecords.isDeleted, 0),
+        eq(
+          hrAttendanceRecords.organizationId,
+          organizationId
+        ),
+        eq(
+          hrAttendanceRecords.isDeleted,
+          0
+        ),
+        gte(
+          hrAttendanceRecords.date,
+          input.startDate
+        ),
+        lte(
+          hrAttendanceRecords.date,
+          input.endDate
+        ),
       ];
 
-      if (operatingUnitId) {
-        conditions.push(eq(hrAttendanceRecords.operatingUnitId, operatingUnitId));
-      }
-
-      // Count pending approvals
-      const pendingApprovalsResult = await db
-        .select({ count: count() })
-        .from(hrAttendanceRecords)
-        .where(and(...conditions, eq(hrAttendanceRecords.approvalStatus, "pending")));
-      const pendingApprovalsCount = pendingApprovalsResult[0]?.count || 0;
-
-      // Sum overtime hours
-      const overtimeResult = await db
-        .select({ total: sql`SUM(${hrAttendanceRecords.overtimeHours})` })
-        .from(hrAttendanceRecords)
-        .where(and(...conditions));
-      const overtimeHours = overtimeResult[0]?.total ? parseFloat(overtimeResult[0].total) : 0;
-
-      // Count late arrivals
-      const lateResult = await db
-        .select({ count: count() })
-        .from(hrAttendanceRecords)
-        .where(and(...conditions, eq(hrAttendanceRecords.status, "late")));
-      const lateArrivalsCount = lateResult[0]?.count || 0;
-
-      // Count absences
-      const absentResult = await db
-        .select({ count: count() })
-        .from(hrAttendanceRecords)
-        .where(and(...conditions, eq(hrAttendanceRecords.status, "absent")));
-      const absentCount = absentResult[0]?.count || 0;
-
-      // Count on-leave
-      const onLeaveResult = await db
-        .select({ count: count() })
-        .from(hrAttendanceRecords)
-        .where(and(...conditions, eq(hrAttendanceRecords.status, "on_leave")));
-      const onLeaveCount = onLeaveResult[0]?.count || 0;
-
-      // Count present and half-day
-      const presentResult = await db
-        .select({ count: count() })
-        .from(hrAttendanceRecords)
-        .where(
-          and(
-            ...conditions,
-            sql`${hrAttendanceRecords.status} IN ('present', 'half_day')`
+      if (
+        operatingUnitId
+      ) {
+        conditions.push(
+          eq(
+            hrAttendanceRecords.operatingUnitId,
+            operatingUnitId
           )
         );
-      const presentCount = presentResult[0]?.count || 0;
+      }
 
-      // Total records
-      const totalResult = await db
-        .select({ count: count() })
-        .from(hrAttendanceRecords)
-        .where(and(...conditions));
-      const totalRecords = totalResult[0]?.count || 0;
+      if (
+        input.employeeId
+      ) {
+        conditions.push(
+          eq(
+            hrAttendanceRecords.employeeId,
+            input.employeeId
+          )
+        );
+      }
 
-      // Calculate attendance rate
-      const attendanceRate = totalRecords > 0 ? (presentCount / totalRecords) * 100 : 0;
+      return await db
+        .select()
+        .from(
+          hrAttendanceRecords
+        )
+        .where(
+          and(
+            ...conditions
+          )
+        )
+        .orderBy(
+          desc(
+            hrAttendanceRecords.date
+          )
+        );
+    }),
+
+  upsert: scopedProcedure
+    .input(
+      z.object({
+        employeeId:
+          z.number(),
+        date: z.string(),
+        status: z.enum([
+            "present",
+            "absent",
+            "late",
+            "half_day",
+            "holiday",
+            "weekend",
+            "on_leave"
+          ]),
+        checkIn:
+          z.string()
+            .optional(),
+        checkOut:
+          z.string()
+            .optional(),
+        workHours:
+          z.number()
+            .optional(),
+        overtimeHours:
+          z.number()
+            .optional(),
+        notes:
+          z.string()
+            .optional(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const {
+        organizationId,
+        operatingUnitId,
+      } = ctx.scope;
+
+      const db = await getDb();
+
+      await validatePeriodLock({
+        db,
+        organizationId,
+        operatingUnitId,
+        attendanceDate:
+          input.date,
+      });
+
+      const existing =
+        await db
+          .select()
+          .from(
+            hrAttendanceRecords
+          )
+          .where(
+            and(
+              eq(
+                hrAttendanceRecords.employeeId,
+                input.employeeId
+              ),
+              eq(
+                hrAttendanceRecords.date,
+                input.date
+              )
+            )
+          )
+          .limit(1);
+
+      if (
+        existing.length >
+        0
+      ) {
+        await db
+          .update(
+            hrAttendanceRecords
+          )
+          .set({
+            status:
+              input.status,
+            checkIn:
+              formatSqlDateTime(
+                input.checkIn
+              ),
+            checkOut:
+              formatSqlDateTime(
+                input.checkOut
+              ),
+            workHours:
+              input.workHours?.toString(),
+            overtimeHours:
+              input.overtimeHours?.toString(),
+            notes:
+              input.notes,
+          })
+          .where(
+            eq(
+              hrAttendanceRecords.id,
+              existing[0].id
+            )
+          );
+
+        return {
+          success: true,
+          updated: true,
+        };
+      }
+
+      await db
+        .insert(
+          hrAttendanceRecords
+        )
+        .values({
+          organizationId,
+          operatingUnitId,
+          employeeId:
+            input.employeeId,
+          date:
+            input.date,
+          status:
+            input.status as any,
+          checkIn:
+            formatSqlDateTime(
+              input.checkIn
+            ),
+          checkOut:
+            formatSqlDateTime(
+              input.checkOut
+            ),
+          workHours:
+            input.workHours?.toString(),
+          overtimeHours:
+            input.overtimeHours?.toString(),
+          notes:
+            input.notes,
+        });
 
       return {
-        pendingApprovalsCount,
-        overtimeHours: Math.round(overtimeHours * 100) / 100,
-        attendanceRate: Math.round(attendanceRate * 100) / 100,
-        lateArrivalsCount,
-        absentCount,
-        onLeaveCount,
-        totalRecords,
-        presentCount,
+        success: true,
+        updated: false,
       };
     }),
-});
+
+  delete: scopedProcedure
+    .input(
+      z.object({
+        id: z.number(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const {
+        organizationId,
+      } = ctx.scope;
+
+      const db = await getDb();
+
+      const record =
+        await db
+          .select()
+          .from(
+            hrAttendanceRecords
+          )
+          .where(
+            eq(
+              hrAttendanceRecords.id,
+              input.id
+            )
+          )
+          .limit(1);
+
+      if (
+        !record.length
+      ) {
+        throw new Error(
+          "Record not found"
+        );
+      }
+
+      await validatePeriodLock({
+        db,
+        organizationId,
+        attendanceDate:
+          record[0].date,
+      });
+
+      await db
+        .update(
+          hrAttendanceRecords
+        )
+        .set({
+          isDeleted:
+            1,
+          deletedAt:
+            nowSql,
+          deletedBy:
+            ctx.user?.id,
+        })
+        .where(
+          eq(
+            hrAttendanceRecords.id,
+            input.id
+          )
+        );
+
+      return {
+        success: true,
+      };
+    }),
+
+  /* =====================================
+     DASHBOARD METRICS
+  ===================================== */
+
+  getDashboardMetrics:
+    scopedProcedure
+      .input(
+        z.object({
+          startDate:
+            z.string(),
+          endDate:
+            z.string(),
+        })
+      )
+      .query(async ({ ctx, input }) => {
+        const {
+          organizationId,
+          operatingUnitId,
+        } = ctx.scope;
+
+        const db =
+          await getDb();
+
+        const conditions = [
+          eq(
+            hrAttendanceRecords.organizationId,
+            organizationId
+          ),
+          eq(
+            hrAttendanceRecords.isDeleted,
+            0
+          ),
+          gte(
+            hrAttendanceRecords.date,
+            input.startDate
+          ),
+          lte(
+            hrAttendanceRecords.date,
+            input.endDate
+          ),
+        ];
+
+        if (
+          operatingUnitId
+        ) {
+          conditions.push(
+            eq(
+              hrAttendanceRecords.operatingUnitId,
+              operatingUnitId
+            )
+          );
+        }
+
+        const records =
+          await db
+            .select()
+            .from(
+              hrAttendanceRecords
+            )
+            .where(
+              and(
+                ...conditions
+              )
+            );
+
+        const overtimeHours =
+          records.reduce(
+            (
+              sum,
+              r
+            ) =>
+              sum +
+              parseFloat(
+                r.overtimeHours?.toString() ||
+                  "0"
+              ),
+            0
+          );
+
+        const pendingApprovalsCount =
+          records.filter(
+            r =>
+              r.approvalStatus ===
+              "pending"
+          ).length;
+
+        return {
+          overtimeHours,
+          pendingApprovalsCount,
+        };
+      }),
+
+  /* =====================================
+     PDF EXPORT
+  ===================================== */
+
+  exportToPdf: scopedProcedure
+  .input(
+    z.object({
+      startDate: z.string(),
+      endDate: z.string(),
+      language: z.enum(["en", "ar"]),
+    })
+  )
+  .mutation(async ({ ctx, input }) => {
+    const {
+      organizationId,
+      operatingUnitId,
+    } = ctx.scope;
+
+    const db = await getDb();
+
+    if (!db) {
+      throw new Error("Database not available");
+    }
+
+    const org = await db
+      .select()
+      .from(organizations)
+      .where(
+        eq(organizations.id, organizationId)
+      )
+      .limit(1);
+
+    if (!org.length) {
+      throw new Error(
+        "Organization not found"
+      );
+    }
+
+    const conditions = [
+      eq(
+        hrAttendanceRecords.organizationId,
+        organizationId
+      ),
+      gte(
+        hrAttendanceRecords.date,
+        input.startDate
+      ),
+      lte(
+        hrAttendanceRecords.date,
+        input.endDate
+      ),
+      eq(
+        hrAttendanceRecords.isDeleted,
+        0
+      ),
+    ];
+
+    /**
+     * IMPORTANT:
+     * operating unit isolation
+     */
+    if (operatingUnitId) {
+      conditions.push(
+        eq(
+          hrAttendanceRecords.operatingUnitId,
+          operatingUnitId
+        )
+      );
+    }
+
+    const records = await db
+      .select()
+      .from(hrAttendanceRecords)
+      .where(and(...conditions));
+
+    const uniqueEmployees = new Set(
+      records.map(r => r.employeeId)
+    );
+
+    const totalOvertimeHours =
+      records.reduce(
+        (sum, r) =>
+          sum +
+          Number(
+            r.overtimeHours || 0
+          ),
+        0
+      );
+
+    const bodyHtml =
+      generateAttendanceReportHtml({
+        organizationName:
+          org[0].name,
+
+        period: `${input.startDate} → ${input.endDate}`,
+
+        totalStaff:
+          uniqueEmployees.size,
+
+        totalDays:
+          records.length,
+
+        totalOvertimeHours,
+
+        records: records.map((r) => ({
+          staffName:
+            `Employee #${r.employeeId}`,
+
+          staffId:
+            String(r.employeeId),
+
+          date: r.date,
+
+          checkIn:
+            r.checkIn,
+
+          checkOut:
+            r.checkOut,
+
+          workHours:
+            Number(
+              r.workHours || 0
+            ),
+
+          overtimeHours:
+            Number(
+              r.overtimeHours || 0
+            ),
+
+          status:
+            r.status,
+        })),
+
+        language:
+          input.language,
+      });
+
+    const pdfResult =
+      await generateOfficialPdf({
+        organizationName:
+          org[0].name,
+
+        department:
+          input.language === "ar"
+            ? "إدارة الموارد البشرية"
+            : "Human Resources",
+
+        documentTitle:
+          input.language === "ar"
+            ? "تقرير الحضور"
+            : "Attendance Report",
+
+        formNumber:
+          `ATT-${Date.now()}`,
+
+        formDate:
+          new Date().toLocaleDateString(
+            input.language === "ar"
+              ? "ar-SA"
+              : "en-US"
+          ),
+
+        bodyHtml,
+
+        direction:
+          input.language === "ar"
+            ? "rtl"
+            : "ltr",
+
+        language:
+          input.language,
+      });
+
+    return {
+      success: true,
+      url: pdfResult.url,
+    };
+  }),
+  })

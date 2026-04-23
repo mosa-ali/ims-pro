@@ -81,7 +81,14 @@ export function AttendanceDashboard() {
     useState<AttendancePeriod | null>(null);
 
   const [drilldownOpen, setDrilldownOpen] = useState(false);
-  const [drilldownType, setDrilldownType] = useState<string>("");
+  const [drilldownType, setDrilldownType] = useState<
+  | "pending_approvals"
+  | "overtime"
+  | "attendance_rate"
+  | "late_arrivals"
+  | "absent_count"
+  | "on_leave_count"
+    >("attendance_rate");
 
   /**
    * Translation labels
@@ -165,12 +172,13 @@ export function AttendanceDashboard() {
   /**
    * Attendance records
    */
-  const { data: attendanceRecords = [] } =
-    trpc.hrAttendance.getAll.useQuery(
+    const {
+      data: attendanceRecords = [],
+      isLoading: attendanceLoading
+    } = trpc.hrAttendance.getAll.useQuery(
       {
         startDate: currentMonthRange.startDate,
         endDate: currentMonthRange.endDate,
-        limit: 5000
       },
       {
         enabled: !!currentOrganizationId
@@ -249,7 +257,10 @@ export function AttendanceDashboard() {
    */
   useEffect(() => {
     if (periodData) {
-      setCurrentPeriod(periodData);
+      setCurrentPeriod({
+        ...periodData,
+        year: periodData.periodYear
+      });
       return;
     }
 
@@ -272,10 +283,18 @@ export function AttendanceDashboard() {
     });
   }, [periodData, isRTL]);
 
-  const openDrilldown = (type: string) => {
-    setDrilldownType(type);
-    setDrilldownOpen(true);
-  };
+  const openDrilldown = (
+  type:
+    | "pending_approvals"
+    | "overtime"
+    | "attendance_rate"
+    | "late_arrivals"
+    | "absent_count"
+    | "on_leave_count"
+      ) => {
+        setDrilldownType(type);
+        setDrilldownOpen(true);
+      };
 
   const renderKPICard = (
     title: string,
@@ -494,9 +513,18 @@ export function AttendanceDashboard() {
       {/* Drilldown Modal */}
       {drilldownOpen && (
         <KPIDrillDownModal
-          open={drilldownOpen}
-          type={drilldownType}
+          isOpen={drilldownOpen}
           onClose={() => setDrilldownOpen(false)}
+          title={labels.viewDetails}
+          kpiType={drilldownType}
+          records={(attendanceRecords || []).map((r) => ({
+            ...r,
+            staffName: r.staffName || "Unknown Employee",
+            staffId: r.staffId || "-",
+            workHours: Number(r.workHours || 0),
+            overtimeHours: Number(r.overtimeHours || 0),
+          }))}
+          isLoading={attendanceLoading}
         />
       )}
     </div>

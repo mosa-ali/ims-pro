@@ -8046,6 +8046,8 @@ export interface Translations {
   hrAttendance: {
     aboutPeriodLocking: string;
     absent: string;
+    year: string;
+    organizations: string;
     absentDays: string;
     absentToday: string;
     actions: string;
@@ -8125,6 +8127,7 @@ export interface Translations {
     month: string;
     monthlyAttendanceSheet: string;
     monthlySheetsForms: string;
+    monthlySheetsExports: string;
     more: string;
     myAttendance: string;
     next: string;
@@ -18311,6 +18314,8 @@ export const en: Translations = {
   hrAttendance: {
     aboutPeriodLocking: 'About Period Locking',
     absent: 'Absent',
+    year: 'Year',
+    organizations: 'Organizations',
     absentDays: 'Absent Days',
     absentToday: 'Absent Today',
     actions: 'Actions',
@@ -18390,6 +18395,7 @@ export const en: Translations = {
     month: 'Month',
     monthlyAttendanceSheet: 'Monthly Attendance Sheet',
     monthlySheetsForms: 'Monthly sheets & forms',
+    monthlySheetsExports: 'Monthly sheets Export',
     more: 'more',
     myAttendance: 'My Attendance',
     next: 'Next',
@@ -31874,6 +31880,8 @@ export const ar: Translations = {
   hrAttendance: {
     aboutPeriodLocking: 'حول إغلاق الفترات',
     absent: 'غائب',
+    year: 'السنه',
+    organizations: 'المنظمات',
     absentDays: 'أيام الغياب',
     absentToday: 'غائب اليوم',
     actions: 'الإجراءات',
@@ -31953,6 +31961,7 @@ export const ar: Translations = {
     month: 'شهر',
     monthlyAttendanceSheet: 'كشف الحضور الشهري',
     monthlySheetsForms: 'الأوراق والنماذج الشهرية',
+    monthlySheetsExports: 'النماذج الشهرية للتصدير',
     more: 'المزيد',
     myAttendance: 'حضوري',
     next: 'التالي',

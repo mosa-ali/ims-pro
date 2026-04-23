@@ -127,25 +127,58 @@ export function AttendanceReports() {
  const exportPdfMutation = trpc.hrAttendance.exportToPdf.useMutation();
 
  const handleExport = async () => {
-   try {
-     const startDate = new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString().split('T')[0];
-     const endDate = new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0).toISOString().split('T')[0];
-     
-     const result = await exportPdfMutation.mutateAsync({
-       startDate,
-       endDate,
-       language: language as 'en' | 'ar',
-     });
-     
-     // Open PDF in new tab
-     if (result.url) {
-       window.open(result.url, '_blank');
-     }
-   } catch (error) {
-     console.error('Export error:', error);
-     alert(t.common?.error || 'Failed to export report');
-   }
- };
+  try {
+    if (!selectedMonth) {
+      alert(t.common?.error || "Please select month");
+      return;
+    }
+
+    const [year, month] = selectedMonth.split("-");
+
+    const startDate = new Date(
+      parseInt(year),
+      parseInt(month) - 1,
+      1
+    )
+      .toISOString()
+      .split("T")[0];
+
+    const endDate = new Date(
+      parseInt(year),
+      parseInt(month),
+      0
+    )
+      .toISOString()
+      .split("T")[0];
+
+    const result = await exportPdfMutation.mutateAsync({
+      startDate,
+      endDate,
+      language: language as "en" | "ar",
+    });
+
+    if (result?.url) {
+      /**
+       * Force actual PDF open/download
+       * avoids browser screenshot/HTML preview issue
+       */
+      const link = document.createElement("a");
+      link.href = result.url;
+      link.target = "_blank";
+      link.rel = "noopener noreferrer";
+
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+  } catch (error) {
+    console.error("Export error:", error);
+    alert(
+      t.common?.error ||
+      "Failed to export report"
+    );
+  }
+};
 
  const getMonthName = () => {
    if (!selectedMonth) return '';
@@ -354,9 +387,13 @@ export function AttendanceReports() {
  };
 
  const renderOvertimeSheet = () => {
- const overtimeRecords = records.filter(r => r.overtimeHours > 0);
- const totalOvertimeHours = overtimeRecords.reduce((sum, r) => sum + r.overtimeHours, 0);
-
+ const overtimeRecords = records.filter(
+  r => Number(r.overtimeHours || 0) > 0
+  );
+  const totalOvertimeHours = overtimeRecords.reduce(
+  (sum, r) => sum + Number(r.overtimeHours || 0),
+    0
+  );
  return (
  <div className="bg-white p-8 rounded-lg border border-gray-200 print:border-0">
  {/* Header */}
@@ -406,14 +443,14 @@ export function AttendanceReports() {
  overtimeRecords.map((record, index) => (
  <tr key={record.id}>
  <td className={`border border-gray-300 px-2 py-2 text-sm text-start`}>{index + 1}</td>
- <td className={`border border-gray-300 px-2 py-2 text-sm text-start`}>{record.staffName}</td>
- <td className={`border border-gray-300 px-2 py-2 text-sm text-start`}>{record.staffId}</td>
+ <td className={`border border-gray-300 px-2 py-2 text-sm text-start`}>{record.employeeName}</td>
+ <td className={`border border-gray-300 px-2 py-2 text-sm text-start`}>{record.employeeCode}</td>
  <td className={`border border-gray-300 px-2 py-2 text-sm text-start`}>{record.date}</td>
  <td className={`border border-gray-300 px-2 py-2 text-sm font-bold text-purple-600 text-start`}>
- {record.overtimeHours.toFixed(1)}h
+ {Number(record.overtimeHours || 0).toFixed(1)}h
  </td>
  <td className={`border border-gray-300 px-2 py-2 text-sm text-start`}>
- {record.approvalStatus}
+ {record.status}
  </td>
  <td className={`border border-gray-300 px-2 py-2 text-sm text-start`}>
  {record.notes || '-'}
@@ -459,7 +496,10 @@ export function AttendanceReports() {
  };
 
  return (
- <div className="space-y-6 print:space-y-0">
+ <div
+  className="space-y-6 print:space-y-0"
+  dir={isRTL ? "rtl" : "ltr"}
+>
  {/* Header - Hide on print */}
  <div className="print:hidden">
  
