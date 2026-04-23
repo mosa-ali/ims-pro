@@ -2,6 +2,7 @@ import puppeteer, { Browser } from "puppeteer";
 import { storagePut } from "../../storage";
 import { generateOfficialPdfHtml } from "./templates/layout/OfficialWrapper";
 import { ENV } from "../../_core/env";
+import fs from "fs";
 
 export interface OfficialPdfOptions {
   organizationName: string;
@@ -56,9 +57,37 @@ export async function generateOfficialPdf(
     //-----------------------------------
     // Resolve executable path safely
     //-----------------------------------
-    const executablePath =
-      ENV.PUPPETEER_EXECUTABLE_PATH ||
-      puppeteer.executablePath();
+    //-----------------------------------
+// Resolve executable path safely
+//-----------------------------------
+const possibleChromePaths = [
+  process.env.PUPPETEER_EXECUTABLE_PATH,
+    ENV.PUPPETEER_EXECUTABLE_PATH,
+
+    // Azure existing installed Chrome
+    "/home/.cache/puppeteer/chrome/linux-146.0.7680.153/chrome-linux64/chrome",
+
+    // Future-proof fallback (search newer versions manually if upgraded)
+    "/usr/bin/chromium-browser",
+    "/usr/bin/google-chrome",
+
+    // Puppeteer default
+    puppeteer.executablePath(),
+      ].filter(Boolean) as string[];
+
+      const executablePath = possibleChromePaths.find((path) => {
+        try {
+          return fs.existsSync(path);
+        } catch {
+          return false;
+        }
+      });
+
+      if (!executablePath) {
+        throw new Error(
+          "No valid Chrome executable found for PDF generation."
+        );
+      }
 
     console.log("PDF Engine Starting...");
     console.log("Using Chromium Path:", executablePath);
