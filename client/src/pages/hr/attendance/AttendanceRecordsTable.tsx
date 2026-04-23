@@ -148,16 +148,33 @@ export function AttendanceRecordsTable() {
  }
  };
 
- const getApprovalBadge = (status: string) => {
+const getApprovalBadge = (status: string) => {
  switch (status) {
- case 'approved':
- return { color: 'bg-green-100 text-green-700', label: t.hrAttendance.approved };
- case 'pending':
- return { color: 'bg-orange-100 text-orange-700', label: t.hrAttendance.pending };
- case 'rejected':
- return { color: 'bg-red-100 text-red-700', label: t.hrAttendance.rejected };
+   case 'approved':
+     return {
+       color: 'bg-green-100 text-green-700',
+       label: t.hrAttendance.approved
+     };
+
+   case 'pending':
+     return {
+       color: 'bg-orange-100 text-orange-700',
+       label: t.hrAttendance.pending
+     };
+
+   case 'rejected':
+     return {
+       color: 'bg-red-100 text-red-700',
+       label: t.hrAttendance.rejected
+     };
+
+   default:
+     return {
+       color: 'bg-gray-100 text-gray-700',
+       label: t.hrAttendance.pending
+     };
  }
- };
+};
 
  const labels = {
  title: t.hrAttendance.attendanceRecords,
@@ -418,8 +435,10 @@ export function AttendanceRecordsTable() {
  </>
  )}
  {record.periodLocked && (
- <Lock className="w-4 h-4 text-gray-400" title={labels.locked} />
- )}
+  <span title={labels.locked}>
+    <Lock className="w-4 h-4 text-gray-400" />
+  </span>
+)}
  </div>
  </td>
  </tr>
