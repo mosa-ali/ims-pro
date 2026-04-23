@@ -44,10 +44,15 @@ jobs:
         run: pnpm install --frozen-lockfile
       
       - name: Install Puppeteer Chrome
-        run: npx puppeteer browsers install chrome
+        run: |
+          echo "Installing Chrome in project-local cache..."
 
-      - name: Verify Chrome installation
-        run: find node_modules -name chrome | head -20
+          export PUPPETEER_CACHE_DIR=$(pwd)/node_modules/.cache/puppeteer
+
+          npx puppeteer browsers install chrome
+
+          echo "Verifying browser install..."
+          find node_modules/.cache/puppeteer -type f | head -20
       
       - name: Verify Puppeteer Chromium
         run: |
@@ -113,7 +118,15 @@ jobs:
       - name: Install Puppeteer Chrome inside deploy package
         run: |
           cd deploy
+
+          echo "Installing Chrome inside deploy package..."
+
+          export PUPPETEER_CACHE_DIR=$(pwd)/node_modules/.cache/puppeteer
+
           npx puppeteer browsers install chrome
+
+          echo "Verifying deploy Chrome install..."
+          find node_modules/.cache/puppeteer -type f | head -20
       
       - name: Verify Puppeteer cache inside deploy package
         run: |
