@@ -1,8 +1,0 @@
-{
-  "query": "SELECT id, name, domain, COUNT(*) as count FROM organizations GROUP BY id HAVING count > 1; SELECT id, organizationId, name, COUNT(*) as count FROM operating_units GROUP BY id HAVING count > 1;",
-  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway03.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3DLEw35gkkimUcv.eeb1f1cd43d3 --database 6e38zfddYazj4vVoRnY5Mj --execute SELECT id, name, domain, COUNT(*) as count FROM organizations GROUP BY id HAVING count > 1; SELECT id, organizationId, name, COUNT(*) as count FROM operating_units GROUP BY id HAVING count > 1;",
-  "returncode": 1,
-  "logs": [
-    "ERROR 1055 (42000) at line 1: Expression #2 of SELECT list is not in GROUP BY clause and contains nonaggregated column '6e38zfddYazj4vVoRnY5Mj.organizations.name' which is not functionally dependent on columns in GROUP BY clause; this is incompatible with sql_mode=only_full_group_by"
-  ]
-}

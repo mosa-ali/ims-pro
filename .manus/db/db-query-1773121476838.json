@@ -1,9 +1,0 @@
-{
-  "query": "\nDELETE FROM purchase_requests \nWHERE id IN (\n  SELECT id FROM (\n    SELECT id,\n           ROW_NUMBER() OVER (PARTITION BY prNumber, organizationId, operatingUnitId ORDER BY id) as rn\n    FROM purchase_requests\n  ) t\n  WHERE rn > 1\n);\n",
-  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway03.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3DLEw35gkkimUcv.eeb1f1cd43d3 --database 6e38zfddYazj4vVoRnY5Mj --execute \nDELETE FROM purchase_requests \nWHERE id IN (\n  SELECT id FROM (\n    SELECT id,\n           ROW_NUMBER() OVER (PARTITION BY prNumber, organizationId, operatingUnitId ORDER BY id) as rn\n    FROM purchase_requests\n  ) t\n  WHERE rn > 1\n);\n",
-  "rows": [],
-  "messages": [],
-  "stdout": "",
-  "stderr": "",
-  "execution_time_ms": 383
-}

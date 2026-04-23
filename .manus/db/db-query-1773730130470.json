@@ -1,9 +1,0 @@
-{
-  "query": "UPDATE email_provider_settings SET isActive = 0 WHERE id = 1 AND organizationId = 210002 AND tenantId = '';",
-  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway03.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3DLEw35gkkimUcv.eeb1f1cd43d3 --database 6e38zfddYazj4vVoRnY5Mj --execute UPDATE email_provider_settings SET isActive = 0 WHERE id = 1 AND organizationId = 210002 AND tenantId = '';",
-  "rows": [],
-  "messages": [],
-  "stdout": "",
-  "stderr": "",
-  "execution_time_ms": 57
-}

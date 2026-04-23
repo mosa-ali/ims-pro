@@ -1,8 +1,0 @@
-{
-  "query": "SELECT id, orgId, recipientEmail, status, subject, createdAt FROM email_outbox ORDER BY createdAt DESC LIMIT 5;",
-  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway03.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3DLEw35gkkimUcv.eeb1f1cd43d3 --database 6e38zfddYazj4vVoRnY5Mj --execute SELECT id, orgId, recipientEmail, status, subject, createdAt FROM email_outbox ORDER BY createdAt DESC LIMIT 5;",
-  "returncode": 1,
-  "logs": [
-    "ERROR 1054 (42S22) at line 1: Unknown column 'orgid' in 'field list'"
-  ]
-}

@@ -1,9 +1,0 @@
-{
-  "query": "CREATE TABLE IF NOT EXISTS `email_dead_letter_queue` (\n\t`id` int AUTO_INCREMENT NOT NULL,\n\t`organizationId` int NOT NULL,\n\t`outboxId` int,\n\t`templateKey` varchar(100) NOT NULL,\n\t`recipientEmail` varchar(255) NOT NULL,\n\t`recipientName` varchar(255),\n\t`subject` varchar(255) NOT NULL,\n\t`bodyHtml` longtext NOT NULL,\n\t`bodyText` longtext,\n\t`failureReason` text NOT NULL,\n\t`failureCode` varchar(50),\n\t`finalRetryCount` int NOT NULL DEFAULT 0,\n\t`movedAt` timestamp NOT NULL DEFAULT (now()),\n\t`reviewedAt` timestamp,\n\t`reviewedBy` int,\n\t`reviewNotes` text,\n\t`metadata` json,\n\tCONSTRAINT `email_dead_letter_queue_id` PRIMARY KEY(`id`),\n\tINDEX `email_dead_letter_queue_organization_id_idx` (`organizationId`),\n\tINDEX `email_dead_letter_queue_moved_at_idx` (`movedAt`)\n);",
-  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway03.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3DLEw35gkkimUcv.eeb1f1cd43d3 --database 6e38zfddYazj4vVoRnY5Mj --execute CREATE TABLE IF NOT EXISTS `email_dead_letter_queue` (\n\t`id` int AUTO_INCREMENT NOT NULL,\n\t`organizationId` int NOT NULL,\n\t`outboxId` int,\n\t`templateKey` varchar(100) NOT NULL,\n\t`recipientEmail` varchar(255) NOT NULL,\n\t`recipientName` varchar(255),\n\t`subject` varchar(255) NOT NULL,\n\t`bodyHtml` longtext NOT NULL,\n\t`bodyText` longtext,\n\t`failureReason` text NOT NULL,\n\t`failureCode` varchar(50),\n\t`finalRetryCount` int NOT NULL DEFAULT 0,\n\t`movedAt` timestamp NOT NULL DEFAULT (now()),\n\t`reviewedAt` timestamp,\n\t`reviewedBy` int,\n\t`reviewNotes` text,\n\t`metadata` json,\n\tCONSTRAINT `email_dead_letter_queue_id` PRIMARY KEY(`id`),\n\tINDEX `email_dead_letter_queue_organization_id_idx` (`organizationId`),\n\tINDEX `email_dead_letter_queue_moved_at_idx` (`movedAt`)\n);",
-  "rows": [],
-  "messages": [],
-  "stdout": "",
-  "stderr": "",
-  "execution_time_ms": 120
-}

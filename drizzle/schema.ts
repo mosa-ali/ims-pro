@@ -3164,6 +3164,71 @@ export const hrSanctions = mysqlTable("hr_sanctions", {
 	updatedAt: timestamp({ mode: 'string' }).defaultNow().onUpdateNow().notNull(),
 });
 
+export const hrAttendancePeriods = mysqlTable(
+  "hr_attendance_periods",
+  {
+    id: int().autoincrement().primaryKey().notNull(),
+
+    organizationId: int().notNull(),
+    operatingUnitId: int(),
+
+    periodMonth: int().notNull(),
+    periodYear: int().notNull(),
+
+    monthName: varchar({ length: 50 }).notNull(),
+
+    status: mysqlEnum([
+      "open",
+      "locked",
+      "processing_payroll",
+      "paid"
+    ])
+      .default("open")
+      .notNull(),
+
+    lockDeadline: date(),
+
+    totalRecords: int().default(0),
+    approvedRecords: int().default(0),
+    pendingRecords: int().default(0),
+
+    lockedBy: int(),
+    lockedAt: timestamp({ mode: "string" }),
+
+    unlockedBy: int(),
+    unlockedAt: timestamp({ mode: "string" }),
+
+    notes: varchar({ length: 1000 }),
+
+    isDeleted: tinyint()
+      .default(0)
+      .notNull(),
+	
+    deletedAt: timestamp({ mode: "string" }),
+    deletedBy: int(),
+
+	createdBy: int(),
+    createdAt: timestamp({ mode: "string" })
+      .defaultNow()
+      .notNull(),
+	updatedBy: int(),
+    updatedAt: timestamp({ mode: "string" })
+      .defaultNow()
+      .onUpdateNow()
+      .notNull(),
+  },
+  (table) => [
+    index(
+      "attendance_period_unique"
+    ).on(
+      table.organizationId,
+      table.operatingUnitId,
+      table.periodMonth,
+      table.periodYear
+    ),
+  ]
+);
+
 export const importHistory = mysqlTable("import_history", {
 	id: int().autoincrement().primaryKey().notNull(),
 	projectId: int("project_id").notNull(),
