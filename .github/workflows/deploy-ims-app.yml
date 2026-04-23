@@ -320,15 +320,12 @@ jobs:
 
       - name: Show startup script
         run: |
-          echo "======================================"
-          echo "Generated startup script:"
-          echo "======================================"
+          echo "=== Startup script created ==="
           cat deploy/.azure/startup.sh
           echo ""
-          echo "Azure Portal Configuration:"
+          echo "Configure in Azure Portal:"
           echo "App Service → Configuration → General Settings"
-          echo "Startup Command:"
-          echo "/home/site/wwwroot/.azure/startup.sh"
+          echo "Startup Command: /home/site/wwwroot/.azure/startup.sh"
 
       - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v3
