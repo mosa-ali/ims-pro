@@ -1,4 +1,4 @@
-name: Build and Deploy IMS App to Azure Web App (Linux)
+name: Build and deploy Node.js app to Azure Web App (Linux)
 
 on:
   push:
@@ -7,56 +7,37 @@ on:
   workflow_dispatch:
 
 env:
-  NODE_VERSION: "22"
-  PNPM_VERSION: "10"
   CI: true
   HUSKY: 0
+  NODE_ENV: production
   PDF_ENABLED: true
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
-    timeout-minutes: 60
-
+    environment: .env
     permissions:
       contents: read
 
     steps:
-      ######################################################################
-      # Checkout
-      ######################################################################
-      - name: Checkout repository
+      - name: Checkout
         uses: actions/checkout@v4
 
-      ######################################################################
-      # Setup Node
-      ######################################################################
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          run_install: false
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '~22.x'
           cache: pnpm
 
-      ######################################################################
-      # Setup pnpm
-      ######################################################################
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          run_install: false
-
-      ######################################################################
-      # Show versions
-      ######################################################################
-      - name: Show versions
+      - name: Show tool versions
         run: |
-          echo "Node version:"
           node -v
-          
-          echo "NPM version:"
           npm -v
-          
-          echo "PNPM version:"
           pnpm -v
 
       ######################################################################
