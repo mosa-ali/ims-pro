@@ -5078,6 +5078,8 @@ export interface Translations {
     attendance: string;
     attendanceAnalytics: string;
     attendanceRateByDepartment: string;
+    attendanceRate: string;
+    autoRefresh: string;
     auditGovernance: string;
     auditLog: string;
     auditTrailLog: string;
@@ -6841,6 +6843,8 @@ export interface Translations {
     attendanceAnalytics: string;
     attendanceAnomalies: string;
     attendanceRateByDepartment: string;
+    attendanceRate: string;
+    autoRefresh: string;
     auditGovernance: string;
     average: string;
     backToHr: string;
@@ -15415,6 +15419,7 @@ export const en: Translations = {
     attendance: 'Attendance',
     attendanceAnalytics: 'Attendance Analytics',
     attendanceRateByDepartment: 'Attendance Rate by Department',
+    attendanceRate: 'Attendance Rate',
     auditGovernance: 'Audit & governance',
     auditLog: 'Audit Log',
     auditTrailLog: 'Audit Trail Log',
@@ -17101,6 +17106,8 @@ export const en: Translations = {
     attendanceAnalytics: 'Attendance Analytics',
     attendanceAnomalies: 'Attendance Anomalies',
     attendanceRateByDepartment: 'Attendance Rate by Department',
+    attendanceRate: 'Attendance Rate',
+    autoRefresh: 'Auto Refersh',
     auditGovernance: 'Audit & governance',
     average: 'Average',
     backToHr: 'Back to HR',
@@ -28974,6 +28981,7 @@ export const ar: Translations = {
     attendance: 'الحضور',
     attendanceAnalytics: 'تحليلات الحضور',
     attendanceRateByDepartment: 'معدل الحضور حسب القسم',
+    attendanceRate: 'معدل الحضور',
     auditGovernance: 'التدقيق والحوكمة',
     auditLog: 'سجل التدقيق',
     auditTrailLog: 'سجل مسار التدقيق',
@@ -30661,6 +30669,8 @@ export const ar: Translations = {
     attendanceAnalytics: 'تحليلات الحضور',
     attendanceAnomalies: 'شذوذ الحضور',
     attendanceRateByDepartment: 'معدل الحضور حسب القسم',
+    attendanceRate: 'معدل الحضور',
+    autoRefresh: 'تحديث تلقائي',
     auditGovernance: 'التدقيق والحوكمة',
     average: 'المتوسط',
     backToHr: 'العودة إلى الموارد البشرية',
