@@ -352,7 +352,7 @@ export const contractRouter = router({
         .set({
           ...(input.contractValue && { contractValue: input.contractValue }),
           ...(input.retentionPercentage && { retentionPercentage: input.retentionPercentage }),
-          ...(input.endDate && { endDate: input.endDate.toISOString() }),
+          ...(input.endDate && { endDate: input.endDate.toISOString().split('T')[0] }),
           ...(input.signedFileUrl && { signedFileUrl: input.signedFileUrl }),
           updatedBy: ctx.user.id,
         })
@@ -413,7 +413,9 @@ export const contractRouter = router({
           description: milestone.description || null,
           amount: milestone.amount,
           currency: milestone.currency,
-          dueDate: milestone.dueDate ? milestone.dueDate.toISOString() : null,
+          dueDate: milestone.dueDate 
+          ? milestone.dueDate.toISOString().split('T')[0] 
+          : null,
           orderIndex: milestone.orderIndex,
           status: 'pending',
           createdBy: ctx.user.id,
