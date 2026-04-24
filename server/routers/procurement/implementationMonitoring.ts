@@ -539,13 +539,25 @@ export const implementationMonitoringRouter = router({
    * Add observation
    */
   addObservation: scopedProcedure
-    .input(z.object({
+  .input(
+    z.object({
       monitoringId: z.number().int().positive(),
-      observationType: z.enum(['positive', 'negative', 'neutral']),
+
+      observationDate: z.date().optional(),
+
+      observationType: z.enum([
+        "positive",
+        "negative",
+        "neutral"
+      ]),
+
       description: z.string().min(1),
+
       actionRequired: z.string().optional(),
+
       reportedBy: z.string().optional(),
-    }))
+    })
+  )
     .mutation(async ({ ctx, input }) => {
       const db = await getDb();
       if (!db) throw new Error('Database not available');

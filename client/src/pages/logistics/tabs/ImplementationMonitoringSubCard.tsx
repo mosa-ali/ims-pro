@@ -202,6 +202,13 @@ export default function ImplementationMonitoringSubCard({ contractId }: Implemen
       { enabled: contractId > 0 }
     );
 
+  const {
+          data: monitoringStatus
+        } = trpc.procurementPhaseA.implementationMonitoring.getStatus.useQuery(
+          { contractId },
+          { enabled: contractId > 0 }
+      );
+
   // Initialize monitoring if needed
   const initMut = trpc.procurementPhaseA.implementationMonitoring.initialize.useMutation({
     onSuccess: () => {
@@ -248,32 +255,43 @@ export default function ImplementationMonitoringSubCard({ contractId }: Implemen
               <ClipboardCheck className="w-5 h-5 text-teal-600" />
               <h3 className="text-lg font-semibold">{t.title}</h3>
             </div>
-            <Badge className={
-              monitoring.status === "active" ? "bg-green-100 text-green-700" :
-              monitoring.status === "on_hold" ? "bg-yellow-100 text-yellow-700" :
-              monitoring.status === "closed" ? "bg-gray-100 text-gray-600" :
-              "bg-blue-100 text-blue-700"
-            }>
-              {monitoring.status === "active" ? t.active :
-               monitoring.status === "on_hold" ? t.onHold :
-               monitoring.status === "closed" ? t.closed :
-               t.notStarted}
-            </Badge>
+            <Badge
+                className={
+                  monitoring.status === "completed"
+                    ? "bg-green-100 text-green-700"
+                    : monitoring.status === "in_progress"
+                    ? "bg-blue-100 text-blue-700"
+                    : monitoring.status === "pending"
+                    ? "bg-yellow-100 text-yellow-700"
+                    : "bg-gray-100 text-gray-600"
+                }
+              >
+                {monitoring.status === "completed"
+                  ? t.completed
+                  : monitoring.status === "in_progress"
+                  ? t.inProgress
+                  : monitoring.status === "pending"
+                  ? t.pending
+                  : t.notStarted}
+              </Badge>
           </div>
-          {monitoring.overallProgress !== null && (
-            <div className="mt-2">
-              <div className="flex justify-between text-xs text-muted-foreground mb-1">
-                <span>{t.overallProgress}</span>
-                <span>{monitoring.overallProgress}%</span>
+          {monitoringStatus && (
+              <div className="mt-2">
+                <div className="flex justify-between text-xs text-muted-foreground mb-1">
+                  <span>{t.overallProgress}</span>
+                  <span>{monitoringStatus.progress}%</span>
+                </div>
+
+                <div className="w-full bg-muted rounded-full h-2">
+                  <div
+                    className="bg-teal-500 h-2 rounded-full transition-all"
+                    style={{
+                      width: `${monitoringStatus.progress}%`
+                    }}
+                  />
+                </div>
               </div>
-              <div className="w-full bg-muted rounded-full h-2">
-                <div
-                  className="bg-teal-500 h-2 rounded-full transition-all"
-                  style={{ width: `${monitoring.overallProgress}%` }}
-                />
-              </div>
-            </div>
-          )}
+            )}
         </CardContent>
       </Card>
 
@@ -337,11 +355,6 @@ function ChecklistSection({ monitoringId, t, isRTL }: { monitoringId: number; t:
     onError: (err) => toast.error(err.message),
   });
 
-  const updateMut = trpc.procurementPhaseA.implementationMonitoring.updateChecklistItem.useMutation({
-    onSuccess: () => { toast.success(t.updated); setShowDialog(false); resetForm(); refetch(); },
-    onError: (err) => toast.error(err.message),
-  });
-
   const deleteMut = trpc.procurementPhaseA.implementationMonitoring.deleteChecklistItem.useMutation({
     onSuccess: () => { toast.success(t.deleted); refetch(); },
     onError: (err) => toast.error(err.message),
@@ -353,20 +366,21 @@ function ChecklistSection({ monitoringId, t, isRTL }: { monitoringId: number; t:
   };
 
   const handleSave = () => {
-    const payload = {
-      monitoringId,
-      title: form.title,
-      description: form.description || undefined,
-      expectedDate: form.expectedDate ? new Date(form.expectedDate) : undefined,
-      actualDate: form.actualDate ? new Date(form.actualDate) : undefined,
-      completionStatus: form.completionStatus as any,
+      if (!form.title.trim()) {
+        toast.error(
+          isRTL
+            ? "يرجى إدخال وصف العنصر"
+            : "Checklist item description is required"
+        );
+        return;
+      }
+
+      createMut.mutate({
+        monitoringId,
+        itemDescription: form.title.trim(),
+        orderIndex: 0
+      });
     };
-    if (editingId) {
-      updateMut.mutate({ id: editingId, ...payload });
-    } else {
-      createMut.mutate(payload);
-    }
-  };
 
   const handleEdit = (item: any) => {
     setEditingId(item.id);
@@ -490,8 +504,8 @@ function ChecklistSection({ monitoringId, t, isRTL }: { monitoringId: number; t:
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => { resetForm(); setShowDialog(false); }}>{t.cancel}</Button>
-            <Button onClick={handleSave} disabled={createMut.isPending || updateMut.isPending}>
-              {(createMut.isPending || updateMut.isPending) && <Loader2 className="w-4 h-4 animate-spin mr-2" />}
+            <Button onClick={handleSave} disabled={createMut.isPending}>
+              {createMut.isPending && <Loader2 className="w-4 h-4 animate-spin mr-2" />}
               {t.save}
             </Button>
           </DialogFooter>
@@ -680,7 +694,6 @@ function ObservationsSection({ monitoringId, t, isRTL }: { monitoringId: number;
       observationDate: form.observationDate ? new Date(form.observationDate) : new Date(),
       observationType: form.observationType as any,
       description: form.description,
-      severity: form.severity as any,
       actionRequired: form.actionRequired || undefined,
     });
   };

@@ -185,17 +185,39 @@ export default function PaymentScheduleSubCard({ contractId }: PaymentScheduleSu
 
   const handleSave = () => {
     // Validate required fields
-    if (!form.percentage || !form.amount) {
-      toast.error(t.warning100);
-      return;
-    }
+    if (!form.description.trim()) {
+        toast.error(
+          isRTL
+            ? "يرجى إدخال وصف الدفعة"
+            : "Payment description is required"
+        );
+        return;
+      }
+
+      if (!form.percentage || Number(form.percentage) <= 0) {
+        toast.error(
+          isRTL
+            ? "يرجى إدخال نسبة صحيحة"
+            : "Please enter valid percentage"
+        );
+        return;
+      }
+
+      if (!form.amount || Number(form.amount) <= 0) {
+        toast.error(
+          isRTL
+            ? "يرجى إدخال مبلغ صحيح"
+            : "Please enter valid amount"
+        );
+        return;
+      }
 
     if (editingId) {
       // Update single entry
       const updatePayload = {
         id: editingId,
         paymentType: form.paymentType as any,
-        description: form.description || undefined,
+        description: form.description.trim(),
         paymentPercentage: form.percentage,
         paymentAmount: form.amount,
         orderIndex: parseInt(form.orderIndex) || 0,
@@ -208,7 +230,7 @@ export default function PaymentScheduleSubCard({ contractId }: PaymentScheduleSu
         entries: [
           {
             paymentType: form.paymentType as any,
-            description: form.description || "",
+            description: form.description.trim(),
             paymentPercentage: form.percentage,
             paymentAmount: form.amount,
             linkedMilestoneId: undefined,
@@ -398,7 +420,7 @@ export default function PaymentScheduleSubCard({ contractId }: PaymentScheduleSu
               </Select>
             </div>
             <div>
-              <Label>{t.description_}</Label>
+              <Label>{t.description_} *</Label>
               <Textarea
                 value={form.description}
                 onChange={(e) => setForm({ ...form, description: e.target.value })}

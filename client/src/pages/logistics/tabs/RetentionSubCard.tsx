@@ -136,7 +136,11 @@ export default function RetentionSubCard({ contractId }: RetentionSubCardProps) 
   });
 
   // Queries
-  const { data: terms, isLoading, refetch } = trpc.procurementPhaseA.contractRetention.list.useQuery(
+  const {
+    data: term,
+    isLoading,
+    refetch
+  } = trpc.procurementPhaseA.contractRetention.getByContract.useQuery(
     { contractId },
     { enabled: contractId > 0 }
   );
@@ -194,17 +198,33 @@ export default function RetentionSubCard({ contractId }: RetentionSubCardProps) 
   };
 
   const handleSave = () => {
+    if (!form.retentionPercentage) {
+      toast.error(
+        isRTL
+          ? "يرجى إدخال نسبة الاحتجاز"
+          : "Retention percentage is required"
+      );
+      return;
+    }
+
     const payload = {
       contractId,
-      milestoneLabel: form.milestoneLabel || undefined,
       retentionPercentage: form.retentionPercentage,
-      retentionHeld: form.retentionHeld || undefined,
-      releaseCondition: form.releaseCondition || undefined,
-      releaseDate: form.releaseDate ? new Date(form.releaseDate) : undefined,
+      retentionBasis: "contract_value" as const,
+
+      releaseCondition: "final_acceptance" as const,
+
+      releaseType: "full" as const,
+
+      remarks: form.milestoneLabel || undefined
     };
 
     if (editingId) {
-      updateMut.mutate({ id: editingId, ...payload });
+      updateMut.mutate({
+        id: editingId,
+        retentionPercentage: form.retentionPercentage,
+        remarks: form.milestoneLabel || undefined
+      });
     } else {
       createMut.mutate(payload);
     }
@@ -213,9 +233,9 @@ export default function RetentionSubCard({ contractId }: RetentionSubCardProps) 
   const handleEdit = (term: any) => {
     setEditingId(term.id);
     setForm({
-      milestoneLabel: term.milestoneLabel || "",
+      milestoneLabel: term.remarks || "" || "",
       retentionPercentage: term.retentionPercentage || "",
-      retentionHeld: term.retentionHeld || "",
+      retentionHeld: term.maxRetentionAmount || "",
       releaseCondition: term.releaseCondition || "",
       releaseDate: term.releaseDate ? new Date(term.releaseDate).toISOString().split("T")[0] : "",
     });
@@ -224,7 +244,7 @@ export default function RetentionSubCard({ contractId }: RetentionSubCardProps) 
 
   const handleRelease = (term: any) => {
     setReleasingId(term.id);
-    setReleaseAmount(String(parseFloat(term.retentionHeld || "0") - parseFloat(term.retentionReleased || "0")));
+    setReleaseAmount(String(parseFloat(term.totalRetained || "0") - parseFloat(term.totalReleased || "0")));
     setShowReleaseDialog(true);
   };
 
@@ -245,9 +265,15 @@ export default function RetentionSubCard({ contractId }: RetentionSubCardProps) 
   };
 
   // Summary
-  const totalHeld = terms?.reduce((sum: number, t: any) => sum + parseFloat(t.retentionHeld || "0"), 0) || 0;
-  const totalReleased = terms?.reduce((sum: number, t: any) => sum + parseFloat(t.retentionReleased || "0"), 0) || 0;
-  const balance = totalHeld - totalReleased;
+  const totalHeld = parseFloat(
+      term?.totalRetained || "0"
+    );
+
+    const totalReleased = parseFloat(
+      term?.totalReleased || "0"
+    );
+
+    const balance = totalHeld - totalReleased;
 
   if (isLoading) {
     return <Skeleton className="h-64 w-full" />;
@@ -290,52 +316,73 @@ export default function RetentionSubCard({ contractId }: RetentionSubCardProps) 
       </div>
 
       {/* Retention Table */}
-      {!terms || terms.length === 0 ? (
-        <Card>
-          <CardContent className="py-12 text-center">
-            <ShieldCheck className="w-12 h-12 mx-auto mb-3 text-muted-foreground/30" />
-            <p className="text-muted-foreground">{t.noTerms}</p>
-          </CardContent>
-        </Card>
-      ) : (
-        <Card>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>{t.milestoneLabel}</TableHead>
-                <TableHead>{t.retentionPercentage}</TableHead>
-                <TableHead>{t.retentionHeld}</TableHead>
-                <TableHead>{t.retentionReleased}</TableHead>
-                <TableHead>{t.releaseCondition}</TableHead>
-                <TableHead>{t.status}</TableHead>
-                <TableHead className="text-center">{isRTL ? "الإجراءات" : "Actions"}</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {terms.map((term: any) => (
+      {!term ? (
+            <Card>
+              <CardContent className="py-12 text-center">
+                <ShieldCheck className="w-12 h-12 mx-auto mb-3 text-muted-foreground/30" />
+                <p className="text-muted-foreground">{t.noTerms}</p>
+              </CardContent>
+            </Card>
+          ) : (
+            <Card>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>{t.milestoneLabel}</TableHead>
+                    <TableHead>{t.retentionPercentage}</TableHead>
+                    <TableHead>{t.retentionHeld}</TableHead>
+                    <TableHead>{t.retentionReleased}</TableHead>
+                    <TableHead>{t.releaseCondition}</TableHead>
+                    <TableHead>{t.status}</TableHead>
+                    <TableHead className="text-center">{isRTL ? "الإجراءات" : "Actions"}</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+              {term && (
                 <TableRow key={term.id}>
-                  <TableCell>{term.milestoneLabel || "-"}</TableCell>
-                  <TableCell className="font-semibold">{term.retentionPercentage}%</TableCell>
-                  <TableCell className="font-semibold text-purple-600">${parseFloat(term.retentionHeld || "0").toLocaleString()}</TableCell>
-                  <TableCell className="text-green-600">${parseFloat(term.retentionReleased || "0").toLocaleString()}</TableCell>
-                  <TableCell className="max-w-[200px] truncate">{term.releaseCondition || "-"}</TableCell>
-                  <TableCell>{getStatusBadge(term.status)}</TableCell>
+                  <TableCell>{term.remarks || "-"}</TableCell>
+
+                  <TableCell className="font-semibold">
+                    {term.retentionPercentage}%
+                  </TableCell>
+
+                  <TableCell className="font-semibold text-purple-600">
+                    ${parseFloat(term.totalRetained || "0").toLocaleString()}
+                  </TableCell>
+
+                  <TableCell className="text-green-600">
+                    ${parseFloat(term.totalReleased || "0").toLocaleString()}
+                  </TableCell>
+
+                  <TableCell className="max-w-[200px] truncate">
+                    {term.releaseCondition || "-"}
+                  </TableCell>
+
+                  <TableCell>
+                    {getStatusBadge(term.status)}
+                  </TableCell>
+
                   <TableCell>
                     <div className="flex items-center justify-center gap-1">
                       {term.status !== "released" && (
                         <>
-                          <Button variant="ghost" size="sm" onClick={() => handleEdit(term)}>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleEdit(term)}
+                          >
                             <Edit className="w-3.5 h-3.5" />
                           </Button>
+
                           <Button
                             variant="ghost"
                             size="sm"
                             className="text-green-600"
                             onClick={() => handleRelease(term)}
-                            title={t.release}
                           >
                             <Unlock className="w-3.5 h-3.5" />
                           </Button>
+
                           <Button
                             variant="ghost"
                             size="sm"
@@ -353,7 +400,7 @@ export default function RetentionSubCard({ contractId }: RetentionSubCardProps) 
                     </div>
                   </TableCell>
                 </TableRow>
-              ))}
+              )}
             </TableBody>
           </Table>
         </Card>
@@ -467,7 +514,7 @@ export default function RetentionSubCard({ contractId }: RetentionSubCardProps) 
                   releaseMut.mutate({
                     id: releasingId,
                     releaseAmount,
-                    reason: releaseReason || undefined,
+                    remarks: releaseReason || undefined,
                   });
                 }
               }}

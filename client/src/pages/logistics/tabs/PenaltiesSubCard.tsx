@@ -210,18 +210,81 @@ export default function PenaltiesSubCard({ contractId }: PenaltiesSubCardProps) 
   };
 
   const handleSave = () => {
+  // Description validation
+    if (!form.description.trim()) {
+      toast.error(
+        isRTL
+          ? "يرجى إدخال وصف الغرامة"
+          : "Penalty description is required"
+      );
+      return;
+    }
+
+    let penaltyPercentage = "";
+
+    if (form.penaltyType === "delay") {
+      if (!form.ratePerDay || Number(form.ratePerDay) <= 0) {
+        toast.error(
+          isRTL
+            ? "يرجى إدخال معدل يومي صحيح"
+            : "Valid daily rate is required"
+        );
+        return;
+      }
+
+      penaltyPercentage = form.ratePerDay;
+    } else {
+      if (!form.fixedAmount || Number(form.fixedAmount) <= 0) {
+        toast.error(
+          isRTL
+            ? "يرجى إدخال مبلغ صحيح"
+            : "Valid fixed amount is required"
+        );
+        return;
+      }
+
+      /**
+       * Backend expects percentage
+       * For fixed penalties we map fixed amount
+       * to percentage field temporarily.
+       *
+       * Better long-term fix:
+       * backend should support fixedAmount separately.
+       */
+      penaltyPercentage = form.fixedAmount;
+    }
+
     const payload = {
       contractId,
-      penaltyType: form.penaltyType as any,
-      description: form.description || undefined,
-      ratePerDay: form.ratePerDay || undefined,
-      maxPercentage: form.maxPercentage || undefined,
-      daysDelayed: form.daysDelayed ? parseInt(form.daysDelayed) : undefined,
-      fixedAmount: form.fixedAmount || undefined,
+      penaltyType: form.penaltyType as
+        | "delay"
+        | "quality"
+        | "compliance",
+
+      // FIXED FIELD NAME
+      penaltyDescription: form.description.trim(),
+
+      // FIXED FIELD NAME
+      penaltyPercentage,
+
+      delayDaysThreshold:
+        form.daysDelayed
+          ? parseInt(form.daysDelayed)
+          : 0,
+
+      penaltyBase: "contract_value" as const,
+
+      maxPenaltyLimitPct:
+        form.maxPercentage || "10.00",
+
+      remarks: undefined,
     };
 
     if (editingId) {
-      updateMut.mutate({ id: editingId, ...payload });
+      updateMut.mutate({
+        id: editingId,
+        ...payload,
+      });
     } else {
       createMut.mutate(payload);
     }
@@ -231,10 +294,10 @@ export default function PenaltiesSubCard({ contractId }: PenaltiesSubCardProps) 
     setEditingId(penalty.id);
     setForm({
       penaltyType: penalty.penaltyType,
-      description: penalty.description || "",
-      ratePerDay: penalty.ratePerDay || "",
-      maxPercentage: penalty.maxPercentage || "",
-      daysDelayed: penalty.daysDelayed?.toString() || "",
+      description: penalty.penaltyDescription || "",
+      ratePerDay: penalty.penaltyPercentage || "",
+      maxPercentage: penalty.maxPenaltyLimitPct || "",
+      daysDelayed: penalty.delayDaysThreshold?.toString() || "",
       fixedAmount: penalty.fixedAmount || "",
     });
     setShowDialog(true);
@@ -339,14 +402,14 @@ export default function PenaltiesSubCard({ contractId }: PenaltiesSubCardProps) 
                   <TableCell>
                     <Badge variant="outline">{getTypeLabel(penalty.penaltyType)}</Badge>
                   </TableCell>
-                  <TableCell className="max-w-[200px] truncate">{penalty.description || "-"}</TableCell>
-                  <TableCell>{penalty.ratePerDay ? `$${penalty.ratePerDay}` : "-"}</TableCell>
-                  <TableCell>{penalty.daysDelayed || "-"}</TableCell>
+                  <TableCell className="max-w-[200px] truncate">{penalty.penaltyDescription || "-"}</TableCell>
+                  <TableCell>{penalty.penaltyPercentage ? `$${penalty.penaltyPercentage}` : "-"}</TableCell>
+                  <TableCell>{penalty.delayDaysThreshold || "-"}</TableCell>
                   <TableCell className="font-semibold">${parseFloat(penalty.calculatedAmount || "0").toLocaleString()}</TableCell>
                   <TableCell>{getStatusBadge(penalty.status)}</TableCell>
                   <TableCell>
                     <div className="flex items-center justify-center gap-1">
-                      {penalty.status === "pending" && (
+                      {penalty.status === "draft" && (
                         <>
                           <Button variant="ghost" size="sm" onClick={() => handleEdit(penalty)} title={t.editPenalty}>
                             <Edit className="w-3.5 h-3.5" />
@@ -364,7 +427,14 @@ export default function PenaltiesSubCard({ contractId }: PenaltiesSubCardProps) 
                             variant="ghost"
                             size="sm"
                             className="text-gray-500"
-                            onClick={() => waiveMut.mutate({ id: penalty.id, reason: "Waived by manager" })}
+                            onClick={() =>
+                                waiveMut.mutate({
+                                  id: penalty.id,
+                                  remarks: isRTL
+                                    ? "تم التنازل بواسطة المدير"
+                                    : "Waived by manager"
+                                })
+                              }
                             title={t.waivePenalty}
                           >
                             <XCircle className="w-3.5 h-3.5" />
