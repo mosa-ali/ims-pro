@@ -658,7 +658,203 @@ export default function PenaltiesSubCard({ contractId }: PenaltiesSubCardProps) 
                 ))}
               </TableBody>
             </Table>
-          </Card>
-          )}
-        </div>
+</Card>
+)}
+
+{/* Add/Edit Dialog */}
+<Dialog
+  open={showDialog}
+  onOpenChange={(open) => {
+    if (!open) resetForm();
+    setShowDialog(open);
+  }}
+>
+  <DialogContent className="max-w-md">
+    <DialogHeader>
+      <DialogTitle>
+        {editingId ? t.editPenalty : t.addPenalty}
+      </DialogTitle>
+      <DialogDescription>
+        {t.description}
+      </DialogDescription>
+    </DialogHeader>
+
+    <div className="space-y-4">
+      {/* Penalty Type */}
+      <div>
+        <Label>{t.penaltyType}</Label>
+        <Select
+          value={form.penaltyType}
+          onValueChange={(value) =>
+            setForm({
+              ...form,
+              penaltyType: value
+            })
+          }
+        >
+          <SelectTrigger>
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="delay">
+              {t.delay}
+            </SelectItem>
+            <SelectItem value="quality">
+              {t.quality}
+            </SelectItem>
+            <SelectItem value="compliance">
+              {t.compliance}
+            </SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+
+      {/* Description */}
+      <div>
+        <Label>{t.description_}</Label>
+        <Textarea
+          value={form.description}
+          onChange={(e) =>
+            setForm({
+              ...form,
+              description: e.target.value
+            })
+          }
+        />
+      </div>
+
+      {/* Delay Penalty */}
+      {form.penaltyType === "delay" ? (
+        <>
+          <div>
+            <Label>{t.ratePerDay}</Label>
+            <Input
+              type="number"
+              value={form.ratePerDay}
+              onChange={(e) =>
+                setForm({
+                  ...form,
+                  ratePerDay: e.target.value
+                })
+              }
+            />
+          </div>
+
+          <div>
+            <Label>{t.daysDelayed}</Label>
+            <Input
+              type="number"
+              value={form.daysDelayed}
+              onChange={(e) =>
+                setForm({
+                  ...form,
+                  daysDelayed: e.target.value
+                })
+              }
+            />
+          </div>
+
+          <div>
+            <Label>{t.maxPercentage}</Label>
+            <Input
+              type="number"
+              value={form.maxPercentage}
+              onChange={(e) =>
+                setForm({
+                  ...form,
+                  maxPercentage: e.target.value
+                })
+              }
+            />
+          </div>
+        </>
+      ) : (
+        <>
+          {/* Percentage input */}
+          <div>
+            <Label>{t.penaltyPercentage}</Label>
+            <Input
+              type="number"
+              value={form.penaltyPercentage}
+              onChange={(e) => {
+                const value = e.target.value;
+
+                setForm({
+                  ...form,
+                  penaltyPercentage: value
+                });
+
+                calculatePenaltyAmount(
+                  value,
+                  form.fixedAmount
+                );
+              }}
+            />
+          </div>
+
+          {/* Fixed amount */}
+          <div>
+            <Label>{t.fixedAmount}</Label>
+            <Input
+              type="number"
+              value={form.fixedAmount}
+              onChange={(e) => {
+                const value = e.target.value;
+
+                setForm({
+                  ...form,
+                  fixedAmount: value
+                });
+
+                calculatePenaltyAmount(
+                  form.penaltyPercentage,
+                  value
+                );
+              }}
+            />
+          </div>
+
+          {/* Auto calculated */}
+          <div>
+            <Label>{t.calculatedAmount}</Label>
+            <Input
+              value={form.calculatedAmount}
+              readOnly
+              disabled
+            />
+          </div>
+        </>
       )}
+    </div>
+
+    <DialogFooter>
+      <Button
+        variant="outline"
+        onClick={() => {
+          resetForm();
+          setShowDialog(false);
+        }}
+      >
+        {t.cancel}
+      </Button>
+
+      <Button
+        onClick={handleSave}
+        disabled={
+          createMut.isPending ||
+          updateMut.isPending
+        }
+      >
+        {(createMut.isPending ||
+          updateMut.isPending) && (
+          <Loader2 className="w-4 h-4 animate-spin mr-2" />
+        )}
+        {t.save}
+      </Button>
+    </DialogFooter>
+  </DialogContent>
+</Dialog>
+
+</div>
+);
+}

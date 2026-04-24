@@ -3758,6 +3758,7 @@ export interface Translations {
     active: string;
     // Type 2 Consultancy Flow
     contract: string;
+    create: string;
     contractManagement: string;
     contractNotCreated: string;
     contractDraft: string;
@@ -14330,6 +14331,7 @@ export const en: Translations = {
     active: 'Active',
     // Type 2 Consultancy Flow
     contract: 'Contract',
+    create: 'Create',
     contractManagement: 'Contract Management',
     contractNotCreated: 'Not Created',
     contractDraft: 'Draft',
@@ -27895,6 +27897,7 @@ export const ar: Translations = {
     active: 'نشط',
     // Type 2 Consultancy Flow
     contract: 'العقد',
+    create: 'انشاء',
     contractManagement: 'إدارة العقود',
     contractNotCreated: 'لم يتم الإنشاء',
     contractDraft: 'مسودة',
