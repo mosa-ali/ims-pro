@@ -162,24 +162,59 @@ export default function ContractTab({ purchaseRequestId }: ContractTabProps) {
   };
 
   const handleSaveMilestones = () => {
-    if (!contract) return;
-    const validRows = milestoneRows.filter(r => r.title.trim() && r.amount);
-    if (validRows.length === 0) {
-      toast.error("Add at least one milestone");
-      return;
-    }
-    addMilestonesMut.mutate({
-      contractId: contract.id,
-      milestones: validRows.map((r, i) => ({
-        title: r.title.trim(),
-        description: r.description || undefined,
-        amount: r.amount,
-        currency: contract.currency || 'USD',
-        dueDate: r.dueDate ? new Date(r.dueDate) : undefined,
-        orderIndex: i,
-      })),
-    });
-  };
+      if (!contract) return;
+
+      const validRows = milestoneRows.filter(
+        (r) => r.title.trim() && r.amount
+      );
+
+      if (validRows.length === 0) {
+        toast.error("Add at least one milestone");
+        return;
+      }
+
+      const existingTotal =
+        (milestones || []).reduce(
+          (sum: number, m: any) =>
+            sum + parseFloat(m.amount || "0"),
+          0
+        );
+
+      const newTotal =
+        validRows.reduce(
+          (sum, row) =>
+            sum + parseFloat(row.amount || "0"),
+          0
+        );
+
+      const finalTotal =
+        existingTotal + newTotal;
+
+      const contractValue = parseFloat(
+        contract.contractValue || "0"
+      );
+
+      if (finalTotal > contractValue) {
+        toast.error(
+          `Milestones total (${finalTotal.toLocaleString()}) exceeds contract value (${contractValue.toLocaleString()})`
+        );
+        return;
+      }
+
+      addMilestonesMut.mutate({
+        contractId: contract.id,
+        milestones: validRows.map((r, i) => ({
+          title: r.title.trim(),
+          description: r.description || undefined,
+          amount: r.amount,
+          currency: contract.currency || "USD",
+          dueDate: r.dueDate
+            ? new Date(r.dueDate)
+            : undefined,
+          orderIndex: i,
+        })),
+      });
+    };
 
   const addMilestoneRow = () => {
     setMilestoneRows([...milestoneRows, { title: "", description: "", amount: "", dueDate: "" }]);

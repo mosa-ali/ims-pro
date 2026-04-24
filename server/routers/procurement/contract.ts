@@ -392,17 +392,40 @@ export const contractRouter = router({
       }
 
       // Validate total milestone amounts don't exceed contract value
-      const totalMilestoneAmount = input.milestones.reduce(
-        (sum, m) => sum + parseFloat(m.amount),
-        0
-      );
-      const contractValue = parseFloat(contract.contractValue || '0');
-      if (totalMilestoneAmount > contractValue) {
-        throw new TRPCError({
-          code: 'BAD_REQUEST',
-          message: `Total milestone amounts (${totalMilestoneAmount}) exceed contract value (${contractValue})`,
+      // Get existing milestones first
+        const existingMilestones = await db.query.contractMilestones.findMany({
+          where: and(
+            eq(contractMilestones.contractId, input.contractId),
+            eq(contractMilestones.organizationId, orgId),
+            sql`${contractMilestones.isDeleted} = 0`
+          ),
         });
-      }
+
+        // Existing total
+        const existingTotal = existingMilestones.reduce(
+          (sum, m) => sum + parseFloat(m.amount || "0"),
+          0
+        );
+
+        // New total
+        const newTotal = input.milestones.reduce(
+          (sum, m) => sum + parseFloat(m.amount || "0"),
+          0
+        );
+
+        // Final total
+        const finalTotal = existingTotal + newTotal;
+
+        const contractValue = parseFloat(
+          contract.contractValue || "0"
+        );
+
+        if (finalTotal > contractValue) {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: `Total milestones (${finalTotal}) exceed contract value (${contractValue})`
+          });
+        }
 
       // Insert milestones
       for (const milestone of input.milestones) {
