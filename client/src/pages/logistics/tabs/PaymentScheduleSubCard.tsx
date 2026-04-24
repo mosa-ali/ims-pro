@@ -184,20 +184,40 @@ export default function PaymentScheduleSubCard({ contractId }: PaymentScheduleSu
   };
 
   const handleSave = () => {
-    const payload = {
-      contractId,
-      paymentType: form.paymentType as any,
-      description: form.description || undefined,
-      percentage: form.percentage || undefined,
-      amount: form.amount || undefined,
-      dueDate: form.dueDate ? new Date(form.dueDate) : undefined,
-      orderIndex: parseInt(form.orderIndex) || 0,
-    };
+    // Validate required fields
+    if (!form.percentage || !form.amount) {
+      toast.error(t.warning100);
+      return;
+    }
 
     if (editingId) {
-      updateMut.mutate({ id: editingId, ...payload });
+      // Update single entry
+      const updatePayload = {
+        id: editingId,
+        paymentType: form.paymentType as any,
+        description: form.description || undefined,
+        paymentPercentage: form.percentage,
+        paymentAmount: form.amount,
+        orderIndex: parseInt(form.orderIndex) || 0,
+      };
+      updateMut.mutate(updatePayload);
     } else {
-      createMut.mutate(payload);
+      // Create new entry - send as batch with single entry
+      const createPayload = {
+        contractId,
+        entries: [
+          {
+            paymentType: form.paymentType as any,
+            description: form.description || "",
+            paymentPercentage: form.percentage,
+            paymentAmount: form.amount,
+            linkedMilestoneId: undefined,
+            paymentCondition: "none" as const,
+            orderIndex: parseInt(form.orderIndex) || 0,
+          },
+        ],
+      };
+      createMut.mutate(createPayload);
     }
   };
 

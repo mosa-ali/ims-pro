@@ -5,64 +5,8 @@
     {
       "idx": 0,
       "version": "5",
-      "when": 1775736892695,
-      "tag": "0000_rare_omega_red",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "5",
-      "when": 1775917603907,
-      "tag": "0001_early_leopardon",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "5",
-      "when": 1776038889774,
-      "tag": "0002_eager_sunfire",
-      "breakpoints": true
-    },
-    {
-      "idx": 3,
-      "version": "5",
-      "when": 1776127236621,
-      "tag": "0003_zippy_bucky",
-      "breakpoints": true
-    },
-    {
-      "idx": 4,
-      "version": "5",
-      "when": 1776432971740,
-      "tag": "0004_past_ultron",
-      "breakpoints": true
-    },
-    {
-      "idx": 5,
-      "version": "5",
-      "when": 1776467075777,
-      "tag": "0005_flowery_black_widow",
-      "breakpoints": true
-    },
-    {
-      "idx": 6,
-      "version": "5",
-      "when": 1776614879524,
-      "tag": "0006_shocking_magdalene",
-      "breakpoints": true
-    },
-    {
-      "idx": 7,
-      "version": "5",
-      "when": 1776699142714,
-      "tag": "0007_swift_valeria_richards",
-      "breakpoints": true
-    },
-    {
-      "idx": 8,
-      "version": "5",
-      "when": 1776950473860,
-      "tag": "0008_curious_mattie_franklin",
+      "when": 1777036214256,
+      "tag": "0000_woozy_zarek",
       "breakpoints": true
     }
   ]

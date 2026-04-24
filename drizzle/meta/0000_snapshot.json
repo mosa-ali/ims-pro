@@ -1,7 +1,7 @@
 {
   "version": "5",
   "dialect": "mysql",
-  "id": "89582c7c-4e01-4bc8-87aa-a0055123f80c",
+  "id": "6006f36d-c2e0-4867-8eb1-942ac1f20678",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "account_recovery_requests": {
@@ -5132,6 +5132,297 @@
       "compositePrimaryKeys": {
         "bom_approval_signatures_id": {
           "name": "bom_approval_signatures_id",
+          "columns": [
+            "id"
+          ]
+        }
+      },
+      "uniqueConstraints": {},
+      "checkConstraint": {}
+    },
+    "budget_analysis_expenses": {
+      "name": "budget_analysis_expenses",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": true
+        },
+        "budgetId": {
+          "name": "budgetId",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "budgetLineId": {
+          "name": "budgetLineId",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "budgetItemId": {
+          "name": "budgetItemId",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "organizationId": {
+          "name": "organizationId",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "operatingUnitId": {
+          "name": "operatingUnitId",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "expenseAmount": {
+          "name": "expenseAmount",
+          "type": "decimal(15,2)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "expenseDate": {
+          "name": "expenseDate",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "description": {
+          "name": "description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "descriptionAr": {
+          "name": "descriptionAr",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "category": {
+          "name": "category",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "reference": {
+          "name": "reference",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "status": {
+          "name": "status",
+          "type": "enum('pending','approved','rejected')",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "'pending'"
+        },
+        "notes": {
+          "name": "notes",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "notesAr": {
+          "name": "notesAr",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "deletedAt": {
+          "name": "deletedAt",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "deletedBy": {
+          "name": "deletedBy",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "createdAt": {
+          "name": "createdAt",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "(now())"
+        },
+        "updatedAt": {
+          "name": "updatedAt",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "onUpdate": true,
+          "default": "(now())"
+        },
+        "createdBy": {
+          "name": "createdBy",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "updatedBy": {
+          "name": "updatedBy",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "isDeleted": {
+          "name": "isDeleted",
+          "type": "tinyint",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": 0
+        }
+      },
+      "indexes": {
+        "idx_budget_id": {
+          "name": "idx_budget_id",
+          "columns": [
+            "budgetId"
+          ],
+          "isUnique": false
+        },
+        "idx_budget_line_id": {
+          "name": "idx_budget_line_id",
+          "columns": [
+            "budgetLineId"
+          ],
+          "isUnique": false
+        },
+        "idx_organization_id": {
+          "name": "idx_organization_id",
+          "columns": [
+            "organizationId"
+          ],
+          "isUnique": false
+        },
+        "idx_expense_date": {
+          "name": "idx_expense_date",
+          "columns": [
+            "expenseDate"
+          ],
+          "isUnique": false
+        },
+        "idx_status": {
+          "name": "idx_status",
+          "columns": [
+            "status"
+          ],
+          "isUnique": false
+        }
+      },
+      "foreignKeys": {
+        "budget_analysis_expenses_budgetId_budgets_id_fk": {
+          "name": "budget_analysis_expenses_budgetId_budgets_id_fk",
+          "tableFrom": "budget_analysis_expenses",
+          "tableTo": "budgets",
+          "columnsFrom": [
+            "budgetId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "budget_analysis_expenses_budgetLineId_budget_lines_id_fk": {
+          "name": "budget_analysis_expenses_budgetLineId_budget_lines_id_fk",
+          "tableFrom": "budget_analysis_expenses",
+          "tableTo": "budget_lines",
+          "columnsFrom": [
+            "budgetLineId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "budget_analysis_expenses_organizationId_organizations_id_fk": {
+          "name": "budget_analysis_expenses_organizationId_organizations_id_fk",
+          "tableFrom": "budget_analysis_expenses",
+          "tableTo": "organizations",
+          "columnsFrom": [
+            "organizationId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "budget_analysis_expenses_deletedBy_users_id_fk": {
+          "name": "budget_analysis_expenses_deletedBy_users_id_fk",
+          "tableFrom": "budget_analysis_expenses",
+          "tableTo": "users",
+          "columnsFrom": [
+            "deletedBy"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "set null",
+          "onUpdate": "no action"
+        },
+        "budget_analysis_expenses_createdBy_users_id_fk": {
+          "name": "budget_analysis_expenses_createdBy_users_id_fk",
+          "tableFrom": "budget_analysis_expenses",
+          "tableTo": "users",
+          "columnsFrom": [
+            "createdBy"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "set null",
+          "onUpdate": "no action"
+        },
+        "budget_analysis_expenses_updatedBy_users_id_fk": {
+          "name": "budget_analysis_expenses_updatedBy_users_id_fk",
+          "tableFrom": "budget_analysis_expenses",
+          "tableTo": "users",
+          "columnsFrom": [
+            "updatedBy"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "set null",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "budget_analysis_expenses_id": {
+          "name": "budget_analysis_expenses_id",
           "columns": [
             "id"
           ]
@@ -19568,8 +19859,8 @@
           "notNull": false,
           "autoincrement": false
         },
-        "exchangeRateToUsd": {
-          "name": "exchangeRateToUsd",
+        "exchangeRate": {
+          "name": "exchangeRate",
           "type": "decimal(15,6)",
           "primaryKey": false,
           "notNull": false,
@@ -24450,6 +24741,203 @@
       "uniqueConstraints": {},
       "checkConstraint": {}
     },
+    "hr_attendance_periods": {
+      "name": "hr_attendance_periods",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": true
+        },
+        "organizationId": {
+          "name": "organizationId",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "operatingUnitId": {
+          "name": "operatingUnitId",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "periodMonth": {
+          "name": "periodMonth",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "periodYear": {
+          "name": "periodYear",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "monthName": {
+          "name": "monthName",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "status": {
+          "name": "status",
+          "type": "enum('open','locked','processing_payroll','paid')",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "'open'"
+        },
+        "lockDeadline": {
+          "name": "lockDeadline",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "totalRecords": {
+          "name": "totalRecords",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false,
+          "default": 0
+        },
+        "approvedRecords": {
+          "name": "approvedRecords",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false,
+          "default": 0
+        },
+        "pendingRecords": {
+          "name": "pendingRecords",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false,
+          "default": 0
+        },
+        "lockedBy": {
+          "name": "lockedBy",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "lockedAt": {
+          "name": "lockedAt",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "unlockedBy": {
+          "name": "unlockedBy",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "unlockedAt": {
+          "name": "unlockedAt",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "notes": {
+          "name": "notes",
+          "type": "varchar(1000)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "isDeleted": {
+          "name": "isDeleted",
+          "type": "tinyint",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": 0
+        },
+        "deletedAt": {
+          "name": "deletedAt",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "deletedBy": {
+          "name": "deletedBy",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "createdBy": {
+          "name": "createdBy",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "createdAt": {
+          "name": "createdAt",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "(now())"
+        },
+        "updatedBy": {
+          "name": "updatedBy",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "updatedAt": {
+          "name": "updatedAt",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "onUpdate": true,
+          "default": "(now())"
+        }
+      },
+      "indexes": {
+        "attendance_period_unique": {
+          "name": "attendance_period_unique",
+          "columns": [
+            "organizationId",
+            "operatingUnitId",
+            "periodMonth",
+            "periodYear"
+          ],
+          "isUnique": false
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {
+        "hr_attendance_periods_id": {
+          "name": "hr_attendance_periods_id",
+          "columns": [
+            "id"
+          ]
+        }
+      },
+      "uniqueConstraints": {},
+      "checkConstraint": {}
+    },
     "hr_attendance_records": {
       "name": "hr_attendance_records",
       "columns": {
@@ -24479,6 +24967,20 @@
           "type": "int",
           "primaryKey": false,
           "notNull": true,
+          "autoincrement": false
+        },
+        "staffName": {
+          "name": "staffName",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "staffId": {
+          "name": "staffId",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": false,
           "autoincrement": false
         },
         "date": {
@@ -24533,6 +25035,43 @@
         },
         "notes": {
           "name": "notes",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "source": {
+          "name": "source",
+          "type": "enum('microsoft_teams_shifts','microsoft_teams_presence','manual_hr_entry')",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false,
+          "default": "'manual_hr_entry'"
+        },
+        "approvalStatus": {
+          "name": "approvalStatus",
+          "type": "enum('pending','approved','rejected')",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false,
+          "default": "'pending'"
+        },
+        "approvedBy": {
+          "name": "approvedBy",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "approvedAt": {
+          "name": "approvedAt",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "rejectionReason": {
+          "name": "rejectionReason",
           "type": "text",
           "primaryKey": false,
           "notNull": false,
@@ -24606,6 +25145,27 @@
           "columns": [
             "employeeId",
             "date"
+          ],
+          "isUnique": false
+        },
+        "idx_hr_attendance_source": {
+          "name": "idx_hr_attendance_source",
+          "columns": [
+            "source"
+          ],
+          "isUnique": false
+        },
+        "idx_hr_attendance_approvalStatus": {
+          "name": "idx_hr_attendance_approvalStatus",
+          "columns": [
+            "approvalStatus"
+          ],
+          "isUnique": false
+        },
+        "idx_hr_attendance_staffId": {
+          "name": "idx_hr_attendance_staffId",
+          "columns": [
+            "staffId"
           ],
           "isUnique": false
         }
@@ -25521,6 +26081,13 @@
           "notNull": true,
           "autoincrement": false
         },
+        "salaryScaleId": {
+          "name": "salaryScaleId",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
         "payrollMonth": {
           "name": "payrollMonth",
           "type": "int",
@@ -25552,6 +26119,14 @@
         },
         "transportAllowance": {
           "name": "transportAllowance",
+          "type": "decimal(15,2)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false,
+          "default": "'0'"
+        },
+        "representationAllowance": {
+          "name": "representationAllowance",
           "type": "decimal(15,2)",
           "primaryKey": false,
           "notNull": false,
@@ -25591,6 +26166,30 @@
         },
         "taxDeduction": {
           "name": "taxDeduction",
+          "type": "decimal(15,2)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false,
+          "default": "'0'"
+        },
+        "healthInsuranceAmount": {
+          "name": "healthInsuranceAmount",
+          "type": "decimal(10,2)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false,
+          "default": "'0'"
+        },
+        "employerSocialSecurity": {
+          "name": "employerSocialSecurity",
+          "type": "decimal(15,2)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false,
+          "default": "'0'"
+        },
+        "employeeSocialSecurity": {
+          "name": "employeeSocialSecurity",
           "type": "decimal(15,2)",
           "primaryKey": false,
           "notNull": false,
@@ -25690,7 +26289,7 @@
         },
         "notes": {
           "name": "notes",
-          "type": "text",
+          "type": "varchar(1000)",
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false
@@ -26483,6 +27082,14 @@
           "notNull": true,
           "autoincrement": false
         },
+        "basicSalary": {
+          "name": "basicSalary",
+          "type": "decimal(15,2)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "'0'"
+        },
         "minSalary": {
           "name": "minSalary",
           "type": "decimal(15,2)",
@@ -26554,6 +27161,14 @@
           "autoincrement": false,
           "default": "'value'"
         },
+        "otherAllowances": {
+          "name": "otherAllowances",
+          "type": "decimal(15,2)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false,
+          "default": "'0'"
+        },
         "annualAllowance": {
           "name": "annualAllowance",
           "type": "decimal(15,2)",
@@ -26570,13 +27185,53 @@
           "autoincrement": false,
           "default": "'0'"
         },
-        "otherAllowances": {
-          "name": "otherAllowances",
+        "taxPercent": {
+          "name": "taxPercent",
+          "type": "decimal(5,2)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false,
+          "default": "'0'"
+        },
+        "healthInsuranceAmount": {
+          "name": "healthInsuranceAmount",
+          "type": "decimal(10,2)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false,
+          "default": "'0'"
+        },
+        "employerContribution": {
+          "name": "employerContribution",
           "type": "decimal(15,2)",
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false,
           "default": "'0'"
+        },
+        "employerContributionType": {
+          "name": "employerContributionType",
+          "type": "enum('value','percentage')",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false,
+          "default": "'value'"
+        },
+        "employeeContribution": {
+          "name": "employeeContribution",
+          "type": "decimal(15,2)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false,
+          "default": "'0'"
+        },
+        "employeeContributionType": {
+          "name": "employeeContributionType",
+          "type": "enum('value','percentage')",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false,
+          "default": "'value'"
         },
         "currency": {
           "name": "currency",
@@ -26653,6 +27308,20 @@
           "notNull": false,
           "autoincrement": false
         },
+        "updatedBy": {
+          "name": "updatedBy",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "deletedBy": {
+          "name": "deletedBy",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
         "isDeleted": {
           "name": "isDeleted",
           "type": "tinyint",
@@ -26664,13 +27333,6 @@
         "deletedAt": {
           "name": "deletedAt",
           "type": "timestamp",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "deletedBy": {
-          "name": "deletedBy",
-          "type": "int",
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false
@@ -30020,6 +30682,13 @@
           "notNull": true,
           "autoincrement": false
         },
+        "operatingUnitId": {
+          "name": "operatingUnitId",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
         "name": {
           "name": "name",
           "type": "varchar(500)",
@@ -30077,6 +30746,20 @@
           "autoincrement": false,
           "default": 1
         },
+        "createdBy": {
+          "name": "createdBy",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "updatedBy": {
+          "name": "updatedBy",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
         "createdAt": {
           "name": "createdAt",
           "type": "timestamp",
@@ -30117,7 +30800,17 @@
           "autoincrement": false
         }
       },
-      "indexes": {},
+      "indexes": {
+        "idx_meal_indicator_templates_scope_deleted": {
+          "name": "idx_meal_indicator_templates_scope_deleted",
+          "columns": [
+            "organizationId",
+            "operatingUnitId",
+            "isDeleted"
+          ],
+          "isUnique": false
+        }
+      },
       "foreignKeys": {},
       "compositePrimaryKeys": {
         "meal_indicator_templates_id": {
@@ -30451,6 +31144,27 @@
           "notNull": true,
           "autoincrement": true
         },
+        "organizationId": {
+          "name": "organizationId",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "operatingUnitId": {
+          "name": "operatingUnitId",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "projectId": {
+          "name": "projectId",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
         "surveyId": {
           "name": "surveyId",
           "type": "int",
@@ -30581,6 +31295,20 @@
           "notNull": false,
           "autoincrement": false
         },
+        "createdBy": {
+          "name": "createdBy",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "updatedBy": {
+          "name": "updatedBy",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
         "createdAt": {
           "name": "createdAt",
           "type": "timestamp",
@@ -30599,7 +31327,34 @@
           "default": "(now())"
         }
       },
-      "indexes": {},
+      "indexes": {
+        "idx_meal_survey_questions_scope_deleted": {
+          "name": "idx_meal_survey_questions_scope_deleted",
+          "columns": [
+            "organizationId",
+            "operatingUnitId",
+            "isDeleted"
+          ],
+          "isUnique": false
+        },
+        "idx_meal_survey_questions_survey_scope": {
+          "name": "idx_meal_survey_questions_survey_scope",
+          "columns": [
+            "surveyId",
+            "organizationId",
+            "operatingUnitId"
+          ],
+          "isUnique": false
+        },
+        "idx_meal_survey_questions_project": {
+          "name": "idx_meal_survey_questions_project",
+          "columns": [
+            "projectId",
+            "organizationId"
+          ],
+          "isUnique": false
+        }
+      },
       "foreignKeys": {},
       "compositePrimaryKeys": {
         "meal_survey_questions_id": {
@@ -30624,6 +31379,13 @@
         },
         "organizationId": {
           "name": "organizationId",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "operatingUnitId": {
+          "name": "operatingUnitId",
           "type": "int",
           "primaryKey": false,
           "notNull": true,
@@ -30666,6 +31428,20 @@
           "autoincrement": false,
           "default": 0
         },
+        "createdBy": {
+          "name": "createdBy",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "updatedBy": {
+          "name": "updatedBy",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
         "createdAt": {
           "name": "createdAt",
           "type": "timestamp",
@@ -30706,7 +31482,17 @@
           "autoincrement": false
         }
       },
-      "indexes": {},
+      "indexes": {
+        "idx_meal_survey_standards_scope_deleted": {
+          "name": "idx_meal_survey_standards_scope_deleted",
+          "columns": [
+            "organizationId",
+            "operatingUnitId",
+            "isDeleted"
+          ],
+          "isUnique": false
+        }
+      },
       "foreignKeys": {},
       "compositePrimaryKeys": {
         "meal_survey_standards_id": {
@@ -30747,7 +31533,7 @@
           "name": "operatingUnitId",
           "type": "int",
           "primaryKey": false,
-          "notNull": false,
+          "notNull": true,
           "autoincrement": false
         },
         "projectId": {
@@ -30864,6 +31650,20 @@
           "notNull": false,
           "autoincrement": false
         },
+        "createdBy": {
+          "name": "createdBy",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "updatedBy": {
+          "name": "updatedBy",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
         "isDeleted": {
           "name": "isDeleted",
           "type": "tinyint",
@@ -30904,7 +31704,26 @@
           "default": "(now())"
         }
       },
-      "indexes": {},
+      "indexes": {
+        "idx_meal_survey_submissions_scope_deleted": {
+          "name": "idx_meal_survey_submissions_scope_deleted",
+          "columns": [
+            "organizationId",
+            "operatingUnitId",
+            "isDeleted"
+          ],
+          "isUnique": false
+        },
+        "idx_meal_survey_submissions_survey_scope": {
+          "name": "idx_meal_survey_submissions_survey_scope",
+          "columns": [
+            "surveyId",
+            "organizationId",
+            "operatingUnitId"
+          ],
+          "isUnique": false
+        }
+      },
       "foreignKeys": {},
       "compositePrimaryKeys": {
         "meal_survey_submissions_id": {
@@ -30938,7 +31757,7 @@
           "name": "operatingUnitId",
           "type": "int",
           "primaryKey": false,
-          "notNull": false,
+          "notNull": true,
           "autoincrement": false
         },
         "projectId": {
@@ -31098,7 +31917,25 @@
           "autoincrement": false
         }
       },
-      "indexes": {},
+      "indexes": {
+        "idx_meal_surveys_scope_deleted": {
+          "name": "idx_meal_surveys_scope_deleted",
+          "columns": [
+            "organizationId",
+            "operatingUnitId",
+            "isDeleted"
+          ],
+          "isUnique": false
+        },
+        "idx_meal_surveys_scope": {
+          "name": "idx_meal_surveys_scope",
+          "columns": [
+            "organizationId",
+            "operatingUnitId"
+          ],
+          "isUnique": false
+        }
+      },
       "foreignKeys": {},
       "compositePrimaryKeys": {
         "meal_surveys_id": {
@@ -39286,11 +40123,11 @@
         },
         "recurrence": {
           "name": "recurrence",
-          "type": "varchar(50)",
+          "type": "int",
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false,
-          "default": "'one-time'"
+          "default": 1
         },
         "createdAt": {
           "name": "createdAt",
@@ -39308,10 +40145,31 @@
           "autoincrement": false,
           "onUpdate": true,
           "default": "(now())"
+        },
+        "deletedAt": {
+          "name": "deletedAt",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
         }
       },
       "indexes": {},
-      "foreignKeys": {},
+      "foreignKeys": {
+        "purchase_request_line_items_purchaseRequestId_purchase_requests_id_fk": {
+          "name": "purchase_request_line_items_purchaseRequestId_purchase_requests_id_fk",
+          "tableFrom": "purchase_request_line_items",
+          "tableTo": "purchase_requests",
+          "columnsFrom": [
+            "purchaseRequestId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
       "compositePrimaryKeys": {
         "purchase_request_line_items_id": {
           "name": "purchase_request_line_items_id",
@@ -39717,6 +40575,13 @@
           "autoincrement": false,
           "default": "(now())"
         },
+        "submittedAt": {
+          "name": "submittedAt",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
         "updatedAt": {
           "name": "updatedAt",
           "type": "timestamp",
@@ -39743,6 +40608,69 @@
         "categoryLegacy": {
           "name": "categoryLegacy",
           "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "logisticsSignerName": {
+          "name": "logisticsSignerName",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "logisticsSignerTitle": {
+          "name": "logisticsSignerTitle",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "logisticsSignatureDataUrl": {
+          "name": "logisticsSignatureDataUrl",
+          "type": "longtext",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "financeSignerName": {
+          "name": "financeSignerName",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "financeSignerTitle": {
+          "name": "financeSignerTitle",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "financeSignatureDataUrl": {
+          "name": "financeSignatureDataUrl",
+          "type": "longtext",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "pmSignerName": {
+          "name": "pmSignerName",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "pmSignerTitle": {
+          "name": "pmSignerTitle",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "pmSignatureDataUrl": {
+          "name": "pmSignatureDataUrl",
+          "type": "longtext",
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false

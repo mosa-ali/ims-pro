@@ -597,6 +597,32 @@ CREATE TABLE `bom_approval_signatures` (
 	CONSTRAINT `bom_approval_signatures_id` PRIMARY KEY(`id`)
 );
 --> statement-breakpoint
+CREATE TABLE `budget_analysis_expenses` (
+	`id` int AUTO_INCREMENT NOT NULL,
+	`budgetId` int NOT NULL,
+	`budgetLineId` int NOT NULL,
+	`budgetItemId` int,
+	`organizationId` int NOT NULL,
+	`operatingUnitId` int,
+	`expenseAmount` decimal(15,2) NOT NULL,
+	`expenseDate` date NOT NULL,
+	`description` text NOT NULL,
+	`descriptionAr` text,
+	`category` varchar(100),
+	`reference` varchar(255),
+	`status` enum('pending','approved','rejected') NOT NULL DEFAULT 'pending',
+	`notes` text,
+	`notesAr` text,
+	`deletedAt` timestamp,
+	`deletedBy` int,
+	`createdAt` timestamp NOT NULL DEFAULT (now()),
+	`updatedAt` timestamp NOT NULL DEFAULT (now()) ON UPDATE CURRENT_TIMESTAMP,
+	`createdBy` int,
+	`updatedBy` int,
+	`isDeleted` tinyint NOT NULL DEFAULT 0,
+	CONSTRAINT `budget_analysis_expenses_id` PRIMARY KEY(`id`)
+);
+--> statement-breakpoint
 CREATE TABLE `budget_items` (
 	`id` int AUTO_INCREMENT NOT NULL,
 	`projectId` int NOT NULL,
@@ -2339,7 +2365,7 @@ CREATE TABLE `finance_currencies` (
 	`name` varchar(100) NOT NULL,
 	`nameAr` varchar(100),
 	`symbol` varchar(10),
-	`exchangeRateToUsd` decimal(15,6) DEFAULT '1.000000',
+	`exchangeRate` decimal(15,6) DEFAULT '1.000000',
 	`isBaseCurrency` tinyint NOT NULL DEFAULT 0,
 	`isActive` tinyint NOT NULL DEFAULT 1,
 	`decimalPlaces` int DEFAULT 2,
@@ -2991,11 +3017,40 @@ CREATE TABLE `hr_annual_plans` (
 	CONSTRAINT `hr_annual_plans_id` PRIMARY KEY(`id`)
 );
 --> statement-breakpoint
+CREATE TABLE `hr_attendance_periods` (
+	`id` int AUTO_INCREMENT NOT NULL,
+	`organizationId` int NOT NULL,
+	`operatingUnitId` int,
+	`periodMonth` int NOT NULL,
+	`periodYear` int NOT NULL,
+	`monthName` varchar(50) NOT NULL,
+	`status` enum('open','locked','processing_payroll','paid') NOT NULL DEFAULT 'open',
+	`lockDeadline` date,
+	`totalRecords` int DEFAULT 0,
+	`approvedRecords` int DEFAULT 0,
+	`pendingRecords` int DEFAULT 0,
+	`lockedBy` int,
+	`lockedAt` timestamp,
+	`unlockedBy` int,
+	`unlockedAt` timestamp,
+	`notes` varchar(1000),
+	`isDeleted` tinyint NOT NULL DEFAULT 0,
+	`deletedAt` timestamp,
+	`deletedBy` int,
+	`createdBy` int,
+	`createdAt` timestamp NOT NULL DEFAULT (now()),
+	`updatedBy` int,
+	`updatedAt` timestamp NOT NULL DEFAULT (now()) ON UPDATE CURRENT_TIMESTAMP,
+	CONSTRAINT `hr_attendance_periods_id` PRIMARY KEY(`id`)
+);
+--> statement-breakpoint
 CREATE TABLE `hr_attendance_records` (
 	`id` int AUTO_INCREMENT NOT NULL,
 	`organizationId` int NOT NULL,
 	`operatingUnitId` int,
 	`employeeId` int NOT NULL,
+	`staffName` varchar(255),
+	`staffId` varchar(50),
 	`date` date NOT NULL,
 	`checkIn` timestamp,
 	`checkOut` timestamp,
@@ -3004,6 +3059,11 @@ CREATE TABLE `hr_attendance_records` (
 	`overtimeHours` decimal(5,2),
 	`location` varchar(255),
 	`notes` text,
+	`source` enum('microsoft_teams_shifts','microsoft_teams_presence','manual_hr_entry') DEFAULT 'manual_hr_entry',
+	`approvalStatus` enum('pending','approved','rejected') DEFAULT 'pending',
+	`approvedBy` int,
+	`approvedAt` timestamp,
+	`rejectionReason` text,
 	`periodLocked` tinyint NOT NULL DEFAULT 0,
 	`lockedBy` int,
 	`lockedAt` timestamp,
@@ -3145,16 +3205,21 @@ CREATE TABLE `hr_payroll_records` (
 	`organizationId` int NOT NULL,
 	`operatingUnitId` int,
 	`employeeId` int NOT NULL,
+	`salaryScaleId` int,
 	`payrollMonth` int NOT NULL,
 	`payrollYear` int NOT NULL,
 	`basicSalary` decimal(15,2) NOT NULL,
 	`housingAllowance` decimal(15,2) DEFAULT '0',
 	`transportAllowance` decimal(15,2) DEFAULT '0',
+	`representationAllowance` decimal(15,2) DEFAULT '0',
 	`otherAllowances` decimal(15,2) DEFAULT '0',
 	`overtimePay` decimal(15,2) DEFAULT '0',
 	`bonus` decimal(15,2) DEFAULT '0',
 	`grossSalary` decimal(15,2) NOT NULL,
 	`taxDeduction` decimal(15,2) DEFAULT '0',
+	`healthInsuranceAmount` decimal(10,2) DEFAULT '0',
+	`employerSocialSecurity` decimal(15,2) DEFAULT '0',
+	`employeeSocialSecurity` decimal(15,2) DEFAULT '0',
 	`socialSecurityDeduction` decimal(15,2) DEFAULT '0',
 	`loanDeduction` decimal(15,2) DEFAULT '0',
 	`otherDeductions` decimal(15,2) DEFAULT '0',
@@ -3167,7 +3232,7 @@ CREATE TABLE `hr_payroll_records` (
 	`paidAt` timestamp,
 	`paymentMethod` enum('bank_transfer','cash','check') DEFAULT 'bank_transfer',
 	`paymentReference` varchar(255),
-	`notes` text,
+	`notes` varchar(1000),
 	`isDeleted` tinyint NOT NULL DEFAULT 0,
 	`deletedAt` timestamp,
 	`deletedBy` int,
@@ -3282,6 +3347,7 @@ CREATE TABLE `hr_salary_scale` (
 	`gradeId` int,
 	`gradeCode` varchar(50) NOT NULL,
 	`step` varchar(50) NOT NULL,
+	`basicSalary` decimal(15,2) NOT NULL DEFAULT '0',
 	`minSalary` decimal(15,2) DEFAULT '0',
 	`maxSalary` decimal(15,2) DEFAULT '0',
 	`approvedGrossSalary` decimal(15,2) NOT NULL,
@@ -3291,9 +3357,15 @@ CREATE TABLE `hr_salary_scale` (
 	`transportAllowanceType` enum('value','percentage') DEFAULT 'value',
 	`representationAllowance` decimal(15,2) DEFAULT '0',
 	`representationAllowanceType` enum('value','percentage') DEFAULT 'value',
+	`otherAllowances` decimal(15,2) DEFAULT '0',
 	`annualAllowance` decimal(15,2) DEFAULT '0',
 	`bonus` decimal(15,2) DEFAULT '0',
-	`otherAllowances` decimal(15,2) DEFAULT '0',
+	`taxPercent` decimal(5,2) DEFAULT '0',
+	`healthInsuranceAmount` decimal(10,2) DEFAULT '0',
+	`employerContribution` decimal(15,2) DEFAULT '0',
+	`employerContributionType` enum('value','percentage') DEFAULT 'value',
+	`employeeContribution` decimal(15,2) DEFAULT '0',
+	`employeeContributionType` enum('value','percentage') DEFAULT 'value',
 	`currency` varchar(10) DEFAULT 'USD',
 	`version` int NOT NULL DEFAULT 1,
 	`effectiveStartDate` date NOT NULL,
@@ -3304,9 +3376,10 @@ CREATE TABLE `hr_salary_scale` (
 	`lastApprovedBy` int,
 	`lastApprovedAt` timestamp,
 	`createdBy` int,
+	`updatedBy` int,
+	`deletedBy` int,
 	`isDeleted` tinyint NOT NULL DEFAULT 0,
 	`deletedAt` timestamp,
-	`deletedBy` int,
 	`createdAt` timestamp NOT NULL DEFAULT (now()),
 	`updatedAt` timestamp NOT NULL DEFAULT (now()) ON UPDATE CURRENT_TIMESTAMP,
 	CONSTRAINT `hr_salary_scale_id` PRIMARY KEY(`id`)
@@ -3763,6 +3836,7 @@ CREATE TABLE `meal_indicator_data_entries` (
 CREATE TABLE `meal_indicator_templates` (
 	`id` int AUTO_INCREMENT NOT NULL,
 	`organizationId` int NOT NULL,
+	`operatingUnitId` int,
 	`name` varchar(500) NOT NULL,
 	`code` varchar(100),
 	`unitOfMeasure` varchar(100),
@@ -3771,6 +3845,8 @@ CREATE TABLE `meal_indicator_templates` (
 	`disaggregationFields` json,
 	`defaultTargets` json,
 	`active` tinyint NOT NULL DEFAULT 1,
+	`createdBy` int,
+	`updatedBy` int,
 	`createdAt` timestamp NOT NULL DEFAULT (now()),
 	`updatedAt` timestamp NOT NULL DEFAULT (now()) ON UPDATE CURRENT_TIMESTAMP,
 	`deletedAt` timestamp,
@@ -3825,6 +3901,9 @@ CREATE TABLE `meal_learning_items` (
 --> statement-breakpoint
 CREATE TABLE `meal_survey_questions` (
 	`id` int AUTO_INCREMENT NOT NULL,
+	`organizationId` int NOT NULL,
+	`operatingUnitId` int,
+	`projectId` int,
 	`surveyId` int NOT NULL,
 	`questionCode` varchar(50) NOT NULL,
 	`questionText` text NOT NULL,
@@ -3843,6 +3922,8 @@ CREATE TABLE `meal_survey_questions` (
 	`isDeleted` tinyint NOT NULL DEFAULT 0,
 	`deletedAt` timestamp,
 	`deletedBy` int,
+	`createdBy` int NOT NULL,
+	`updatedBy` int NOT NULL,
 	`createdAt` timestamp NOT NULL DEFAULT (now()),
 	`updatedAt` timestamp NOT NULL DEFAULT (now()) ON UPDATE CURRENT_TIMESTAMP,
 	CONSTRAINT `meal_survey_questions_id` PRIMARY KEY(`id`)
@@ -3851,11 +3932,14 @@ CREATE TABLE `meal_survey_questions` (
 CREATE TABLE `meal_survey_standards` (
 	`id` int AUTO_INCREMENT NOT NULL,
 	`organizationId` int NOT NULL,
+	`operatingUnitId` int NOT NULL,
 	`standardName` varchar(500) NOT NULL,
 	`validationRules` json,
 	`requiredFields` json,
 	`gpsRequired` tinyint NOT NULL DEFAULT 0,
 	`photoRequired` tinyint NOT NULL DEFAULT 0,
+	`createdBy` int NOT NULL,
+	`updatedBy` int NOT NULL,
 	`createdAt` timestamp NOT NULL DEFAULT (now()),
 	`updatedAt` timestamp NOT NULL DEFAULT (now()) ON UPDATE CURRENT_TIMESTAMP,
 	`deletedAt` timestamp,
@@ -3868,7 +3952,7 @@ CREATE TABLE `meal_survey_submissions` (
 	`id` int AUTO_INCREMENT NOT NULL,
 	`surveyId` int NOT NULL,
 	`organizationId` int NOT NULL,
-	`operatingUnitId` int,
+	`operatingUnitId` int NOT NULL,
 	`projectId` int,
 	`submissionCode` varchar(50) NOT NULL,
 	`respondentName` varchar(255),
@@ -3885,6 +3969,8 @@ CREATE TABLE `meal_survey_submissions` (
 	`longitude` decimal(11,8),
 	`locationName` varchar(255),
 	`deviceInfo` json,
+	`createdBy` int,
+	`updatedBy` int,
 	`isDeleted` tinyint NOT NULL DEFAULT 0,
 	`deletedAt` timestamp,
 	`deletedBy` int,
@@ -3896,7 +3982,7 @@ CREATE TABLE `meal_survey_submissions` (
 CREATE TABLE `meal_surveys` (
 	`id` int AUTO_INCREMENT NOT NULL,
 	`organizationId` int NOT NULL,
-	`operatingUnitId` int,
+	`operatingUnitId` int NOT NULL,
 	`projectId` int,
 	`surveyCode` varchar(50) NOT NULL,
 	`title` varchar(255) NOT NULL,
@@ -4970,9 +5056,10 @@ CREATE TABLE `purchase_request_line_items` (
 	`unit` varchar(50) DEFAULT 'Piece',
 	`unitPrice` decimal(15,2) DEFAULT '0',
 	`totalPrice` decimal(15,2) DEFAULT '0',
-	`recurrence` varchar(50) DEFAULT 'one-time',
+	`recurrence` int DEFAULT 1,
 	`createdAt` timestamp NOT NULL DEFAULT (now()),
 	`updatedAt` timestamp NOT NULL DEFAULT (now()) ON UPDATE CURRENT_TIMESTAMP,
+	`deletedAt` timestamp,
 	CONSTRAINT `purchase_request_line_items_id` PRIMARY KEY(`id`)
 );
 --> statement-breakpoint
@@ -5031,10 +5118,20 @@ CREATE TABLE `purchase_requests` (
 	`deletedBy` int,
 	`createdBy` int,
 	`createdAt` timestamp NOT NULL DEFAULT (now()),
+	`submittedAt` timestamp,
 	`updatedAt` timestamp NOT NULL DEFAULT (now()) ON UPDATE CURRENT_TIMESTAMP,
 	`serviceType` varchar(50),
 	`serviceTypeOther` varchar(255),
 	`categoryLegacy` varchar(50),
+	`logisticsSignerName` varchar(255),
+	`logisticsSignerTitle` varchar(255),
+	`logisticsSignatureDataUrl` longtext,
+	`financeSignerName` varchar(255),
+	`financeSignerTitle` varchar(255),
+	`financeSignatureDataUrl` longtext,
+	`pmSignerName` varchar(255),
+	`pmSignerTitle` varchar(255),
+	`pmSignatureDataUrl` longtext,
 	CONSTRAINT `purchase_requests_id` PRIMARY KEY(`id`)
 );
 --> statement-breakpoint
@@ -6741,6 +6838,12 @@ ALTER TABLE `bom_approval_signatures` ADD CONSTRAINT `bom_approval_signatures_bo
 ALTER TABLE `bom_approval_signatures` ADD CONSTRAINT `bom_approval_signatures_organizationId_organizations_id_fk` FOREIGN KEY (`organizationId`) REFERENCES `organizations`(`id`) ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE `bom_approval_signatures` ADD CONSTRAINT `bom_approval_signatures_operatingUnitId_operating_units_id_fk` FOREIGN KEY (`operatingUnitId`) REFERENCES `operating_units`(`id`) ON DELETE set null ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE `bom_approval_signatures` ADD CONSTRAINT `bom_approval_signatures_signedByUserId_users_id_fk` FOREIGN KEY (`signedByUserId`) REFERENCES `users`(`id`) ON DELETE set null ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE `budget_analysis_expenses` ADD CONSTRAINT `budget_analysis_expenses_budgetId_budgets_id_fk` FOREIGN KEY (`budgetId`) REFERENCES `budgets`(`id`) ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE `budget_analysis_expenses` ADD CONSTRAINT `budget_analysis_expenses_budgetLineId_budget_lines_id_fk` FOREIGN KEY (`budgetLineId`) REFERENCES `budget_lines`(`id`) ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE `budget_analysis_expenses` ADD CONSTRAINT `budget_analysis_expenses_organizationId_organizations_id_fk` FOREIGN KEY (`organizationId`) REFERENCES `organizations`(`id`) ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE `budget_analysis_expenses` ADD CONSTRAINT `budget_analysis_expenses_deletedBy_users_id_fk` FOREIGN KEY (`deletedBy`) REFERENCES `users`(`id`) ON DELETE set null ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE `budget_analysis_expenses` ADD CONSTRAINT `budget_analysis_expenses_createdBy_users_id_fk` FOREIGN KEY (`createdBy`) REFERENCES `users`(`id`) ON DELETE set null ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE `budget_analysis_expenses` ADD CONSTRAINT `budget_analysis_expenses_updatedBy_users_id_fk` FOREIGN KEY (`updatedBy`) REFERENCES `users`(`id`) ON DELETE set null ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE `budget_items` ADD CONSTRAINT `budget_items_projectId_projects_id_fk` FOREIGN KEY (`projectId`) REFERENCES `projects`(`id`) ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE `budget_items` ADD CONSTRAINT `budget_items_organizationId_organizations_id_fk` FOREIGN KEY (`organizationId`) REFERENCES `organizations`(`id`) ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE `budget_items` ADD CONSTRAINT `budget_items_activityId_activities_id_fk` FOREIGN KEY (`activityId`) REFERENCES `activities`(`id`) ON DELETE set null ON UPDATE no action;--> statement-breakpoint
@@ -6935,6 +7038,7 @@ ALTER TABLE `purchase_order_line_items` ADD CONSTRAINT `purchase_order_line_item
 ALTER TABLE `purchase_order_line_items` ADD CONSTRAINT `purchase_order_line_items_organizationId_organizations_id_fk` FOREIGN KEY (`organizationId`) REFERENCES `organizations`(`id`) ON DELETE set null ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE `purchase_order_line_items` ADD CONSTRAINT `purchase_order_line_items_operatingUnitId_operating_units_id_fk` FOREIGN KEY (`operatingUnitId`) REFERENCES `operating_units`(`id`) ON DELETE set null ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE `purchase_order_line_items` ADD CONSTRAINT `purchase_order_line_items_deletedBy_users_id_fk` FOREIGN KEY (`deletedBy`) REFERENCES `users`(`id`) ON DELETE set null ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE `purchase_request_line_items` ADD CONSTRAINT `purchase_request_line_items_purchaseRequestId_purchase_requests_id_fk` FOREIGN KEY (`purchaseRequestId`) REFERENCES `purchase_requests`(`id`) ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE `quotation_analysis_audit_log` ADD CONSTRAINT `quotation_analysis_audit_log_quotationAnalysisId_quotation_analyses_id_fk` FOREIGN KEY (`quotationAnalysisId`) REFERENCES `quotation_analyses`(`id`) ON DELETE set null ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE `quotation_analysis_audit_log` ADD CONSTRAINT `quotation_analysis_audit_log_changedBy_users_id_fk` FOREIGN KEY (`changedBy`) REFERENCES `users`(`id`) ON DELETE set null ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE `quotation_analysis_line_items` ADD CONSTRAINT `quotation_analysis_line_items_quotationAnalysisId_quotation_analyses_id_fk` FOREIGN KEY (`quotationAnalysisId`) REFERENCES `quotation_analyses`(`id`) ON DELETE set null ON UPDATE no action;--> statement-breakpoint
@@ -7099,6 +7203,11 @@ CREATE INDEX `idx_bas_verification` ON `bidder_acknowledgement_signatures` (`ver
 CREATE INDEX `idx_bwc_org` ON `blacklist_workflow_config` (`organizationId`);--> statement-breakpoint
 CREATE INDEX `idx_bom_sig_bom` ON `bom_approval_signatures` (`bomId`);--> statement-breakpoint
 CREATE INDEX `idx_bom_sig_org` ON `bom_approval_signatures` (`organizationId`);--> statement-breakpoint
+CREATE INDEX `idx_budget_id` ON `budget_analysis_expenses` (`budgetId`);--> statement-breakpoint
+CREATE INDEX `idx_budget_line_id` ON `budget_analysis_expenses` (`budgetLineId`);--> statement-breakpoint
+CREATE INDEX `idx_organization_id` ON `budget_analysis_expenses` (`organizationId`);--> statement-breakpoint
+CREATE INDEX `idx_expense_date` ON `budget_analysis_expenses` (`expenseDate`);--> statement-breakpoint
+CREATE INDEX `idx_status` ON `budget_analysis_expenses` (`status`);--> statement-breakpoint
 CREATE INDEX `unique_line_code` ON `budget_lines` (`budgetId`,`lineCode`);--> statement-breakpoint
 CREATE INDEX `unique_month_allocation` ON `budget_monthly_allocations` (`budgetLineId`,`allocationMonth`);--> statement-breakpoint
 CREATE INDEX `budgetCode` ON `budgets` (`budgetCode`);--> statement-breakpoint
@@ -7239,7 +7348,11 @@ CREATE INDEX `idx_parent` ON `gl_accounts` (`parentAccountId`);--> statement-bre
 CREATE INDEX `idx_type` ON `gl_accounts` (`accountType`);--> statement-breakpoint
 CREATE INDEX `idx_gl_entity` ON `gl_posting_events` (`entityType`,`entityId`);--> statement-breakpoint
 CREATE INDEX `idx_gl_org` ON `gl_posting_events` (`organizationId`);--> statement-breakpoint
+CREATE INDEX `attendance_period_unique` ON `hr_attendance_periods` (`organizationId`,`operatingUnitId`,`periodMonth`,`periodYear`);--> statement-breakpoint
 CREATE INDEX `hr_attendance_records_employeeId_date_unique` ON `hr_attendance_records` (`employeeId`,`date`);--> statement-breakpoint
+CREATE INDEX `idx_hr_attendance_source` ON `hr_attendance_records` (`source`);--> statement-breakpoint
+CREATE INDEX `idx_hr_attendance_approvalStatus` ON `hr_attendance_records` (`approvalStatus`);--> statement-breakpoint
+CREATE INDEX `idx_hr_attendance_staffId` ON `hr_attendance_records` (`staffId`);--> statement-breakpoint
 CREATE INDEX `hr_leave_balances_employeeId_year_leaveType_unique` ON `hr_leave_balances` (`employeeId`,`year`,`leaveType`);--> statement-breakpoint
 CREATE INDEX `hr_payroll_records_employeeId_payrollMonth_payrollYear_unique` ON `hr_payroll_records` (`employeeId`,`payrollMonth`,`payrollYear`);--> statement-breakpoint
 CREATE INDEX `idx_checklist_monitoring` ON `implementation_checklist` (`monitoring_id`);--> statement-breakpoint
@@ -7267,6 +7380,15 @@ CREATE INDEX `idx_project` ON `journal_lines` (`projectId`);--> statement-breakp
 CREATE INDEX `idx_grant` ON `journal_lines` (`grantId`);--> statement-breakpoint
 CREATE INDEX `landing_settings_organizationId_unique` ON `landing_settings` (`organizationId`);--> statement-breakpoint
 CREATE INDEX `dqaCode` ON `meal_dqa_visits` (`dqaCode`);--> statement-breakpoint
+CREATE INDEX `idx_meal_indicator_templates_scope_deleted` ON `meal_indicator_templates` (`organizationId`,`operatingUnitId`,`isDeleted`);--> statement-breakpoint
+CREATE INDEX `idx_meal_survey_questions_scope_deleted` ON `meal_survey_questions` (`organizationId`,`operatingUnitId`,`isDeleted`);--> statement-breakpoint
+CREATE INDEX `idx_meal_survey_questions_survey_scope` ON `meal_survey_questions` (`surveyId`,`organizationId`,`operatingUnitId`);--> statement-breakpoint
+CREATE INDEX `idx_meal_survey_questions_project` ON `meal_survey_questions` (`projectId`,`organizationId`);--> statement-breakpoint
+CREATE INDEX `idx_meal_survey_standards_scope_deleted` ON `meal_survey_standards` (`organizationId`,`operatingUnitId`,`isDeleted`);--> statement-breakpoint
+CREATE INDEX `idx_meal_survey_submissions_scope_deleted` ON `meal_survey_submissions` (`organizationId`,`operatingUnitId`,`isDeleted`);--> statement-breakpoint
+CREATE INDEX `idx_meal_survey_submissions_survey_scope` ON `meal_survey_submissions` (`surveyId`,`organizationId`,`operatingUnitId`);--> statement-breakpoint
+CREATE INDEX `idx_meal_surveys_scope_deleted` ON `meal_surveys` (`organizationId`,`operatingUnitId`,`isDeleted`);--> statement-breakpoint
+CREATE INDEX `idx_meal_surveys_scope` ON `meal_surveys` (`organizationId`,`operatingUnitId`);--> statement-breakpoint
 CREATE INDEX `microsoft_integrations_organizationId_unique` ON `microsoft_integrations` (`organizationId`);--> statement-breakpoint
 CREATE INDEX `idx_mitigation_attachments_action` ON `mitigation_action_attachments` (`actionId`);--> statement-breakpoint
 CREATE INDEX `idx_mitigation_comments_action` ON `mitigation_action_comments` (`actionId`);--> statement-breakpoint
