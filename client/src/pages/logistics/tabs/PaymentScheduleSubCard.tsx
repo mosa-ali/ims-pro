@@ -81,6 +81,8 @@ const translations = {
     remaining: "Remaining",
     warning100: "Total allocation must equal 100%",
     orderIndex: "Order",
+    amountExceedsContractValue:"Amount Exceeds Contract Value",
+    contractValue: "Contract Value"
   },
   ar: {
     title: "جدول الدفعات",
@@ -113,6 +115,8 @@ const translations = {
     remaining: "المتبقي",
     warning100: "يجب أن يساوي إجمالي التخصيص 100%",
     orderIndex: "الترتيب",
+    amountExceedsContractValue: "المبلغ يتجاوز قيمة العقد",
+    contractValue: "قيمة العقد"
   },
 };
 
@@ -141,7 +145,15 @@ export default function PaymentScheduleSubCard({ contractId }: PaymentScheduleSu
     { contractId },
     { enabled: contractId > 0 }
   );
+      const { data: contract } =
+      trpc.procurementPhaseA.contracts.getById.useQuery(
+        { id: contractId },
+        { enabled: contractId > 0 }
+      );
 
+    const contractValue = Number(
+      contract?.contractValue || 0
+    );
   // Mutations
   const createMut = trpc.procurementPhaseA.contractPaymentSchedule.create.useMutation({
     onSuccess: () => {
@@ -170,7 +182,40 @@ export default function PaymentScheduleSubCard({ contractId }: PaymentScheduleSu
     },
     onError: (err) => toast.error(err.message),
   });
+    const calculatePaymentAmount = (
+  percentage: string,
+  manualAmount?: string
+) => {
+  const pct = Number(percentage || 0);
+  const amt = Number(manualAmount || 0);
 
+  // Auto calculate from percentage
+  if (pct > 0) {
+    const calculated =
+      (contractValue * pct) / 100;
+
+    if (calculated > contractValue) {
+      toast.error(
+        t.amountExceedsContractValue ||
+        "Amount exceeds contract value"
+      );
+      return;
+    }
+
+    setForm((prev) => ({
+      ...prev,
+      amount: calculated.toFixed(2),
+    }));
+  }
+
+  // Manual validation
+  if (amt > contractValue) {
+    toast.error(
+      t.amountExceedsContractValue ||
+      "Amount exceeds contract value"
+    );
+  }
+};
   const resetForm = () => {
     setEditingId(null);
     setForm({
@@ -244,17 +289,19 @@ export default function PaymentScheduleSubCard({ contractId }: PaymentScheduleSu
   };
 
   const handleEdit = (entry: any) => {
-    setEditingId(entry.id);
-    setForm({
-      paymentType: entry.paymentType,
-      description: entry.description || "",
-      percentage: entry.percentage || "",
-      amount: entry.amount || "",
-      dueDate: entry.dueDate ? new Date(entry.dueDate).toISOString().split("T")[0] : "",
-      orderIndex: entry.orderIndex?.toString() || "0",
-    });
-    setShowDialog(true);
-  };
+  setEditingId(entry.id);
+
+  setForm({
+    paymentType: entry.paymentType || "milestone",
+    description: entry.description || "",
+    percentage: entry.paymentPercentage || "",
+    amount: entry.paymentAmount || "",
+    dueDate: "",
+    orderIndex: entry.orderIndex?.toString() || "0",
+  });
+
+  setShowDialog(true);
+};
 
   const getTypeLabel = (type: string) => {
     const labels: Record<string, string> = {
@@ -278,13 +325,25 @@ export default function PaymentScheduleSubCard({ contractId }: PaymentScheduleSu
   };
 
   // Calculate totals
-  const totalPercentage = useMemo(() => {
-    return entries?.reduce((sum: number, e: any) => sum + parseFloat(e.percentage || "0"), 0) || 0;
-  }, [entries]);
+    const totalPercentage = useMemo(() => {
+      return (
+        entries?.reduce(
+          (sum: number, e: any) =>
+            sum + Number(e.paymentPercentage || 0),
+          0
+        ) || 0
+      );
+    }, [entries]);
 
-  const totalAmount = useMemo(() => {
-    return entries?.reduce((sum: number, e: any) => sum + parseFloat(e.amount || "0"), 0) || 0;
-  }, [entries]);
+    const totalAmount = useMemo(() => {
+      return (
+        entries?.reduce(
+          (sum: number, e: any) =>
+            sum + Number(e.paymentAmount || 0),
+          0
+        ) || 0
+      );
+    }, [entries]);
 
   if (isLoading) {
     return <Skeleton className="h-64 w-full" />;
@@ -354,15 +413,23 @@ export default function PaymentScheduleSubCard({ contractId }: PaymentScheduleSu
                     <Badge variant="outline">{getTypeLabel(entry.paymentType)}</Badge>
                   </TableCell>
                   <TableCell className="max-w-[200px] truncate">{entry.description || "-"}</TableCell>
-                  <TableCell className="font-semibold">{entry.percentage}%</TableCell>
-                  <TableCell className="font-semibold">${parseFloat(entry.amount || "0").toLocaleString()}</TableCell>
+                  <TableCell className="font-semibold">
+                    {entry.paymentPercentage}%
+                  </TableCell>
+
+                  <TableCell className="font-semibold">
+                    $
+                    {Number(
+                      entry.paymentAmount || 0
+                    ).toLocaleString()}
+                  </TableCell>
                   <TableCell>
                     {entry.dueDate ? new Date(entry.dueDate).toLocaleDateString() : "-"}
                   </TableCell>
                   <TableCell>{getStatusBadge(entry.status)}</TableCell>
                   <TableCell>
                     <div className="flex items-center justify-center gap-1">
-                      {entry.status === "scheduled" && (
+                      {entry.status === "pending" && (
                         <>
                           <Button variant="ghost" size="sm" onClick={() => handleEdit(entry)}>
                             <Edit className="w-3.5 h-3.5" />
@@ -433,7 +500,19 @@ export default function PaymentScheduleSubCard({ contractId }: PaymentScheduleSu
                 <Input
                   type="number"
                   value={form.percentage}
-                  onChange={(e) => setForm({ ...form, percentage: e.target.value })}
+                  onChange={(e) => {
+                    const value = e.target.value;
+
+                    setForm({
+                      ...form,
+                      percentage: value
+                    });
+
+                    calculatePaymentAmount(
+                      value,
+                      form.amount
+                    );
+                  }}
                   placeholder="25"
                   min="0"
                   max="100"
@@ -444,7 +523,22 @@ export default function PaymentScheduleSubCard({ contractId }: PaymentScheduleSu
                 <Input
                   type="number"
                   value={form.amount}
-                  onChange={(e) => setForm({ ...form, amount: e.target.value })}
+                  onChange={(e) => {
+                    const value = e.target.value;
+
+                    if (Number(value) > contractValue) {
+                      toast.error(
+                        t.amountExceedsContractValue ||
+                        "Amount exceeds contract value"
+                      );
+                      return;
+                    }
+
+                    setForm({
+                      ...form,
+                      amount: value
+                    });
+                  }}
                   placeholder="0.00"
                 />
               </div>

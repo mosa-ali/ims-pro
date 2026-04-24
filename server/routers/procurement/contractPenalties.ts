@@ -122,12 +122,35 @@ export const contractPenaltiesRouter = router({
         }
       }
 
-      const penaltyPct = parseFloat(input.penaltyPercentage);
-      const maxLimitPct = parseFloat(input.maxPenaltyLimitPct);
-      let calculatedAmount = (baseAmount * penaltyPct) / 100;
+      let calculatedAmount = 0;
+      const penaltyPct = parseFloat(input.penaltyPercentage || "0");
+      const maxLimitPct = parseFloat(input.maxPenaltyLimitPct || "10");
+
+      if (input.penaltyType === "delay") {
+        // Delay penalties = percentage logic
+        calculatedAmount = (baseAmount * penaltyPct) / 100;
+
+      } else {
+        // Quality / Compliance = fixed amount directly
+        calculatedAmount = penaltyPct;
+      }
+
+      // Apply max cap
       const maxAmount = (baseAmount * maxLimitPct) / 100;
-      if (calculatedAmount > maxAmount) {
+
+      if (
+        input.penaltyType === "delay" &&
+        calculatedAmount > maxAmount
+      ) {
         calculatedAmount = maxAmount;
+      }
+
+      // Prevent penalty > contract value
+      if (calculatedAmount > baseAmount) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "Penalty amount cannot exceed contract value"
+        });
       }
 
       const [result] = await db
@@ -199,7 +222,14 @@ export const contractPenaltiesRouter = router({
           }
           const pct = parseFloat(input.penaltyPercentage || penalty.penaltyPercentage || '0');
           const maxPct = parseFloat(input.maxPenaltyLimitPct || penalty.maxPenaltyLimitPct || '10');
-          let calc = (baseAmount * pct) / 100;
+          let calc = 0;
+            if (
+              (input.penaltyType || penalty.penaltyType) === "delay"
+            ) {
+              calc = (baseAmount * pct) / 100;
+            } else {
+              calc = pct;
+            }
           const maxAmt = (baseAmount * maxPct) / 100;
           if (calc > maxAmt) calc = maxAmt;
           calculatedAmount = calc.toFixed(2);

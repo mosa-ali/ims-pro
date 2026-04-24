@@ -103,9 +103,15 @@ export const contractRetentionRouter = router({
           retentionEnabled: 1,
           retentionPercentage: input.retentionPercentage,
           retentionBasis: input.retentionBasis,
+
+          // maximum retention allowed
           maxRetentionAmount: maxRetentionAmount.toFixed(2),
-          totalRetained: '0.00',
+
+          // actual retained amount (THIS WAS WRONG)
+          totalRetained: maxRetentionAmount.toFixed(2),
+
           totalReleased: '0.00',
+
           releaseCondition: input.releaseCondition,
           releaseType: input.releaseType,
           status: 'active',

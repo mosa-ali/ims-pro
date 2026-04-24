@@ -3825,6 +3825,9 @@ export interface Translations {
     contractPendingApproval: string;
     fillAllRequiredFields: string;
     addAtLeastOneMilestone: string;
+    penaltyPercentage: string;
+    actions: string;
+    waivedByManager: string;
     prNotFoundTitle: string;
     goBack: string;
     cbaRequiredDesc: string;
@@ -14129,6 +14132,9 @@ export const en: Translations = {
  process: 'Process',
  prNum: 'PR Number',
  reqDate: 'Request Date',
+ penaltyPercentage: 'Penalty Percentage',
+ actions: 'Actions',
+ waivedByManager: 'Waived By Manager',
  requester: 'Requester',
  urgency: 'Urgency',
  status: 'Status',
@@ -27983,6 +27989,9 @@ export const ar: Translations = {
     fixedAmount: 'مبلغ ثابت',
     goToSac: 'الانتقال لإدارة شهادات القبول',
     linkedMilestone: 'المرحلة المرتبطة',
+    penaltyPercentage: 'نسبة الغرامة',
+    actions: 'الاجراءات',
+    waivedByManager: 'تم التنازل عنه من قبل المدير',  
     lumpSum: 'مبلغ إجمالي',
     milestoneDesc: 'الوصف',
     milestoneDueDate: 'تاريخ الاستحقاق',

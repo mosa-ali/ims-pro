@@ -235,7 +235,7 @@ export default function RetentionSubCard({ contractId }: RetentionSubCardProps) 
     setForm({
       milestoneLabel: term.remarks || "" || "",
       retentionPercentage: term.retentionPercentage || "",
-      retentionHeld: term.maxRetentionAmount || "",
+      retentionHeld: term.totalRetained || "",
       releaseCondition: term.releaseCondition || "",
       releaseDate: term.releaseDate ? new Date(term.releaseDate).toISOString().split("T")[0] : "",
     });
@@ -355,7 +355,9 @@ export default function RetentionSubCard({ contractId }: RetentionSubCardProps) 
                   </TableCell>
 
                   <TableCell className="max-w-[200px] truncate">
-                    {term.releaseCondition || "-"}
+                    {term.releaseCondition
+                      ?.replaceAll("_", " ")
+                      .replace(/\b\w/g, (c: string) => c.toUpperCase()) || "-"}
                   </TableCell>
 
                   <TableCell>

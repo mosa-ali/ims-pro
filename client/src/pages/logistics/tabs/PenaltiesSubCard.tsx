@@ -48,6 +48,7 @@ import {
   DollarSign,
 } from "lucide-react";
 import { toast } from "sonner";
+import { useTranslation } from "@/i18n/useTranslation";
 
 const translations = {
   en: {
@@ -85,6 +86,9 @@ const translations = {
     appliedAmount: "Applied Amount",
     pendingAmount: "Pending Amount",
     fixedAmount: "Fixed Amount",
+    penaltyPercentage: 'Penalty Percentage',
+    actions: 'Actions',
+    waivedByManager: 'Waived By Manager',
   },
   ar: {
     title: "إدارة الغرامات",
@@ -96,6 +100,9 @@ const translations = {
     delay: "غرامة تأخير",
     quality: "غرامة جودة",
     compliance: "غرامة امتثال",
+    penaltyPercentage: 'نسبة الغرامة',
+    actions: 'الاجراءات',
+    waivedByManager: 'تم التنازل عنه من قبل المدير',  
     other: "أخرى",
     description_: "الوصف",
     ratePerDay: "المعدل اليومي",
@@ -136,78 +143,148 @@ export default function PenaltiesSubCard({ contractId }: PenaltiesSubCardProps) 
   const [showDialog, setShowDialog] = useState(false);
   const [editingId, setEditingId] = useState<number | null>(null);
   const [form, setForm] = useState({
-    penaltyType: "delay" as string,
+    penaltyType: "delay",
     description: "",
     ratePerDay: "",
     maxPercentage: "",
     daysDelayed: "",
     fixedAmount: "",
+    penaltyPercentage: "",
+    calculatedAmount: "",
+    contractValue: ""
   });
 
   // Queries
-  const { data: penalties, isLoading, refetch } = trpc.procurementPhaseA.contractPenalties.list.useQuery(
-    { contractId },
-    { enabled: contractId > 0 }
-  );
+    const {
+      data: penalties,
+      isLoading,
+      refetch
+    } = trpc.procurementPhaseA.contractPenalties.list.useQuery(
+      { contractId },
+      { enabled: contractId > 0 }
+    );
 
-  const utils = trpc.useUtils();
+    const {
+      data: contract
+    } = trpc.procurementPhaseA.contracts.getById.useQuery(
+      { id: contractId },
+      { enabled: contractId > 0 }
+    );
 
-  // Mutations
-  const createMut = trpc.procurementPhaseA.contractPenalties.create.useMutation({
-    onSuccess: () => {
-      toast.success(t.penaltyCreated);
-      setShowDialog(false);
-      resetForm();
-      refetch();
-    },
-    onError: (err) => toast.error(err.message),
-  });
+    // Contract total value
+    const contractValue = Number(
+      contract?.contractValue || 0
+    );
 
-  const updateMut = trpc.procurementPhaseA.contractPenalties.update.useMutation({
-    onSuccess: () => {
-      toast.success(t.penaltyUpdated);
-      setShowDialog(false);
-      resetForm();
-      refetch();
-    },
-    onError: (err) => toast.error(err.message),
-  });
+    const utils = trpc.useUtils();
 
-  const deleteMut = trpc.procurementPhaseA.contractPenalties.delete.useMutation({
-    onSuccess: () => {
-      toast.success(t.penaltyDeleted);
-      refetch();
-    },
-    onError: (err) => toast.error(err.message),
-  });
 
-  const applyMut = trpc.procurementPhaseA.contractPenalties.applyPenalty.useMutation({
-    onSuccess: () => {
-      toast.success(t.penaltyApplied);
-      refetch();
-    },
-    onError: (err) => toast.error(err.message),
-  });
+    // Mutations
+    const createMut =
+      trpc.procurementPhaseA.contractPenalties.create.useMutation({
+        onSuccess: () => {
+          toast.success(t.penaltyCreated);
+          setShowDialog(false);
+          resetForm();
+          refetch();
+        },
+        onError: (err) => toast.error(err.message),
+      });
 
-  const waiveMut = trpc.procurementPhaseA.contractPenalties.waive.useMutation({
-    onSuccess: () => {
-      toast.success(t.penaltyWaived);
-      refetch();
-    },
-    onError: (err) => toast.error(err.message),
-  });
+    const updateMut =
+      trpc.procurementPhaseA.contractPenalties.update.useMutation({
+        onSuccess: () => {
+          toast.success(t.penaltyUpdated);
+          setShowDialog(false);
+          resetForm();
+          refetch();
+        },
+        onError: (err) => toast.error(err.message),
+      });
 
-  const resetForm = () => {
-    setEditingId(null);
-    setForm({
-      penaltyType: "delay",
-      description: "",
-      ratePerDay: "",
-      maxPercentage: "",
-      daysDelayed: "",
-      fixedAmount: "",
-    });
-  };
+    const deleteMut =
+      trpc.procurementPhaseA.contractPenalties.delete.useMutation({
+        onSuccess: () => {
+          toast.success(t.penaltyDeleted);
+          refetch();
+        },
+        onError: (err) => toast.error(err.message),
+      });
+
+    const applyMut =
+      trpc.procurementPhaseA.contractPenalties.applyPenalty.useMutation({
+        onSuccess: () => {
+          toast.success(t.penaltyApplied);
+          refetch();
+        },
+        onError: (err) => toast.error(err.message),
+      });
+
+    const waiveMut =
+      trpc.procurementPhaseA.contractPenalties.waive.useMutation({
+        onSuccess: () => {
+          toast.success(t.penaltyWaived);
+          refetch();
+        },
+        onError: (err) => toast.error(err.message),
+      });
+
+
+    // Reset form
+    const resetForm = () => {
+      setEditingId(null);
+
+      setForm({
+        penaltyType: "delay",
+        description: "",
+        ratePerDay: "",
+        maxPercentage: "",
+        daysDelayed: "",
+        fixedAmount: "",
+        penaltyPercentage: "",
+        calculatedAmount: "",
+        contractValue: contractValue.toString()
+      });
+    };
+
+    // Auto calculation helper
+    const calculatePenaltyAmount = (
+      percentage: string,
+      amount: string
+    ) => {
+      const pct = Number(percentage || 0);
+      const amt = Number(amount || 0);
+
+      // Percentage-based calculation
+      if (pct > 0) {
+        const calculated =
+          (contractValue * pct) / 100;
+
+        if (calculated > contractValue) {
+          toast.error(
+            isRTL
+              ? "قيمة الغرامة تتجاوز قيمة العقد"
+              : "Penalty exceeds contract value"
+          );
+          return;
+        }
+
+        setForm((prev) => ({
+          ...prev,
+          fixedAmount: calculated.toFixed(2),
+          calculatedAmount: calculated.toFixed(2),
+        }));
+      }
+
+      // Manual amount validation
+      if (amt > contractValue) {
+        toast.error(
+          isRTL
+            ? "مبلغ الغرامة أكبر من قيمة العقد"
+            : "Penalty amount cannot exceed contract value"
+        );
+      }
+    };
 
   const handleSave = () => {
   // Description validation
@@ -293,13 +370,36 @@ export default function PenaltiesSubCard({ contractId }: PenaltiesSubCardProps) 
   const handleEdit = (penalty: any) => {
     setEditingId(penalty.id);
     setForm({
-      penaltyType: penalty.penaltyType,
-      description: penalty.penaltyDescription || "",
-      ratePerDay: penalty.penaltyPercentage || "",
-      maxPercentage: penalty.maxPenaltyLimitPct || "",
-      daysDelayed: penalty.delayDaysThreshold?.toString() || "",
-      fixedAmount: penalty.fixedAmount || "",
-    });
+        penaltyType: penalty.penaltyType,
+        description: penalty.penaltyDescription || "",
+
+        ratePerDay:
+          penalty.penaltyType === "delay"
+            ? penalty.penaltyPercentage || ""
+            : "",
+
+        maxPercentage:
+          penalty.maxPenaltyLimitPct || "",
+
+        daysDelayed:
+          penalty.delayDaysThreshold?.toString() || "",
+
+        fixedAmount:
+          penalty.penaltyType !== "delay"
+            ? penalty.calculatedAmount || ""
+            : "",
+
+        penaltyPercentage:
+          penalty.penaltyType !== "delay"
+            ? penalty.penaltyPercentage || ""
+            : "",
+
+        calculatedAmount:
+          penalty.calculatedAmount || "",
+
+        contractValue:
+          contractValue.toString()
+      });
     setShowDialog(true);
   };
 
@@ -329,225 +429,236 @@ export default function PenaltiesSubCard({ contractId }: PenaltiesSubCardProps) 
     );
   };
 
-  // Summary calculations
-  const totalAmount = penalties?.reduce((sum: number, p: any) => sum + parseFloat(p.calculatedAmount || "0"), 0) || 0;
-  const appliedAmount = penalties?.filter((p: any) => p.status === "applied").reduce((sum: number, p: any) => sum + parseFloat(p.calculatedAmount || "0"), 0) || 0;
-  const pendingAmount = penalties?.filter((p: any) => p.status === "pending").reduce((sum: number, p: any) => sum + parseFloat(p.calculatedAmount || "0"), 0) || 0;
+// Summary calculations
+    const totalAmount =
+      penalties?.reduce(
+        (sum: number, p: any) =>
+          sum + Number(p.calculatedAmount || 0),
+        0
+      ) || 0;
 
-  if (isLoading) {
-    return <Skeleton className="h-64 w-full" />;
-  }
+    const appliedAmount =
+      penalties
+        ?.filter((p: any) => p.status === "applied")
+        .reduce(
+          (sum: number, p: any) =>
+            sum + Number(p.calculatedAmount || 0),
+          0
+        ) || 0;
 
-  return (
-    <div className="space-y-4">
-      {/* Summary Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <Card className="border-l-4 border-l-orange-500">
-          <CardContent className="pt-4 pb-3">
-            <p className="text-xs text-muted-foreground">{t.totalPenalties}</p>
-            <p className="text-lg font-bold">${totalAmount.toLocaleString()}</p>
-          </CardContent>
-        </Card>
-        <Card className="border-l-4 border-l-red-500">
-          <CardContent className="pt-4 pb-3">
-            <p className="text-xs text-muted-foreground">{t.appliedAmount}</p>
-            <p className="text-lg font-bold text-red-600">${appliedAmount.toLocaleString()}</p>
-          </CardContent>
-        </Card>
-        <Card className="border-l-4 border-l-yellow-500">
-          <CardContent className="pt-4 pb-3">
-            <p className="text-xs text-muted-foreground">{t.pendingAmount}</p>
-            <p className="text-lg font-bold text-yellow-600">${pendingAmount.toLocaleString()}</p>
-          </CardContent>
-        </Card>
-      </div>
+    const pendingAmount =
+      penalties
+        ?.filter((p: any) =>
+          ["draft", "pending"].includes(p.status)
+        )
+        .reduce(
+          (sum: number, p: any) =>
+            sum + Number(p.calculatedAmount || 0),
+          0
+        ) || 0;
 
-      {/* Header with Add button */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <AlertTriangle className="w-5 h-5 text-orange-600" />
-          <h3 className="text-lg font-semibold">{t.title}</h3>
+    if (isLoading) {
+      return <Skeleton className="h-64 w-full" />;
+    }
+
+    return (
+      <div className="space-y-4">
+        {/* Summary Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <Card className="border-l-4 border-l-orange-500">
+            <CardContent className="pt-4 pb-3">
+              <p className="text-xs text-muted-foreground">
+                {t.totalPenalties}
+              </p>
+              <p className="text-lg font-bold">
+                ${totalAmount.toLocaleString()}
+              </p>
+            </CardContent>
+          </Card>
+
+          <Card className="border-l-4 border-l-red-500">
+            <CardContent className="pt-4 pb-3">
+              <p className="text-xs text-muted-foreground">
+                {t.appliedAmount}
+              </p>
+              <p className="text-lg font-bold text-red-600">
+                ${appliedAmount.toLocaleString()}
+              </p>
+            </CardContent>
+          </Card>
+
+          <Card className="border-l-4 border-l-yellow-500">
+            <CardContent className="pt-4 pb-3">
+              <p className="text-xs text-muted-foreground">
+                {t.pendingAmount}
+              </p>
+              <p className="text-lg font-bold text-yellow-600">
+                ${pendingAmount.toLocaleString()}
+              </p>
+            </CardContent>
+          </Card>
         </div>
-        <Button onClick={() => { resetForm(); setShowDialog(true); }} className="gap-2" size="sm">
-          <Plus className="w-4 h-4" />
-          {t.addPenalty}
-        </Button>
-      </div>
 
-      {/* Penalties Table */}
-      {!penalties || penalties.length === 0 ? (
-        <Card>
-          <CardContent className="py-12 text-center">
-            <AlertTriangle className="w-12 h-12 mx-auto mb-3 text-muted-foreground/30" />
-            <p className="text-muted-foreground">{t.noPenalties}</p>
-          </CardContent>
-        </Card>
-      ) : (
-        <Card>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>{t.penaltyType}</TableHead>
-                <TableHead>{t.description_}</TableHead>
-                <TableHead>{t.ratePerDay}</TableHead>
-                <TableHead>{t.daysDelayed}</TableHead>
-                <TableHead>{t.calculatedAmount}</TableHead>
-                <TableHead>{t.status}</TableHead>
-                <TableHead className="text-center">{isRTL ? "الإجراءات" : "Actions"}</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {penalties.map((penalty: any) => (
-                <TableRow key={penalty.id}>
-                  <TableCell>
-                    <Badge variant="outline">{getTypeLabel(penalty.penaltyType)}</Badge>
-                  </TableCell>
-                  <TableCell className="max-w-[200px] truncate">{penalty.penaltyDescription || "-"}</TableCell>
-                  <TableCell>{penalty.penaltyPercentage ? `$${penalty.penaltyPercentage}` : "-"}</TableCell>
-                  <TableCell>{penalty.delayDaysThreshold || "-"}</TableCell>
-                  <TableCell className="font-semibold">${parseFloat(penalty.calculatedAmount || "0").toLocaleString()}</TableCell>
-                  <TableCell>{getStatusBadge(penalty.status)}</TableCell>
-                  <TableCell>
-                    <div className="flex items-center justify-center gap-1">
-                      {penalty.status === "draft" && (
-                        <>
-                          <Button variant="ghost" size="sm" onClick={() => handleEdit(penalty)} title={t.editPenalty}>
-                            <Edit className="w-3.5 h-3.5" />
-                          </Button>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            className="text-red-600 hover:text-red-700"
-                            onClick={() => applyMut.mutate({ id: penalty.id })}
-                            title={t.applyPenalty}
-                          >
-                            <CheckCircle className="w-3.5 h-3.5" />
-                          </Button>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            className="text-gray-500"
-                            onClick={() =>
-                                waiveMut.mutate({
-                                  id: penalty.id,
-                                  remarks: isRTL
-                                    ? "تم التنازل بواسطة المدير"
-                                    : "Waived by manager"
+        {/* Header */}
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <AlertTriangle className="w-5 h-5 text-orange-600" />
+            <h3 className="text-lg font-semibold">
+              {t.title}
+            </h3>
+          </div>
+
+          <Button
+            onClick={() => {
+              resetForm();
+              setShowDialog(true);
+            }}
+            className="gap-2"
+            size="sm"
+          >
+            <Plus className="w-4 h-4" />
+            {t.addPenalty}
+          </Button>
+        </div>
+
+        {/* Penalties Table */}
+        {!penalties || penalties.length === 0 ? (
+          <Card>
+            <CardContent className="py-12 text-center">
+              <AlertTriangle className="w-12 h-12 mx-auto mb-3 text-muted-foreground/30" />
+              <p className="text-muted-foreground">
+                {t.noPenalties}
+              </p>
+            </CardContent>
+          </Card>
+        ) : (
+          <Card>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>{t.penaltyType}</TableHead>
+                  <TableHead>{t.description_}</TableHead>
+                  <TableHead>{t.penaltyPercentage}</TableHead>
+                  <TableHead>{t.daysDelayed}</TableHead>
+                  <TableHead>{t.calculatedAmount}</TableHead>
+                  <TableHead>{t.status}</TableHead>
+                  <TableHead className="text-center">
+                    {t.actions}
+                  </TableHead>
+                </TableRow>
+              </TableHeader>
+
+              <TableBody>
+                {penalties.map((penalty: any) => (
+                  <TableRow key={penalty.id}>
+                    <TableCell>
+                      <Badge variant="outline">
+                        {getTypeLabel(
+                          penalty.penaltyType
+                        )}
+                      </Badge>
+                    </TableCell>
+
+                    <TableCell className="max-w-[200px] truncate">
+                      {penalty.penaltyDescription || "-"}
+                    </TableCell>
+
+                    <TableCell>
+                      {penalty.penaltyPercentage
+                        ? `${penalty.penaltyPercentage}%`
+                        : "-"}
+                    </TableCell>
+
+                    <TableCell>
+                      {penalty.delayDaysThreshold || "-"}
+                    </TableCell>
+
+                    <TableCell className="font-semibold">
+                      $
+                      {Number(
+                        penalty.calculatedAmount || 0
+                      ).toLocaleString()}
+                    </TableCell>
+
+                    <TableCell>
+                      {getStatusBadge(
+                        penalty.status
+                      )}
+                    </TableCell>
+
+                    <TableCell>
+                      <div className="flex items-center justify-center gap-1">
+                        {penalty.status === "draft" && (
+                          <>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() =>
+                                handleEdit(penalty)
+                              }
+                              title={t.editPenalty}
+                            >
+                              <Edit className="w-3.5 h-3.5" />
+                            </Button>
+
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="text-red-600 hover:text-red-700"
+                              onClick={() =>
+                                applyMut.mutate({
+                                  id: penalty.id
                                 })
                               }
-                            title={t.waivePenalty}
-                          >
-                            <XCircle className="w-3.5 h-3.5" />
-                          </Button>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            className="text-red-500"
-                            onClick={() => {
-                              if (confirm(t.confirmDelete)) {
-                                deleteMut.mutate({ id: penalty.id });
-                              }
-                            }}
-                            title={t.delete}
-                          >
-                            <Trash2 className="w-3.5 h-3.5" />
-                          </Button>
-                        </>
-                      )}
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </Card>
-      )}
+                              title={t.applyPenalty}
+                            >
+                              <CheckCircle className="w-3.5 h-3.5" />
+                            </Button>
 
-      {/* Add/Edit Dialog */}
-      <Dialog open={showDialog} onOpenChange={(open) => { if (!open) { resetForm(); } setShowDialog(open); }}>
-        <DialogContent className="max-w-md">
-          <DialogHeader>
-            <DialogTitle>{editingId ? t.editPenalty : t.addPenalty}</DialogTitle>
-            <DialogDescription>
-              {isRTL ? "أدخل تفاصيل الغرامة" : "Enter penalty details"}
-            </DialogDescription>
-          </DialogHeader>
-          <div className="space-y-4">
-            <div>
-              <Label>{t.penaltyType} *</Label>
-              <Select value={form.penaltyType} onValueChange={(v) => setForm({ ...form, penaltyType: v })}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="delay">{t.delay}</SelectItem>
-                  <SelectItem value="quality">{t.quality}</SelectItem>
-                  <SelectItem value="compliance">{t.compliance}</SelectItem>
-                  <SelectItem value="other">{t.other}</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div>
-              <Label>{t.description_}</Label>
-              <Textarea
-                value={form.description}
-                onChange={(e) => setForm({ ...form, description: e.target.value })}
-                rows={2}
-              />
-            </div>
-            {form.penaltyType === "delay" ? (
-              <>
-                <div className="grid grid-cols-2 gap-3">
-                  <div>
-                    <Label>{t.ratePerDay}</Label>
-                    <Input
-                      type="number"
-                      value={form.ratePerDay}
-                      onChange={(e) => setForm({ ...form, ratePerDay: e.target.value })}
-                      placeholder="0.00"
-                    />
-                  </div>
-                  <div>
-                    <Label>{t.daysDelayed}</Label>
-                    <Input
-                      type="number"
-                      value={form.daysDelayed}
-                      onChange={(e) => setForm({ ...form, daysDelayed: e.target.value })}
-                      placeholder="0"
-                    />
-                  </div>
-                </div>
-                <div>
-                  <Label>{t.maxPercentage}</Label>
-                  <Input
-                    type="number"
-                    value={form.maxPercentage}
-                    onChange={(e) => setForm({ ...form, maxPercentage: e.target.value })}
-                    placeholder="10"
-                  />
-                </div>
-              </>
-            ) : (
-              <div>
-                <Label>{t.fixedAmount}</Label>
-                <Input
-                  type="number"
-                  value={form.fixedAmount}
-                  onChange={(e) => setForm({ ...form, fixedAmount: e.target.value })}
-                  placeholder="0.00"
-                />
-              </div>
-            )}
-          </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => { resetForm(); setShowDialog(false); }}>
-              {t.cancel}
-            </Button>
-            <Button onClick={handleSave} disabled={createMut.isPending || updateMut.isPending}>
-              {(createMut.isPending || updateMut.isPending) && <Loader2 className="w-4 h-4 animate-spin mr-2" />}
-              {t.save}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-    </div>
-  );
-}
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="text-gray-500"
+                              onClick={() =>
+                                waiveMut.mutate({
+                                  id: penalty.id,
+                                  remarks:
+                                    t.waivedByManager
+                                })
+                              }
+                              title={t.waivePenalty}
+                            >
+                              <XCircle className="w-3.5 h-3.5" />
+                            </Button>
+
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="text-red-500"
+                              onClick={() => {
+                                if (
+                                  confirm(
+                                    t.confirmDelete
+                                  )
+                                ) {
+                                  deleteMut.mutate({
+                                    id: penalty.id
+                                  });
+                                }
+                              }}
+                              title={t.delete}
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                            </Button>
+                          </>
+                        )}
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </Card>
+          )}
+        </div>
+      )}
