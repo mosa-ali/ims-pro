@@ -4,7 +4,6 @@
  * Features: Create SAC, link to milestones, inline signing (in SACForm)
  * Bilingual EN/AR support
  */
-import { useTranslation } from '@/i18n/useTranslation';
 import { useState } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { trpc } from "@/lib/trpc";
@@ -28,10 +27,71 @@ interface SACTabProps {
   prNumber?: string;
 }
 
+const translations = {
+  en: {
+    title: "Service Acceptance Certificate (SAC)",
+    description: "Manage Service Acceptance Certificates for contract deliverables",
+    certificates: "certificates",
+    createSac: "Create SAC",
+    contractNotApproved: "The contract must be approved before creating SACs",
+    sacRequiresContract: "Contract must be approved before creating SAC",
+    noSacs: "No SACs created yet",
+    createFirstSac: "Create a Service Acceptance Certificate for completed deliverables",
+    sacProgress: "SAC Coverage",
+    deliverables: "Deliverables",
+    deliverablesPlaceholder: "Describe the accepted deliverables...",
+    sacAmount: "Amount",
+    acceptanceDate: "Acceptance Date",
+    linkedMilestone: "Linked Milestone",
+    selectMilestone: "Select Milestone",
+    noMilestone: "No milestone",
+    createSacDesc: "Create a new SAC for this contract",
+    cancel: "Cancel",
+    create: "Create",
+    sacCreated: "SAC created successfully",
+    sacDeleted: "SAC deleted",
+    confirmDeleteSac: "Are you sure you want to delete this SAC?",
+    editAndSign: "Edit & Sign",
+    draft: "Draft",
+    signed: "Signed",
+    rejected: "Rejected",
+    pleaseSelectAll: "Please fill all required fields",
+  },
+  ar: {
+    title: "شهادة قبول الخدمة (SAC)",
+    description: "إدارة شهادات قبول الخدمة لتسليمات العقد",
+    certificates: "شهادات",
+    createSac: "إنشاء شهادة قبول",
+    contractNotApproved: "يجب الموافقة على العقد قبل إنشاء شهادات القبول",
+    sacRequiresContract: "يجب اعتماد العقد قبل إنشاء شهادة قبول الخدمة",
+    noSacs: "لم يتم إنشاء شهادات قبول بعد",
+    createFirstSac: "أنشئ شهادة قبول خدمة للتسليمات المكتملة",
+    sacProgress: "تغطية شهادات القبول",
+    deliverables: "التسليمات",
+    deliverablesPlaceholder: "وصف التسليمات المقبولة...",
+    sacAmount: "المبلغ",
+    acceptanceDate: "تاريخ القبول",
+    linkedMilestone: "المرحلة المرتبطة",
+    selectMilestone: "اختر المرحلة",
+    noMilestone: "بدون مرحلة",
+    createSacDesc: "إنشاء شهادة قبول جديدة لهذا العقد",
+    cancel: "إلغاء",
+    create: "إنشاء",
+    sacCreated: "تم إنشاء شهادة القبول بنجاح",
+    sacDeleted: "تم حذف شهادة القبول",
+    confirmDeleteSac: "هل أنت متأكد من حذف شهادة القبول؟",
+    editAndSign: "تعديل وتوقيع",
+    draft: "مسودة",
+    signed: "موقّع",
+    rejected: "مرفوض",
+    pleaseSelectAll: "يرجى ملء جميع الحقول المطلوبة",
+  },
+};
+
 export default function SACTab({ purchaseRequestId }: SACTabProps) {
-  const t = useTranslation();
   const { language } = useLanguage();
   const isRTL = language === 'ar';
+  const localT = translations[language as keyof typeof translations] || translations.en;
 
   // Fetch contract for this PR (SAC requires an approved contract)
   const { data: contract } = trpc.procurementPhaseA.contracts.getByPR.useQuery(
@@ -72,7 +132,7 @@ export default function SACTab({ purchaseRequestId }: SACTabProps) {
   // Mutations
   const createSac = trpc.procurementPhaseA.sac.create.useMutation({
     onSuccess: () => {
-      toast.success(t.procurement.sacCreated || "SAC created");
+      toast.success(localT.sacCreated);
       setShowCreateDialog(false);
       resetCreateForm();
       refetchSacs();
@@ -83,7 +143,7 @@ export default function SACTab({ purchaseRequestId }: SACTabProps) {
 
   const deleteSac = trpc.procurementPhaseA.sac.delete.useMutation({
     onSuccess: () => {
-      toast.success(t.procurement.sacDeleted || "SAC deleted");
+      toast.success(localT.sacDeleted);
       refetchSacs();
       refetchSummary();
     },
@@ -100,7 +160,7 @@ export default function SACTab({ purchaseRequestId }: SACTabProps) {
 
   const handleCreate = () => {
     if (!sacDeliverables.trim() || !sacAmount || !sacDate) {
-      toast.error("Please fill all required fields");
+      toast.error(localT.pleaseSelectAll);
       return;
     }
     createSac.mutate({
@@ -120,9 +180,9 @@ export default function SACTab({ purchaseRequestId }: SACTabProps) {
       rejected: "bg-red-100 text-red-700",
     };
     const labels: Record<string, string> = {
-      draft: isRTL ? "مسودة" : "Draft",
-      approved: isRTL ? "موقّع" : "Signed",
-      rejected: isRTL ? "مرفوض" : "Rejected",
+      draft: localT.draft,
+      approved: localT.signed,
+      rejected: localT.rejected,
     };
     return <Badge className={colors[status] || "bg-gray-100"}>{labels[status] || status}</Badge>;
   };
@@ -153,14 +213,14 @@ export default function SACTab({ purchaseRequestId }: SACTabProps) {
         <CardHeader className="pb-3">
           <div className="flex items-center justify-between">
             <div>
-              <CardTitle className="text-lg">{t.procurement.sacTitle}</CardTitle>
+              <CardTitle className="text-lg">{localT.title}</CardTitle>
               <CardDescription>
-                {summary?.count || 0} {t.procurement.sacRecords}
+                {summary?.count || 0} {localT.certificates}
               </CardDescription>
             </div>
             {contractApproved && (
               <Button size="sm" onClick={() => setShowCreateDialog(true)} className="gap-1">
-                <Plus className="w-4 h-4" /> {t.procurement.createSac}
+                <Plus className="w-4 h-4" /> {localT.createSac}
               </Button>
             )}
           </div>
@@ -171,7 +231,7 @@ export default function SACTab({ purchaseRequestId }: SACTabProps) {
             <div className="mb-4">
               <div className="flex justify-between text-xs text-gray-500 mb-1">
                 <span>
-                  {t.procurement.sacProgress}: {contractCurrency} {effectiveApproved.toLocaleString()} / {contractCurrency} {contractVal.toLocaleString()}
+                  {localT.sacProgress}: {contractCurrency} {effectiveApproved.toLocaleString()} / {contractCurrency} {contractVal.toLocaleString()}
                   {hasPartialCompletion && (
                     <span className="text-amber-600 ml-1">
                       ({isRTL ? 'المبلغ الكامل' : 'Full amount'}: {contractCurrency} {totalApproved.toLocaleString()})
@@ -192,7 +252,7 @@ export default function SACTab({ purchaseRequestId }: SACTabProps) {
           {!contractApproved && (
             <div className="text-center py-8 text-yellow-600 bg-yellow-50 rounded-lg">
               <Clock className="w-10 h-10 mx-auto mb-3 text-yellow-400" />
-              <p className="text-sm font-medium">{t.procurement.contractNotApproved || t.procurement.sacRequiresContract}</p>
+              <p className="text-sm font-medium">{localT.contractNotApproved || localT.sacRequiresContract}</p>
             </div>
           )}
         </CardContent>
@@ -204,8 +264,8 @@ export default function SACTab({ purchaseRequestId }: SACTabProps) {
           <CardContent className="pt-6">
             <div className="text-center py-8 text-gray-500">
               <FileCheck className="w-12 h-12 mx-auto mb-3 text-gray-300" />
-              <p className="text-sm font-medium mb-2">{t.procurement.noSacs}</p>
-              <p className="text-xs text-gray-400">{t.procurement.createFirstSac}</p>
+              <p className="text-sm font-medium mb-2">{localT.noSacs}</p>
+              <p className="text-xs text-gray-400">{localT.createFirstSac}</p>
             </div>
           </CardContent>
         </Card>
@@ -235,10 +295,10 @@ export default function SACTab({ purchaseRequestId }: SACTabProps) {
                         <>
                           <Button size="sm" variant="outline" className="gap-1 h-7 text-xs"
                             onClick={() => window.location.href = `/organization/logistics/procurement-workspace/sac-form/${sac.id}?prId=${purchaseRequestId}`}>
-                            <ExternalLink className="w-3 h-3" /> {isRTL ? "تعديل وتوقيع" : "Edit & Sign"}
+                            <ExternalLink className="w-3 h-3" /> {localT.editAndSign}
                           </Button>
                           <Button size="sm" variant="ghost" className="h-7 text-xs text-red-500"
-                            onClick={() => { if (confirm(t.procurement.confirmDeleteSac)) deleteSac.mutate({ id: sac.id }); }}>
+                            onClick={() => { if (confirm(localT.confirmDeleteSac)) deleteSac.mutate({ id: sac.id }); }}>
                             <Trash2 className="w-3 h-3" />
                           </Button>
                         </>
@@ -259,32 +319,32 @@ export default function SACTab({ purchaseRequestId }: SACTabProps) {
       <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
         <DialogContent className="max-w-lg">
           <DialogHeader>
-            <DialogTitle>{t.procurement.createSac}</DialogTitle>
-            <DialogDescription>{t.procurement.createSacDesc}</DialogDescription>
+            <DialogTitle>{localT.createSac}</DialogTitle>
+            <DialogDescription>{localT.createSacDesc}</DialogDescription>
           </DialogHeader>
           <div className="space-y-4">
             <div className="space-y-2">
-              <Label>{t.procurement.deliverables} *</Label>
+              <Label>{localT.deliverables} *</Label>
               <Textarea value={sacDeliverables} onChange={(e) => setSacDeliverables(e.target.value)}
-                placeholder={t.procurement.deliverablesPlaceholder} rows={3} />
+                placeholder={localT.deliverablesPlaceholder} rows={3} />
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label>{t.procurement.sacAmount} *</Label>
+                <Label>{localT.sacAmount} *</Label>
                 <Input type="number" step="0.01" value={sacAmount} onChange={(e) => setSacAmount(e.target.value)} />
               </div>
               <div className="space-y-2">
-                <Label>{t.procurement.acceptanceDate} *</Label>
+                <Label>{localT.acceptanceDate} *</Label>
                 <Input type="date" value={sacDate} onChange={(e) => setSacDate(e.target.value)} />
               </div>
             </div>
             {(milestones || []).length > 0 && (
               <div className="space-y-2">
-                <Label>{t.procurement.linkedMilestone}</Label>
+                <Label>{localT.linkedMilestone}</Label>
                 <Select value={linkedMilestoneId} onValueChange={setLinkedMilestoneId}>
-                  <SelectTrigger><SelectValue placeholder={t.procurement.selectMilestone} /></SelectTrigger>
+                  <SelectTrigger><SelectValue placeholder={localT.selectMilestone} /></SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="none">{t.procurement.noMilestone}</SelectItem>
+                    <SelectItem value="none">{localT.noMilestone}</SelectItem>
                     {(milestones || []).map((m: any) => (
                       <SelectItem key={m.id} value={String(m.id)}>
                         {m.title} — {contractCurrency} {Number(m.amount || 0).toLocaleString()}
@@ -296,16 +356,14 @@ export default function SACTab({ purchaseRequestId }: SACTabProps) {
             )}
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setShowCreateDialog(false)}>{t.procurement.cancel}</Button>
+            <Button variant="outline" onClick={() => setShowCreateDialog(false)}>{localT.cancel}</Button>
             <Button onClick={handleCreate} disabled={createSac.isPending} className="gap-2">
               {createSac.isPending && <Loader2 className="w-4 h-4 animate-spin" />}
-              {t.procurement.create}
+              {localT.create}
             </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
-
-
     </div>
   );
 }

@@ -297,7 +297,7 @@ export const sacRouter = router({
             deliverableStatuses: input.deliverableStatuses ? JSON.stringify(input.deliverableStatuses) : null,
             approvedAmount: input.approvedAmount,
             currency: input.currency,
-            acceptanceDate: input.acceptanceDate.toISOString(),
+            acceptanceDate: input.acceptanceDate.toISOString().split('T')[0],
             acceptanceType,
             acceptedBy: ctx.user.id,
             status: 'draft',
@@ -494,7 +494,7 @@ export const sacRouter = router({
 
       if (input.deliverables !== undefined) updateData.deliverables = input.deliverables;
       if (input.approvedAmount !== undefined) updateData.approvedAmount = input.approvedAmount;
-      if (input.acceptanceDate !== undefined) updateData.acceptanceDate = input.acceptanceDate.toISOString();
+      if (input.acceptanceDate !== undefined) updateData.acceptanceDate = input.acceptanceDate.toISOString().split('T')[0];
       if (input.acceptanceText !== undefined) updateData.acceptanceText = input.acceptanceText;
       if (input.verifiedBoqs !== undefined) updateData.verifiedBoqs = input.verifiedBoqs ? 1 : 0;
       if (input.verifiedContractTerms !== undefined) updateData.verifiedContractTerms = input.verifiedContractTerms ? 1 : 0;
@@ -577,7 +577,7 @@ export const sacRouter = router({
         .update(serviceAcceptanceCertificates)
         .set({
           status: 'pending_approval',
-          submittedAt: new Date().toISOString(),
+          submittedAt: new Date().toISOString().split('T')[0],
           submittedBy: ctx.user.id,
           updatedBy: ctx.user.id,
         })
@@ -642,7 +642,7 @@ export const sacRouter = router({
         const sigKey = `sac-signatures/${orgId}/${sac.id}-${Date.now()}.png`;
         const { url: signatureImageUrl } = await storagePut(sigKey, signatureBuffer, 'image/png');
 
-        const now = new Date().toISOString();
+        const now = new Date().toISOString().split('T')[0];
         // Generate verification code for QR
         const verificationCode = `SAC-${sac.sacNumber}-${crypto.randomBytes(8).toString('hex').toUpperCase()}`;
 
@@ -1113,7 +1113,7 @@ export const sacRouter = router({
       const sigKey = `sac-signatures/${orgId}/${sac.id}-${Date.now()}.png`;
       const { url: signatureImageUrl } = await storagePut(sigKey, signatureBuffer, 'image/png');
 
-      const now = new Date().toISOString();
+      const now = new Date().toISOString().split('T')[0];
       const verificationCode = `SAC-${sac.sacNumber}-${crypto.randomBytes(8).toString('hex').toUpperCase()}`;
 
       // Build update data - save form data + signature in one go
@@ -1138,7 +1138,7 @@ export const sacRouter = router({
       if (input.preparedByRole !== undefined) updateData.preparedByRole = input.preparedByRole;
       if (input.deliverableStatuses) updateData.deliverableStatuses = JSON.stringify(input.deliverableStatuses);
       if (input.approvedAmount !== undefined) updateData.approvedAmount = input.approvedAmount;
-      if (input.acceptanceDate !== undefined) updateData.acceptanceDate = input.acceptanceDate.toISOString();
+      if (input.acceptanceDate !== undefined) updateData.acceptanceDate = input.acceptanceDate.toISOString().split('T')[0];
 
       await db
         .update(serviceAcceptanceCertificates)
@@ -1223,7 +1223,7 @@ export const sacRouter = router({
         .update(serviceAcceptanceCertificates)
         .set({
           isDeleted: 1,
-          deletedAt: new Date().toISOString(),
+          deletedAt: new Date().toISOString().split('T')[0],
           deletedBy: ctx.user.id,
         })
         .where(eq(serviceAcceptanceCertificates.id, input.id));
