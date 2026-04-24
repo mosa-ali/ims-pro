@@ -127,8 +127,8 @@ export const contractRouter = router({
             currency: resolvedCurrency,
             paymentStructure: input.paymentStructure,
             retentionPercentage: input.retentionPercentage,
-            startDate: input.startDate.toISOString(),
-            endDate: input.endDate.toISOString(),
+            startDate: input.startDate.toISOString().split('T')[0],
+            endDate: input.endDate.toISOString().split('T')[0],
             signedFileUrl: input.signedFileUrl || null,
             status: 'draft',
             createdBy: ctx.user.id,
@@ -549,7 +549,7 @@ export const contractRouter = router({
       const updateData: Record<string, any> = {
         status: newStatus,
         approvedBy: input.approve ? ctx.user.id : null,
-        approvedAt: input.approve ? new Date().toISOString() : null,
+        approvedAt: input.approve ? new Date().toISOString().split('T')[0] : null,
         updatedBy: ctx.user.id,
       };
       
@@ -558,7 +558,7 @@ export const contractRouter = router({
         updateData.signatureImageUrl = signatureUrl;
         updateData.signatureSignerName = input.signerName || ctx.user.name || '';
         updateData.signatureSignerTitle = input.signerTitle || '';
-        updateData.signatureTimestamp = new Date().toISOString();
+        updateData.signatureTimestamp = new Date().toISOString().split('T')[0];
         updateData.signatureVerificationCode = verificationCode;
       }
 
@@ -630,7 +630,7 @@ export const contractRouter = router({
         .update(contracts)
         .set({
           isDeleted: 1,
-          deletedAt: new Date().toISOString(),
+          deletedAt: new Date().toISOString().split('T')[0],
           deletedBy: ctx.user.id,
         })
         .where(eq(contracts.id, input.id));
