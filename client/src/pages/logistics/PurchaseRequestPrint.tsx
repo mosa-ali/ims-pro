@@ -104,11 +104,11 @@ export default function PurchaseRequestPrint() {
                 ? "مقدم الطلب"
                 : "Requested By"}
             </div>
+            <div className="mt-6 border-t pt-2 text-xs mb-2">
+              {formatDate(pr.createdAt)}
+            </div>
             <div className="text-sm font-medium">
               {pr.requesterName || "-"}
-            </div>
-            <div className="mt-6 border-t pt-2 text-xs">
-              {formatDate(pr.createdAt)}
             </div>
           </>
         );
@@ -128,14 +128,14 @@ export default function PurchaseRequestPrint() {
                   alt="Logistics Signature"
                   className="h-16 mx-auto object-contain mb-2"
                 />
+                <div className="text-xs mt-2 mb-2 border-t pt-2">
+                  {formatDate(pr.logValidatedOn)}
+                </div>
                 <div className="text-sm font-medium">
                   {pr.logisticsSignerName || "-"}
                 </div>
                 <div className="text-xs text-gray-600">
                   {pr.logisticsSignerTitle || "-"}
-                </div>
-                <div className="text-xs mt-2">
-                  {formatDate(pr.logValidatedOn)}
                 </div>
               </>
             ) : (
@@ -163,14 +163,14 @@ export default function PurchaseRequestPrint() {
                   alt="Finance Signature"
                   className="h-16 mx-auto object-contain mb-2"
                 />
+                <div className="text-xs mt-2 mb-2 border-t pt-2">
+                  {formatDate(pr.finValidatedOn)}
+                </div>
                 <div className="text-sm font-medium">
                   {pr.financeSignerName || "-"}
                 </div>
                 <div className="text-xs text-gray-600">
                   {pr.financeSignerTitle || "-"}
-                </div>
-                <div className="text-xs mt-2">
-                  {formatDate(pr.finValidatedOn)}
                 </div>
               </>
             ) : (
@@ -198,14 +198,14 @@ export default function PurchaseRequestPrint() {
                   alt="Approval Signature"
                   className="h-16 mx-auto object-contain mb-2"
                 />
+                <div className="text-xs mt-2 mb-2 border-t pt-2">
+                  {formatDate(pr.approvedOn)}
+                </div>
                 <div className="text-sm font-medium">
                   {pr.pmSignerName || "-"}
                 </div>
                 <div className="text-xs text-gray-600">
                   {pr.pmSignerTitle || "-"}
-                </div>
-                <div className="text-xs mt-2">
-                  {formatDate(pr.approvedOn)}
                 </div>
               </>
             ) : (
@@ -236,8 +236,10 @@ export default function PurchaseRequestPrint() {
       organizationNameAr={
         currentOrganization?.nameAr || ""
       }
+      operatingUnitName={
+        currentOperatingUnit?.name || "-"
+      }
       formTitle="Purchase Request"
-      formTitleAr="طلب شراء"
       formNumber={
         pr.prNumber || `PR-${pr.id}`
       }
@@ -522,17 +524,7 @@ export default function PurchaseRequestPrint() {
             (section) => (
               <div
                 key={section.key}
-                className="rounded p-3 text-center min-h-[220px]"
-                style={{
-                  border:
-                    "1px solid #1e40af",
-                  backgroundColor:
-                    "#f8fbff",
-                  WebkitPrintColorAdjust:
-                    "exact",
-                  printColorAdjust:
-                    "exact",
-                }}
+                className="p-3 text-center min-h-[220px]"
               >
                 {renderSignatureBlock(
                   section.key
