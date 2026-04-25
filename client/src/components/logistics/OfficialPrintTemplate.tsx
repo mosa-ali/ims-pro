@@ -100,7 +100,7 @@ export function OfficialPrintTemplate({
      LTR: Org LEFT | Title CENTER | Logo+Ref RIGHT
      RTL: Logo+Ref LEFT | Title CENTER | Org RIGHT
      ================================================================ */}
- <header className="pb-4 mb-6">
+ <header className="pb-4 mb-6 print-header">
    <div style={{
      display: 'flex',
      justifyContent: 'space-between',
@@ -226,12 +226,16 @@ export function OfficialPrintTemplate({
  }
  /* Hide ALL non-print elements */
  .print\\:hidden,
- nav, aside, header:not(.print-header),
- [data-sidebar], [data-header],
- .sidebar, .header-nav,
- [class*="Sidebar"], [class*="Header"] {
+ nav,
+aside,
+[data-sidebar],
+[data-header],
+.sidebar,
+.header-nav,
+.app-sidebar,
+.top-navigation {
  display: none !important;
- }
+}
  /* Ensure the print content takes full width */
  .min-h-screen {
  min-height: auto !important;
