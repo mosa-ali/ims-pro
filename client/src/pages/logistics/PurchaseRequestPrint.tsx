@@ -49,9 +49,9 @@ export default function PurchaseRequestPrint() {
 
   const lineItems = pr.lineItems || [];
 
-  const totalAmount = parseFloat(
-    pr.total || pr.prTotalUsd || "0"
-  ).toLocaleString();
+  const totalAmount = Number(
+     pr.prTotalUsd ?? pr.total ?? 0
+     ).toLocaleString();
 
   const formatDate = (
     date: string | null | undefined
@@ -104,15 +104,9 @@ export default function PurchaseRequestPrint() {
                 ? "مقدم الطلب"
                 : "Requested By"}
             </div>
-
             <div className="text-sm font-medium">
               {pr.requesterName || "-"}
             </div>
-
-            <div className="text-xs text-gray-600">
-              {pr.requesterEmail || ""}
-            </div>
-
             <div className="mt-6 border-t pt-2 text-xs">
               {formatDate(pr.createdAt)}
             </div>
@@ -127,7 +121,6 @@ export default function PurchaseRequestPrint() {
                 ? "اعتماد اللوجستيات"
                 : "Logistics Validation"}
             </div>
-
             {pr.logisticsSignatureDataUrl ? (
               <>
                 <img
@@ -135,15 +128,12 @@ export default function PurchaseRequestPrint() {
                   alt="Logistics Signature"
                   className="h-16 mx-auto object-contain mb-2"
                 />
-
                 <div className="text-sm font-medium">
                   {pr.logisticsSignerName || "-"}
                 </div>
-
                 <div className="text-xs text-gray-600">
                   {pr.logisticsSignerTitle || "-"}
                 </div>
-
                 <div className="text-xs mt-2">
                   {formatDate(pr.logValidatedOn)}
                 </div>
@@ -166,7 +156,6 @@ export default function PurchaseRequestPrint() {
                 ? "اعتماد المالية"
                 : "Finance Validation"}
             </div>
-
             {pr.financeSignatureDataUrl ? (
               <>
                 <img
@@ -174,15 +163,12 @@ export default function PurchaseRequestPrint() {
                   alt="Finance Signature"
                   className="h-16 mx-auto object-contain mb-2"
                 />
-
                 <div className="text-sm font-medium">
                   {pr.financeSignerName || "-"}
                 </div>
-
                 <div className="text-xs text-gray-600">
                   {pr.financeSignerTitle || "-"}
                 </div>
-
                 <div className="text-xs mt-2">
                   {formatDate(pr.finValidatedOn)}
                 </div>
@@ -205,7 +191,6 @@ export default function PurchaseRequestPrint() {
                 ? "الاعتماد النهائي"
                 : "Final Approval"}
             </div>
-
             {pr.pmSignatureDataUrl ? (
               <>
                 <img
@@ -213,15 +198,12 @@ export default function PurchaseRequestPrint() {
                   alt="Approval Signature"
                   className="h-16 mx-auto object-contain mb-2"
                 />
-
                 <div className="text-sm font-medium">
                   {pr.pmSignerName || "-"}
                 </div>
-
                 <div className="text-xs text-gray-600">
                   {pr.pmSignerTitle || "-"}
                 </div>
-
                 <div className="text-xs mt-2">
                   {formatDate(pr.approvedOn)}
                 </div>
@@ -235,7 +217,6 @@ export default function PurchaseRequestPrint() {
             )}
           </>
         );
-
       default:
         return null;
     }
@@ -311,7 +292,6 @@ export default function PurchaseRequestPrint() {
             </strong>{" "}
             {pr.category || "-"}
           </div>
-
           <div>
             <strong>
               {isRTL
@@ -320,7 +300,6 @@ export default function PurchaseRequestPrint() {
             </strong>{" "}
             {pr.urgency || "-"}
           </div>
-
           <div>
             <strong>
               {isRTL
@@ -329,7 +308,6 @@ export default function PurchaseRequestPrint() {
             </strong>{" "}
             {pr.department || "-"}
           </div>
-
           <div>
             <strong>
               {isRTL
@@ -340,7 +318,6 @@ export default function PurchaseRequestPrint() {
               "-"}
           </div>
         </div>
-
         <div className="space-y-2">
           <div>
             <strong>
@@ -350,7 +327,6 @@ export default function PurchaseRequestPrint() {
             </strong>{" "}
             {pr.donorName || "-"}
           </div>
-
           <div>
             <strong>
               {isRTL
@@ -359,7 +335,6 @@ export default function PurchaseRequestPrint() {
             </strong>{" "}
             {pr.budgetCode || "-"}
           </div>
-
           <div>
             <strong>
               {isRTL
@@ -373,7 +348,6 @@ export default function PurchaseRequestPrint() {
                 )
               : "-"}
           </div>
-
           <div>
             <strong>
               {isRTL
@@ -384,7 +358,6 @@ export default function PurchaseRequestPrint() {
           </div>
         </div>
       </div>
-
       {/* Line Items */}
       <table className="w-full border text-sm mb-6">
         <thead>
@@ -427,42 +400,77 @@ export default function PurchaseRequestPrint() {
             </th>
           </tr>
         </thead>
-
         <tbody>
           {lineItems.map(
-            (
-              item: any,
-              index: number
-            ) => (
-              <tr key={index}>
-                <td className="border px-3 py-2">
-                  {index + 1}
-                </td>
-                <td className="border px-3 py-2">
-                  {item.description}
-                </td>
-                <td className="border px-3 py-2">
-                  {item.quantity}
-                </td>
-                <td className="border px-3 py-2">
-                  {item.unit}
-                </td>
-                <td className="border px-3 py-2">
-                  {pr.currency}{" "}
-                  {parseFloat(
-                    item.unitPrice || "0"
-                  ).toLocaleString()}
-                </td>
-                <td className="border px-3 py-2">
-                  {pr.currency}{" "}
-                  {parseFloat(
-                    item.totalPrice || "0"
-                  ).toLocaleString()}
-                </td>
-              </tr>
-            )
+          (
+               item: any,
+               index: number
+          ) => (
+               <tr key={index}>
+               <td className="border px-3 py-2">
+                    {index + 1}
+               </td>
+
+               <td className="border px-3 py-2">
+                    {item.description}
+               </td>
+
+               <td className="border px-3 py-2">
+                    {item.quantity}
+               </td>
+
+               <td className="border px-3 py-2">
+                    {item.unit}
+               </td>
+
+               <td className="border px-3 py-2">
+                    {pr.exchangeTo || "USD"}{" "}
+                    {Number(
+                    item.unitPrice || 0
+                    ).toLocaleString()}
+               </td>
+
+               <td className="border px-3 py-2">
+                    {pr.exchangeTo || "USD"}{" "}
+                    {Number(
+                    item.totalPrice || 0
+                    ).toLocaleString()}
+               </td>
+               </tr>
+          )
           )}
-        </tbody>
+
+          {/* Total Row */}
+          <tr
+          style={{
+               backgroundColor: "#f8fbff",
+               fontWeight: "bold",
+               WebkitPrintColorAdjust:
+               "exact",
+               printColorAdjust:
+               "exact",
+          }}
+          >
+          {/* Empty columns */}
+          <td
+               colSpan={4}
+               className="border px-3 py-2"
+          />
+
+          {/* Total Label */}
+          <td className="border px-3 py-2 text-right">
+               {isRTL
+               ? "الإجمالي:"
+               : "Total:"}
+          </td>
+
+          {/* Total Amount */}
+          <td className="border px-3 py-2">
+               {pr.exchangeTo || "USD"}{" "}
+               {totalAmount}
+          </td>
+          </tr>
+      </tbody>
       </table>
 
       {/* Justification */}
@@ -509,7 +517,6 @@ export default function PurchaseRequestPrint() {
             ? "سير الموافقات والتوقيعات"
             : "Approval Workflow Signatures"}
         </h3>
-
         <div className="grid grid-cols-4 gap-4">
           {orderedSections.map(
             (section) => (
