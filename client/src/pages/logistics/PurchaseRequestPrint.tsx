@@ -123,11 +123,6 @@ export default function PurchaseRequestPrint() {
             </div>
             {pr.logisticsSignatureDataUrl ? (
               <>
-                <img
-                  src={pr.logisticsSignatureDataUrl}
-                  alt="Logistics Signature"
-                  className="h-16 mx-auto object-contain mb-2"
-                />
                 <div className="text-xs mt-2 mb-2 border-t pt-2">
                   {formatDate(pr.logValidatedOn)}
                 </div>
@@ -137,6 +132,11 @@ export default function PurchaseRequestPrint() {
                 <div className="text-xs text-gray-600">
                   {pr.logisticsSignerTitle || "-"}
                 </div>
+                <img
+                  src={pr.logisticsSignatureDataUrl}
+                  alt="Logistics Signature"
+                  className="h-16 mx-auto object-contain mt-3"
+                />
               </>
             ) : (
               <div className="text-xs italic text-gray-400 mt-10">
@@ -158,11 +158,6 @@ export default function PurchaseRequestPrint() {
             </div>
             {pr.financeSignatureDataUrl ? (
               <>
-                <img
-                  src={pr.financeSignatureDataUrl}
-                  alt="Finance Signature"
-                  className="h-16 mx-auto object-contain mb-2"
-                />
                 <div className="text-xs mt-2 mb-2 border-t pt-2">
                   {formatDate(pr.finValidatedOn)}
                 </div>
@@ -172,6 +167,11 @@ export default function PurchaseRequestPrint() {
                 <div className="text-xs text-gray-600">
                   {pr.financeSignerTitle || "-"}
                 </div>
+                <img
+                  src={pr.financeSignatureDataUrl}
+                  alt="Finance Signature"
+                  className="h-16 mx-auto object-contain mt-3"
+                />
               </>
             ) : (
               <div className="text-xs italic text-gray-400 mt-10">
@@ -193,11 +193,6 @@ export default function PurchaseRequestPrint() {
             </div>
             {pr.pmSignatureDataUrl ? (
               <>
-                <img
-                  src={pr.pmSignatureDataUrl}
-                  alt="Approval Signature"
-                  className="h-16 mx-auto object-contain mb-2"
-                />
                 <div className="text-xs mt-2 mb-2 border-t pt-2">
                   {formatDate(pr.approvedOn)}
                 </div>
@@ -207,6 +202,11 @@ export default function PurchaseRequestPrint() {
                 <div className="text-xs text-gray-600">
                   {pr.pmSignerTitle || "-"}
                 </div>
+                <img
+                  src={pr.pmSignatureDataUrl}
+                  alt="Approval Signature"
+                  className="h-16 mx-auto object-contain mt-3"
+                />
               </>
             ) : (
               <div className="text-xs italic text-gray-400 mt-10">
@@ -252,7 +252,7 @@ export default function PurchaseRequestPrint() {
           : ""
       }
     >
-      {/* Force print colors */}
+      {/* Force print colors and header visibility */}
       <style>
         {`
           @media print {
@@ -261,8 +261,55 @@ export default function PurchaseRequestPrint() {
               print-color-adjust: exact !important;
             }
 
-            body {
+            html, body {
               background: white !important;
+              margin: 0 !important;
+              padding: 0 !important;
+              width: 100% !important;
+              height: 100% !important;
+            }
+
+            /* Ensure header container is visible */
+            .official-header {
+              display: flex !important;
+              visibility: visible !important;
+              opacity: 1 !important;
+              page-break-inside: avoid !important;
+              margin: 0 !important;
+              padding: 0 !important;
+              width: 100% !important;
+            }
+
+            /* Ensure all header sections display */
+            .header-left, .header-center, .header-right {
+              display: flex !important;
+              visibility: visible !important;
+              opacity: 1 !important;
+            }
+
+            .org-block, .org-name, .ou-name, .module-name,
+            .doc-title, .org-logo, .ref-date, .value {
+              display: block !important;
+              visibility: visible !important;
+              opacity: 1 !important;
+            }
+
+            /* Force hr to print */
+            hr, .hr-strong {
+              display: block !important;
+              visibility: visible !important;
+              opacity: 1 !important;
+              border: 1px solid #000 !important;
+              margin: 10px 0 !important;
+              page-break-inside: avoid !important;
+            }
+
+            /* Ensure content displays */
+            .pdf-content {
+              display: block !important;
+              visibility: visible !important;
+              opacity: 1 !important;
+              width: 100% !important;
             }
           }
         `}
