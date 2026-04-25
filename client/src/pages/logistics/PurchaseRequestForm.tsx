@@ -482,50 +482,57 @@ serviceType: pr.serviceType ?? "",
  
  // FIX: Org Admin Approval Visibility
  // Add Org Admin role detection for approval workflow testing
- const userRole = user?.role || "";
- const userRoleName = user?.role || "";
- 
- // Role detection logic
- const isLogisticsUser = 
-   userRoleName.toLowerCase().includes("logistic officer") ||
-   userRoleName.toLowerCase().includes("logistic manager");
- 
- const isFinanceUser = 
-   userRoleName.toLowerCase().includes("finance officer") ||
-   userRoleName.toLowerCase().includes("finance manager");
- 
- const isPMUser = 
-   userRoleName.toLowerCase().includes("project manager") ||
-   userRoleName.toLowerCase().includes("program manager") ||
-   userRoleName.toLowerCase().includes("office manager");
- 
- // FIX: Add Org Admin to all approval checks
- const isOrgAdmin =
-  userRoleName.toLowerCase().includes("organization admin") ||
-  userRole === "organization_admin" ||
-  userRole === "platform_super_admin";
- 
- // Update visibility conditions
+  const systemRole = user?.role || "";
+  const orgRole = user?.organizationRole || "";
+  const rbacRole = user?.rbacRole || "";
+
+  // Normalize
+  const roleText = `
+    ${systemRole}
+    ${orgRole}
+    ${rbacRole}
+  `.toLowerCase();
+
+  const isLogisticsUser =
+    roleText.includes("logistic manager") ||
+    roleText.includes("logistics officer") ||
+    roleText.includes("logistic officer");
+
+  const isFinanceUser =
+    roleText.includes("finance manager") ||
+    roleText.includes("finance officer") ||
+    roleText.includes("finance coordinator");
+
+  const isPMUser =
+    roleText.includes("project manager") ||
+    roleText.includes("program manager") ||
+    roleText.includes("project officer") ||
+    roleText.includes("office manager");
+
+  const isOrgAdmin =
+    systemRole === "organization_admin" ||
+    systemRole === "platform_super_admin";
+
   const canViewLogisticsApproval =
-(
-  formData.status === "submitted" ||
-  existingPR?.logisticsSignatureDataUrl
-) &&
-(isLogisticsUser || isOrgAdmin);
+    (
+      formData.status === "submitted" ||
+      !!existingPR?.logisticsSignatureDataUrl
+    ) &&
+    (isLogisticsUser || isOrgAdmin);
 
-const canViewFinanceApproval =
-(
-  formData.status === "validated_by_logistic" ||
-  existingPR?.financeSignatureDataUrl
-) &&
-(isFinanceUser || isOrgAdmin);
+  const canViewFinanceApproval =
+    (
+      formData.status === "validated_by_logistic" ||
+      !!existingPR?.financeSignatureDataUrl
+    ) &&
+    (isFinanceUser || isOrgAdmin);
 
-const canViewPMApproval =
-(
-  formData.status === "validated_by_finance" ||
-  existingPR?.pmSignatureDataUrl
-) &&
-(isPMUser || isOrgAdmin);
+  const canViewPMApproval =
+    (
+      formData.status === "validated_by_finance" ||
+      !!existingPR?.pmSignatureDataUrl
+    ) &&
+    (isPMUser || isOrgAdmin);
  
  // CRITICAL FIX #14: Signature Locking - Determine which signatures are locked
  // Logistics signature: Locked after logistics validation
