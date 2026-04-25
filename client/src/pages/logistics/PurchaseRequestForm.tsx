@@ -13,7 +13,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import SignatureCapture from "@/components/SignatureCapture";
 import {
  Select,
  SelectContent,
@@ -47,6 +46,7 @@ import {
 } from "@/components/ui/dialog";
 import { useTranslation } from '@/i18n/useTranslation';
 import { BackButton } from "@/components/BackButton";
+import SignaturePad from "@/components/SignaturePad";
 
 /**
  * Translation Keys Used (from translations.ts via t.logistics namespace):
@@ -187,6 +187,10 @@ export default function PurchaseRequestForm() {
  // Load unit types from master list
  const { data: unitTypesData, isLoading: unitTypesLoading } = trpc.masterData.unitTypes.getAll.useQuery({});
  
+ const [logisticsSignature, setLogisticsSignature] = useState<string | null>(null);
+ const [financeSignature, setFinanceSignature] = useState<string | null>(null);
+ const [pmSignature, setPMSignature] = useState<string | null>(null);
+
  // Scope readiness gating - do not execute scoped queries until scope is fully initialized
  const activeScopeReady = !!currentOrganization && !!currentOperatingUnit && !ouLoading;
 
@@ -1374,19 +1378,54 @@ budgetUtilizationPercent={budgetUtilizationPercent}
       </DialogTitle>
     </DialogHeader>
 
-    <SignatureCapture
-      embedded={true}
-      onSave={async (data) => {
-        await handleLogisticSignatureApproval(data);
-        setLogisticsSignatureOpen(false);
-      }}
-      defaultName={user?.name || ""}
-      defaultTitle={
-        isRTL ? "مسؤول اللوجستيات" : "Logistics Officer"
-      }
-      isRTL={isRTL}
-      saving={validateLogisticsMutation.isPending}
-    />
+    <div className="space-y-4">
+      <div>
+        <Label>{isRTL ? "اسم الموقّع" : "Signer Name"}</Label>
+        <Input value={user?.name || ""} disabled />
+      </div>
+
+      <div>
+        <Label>{isRTL ? "المسمى الوظيفي" : "Title / Role"}</Label>
+        <Input
+          value={isRTL ? "مسؤول اللوجستيات" : "Logistics Officer"}
+          disabled
+        />
+      </div>
+
+      <SignaturePad
+        onSignatureChange={setLogisticsSignature}
+        labels={{
+          clear: isRTL ? "مسح" : "Clear",
+          undo: isRTL ? "تراجع" : "Undo",
+          signHere: isRTL ? "وقّع هنا" : "Sign here",
+        }}
+      />
+
+      <div className="flex justify-end">
+        <Button
+          disabled={
+            !logisticsSignature ||
+            validateLogisticsMutation.isPending
+          }
+          onClick={async () => {
+            await handleLogisticSignatureApproval({
+              signerName: user?.name || "",
+              signerTitle: isRTL
+                ? "مسؤول اللوجستيات"
+                : "Logistics Officer",
+              signatureDataUrl: logisticsSignature!,
+            });
+
+            setLogisticsSignatureOpen(false);
+            setLogisticsSignature(null);
+          }}
+        >
+          {validateLogisticsMutation.isPending
+            ? (isRTL ? "جاري الحفظ..." : "Saving...")
+            : (isRTL ? "التحقق والتوقيع" : "Validate & Sign")}
+        </Button>
+      </div>
+    </div>
   </DialogContent>
 </Dialog>
 
@@ -1404,19 +1443,54 @@ budgetUtilizationPercent={budgetUtilizationPercent}
       </DialogTitle>
     </DialogHeader>
 
-    <SignatureCapture
-      embedded={true}
-      onSave={async (data) => {
-        await handleFinanceSignatureApproval(data);
-        setFinanceSignatureOpen(false);
-      }}
-      defaultName={user?.name || ""}
-      defaultTitle={
-        isRTL ? "مسؤول المالية" : "Finance Officer"
-      }
-      isRTL={isRTL}
-      saving={validateFinanceMutation.isPending}
-    />
+    <div className="space-y-4">
+      <div>
+        <Label>{isRTL ? "اسم الموقّع" : "Signer Name"}</Label>
+        <Input value={user?.name || ""} disabled />
+      </div>
+
+      <div>
+        <Label>{isRTL ? "المسمى الوظيفي" : "Title / Role"}</Label>
+        <Input
+          value={isRTL ? "مسؤول المالية" : "Finance Officer"}
+          disabled
+        />
+      </div>
+
+      <SignaturePad
+        onSignatureChange={setFinanceSignature}
+        labels={{
+          clear: isRTL ? "مسح" : "Clear",
+          undo: isRTL ? "تراجع" : "Undo",
+          signHere: isRTL ? "وقّع هنا" : "Sign here",
+        }}
+      />
+
+      <div className="flex justify-end">
+        <Button
+          disabled={
+            !financeSignature ||
+            validateFinanceMutation.isPending
+          }
+          onClick={async () => {
+            await handleFinanceSignatureApproval({
+              signerName: user?.name || "",
+              signerTitle: isRTL
+                ? "مسؤول المالية"
+                : "Finance Officer",
+              signatureDataUrl: financeSignature!,
+            });
+
+            setFinanceSignatureOpen(false);
+            setFinanceSignature(null);
+          }}
+        >
+          {validateFinanceMutation.isPending
+            ? (isRTL ? "جاري الحفظ..." : "Saving...")
+            : (isRTL ? "التحقق والتوقيع" : "Validate & Sign")}
+        </Button>
+      </div>
+    </div>
   </DialogContent>
 </Dialog>
 
@@ -1434,23 +1508,57 @@ budgetUtilizationPercent={budgetUtilizationPercent}
       </DialogTitle>
     </DialogHeader>
 
-    <SignatureCapture
-      embedded={true}
-      onSave={async (data) => {
-        await handlePMSignatureApproval(data);
-        setPMSignatureOpen(false);
-      }}
-      defaultName={user?.name || ""}
-      defaultTitle={
-        isRTL ? "مدير المشروع" : "Project Manager"
-      }
-      isRTL={isRTL}
-      saving={approvePMMutation.isPending}
-    />
+    <div className="space-y-4">
+      <div>
+        <Label>{isRTL ? "اسم الموقّع" : "Signer Name"}</Label>
+        <Input value={user?.name || ""} disabled />
+      </div>
+
+      <div>
+        <Label>{isRTL ? "المسمى الوظيفي" : "Title / Role"}</Label>
+        <Input
+          value={isRTL ? "مدير المشروع" : "Project Manager"}
+          disabled
+        />
+      </div>
+
+      <SignaturePad
+        onSignatureChange={setPMSignature}
+        labels={{
+          clear: isRTL ? "مسح" : "Clear",
+          undo: isRTL ? "تراجع" : "Undo",
+          signHere: isRTL ? "وقّع هنا" : "Sign here",
+        }}
+      />
+
+      <div className="flex justify-end">
+        <Button
+          disabled={
+            !pmSignature ||
+            approvePMMutation.isPending
+          }
+          onClick={async () => {
+            await handlePMSignatureApproval({
+              signerName: user?.name || "",
+              signerTitle: isRTL
+                ? "مدير المشروع"
+                : "Project Manager",
+              signatureDataUrl: pmSignature!,
+            });
+
+            setPMSignatureOpen(false);
+            setPMSignature(null);
+          }}
+        >
+          {approvePMMutation.isPending
+            ? (isRTL ? "جاري الحفظ..." : "Saving...")
+            : (isRTL ? "اعتماد وتوقيع" : "Approve & Sign")}
+        </Button>
+      </div>
+    </div>
   </DialogContent>
 </Dialog>
-
-</div>
-</div>
-);
+    </div>
+  </div>
+  );
 }
