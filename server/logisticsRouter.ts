@@ -52,6 +52,26 @@ import { prWorkflowDashboardRouter } from "./routers/logistics/prWorkflowDashboa
 import { supplierQuotationRouter } from "./routers/procurement/supplierQuotation";
 import { stockManagementRouter } from "./routers/logistics/stockManagementRouter";
 
+
+const formatSqlDate = (dateValue?: string | Date | null) => {
+  if (!dateValue) return null;
+
+  return new Date(dateValue)
+    .toISOString()
+    .split("T")[0]; // YYYY-MM-DD
+};
+
+const formatSqlDateTime = (dateValue?: string | Date | null) => {
+  if (!dateValue) return null;
+
+  return new Date(dateValue)
+    .toISOString()
+    .slice(0, 19)
+    .replace("T", " "); // YYYY-MM-DD HH:mm:ss
+};
+
+const nowSql = new Date().toISOString().slice(0, 19).replace('T', ' ');
+
 // ============================================================================
 // PURCHASE REQUESTS ROUTER
 // ============================================================================
@@ -396,7 +416,7 @@ const purchaseRequestsRouter = router({
       const { organizationId } = ctx.scope;
       
       await db.update(purchaseRequests).set({
-        isDeleted: true, deletedAt: new Date(), deletedBy: ctx.user.id,
+        isDeleted: 1, deletedAt: nowSql, deletedBy: ctx.user.id,
       }).where(and(eq(purchaseRequests.id, input.id), eq(purchaseRequests.organizationId, organizationId)));
       return { success: true };
     }),
@@ -416,7 +436,7 @@ const purchaseRequestsRouter = router({
       if (!pr) throw new Error("Purchase request not found");
       
       await db.update(purchaseRequests).set({
-        status: "approved", approvedBy: ctx.user.id, approvedAt: new Date(), updatedBy: ctx.user.id,
+        status: "approved", approvedBy: ctx.user.id, approvedOn: nowSql,
       }).where(and(eq(purchaseRequests.id, input.id), eq(purchaseRequests.organizationId, organizationId)));
       
       // Auto-create RFQ after PR approval (async, don't block response)
@@ -586,7 +606,7 @@ const purchaseRequestsRouter = router({
             donor: pr.donorName,
             requester: pr.requesterName,
             status: pr.status,
-            date: (typeof pr.createdAt === 'string' ? pr.createdAt : pr.createdAt?.toISOString?.() || '').split("T")[0],
+            date: (typeof pr.createdAt === 'string' ? pr.createdAt : new Date().toISOString() || '').split("T")[0],
             totalAmount: totalAmount.toFixed(2),
           });
         } else {
@@ -601,7 +621,7 @@ const purchaseRequestsRouter = router({
               donor: pr.donorName,
               requester: pr.requesterName,
               status: pr.status,
-              date: (typeof pr.createdAt === 'string' ? pr.createdAt : pr.createdAt?.toISOString?.() || '').split("T")[0],
+              date: (typeof pr.createdAt === 'string' ? pr.createdAt : new Date().toISOString() || '').split("T")[0],
               totalAmount: totalAmount.toFixed(2),
               lineNumber: item.lineNumber,
               description: item.description,
@@ -843,6 +863,7 @@ const purchaseRequestsRouter = router({
       };
     }),
 
+
   submit: scopedProcedure
     .input(z.object({
       id: z.number(),
@@ -857,8 +878,8 @@ const purchaseRequestsRouter = router({
         .update(purchaseRequests)
         .set({
           status: "submitted",
-          submittedAt: new Date(),
-          updatedAt: new Date(),
+          submittedAt: nowSql,
+          updatedAt: nowSql,
         })
         .where(
           and(
@@ -932,13 +953,13 @@ const purchaseRequestsRouter = router({
         .update(purchaseRequests)
         .set({
           status: "validated_by_logistic",
-          logValidatedOn: new Date(),
+          logValidatedOn: new Date().toISOString().slice(0, 19).replace('T', ' '),
           logValidatedBy: ctx.user?.id,
           logValidatorEmail: ctx.user?.email,
           logisticsSignerName: input.signerName,
           logisticsSignerTitle: input.signerTitle,
           logisticsSignatureDataUrl: input.signatureDataUrl,
-          updatedAt: new Date(),
+          updatedAt: new Date().toISOString().slice(0, 19).replace('T', ' '),
         })
         .where(
           and(
@@ -971,13 +992,13 @@ const purchaseRequestsRouter = router({
         .update(purchaseRequests)
         .set({
           status: "validated_by_finance",
-          finValidatedOn: new Date(),
+          finValidatedOn: new Date().toISOString().slice(0, 19).replace('T', ' '),
           finValidatedBy: ctx.user?.id,
           finValidatorEmail: ctx.user?.email,
           financeSignerName: input.signerName,
           financeSignerTitle: input.signerTitle,
           financeSignatureDataUrl: input.signatureDataUrl,
-          updatedAt: new Date(),
+          updatedAt: new Date().toISOString().slice(0, 19).replace('T', ' '),
         })
         .where(
           and(
@@ -1010,13 +1031,13 @@ const purchaseRequestsRouter = router({
         .update(purchaseRequests)
         .set({
           status: "approved",
-          approvedOn: new Date(),
+          approvedOn: new Date().toISOString().slice(0, 19).replace('T', ' '),
           approvedBy: ctx.user?.id,
           approverEmail: ctx.user?.email,
           pmSignerName: input.signerName,
           pmSignerTitle: input.signerTitle,
           pmSignatureDataUrl: input.signatureDataUrl,
-          updatedAt: new Date(),
+          updatedAt: new Date().toISOString().slice(0, 19).replace('T', ' '),
         })
         .where(
           and(
@@ -1046,11 +1067,11 @@ const purchaseRequestsRouter = router({
         .update(purchaseRequests)
         .set({
           status: "rejected_by_logistic",
-          logRejectedOn: new Date(),
+          logRejectedOn: new Date().toISOString().slice(0, 19).replace('T', ' '),
           logRejectedBy: ctx.user?.id,
           rejectReason: input.rejectReason,
           rejectionStage: "logistics",
-          updatedAt: new Date(),
+          updatedAt: new Date().toISOString().slice(0, 19).replace('T', ' '),
         })
         .where(
           and(
@@ -1080,11 +1101,11 @@ const purchaseRequestsRouter = router({
         .update(purchaseRequests)
         .set({
           status: "rejected_by_finance",
-          finRejectedOn: new Date(),
+          finRejectedOn: new Date().toISOString().slice(0, 19).replace('T', ' '),
           finRejectedBy: ctx.user?.id,
           rejectReason: input.rejectReason,
           rejectionStage: "finance",
-          updatedAt: new Date(),
+          updatedAt: nowSql,
         })
         .where(
           and(
@@ -1114,11 +1135,11 @@ const purchaseRequestsRouter = router({
         .update(purchaseRequests)
         .set({
           status: "rejected_by_pm",
-          pmRejectedOn: new Date(),
+          pmRejectedOn: new Date().toISOString().slice(0, 19).replace('T', ' '),
           pmRejectedBy: ctx.user?.id,
           rejectReason: input.rejectReason,
           rejectionStage: "pm",
-          updatedAt: new Date(),
+          updatedAt: nowSql,
         })
         .where(
           and(
@@ -1377,7 +1398,7 @@ const purchaseOrdersRouter = router({
       const { organizationId } = ctx.scope;
       
       await db.update(purchaseOrders).set({
-        isDeleted: true, deletedAt: new Date(), deletedBy: ctx.user.id,
+        isDeleted: 1, deletedAt: nowSql, deletedBy: ctx.user.id,
       }).where(and(eq(purchaseOrders.id, input.id), eq(purchaseOrders.organizationId, organizationId)));
       return { success: true };
     }),
@@ -1523,7 +1544,7 @@ const grnRouter = router({
       const { organizationId } = ctx.scope;
       
       await db.update(goodsReceiptNotes).set({
-        isDeleted: true, deletedAt: new Date(), deletedBy: ctx.user.id,
+        isDeleted: 1, deletedAt: nowSql, deletedBy: ctx.user.id,
       }).where(and(eq(goodsReceiptNotes.id, input.id), eq(goodsReceiptNotes.organizationId, organizationId)));
       return { success: true };
     }),
@@ -1665,7 +1686,7 @@ const stockRouter = router({
       const { organizationId } = ctx.scope;
       
       await db.update(stockItems).set({
-        isDeleted: true, deletedAt: new Date(), deletedBy: ctx.user.id,
+        isDeleted: 1, deletedAt: nowSql, deletedBy: ctx.user.id,
       }).where(and(eq(stockItems.id, input.id), eq(stockItems.organizationId, organizationId)));
       return { success: true };
     }),
@@ -1914,8 +1935,8 @@ const stockIssuedRouter = router({
       const { organizationId } = ctx.scope;
       
       await db.update(stockIssued).set({
-        isDeleted: true,
-        deletedAt: new Date(),
+        isDeleted: 1,
+        deletedAt: nowSql,
         deletedBy: ctx.user.id,
       }).where(and(eq(stockIssued.id, input.id), eq(stockIssued.organizationId, organizationId)));
       
@@ -2019,7 +2040,7 @@ const returnedItemsRouter = router({
         ...returnData,
         organizationId,
         operatingUnitId,
-        returnDate: input.returnDate ? new Date(input.returnDate) : new Date(),
+        returnDate: formatSqlDate(input.returnDate),
         createdBy: ctx.user.id,
       });
       
@@ -2127,8 +2148,8 @@ const returnedItemsRouter = router({
       const { organizationId } = ctx.scope;
       
       await db.update(returnedItems).set({
-        isDeleted: true,
-        deletedAt: new Date(),
+        isDeleted: 1,
+        deletedAt: nowSql,
         deletedBy: ctx.user.id,
       }).where(and(eq(returnedItems.id, input.id), eq(returnedItems.organizationId, organizationId)));
       
@@ -2267,7 +2288,7 @@ const vehiclesRouter = router({
       const { organizationId } = ctx.scope;
       
       await db.update(vehicles).set({
-        isDeleted: true, deletedAt: new Date(), deletedBy: ctx.user.id,
+        isDeleted: 1, deletedAt: nowSql, deletedBy: ctx.user.id,
       }).where(and(eq(vehicles.id, input.id), eq(vehicles.organizationId, organizationId)));
       return { success: true };
     }),
@@ -2386,7 +2407,7 @@ const driversRouter = router({
       const { organizationId } = ctx.scope;
       
       await db.update(drivers).set({
-        isDeleted: true, deletedAt: new Date(), deletedBy: ctx.user.id,
+        isDeleted: 1, deletedAt: nowSql, deletedBy: ctx.user.id,
       }).where(and(eq(drivers.id, input.id), eq(drivers.organizationId, organizationId)));
       return { success: true };
     }),
@@ -2411,7 +2432,7 @@ const tripLogsRouter = router({
       
       const conditions = [
         eq(tripLogs.organizationId, organizationId),
-        eq(tripLogs.isDeleted, false),
+        eq(tripLogs.isDeleted, 0),
       ];
       
       if (input.vehicleId) conditions.push(eq(tripLogs.vehicleId, input.vehicleId));
@@ -2453,7 +2474,7 @@ const tripLogsRouter = router({
       const startMileage = parseFloat(input.startMileage || "0") || 0;
       const endMileage = parseFloat(input.endMileage || "0") || 0;
       const distanceTraveled = endMileage > startMileage ? (endMileage - startMileage).toFixed(2) : "0";
-      
+
       const result = await db.insert(tripLogs).values({
         ...input, organizationId, operatingUnitId, distanceTraveled, createdBy: ctx.user.id, updatedBy: ctx.user.id,
       });
@@ -2467,7 +2488,7 @@ const tripLogsRouter = router({
       const { organizationId } = ctx.scope;
       
       await db.update(tripLogs).set({
-        isDeleted: true, deletedAt: new Date(), deletedBy: ctx.user.id,
+        isDeleted: 1, deletedAt: nowSql, deletedBy: ctx.user.id,
       }).where(and(eq(tripLogs.id, input.id), eq(tripLogs.organizationId, organizationId)));
       return { success: true };
     }),
@@ -2490,7 +2511,7 @@ const fuelLogsRouter = router({
       
       const conditions = [
         eq(fuelLogs.organizationId, organizationId),
-        eq(fuelLogs.isDeleted, false),
+        eq(fuelLogs.isDeleted, 0),
       ];
       
       if (input.vehicleId) conditions.push(eq(fuelLogs.vehicleId, input.vehicleId));
@@ -2542,7 +2563,7 @@ const fuelLogsRouter = router({
       const { organizationId } = ctx.scope;
       
       await db.update(fuelLogs).set({
-        isDeleted: true, deletedAt: new Date(), deletedBy: ctx.user.id,
+        isDeleted: 1, deletedAt: nowSql, deletedBy: ctx.user.id,
       }).where(and(eq(fuelLogs.id, input.id), eq(fuelLogs.organizationId, organizationId)));
       return { success: true };
     }),
@@ -2627,7 +2648,7 @@ const maintenanceRouter = router({
       const { organizationId } = ctx.scope;
       const { id, ...updateData } = input;
       await db.update(vehicleMaintenance)
-        .set({ ...updateData, updatedBy: ctx.user.id, updatedAt: new Date() })
+        .set({ ...updateData, updatedBy: ctx.user.id, updatedAt: nowSql })
         .where(and(
           eq(vehicleMaintenance.id, id),
           eq(vehicleMaintenance.organizationId, organizationId),
@@ -2641,7 +2662,7 @@ const maintenanceRouter = router({
       const db = await getDb();
       const { organizationId } = ctx.scope;
       await db.update(vehicleMaintenance)
-        .set({ isDeleted: 1, deletedAt: new Date(), deletedBy: ctx.user.id })
+        .set({ isDeleted: 1, deletedAt: nowSql, deletedBy: ctx.user.id })
         .where(and(
           eq(vehicleMaintenance.id, input.id),
           eq(vehicleMaintenance.organizationId, organizationId)
@@ -2889,7 +2910,7 @@ const fleetKPIsRouter = router({
         .from(tripLogs)
         .where(and(
           eq(tripLogs.organizationId, organizationId),
-          eq(tripLogs.isDeleted, false),
+          eq(tripLogs.isDeleted, 0),
           sql`${tripLogs.createdAt} >= ${monthStartStr}`,
           sql`${tripLogs.createdAt} <= ${monthEndStr}`,
         ));
@@ -2899,7 +2920,7 @@ const fleetKPIsRouter = router({
         .from(tripLogs)
         .where(and(
           eq(tripLogs.organizationId, organizationId),
-          eq(tripLogs.isDeleted, false),
+          eq(tripLogs.isDeleted, 0),
           eq(tripLogs.status, 'in_progress'),
         ));
 
@@ -2926,7 +2947,7 @@ const fleetKPIsRouter = router({
         .from(fuelLogs)
         .where(and(
           eq(fuelLogs.organizationId, organizationId),
-          eq(fuelLogs.isDeleted, false),
+          eq(fuelLogs.isDeleted, 0),
           sql`${fuelLogs.createdAt} >= ${monthStartStr}`,
           sql`${fuelLogs.createdAt} <= ${monthEndStr}`,
         ));
@@ -2936,7 +2957,7 @@ const fleetKPIsRouter = router({
         .from(fuelLogs)
         .where(and(
           eq(fuelLogs.organizationId, organizationId),
-          eq(fuelLogs.isDeleted, false),
+          eq(fuelLogs.isDeleted, 0),
           sql`${fuelLogs.createdAt} >= ${monthStartStr}`,
           sql`${fuelLogs.createdAt} <= ${monthEndStr}`,
         ));

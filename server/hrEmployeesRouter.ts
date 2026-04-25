@@ -12,6 +12,27 @@ import { eq, and, desc, like, or, sql, count } from "drizzle-orm";
  * PLATFORM-LEVEL ISOLATION: Uses scopedProcedure to automatically inject
  * organizationId and operatingUnitId from HTTP headers via ctx.scope
  */
+
+const formatSqlDate = (dateValue?: string | Date | null) => {
+  if (!dateValue) return null;
+
+  return new Date(dateValue)
+    .toISOString()
+    .split("T")[0]; // YYYY-MM-DD
+};
+
+const formatSqlDateTime = (dateValue?: string | Date | null) => {
+  if (!dateValue) return null;
+
+  return new Date(dateValue)
+    .toISOString()
+    .slice(0, 19)
+    .replace("T", " "); // YYYY-MM-DD HH:mm:ss
+};
+
+const nowSql = new Date().toISOString().slice(0, 19).replace('T', ' ');
+
+
 export const hrEmployeesRouter = router({
   // Get all employees for an organization (excludes soft-deleted)
   // Uses scopedProcedure - organizationId and operatingUnitId come from ctx.scope
@@ -34,7 +55,7 @@ export const hrEmployeesRouter = router({
       const conditions = [
         eq(hrEmployees.organizationId, organizationId),
         eq(hrEmployees.operatingUnitId, operatingUnitId),
-        eq(hrEmployees.isDeleted, false),
+        eq(hrEmployees.isDeleted, 0),
       ];
       if (input.status) {
         conditions.push(eq(hrEmployees.status, input.status));
@@ -98,7 +119,7 @@ export const hrEmployeesRouter = router({
             eq(hrEmployees.id, input.id),
             eq(hrEmployees.organizationId, organizationId),
             eq(hrEmployees.operatingUnitId, operatingUnitId),
-            eq(hrEmployees.isDeleted, false)
+            eq(hrEmployees.isDeleted, 0)
           )
         )
         .limit(1);
@@ -120,7 +141,7 @@ export const hrEmployeesRouter = router({
       const conditions = [
         eq(hrEmployees.organizationId, organizationId),
         eq(hrEmployees.operatingUnitId, operatingUnitId),
-        eq(hrEmployees.isDeleted, false),
+        eq(hrEmployees.isDeleted, 0),
       ];
       
       const allEmployees = await db
@@ -214,12 +235,12 @@ export const hrEmployeesRouter = router({
         ...input,
         organizationId,
         operatingUnitId,
-        dateOfBirth: input.dateOfBirth ? new Date(input.dateOfBirth) : null,
+        dateOfBirth: input.dateOfBirth ? formatSqlDate(input.dateOfBirth): null,
         // Date columns should remain as strings in YYYY-MM-DD format
-        hireDate: input.hireDate || null,
-        contractStartDate: input.contractStartDate || null,
-        contractEndDate: input.contractEndDate || null,
-        probationEndDate: input.probationEndDate || null,
+        hireDate: formatSqlDate(input.hireDate) || null,
+        contractStartDate: formatSqlDate(input.contractStartDate) || null,
+        contractEndDate: formatSqlDate(input.contractEndDate) || null,
+        probationEndDate: formatSqlDate(input.probationEndDate) || null,
         createdBy: ctx.user?.id,
         updatedBy: ctx.user?.id,
       });
@@ -300,7 +321,7 @@ export const hrEmployeesRouter = router({
             eq(hrEmployees.id, id),
             eq(hrEmployees.organizationId, organizationId),
             eq(hrEmployees.operatingUnitId, operatingUnitId),
-            eq(hrEmployees.isDeleted, false)
+            eq(hrEmployees.isDeleted, 0)
           )
         );
       
@@ -321,8 +342,8 @@ export const hrEmployeesRouter = router({
       await db
         .update(hrEmployees)
         .set({
-          isDeleted: true,
-          deletedAt: new Date(),
+          isDeleted: 0,
+          deletedAt: new Date().toISOString().slice(0, 19).replace('T', ' '),
           deletedBy: ctx.user?.id,
         })
         .where(
@@ -350,9 +371,9 @@ export const hrEmployeesRouter = router({
       await db
         .update(hrEmployees)
         .set({
-          isDeleted: false,
-          deletedAt: null,
-          deletedBy: null,
+          isDeleted: 0,
+          deletedAt: new Date().toISOString().slice(0, 19).replace('T', ' '),
+          deletedBy: ctx.user?.id,
         })
         .where(
           and(
@@ -383,7 +404,7 @@ export const hrEmployeesRouter = router({
           and(
             eq(hrEmployees.organizationId, organizationId),
             eq(hrEmployees.operatingUnitId, operatingUnitId),
-            eq(hrEmployees.isDeleted, true)
+            eq(hrEmployees.isDeleted, 1)
           )
         )
         .orderBy(desc(hrEmployees.deletedAt));
@@ -408,7 +429,7 @@ export const hrEmployeesRouter = router({
           and(
             eq(hrEmployees.organizationId, organizationId),
             eq(hrEmployees.operatingUnitId, operatingUnitId),
-            eq(hrEmployees.isDeleted, false),
+            eq(hrEmployees.isDeleted, 0),
             eq(hrEmployees.status, 'active')
           )
         );
@@ -421,7 +442,7 @@ export const hrEmployeesRouter = router({
           and(
             eq(hrEmployees.organizationId, organizationId),
             eq(hrEmployees.operatingUnitId, operatingUnitId),
-            eq(hrEmployees.isDeleted, false),
+            eq(hrEmployees.isDeleted, 0),
             or(
               eq(hrEmployees.status, 'suspended'),
               eq(hrEmployees.status, 'on_leave')
@@ -437,7 +458,7 @@ export const hrEmployeesRouter = router({
           and(
             eq(hrEmployees.organizationId, organizationId),
             eq(hrEmployees.operatingUnitId, operatingUnitId),
-            eq(hrEmployees.isDeleted, false),
+            eq(hrEmployees.isDeleted, 0),
             or(
               eq(hrEmployees.status, 'terminated'),
               eq(hrEmployees.status, 'resigned')

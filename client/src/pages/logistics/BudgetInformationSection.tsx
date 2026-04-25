@@ -171,7 +171,11 @@ export function BudgetInformationSection({
  maximumFractionDigits: 2,
  })}`}
  readOnly
- className="bg-muted"
+ className={`${
+ remainingBudget < 0
+ ? "bg-red-50 dark:bg-red-950 border-red-300 dark:border-red-700"
+ : "bg-muted"
+ }`}
  />
  </div>
  )}
@@ -217,25 +221,40 @@ export function BudgetInformationSection({
 
  {/* Exchange to */}
  <div>
- <Label>{t.logistics.exchangeTo}</Label>
- <select
- value={formData.exchangeTo || "USD"}
- onChange={(e) => {
- setFormData((prev: any) => ({
- ...prev,
- exchangeTo: e.target.value,
- }));
- }}
- disabled={isLocked}
- className="w-full px-4 py-2.5 rounded-lg border border-border bg-card text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 disabled:opacity-50 disabled:cursor-not-allowed"
- >
- {currencyOptions.map((opt) => (
- <option key={opt.value} value={opt.value}>
- {opt.label}
- </option>
- ))}
- </select>
- </div>
+  <Label>{t.logistics.exchangeTo}</Label>
+
+  {formData.currency === "USD" ? (
+    <Input
+      value="USD"
+      readOnly
+      className="bg-muted"
+    />
+  ) : (
+    <select
+      value={formData.exchangeTo || ""}
+      onChange={(e) => {
+        setFormData((prev: any) => ({
+          ...prev,
+          exchangeTo: e.target.value,
+        }));
+      }}
+      disabled={isLocked}
+      className="w-full px-4 py-2.5 rounded-lg border border-border bg-card text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 disabled:opacity-50 disabled:cursor-not-allowed"
+    >
+      <option value="">
+        {t.logistics.selectCurrency}
+      </option>
+
+      {currencyOptions
+        .filter((opt) => opt.value !== formData.currency)
+        .map((opt) => (
+          <option key={opt.value} value={opt.value}>
+            {opt.label}
+          </option>
+        ))}
+    </select>
+  )}
+</div>
 
  {/* Total */}
  <div>
@@ -255,6 +274,21 @@ export function BudgetInformationSection({
  />
  </div>
  </div>
+
+ {/* Budget Overspent Warning */}
+ {remainingBudget < 0 && (
+ <div className="p-3 rounded-lg bg-red-50 dark:bg-red-950 border border-red-300 dark:border-red-700">
+ <p className="text-sm text-red-900 dark:text-red-100 flex items-start gap-2">
+ <span className="text-lg">⚠️</span>
+ <span>
+ <strong>Budget Line Overspent:</strong> This budget line has already exceeded its allocated amount by {formData.currency} {Math.abs(remainingBudget).toLocaleString("en-US", {
+ minimumFractionDigits: 2,
+ maximumFractionDigits: 2,
+ })}. No new PRs can be submitted against this budget line until the overspend is resolved.
+ </span>
+ </p>
+ </div>
+ )}
 
  {/* Conversion Preview */}
  {conversionPreview() && (

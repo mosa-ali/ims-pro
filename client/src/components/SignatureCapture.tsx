@@ -13,16 +13,21 @@ import {
 import { Eraser, Check, Pen } from "lucide-react";
 
 interface SignatureCaptureProps {
-  open: boolean;
-  onClose: () => void;
+  open?: boolean;
+  onClose?: () => void;
+
+  embedded?: boolean;
+
   onSave: (data: {
     signerName: string;
     signerTitle: string;
     signatureDataUrl: string;
   }) => void;
+
   defaultName?: string;
   defaultTitle?: string;
   isRTL?: boolean;
+
   labels?: {
     title?: string;
     nameLabel?: string;
@@ -37,12 +42,14 @@ interface SignatureCaptureProps {
     nameRequired?: string;
     description?: string;
   };
+
   saving?: boolean;
 }
 
 export default function SignatureCapture({
-  open,
-  onClose,
+  open = false,
+  onClose = () => {},
+  embedded = false,
   onSave,
   defaultName = "",
   defaultTitle = "",

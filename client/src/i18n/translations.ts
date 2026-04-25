@@ -6023,6 +6023,16 @@ export interface Translations {
   };
   logistics: {
     accept: string;
+    training: string;
+    cleaning: string;
+    security: string;
+    transportation: string;
+    catering: string;
+    itServices: string;
+    audit: string;
+    legal: string;
+    selectCurrency: string;
+    approveByPM: string;
     accepted: string;
     acceptedQty: string;
     acknowledged: string;
@@ -16320,6 +16330,16 @@ export const en: Translations = {
   },
   logistics: {
     accept: 'Accept',
+        training: 'Training',
+    cleaning: 'Cleaning', 
+    security: 'Security',
+    transportation: 'Transportation',
+    catering: 'Catering',
+    itServices: 'IT Services', 
+    audit: 'Audit',
+    legal: 'Legal Services',
+    selectCurrency: 'Selected Currency',
+    approveByPM: 'Approved by PM',
     accepted: 'Accepted',
     acceptedQty: 'Accepted Qty',
     acknowledged: 'Acknowledged',
@@ -29890,6 +29910,16 @@ export const ar: Translations = {
   },
   logistics: {
     accept: 'قبول',
+        training: 'التدريب',
+    cleaning: 'النظافة', 
+    security: 'الامن',
+    transportation: 'النقل والمواصلات',
+    catering: 'التموين',
+    itServices: 'نظم المعلومات', 
+    audit: 'التدقيق',
+    legal: 'الشئون القانونية',
+    selectCurrency: 'العملة المختارة',
+    approveByPM: 'تم الموافقة من قبل مدير المنظمة',
     accepted: 'مقبول',
     acceptedQty: 'الكمية المقبولة',
     acknowledged: 'مستلم',

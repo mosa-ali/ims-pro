@@ -79,7 +79,7 @@ export function AppraisalPrintModal({
  goals: t.hrModals.goalsForNextPeriod || 'Goals for Next Period',
  
  employeeComments: t.hrModals.employeeComments || 'Employee Comments',
- supervisorComments: t.hr.supervisorComments || 'Supervisor Comments',
+ supervisorComments: t.hrStaff.supervisorComments || 'Supervisor Comments',
  
  signatures: t.hrModals.signatures || 'Signatures',
  employeeSignature: t.hrModals.employeeSignature || 'Employee Signature',
