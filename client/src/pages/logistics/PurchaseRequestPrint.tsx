@@ -22,15 +22,12 @@ export default function PurchaseRequestPrint() {
   const id = params?.id ? parseInt(params.id) : 0;
 
   const { data: pr, isLoading } =
-    trpc.logistics.purchaseRequests.getById.useQuery(
-      {
-        id,
-        organizationId: currentOrganization?.id || 0,
-      },
-      {
-        enabled: !!id && !!currentOrganization?.id,
-      }
-    );
+  trpc.logistics.purchaseRequests.getById.useQuery(
+    { id },
+    {
+      enabled: !!id,
+    }
+  );
 
   if (isLoading) {
     return (
@@ -53,7 +50,7 @@ export default function PurchaseRequestPrint() {
   const lineItems = pr.lineItems || [];
 
   const totalAmount = parseFloat(
-    pr.total || pr.totalAmount || "0"
+    pr.total || pr.prTotalUsd || "0"
   ).toLocaleString();
 
   const formatDate = (
@@ -250,7 +247,7 @@ export default function PurchaseRequestPrint() {
       organizationLogo={
         currentOrganization?.logoUrl ||
         branding?.logoUrl ||
-        null
+        undefined
       }
       organizationName={
         currentOrganization?.name || "-"
