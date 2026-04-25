@@ -78,31 +78,37 @@ const nowSql = new Date().toISOString().slice(0, 19).replace('T', ' ');
 // ============================================================================
 
   async function getWorkflowApprover(
-    db: any,
-    organizationId: number,
-    operatingUnitId: number,
-    allowedRoles: string[]
-  ) {
-    const result = await db
-      .select({
-        id: users.id,
-        name: users.name,
-        email: users.email,
-        role: users.role
-      })
-      .from(users)
-      .where(
-        and(
-          eq(users.currentOrganizationId, organizationId),
-          eq(users.operatingUnitId, operatingUnitId),
-          inArray(users.role, allowedRoles),
-          eq(users.isActive, 1)
-        )
-      )
-      .limit(1);
+  db: any,
+  organizationId: number,
+  operatingUnitId: number | null,
+  allowedRoles: string[]
+) {
+  const conditions = [
+    eq(users.currentOrganizationId, organizationId),
+    inArray(users.role, allowedRoles),
+    eq(users.isActive, 1)
+  ];
 
-    return result[0] || null;
+  // Only filter by operating unit if provided
+  if (operatingUnitId) {
+    conditions.push(
+      eq(users.operatingUnitId, operatingUnitId)
+    );
   }
+
+  const result = await db
+    .select({
+      id: users.id,
+      name: users.name,
+      email: users.email,
+      role: users.role
+    })
+    .from(users)
+    .where(and(...conditions))
+    .limit(1);
+
+  return result[0] || null;
+}
 
 const purchaseRequestsRouter = router({
   list: scopedProcedure

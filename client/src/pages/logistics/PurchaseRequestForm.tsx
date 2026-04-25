@@ -227,7 +227,10 @@ export default function PurchaseRequestForm() {
  const [rejectionReason, setRejectionReason] = useState("");
  const [selectedBudgetId, setSelectedBudgetId] = useState<number | undefined>(undefined);
 
- // Signature dialogs are now embedded in footer, no modal dialogs needed
+ // ✅ MODAL SIGNATURE STATE VARIABLES
+ const [logisticsSignatureOpen, setLogisticsSignatureOpen] = useState(false);
+ const [financeSignatureOpen, setFinanceSignatureOpen] = useState(false);
+ const [pmSignatureOpen, setPMSignatureOpen] = useState(false);
 
  const [lineItems, setLineItems] = useState<LineItem[]>([
  { budgetLine: "", description: "", descriptionAr: "", specifications: "", quantity: "1", unit: "", unitPrice: "0", recurrence: "" },
@@ -476,7 +479,7 @@ serviceType: pr.serviceType ?? "",
  // FIX: Org Admin Approval Visibility
  // Add Org Admin role detection for approval workflow testing
  const userRole = user?.role || "";
- const userRoleName = user?.roleName || "";
+ const userRoleName = user?.role || "";
  
  // Role detection logic
  const isLogisticsUser = 
@@ -502,21 +505,21 @@ serviceType: pr.serviceType ?? "",
   const canViewLogisticsApproval =
 (
   formData.status === "submitted" ||
-  existingPR?.logisticsSignature?.signatureDataUrl
+  existingPR?.logisticsSignatureDataUrl
 ) &&
 (isLogisticsUser || isOrgAdmin);
 
 const canViewFinanceApproval =
 (
   formData.status === "validated_by_logistic" ||
-  existingPR?.financeSignature?.signatureDataUrl
+  existingPR?.financeSignatureDataUrl
 ) &&
 (isFinanceUser || isOrgAdmin);
 
 const canViewPMApproval =
 (
   formData.status === "validated_by_finance" ||
-  existingPR?.pmSignature?.signatureDataUrl
+  existingPR?.pmSignatureDataUrl
 ) &&
 (isPMUser || isOrgAdmin);
  
@@ -617,7 +620,6 @@ const canViewPMApproval =
  
  await validateLogisticsMutation.mutateAsync({
  id: parseInt(params.id!),
- financeEmail: emailToUse,
  signerName: data.signerName,
  signerTitle: data.signerTitle,
  signatureDataUrl: data.signatureDataUrl,
@@ -641,7 +643,6 @@ const canViewPMApproval =
  
  await validateFinanceMutation.mutateAsync({
  id: parseInt(params.id!),
- pmEmail: emailToUse,
  signerName: data.signerName,
  signerTitle: data.signerTitle,
  signatureDataUrl: data.signatureDataUrl,
@@ -1114,190 +1115,340 @@ budgetUtilizationPercent={budgetUtilizationPercent}
  </CardContent>
  </Card>
 
-{/* Approval Workflow Signatures Section */}
-<Card>
-  <CardHeader>
-    <CardTitle>
+ {/* Approval Workflow Signatures Section */}
+ <Card>
+ <CardHeader>
+ <CardTitle>{isRTL ? 'توقيعات سير العمل' : 'Approval Workflow Signatures'}</CardTitle>
+ </CardHeader>
+ <CardContent className="space-y-6">
+ {/* Logistics Signature Section - Show when submitted */}
+{canViewLogisticsApproval && (
+  <div className="border-l-4 border-blue-500 pl-4">
+    <h3 className="text-sm font-semibold mb-4">
       {isRTL
-        ? "توقيعات سير العمل"
-        : "Approval Workflow Signatures"}
-    </CardTitle>
-  </CardHeader>
+        ? "توقيع التحقق من اللوجستيات"
+        : "Logistics Validation Signature"}
+    </h3>
 
-  <CardContent className="space-y-6">
-
-    {/* ===============================
-        LOGISTICS VALIDATION
-    =============================== */}
-    {canViewLogisticsApproval && (
-      <div className="border-l-4 border-blue-500 pl-4">
-        <h3 className="text-sm font-semibold mb-4">
-          {isRTL
-            ? "التحقق من اللوجستيات"
-            : "Logistics Validation"}
-        </h3>
-
-        {!existingPR?.logisticsSignatureDataUrl ? (
-          <SignatureCapture
-            embedded={true}
-            onSave={handleLogisticSignatureApproval}
-            defaultName={user?.name || ""}
-            defaultTitle={
-              isRTL
-                ? "مسؤول اللوجستيات"
-                : "Logistics Officer"
-            }
-            isRTL={isRTL}
-            saving={validateLogisticsMutation.isPending}
-            labels={{
-              title: isRTL
-                ? "التوقيع الرقمي - التحقق من اللوجستيات"
-                : "Digital Signature - Logistics Validation",
-
-              description: isRTL
-                ? "ارسم توقيعك للتحقق من طلب الشراء."
-                : "Draw your signature to validate this purchase request.",
-
-              saveSignature: isRTL
-                ? "تحقق وتوقيع"
-                : "Validate & Sign",
-            }}
-          />
-        ) : (
-          <SignatureHistoryCard
-            color="green"
-            title={isRTL ? "تم التحقق من اللوجستيات" : "Logistics Validation Completed"}
-            signer={existingPR?.logisticsSignerName}
-            role={existingPR?.logisticsSignerTitle}
-            date={existingPR?.logValidatedOn}
-            signature={existingPR?.logisticsSignatureDataUrl}
-            isRTL={isRTL}
-          />
-        )}
+    {!existingPR?.logisticsSignatureDataUrl ? (
+      <div className="flex gap-2">
+        <Button
+          onClick={() => setLogisticsSignatureOpen(true)}
+          className="gap-2"
+          disabled={validateLogisticsMutation.isPending}
+        >
+          {validateLogisticsMutation.isPending ? (
+            <Loader2 className="w-4 h-4 animate-spin" />
+          ) : null}
+          {isRTL ? "التحقق والتوقيع" : "Validate & Sign"}
+        </Button>
       </div>
-    )}
+    ) : (
+      <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+        <div className="flex items-start gap-3">
+          <CheckCircle className="w-5 h-5 text-green-600 mt-1 flex-shrink-0" />
 
+          <div className="flex-1">
+            <p className="font-semibold text-green-900">
+              {isRTL
+                ? "تم التحقق من اللوجستيات"
+                : "Logistics Validated"}
+            </p>
 
-    {/* ===============================
-        FINANCE VALIDATION
-    =============================== */}
-    {canViewFinanceApproval && (
-      <div className="border-l-4 border-purple-500 pl-4">
-        <h3 className="text-sm font-semibold mb-4">
-          {isRTL
-            ? "التحقق المالي"
-            : "Finance Validation"}
-        </h3>
+            <p className="text-sm text-green-700 mt-1">
+              {isRTL ? "الموقّع: " : "Signed by: "}
+              {existingPR?.logisticsSignerName}
+            </p>
 
-        {!existingPR?.financeSignatureDataUrl ? (
-          <SignatureCapture
-            embedded={true}
-            onSave={handleFinanceSignatureApproval}
-            defaultName={user?.name || ""}
-            defaultTitle={
-              isRTL
-                ? "مسؤول المالية"
-                : "Finance Officer"
-            }
-            isRTL={isRTL}
-            saving={validateFinanceMutation.isPending}
-            labels={{
-              title: isRTL
-                ? "التوقيع الرقمي - التحقق المالي"
-                : "Digital Signature - Finance Validation",
+            <p className="text-sm text-green-700">
+              {isRTL ? "المسمى: " : "Title: "}
+              {existingPR?.logisticsSignerTitle}
+            </p>
 
-              description: isRTL
-                ? "ارسم توقيعك للتحقق المالي من طلب الشراء."
-                : "Draw your signature to validate this purchase request financially.",
+            {existingPR?.logValidatedOn && (
+              <p className="text-sm text-green-700">
+                {isRTL ? "التاريخ: " : "Date: "}
+                {new Date(existingPR.logValidatedOn).toLocaleString()}
+              </p>
+            )}
 
-              saveSignature: isRTL
-                ? "تحقق وتوقيع"
-                : "Validate & Sign",
-            }}
-          />
-        ) : (
-          <SignatureHistoryCard
-            color="purple"
-            title={isRTL ? "تم التحقق المالي" : "Finance Validation Completed"}
-            signer={existingPR?.financeSignerName}
-            role={existingPR?.financeSignerTitle}
-            date={existingPR?.finValidatedOn}
-            signature={existingPR?.financeSignatureDataUrl}
-            isRTL={isRTL}
-          />
-        )}
-      </div>
-    )}
-
-
-    {/* ===============================
-        FINAL APPROVAL
-    =============================== */}
-    {canViewPMApproval && (
-      <div className="border-l-4 border-amber-500 pl-4">
-        <h3 className="text-sm font-semibold mb-4">
-          {isRTL
-            ? "الاعتماد النهائي"
-            : "Final Approval"}
-        </h3>
-
-        {!existingPR?.pmSignatureDataUrl ? (
-          <SignatureCapture
-            embedded={true}
-            onSave={handlePMSignatureApproval}
-            defaultName={user?.name || ""}
-            defaultTitle={
-              isRTL
-                ? "مدير المشروع"
-                : "Project Manager"
-            }
-            isRTL={isRTL}
-            saving={approvePMMutation.isPending}
-            labels={{
-              title: isRTL
-                ? "التوقيع الرقمي - الاعتماد النهائي"
-                : "Digital Signature - Final Approval",
-
-              description: isRTL
-                ? "ارسم توقيعك لاعتماد طلب الشراء بشكل نهائي."
-                : "Draw your signature to complete final approval of this purchase request.",
-
-              saveSignature: isRTL
-                ? "اعتماد وتوقيع"
-                : "Approve & Sign",
-            }}
-          />
-        ) : (
-          <SignatureHistoryCard
-            color="amber"
-            title={isRTL ? "تم الاعتماد النهائي" : "Final Approval Completed"}
-            signer={existingPR?.pmSignerName}
-            role={existingPR?.pmSignerTitle}
-            date={existingPR?.approvedOn}
-            signature={existingPR?.pmSignatureDataUrl}
-            isRTL={isRTL}
-          />
-        )}
-      </div>
-    )}
-
-
-    {/* No workflow yet */}
-    {!canViewLogisticsApproval &&
-      !canViewFinanceApproval &&
-      !canViewPMApproval && (
-        <div className="text-center py-6 text-gray-500">
-          <Clock className="w-8 h-8 mx-auto mb-2" />
-
-          <p>
-            {isRTL
-              ? "سيظهر سير الموافقات بعد إرسال طلب الشراء"
-              : "Approval workflow will appear after submitting the purchase request"}
-          </p>
+            {existingPR?.logisticsSignatureDataUrl && (
+              <img
+                src={existingPR.logisticsSignatureDataUrl}
+                alt="Signature"
+                className="mt-3 h-16 border border-green-300 rounded"
+              />
+            )}
+          </div>
         </div>
-      )}
-  </CardContent>
+      </div>
+    )}
+  </div>
+)}
+
+ {/* Finance Signature Section - Show when validated by logistics */}
+ {canViewFinanceApproval && (
+  <div className="border-l-4 border-green-500 pl-4">
+ <h3 className="text-sm font-semibold mb-4">{isRTL ? 'توقيع التحقق من المالية' : 'Finance Validation Signature'}</h3>
+ {!existingPR?.financeSignatureDataUrl ? (
+ <div className="flex gap-2">
+   <Button
+     onClick={() => setFinanceSignatureOpen(true)}
+     className="gap-2"
+     disabled={validateFinanceMutation.isPending}
+   >
+     {validateFinanceMutation.isPending ? (
+       <Loader2 className="w-4 h-4 animate-spin" />
+     ) : null}
+     {isRTL ? "التحقق والتوقيع" : "Validate & Sign"}
+   </Button>
+ </div>
+ ) : (
+ <div className="bg-purple-50 border border-purple-200 rounded-lg p-4">
+ <div className="flex items-start gap-3">
+ <CheckCircle className="w-5 h-5 text-purple-600 mt-1 flex-shrink-0" />
+ <div className="flex-1">
+ <p className="font-semibold text-purple-900">{isRTL ? 'تم التحقق من المالية' : 'Finance Validated'}</p>
+ <p className="text-sm text-purple-700 mt-1">{isRTL ? 'الموقّع: ' : 'Signed by: '}{existingPR?.financeSignerName}</p>
+ <p className="text-sm text-purple-700">{isRTL ? 'المسمى: ' : 'Title: '}{existingPR?.financeSignerTitle}</p>
+ {existingPR?.finValidatedOn && (
+ <p className="text-sm text-purple-700">{isRTL ? 'التاريخ: ' : 'Date: '}{new Date(existingPR.finValidatedOn).toLocaleString()}</p>
+ )}
+ {existingPR?.financeSignatureDataUrl && (
+ <img src={existingPR.financeSignatureDataUrl} alt="Signature" className="mt-3 h-16 border border-purple-300 rounded" />
+ )}
+ </div>
+ </div>
+ </div>
+ )}
+ </div>
+ )}
+
+{/* PM Signature Section - Show when validated by finance */}{canViewPMApproval && (
+  <div className="border-l-4 border-purple-500 pl-4">
+    <h3 className="text-sm font-semibold mb-4">
+      {isRTL ? "توقيع اعتماد المدير" : "Manager Approval Signature"}
+    </h3>
+
+    {!existingPR?.pmSignatureDataUrl ? (
+      <div className="flex gap-2">
+        <Button
+          onClick={() => setPMSignatureOpen(true)}
+          className="gap-2"
+          disabled={approvePMMutation.isPending}
+        >
+          {approvePMMutation.isPending ? (
+            <Loader2 className="w-4 h-4 animate-spin" />
+          ) : null}
+          {isRTL ? "التحقق والتوقيع" : "Validate & Sign"}
+        </Button>
+      </div>
+    ) : (
+      <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
+        <div className="flex items-start gap-3">
+          <CheckCircle className="w-5 h-5 text-amber-600 mt-1 flex-shrink-0" />
+
+          <div className="flex-1">
+            <p className="font-semibold text-amber-900">
+              {isRTL
+                ? "تم الاعتماد من قبل المدير"
+                : "Approved by Manager"}
+            </p>
+
+            <p className="text-sm text-amber-700 mt-1">
+              {isRTL ? "الموقّع: " : "Signed by: "}
+              {existingPR?.pmSignerName}
+            </p>
+
+            <p className="text-sm text-amber-700">
+              {isRTL ? "المسمى: " : "Title: "}
+              {existingPR?.pmSignerTitle}
+            </p>
+
+            {existingPR?.approvedOn && (
+              <p className="text-sm text-amber-700">
+                {isRTL ? "التاريخ: " : "Date: "}
+                {new Date(existingPR.approvedOn).toLocaleString()}
+              </p>
+            )}
+
+            {existingPR?.pmSignatureDataUrl && (
+              <img
+                src={existingPR.pmSignatureDataUrl}
+                alt="Signature"
+                className="mt-3 h-16 border border-amber-300 rounded"
+              />
+            )}
+          </div>
+        </div>
+      </div>
+    )}
+  </div>
+)}
+
+ {/* Approved Status - Show all signatures as read-only history */}
+ {formData.status === "approved" && (
+ <div className="space-y-4">
+ {/* Logistics Signature - Read-only */}
+ {existingPR?.logisticsSignatureDataUrl && (
+ <div className="border-l-4 border-green-500 pl-4">
+ <h3 className="text-sm font-semibold mb-3">{isRTL ? 'توقيع التحقق من اللوجستيات' : 'Logistics Validation Signature'}</h3>
+ <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+ <div className="flex items-start gap-3">
+ <CheckCircle className="w-5 h-5 text-green-600 mt-1 flex-shrink-0" />
+ <div className="flex-1">
+ <p className="font-semibold text-green-900">{isRTL ? 'تم التحقق من اللوجستيات' : 'Logistics Validated'}</p>
+ <p className="text-sm text-green-700 mt-1">{isRTL ? 'الموقّع: ' : 'Signed by: '}{existingPR?.logisticsSignerName}</p>
+ <p className="text-sm text-green-700">{isRTL ? 'المسمى: ' : 'Title: '}{existingPR?.logisticsSignerTitle}</p>
+ {existingPR?.logValidatedOn && (
+ <p className="text-sm text-green-700">{isRTL ? 'التاريخ: ' : 'Date: '}{new Date(existingPR.logValidatedOn).toLocaleString()}</p>
+ )}
+ <img src={existingPR.logisticsSignatureDataUrl} alt="Signature" className="mt-3 h-16 border border-green-300 rounded" />
+ </div>
+ </div>
+ </div>
+ </div>
+ )}
+
+ {/* Finance Signature - Read-only */}
+ {existingPR?.financeSignatureDataUrl && (
+ <div className="border-l-4 border-purple-500 pl-4">
+ <h3 className="text-sm font-semibold mb-3">{isRTL ? 'توقيع التحقق من المالية' : 'Finance Validation Signature'}</h3>
+ <div className="bg-purple-50 border border-purple-200 rounded-lg p-4">
+ <div className="flex items-start gap-3">
+ <CheckCircle className="w-5 h-5 text-purple-600 mt-1 flex-shrink-0" />
+ <div className="flex-1">
+ <p className="font-semibold text-purple-900">{isRTL ? 'تم التحقق من المالية' : 'Finance Validated'}</p>
+ <p className="text-sm text-purple-700 mt-1">{isRTL ? 'الموقّع: ' : 'Signed by: '}{existingPR?.financeSignerName}</p>
+ <p className="text-sm text-purple-700">{isRTL ? 'المسمى: ' : 'Title: '}{existingPR?.financeSignerTitle}</p>
+ {existingPR?.finValidatedOn && (
+ <p className="text-sm text-purple-700">{isRTL ? 'التاريخ: ' : 'Date: '}{new Date(existingPR.finValidatedOn).toLocaleString()}</p>
+ )}
+ <img src={existingPR.financeSignatureDataUrl} alt="Signature" className="mt-3 h-16 border border-purple-300 rounded" />
+ </div>
+ </div>
+ </div>
+ </div>
+ )}
+
+ {/* PM Signature - Read-only */}
+ {existingPR?.pmSignatureDataUrl && (
+ <div className="border-l-4 border-amber-500 pl-4">
+ <h3 className="text-sm font-semibold mb-3">{isRTL ? 'توقيع اعتماد المدير' : 'Manager Approval Signature'}</h3>
+ <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
+ <div className="flex items-start gap-3">
+ <CheckCircle className="w-5 h-5 text-amber-600 mt-1 flex-shrink-0" />
+ <div className="flex-1">
+ <p className="font-semibold text-amber-900">{isRTL ? 'تم الاعتماد من قبل المدير' : 'Approved by Manager'}</p>
+ <p className="text-sm text-amber-700 mt-1">{isRTL ? 'الموقّع: ' : 'Signed by: '}{existingPR?.pmSignerName}</p>
+ <p className="text-sm text-amber-700">{isRTL ? 'المسمى: ' : 'Title: '}{existingPR?.pmSignerTitle}</p>
+ {existingPR?.approvedOn && (
+ <p className="text-sm text-amber-700">{isRTL ? 'التاريخ: ' : 'Date: '}{new Date(existingPR.approvedOn).toLocaleString()}</p>
+ )}
+ <img src={existingPR.pmSignatureDataUrl} alt="Signature" className="mt-3 h-16 border border-amber-300 rounded" />
+ </div>
+ </div>
+ </div>
+ </div>
+ )}
+ </div>
+ )}
+ </CardContent>
 </Card>
+
+{/* ============================= */}
+{/* Signature Dialogs */}
+{/* ============================= */}
+
+{/* Logistics Signature Modal */}
+<Dialog
+  open={logisticsSignatureOpen}
+  onOpenChange={setLogisticsSignatureOpen}
+>
+  <DialogContent className="max-w-2xl">
+    <DialogHeader>
+      <DialogTitle>
+        {isRTL
+          ? "التحقق من اللوجستيات والتوقيع"
+          : "Logistics Validation & Signature"}
+      </DialogTitle>
+    </DialogHeader>
+
+    <SignatureCapture
+      embedded={true}
+      onSave={async (data) => {
+        await handleLogisticSignatureApproval(data);
+        setLogisticsSignatureOpen(false);
+      }}
+      defaultName={user?.name || ""}
+      defaultTitle={
+        isRTL ? "مسؤول اللوجستيات" : "Logistics Officer"
+      }
+      isRTL={isRTL}
+      saving={validateLogisticsMutation.isPending}
+    />
+  </DialogContent>
+</Dialog>
+
+{/* Finance Signature Modal */}
+<Dialog
+  open={financeSignatureOpen}
+  onOpenChange={setFinanceSignatureOpen}
+>
+  <DialogContent className="max-w-2xl">
+    <DialogHeader>
+      <DialogTitle>
+        {isRTL
+          ? "التحقق المالي والتوقيع"
+          : "Finance Validation & Signature"}
+      </DialogTitle>
+    </DialogHeader>
+
+    <SignatureCapture
+      embedded={true}
+      onSave={async (data) => {
+        await handleFinanceSignatureApproval(data);
+        setFinanceSignatureOpen(false);
+      }}
+      defaultName={user?.name || ""}
+      defaultTitle={
+        isRTL ? "مسؤول المالية" : "Finance Officer"
+      }
+      isRTL={isRTL}
+      saving={validateFinanceMutation.isPending}
+    />
+  </DialogContent>
+</Dialog>
+
+{/* PM Signature Modal */}
+<Dialog
+  open={pmSignatureOpen}
+  onOpenChange={setPMSignatureOpen}
+>
+  <DialogContent className="max-w-2xl">
+    <DialogHeader>
+      <DialogTitle>
+        {isRTL
+          ? "الاعتماد النهائي والتوقيع"
+          : "Final Approval & Signature"}
+      </DialogTitle>
+    </DialogHeader>
+
+    <SignatureCapture
+      embedded={true}
+      onSave={async (data) => {
+        await handlePMSignatureApproval(data);
+        setPMSignatureOpen(false);
+      }}
+      defaultName={user?.name || ""}
+      defaultTitle={
+        isRTL ? "مدير المشروع" : "Project Manager"
+      }
+      isRTL={isRTL}
+      saving={approvePMMutation.isPending}
+    />
+  </DialogContent>
+</Dialog>
 
 </div>
 </div>
