@@ -412,7 +412,7 @@ serviceType: pr.serviceType ?? "",
  const submitMutation = trpc.logistics.purchaseRequests.submit.useMutation();
  const validateLogisticsMutation = trpc.logistics.purchaseRequests.validateByLogistics.useMutation();
  const validateFinanceMutation = trpc.logistics.purchaseRequests.validateByFinance.useMutation();
- const approvePMMutation = trpc.logistics.purchaseRequests.approveByPM.useMutation();
+ const approvePMMutation = trpc.logistics.purchaseRequests.validateByPM.useMutation();
  const rejectMutation = trpc.logistics.purchaseRequests.reject.useMutation();
  const validateBudgetMutation = trpc.logistics.purchaseRequests.validateBudget.useMutation();
 
@@ -472,6 +472,53 @@ serviceType: pr.serviceType ?? "",
  // Determine if we're in view mode (URL doesn't contain /edit)
  const [location] = useLocation();
  const isViewMode = !location.includes("/edit") && !location.includes("/new");
+ 
+ // FIX: Org Admin Approval Visibility
+ // Add Org Admin role detection for approval workflow testing
+ const userRole = user?.role || "";
+ const userRoleName = user?.roleName || "";
+ 
+ // Role detection logic
+ const isLogisticsUser = 
+   userRoleName.toLowerCase().includes("logistic officer") ||
+   userRoleName.toLowerCase().includes("logistic manager");
+ 
+ const isFinanceUser = 
+   userRoleName.toLowerCase().includes("finance officer") ||
+   userRoleName.toLowerCase().includes("finance manager");
+ 
+ const isPMUser = 
+   userRoleName.toLowerCase().includes("project manager") ||
+   userRoleName.toLowerCase().includes("program manager") ||
+   userRoleName.toLowerCase().includes("office manager");
+ 
+ // FIX: Add Org Admin to all approval checks
+ const isOrgAdmin = 
+   userRoleName.toLowerCase().includes("organization admin") ||
+   userRoleName.toLowerCase().includes("org admin") ||
+   userRole === "admin";
+ 
+ // Update visibility conditions
+  const canViewLogisticsApproval =
+  (
+    formData.status === "submitted" ||
+    existingPR?.logisticsSignatureDataUrl
+  ) &&
+  (isLogisticsUser || isOrgAdmin);
+
+  const canViewFinanceApproval =
+  (
+    formData.status === "validated_by_logistic" ||
+    existingPR?.financeSignatureDataUrl
+  ) &&
+  (isFinanceUser || isOrgAdmin);
+
+  const canViewPMApproval =
+  (
+    formData.status === "validated_by_finance" ||
+    existingPR?.pmSignatureDataUrl
+  ) &&
+  (isPMUser || isOrgAdmin);
  
  // CRITICAL FIX #14: Signature Locking - Determine which signatures are locked
  // Logistics signature: Locked after logistics validation
@@ -1074,7 +1121,7 @@ budgetUtilizationPercent={budgetUtilizationPercent}
  </CardHeader>
  <CardContent className="space-y-6">
  {/* Logistics Signature Section - Show when submitted */}
-{formData.status === "submitted" && (
+{canViewLogisticsApproval && (
   <div className="border-l-4 border-blue-500 pl-4">
     <h3 className="text-sm font-semibold mb-4">
       {isRTL
@@ -1175,8 +1222,8 @@ budgetUtilizationPercent={budgetUtilizationPercent}
 )}
 
  {/* Finance Signature Section - Show when validated by logistics */}
- {formData.status === "validated_by_logistic" && (
- <div className="border-l-4 border-purple-500 pl-4">
+ {canViewFinanceApproval && (
+  <div className="border-l-4 border-green-500 pl-4">
  <h3 className="text-sm font-semibold mb-4">{isRTL ? 'توقيع التحقق من المالية' : 'Finance Validation Signature'}</h3>
  {!existingPR?.financeSignatureDataUrl ? (
  <SignatureCapture
@@ -1222,9 +1269,8 @@ budgetUtilizationPercent={budgetUtilizationPercent}
  </div>
  )}
 
-{/* PM Signature Section - Show when validated by finance */}
-{formData.status === "validated_by_finance" && (
-  <div className="border-l-4 border-amber-500 pl-4">
+{/* PM Signature Section - Show when validated by finance */}{canViewPMApproval && (
+  <div className="border-l-4 border-purple-500 pl-4">
     <h3 className="text-sm font-semibold mb-4">
       {isRTL ? "توقيع اعتماد المدير" : "Manager Approval Signature"}
     </h3>

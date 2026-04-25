@@ -310,20 +310,20 @@ export const purchaseRequestRouter = router({
           signerName: pr.logisticsSignerName,
           signerTitle: pr.logisticsSignerTitle,
           signatureDataUrl: pr.logisticsSignatureDataUrl,
-          signedAt: new Date().toISOString().slice(0, 19).replace('T', ' '),
+          signedAt: pr.logValidatedOn,
 
         },
         financeSignature: {
           signerName: pr.financeSignerName,
           signerTitle: pr.financeSignerTitle,
           signatureDataUrl: pr.financeSignatureDataUrl,
-          signedAt: new Date().toISOString().slice(0, 19).replace('T', ' '),
+          signedAt: pr.finValidatedOn,
         },
         pmSignature: {
           signerName: pr.pmSignerName,
           signerTitle: pr.pmSignerTitle,
           signatureDataUrl: pr.pmSignatureDataUrl,
-          signedAt: new Date().toISOString().slice(0, 19).replace('T', ' '),
+          signedAt: pr.approvedOn,
         }
       };
     }),
@@ -368,7 +368,7 @@ export const purchaseRequestRouter = router({
             unit: z.string(),
             unitPrice: z.number(),
             totalPrice: z.number(),
-            recurrence: z.number().optional().default(1),
+            recurrence: z.string().optional(),
           })
         ),
       })
@@ -481,7 +481,7 @@ export const purchaseRequestRouter = router({
             unit: z.string(),
             unitPrice: z.number(),
             totalPrice: z.number(),
-            recurrence: z.number().optional().default(1),
+            recurrence: z.string().optional(),
           })
         ).optional(),
       })
@@ -574,7 +574,10 @@ export const purchaseRequestRouter = router({
           and(
             eq(purchaseRequests.id, input.id),
             eq(purchaseRequests.organizationId, ctx.scope.organizationId),
-            eq(purchaseRequests.operatingUnitId, ctx.scope.operatingUnitId)
+            or(
+            eq(purchaseRequests.operatingUnitId, ctx.scope.operatingUnitId),
+            isNull(purchaseRequests.operatingUnitId)
+            )
           )
         );
 
@@ -823,7 +826,7 @@ export const purchaseRequestRouter = router({
             unit: z.string(),
             unitPrice: z.number(),
             totalPrice: z.number(),
-            recurrence: z.number().optional().default(1),
+            recurrence: z.string().optional(),
           })
         ),
       })

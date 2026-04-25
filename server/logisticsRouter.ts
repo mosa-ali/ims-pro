@@ -10,7 +10,7 @@ import { z } from "zod";
 import { router, protectedProcedure, scopedProcedure } from "./_core/trpc";
 import { generatePurchaseRequestApprovalEvidence } from "./evidenceGeneration";
 import { getDb } from "./db";
-import { eq, and, desc, like, or, sql, isNull, gte, lte, between } from "drizzle-orm";
+import { eq, and, desc, like, or, sql, isNull, inArray, gte, lte, between } from "drizzle-orm";
 import {
   purchaseRequests,
   purchaseRequestLineItems,
@@ -32,6 +32,7 @@ import {
   vehicleMaintenance,
   vendors,
   contracts,
+  users,
 } from "../drizzle/schema";
 import { TRPCError } from "@trpc/server";
 import { purchaseRequestRouter } from "./routers/procurement/purchaseRequest";
@@ -75,6 +76,33 @@ const nowSql = new Date().toISOString().slice(0, 19).replace('T', ' ');
 // ============================================================================
 // PURCHASE REQUESTS ROUTER
 // ============================================================================
+
+  async function getWorkflowApprover(
+    db: any,
+    organizationId: number,
+    operatingUnitId: number,
+    allowedRoles: string[]
+  ) {
+    const result = await db
+      .select({
+        id: users.id,
+        name: users.name,
+        email: users.email,
+        role: users.role
+      })
+      .from(users)
+      .where(
+        and(
+          eq(users.currentOrganizationId, organizationId),
+          eq(users.operatingUnitId, operatingUnitId),
+          inArray(users.role, allowedRoles),
+          eq(users.isActive, 1)
+        )
+      )
+      .limit(1);
+
+    return result[0] || null;
+  }
 
 const purchaseRequestsRouter = router({
   list: scopedProcedure
@@ -161,12 +189,13 @@ const purchaseRequestsRouter = router({
     .input(z.object({ id: z.number() }))
     .query(async ({ ctx, input }) => {
       const db = await getDb();
-      const { organizationId } = ctx.scope;
+      const { organizationId, operatingUnitId } = ctx.scope;
       
       const pr = await db.select().from(purchaseRequests)
         .where(and(
           eq(purchaseRequests.id, input.id),
           eq(purchaseRequests.organizationId, organizationId),
+          eq(purchaseRequests.operatingUnitId, operatingUnitId),
           sql`${purchaseRequests.isDeleted} = 0`
         ))
         .limit(1);
@@ -278,24 +307,24 @@ const purchaseRequestsRouter = router({
       if (lineItems.length > 0) {
         await db.insert(purchaseRequestLineItems).values(
           lineItems.map((item, index) => {
-            const qty = parseFloat(item.quantity) || 0;
-            const price = parseFloat(item.unitPrice || "0") || 0;
-            const recurrence = parseFloat(item.recurrence || "1") || 1;
-            return {
-              purchaseRequestId: prId,
-              lineNumber: index + 1,
-              budgetLine: item.budgetLine,
-              description: item.description,
-              descriptionAr: item.descriptionAr,
-              specifications: item.specifications,
-              specificationsAr: item.specificationsAr,
-              quantity: item.quantity,
-              unit: item.unit || "Piece",
-              unitPrice: item.unitPrice || "0",
-              recurrence: item.recurrence || "",
-              totalPrice: (qty * price * recurrence).toFixed(2),
-            };
-          })
+          const qty = parseFloat(String(item.quantity || 0)) || 0;
+          const price = parseFloat(String(item.unitPrice || 0)) || 0;
+          const recurrence = parseFloat(String(item.recurrence || 1)) || 1;
+          return {
+            purchaseRequestId: prId,
+            lineNumber: index + 1,
+            budgetLine: item.budgetLine,
+            description: item.description,
+            descriptionAr: item.descriptionAr,
+            specifications: item.specifications,
+            specificationsAr: item.specificationsAr,
+            quantity: String(item.quantity || "0"),
+            unit: item.unit || "Piece",
+            unitPrice: String(item.unitPrice || "0"),
+            recurrence: String(item.recurrence || "1"),
+            totalPrice: (qty * price * recurrence).toFixed(2),
+          };
+        })
         );
       }
       
@@ -351,31 +380,105 @@ const purchaseRequestsRouter = router({
     .mutation(async ({ input, ctx }) => {
       const db = await getDb();
       const { organizationId } = ctx.scope;
+      const [existingPR] = await db
+        .select()
+        .from(purchaseRequests)
+        .where(
+          and(
+            eq(purchaseRequests.id, input.id),
+            eq(purchaseRequests.organizationId, organizationId)
+          )
+        )
+        .limit(1);
+
+      if (!existingPR) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Purchase Request not found"
+        });
+      }
+
+      const lockedStatuses = [
+        "validated_by_logistic",
+        "validated_by_finance",
+        "approved",
+        "rejected_by_logistic",
+        "rejected_by_finance",
+        "rejected_by_pm"
+      ];
+
+      if (lockedStatuses.includes(existingPR.status)) {
+        throw new TRPCError({
+          code: "FORBIDDEN",
+          message: `Cannot edit PR in ${existingPR.status} status`
+        });
+      }
       const { id, lineItems, donor, donorName, exchangeRate, exchangeTo, total, neededByDate, totalBudgetLine, deliveryLocationAr, projectTitleAr, justificationAr, budgetLineId, ...data } = input;
       
-      let totalAmount;
+      let totalAmount: number | undefined;
       if (lineItems) {
         totalAmount = 0;
+
         lineItems.forEach((item) => {
-          const qty = parseFloat(item.quantity) || 0;
-          const price = parseFloat(item.unitPrice || "0") || 0;
-          totalAmount += qty * price;
+          const qty = parseFloat(String(item.quantity || 0)) || 0;
+          const price = parseFloat(String(item.unitPrice || 0)) || 0;
+          const recurrence = parseFloat(String(item.recurrence || 1)) || 1;
+
+          totalAmount += qty * price * recurrence;
         });
       }
       
+      const updatePayload: any = {
+              ...data
+            };
 
-      
-      await db.update(purchaseRequests).set({
-        ...data,
-        ...(donorName !== undefined && { donorName }),
-        ...(donor !== undefined && !donorName && { donorName: donor }),
-        ...(neededByDate !== undefined && { neededBy: neededByDate }),
-        ...(totalBudgetLine !== undefined && { totalBudgetLine: String(parseFloat(String(totalBudgetLine))) }),
-        ...(exchangeRate !== undefined && { exchangeRate }),
-        ...(exchangeTo !== undefined && { exchangeTo }),
-        ...(total !== undefined && { total }),
-        ...(totalAmount !== undefined && { prTotalUsd: totalAmount.toFixed(2) }),
-      }).where(and(eq(purchaseRequests.id, id), eq(purchaseRequests.organizationId, organizationId)));
+            // donor name
+            if (donorName !== undefined) {
+              updatePayload.donorName = donorName;
+            } else if (donor !== undefined) {
+              updatePayload.donorName = donor;
+            }
+
+            // needed by
+            if (neededByDate !== undefined) {
+              updatePayload.neededBy = neededByDate;
+            }
+
+            // total budget line
+            if (totalBudgetLine !== undefined) {
+              updatePayload.totalBudgetLine = String(
+                parseFloat(String(totalBudgetLine))
+              );
+            }
+
+            // exchange
+            if (exchangeRate !== undefined) {
+              updatePayload.exchangeRate = exchangeRate;
+            }
+
+            if (exchangeTo !== undefined) {
+              updatePayload.exchangeTo = exchangeTo;
+            }
+
+            // total
+            if (total !== undefined) {
+              updatePayload.total = total;
+            }
+
+            // calculated USD total
+            if (totalAmount !== undefined) {
+              updatePayload.prTotalUsd = totalAmount.toFixed(2);
+            }
+
+            await db
+              .update(purchaseRequests)
+              .set(updatePayload)
+              .where(
+                and(
+                  eq(purchaseRequests.id, id),
+                  eq(purchaseRequests.organizationId, organizationId)
+                )
+              );
       
       if (lineItems) {
         await db.delete(purchaseRequestLineItems)
@@ -384,24 +487,24 @@ const purchaseRequestsRouter = router({
         if (lineItems.length > 0) {
           await db.insert(purchaseRequestLineItems).values(
             lineItems.map((item, index) => {
-              const qty = parseFloat(item.quantity) || 0;
-              const price = parseFloat(item.unitPrice || "0") || 0;
-              const recurrence = parseFloat(item.recurrence || "1") || 1;
-              return {
-                purchaseRequestId: id,
-                lineNumber: index + 1,
-                budgetLine: item.budgetLine,
-                description: item.description,
-                descriptionAr: item.descriptionAr,
-                specifications: item.specifications,
-                specificationsAr: item.specificationsAr,
-                quantity: item.quantity,
-                unit: item.unit || "Piece",
-                unitPrice: item.unitPrice || "0",
-                recurrence: item.recurrence || "",
-                totalPrice: (qty * price * recurrence).toFixed(2),
-              };
-            })
+            const qty = parseFloat(String(item.quantity || 0)) || 0;
+            const price = parseFloat(String(item.unitPrice || 0)) || 0;
+            const recurrence = parseFloat(String(item.recurrence || 1)) || 1;
+            return {
+              purchaseRequestId: id,
+              lineNumber: index + 1,
+              budgetLine: item.budgetLine,
+              description: item.description,
+              descriptionAr: item.descriptionAr,
+              specifications: item.specifications,
+              specificationsAr: item.specificationsAr,
+              quantity: String(item.quantity || "0"),
+              unit: item.unit || "Piece",
+              unitPrice: String(item.unitPrice || "0"),
+              recurrence: String(item.recurrence || "1"),
+              totalPrice: (qty * price * recurrence).toFixed(2),
+            };
+          })
           );
         }
       }
@@ -459,7 +562,7 @@ const purchaseRequestsRouter = router({
       const { organizationId } = ctx.scope;
       
       await db.update(purchaseRequests).set({
-        status: "rejected", rejectionReason: input.reason, updatedBy: ctx.user.id,
+        rejectionStage: "rejected", rejectReason: input.reason,
       }).where(and(eq(purchaseRequests.id, input.id), eq(purchaseRequests.organizationId, organizationId)));
       return { success: true };
     }),
@@ -775,6 +878,7 @@ const purchaseRequestsRouter = router({
             organizationId,
             operatingUnitId,
             createdBy: ctx.user.id,
+            CreatedAt: nowSql,
           });
           
           const prId = prResult[0].insertId;
@@ -867,12 +971,35 @@ const purchaseRequestsRouter = router({
   submit: scopedProcedure
     .input(z.object({
       id: z.number(),
-      logisticsEmail: z.string().email(),
-    }))
+      }))
     .mutation(async ({ ctx, input }) => {
       const db = await getDb();
       const { notifyLogisticsOfPRSubmission } = await import("./services/prNotificationService");
       
+      const [pr] = await db
+        .select()
+        .from(purchaseRequests)
+        .where(
+          and(
+            eq(purchaseRequests.id, input.id),
+            eq(purchaseRequests.organizationId, ctx.scope.organizationId)
+          )
+        )
+        .limit(1);
+
+      if (!pr) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Purchase Request not found"
+        });
+      }
+
+      if (pr.status !== "draft") {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: `Only draft PRs can be submitted. Current status: ${pr.status}`
+        });
+      }
       // Update PR status to submitted
       await db
         .update(purchaseRequests)
@@ -888,9 +1015,24 @@ const purchaseRequestsRouter = router({
           )
         );
       
-      // Send email notification to Logistics
-      await notifyLogisticsOfPRSubmission(input.id, input.logisticsEmail);
-      
+      const approver = await getWorkflowApprover(
+        db,
+        ctx.scope.organizationId,
+        ctx.scope.operatingUnitId,
+        ["logistics_manager", "logistics_officer", "organization_admin"]
+        );
+
+        if (!approver?.email) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "No logistics approver found"
+        });
+        }
+
+        await notifyLogisticsOfPRSubmission(
+        input.id,
+        approver.email
+        );     
       return { success: true, message: "PR submitted successfully. Logistics team has been notified." };
     }),
 
@@ -938,16 +1080,42 @@ const purchaseRequestsRouter = router({
   validateByLogistics: scopedProcedure
     .input(z.object({
       id: z.number(),
-      financeEmail: z.string().email(),
       comments: z.string().optional(),
       signerName: z.string(),
       signerTitle: z.string(),
       signatureDataUrl: z.string(),
     }))
+    
     .mutation(async ({ ctx, input }) => {
       const db = await getDb();
       const { notifyFinanceOfLogisticsValidation } = await import("./services/prNotificationService");
       
+      const [pr] = await db
+        .select()
+        .from(purchaseRequests)
+        .where(
+          and(
+            eq(purchaseRequests.id, input.id),
+            eq(purchaseRequests.organizationId, ctx.scope.organizationId)
+          )
+        )
+        .limit(1);
+
+      if (!pr) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Purchase Request not found"
+        });
+      }
+
+      if (pr.status !== "submitted") {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message:
+            "Only submitted PRs can be validated by logistics"
+        });
+      }
+
       // Update PR status
       await db
         .update(purchaseRequests)
@@ -968,8 +1136,24 @@ const purchaseRequestsRouter = router({
           )
         );
       
-      // Send email notification to Finance
-      await notifyFinanceOfLogisticsValidation(input.id, input.financeEmail);
+      const approver = await getWorkflowApprover(
+        db,
+        ctx.scope.organizationId,
+        ctx.scope.operatingUnitId,
+        ["finance_manager", "finance_officer", "organization_admin"]
+        );
+
+        if (!approver?.email) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "No finance approver found"
+        });
+        }
+
+        await notifyFinanceOfLogisticsValidation(
+        input.id,
+        approver.email
+        );
       
       return { success: true, message: "PR validated by Logistics. Finance team has been notified." };
     }),
@@ -977,7 +1161,6 @@ const purchaseRequestsRouter = router({
   validateByFinance: scopedProcedure
     .input(z.object({
       id: z.number(),
-      pmEmail: z.string().email(),
       comments: z.string().optional(),
       signerName: z.string(),
       signerTitle: z.string(),
@@ -986,7 +1169,31 @@ const purchaseRequestsRouter = router({
     .mutation(async ({ ctx, input }) => {
       const db = await getDb();
       const { notifyPMOfFinanceValidation } = await import("./services/prNotificationService");
-      
+      const [pr] = await db
+        .select()
+        .from(purchaseRequests)
+        .where(
+          and(
+            eq(purchaseRequests.id, input.id),
+            eq(purchaseRequests.organizationId, ctx.scope.organizationId)
+          )
+        )
+        .limit(1);
+
+      if (!pr) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Purchase Request not found"
+        });
+      }
+
+      if (pr.status !== "validated_by_logistic") {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message:
+            "PR must be validated by logistics first"
+        });
+      }
       // Update PR status
       await db
         .update(purchaseRequests)
@@ -1007,8 +1214,29 @@ const purchaseRequestsRouter = router({
           )
         );
       
-      // Send email notification to PM
-      await notifyPMOfFinanceValidation(input.id, input.pmEmail);
+      const approver = await getWorkflowApprover(
+        db,
+        ctx.scope.organizationId,
+        ctx.scope.operatingUnitId,
+        [
+          "project_manager",
+          "program_manager",
+          "office_manager",
+          "organization_admin"
+        ]
+        );
+
+        if (!approver?.email) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "No PM approver found"
+        });
+        }
+
+        await notifyPMOfFinanceValidation(
+        input.id,
+        approver.email
+        );
       
       return { success: true, message: "PR validated by Finance. Program Manager has been notified." };
     }),
@@ -1016,7 +1244,6 @@ const purchaseRequestsRouter = router({
   validateByPM: scopedProcedure
     .input(z.object({
       id: z.number(),
-      requesterEmail: z.string().email(),
       comments: z.string().optional(),
       signerName: z.string(),
       signerTitle: z.string(),
@@ -1026,6 +1253,32 @@ const purchaseRequestsRouter = router({
       const db = await getDb();
       const { notifyRequesterOfApproval } = await import("./services/prNotificationService");
       
+      const [pr] = await db
+        .select()
+        .from(purchaseRequests)
+        .where(
+          and(
+            eq(purchaseRequests.id, input.id),
+            eq(purchaseRequests.organizationId, ctx.scope.organizationId)
+          )
+        )
+        .limit(1);
+
+      if (!pr) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Purchase Request not found"
+        });
+      }
+
+      if (pr.status !== "validated_by_finance") {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message:
+            "PR must be validated by finance first"
+        });
+      }
+
       // Update PR status to approved
       await db
         .update(purchaseRequests)
@@ -1046,8 +1299,23 @@ const purchaseRequestsRouter = router({
           )
         );
       
-      // Send email notification to Requester
-      await notifyRequesterOfApproval(input.id, input.requesterEmail);
+      const existingPR = await db
+      .select()
+      .from(purchaseRequests)
+      .where(eq(purchaseRequests.id, input.id))
+      .limit(1);
+
+      if (!pr?.requesterEmail) {
+      throw new TRPCError({
+        code: "NOT_FOUND",
+        message: "Requester email not found"
+      });
+      }
+
+      await notifyRequesterOfApproval(
+      input.id,
+      pr.requesterEmail
+      );
       
       return { success: true, message: "PR approved by PM. Requester has been notified." };
     }),
@@ -1062,6 +1330,32 @@ const purchaseRequestsRouter = router({
       const db = await getDb();
       const { notifyRequesterOfRejection } = await import("./services/prNotificationService");
       
+      const [pr] = await db
+      .select()
+      .from(purchaseRequests)
+      .where(
+        and(
+          eq(purchaseRequests.id, input.id),
+          eq(purchaseRequests.organizationId, ctx.scope.organizationId)
+        )
+      )
+      .limit(1);
+
+    if (!pr) {
+      throw new TRPCError({
+        code: "NOT_FOUND",
+        message: "Purchase Request not found"
+      });
+    }
+
+    // Only submitted PR can be rejected by logistics
+    if (pr.status !== "submitted") {
+      throw new TRPCError({
+        code: "BAD_REQUEST",
+        message: `Logistics can only reject submitted PRs. Current status: ${pr.status}`
+      });
+    }
+
       // Update PR status to rejected
       await db
         .update(purchaseRequests)
@@ -1096,6 +1390,32 @@ const purchaseRequestsRouter = router({
       const db = await getDb();
       const { notifyRequesterOfRejection } = await import("./services/prNotificationService");
       
+      const [pr] = await db
+        .select()
+        .from(purchaseRequests)
+        .where(
+          and(
+            eq(purchaseRequests.id, input.id),
+            eq(purchaseRequests.organizationId, ctx.scope.organizationId)
+          )
+        )
+        .limit(1);
+
+      if (!pr) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Purchase Request not found"
+        });
+      }
+
+      // Finance can only reject after logistics approval
+      if (pr.status !== "validated_by_logistic") {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: `Finance can only reject PRs validated by logistics. Current status: ${pr.status}`
+        });
+      }
+
       // Update PR status to rejected
       await db
         .update(purchaseRequests)
@@ -1130,6 +1450,32 @@ const purchaseRequestsRouter = router({
       const db = await getDb();
       const { notifyRequesterOfRejection } = await import("./services/prNotificationService");
       
+      const [pr] = await db
+        .select()
+        .from(purchaseRequests)
+        .where(
+          and(
+            eq(purchaseRequests.id, input.id),
+            eq(purchaseRequests.organizationId, ctx.scope.organizationId)
+          )
+        )
+        .limit(1);
+
+      if (!pr) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Purchase Request not found"
+        });
+      }
+
+      // PM can only reject after finance validation
+      if (pr.status !== "validated_by_finance") {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: `PM can only reject PRs validated by finance. Current status: ${pr.status}`
+        });
+      }
+
       // Update PR status to rejected
       await db
         .update(purchaseRequests)
@@ -1264,7 +1610,7 @@ const purchaseOrdersRouter = router({
           .from(purchaseRequests)
           .where(eq(purchaseRequests.id, input.purchaseRequestId))
           .limit(1);
-        const contractChainCategories = ['services', 'consultancy', 'works'];
+        const contractChainCategories = ['services', 'works'];
         const isStandardContractChain = pr && contractChainCategories.includes(pr.category || '');
         
         // Services/Works/Consultancy: PO is fully blocked (they use SAC/Invoice chain)
@@ -1823,7 +2169,7 @@ const stockIssuedRouter = router({
         ...issueData,
         organizationId,
         operatingUnitId,
-        issueDate: input.issueDate ? new Date(input.issueDate) : new Date(),
+        issueDate: nowSql,
         createdBy: ctx.user.id,
       });
       
@@ -2040,7 +2386,7 @@ const returnedItemsRouter = router({
         ...returnData,
         organizationId,
         operatingUnitId,
-        returnDate: formatSqlDate(input.returnDate),
+        returnDate: nowSql,
         createdBy: ctx.user.id,
       });
       
@@ -2476,7 +2822,7 @@ const tripLogsRouter = router({
       const distanceTraveled = endMileage > startMileage ? (endMileage - startMileage).toFixed(2) : "0";
 
       const result = await db.insert(tripLogs).values({
-        ...input, organizationId, operatingUnitId, distanceTraveled, createdBy: ctx.user.id, updatedBy: ctx.user.id,
+        ...input, organizationId, operatingUnitId, distanceTraveled, createdBy: ctx.user.id, createdAt: nowSql, updatedBy: ctx.user.id, updatedAt: nowSql,
       });
       return { id: result[0].insertId };
     }),
