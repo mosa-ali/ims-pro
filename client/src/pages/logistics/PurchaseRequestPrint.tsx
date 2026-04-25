@@ -380,7 +380,7 @@ export default function PurchaseRequestPrint() {
                 ? "المبلغ الإجمالي:"
                 : "Total Amount:"}
             </strong>{" "}
-            {pr.currency} {totalAmount}
+            {pr.exchangeTo} {totalAmount}
           </div>
         </div>
       </div>
