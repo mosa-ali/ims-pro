@@ -368,7 +368,10 @@ export const purchaseRequestRouter = router({
             unit: z.string(),
             unitPrice: z.number(),
             totalPrice: z.number(),
-            recurrence: z.string().optional(),
+            recurrence: z.union([
+            z.string(),
+            z.number()
+          ]).optional(),
           })
         ),
       })
@@ -481,7 +484,10 @@ export const purchaseRequestRouter = router({
             unit: z.string(),
             unitPrice: z.number(),
             totalPrice: z.number(),
-            recurrence: z.string().optional(),
+            recurrence: z.union([
+            z.string(),
+            z.number()
+          ]).optional(),
           })
         ).optional(),
       })
@@ -826,7 +832,10 @@ export const purchaseRequestRouter = router({
             unit: z.string(),
             unitPrice: z.number(),
             totalPrice: z.number(),
-            recurrence: z.string().optional(),
+            recurrence: z.union([
+            z.string(),
+            z.number()
+          ]).optional(),
           })
         ),
       })

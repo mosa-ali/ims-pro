@@ -258,7 +258,10 @@ const purchaseRequestsRouter = router({
         quantity: z.string(),
         unit: z.string().optional(),
         unitPrice: z.string().optional(),
-        recurrence: z.string().optional(),
+        recurrence: z.union([
+        z.string(),
+        z.number()
+      ]).optional(),
       })),
     }))
     .mutation(async ({ input, ctx }) => {
@@ -279,11 +282,12 @@ const purchaseRequestsRouter = router({
       
       let totalAmount = 0;
       lineItems.forEach((item) => {
-        const qty = parseFloat(item.quantity) || 0;
-        const price = parseFloat(item.unitPrice || "0") || 0;
-        const recurrence = parseFloat(item.recurrence || "1") || 1;
-        totalAmount += qty * price * recurrence;
-      });
+      const qty = parseFloat(String(item.quantity ?? 0)) || 0;
+      const price = parseFloat(String(item.unitPrice ?? 0)) || 0;
+      const recurrence = parseFloat(String(item.recurrence ?? 1)) || 1;
+
+      totalAmount += qty * price * recurrence;
+    });
       
       const processedExchangeRate = exchangeRate ? parseFloat(exchangeRate).toString() : undefined;
       console.log("[PR Create] Saving with exchangeRate:", processedExchangeRate);
@@ -305,11 +309,11 @@ const purchaseRequestsRouter = router({
       const prId = result[0].insertId;
       
       if (lineItems.length > 0) {
-        await db.insert(purchaseRequestLineItems).values(
-          lineItems.map((item, index) => {
-          const qty = parseFloat(String(item.quantity || 0)) || 0;
-          const price = parseFloat(String(item.unitPrice || 0)) || 0;
-          const recurrence = parseFloat(String(item.recurrence || 1)) || 1;
+        const processedLineItems = lineItems.map((item, index) => {
+          const qty = parseFloat(String(item.quantity ?? 0)) || 0;
+          const price = parseFloat(String(item.unitPrice ?? 0)) || 0;
+          const recurrence = parseFloat(String(item.recurrence ?? 1)) || 1;
+
           return {
             purchaseRequestId: prId,
             lineNumber: index + 1,
@@ -318,14 +322,15 @@ const purchaseRequestsRouter = router({
             descriptionAr: item.descriptionAr,
             specifications: item.specifications,
             specificationsAr: item.specificationsAr,
-            quantity: String(item.quantity || "0"),
+            quantity: String(item.quantity ?? "0"),
             unit: item.unit || "Piece",
-            unitPrice: String(item.unitPrice || "0"),
-            recurrence: String(item.recurrence || "1"),
+            unitPrice: String(item.unitPrice ?? "0"),
+            recurrence: String(item.recurrence ?? "1"),
             totalPrice: (qty * price * recurrence).toFixed(2),
           };
-        })
-        );
+        });
+
+        await db.insert(purchaseRequestLineItems).values(processedLineItems);
       }
       
       return { id: prId };
@@ -374,7 +379,10 @@ const purchaseRequestsRouter = router({
         quantity: z.string(),
         unit: z.string().optional(),
         unitPrice: z.string().optional(),
-        recurrence: z.string().optional(),
+        recurrence: z.union([
+        z.string(),
+        z.number()
+      ]).optional(),
       })).optional(),
     }))
     .mutation(async ({ input, ctx }) => {
@@ -420,9 +428,9 @@ const purchaseRequestsRouter = router({
         totalAmount = 0;
 
         lineItems.forEach((item) => {
-          const qty = parseFloat(String(item.quantity || 0)) || 0;
-          const price = parseFloat(String(item.unitPrice || 0)) || 0;
-          const recurrence = parseFloat(String(item.recurrence || 1)) || 1;
+          const qty = parseFloat(String(item.quantity ?? 0)) || 0;
+          const price = parseFloat(String(item.unitPrice ?? 0)) || 0;
+          const recurrence = parseFloat(String(item.recurrence ?? 1)) || 1;
 
           totalAmount += qty * price * recurrence;
         });
@@ -484,33 +492,31 @@ const purchaseRequestsRouter = router({
         await db.delete(purchaseRequestLineItems)
           .where(eq(purchaseRequestLineItems.purchaseRequestId, id));
         
-        if (lineItems.length > 0) {
-          await db.insert(purchaseRequestLineItems).values(
-            lineItems.map((item, index) => {
-            const qty = parseFloat(String(item.quantity || 0)) || 0;
-            const price = parseFloat(String(item.unitPrice || 0)) || 0;
-            const recurrence = parseFloat(String(item.recurrence || 1)) || 1;
-            return {
-              purchaseRequestId: id,
-              lineNumber: index + 1,
-              budgetLine: item.budgetLine,
-              description: item.description,
-              descriptionAr: item.descriptionAr,
-              specifications: item.specifications,
-              specificationsAr: item.specificationsAr,
-              quantity: String(item.quantity || "0"),
-              unit: item.unit || "Piece",
-              unitPrice: String(item.unitPrice || "0"),
-              recurrence: String(item.recurrence || "1"),
-              totalPrice: (qty * price * recurrence).toFixed(2),
-            };
-          })
-          );
-        }
+      if (lineItems.length > 0) {
+        const processedLineItems = lineItems.map((item, index) => {
+          const qty = parseFloat(String(item.quantity ?? 0)) || 0;
+          const price = parseFloat(String(item.unitPrice ?? 0)) || 0;
+          const recurrence = parseFloat(String(item.recurrence ?? 1)) || 1;
+
+          return {
+            purchaseRequestId: id,
+            lineNumber: index + 1,
+            budgetLine: item.budgetLine,
+            description: item.description,
+            descriptionAr: item.descriptionAr,
+            specifications: item.specifications,
+            specificationsAr: item.specificationsAr,
+            quantity: String(item.quantity ?? "0"),
+            unit: item.unit || "Piece",
+            unitPrice: String(item.unitPrice ?? "0"),
+            recurrence: String(item.recurrence ?? "1"),
+            totalPrice: (qty * price * recurrence).toFixed(2),
+          };
+        });
+        await db.insert(purchaseRequestLineItems).values(processedLineItems);
       }
-      
       return { success: true };
-    }),
+    }}),
 
   delete: scopedProcedure
     .input(z.object({ id: z.number() }))
