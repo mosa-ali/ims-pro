@@ -33,6 +33,7 @@ import {
   vendors,
   contracts,
   users,
+  userOrganizations,
 } from "../drizzle/schema";
 import { TRPCError } from "@trpc/server";
 import { purchaseRequestRouter } from "./routers/procurement/purchaseRequest";
@@ -83,32 +84,49 @@ const nowSql = new Date().toISOString().slice(0, 19).replace('T', ' ');
   operatingUnitId: number | null,
   allowedRoles: string[]
 ) {
-  const conditions = [
-    eq(users.currentOrganizationId, organizationId),
-    inArray(users.role, allowedRoles),
-    eq(users.isActive, 1)
-  ];
+  // STEP 1 → same org + same OU
+    const result = await db
+        .select({
+          id: users.id,
+          name: users.name,
+          email: users.email,
+          role: userOrganizations.role,
+        })
+        .from(userOrganizations)
+        .innerJoin(users, eq(userOrganizations.userId, users.id))
+        .where(
+          and(
+            eq(userOrganizations.organizationId, organizationId),
+            eq(users.isActive, 1),
+            inArray(userOrganizations.role, allowedRoles)
+          )
+        )
+        .limit(1);
 
-  // Only filter by operating unit if provided
-  if (operatingUnitId) {
-    conditions.push(
-      eq(users.operatingUnitId, operatingUnitId)
-    );
-  }
+      if (result.length > 0) {
+        return result[0];
+      }
 
-  const result = await db
-    .select({
-      id: users.id,
-      name: users.name,
-      email: users.email,
-      role: users.role
-    })
-    .from(users)
-    .where(and(...conditions))
-    .limit(1);
+      // STEP 2 → fallback to organization admin
+      const fallback = await db
+        .select({
+          id: users.id,
+          name: users.name,
+          email: users.email,
+          role: users.role,
+        })
+        .from(users)
+        .where(
+          and(
+            eq(users.currentOrganizationId, organizationId),
+            eq(users.role, "organization_admin"),
+            eq(users.isActive, 1)
+          )
+        )
+        .limit(1);
 
-  return result[0] || null;
-}
+      return fallback[0] || null;
+    }
 
 const purchaseRequestsRouter = router({
   list: scopedProcedure
@@ -1031,7 +1049,11 @@ const purchaseRequestsRouter = router({
         db,
         ctx.scope.organizationId,
         ctx.scope.operatingUnitId,
-        ["logistics_manager", "logistics_officer", "organization_admin"]
+        [
+          "Logistic Manager",
+          "Logistics Officer",
+          "organization_admin"
+          ]
         );
 
         if (!approver?.email) {
@@ -1152,7 +1174,12 @@ const purchaseRequestsRouter = router({
         db,
         ctx.scope.organizationId,
         ctx.scope.operatingUnitId,
-        ["finance_manager", "finance_officer", "organization_admin"]
+        [
+          "Finance Manager",
+          "Finance Officer",
+          "Finance Coordinator",
+          "organization_admin"
+          ]
         );
 
         if (!approver?.email) {
@@ -1231,11 +1258,11 @@ const purchaseRequestsRouter = router({
         ctx.scope.organizationId,
         ctx.scope.operatingUnitId,
         [
-          "project_manager",
-          "program_manager",
-          "office_manager",
+          "Project Manager",
+          "Program Manager",
+          "Project Officer",
           "organization_admin"
-        ]
+          ]          
         );
 
         if (!approver?.email) {
