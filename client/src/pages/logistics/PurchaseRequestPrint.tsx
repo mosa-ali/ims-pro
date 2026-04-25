@@ -1,8 +1,5 @@
-/**
- * Purchase Request Print View
- * Official document format using OfficialPrintTemplate with children pattern
- */
 import { useOrganization } from "@/contexts/OrganizationContext";
+import { useOperatingUnit } from "@/contexts/OperatingUnitContext";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { trpc } from "@/lib/trpc";
 import { useRoute } from "wouter";
@@ -10,148 +7,537 @@ import { OfficialPrintTemplate } from "@/components/logistics/OfficialPrintTempl
 import { format } from "date-fns";
 
 export default function PurchaseRequestPrint() {
- const { currentOrganization } = useOrganization();
-  const { language, isRTL} = useLanguage();
- const [, params] = useRoute("/organization/logistics/purchase-requests/:id/print");
- const id = params?.id ? parseInt(params.id) : 0;
+  const { currentOrganization } = useOrganization();
+  const { currentOperatingUnit } = useOperatingUnit();
+  const { isRTL } = useLanguage();
 
- const { data: pr, isLoading } = trpc.logistics.purchaseRequests.getById.useQuery(
- { id, organizationId: currentOrganization?.id || 0 },
- { enabled: !!id && !!currentOrganization?.id }
- );
+  // Branding only used as fallback for logo
+  const brandingQuery = trpc.settings.branding.get.useQuery();
+  const branding = brandingQuery.data;
 
- if (isLoading) return <div className="p-8 text-center">{isRTL ? 'جاري التحميل...' : 'Loading...'}</div>;
- if (!pr) return <div className="p-8 text-center">{isRTL ? 'لم يتم العثور على طلب الشراء' : 'Purchase Request not found'}</div>;
+  const [, params] = useRoute(
+    "/organization/logistics/purchase-requests/:id/print"
+  );
 
- const lineItems = pr.lineItems || [];
+  const id = params?.id ? parseInt(params.id) : 0;
 
- return (
- <OfficialPrintTemplate
-      direction={isRTL ? 'rtl' : 'ltr'}
- organizationLogo={currentOrganization?.logoUrl}
- organizationName={currentOrganization?.name}
- organizationNameAr={currentOrganization?.nameAr}
- formTitle="Purchase Request"
- formTitleAr="طلب شراء"
- formNumber={pr.prNumber || `PR-${pr.id}`}
- formDate={pr.createdAt ? format(new Date(pr.createdAt), "yyyy-MM-dd") : ""}
- signatureBlocks={[
- { label: "Requested By", labelAr: "طلب بواسطة", name: pr.requesterName || "", date: pr.createdAt ? format(new Date(pr.createdAt), "yyyy-MM-dd") : "" },
- { label: "Reviewed By", labelAr: "راجع بواسطة" },
- { label: "Approved By", labelAr: "اعتمد بواسطة" },
- ]}
- >
- {/* Metadata */}
- <div className="grid grid-cols-2 gap-4 mb-6">
- <div className="space-y-2">
- <div className="flex"><span className="text-sm text-muted-foreground w-32">Project:</span><span className="text-sm font-medium">{pr.projectTitle || "-"}</span></div>
- <div className="flex"><span className="text-sm text-muted-foreground w-32">Category:</span><span className="text-sm font-medium capitalize">{pr.category || "-"}</span></div>
- <div className="flex"><span className="text-sm text-muted-foreground w-32">Urgency:</span><span className="text-sm font-medium capitalize">{pr.urgency || "Normal"}</span></div>
- <div className="flex"><span className="text-sm text-muted-foreground w-32">Department:</span><span className="text-sm font-medium">{pr.department || "-"}</span></div>
- </div>
- <div className="space-y-2">
- <div className="flex"><span className="text-sm text-muted-foreground w-32">Donor:</span><span className="text-sm font-medium">{pr.donorId || "-"}</span></div>
- <div className="flex"><span className="text-sm text-muted-foreground w-32">{isRTL ? 'رمز الميزانية:' : 'Budget Code:'}</span><span className="text-sm font-medium">{pr.budgetCode || "-"}</span></div>
- <div className="flex"><span className="text-sm text-muted-foreground w-32">{isRTL ? 'مطلوب بحلول:' : 'Needed By:'}</span><span className="text-sm font-medium">{pr.neededByDate ? format(new Date(pr.neededByDate), "yyyy-MM-dd") : "-"}</span></div>
- <div className="flex"><span className="text-sm text-muted-foreground w-32">{isRTL ? 'المبلغ الإجمالي:' : 'Total Amount:'}</span><span className="text-sm font-bold">{pr.currency} {parseFloat(pr.totalAmount || "0").toLocaleString()}</span></div>
- </div>
- </div>
+  const { data: pr, isLoading } =
+    trpc.logistics.purchaseRequests.getById.useQuery(
+      {
+        id,
+        organizationId: currentOrganization?.id || 0,
+      },
+      {
+        enabled: !!id && !!currentOrganization?.id,
+      }
+    );
 
- {/* Line Items Table */}
- <table className="w-full border-collapse border border-gray-300 text-sm">
- <thead>
- <tr className="bg-gray-100">
- <th className="border border-gray-300 px-3 py-2 text-start">#</th>
- <th className="border border-gray-300 px-3 py-2 text-start">{isRTL ? 'الوصف' : 'Description'}</th>
- <th className="border border-gray-300 px-3 py-2 text-end">Qty</th>
- <th className="border border-gray-300 px-3 py-2 text-start">{isRTL ? 'الوحدة' : 'Unit'}</th>
- <th className="border border-gray-300 px-3 py-2 text-end">{isRTL ? 'سعر الوحدة' : 'Unit Price'}</th>
- <th className="border border-gray-300 px-3 py-2 text-end">{isRTL ? 'الإجمالي' : 'Total'}</th>
- </tr>
- </thead>
- <tbody>
- {lineItems.map((item: any, idx: number) => (
- <tr key={idx}>
- <td className="border border-gray-300 px-3 py-2">{idx + 1}</td>
- <td className="border border-gray-300 px-3 py-2">{item.description}</td>
- <td className="border border-gray-300 px-3 py-2 text-end">{item.quantity || 0}</td>
- <td className="border border-gray-300 px-3 py-2">{item.unit || "-"}</td>
- <td className="border border-gray-300 px-3 py-2 text-end">{pr.currency} {parseFloat(item.unitPrice || "0").toLocaleString()}</td>
- <td className="border border-gray-300 px-3 py-2 text-end">{pr.currency} {parseFloat(item.totalPrice || "0").toLocaleString()}</td>
- </tr>
- ))}
- </tbody>
- <tfoot>
- <tr className="bg-gray-50 font-bold">
- <td colSpan={5} className="border border-gray-300 px-3 py-2 text-end">Total:</td>
- <td className="border border-gray-300 px-3 py-2 text-end">{pr.currency} {parseFloat(pr.totalAmount || "0").toLocaleString()}</td>
- </tr>
- </tfoot>
- </table>
+  if (isLoading) {
+    return (
+      <div className="p-8 text-center">
+        {isRTL ? "جاري التحميل..." : "Loading..."}
+      </div>
+    );
+  }
 
- {pr.justificationEn && (
- <div className="mt-4">
- <h4 className="text-sm font-semibold mb-1">Justification:</h4>
- <p className="text-sm text-muted-foreground">{pr.justificationEn}</p>
- </div>
- )}
+  if (!pr) {
+    return (
+      <div className="p-8 text-center">
+        {isRTL
+          ? "لم يتم العثور على طلب الشراء"
+          : "Purchase Request not found"}
+      </div>
+    );
+  }
 
- {/* Digital Signatures Audit Trail */}
- <div className="mt-8 pt-6 border-t border-gray-300">
- <h3 className="text-sm font-bold mb-4">{isRTL ? 'التوقيعات الرقمية' : 'Digital Signatures'}</h3>
- <div className="grid grid-cols-3 gap-4">
- {/* Logistics Officer Signature */}
- <div className="border border-gray-300 p-4 rounded">
- <div className="text-xs font-semibold mb-2">{isRTL ? 'ضابط الخدمات اللوجستية' : 'Logistics Officer'}</div>
- {pr.logisticsSignatureDataUrl ? (
- <>
- <img src={pr.logisticsSignatureDataUrl} alt="Logistics Signature" className="w-full h-16 object-contain mb-2" />
- <div className="text-xs text-muted-foreground">
- <div>{pr.logisticsSignerName || '-'}</div>
- <div>{pr.logisticsSignerTitle || '-'}</div>
- <div>{pr.logValidatedOn ? format(new Date(pr.logValidatedOn), 'yyyy-MM-dd HH:mm') : '-'}</div>
- </div>
- </>
- ) : (
- <div className="text-xs text-muted-foreground italic">{isRTL ? 'لم يتم التوقيع بعد' : 'Not signed yet'}</div>
- )}
- </div>
+  const lineItems = pr.lineItems || [];
 
- {/* Finance Officer Signature */}
- <div className="border border-gray-300 p-4 rounded">
- <div className="text-xs font-semibold mb-2">{isRTL ? 'ضابط المالية' : 'Finance Officer'}</div>
- {pr.financeSignatureDataUrl ? (
- <>
- <img src={pr.financeSignatureDataUrl} alt="Finance Signature" className="w-full h-16 object-contain mb-2" />
- <div className="text-xs text-muted-foreground">
- <div>{pr.financeSignerName || '-'}</div>
- <div>{pr.financeSignerTitle || '-'}</div>
- <div>{pr.finValidatedOn ? format(new Date(pr.finValidatedOn), 'yyyy-MM-dd HH:mm') : '-'}</div>
- </div>
- </>
- ) : (
- <div className="text-xs text-muted-foreground italic">{isRTL ? 'لم يتم التوقيع بعد' : 'Not signed yet'}</div>
- )}
- </div>
+  const totalAmount = parseFloat(
+    pr.total || pr.totalAmount || "0"
+  ).toLocaleString();
 
- {/* Office Manager (PM) Signature */}
- <div className="border border-gray-300 p-4 rounded">
- <div className="text-xs font-semibold mb-2">{isRTL ? 'مدير المكتب' : 'Office Manager'}</div>
- {pr.pmSignatureDataUrl ? (
- <>
- <img src={pr.pmSignatureDataUrl} alt="PM Signature" className="w-full h-16 object-contain mb-2" />
- <div className="text-xs text-muted-foreground">
- <div>{pr.pmSignerName || '-'}</div>
- <div>{pr.pmSignerTitle || '-'}</div>
- <div>{pr.approvedOn ? format(new Date(pr.approvedOn), 'yyyy-MM-dd HH:mm') : '-'}</div>
- </div>
- </>
- ) : (
- <div className="text-xs text-muted-foreground italic">{isRTL ? 'لم يتم التوقيع بعد' : 'Not signed yet'}</div>
- )}
- </div>
- </div>
- </div>
- </OfficialPrintTemplate>
- );
+  const formatDate = (
+    date: string | null | undefined
+  ) => {
+    if (!date) return "-";
+    return format(
+      new Date(date),
+      "yyyy-MM-dd HH:mm"
+    );
+  };
+
+  const signatureSections = [
+    {
+      key: "requested",
+      title: isRTL ? "مقدم الطلب" : "Requested By",
+    },
+    {
+      key: "logistics",
+      title: isRTL
+        ? "اعتماد اللوجستيات"
+        : "Logistics Validation",
+    },
+    {
+      key: "finance",
+      title: isRTL
+        ? "اعتماد المالية"
+        : "Finance Validation",
+    },
+    {
+      key: "approval",
+      title: isRTL
+        ? "الاعتماد النهائي"
+        : "Final Approval",
+    },
+  ];
+
+  const orderedSections = isRTL
+    ? [...signatureSections].reverse()
+    : signatureSections;
+
+  const renderSignatureBlock = (
+    key: string
+  ) => {
+    switch (key) {
+      case "requested":
+        return (
+          <>
+            <div className="text-xs font-semibold mb-2">
+              {isRTL
+                ? "مقدم الطلب"
+                : "Requested By"}
+            </div>
+
+            <div className="text-sm font-medium">
+              {pr.requesterName || "-"}
+            </div>
+
+            <div className="text-xs text-gray-600">
+              {pr.requesterEmail || ""}
+            </div>
+
+            <div className="mt-6 border-t pt-2 text-xs">
+              {formatDate(pr.createdAt)}
+            </div>
+          </>
+        );
+
+      case "logistics":
+        return (
+          <>
+            <div className="text-xs font-semibold mb-2">
+              {isRTL
+                ? "اعتماد اللوجستيات"
+                : "Logistics Validation"}
+            </div>
+
+            {pr.logisticsSignatureDataUrl ? (
+              <>
+                <img
+                  src={pr.logisticsSignatureDataUrl}
+                  alt="Logistics Signature"
+                  className="h-16 mx-auto object-contain mb-2"
+                />
+
+                <div className="text-sm font-medium">
+                  {pr.logisticsSignerName || "-"}
+                </div>
+
+                <div className="text-xs text-gray-600">
+                  {pr.logisticsSignerTitle || "-"}
+                </div>
+
+                <div className="text-xs mt-2">
+                  {formatDate(pr.logValidatedOn)}
+                </div>
+              </>
+            ) : (
+              <div className="text-xs italic text-gray-400 mt-10">
+                {isRTL
+                  ? "لم يتم التوقيع بعد"
+                  : "Not signed yet"}
+              </div>
+            )}
+          </>
+        );
+
+      case "finance":
+        return (
+          <>
+            <div className="text-xs font-semibold mb-2">
+              {isRTL
+                ? "اعتماد المالية"
+                : "Finance Validation"}
+            </div>
+
+            {pr.financeSignatureDataUrl ? (
+              <>
+                <img
+                  src={pr.financeSignatureDataUrl}
+                  alt="Finance Signature"
+                  className="h-16 mx-auto object-contain mb-2"
+                />
+
+                <div className="text-sm font-medium">
+                  {pr.financeSignerName || "-"}
+                </div>
+
+                <div className="text-xs text-gray-600">
+                  {pr.financeSignerTitle || "-"}
+                </div>
+
+                <div className="text-xs mt-2">
+                  {formatDate(pr.finValidatedOn)}
+                </div>
+              </>
+            ) : (
+              <div className="text-xs italic text-gray-400 mt-10">
+                {isRTL
+                  ? "لم يتم التوقيع بعد"
+                  : "Not signed yet"}
+              </div>
+            )}
+          </>
+        );
+
+      case "approval":
+        return (
+          <>
+            <div className="text-xs font-semibold mb-2">
+              {isRTL
+                ? "الاعتماد النهائي"
+                : "Final Approval"}
+            </div>
+
+            {pr.pmSignatureDataUrl ? (
+              <>
+                <img
+                  src={pr.pmSignatureDataUrl}
+                  alt="Approval Signature"
+                  className="h-16 mx-auto object-contain mb-2"
+                />
+
+                <div className="text-sm font-medium">
+                  {pr.pmSignerName || "-"}
+                </div>
+
+                <div className="text-xs text-gray-600">
+                  {pr.pmSignerTitle || "-"}
+                </div>
+
+                <div className="text-xs mt-2">
+                  {formatDate(pr.approvedOn)}
+                </div>
+              </>
+            ) : (
+              <div className="text-xs italic text-gray-400 mt-10">
+                {isRTL
+                  ? "لم يتم التوقيع بعد"
+                  : "Not signed yet"}
+              </div>
+            )}
+          </>
+        );
+
+      default:
+        return null;
+    }
+  };
+
+  return (
+    <OfficialPrintTemplate
+      direction={isRTL ? "rtl" : "ltr"}
+      organizationLogo={
+        currentOrganization?.logoUrl ||
+        branding?.logoUrl ||
+        null
+      }
+      organizationName={
+        currentOrganization?.name || "-"
+      }
+      organizationNameAr={
+        currentOrganization?.nameAr || ""
+      }
+      formTitle="Purchase Request"
+      formTitleAr="طلب شراء"
+      formNumber={
+        pr.prNumber || `PR-${pr.id}`
+      }
+      formDate={
+        pr.createdAt
+          ? format(
+              new Date(pr.createdAt),
+              "yyyy-MM-dd"
+            )
+          : ""
+      }
+    >
+      {/* Force print colors */}
+      <style>
+        {`
+          @media print {
+            * {
+              -webkit-print-color-adjust: exact !important;
+              print-color-adjust: exact !important;
+            }
+
+            body {
+              background: white !important;
+            }
+          }
+        `}
+      </style>
+
+      {/* Metadata */}
+      <div
+        className={`grid grid-cols-2 gap-6 mb-6 ${
+          isRTL
+            ? "text-right"
+            : "text-left"
+        }`}
+      >
+        <div className="space-y-2">
+          <div>
+            <strong>
+              {isRTL
+                ? "المشروع:"
+                : "Project:"}
+            </strong>{" "}
+            {pr.projectTitle || "-"}
+          </div>
+
+          <div>
+            <strong>
+              {isRTL
+                ? "الفئة:"
+                : "Category:"}
+            </strong>{" "}
+            {pr.category || "-"}
+          </div>
+
+          <div>
+            <strong>
+              {isRTL
+                ? "الأولوية:"
+                : "Urgency:"}
+            </strong>{" "}
+            {pr.urgency || "-"}
+          </div>
+
+          <div>
+            <strong>
+              {isRTL
+                ? "القسم:"
+                : "Department:"}
+            </strong>{" "}
+            {pr.department || "-"}
+          </div>
+
+          <div>
+            <strong>
+              {isRTL
+                ? "الوحدة التشغيلية:"
+                : "Operating Unit:"}
+            </strong>{" "}
+            {currentOperatingUnit?.name ||
+              "-"}
+          </div>
+        </div>
+
+        <div className="space-y-2">
+          <div>
+            <strong>
+              {isRTL
+                ? "الجهة المانحة:"
+                : "Donor:"}
+            </strong>{" "}
+            {pr.donorName || "-"}
+          </div>
+
+          <div>
+            <strong>
+              {isRTL
+                ? "رمز الميزانية:"
+                : "Budget Code:"}
+            </strong>{" "}
+            {pr.budgetCode || "-"}
+          </div>
+
+          <div>
+            <strong>
+              {isRTL
+                ? "مطلوب بحلول:"
+                : "Needed By:"}
+            </strong>{" "}
+            {pr.neededBy
+              ? format(
+                  new Date(pr.neededBy),
+                  "yyyy-MM-dd"
+                )
+              : "-"}
+          </div>
+
+          <div>
+            <strong>
+              {isRTL
+                ? "المبلغ الإجمالي:"
+                : "Total Amount:"}
+            </strong>{" "}
+            {pr.currency} {totalAmount}
+          </div>
+        </div>
+      </div>
+
+      {/* Line Items */}
+      <table className="w-full border text-sm mb-6">
+        <thead>
+          <tr
+            style={{
+              backgroundColor:
+                "#1e40af",
+              color: "white",
+              WebkitPrintColorAdjust:
+                "exact",
+              printColorAdjust:
+                "exact",
+            }}
+          >
+            <th className="border px-3 py-2">
+              #
+            </th>
+            <th className="border px-3 py-2">
+              {isRTL
+                ? "الوصف"
+                : "Description"}
+            </th>
+            <th className="border px-3 py-2">
+              Qty
+            </th>
+            <th className="border px-3 py-2">
+              {isRTL
+                ? "الوحدة"
+                : "Unit"}
+            </th>
+            <th className="border px-3 py-2">
+              {isRTL
+                ? "سعر الوحدة"
+                : "Unit Price"}
+            </th>
+            <th className="border px-3 py-2">
+              {isRTL
+                ? "الإجمالي"
+                : "Total"}
+            </th>
+          </tr>
+        </thead>
+
+        <tbody>
+          {lineItems.map(
+            (
+              item: any,
+              index: number
+            ) => (
+              <tr key={index}>
+                <td className="border px-3 py-2">
+                  {index + 1}
+                </td>
+                <td className="border px-3 py-2">
+                  {item.description}
+                </td>
+                <td className="border px-3 py-2">
+                  {item.quantity}
+                </td>
+                <td className="border px-3 py-2">
+                  {item.unit}
+                </td>
+                <td className="border px-3 py-2">
+                  {pr.currency}{" "}
+                  {parseFloat(
+                    item.unitPrice || "0"
+                  ).toLocaleString()}
+                </td>
+                <td className="border px-3 py-2">
+                  {pr.currency}{" "}
+                  {parseFloat(
+                    item.totalPrice || "0"
+                  ).toLocaleString()}
+                </td>
+              </tr>
+            )
+          )}
+        </tbody>
+      </table>
+
+      {/* Justification */}
+      {pr.justification && (
+        <div className="mb-6">
+          <h4
+            className="font-semibold mb-2"
+            style={{
+              color: "#1e40af",
+            }}
+          >
+            {isRTL
+              ? "المبرر:"
+              : "Justification:"}
+          </h4>
+
+          <div
+            className="p-4 rounded"
+            style={{
+              backgroundColor:
+                "#f8fbff",
+              border:
+                "1px solid #dbeafe",
+              WebkitPrintColorAdjust:
+                "exact",
+              printColorAdjust:
+                "exact",
+            }}
+          >
+            {pr.justification}
+          </div>
+        </div>
+      )}
+
+      {/* Signatures */}
+      <div className="mt-8 pt-6 border-t">
+        <h3
+          className="text-sm font-bold mb-4"
+          style={{
+            color: "#1e40af",
+          }}
+        >
+          {isRTL
+            ? "سير الموافقات والتوقيعات"
+            : "Approval Workflow Signatures"}
+        </h3>
+
+        <div className="grid grid-cols-4 gap-4">
+          {orderedSections.map(
+            (section) => (
+              <div
+                key={section.key}
+                className="rounded p-3 text-center min-h-[220px]"
+                style={{
+                  border:
+                    "1px solid #1e40af",
+                  backgroundColor:
+                    "#f8fbff",
+                  WebkitPrintColorAdjust:
+                    "exact",
+                  printColorAdjust:
+                    "exact",
+                }}
+              >
+                {renderSignatureBlock(
+                  section.key
+                )}
+              </div>
+            )
+          )}
+        </div>
+      </div>
+    </OfficialPrintTemplate>
+  );
 }

@@ -48,6 +48,7 @@ import { useTranslation } from '@/i18n/useTranslation';
 import { BackButton } from "@/components/BackButton";
 import SignaturePad from "@/components/SignaturePad";
 
+
 /**
  * Translation Keys Used (from translations.ts via t.logistics namespace):
  * 
@@ -179,6 +180,8 @@ export default function PurchaseRequestForm() {
 
  // Get organizationId and operatingUnitId from context (same pattern as Finance and HR modules)
  const { currentOrganization } = useOrganization();
+  const brandingQuery = trpc.settings.branding.get.useQuery();
+  const branding = brandingQuery.data;
  const { currentOperatingUnit, isLoading: ouLoading } = useOperatingUnit();
 
  const organizationId = currentOrganization?.id;
