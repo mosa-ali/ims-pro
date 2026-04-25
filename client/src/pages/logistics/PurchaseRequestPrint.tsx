@@ -269,47 +269,60 @@ export default function PurchaseRequestPrint() {
               height: 100% !important;
             }
 
-            /* Ensure header container is visible */
-            .official-header {
-              display: flex !important;
+            /* CRITICAL: Force header to display (overrides OfficialPrintTemplate hide rule) */
+            header {
+              display: block !important;
               visibility: visible !important;
               opacity: 1 !important;
               page-break-inside: avoid !important;
-              margin: 0 !important;
-              padding: 0 !important;
-              width: 100% !important;
             }
 
-            /* Ensure all header sections display */
-            .header-left, .header-center, .header-right {
+            /* Ensure all header flex containers display */
+            header > div,
+            header div {
               display: flex !important;
               visibility: visible !important;
               opacity: 1 !important;
             }
 
-            .org-block, .org-name, .ou-name, .module-name,
-            .doc-title, .org-logo, .ref-date, .value {
+            /* Ensure header images display */
+            header img {
               display: block !important;
               visibility: visible !important;
               opacity: 1 !important;
             }
 
-            /* Force hr to print */
-            hr, .hr-strong {
+            /* Force header hr to print */
+            header hr {
               display: block !important;
               visibility: visible !important;
               opacity: 1 !important;
-              border: 1px solid #000 !important;
-              margin: 10px 0 !important;
+              border-top: 2.5px solid #1a365d !important;
+              margin: 12px 0 !important;
               page-break-inside: avoid !important;
             }
 
-            /* Ensure content displays */
-            .pdf-content {
+            /* Ensure all text in header is visible */
+            header div[style] {
               display: block !important;
               visibility: visible !important;
               opacity: 1 !important;
-              width: 100% !important;
+            }
+
+            /* Ensure main content displays */
+            main {
+              display: block !important;
+              visibility: visible !important;
+              opacity: 1 !important;
+              min-height: auto !important;
+            }
+
+            /* Ensure all sections display */
+            section {
+              display: block !important;
+              visibility: visible !important;
+              opacity: 1 !important;
+              page-break-inside: avoid !important;
             }
           }
         `}
