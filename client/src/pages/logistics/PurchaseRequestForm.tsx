@@ -502,7 +502,7 @@ serviceType: pr.serviceType ?? "",
  // FIX: Add Org Admin to all approval checks
  const isOrgAdmin =
   userRoleName.toLowerCase().includes("organization admin") ||
-  userRole === "admin" ||
+  userRole === "organization_admin" ||
   userRole === "platform_super_admin";
  
  // Update visibility conditions
