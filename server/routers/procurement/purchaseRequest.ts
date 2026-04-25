@@ -17,7 +17,6 @@ import { getDb } from "../../db";
 // Reason: procurementWorkflowTracker missing export from schema.ts, causes build failure
 // Must be fixed properly in Finance Core Alignment Phase / Schema review
 // Owner: Manus
-import { purchaseRequests, purchaseRequestLineItems, bidAnalyses, users, userOrganizations, userActiveScope, budgetLines } from "../../../drizzle/schema";
 // import { procurementWorkflowTracker } from "../../../drizzle/schema"; // TEMP UNBLOCK
 import { eq, and, desc, isNull, inArray } from "drizzle-orm";
 import { TRPCError } from "@trpc/server";
@@ -28,6 +27,33 @@ import {
   performHardDelete,
   performSoftDelete,
 } from "../../db/deletionGovernance";
+import {
+  users,
+  userOrganizations,
+  purchaseRequests,
+  userActiveScope,
+  purchaseRequestLineItems,
+  budgetLines,
+  bidAnalyses,
+  purchaseOrders,
+  purchaseOrderLineItems,
+  goodsReceiptNotes,
+  grnLineItems,
+  stockItems,
+  stockRequests,
+  stockRequestLineItems,
+  stockIssued,
+  stockIssuedLineItems,
+  returnedItems,
+  returnedItemLineItems,
+  vehicles,
+  drivers,
+  tripLogs,
+  fuelLogs,
+  vehicleMaintenance,
+  vendors,
+  contracts,
+} from "../../../drizzle/schema";
 
 const nowSql = new Date().toISOString().slice(0, 19).replace('T', ' ');
 
@@ -1155,7 +1181,6 @@ export const purchaseRequestRouter = router({
   validateByLogistics: scopedProcedure
     .input(z.object({
       id: z.number(),
-      financeEmail: z.string().email().optional(),
       comments: z.string().optional(),
       signerName: z.string(),
       signerTitle: z.string(),
@@ -1245,7 +1270,6 @@ export const purchaseRequestRouter = router({
   validateByFinance: scopedProcedure
     .input(z.object({
       id: z.number(),
-      pmEmail: z.string().email().optional(),
       comments: z.string().optional(),
       signerName: z.string(),
       signerTitle: z.string(),
