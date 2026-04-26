@@ -28,7 +28,6 @@ import {
  TableHeader,
  TableRow,
 } from "@/components/ui/table";
-import { Plus, Trash2, Save, Send, AlertTriangle, CheckCircle, XCircle, Clock, Loader2, Pen } from "lucide-react";
 import { Link, useLocation, useParams } from "wouter";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { toast } from "sonner";
@@ -47,7 +46,174 @@ import {
 import { useTranslation } from '@/i18n/useTranslation';
 import { BackButton } from "@/components/BackButton";
 import SignaturePad from "@/components/SignaturePad";
+import {
+  Plus,
+  Trash2,
+  Save,
+  Send,
+  AlertTriangle,
+  CheckCircle,
+  XCircle,
+  Clock,
+  Loader2,
+  Pen,
+  Image as ImageIcon,
+  ClipboardPaste
+} from "lucide-react";
 
+const SignatureInput = ({
+  signature,
+  setSignature,
+  isRTL,
+}: {
+  signature: string | null;
+  setSignature: (value: string | null) => void;
+  isRTL: boolean;
+}) => {
+  const [mode, setMode] = useState<"draw" | "paste">("draw");
+
+  const handlePaste = async () => {
+    try {
+      if (!navigator.clipboard || !navigator.clipboard.read) {
+  toast.error(
+    isRTL
+      ? "المتصفح لا يدعم لصق الصور"
+      : "Clipboard image paste is not supported in this browser"
+  );
+  return;
+}
+const clipboardItems = await navigator.clipboard.read();
+
+      for (const item of clipboardItems) {
+        const imageType = item.types.find((type) =>
+          type.startsWith("image/")
+        );
+
+        if (!imageType) continue;
+
+        const blob = await item.getType(imageType);
+
+        const reader = new FileReader();
+
+        reader.onloadend = () => {
+          setSignature(reader.result as string);
+
+          toast.success(
+            isRTL
+              ? "تم لصق التوقيع بنجاح"
+              : "Signature pasted successfully"
+          );
+        };
+
+        reader.readAsDataURL(blob);
+        return;
+      }
+
+      toast.error(
+        isRTL
+          ? "لا توجد صورة في الحافظة"
+          : "No image found in clipboard"
+      );
+    } catch (error) {
+      console.error(error);
+
+      toast.error(
+        isRTL
+          ? "المتصفح لا يدعم لصق الصور"
+          : "Browser does not support image paste"
+      );
+    }
+  };
+
+  return (
+    <div className="space-y-4">
+      {/* Mode selector */}
+      <div className="flex gap-2">
+        <Button
+          type="button"
+          variant={mode === "draw" ? "default" : "outline"}
+          onClick={() => {
+            setMode("draw");
+            setSignature(null);
+          }}
+        >
+          ✍️ {isRTL ? "رسم التوقيع" : "Draw"}
+        </Button>
+
+        <Button
+          type="button"
+          variant={mode === "paste" ? "default" : "outline"}
+          onClick={() => {
+          setMode("paste");
+          setSignature(null);
+        }}
+        >
+          <ClipboardPaste className="w-4 h-4 mr-2" />
+          {isRTL ? "لصق التوقيع" : "Paste"}
+        </Button>
+      </div>
+
+      {/* Draw mode */}
+      {mode === "draw" && (
+        <SignaturePad
+          onSignatureChange={setSignature}
+          labels={{
+            clear: isRTL ? "مسح" : "Clear",
+            undo: isRTL ? "تراجع" : "Undo",
+            signHere: isRTL ? "وقّع هنا" : "Sign here",
+          }}
+        />
+      )}
+
+      {/* Paste mode */}
+      {mode === "paste" && (
+        <div className="border rounded-lg p-6 text-center bg-muted/20">
+          <ImageIcon className="w-10 h-10 mx-auto mb-3 text-muted-foreground" />
+
+          <p className="text-sm mb-3">
+            {isRTL
+              ? "انسخ صورة التوقيع ثم اضغط لصق"
+              : "Copy signature image then click paste"}
+          </p>
+
+          <Button
+            type="button"
+            variant="outline"
+            onClick={handlePaste}
+          >
+            {isRTL ? "لصق الآن" : "Paste Now"}
+          </Button>
+        </div>
+      )}
+
+      {/* Preview */}
+      {signature && (
+        <div className="border rounded-lg p-4">
+          <p className="text-sm font-medium mb-2">
+            {isRTL ? "معاينة التوقيع" : "Preview"}
+          </p>
+
+          <img
+            src={signature}
+            alt="Signature Preview"
+            className="h-24 object-contain mx-auto"
+          />
+
+          <div className="text-center mt-3">
+            <Button
+              type="button"
+              variant="destructive"
+              size="sm"
+              onClick={() => setSignature(null)}
+            >
+              {isRTL ? "إزالة" : "Remove"}
+            </Button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
 
 /**
  * Translation Keys Used (from translations.ts via t.logistics namespace):
@@ -1404,13 +1570,10 @@ budgetUtilizationPercent={budgetUtilizationPercent}
         />
       </div>
 
-      <SignaturePad
-        onSignatureChange={setLogisticsSignature}
-        labels={{
-          clear: isRTL ? "مسح" : "Clear",
-          undo: isRTL ? "تراجع" : "Undo",
-          signHere: isRTL ? "وقّع هنا" : "Sign here",
-        }}
+      <SignatureInput
+        signature={logisticsSignature}
+        setSignature={setLogisticsSignature}
+        isRTL={isRTL}
       />
 
       <div className="flex justify-end">
@@ -1469,13 +1632,10 @@ budgetUtilizationPercent={budgetUtilizationPercent}
         />
       </div>
 
-      <SignaturePad
-        onSignatureChange={setFinanceSignature}
-        labels={{
-          clear: isRTL ? "مسح" : "Clear",
-          undo: isRTL ? "تراجع" : "Undo",
-          signHere: isRTL ? "وقّع هنا" : "Sign here",
-        }}
+      <SignatureInput
+        signature={financeSignature}
+        setSignature={setFinanceSignature}
+        isRTL={isRTL}
       />
 
       <div className="flex justify-end">
@@ -1534,13 +1694,10 @@ budgetUtilizationPercent={budgetUtilizationPercent}
         />
       </div>
 
-      <SignaturePad
-        onSignatureChange={setPMSignature}
-        labels={{
-          clear: isRTL ? "مسح" : "Clear",
-          undo: isRTL ? "تراجع" : "Undo",
-          signHere: isRTL ? "وقّع هنا" : "Sign here",
-        }}
+      <SignatureInput
+        signature={pmSignature}
+        setSignature={setPMSignature}
+        isRTL={isRTL}
       />
 
       <div className="flex justify-end">
