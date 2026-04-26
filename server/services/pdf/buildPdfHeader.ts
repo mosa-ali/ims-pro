@@ -16,7 +16,9 @@
  *   const css = loadOfficialPdfCss();
  *   const headerHtml = buildPdfHeader({ ... });
  */
-import { officialPdfStyles } from "./templates/styles/officialPdfStyles";
+
+import fs from "fs";
+import path from "path";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -43,9 +45,20 @@ export interface PdfHeaderOptions {
 
 // ─── CSS Loader ──────────────────────────────────────────────────────────────
 
+let _cachedCss: string | null = null;
 
+/**
+ * Load the official-pdf.css content (cached after first read).
+ * This is the ONLY approved CSS for PDF headers.
+ */
 export function loadOfficialPdfCss(): string {
-  return officialPdfStyles;
+  if (_cachedCss) return _cachedCss;
+  const cssPath = path.join(
+    import.meta.dirname,
+    "templates/styles/official-pdf.css"
+  );
+  _cachedCss = fs.readFileSync(cssPath, "utf-8");
+  return _cachedCss;
 }
 
 // ─── Header Builder ──────────────────────────────────────────────────────────
