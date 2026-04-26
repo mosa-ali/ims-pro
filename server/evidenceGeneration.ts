@@ -6,7 +6,8 @@
  */
 
 import { findDocumentMapEntry, generateEvidenceDocument, type TriggerEvent } from "./documentMapping";
-import Puppeteer from "puppeteer";
+import puppeteer from "puppeteer-core";
+import chromium from "@sparticuz/chromium";
 
 /**
  * Generate PDF Evidence from HTML

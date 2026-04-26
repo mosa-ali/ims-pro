@@ -11,7 +11,8 @@
  * See docs/PDF_HEADER_RTL_LTR_GUIDELINE.md
  */
 
-import puppeteer from "puppeteer";
+import puppeteer from "puppeteer-core";
+import chromium from "@sparticuz/chromium";
 import { getDb } from "../db";
 import {
   goodsReceiptNotes,

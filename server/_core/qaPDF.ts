@@ -14,7 +14,8 @@
  * - Approval signatures
  */
 
-import puppeteer from "puppeteer";
+import puppeteer from "puppeteer-core";
+import chromium from "@sparticuz/chromium";
 import fs from "fs";
 import path from "path";
 import { getDb } from "../db";

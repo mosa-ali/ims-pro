@@ -5,7 +5,8 @@
  */
 
 import { generateOfficialPdfHtml } from "./services/pdf/templates/layout/OfficialWrapper";
-import puppeteer from "puppeteer";
+import puppeteer from "puppeteer-core";
+import chromium from "@sparticuz/chromium";
 import QRCode from "qrcode";
 
 // Inline translations for bilingual support

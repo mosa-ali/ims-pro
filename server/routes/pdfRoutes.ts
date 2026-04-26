@@ -1,5 +1,6 @@
 import express from "express";
-import puppeteer from "puppeteer";
+import puppeteer from "puppeteer-core";
+import chromium from "@sparticuz/chromium";
 import { getDb } from "../db";
 import { eq } from "drizzle-orm";
 import { generatePRHtml } from "../utils/generatePRHtml";
