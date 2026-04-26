@@ -29,6 +29,7 @@ interface OfficialPrintTemplateProps {
  organizationLogo?: string;
  organizationName?: string;
  organizationNameAr?: string;
+ operatingUnitName?: string;
  department?: string;
  departmentAr?: string;
  formTitle: string;
@@ -50,6 +51,7 @@ export function OfficialPrintTemplate({
  organizationLogo,
  organizationName = "Organization Name",
  organizationNameAr,
+ operatingUnitName,
  department = "Logistics & Procurement",
  departmentAr = "اللوجستيات والمشتريات",
  formTitle,

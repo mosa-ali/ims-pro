@@ -58,7 +58,9 @@ import {
   Loader2,
   Pen,
   Image as ImageIcon,
-  ClipboardPaste
+  ClipboardPaste,
+  Download,
+  FileText
 } from "lucide-react";
 
 const SignatureInput = ({
@@ -1033,6 +1035,18 @@ const canViewPMApproval =
  {t.logistics.reject}
  </Button>
  </>
+ )}
+ {/* Download Official PDF Button - Available when PR is submitted or approved */}
+ {(formData.status === "submitted" || formData.status === "validated_by_logistic" || formData.status === "validated_by_finance" || formData.status === "approved") && params.id && (
+ <Button 
+ variant="outline" 
+ onClick={() => {
+ window.open(`/api/pdf/purchase-request/${params.id}`, "_blank");
+ }}
+ >
+ <Download className="h-4 w-4 me-2" />
+ {isRTL ? "تحميل PDF الرسمي" : "Download Official PDF"}
+ </Button>
  )}
  </div>
  </div>

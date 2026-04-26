@@ -6,6 +6,7 @@ import { useRoute } from "wouter";
 import { OfficialPrintTemplate } from "@/components/logistics/OfficialPrintTemplate";
 import { format } from "date-fns";
 
+
 export default function PurchaseRequestPrint() {
   const { currentOrganization } = useOrganization();
   const { currentOperatingUnit } = useOperatingUnit();

@@ -24,6 +24,7 @@ import { isNull } from "drizzle-orm";
 import { mockAuthMiddleware, handleMockLogin, handleMockLogout } from "./mock-auth";
 import { ENV } from "./env";
 import { getSessionCookieOptions } from "../_core/cookies";
+import pdfRoutes from "../routes/pdfRoutes";
 
 function isPortAvailable(port: number): Promise<boolean> {
   return new Promise(resolve => {
@@ -347,6 +348,16 @@ app.post("/api/auth/email-signin", express.json(), async (req, res) => {
       res.status(500).json({ error: "File upload failed" });
     }
   });
+  // PDF Generation Routes
+    try {
+      const pdfRoutes = await import("../routes/pdfRoutes");
+      if (pdfRoutes && pdfRoutes.default) {
+        app.use("/api/pdf", pdfRoutes.default);
+        console.log("[Server] PDF routes registered at /api/pdf");
+      }
+    } catch (error) {
+      console.error("[Server] Failed to load PDF routes:", error);
+    }
   // tRPC API
   app.use(
     "/api/trpc",
