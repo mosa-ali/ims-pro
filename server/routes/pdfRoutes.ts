@@ -8,8 +8,9 @@ import {
   purchaseRequestLineItems,
   organizations,
   operatingUnits,
-  organizationBranding
+  organizationBranding,
 } from "../../drizzle/schema";
+
 const router = express.Router();
 
 /**
@@ -37,6 +38,24 @@ router.get("/purchase-request/:id", async (req, res) => {
         message: "Purchase request not found",
       });
     }
+
+    /**
+     * Tenant isolation check
+     * Replace req.user fields based on your auth system
+     */
+        /**
+     * TODO:
+     * Add tenant isolation check based on your actual auth session structure.
+     *
+     * Example:
+     * const currentOrgId = req.session?.organizationId;
+     *
+     * if (currentOrgId && pr.organizationId !== currentOrgId) {
+     *   return res.status(403).json({
+     *     message: "Unauthorized access"
+     *   });
+     * }
+     */
 
     // Fetch organization (if available in your schema)
     // For now, we'll use data from the PR record
@@ -81,41 +100,47 @@ const branding = await db.query.organizationBranding.findFirst({
   });
 
     // Launch Puppeteer with Azure-safe configuration
-    const browser = await puppeteer.launch({
-      headless: true,
-      args: [
-        "--no-sandbox",
-        "--disable-setuid-sandbox",
-        "--disable-dev-shm-usage",
-      ],
-    });
+      let browser;
+      let pdf;
 
-    const page = await browser.newPage();
+      try {
+        browser = await puppeteer.launch({
+          headless: true,
+          args: [
+            "--no-sandbox",
+            "--disable-setuid-sandbox",
+            "--disable-dev-shm-usage",
+          ],
+        });
 
-    // Set content and wait for network to be idle
-    await page.setContent(html, {
-      waitUntil: "networkidle0",
-    });
+        const page = await browser.newPage();
 
-    // Generate PDF
-    const pdf = await page.pdf({
-      format: "A4",
-      printBackground: true,
-      margin: {
-        top: "15mm",
-        bottom: "15mm",
-        left: "10mm",
-        right: "10mm",
-      },
-    });
+        await page.setContent(html, {
+          waitUntil: "networkidle0",
+        });
 
-    await browser.close();
+        pdf = await page.pdf({
+          format: "A4",
+          printBackground: true,
+          margin: {
+            top: "15mm",
+            bottom: "15mm",
+            left: "10mm",
+            right: "10mm",
+          },
+        });
+
+      } finally {
+        if (browser) {
+          await browser.close();
+        }
+      }
 
     // Set response headers for PDF download
     res.setHeader("Content-Type", "application/pdf");
     res.setHeader(
       "Content-Disposition",
-      `attachment; filename="PR-${pr.prNumber}.pdf"`
+      `attachment; filename="${pr.prNumber || `PR-${pr.id}`}.pdf"`
     );
     res.setHeader("Content-Length", pdf.length);
 
