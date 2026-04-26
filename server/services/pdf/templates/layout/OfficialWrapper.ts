@@ -1,5 +1,5 @@
-import fs from "fs";
-import path from "path";
+
+import { officialPdfStyles } from "../styles/officialPdfStyles";
 
 export interface OfficialWrapperOptions {
   organizationName: string;
@@ -30,8 +30,7 @@ export function generateOfficialPdfHtml(options: OfficialWrapperOptions): string
     language = "en",
   } = options;
 
-  const cssPath = path.join(import.meta.dirname, "../styles/official-pdf.css");
-  const officialCss = fs.readFileSync(cssPath, "utf-8");
+  const officialCss = officialPdfStyles;
 
   // Single header markup (no RTL/LTR branching)
   // CSS controls mirroring using html[dir="rtl"] selectors.
