@@ -67,9 +67,26 @@ export function OfficialPrintTemplate({
  pageSize = "A4",
 }: OfficialPrintTemplateProps) {
   const { language, isRTL } = useLanguage();
- const handlePrint = () => {
- window.print();
- };
+  const handlePrint = async () => {
+  await document.fonts.ready;
+
+  const images = Array.from(document.images);
+
+  await Promise.all(
+    images.map((img) => {
+      if (img.complete) return Promise.resolve();
+
+      return new Promise((resolve) => {
+        img.onload = resolve;
+        img.onerror = resolve;
+      });
+    })
+  );
+
+  setTimeout(() => {
+    window.print();
+  }, 500);
+};
 
  const isRtl = direction === "rtl";
  const isLandscape = pageSize === "A4-landscape";
@@ -100,63 +117,154 @@ export function OfficialPrintTemplate({
      LTR: Org LEFT | Title CENTER | Logo+Ref RIGHT
      RTL: Logo+Ref LEFT | Title CENTER | Org RIGHT
      ================================================================ */}
- <header className="pb-4 mb-6 print-header">
-   <div style={{
-     display: 'flex',
-     justifyContent: 'space-between',
-     alignItems: 'flex-start',
-   }}>
-     {/* LEFT side in LTR = Org info; in RTL = Logo+Ref (auto-swapped by flexbox + dir) */}
-     <div style={{ flex: '0 0 auto', maxWidth: '35%' }}>
-       <div style={{ fontWeight: 'bold', fontSize: '14pt', color: '#1a365d', lineHeight: 1.3 }}>
-         {organizationName}
-       </div>
-       {organizationNameAr && !isRtl && (
-         <div style={{ fontSize: '11pt', color: '#666', direction: 'rtl' }}>{organizationNameAr}</div>
-       )}
-       <div style={{ fontSize: '10pt', color: '#777', marginTop: '2px' }}>
-         {isRtl && departmentAr ? departmentAr : department}
-       </div>
-     </div>
+  <header className="pb-4 mb-6 print-header">
+  <table
+    style={{
+      width: "100%",
+      borderCollapse: "collapse",
+      marginBottom: "12px",
+    }}
+  >
+    <tbody>
+      <tr>
+        {/* Organization Info */}
+        <td
+          style={{
+            width: "33%",
+            verticalAlign: "top",
+            textAlign: isRtl ? "right" : "left",
+          }}
+        >
+          <div
+            style={{
+              fontWeight: "bold",
+              fontSize: "14pt",
+              color: "#1a365d",
+              lineHeight: 1.3,
+            }}
+          >
+            {organizationName}
+          </div>
 
-     {/* CENTER = Document title */}
-     <div style={{ flex: '1 1 auto', textAlign: 'center', padding: '0 16px' }}>
-       <div style={{ fontSize: '16pt', fontWeight: 'bold', color: '#1a365d', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-         {isRtl && formTitleAr ? formTitleAr : formTitle}
-       </div>
-       {!isRtl && formTitleAr && (
-         <div style={{ fontSize: '12pt', color: '#666', marginTop: '4px', direction: 'rtl' }}>{formTitleAr}</div>
-       )}
-       {isRtl && formTitle && (
-         <div style={{ fontSize: '10pt', color: '#666', marginTop: '4px', direction: 'ltr' }}>{formTitle}</div>
-       )}
-     </div>
+          {organizationNameAr && !isRtl && (
+            <div
+              style={{
+                fontSize: "11pt",
+                color: "#666",
+                direction: "rtl",
+              }}
+            >
+              {organizationNameAr}
+            </div>
+          )}
 
-     {/* RIGHT side in LTR = Logo+Ref; in RTL = Org info (auto-swapped by flexbox + dir) */}
-     <div style={{ flex: '0 0 auto', display: 'flex', flexDirection: 'column', alignItems: isRtl ? 'flex-start' : 'flex-end' }}>
-       {organizationLogo ? (
-         <img 
-           src={organizationLogo} 
-           alt="Logo" 
-           style={{ height: '64px', width: '64px', objectFit: 'contain', marginBottom: '4px' }}
-         />
-       ) : (
-         <div style={{
-           height: '64px', width: '64px', backgroundColor: '#f3f4f6', border: '1px solid #d1d5db',
-           borderRadius: '4px', display: 'flex', alignItems: 'center', justifyContent: 'center',
-           color: '#9ca3af', fontSize: '10pt', fontWeight: 'bold', marginBottom: '4px'
-         }}>
-           {organizationName?.split(" ").map(w => w[0]).join("").slice(0, 3) || "ORG"}
-         </div>
-       )}
-       <div style={{ fontSize: '10pt', color: '#333', direction: 'ltr', textAlign: isRtl ? 'left' : 'right' }}>
-         <div style={{ fontWeight: 500 }}>{formNumber}</div>
-         <div>{formDate}</div>
-       </div>
-     </div>
-   </div>
-   <hr style={{ border: 'none', borderTop: '2.5px solid #1a365d', marginTop: '12px' }} />
- </header>
+          <div
+            style={{
+              fontSize: "10pt",
+              color: "#777",
+              marginTop: "4px",
+            }}
+          >
+            {isRtl && departmentAr ? departmentAr : department}
+          </div>
+        </td>
+
+        {/* Title */}
+        <td
+          style={{
+            width: "34%",
+            verticalAlign: "top",
+            textAlign: "center",
+          }}
+        >
+          <div
+            style={{
+              fontSize: "18pt",
+              fontWeight: "bold",
+              color: "#1a365d",
+              textTransform: "uppercase",
+            }}
+          >
+            {formTitle}
+          </div>
+
+          {formTitleAr && (
+            <div
+              style={{
+                fontSize: "12pt",
+                color: "#666",
+                marginTop: "4px",
+              }}
+            >
+              {formTitleAr}
+            </div>
+          )}
+        </td>
+
+        {/* Logo + Reference */}
+        <td
+          style={{
+            width: "33%",
+            verticalAlign: "top",
+            textAlign: isRtl ? "left" : "right",
+          }}
+        >
+          {organizationLogo ? (
+            <img
+              src={organizationLogo}
+              alt="Logo"
+              style={{
+                height: "70px",
+                width: "70px",
+                objectFit: "contain",
+                display: "inline-block",
+                marginBottom: "8px",
+              }}
+            />
+          ) : (
+            <div
+              style={{
+                height: "70px",
+                width: "70px",
+                border: "1px solid #ccc",
+                display: "inline-flex",
+                alignItems: "center",
+                justifyContent: "center",
+                color: "#999",
+                fontWeight: "bold",
+              }}
+            >
+              LOGO
+            </div>
+          )}
+
+          <div
+            style={{
+              fontSize: "10pt",
+              color: "#333",
+              marginTop: "4px",
+            }}
+          >
+            <div style={{ fontWeight: 600 }}>
+              {formNumber}
+            </div>
+            <div>{formDate}</div>
+          </div>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div
+    style={{
+      height: "3px",
+      backgroundColor: "#1a365d",
+      width: "100%",
+      WebkitPrintColorAdjust: "exact",
+      printColorAdjust: "exact",
+    }}
+  />
+</header>
 
  <main className="min-h-[400px]">
  {children}
@@ -245,6 +353,29 @@ aside,
  .shadow-lg {
  box-shadow: none !important;
  }
+ /* Force header visibility in Save as PDF */
+header {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  page-break-inside: avoid !important;
+}
+
+header table {
+  display: table !important;
+  width: 100% !important;
+}
+
+header img {
+  display: inline-block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  max-height: 70px !important;
+}
+
+.print-header {
+  margin-bottom: 20px !important;
+}
  /* Table handling */
  table { page-break-inside: auto; }
  tr { page-break-inside: avoid; page-break-after: auto; }
