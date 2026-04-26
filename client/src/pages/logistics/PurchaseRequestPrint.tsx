@@ -5,6 +5,7 @@ import { trpc } from "@/lib/trpc";
 import { useRoute } from "wouter";
 import { OfficialPrintTemplate } from "@/components/logistics/OfficialPrintTemplate";
 import { format } from "date-fns";
+import { FileText } from "lucide-react";
 
 
 export default function PurchaseRequestPrint() {
@@ -222,8 +223,31 @@ export default function PurchaseRequestPrint() {
         return null;
     }
   };
+  
+  const handleDownloadPDF = () => {
+  window.print();
+};
 
-  return (
+return (
+  <>
+    {/* Top Action Bar (NOT printed) */}
+    <div className="flex justify-end gap-3 mb-4 print:hidden">
+      <button
+        onClick={() => window.history.back()}
+        className="px-4 py-2 border rounded-md bg-white hover:bg-gray-50"
+      >
+        {isRTL ? "رجوع" : "Back"}
+      </button>
+
+      <button
+        onClick={handleDownloadPDF}
+        className="px-4 py-2 bg-blue-900 text-white rounded-md hover:bg-blue-800"
+      >
+        <FileText className="inline w-4 h-4 mr-2" />
+        {isRTL ? "طباعة / حفظ PDF" : "Print / Save as PDF"}
+      </button>
+    </div>
+    
     <OfficialPrintTemplate
       direction={isRTL ? "rtl" : "ltr"}
       organizationLogo={
@@ -520,5 +544,6 @@ export default function PurchaseRequestPrint() {
         </div>
       </div>
     </OfficialPrintTemplate>
-  );
+  </>
+);
 }
