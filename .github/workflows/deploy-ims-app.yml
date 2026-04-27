@@ -239,7 +239,6 @@ jobs:
           ls -la deploy/node_modules/axios || true
           ls -la deploy/node_modules/cookie || true
           ls -la deploy/node_modules/bcryptjs || true
-          ls -la deploy/node_modules/puppeteer || true
 
       - name: Check publish profile exists
         run: |
