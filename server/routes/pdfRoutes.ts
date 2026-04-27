@@ -1,5 +1,5 @@
 import express from "express";
-import puppeteer from "puppeteer-core";
+import puppeteer from "puppeteer";
 import chromium from "@sparticuz/chromium";
 import { getDb } from "../db";
 import { eq } from "drizzle-orm";

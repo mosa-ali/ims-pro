@@ -6,7 +6,7 @@
  */
 
 import { findDocumentMapEntry, generateEvidenceDocument, type TriggerEvent } from "./documentMapping";
-import puppeteer from "puppeteer-core";
+import puppeteer from "puppeteer";
 import chromium from "@sparticuz/chromium";
 
 /**
