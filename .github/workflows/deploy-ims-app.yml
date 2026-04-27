@@ -114,6 +114,11 @@ jobs:
           cd deploy
           pnpm install --prod --frozen-lockfile
           echo "✓ Production dependencies installed"
+      - name: Debug deployed node_modules
+        run: |
+          cd deploy
+          ls node_modules | grep puppeteer
+          ls node_modules/@sparticuz
         
       - name: Install Puppeteer Chrome inside deploy package
         run: |
@@ -148,7 +153,15 @@ jobs:
           [ -d node_modules/axios ] || (echo "ERROR: axios not found in production node_modules" && exit 1)
           [ -d node_modules/cookie ] || (echo "ERROR: cookie not found in production node_modules" && exit 1)
           [ -d node_modules/bcryptjs ] || (echo "ERROR: bcryptjs not found in production node_modules" && exit 1)
-          [ -d node_modules/puppeteer ] || (echo "ERROR: puppeteer not found in production node_modules" && exit 1)
+          if [ ! -d "node_modules/puppeteer-core" ]; then
+            echo "ERROR: puppeteer-core not found in production node_modules"
+            exit 1
+          fi
+
+          if [ ! -d "node_modules/@sparticuz/chromium" ]; then
+            echo "ERROR: @sparticuz/chromium not found in production node_modules"
+            exit 1
+          fi
 
           if [ -d patches ]; then
             [ -f patches/wouter@3.7.1.patch ] || (echo "ERROR: required patch file missing in deploy/patches" && exit 1)

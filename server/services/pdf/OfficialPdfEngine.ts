@@ -1,4 +1,4 @@
-import puppeteer from "puppeteer";
+import puppeteer from "puppeteer-core";
 import chromium from "@sparticuz/chromium";
 import { storagePut } from '../../storage';
 import { generateOfficialPdfHtml } from './templates/layout/OfficialWrapper';
