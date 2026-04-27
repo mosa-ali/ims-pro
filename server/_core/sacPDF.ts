@@ -6,8 +6,7 @@
  * Full RTL/LTR support.
  */
 
-import puppeteer from "puppeteer-core";
-import chromium from "@sparticuz/chromium";
+import puppeteer from "puppeteer";
 import QRCode from "qrcode";
 import { getDb } from "../db";
 import {

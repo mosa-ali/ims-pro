@@ -1,17 +1,28 @@
-import puppeteer from "puppeteer-core";
-import chromium from "@sparticuz/chromium";
+import puppeteer from "puppeteer";
 import { storagePut } from '../../storage';
 import { generateOfficialPdfHtml } from './templates/layout/OfficialWrapper';
 
 export async function launchBrowser() {
-  const executablePath = await chromium.executablePath();
+  const executablePath =
+    process.env.PUPPETEER_EXECUTABLE_PATH || undefined;
 
-  console.log("Using Chromium executable:", executablePath);
+  console.log(
+    "[PDF] Using Chrome executable:",
+    executablePath || "default system path"
+  );
 
   return puppeteer.launch({
-    args: chromium.args,
     executablePath,
     headless: true,
+    args: [
+      "--no-sandbox",
+      "--disable-setuid-sandbox",
+      "--disable-dev-shm-usage",
+      "--disable-gpu",
+      "--no-first-run",
+      "--no-zygote",
+      "--single-process",
+    ],
   });
 }
 
