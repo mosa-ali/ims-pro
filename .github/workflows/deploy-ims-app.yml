@@ -45,15 +45,27 @@ jobs:
       
       - name: Build application
         run: pnpm build
-      - name: Ensure Puppeteer is in package.json
+      - name: Validate PDF dependencies
         run: |
-          echo "=== Checking for Puppeteer dependency ==="
-          if grep -q '"puppeteer"' package.json; then
-            echo "✓ Puppeteer found in package.json"
+          echo "=== Checking PDF dependencies ==="
+
+          if grep -q '"puppeteer-core"' package.json; then
+            echo "✓ puppeteer-core found"
           else
-            echo "WARNING: Puppeteer not found in package.json"
-            echo "Please add: pnpm add puppeteer"
+            echo "ERROR: puppeteer-core missing from package.json"
+            echo "Run: pnpm add puppeteer-core"
+            exit 1
           fi
+
+          if grep -q '"@sparticuz/chromium"' package.json; then
+            echo "✓ @sparticuz/chromium found"
+          else
+            echo "ERROR: @sparticuz/chromium missing from package.json"
+            echo "Run: pnpm add @sparticuz/chromium"
+            exit 1
+          fi
+
+          echo "✓ PDF dependencies validated successfully"
 
       - name: Build deployment artifact
         run: pnpm run build:deploy

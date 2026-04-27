@@ -181,7 +181,8 @@
       "bcryptjs",
       "core-js",
       "esbuild",
-      "puppeteer"
+      "puppeteer-core",
+    "@sparticuz/chromium"
     ]
   },
   "engines": {
