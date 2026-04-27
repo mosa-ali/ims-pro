@@ -4,16 +4,15 @@ import { generateOfficialPdfHtml } from './templates/layout/OfficialWrapper';
 
 export async function launchBrowser() {
   const executablePath =
-    process.env.PUPPETEER_EXECUTABLE_PATH || undefined;
+    process.env.PUPPETEER_EXECUTABLE_PATH ||
+    "/home/.cache/puppeteer/chrome/linux-147.0.7727.57/chrome-linux64/chrome";
 
-  console.log(
-    "[PDF] Using Chrome executable:",
-    executablePath || "default system path"
-  );
+  console.log("[PDF] Forced Chrome executable:", executablePath);
 
   return puppeteer.launch({
     executablePath,
     headless: true,
+    browser: "chrome",
     args: [
       "--no-sandbox",
       "--disable-setuid-sandbox",
