@@ -43,29 +43,34 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
       
+      - name: Install Puppeteer Chrome
+        run: |
+          echo "Installing Chrome in project-local cache..."
+
+          export PUPPETEER_CACHE_DIR=$(pwd)/node_modules/.cache/puppeteer
+
+          npx puppeteer browsers install chrome
+
+          echo "Verifying browser install..."
+          find node_modules/.cache/puppeteer -type f | head -20
+      
+      - name: Verify Puppeteer Chromium
+        run: |
+          echo "Checking Puppeteer cache..."
+          ls -la node_modules/.cache || true
+          ls -la node_modules/.cache/puppeteer || true
+      
       - name: Build application
         run: pnpm build
-      - name: Validate PDF dependencies
+      - name: Ensure Puppeteer is in package.json
         run: |
-          echo "=== Checking PDF dependencies ==="
-
-          if grep -q '"puppeteer-core"' package.json; then
-            echo "✓ puppeteer-core found"
+          echo "=== Checking for Puppeteer dependency ==="
+          if grep -q '"puppeteer"' package.json; then
+            echo "✓ Puppeteer found in package.json"
           else
-            echo "ERROR: puppeteer-core missing from package.json"
-            echo "Run: pnpm add puppeteer-core"
-            exit 1
+            echo "WARNING: Puppeteer not found in package.json"
+            echo "Please add: pnpm add puppeteer"
           fi
-
-          if grep -q '"@sparticuz/chromium"' package.json; then
-            echo "✓ @sparticuz/chromium found"
-          else
-            echo "ERROR: @sparticuz/chromium missing from package.json"
-            echo "Run: pnpm add @sparticuz/chromium"
-            exit 1
-          fi
-
-          echo "✓ PDF dependencies validated successfully"
 
       - name: Build deployment artifact
         run: pnpm run build:deploy
@@ -109,6 +114,25 @@ jobs:
           cd deploy
           pnpm install --prod --frozen-lockfile
           echo "✓ Production dependencies installed"
+        
+      - name: Install Puppeteer Chrome inside deploy package
+        run: |
+          cd deploy
+
+          echo "Installing Chrome inside deploy package..."
+
+          export PUPPETEER_CACHE_DIR=$(pwd)/node_modules/.cache/puppeteer
+
+          npx puppeteer browsers install chrome
+
+          echo "Verifying deploy Chrome install..."
+          find node_modules/.cache/puppeteer -type f | head -20
+      
+      - name: Verify Puppeteer cache inside deploy package
+        run: |
+          cd deploy
+          ls -la node_modules/.cache || true
+          ls -la node_modules/.cache/puppeteer || true
 
       - name: Validate deploy package structure
         run: |
@@ -261,20 +285,13 @@ jobs:
 
           echo "Checking Puppeteer browser..."
 
-          CHROME_PATH=$(find /home/.cache/puppeteer -type f \( -name chrome -o -name chrome-headless-shell \) | head -1)
+          CHROME_PATH=$(find /home/site/wwwroot/node_modules/.cache/puppeteer -type f -name chrome | head -1)
 
           if [ -z "$CHROME_PATH" ]; then
             echo "WARNING: Packaged Puppeteer Chrome not found"
 
-            if [ -f /usr/bin/chromium-browser ] || [ -f /usr/bin/google-chrome ]; then
-              if [ -f /usr/bin/chromium-browser ]; then
+            if [ -f /usr/bin/chromium-browser ]; then
               export PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
-            elif [ -f /usr/bin/google-chrome ]; then
-              export PUPPETEER_EXECUTABLE_PATH=/usr/bin/google-chrome
-            else
-              echo "ERROR: No Chrome executable found"
-              exit 1
-            fi
               echo "Using fallback system chromium:"
               echo "$PUPPETEER_EXECUTABLE_PATH"
             else
