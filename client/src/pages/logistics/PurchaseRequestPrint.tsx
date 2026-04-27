@@ -2,7 +2,7 @@ import { useOrganization } from "@/contexts/OrganizationContext";
 import { useOperatingUnit } from "@/contexts/OperatingUnitContext";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { trpc } from "@/lib/trpc";
-import { useRoute, useLocation } from "wouter";
+import { useRoute } from "wouter";
 import { OfficialPrintTemplate } from "@/components/logistics/OfficialPrintTemplate";
 import { format } from "date-fns";
 import { Button } from "@/components/ui/button";
@@ -24,7 +24,7 @@ export default function PurchaseRequestPrint() {
   const [, params] = useRoute(
     "/organization/logistics/purchase-requests/:id/print"
   );
-  const [, setLocation] = useLocation();
+
   const id = params?.id ? parseInt(params.id) : 0;
 
   const { data: pr, isLoading } =
@@ -56,7 +56,13 @@ export default function PurchaseRequestPrint() {
   const handleDownloadPDF = async () => {
     try {
       setIsDownloading(true);
-      const response = await fetch(`/api/pdf/purchase-request/${id}`);
+      const response = await fetch(`/api/pdf/purchase-request/${id}`, {
+        method: "GET",
+        credentials: "include",
+        headers: {
+          Accept: "application/pdf",
+        },
+      });
       
       if (!response.ok) {
         if (response.status === 404) {
@@ -71,11 +77,15 @@ export default function PurchaseRequestPrint() {
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.href = url;
-      link.download = `${pr.prNumber || `PR-${pr.id}`}.pdf`;
+      link.download = `PR-${pr.prNumber || pr.id}.pdf`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
-      window.URL.revokeObjectURL(url);
+      
+      // Delay URL revocation to ensure browser completes download
+      setTimeout(() => {
+        window.URL.revokeObjectURL(url);
+      }, 1000);
       
       toast.success(isRTL ? "تم تحميل PDF بنجاح" : "PDF downloaded successfully");
     } catch (error) {
@@ -267,11 +277,7 @@ export default function PurchaseRequestPrint() {
       <div className="sticky top-0 z-10 bg-white border-b border-gray-200 px-6 py-4 flex justify-between items-center">
         <Button
           variant="ghost"
-          onClick={() =>
-            setLocation(
-              `/organization/logistics/purchase-requests/${id}`
-            )
-          }
+          onClick={() => window.history.back()}
           className="flex items-center gap-2"
         >
           <ArrowLeft className="h-4 w-4" />
@@ -460,19 +466,8 @@ export default function PurchaseRequestPrint() {
               </tr>
             </thead>
             <tbody>
-              {lineItems.length === 0 ? (
-                <tr>
-                  <td
-                    colSpan={7}
-                    className="border px-3 py-4 text-center text-gray-500"
-                  >
-                    {isRTL
-                      ? "لا توجد عناصر"
-                      : "No line items available"}
-                  </td>
-                </tr>
-              ) : (
-                lineItems.map((item, idx) => (
+              {lineItems.map(
+                (item, idx) => (
                   <tr key={idx}>
                     <td className="border px-3 py-2">
                       {idx + 1}
@@ -481,24 +476,30 @@ export default function PurchaseRequestPrint() {
                       {item.description}
                     </td>
                     <td className="border px-3 py-2 text-right">
-                      {Number(item.quantity || 0).toFixed(2)}
+                      {Number(
+                        item.quantity || 0
+                      ).toFixed(2)}
                     </td>
                     <td className="border px-3 py-2">
                       {item.unit}
                     </td>
                     <td className="border px-3 py-2 text-right">
-                      {pr.currency}{" "}
-                      {Number(item.unitPrice || 0).toFixed(2)}
+                      {pr.currency} → {pr.exchangeTo}{" "}
+                      {Number(
+                        item.unitPrice || 0
+                      ).toFixed(2)}
                     </td>
                     <td className="border px-3 py-2 text-right">
                       {item.recurrence || 1}
                     </td>
                     <td className="border px-3 py-2 text-right">
                       {pr.currency}{" "}
-                      {Number(item.totalPrice || 0).toFixed(2)}
+                      {Number(
+                        item.totalPrice || 0
+                      ).toFixed(2)}
                     </td>
                   </tr>
-                ))
+                )
               )}
             </tbody>
             <tfoot>
@@ -522,8 +523,14 @@ export default function PurchaseRequestPrint() {
                     : "Total:"}
                 </td>
                 <td className="border px-3 py-2 text-right">
-                  {pr.exchangeTo}{" "}
-                  {totalAmount}
+                  <div className="font-semibold">{pr.exchangeTo} {totalAmount}</div>
+                  {pr.currency !== pr.exchangeTo && (
+                    <div className="text-xs text-gray-600 mt-1">
+                      {isRTL ? "(المبلغ الأصلي: " : "(Original: "}
+                      {pr.currency} {Number(pr.total || 0).toLocaleString()}
+                      {isRTL ? ")" : ")"}
+                    </div>
+                  )}
                 </td>
               </tr>
             </tfoot>
@@ -548,7 +555,13 @@ export default function PurchaseRequestPrint() {
 
           {/* Signatures */}
           <div className="page-break">
-            <h3 className="font-semibold mb-4">
+            <h3
+              className="font-semibold mb-4"
+              style={{
+                pageBreakBefore:
+                  "always",
+              }}
+            >
               {isRTL
                 ? "سير الموافقات والتوقيعات"
                 : "Approval Workflow Signatures"}
