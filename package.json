@@ -181,7 +181,7 @@
       "bcryptjs",
       "core-js",
       "esbuild",
-      "puppeteer-core"
+      "puppeteer"
     ]
   },
   "engines": {
