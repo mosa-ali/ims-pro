@@ -98,6 +98,6 @@ jobs:
         uses: azure/webapps-deploy@v3
         with:
           app-name: ims-pro
-          images: ims-platform:latest
+          images: imsreg.azurecr.io/ims-platform:latest
           publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
           package: deploy
