@@ -101,5 +101,5 @@ jobs:
             --resource-group appwenplan \
             --docker-custom-image-name ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest \
             --docker-registry-server-url https://${{ env.REGISTRY }} \
-            --docker-registry-server-username ${{ secrets.ACR_USERNAME }} \
+            --docker-registry-server-user ${{ secrets.ACR_USERNAME }} \
             --docker-registry-server-password ${{ secrets.ACR_PASSWORD }}
