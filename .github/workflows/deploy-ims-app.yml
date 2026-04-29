@@ -42,9 +42,35 @@ jobs:
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
+      
+      - name: Install Puppeteer Chrome
+        run: |
+          echo "Installing Chrome in project-local cache..."
 
+          export PUPPETEER_CACHE_DIR=$(pwd)/node_modules/.cache/puppeteer
+
+          npx puppeteer browsers install chrome
+
+          echo "Verifying browser install..."
+          find node_modules/.cache/puppeteer -type f | head -20
+      
+      - name: Verify Puppeteer Chromium
+        run: |
+          echo "Checking Puppeteer cache..."
+          ls -la node_modules/.cache || true
+          ls -la node_modules/.cache/puppeteer || true
+      
       - name: Build application
         run: pnpm build
+      - name: Ensure Puppeteer is in package.json
+        run: |
+          echo "=== Checking for Puppeteer dependency ==="
+          if grep -q '"puppeteer"' package.json; then
+            echo "✓ Puppeteer found in package.json"
+          else
+            echo "WARNING: Puppeteer not found in package.json"
+            echo "Please add: pnpm add puppeteer"
+          fi
 
       - name: Build deployment artifact
         run: pnpm run build:deploy
@@ -88,6 +114,30 @@ jobs:
           cd deploy
           pnpm install --prod --frozen-lockfile
           echo "✓ Production dependencies installed"
+      - name: Debug deployed node_modules
+        run: |
+          cd deploy
+          ls node_modules | grep puppeteer
+          ls node_modules/@sparticuz
+        
+      - name: Install Puppeteer Chrome inside deploy package
+        run: |
+          cd deploy
+
+          echo "Installing Chrome inside deploy package..."
+
+          export PUPPETEER_CACHE_DIR=$(pwd)/node_modules/.cache/puppeteer
+
+          npx puppeteer browsers install chrome
+
+          echo "Verifying deploy Chrome install..."
+          find node_modules/.cache/puppeteer -type f | head -20
+      
+      - name: Verify Puppeteer cache inside deploy package
+        run: |
+          cd deploy
+          ls -la node_modules/.cache || true
+          ls -la node_modules/.cache/puppeteer || true
 
       - name: Validate deploy package structure
         run: |
@@ -103,6 +153,15 @@ jobs:
           [ -d node_modules/axios ] || (echo "ERROR: axios not found in production node_modules" && exit 1)
           [ -d node_modules/cookie ] || (echo "ERROR: cookie not found in production node_modules" && exit 1)
           [ -d node_modules/bcryptjs ] || (echo "ERROR: bcryptjs not found in production node_modules" && exit 1)
+          if [ ! -d "node_modules/puppeteer-core" ]; then
+            echo "ERROR: puppeteer-core not found in production node_modules"
+            exit 1
+          fi
+
+          if [ ! -d "node_modules/@sparticuz/chromium" ]; then
+            echo "ERROR: @sparticuz/chromium not found in production node_modules"
+            exit 1
+          fi
 
           if [ -d patches ]; then
             [ -f patches/wouter@3.7.1.patch ] || (echo "ERROR: required patch file missing in deploy/patches" && exit 1)
@@ -113,7 +172,7 @@ jobs:
       - name: Verify PRODUCTION runtime dependencies are installed
         run: |
           cd deploy
-          pnpm list express drizzle-orm mysql2 axios cookie bcryptjs --depth 0
+          pnpm list express drizzle-orm mysql2 axios cookie bcryptjs puppeteer --depth 0
 
       - name: Verify devDependencies are NOT installed
         run: |
@@ -145,6 +204,7 @@ jobs:
           node --input-type=module -e "import('axios').then(()=>console.log('✓ axios import OK')).catch(err=>{console.error(err); process.exit(1)})"
           node --input-type=module -e "import('cookie').then(()=>console.log('✓ cookie import OK')).catch(err=>{console.error(err); process.exit(1)})"
           node --input-type=module -e "import('bcryptjs').then(()=>console.log('✓ bcryptjs import OK')).catch(err=>{console.error(err); process.exit(1)})"
+          node --input-type=module -e "import('puppeteer').then(()=>console.log('✓ puppeteer import OK')).catch(err=>{console.error(err); process.exit(1)})"
 
       - name: Validate production server startup
         run: |
@@ -194,6 +254,7 @@ jobs:
           ls -la deploy/node_modules/axios || true
           ls -la deploy/node_modules/cookie || true
           ls -la deploy/node_modules/bcryptjs || true
+          ls -la deploy/node_modules/puppeteer || true
 
       - name: Check publish profile exists
         run: |
@@ -216,25 +277,12 @@ jobs:
           echo "3. All required environment variables are set"
           echo "4. PDF_ENABLED = true (for PDF generation)"
           echo ""
-          echo "For PDF generation, choose one option:"
-          echo ""
-          echo "OPTION 1: External PDF API (Recommended)"
-          echo "  - Sign up at https://pdfshift.io (free tier available)"
-          echo "  - Set PDFSHIFT_API_KEY environment variable"
-          echo ""
-          echo "OPTION 2: Manus Built-in PDF API"
-          echo "  - Uses BUILT_IN_FORGE_API_KEY (already configured)"
-          echo "  - No additional setup needed"
-          echo ""
-          echo "OPTION 3: Node.js PDF Library"
-          echo "  - No external service needed"
-          echo "  - Requires npm packages (xhtml2pdf or pdfkit)"
-          echo ""
+          echo "For PDF generation:"
           echo "Set Azure Startup Command to:"
           echo "/home/site/wwwroot/.azure/startup.sh"
           echo "============================================="
 
-      - name: Create Azure startup script (no Puppeteer/Chrome required)
+      - name: Create Azure startup script for PDF dependencies
         run: |
           mkdir -p deploy/.azure
 
@@ -248,10 +296,27 @@ jobs:
 
           cd /home/site/wwwroot
 
-          echo "Environment validation..."
-          echo "NODE_ENV=$NODE_ENV"
-          echo "PDF_ENABLED=$PDF_ENABLED"
-          echo "APP_BASE_URL=$APP_BASE_URL"
+          echo "Checking Puppeteer browser..."
+
+          CHROME_PATH=$(find /home/site/wwwroot/node_modules/.cache/puppeteer -type f -name chrome | head -1)
+
+          if [ -z "$CHROME_PATH" ]; then
+            echo "WARNING: Packaged Puppeteer Chrome not found"
+
+            if [ -f /usr/bin/chromium-browser ]; then
+              export PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
+              echo "Using fallback system chromium:"
+              echo "$PUPPETEER_EXECUTABLE_PATH"
+            else
+              echo "ERROR: No Chrome executable found"
+              echo "PDF generation will fail"
+              exit 1
+            fi
+          else
+            export PUPPETEER_EXECUTABLE_PATH="$CHROME_PATH"
+            echo "Using packaged Puppeteer Chrome:"
+            echo "$PUPPETEER_EXECUTABLE_PATH"
+          fi
 
           echo "Verifying production files..."
 
@@ -265,22 +330,13 @@ jobs:
             exit 1
           fi
 
-          echo "Checking PDF generation configuration..."
+          echo "Environment validation..."
 
-          if [ "$PDF_ENABLED" = "true" ]; then
-            if [ -n "$PDFSHIFT_API_KEY" ]; then
-              echo "✓ Using pdfshift.io for PDF generation"
-            elif [ -n "$BUILT_IN_FORGE_API_KEY" ]; then
-              echo "✓ Using Manus built-in PDF API"
-            else
-              echo "WARNING: PDF_ENABLED=true but no PDF API configured"
-              echo "Set PDFSHIFT_API_KEY or ensure BUILT_IN_FORGE_API_KEY is available"
-            fi
-          fi
+          echo "NODE_ENV=$NODE_ENV"
+          echo "PDF_ENABLED=$PDF_ENABLED"
+          echo "APP_BASE_URL=$APP_BASE_URL"
 
           echo "Starting IMS application..."
-          echo "======================================"
-
           node dist/index.js
           STARTUPEOF
 

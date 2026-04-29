@@ -26,7 +26,7 @@ export default function BidOpeningMinutesPrint() {
 
  const prNumber = bom.purchaseRequest?.prNumber || "-";
  const currency = bom.purchaseRequest?.currency || "USD";
- const prTotal = parseFloat(String(bom.purchaseRequest?.prTotalUsd || bom.purchaseRequest?.prTotalUSD || "0"));
+ const prTotal = parseFloat(String(bom.purchaseRequest?.prTotalUsd || bom.purchaseRequest?.prTotalUsd || "0"));
 
  return (
  <OfficialPrintTemplate
@@ -36,7 +36,7 @@ export default function BidOpeningMinutesPrint() {
  organizationNameAr={currentOrganization?.nameAr}
  formTitle="Bid Opening Minutes"
  formTitleAr="محضر فتح المظاريف"
- formNumber={bom.bomNumber || `BOM-${bom.id}`}
+ formNumber={bom.minutesNumber || `BOM-${bom.id}`}
  formDate={bom.openingDate ? format(new Date(bom.openingDate), "yyyy-MM-dd") : ""}
  signatureBlocks={[
  { label: "Committee Chairperson", labelAr: "رئيس اللجنة", name: bom.chairpersonName || "" },
@@ -158,10 +158,10 @@ export default function BidOpeningMinutesPrint() {
  </div>
 
  {/* Observations */}
- {bom.observations && (
+ {bom.openingNotes && (
  <div className="mt-4">
  <h4 className="text-sm font-bold mb-1">Observations / الملاحظات:</h4>
- <p className="text-xs text-gray-600">{bom.observations}</p>
+ <p className="text-xs text-gray-600">{bom.openingNotes}</p>
  </div>
  )}
 

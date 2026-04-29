@@ -26,7 +26,7 @@ import {
 } from "drizzle-orm";
 
 import { generateOfficialPdf } from "./services/pdf/OfficialPdfEngine";
-import { generateAttendanceReportHtml } from "./services/pdf/templates/AttendanceReportTemplate";
+import { generateAttendanceReportHtml } from "./services/pdf/templates/HR/AttendanceReportTemplate";
 
 
 /* =========================================================

@@ -1,0 +1,16 @@
+node_modules
+dist
+.git
+.gitignore
+.env
+.env.*
+!.env.frontend
+.vscode
+.idea
+coverage
+logs
+*.log
+uploads
+.cache
+tmp
+.env.docker

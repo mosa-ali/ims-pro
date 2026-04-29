@@ -1,6 +1,6 @@
 /**
  * Logistics & Procurement Router
- * Handles all CRUD operations for the Logistics module
+ * Handles all CRUD operations for the Logistics module + PDF Generation
  * 
  * PLATFORM-LEVEL ISOLATION: Uses scopedProcedure to automatically inject
  * organizationId and operatingUnitId from HTTP headers via ctx.scope
@@ -34,6 +34,8 @@ import {
   contracts,
   users,
   userOrganizations,
+  bidOpeningMinutes,
+  organizationBranding,
 } from "../drizzle/schema";
 import { TRPCError } from "@trpc/server";
 import { purchaseRequestRouter } from "./routers/procurement/purchaseRequest";
@@ -54,7 +56,10 @@ import { prWorkflowDashboardRouter } from "./routers/logistics/prWorkflowDashboa
 import { supplierQuotationRouter } from "./routers/procurement/supplierQuotation";
 import { stockManagementRouter } from "./routers/logistics/stockManagementRouter";
 
-
+// PDF Generation imports
+import { generateOfficialPdf } from "./services/pdf/OfficialPdfEngine";
+import { buildBidOpeningMinutesHtml } from "./services/pdf/templates/logistics/bidOpeningMinutesTemplate";
+import { uploadPdf, generatePdfFileName, isValidPdfBuffer, isFileSizeValid } from "./services/pdf/PdfStorageService";
 const formatSqlDate = (dateValue?: string | Date | null) => {
   if (!dateValue) return null;
 
@@ -3465,6 +3470,183 @@ export const logisticsRouter = router({
 
   // Batch-based Stock Management
   stockMgmt: stockManagementRouter,
+
+  // ============================================================================
+  // PDF GENERATION PROCEDURES
+  // ============================================================================
+
+  /**
+   * Generate PDF for Bid Opening Minutes
+   * Flow:
+   * 1. Fetch BOM from database
+   * 2. Build HTML content
+   * 3. Generate PDF using Puppeteer
+   * 4. Upload to S3
+   * 5. Save URL to database
+   * 6. Return URL to frontend
+   */
+  generateBidOpeningMinutesPdf: protectedProcedure
+    .input(
+      z.object({
+        bomId: z.number().int().positive(),
+        language: z.enum(["en", "ar"]).default("en")
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const { bomId, language } = input;
+
+      if (!ctx.user) {
+        throw new Error("User not authenticated");
+      }
+
+      try {
+        console.log(`[PDF] Generating BOM PDF: ID=${bomId}, Language=${language}`);
+
+        // Step 1: Fetch BOM from database
+        const db = await getDb();
+        const bomData = await db
+          .select()
+          .from(bidOpeningMinutes)
+          .where(eq(bidOpeningMinutes.id, bomId))
+          .limit(1);
+
+        if (!bomData || bomData.length === 0) {
+          throw new Error(`BOM not found: ID=${bomId}`);
+        }
+
+        const bom = bomData[0];
+        console.log(`[PDF] BOM fetched: ${bom.minutesNumber}`);
+
+        // Fetch organization branding
+        const brandingData = await db
+          .select()
+          .from(organizationBranding)
+          .where(eq(organizationBranding.organizationId, bom.organizationId))
+          .limit(1);
+
+        const branding = brandingData[0];
+
+        // Step 2: Build HTML content
+        const htmlContent = buildBidOpeningMinutesHtml(
+          {
+            id: bom.id,
+            bomNumber: bom.minutesNumber,
+            bidDate: bom.openingDate,
+            openingTime: bom.openingTime || "Not specified",
+            location: bom.openingVenue || "Not specified",
+            chairman: bom.chairpersonName || "Not specified",
+            secretary: bom.member1Name || "Not specified",
+            committee: [], // TODO: Fetch from database if available
+            bids: [], // TODO: Fetch from database if available
+            notes: bom.openingNotes || "", // FIX: Ensure string type (was null)
+            language
+          },
+          language
+        );
+
+        console.log(`[PDF] HTML content generated`);
+
+        // Step 3: Generate PDF using Puppeteer
+        console.log(`[PDF] Generating PDF...`);
+        const pdfBuffer = await generateOfficialPdf({
+          organizationName: branding?.organizationName || "Organization", // FIX: Use branding from database
+          operatingUnitName: branding?.systemName || "-", // FIX: Use systemName from branding
+          organizationLogo: branding?.logoUrl || "", // FIX: Use logoUrl from branding
+          department: language === "ar" ? "الخدمات اللوجستية" : "Logistics Services",
+          documentTitle: language === "ar" ? "محضر فتح العروض" : "Bid Opening Minutes",
+          formNumber: bom.minutesNumber,
+          formDate: new Date(bom.openingDate).toLocaleDateString(
+            language === "ar" ? "ar-SA" : "en-US"
+          ),
+          bodyHtml: htmlContent,
+          direction: language === "ar" ? "rtl" : "ltr",
+          language
+        });
+
+        console.log(`[PDF] PDF generated, size: ${pdfBuffer.toString().length} bytes`);
+
+        // Validate PDF
+        if (!isValidPdfBuffer(pdfBuffer)) {
+          throw new Error("Generated PDF is invalid");
+        }
+
+        if (!isFileSizeValid(pdfBuffer)) {
+          throw new Error("PDF size exceeds maximum limit (50MB)");
+        }
+
+        // Step 4: Upload to S3
+        console.log(`[PDF] Uploading to S3...`);
+        const fileName = generatePdfFileName(
+          "bid-opening-minutes",
+          bom.minutesNumber,
+          language
+        );
+
+        const uploadResult = await uploadPdf(fileName, pdfBuffer); // FIX: pdfBuffer is already Buffer
+        console.log(`[PDF] PDF uploaded to S3: ${uploadResult.url}`);
+
+        // Step 5: Save URL to database
+        console.log(`[PDF] Updating database with PDF URL...`);
+        await db
+          .update(bidOpeningMinutes)
+          .set({
+            pdfFileUrl: uploadResult.url,
+            updatedAt: nowSql,
+          })
+          .where(eq(bidOpeningMinutes.id, bomId));
+
+        console.log(`[PDF] Database updated successfully`);
+
+        // Step 6: Return result
+        return {
+          success: true,
+          pdfUrl: uploadResult.url,
+          pdfKey: uploadResult.key,
+          fileName: uploadResult.fileName,
+          generatedAt: uploadResult.uploadedAt,
+          message: `PDF generated successfully for ${bom.minutesNumber}`
+        };
+      } catch (error) {
+        console.error(`[PDF] Error generating BOM PDF:`, error);
+        throw new Error(
+          `Failed to generate PDF: ${error instanceof Error ? error.message : String(error)}`
+        );
+      }
+    }),
+
+  /**
+   * Get existing PDF URL for BOM
+   */
+  getBidOpeningMinutesPdfUrl: protectedProcedure
+    .input(z.object({ bomId: z.number().int().positive() }))
+    .query(async ({ input }) => {
+      const { bomId } = input;
+
+      try {
+        const db = await getDb(); // FIX: Get db instance
+        const bomData = await db
+          .select()
+          .from(bidOpeningMinutes)
+          .where(eq(bidOpeningMinutes.id, bomId))
+          .limit(1);
+
+        if (!bomData || bomData.length === 0) {
+          return { pdfUrl: null, exists: false };
+        }
+
+        const bom = bomData[0];
+        return {
+          pdfUrl: bom.pdfFileUrl,
+          exists: !!bom.pdfFileUrl,
+          generatedAt: bom.updatedAt
+        };
+      } catch (error) {
+        console.error(`[PDF] Error fetching PDF URL:`, error);
+        throw new Error(
+          `Failed to fetch PDF URL: ${error instanceof Error ? error.message : String(error)}`
+        );
+      }
+    })
 });
 
 export type LogisticsRouter = typeof logisticsRouter;
