@@ -9,7 +9,7 @@ on:
 env:
   REGISTRY: imsreg.azurecr.io
   IMAGE_NAME: ims-platform
-  WEBAPP_NAME: ims-pro
+  APP_NAME: ims-pro
 
 jobs:
   build-and-deploy:
@@ -97,5 +97,5 @@ jobs:
       - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v3
         with:
-          app-name: ${{ env.WEBAPP_NAME }}
+          app-name: ${{ env.APP_NAME }}
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
