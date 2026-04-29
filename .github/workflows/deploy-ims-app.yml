@@ -97,5 +97,5 @@ jobs:
       - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v3
         with:
-          app-name: ${{ env.APP_NAME }}
+          app-name: ims-pro
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
