@@ -57,14 +57,19 @@ export interface OfficialPdfOptions {
   });
 
   // Launch Puppeteer
-  const browser = await puppeteer.launch({
+const browser = await puppeteer.launch({
   headless: true,
-  executablePath: process.env.PUPPETEER_EXECUTABLE_PATH,
+  executablePath:
+    process.env.PUPPETEER_EXECUTABLE_PATH ||
+    (process.env.NODE_ENV === "production"
+      ? "/usr/bin/chromium"
+      : undefined),
   args: [
     "--no-sandbox",
     "--disable-setuid-sandbox",
-    "--disable-dev-shm-usage"
-  ]
+    "--disable-dev-shm-usage",
+    "--disable-gpu",
+  ],
 });
 
   try {
