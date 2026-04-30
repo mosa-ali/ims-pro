@@ -1,14 +1,12 @@
 /**
  * Bid Opening Minutes PDF Generator Component
- * Frontend component for BOM PDF generation
+ * Frontend component for BOM PDF generation with in-memory caching
  * 
- * This component ONLY handles UI - PDF generation happens on backend
  * Flow:
- * 1. User clicks "Generate PDF" button
- * 2. Component calls tRPC mutation
- * 3. Backend generates PDF and uploads to S3
- * 4. Backend returns URL
- * 5. Component displays download button
+ * 1. Check if pdfFileUrl exists in database
+ * 2. If exists, reuse and download immediately
+ * 3. If not exists, generate new PDF, save URL to database, download
+ * 4. On regenerate, force new PDF generation
  */
 
 import { useState } from "react";
@@ -29,44 +27,61 @@ export function BidOpeningMinutesPdfGenerator({
   existingPdfUrl
 }: BidOpeningMinutesPdfGeneratorProps) {
   const [pdfUrl, setPdfUrl] = useState<string | null>(existingPdfUrl || null);
+  const [isDownloading, setIsDownloading] = useState(false);
 
   // Mutation for generating PDF
   const { mutate: generatePdf, isPending: isGenerating } =
     trpc.logistics.generateBidOpeningMinutesPdf.useMutation({
       onSuccess: (data) => {
         setPdfUrl(data.pdfUrl);
-        toast.success("PDF generated successfully!");
+        toast.success(
+          data.cached
+            ? "Using existing PDF. Downloading..."
+            : "PDF generated successfully! Downloading..."
+        );
+        // Auto-download immediately after generation
+        downloadPdf(data.pdfUrl);
       },
       onError: (error) => {
         toast.error(`Failed to generate PDF: ${error.message}`);
-      }
+      },
     });
 
-  // Query for fetching existing PDF URL
-  const { data: pdfData, isLoading: isFetching } =
-    trpc.logistics.getBidOpeningMinutesPdfUrl.useQuery(
-      { bomId },
-      { enabled: !pdfUrl }
-    );
+  // Download PDF by triggering window.location.href
+  const downloadPdf = (url: string) => {
+    try {
+      setIsDownloading(true);
+      window.location.href = url;
+      
+      // Reset download state after a short delay
+      setTimeout(() => {
+        setIsDownloading(false);
+      }, 1000);
+    } catch (error) {
+      toast.error("Failed to download PDF");
+      setIsDownloading(false);
+    }
+  };
 
   // Use fetched URL if available
-  const displayUrl = pdfUrl || pdfData?.pdfUrl;
+  const displayUrl = pdfUrl;
 
   const handleGeneratePdf = (language: "en" | "ar") => {
     generatePdf({
       bomId,
-      language
+      language,
     });
   };
 
   const handleDownloadPdf = () => {
     if (displayUrl) {
-      window.open(displayUrl, "_blank");
+      downloadPdf(displayUrl);
     }
   };
 
   const handleRegenerate = () => {
     setPdfUrl(null);
+    toast.info("Ready to generate new PDF");
   };
 
   return (
@@ -80,96 +95,110 @@ export function BidOpeningMinutesPdfGenerator({
       {displayUrl ? (
         <div className="bg-green-50 border border-green-200 rounded p-3">
           <p className="text-sm text-green-800">
-            ✓ PDF is ready for download
+            ✓ PDF ready for download (cached in-memory, expires in 1 hour)
           </p>
         </div>
       ) : (
         <div className="bg-blue-50 border border-blue-200 rounded p-3">
           <p className="text-sm text-blue-800">
-            No PDF generated yet. Click below to generate.
+            No PDF generated yet. Click below to generate and download.
           </p>
         </div>
       )}
 
       {/* Action Buttons */}
       <div className="flex flex-wrap gap-2">
-        {/* Generate English PDF */}
+        {/* Generate English PDF - Auto-downloads */}
         <Button
           onClick={() => handleGeneratePdf("en")}
-          disabled={isGenerating || isFetching}
+          disabled={isGenerating || isDownloading}
           variant="default"
           size="sm"
         >
-          {isGenerating ? (
+          {isGenerating || isDownloading ? (
             <>
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              Generating...
+              {isGenerating ? "Generating..." : "Downloading..."}
             </>
           ) : (
             <>
               <Download className="mr-2 h-4 w-4" />
-              Generate PDF (English)
+              Generate & Download PDF (English)
             </>
           )}
         </Button>
 
-        {/* Generate Arabic PDF */}
+        {/* Generate Arabic PDF - Auto-downloads */}
         <Button
           onClick={() => handleGeneratePdf("ar")}
-          disabled={isGenerating || isFetching}
+          disabled={isGenerating || isDownloading}
           variant="outline"
           size="sm"
         >
-          {isGenerating ? (
+          {isGenerating || isDownloading ? (
             <>
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              جاري الإنشاء...
+              {isGenerating ? "جاري الإنشاء..." : "جاري التحميل..."}
             </>
           ) : (
             <>
               <Download className="mr-2 h-4 w-4" />
-              إنشاء PDF (العربية)
+              إنشاء وتحميل PDF (العربية)
             </>
           )}
         </Button>
 
-        {/* Download PDF (if exists) */}
+        {/* Download existing PDF */}
         {displayUrl && (
           <Button
             onClick={handleDownloadPdf}
             variant="default"
             size="sm"
             className="bg-green-600 hover:bg-green-700"
+            disabled={isDownloading}
           >
-            <Download className="mr-2 h-4 w-4" />
-            Download PDF
+            {isDownloading ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Downloading...
+              </>
+            ) : (
+              <>
+                <Download className="mr-2 h-4 w-4" />
+                Download PDF Again
+              </>
+            )}
           </Button>
         )}
 
-        {/* Regenerate PDF */}
+        {/* Regenerate PDF (forces new generation, not cached) */}
         {displayUrl && (
           <Button
             onClick={handleRegenerate}
             variant="ghost"
             size="sm"
+            disabled={isGenerating}
           >
             <RefreshCw className="mr-2 h-4 w-4" />
-            Regenerate
+            Generate New PDF
           </Button>
         )}
       </div>
 
-      {/* Loading State */}
-      {isFetching && (
-        <div className="flex items-center gap-2 text-sm text-muted-foreground">
-          <Loader2 className="h-4 w-4 animate-spin" />
-          Loading PDF information...
+      {/* Info Section */}
+      <div className="text-xs text-muted-foreground space-y-1 pt-2 border-t">
+        <div>
+          <span className="font-semibold">BOM Number:</span>{" "}
+          <span className="font-mono">{bomNumber}</span>
         </div>
-      )}
-
-      {/* BOM Number Display */}
-      <div className="text-xs text-muted-foreground">
-        BOM Number: <span className="font-mono">{bomNumber}</span>
+        <div>
+          <span className="font-semibold">Cache Duration:</span> 1 hour
+        </div>
+        <div className="text-xs text-gray-500 italic">
+          PDFs are generated in-memory and cached for fast reuse. If the BOM
+          hasn't changed, the existing PDF will be downloaded instead of
+          regenerating.
+        </div>
       </div>
     </div>
   );

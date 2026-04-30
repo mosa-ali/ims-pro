@@ -7,11 +7,14 @@ import {
   purchaseRequests,
   bomApprovalSignatures,
   users,
+  organizationBranding,
 } from "../../../drizzle/schema";
 import { eq, and, desc, isNull, sql } from "drizzle-orm";
 import { TRPCError } from "@trpc/server";
 import { nanoid } from "nanoid";
 import QRCode from "qrcode";
+
+const nowSql = new Date().toISOString().slice(0, 19).replace('T', ' ');
 
 /**
  * Bid Opening Minutes (BOM) Router
@@ -85,7 +88,7 @@ export const bidOpeningMinutesRouter = router({
       }
 
       // Check if announcement has closed
-      if (ba.announcementEndDate && new Date() < ba.announcementEndDate) {
+      if (ba.announcementEndDate && nowSql < ba.announcementEndDate) {
         throw new TRPCError({
           code: "BAD_REQUEST",
           message: "Cannot create BOM before announcement end date.",
@@ -180,7 +183,7 @@ export const bidOpeningMinutesRouter = router({
       await db.update(bidOpeningMinutes)
         .set({
           ...committeeData,
-          updatedAt: new Date(),
+          updatedAt: nowSql,
           updatedBy: ctx.user.id,
         })
         .where(eq(bidOpeningMinutes.id, bomId));
@@ -230,7 +233,7 @@ export const bidOpeningMinutesRouter = router({
       await db.update(bidOpeningMinutes)
         .set({
           ...summaryData,
-          updatedAt: new Date(),
+          updatedAt: nowSql,
           updatedBy: ctx.user.id,
         })
         .where(eq(bidOpeningMinutes.id, bomId));
@@ -284,9 +287,9 @@ export const bidOpeningMinutesRouter = router({
       await db.update(bidOpeningMinutes)
         .set({
           status: "finalized",
-          finalizedAt: new Date(),
+          finalizedAt: nowSql,
           finalizedBy: ctx.user.id,
-          updatedAt: new Date(),
+          updatedAt: nowSql,
           updatedBy: ctx.user.id,
         })
         .where(eq(bidOpeningMinutes.id, bomId));
@@ -338,7 +341,7 @@ export const bidOpeningMinutesRouter = router({
       approverComments: z.string().optional(),
     }))
     .mutation(async ({ input, ctx }) => {
-      console.log("[BOM approve] Called:", { bomId: input.bomId, userId: ctx.user.id, platformRole: ctx.user.platformRole });
+      console.log("[BOM approve] Called:", { bomId: input.bomId, userId: ctx.user.id, platformRole: ctx.user.role });
       const { bomId, approverComments } = input;
       const { organizationId } = ctx.scope;
       const db = await getDb();
@@ -403,10 +406,10 @@ export const bidOpeningMinutesRouter = router({
       await db.update(bidOpeningMinutes)
         .set({
           status: "approved",
-          approvedAt: new Date(),
+          approvedAt: nowSql,
           approvedBy: ctx.user.id,
           approverComments: approverComments || null,
-          updatedAt: new Date(),
+          updatedAt: nowSql,
           updatedBy: ctx.user.id,
         })
         .where(eq(bidOpeningMinutes.id, bomId));
@@ -416,7 +419,7 @@ export const bidOpeningMinutesRouter = router({
         await db.update(bidAnalyses)
           .set({
             bomCompleted: 1,
-            updatedAt: new Date(),
+            updatedAt: nowSql,
           })
           .where(eq(bidAnalyses.id, bom.bidAnalysisId));
       }
@@ -1022,9 +1025,9 @@ export const bidOpeningMinutesRouter = router({
 
       // Generate PDF using Official PDF Engine with server-side language detection
       const { url: pdfUrl } = await generateOfficialPdf({
-        organizationName: org?.name || 'Organization',
+        organizationName: org?.name || '',
         operatingUnitName: ou?.name,
-        organizationLogo: branding?.logoUrl || org?.logoUrl,
+        organizationLogo: branding?.logoUrl || "",
         department: labels.department,
         documentTitle: labels.documentTitle,
         formNumber: bom.minutesNumber,
@@ -1039,7 +1042,7 @@ export const bidOpeningMinutesRouter = router({
       await db.update(bidOpeningMinutes)
         .set({
           pdfFileUrl: pdfUrl,
-          updatedAt: new Date(),
+          updatedAt: nowSql,
           updatedBy: ctx.user.id,
         })
         .where(eq(bidOpeningMinutes.id, bomId));
@@ -1252,15 +1255,14 @@ export const bidOpeningMinutesRouter = router({
       }
 
       // Update the signature slot
-      const now = new Date();
       await db.update(bomApprovalSignatures)
         .set({
           signatureDataUrl,
-          signedAt: now.toISOString().slice(0, 19).replace('T', ' '),
+          signedAt: nowSql,
           signedByUserId: ctx.user.id,
           verificationCode,
           qrCodeDataUrl,
-          updatedAt: now,
+          updatedAt: nowSql,
         })
         .where(eq(bomApprovalSignatures.id, signatureId));
 
@@ -1339,7 +1341,7 @@ export const bidOpeningMinutesRouter = router({
           signedByUserId: null,
           verificationCode: null,
           qrCodeDataUrl: null,
-          updatedAt: new Date(),
+          updatedAt: nowSql,
         })
         .where(eq(bomApprovalSignatures.id, signatureId));
 
@@ -1347,7 +1349,7 @@ export const bidOpeningMinutesRouter = router({
       await db.update(bidOpeningMinutes)
         .set({
           pdfFileUrl: null,
-          updatedAt: new Date(),
+          updatedAt: nowSql,
           updatedBy: ctx.user.id,
         })
         .where(eq(bidOpeningMinutes.id, slot.bomId));

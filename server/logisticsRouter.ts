@@ -57,9 +57,10 @@ import { supplierQuotationRouter } from "./routers/procurement/supplierQuotation
 import { stockManagementRouter } from "./routers/logistics/stockManagementRouter";
 
 // PDF Generation imports
-import { generateOfficialPdf } from "./services/pdf/OfficialPdfEngine";
+import { generateOfficialPdf, cachePdfAndGetToken } from "./services/pdf/OfficialPdfEngine";
 import { buildBidOpeningMinutesHtml } from "./services/pdf/templates/logistics/bidOpeningMinutesTemplate";
 import { uploadPdf, generatePdfFileName, isValidPdfBuffer, isFileSizeValid } from "./services/pdf/PdfStorageService";
+
 const formatSqlDate = (dateValue?: string | Date | null) => {
   if (!dateValue) return null;
 
@@ -3492,7 +3493,7 @@ export const logisticsRouter = router({
         language: z.enum(["en", "ar"]).default("en")
       })
     )
-    .mutation(async ({ ctx, input }) => {
+        .mutation(async ({ ctx, input }) => {
       const { bomId, language } = input;
 
       if (!ctx.user) {
@@ -3517,6 +3518,18 @@ export const logisticsRouter = router({
         const bom = bomData[0];
         console.log(`[PDF] BOM fetched: ${bom.minutesNumber}`);
 
+        // SMART CACHING: Check if PDF already exists in database
+        if (bom.pdfFileUrl) {
+          console.log(`[PDF] Reusing existing PDF URL for BOM ${bomId}: ${bom.pdfFileUrl.substring(0, 50)}...`);
+          return {
+            success: true,
+            pdfUrl: bom.pdfFileUrl,
+            fileName: `BOM-${bom.minutesNumber}.pdf`,
+            cached: true,
+            message: `Using existing PDF for ${bom.minutesNumber}`
+          };
+        }
+
         // Fetch organization branding
         const brandingData = await db
           .select()
@@ -3538,7 +3551,7 @@ export const logisticsRouter = router({
             secretary: bom.member1Name || "Not specified",
             committee: [], // TODO: Fetch from database if available
             bids: [], // TODO: Fetch from database if available
-            notes: bom.openingNotes || "", // FIX: Ensure string type (was null)
+            notes: bom.openingNotes || "",
             language
           },
           language
@@ -3549,9 +3562,9 @@ export const logisticsRouter = router({
         // Step 3: Generate PDF using Puppeteer
         console.log(`[PDF] Generating PDF...`);
         const pdfBuffer = await generateOfficialPdf({
-          organizationName: branding?.organizationName || "Organization", // FIX: Use branding from database
-          operatingUnitName: branding?.systemName || "-", // FIX: Use systemName from branding
-          organizationLogo: branding?.logoUrl || "", // FIX: Use logoUrl from branding
+          organizationName: branding?.organizationName || "Organization",
+          operatingUnitName: branding?.systemName || "-",
+          organizationLogo: branding?.logoUrl || "",
           department: language === "ar" ? "الخدمات اللوجستية" : "Logistics Services",
           documentTitle: language === "ar" ? "محضر فتح العروض" : "Bid Opening Minutes",
           formNumber: bom.minutesNumber,
@@ -3563,34 +3576,20 @@ export const logisticsRouter = router({
           language
         });
 
-        console.log(`[PDF] PDF generated, size: ${pdfBuffer.toString().length} bytes`);
+        console.log(`[PDF] PDF generated, size: ${(pdfBuffer.length / 1024).toFixed(2)}KB`);
 
-        // Validate PDF
-        if (!isValidPdfBuffer(pdfBuffer)) {
-          throw new Error("Generated PDF is invalid");
-        }
-
-        if (!isFileSizeValid(pdfBuffer)) {
-          throw new Error("PDF size exceeds maximum limit (50MB)");
-        }
-
-        // Step 4: Upload to S3
-        console.log(`[PDF] Uploading to S3...`);
-        const fileName = generatePdfFileName(
-          "bid-opening-minutes",
-          bom.minutesNumber,
-          language
-        );
-
-        const uploadResult = await uploadPdf(fileName, pdfBuffer); // FIX: pdfBuffer is already Buffer
-        console.log(`[PDF] PDF uploaded to S3: ${uploadResult.url}`);
+        // Step 4: Cache PDF in-memory and get download token/URL
+        // PDF will be cached for 1 hour and auto-expire
+        console.log(`[PDF] Caching PDF in-memory with 1-hour TTL...`);
+        const downloadUrl = cachePdfAndGetToken(pdfBuffer);
+        console.log(`[PDF] PDF cached, download URL: ${downloadUrl}`);
 
         // Step 5: Save URL to database
         console.log(`[PDF] Updating database with PDF URL...`);
         await db
           .update(bidOpeningMinutes)
           .set({
-            pdfFileUrl: uploadResult.url,
+            pdfFileUrl: downloadUrl,
             updatedAt: nowSql,
           })
           .where(eq(bidOpeningMinutes.id, bomId));
@@ -3600,17 +3599,19 @@ export const logisticsRouter = router({
         // Step 6: Return result
         return {
           success: true,
-          pdfUrl: uploadResult.url,
-          pdfKey: uploadResult.key,
-          fileName: uploadResult.fileName,
-          generatedAt: uploadResult.uploadedAt,
+          pdfUrl: downloadUrl,
+          pdfKey: downloadUrl,
+          fileName: `BOM-${bom.minutesNumber}.pdf`,
+          generatedAt: new Date().toISOString(),
+          cached: false,
           message: `PDF generated successfully for ${bom.minutesNumber}`
         };
       } catch (error) {
         console.error(`[PDF] Error generating BOM PDF:`, error);
-        throw new Error(
-          `Failed to generate PDF: ${error instanceof Error ? error.message : String(error)}`
-        );
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: `Failed to generate PDF: ${error instanceof Error ? error.message : String(error)}`
+        });
       }
     }),
 

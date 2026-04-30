@@ -9,7 +9,7 @@ on:
 env:
   REGISTRY: imsreg.azurecr.io
   IMAGE_NAME: ims-platform
-  APP_NAME: ims-pro
+  APP_NAME: ims-platform
 
 jobs:
   build-and-deploy:
