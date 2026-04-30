@@ -66,9 +66,10 @@ const browser = await puppeteer.launch({
     '--disable-setuid-sandbox',
     '--disable-dev-shm-usage',
     '--disable-gpu',
+    '--disable-crash-reporter',
+    '--disable-breakpad',
   ],
 });
-
 
   try {
     const page = await browser.newPage();
