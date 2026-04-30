@@ -1,5 +1,0 @@
-id,quotationAnalysisId,supplierId,supplierName,quoteReference,quoteDate,totalAmount,currency,deliveryDays,paymentTerms,warrantyMonths,technicalScore,financialScore,totalScore,isSelected,remarks,createdAt,updatedAt
-1,2,,Al-Salam Trading Co.,,,735.00,USD,,,,,,,0,,2026-02-07 02:44:33,2026-02-07 02:45:00
-30001,1,,Al-Noor Electronics,,,3360.00,USD,,,,,45.54,,0,,2026-02-07 11:29:20,2026-02-07 11:32:17
-30002,1,,TechWorld Solutions,,,3060.00,USD,,,,,50.00,,1,,2026-02-07 11:30:29,2026-02-07 11:37:58
-30003,1,,Gulf IT Supplies,,,3220.00,USD,,,,,47.52,,0,,2026-02-07 11:31:33,2026-02-07 11:32:17

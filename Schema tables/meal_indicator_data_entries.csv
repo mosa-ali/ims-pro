@@ -1,5 +1,0 @@
-id,indicatorId,organizationId,operatingUnitId,projectId,reportingPeriod,periodStartDate,periodEndDate,achievedValue,disaggregation,dataSource,evidenceFiles,notes,isVerified,verifiedAt,verifiedBy,verificationNotes,isDeleted,deletedAt,deletedBy,createdAt,updatedAt,createdBy,updatedBy
-1,60002,30001,30001,,2025-06,2025-06-01 00:00:00,2025-06-30 00:00:00,75.00,"{""female"": 35, ""male"": 40}",,,Test data entry via tRPC,0,,,,0,,,2026-02-06 18:14:15,2026-02-06 18:14:15,1080332,1080332
-30001,90002,30001,30001,,2026-02,2026-02-01 00:00:00,2026-02-28 00:00:00,1500.00,,,,,0,,,,0,,,2026-02-06 21:11:33,2026-02-06 21:11:33,1080332,1080332
-30002,90002,30001,30001,,2026-02,2026-02-01 00:00:00,2026-02-28 00:00:00,2500.00,,,,,0,,,,0,,,2026-02-06 21:15:07,2026-02-06 21:15:07,1080332,1080332
-30003,90002,30001,30001,,2026-02,2026-02-01 00:00:00,2026-02-28 00:00:00,2500.00,,,,,0,,,,0,,,2026-02-06 21:18:27,2026-02-06 21:18:27,1080332,1080332

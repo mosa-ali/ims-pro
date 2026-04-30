@@ -56,21 +56,19 @@ export interface OfficialPdfOptions {
     language,
   });
 
-  // Launch Puppeteer
+// Launch Puppeteer
 const browser = await puppeteer.launch({
   headless: true,
-  executablePath:
-    process.env.PUPPETEER_EXECUTABLE_PATH ||
-    (process.env.NODE_ENV === "production"
-      ? "/usr/bin/chromium"
-      : undefined),
+  executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || 
+    (process.env.NODE_ENV === 'production' ? '/usr/bin/chromium' : undefined),
   args: [
-    "--no-sandbox",
-    "--disable-setuid-sandbox",
-    "--disable-dev-shm-usage",
-    "--disable-gpu",
+    '--no-sandbox',
+    '--disable-setuid-sandbox',
+    '--disable-dev-shm-usage',
+    '--disable-gpu',
   ],
 });
+
 
   try {
     const page = await browser.newPage();

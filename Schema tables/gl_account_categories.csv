@@ -1,2 +1,0 @@
-id,organizationId,operatingUnitId,code,name,nameAr,parentId,level,accountType,normalBalance,isActive,sortOrder,createdAt,updatedAt,createdBy,updatedBy,deletedAt,deletedBy
-1,30001,30001,1000,Assest,,,1,asset,debit,1,0,2026-02-05 19:34:00,2026-02-05 19:34:00,1080332,1080332,,

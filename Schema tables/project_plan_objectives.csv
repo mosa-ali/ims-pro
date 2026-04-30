@@ -1,7 +1,0 @@
-id,projectId,organizationId,operatingUnitId,code,title,titleAr,description,status,isDeleted,deletedAt,deletedBy,createdAt,updatedAt,createdBy,updatedBy
-1,120005,0,,OBJ-01,Improve community health outcomes,تحسين نتائج صحة المجتمع,Strategic objective to improve health outcomes in target communities,Not Started,0,,,2026-01-31 17:09:55,2026-01-31 17:09:55,1,
-2,150027,0,,OBJ-01,Improve Water Access,تحسين الوصول للمياه,Increase access to clean water for affected communities,Not Started,0,,,2026-02-03 21:24:45,2026-02-03 21:24:45,1080332,
-3,150027,0,,OBJ-01,Improve Water Access for Communities,,,Not Started,0,,,2026-02-03 21:32:12,2026-02-03 21:32:12,1080332,
-4,150027,0,,OBJ-01,Improve Water Access,,,Not Started,0,,,2026-02-03 21:40:32,2026-02-03 21:40:32,1080332,
-5,150027,0,,OBJ-01,Improve Water Access for Communities,,,Not Started,0,,,2026-02-03 21:49:18,2026-02-03 21:49:18,1080332,
-6,150027,0,,OBJ-01,Improve Water Access,,,Not Started,0,,,2026-02-03 21:58:00,2026-02-03 21:58:00,1080332,

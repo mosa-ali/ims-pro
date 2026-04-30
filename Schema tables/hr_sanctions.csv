@@ -1,3 +1,0 @@
-id,organizationId,operatingUnitId,employeeId,sanctionCode,sanctionType,severity,incidentDate,reportedDate,description,evidence,investigatedBy,investigationNotes,investigationDate,decisionDate,decisionBy,decision,appealDate,appealOutcome,appealNotes,status,effectiveDate,expiryDate,notes,isDeleted,deletedAt,deletedBy,createdAt,updatedAt
-2,30001,,42,,verbal_warning,minor,2026-01-31 00:00:00,,Repeated late arrivals,,,,,,,,,,,closed,,,,0,,,2026-02-01 06:12:11,2026-02-01 06:12:11
-3,30001,,44,,written_warning,moderate,2026-01-10 00:00:00,,Unauthorized absence,,,,,,,,,,,under_investigation,,,,0,,,2026-02-01 06:12:11,2026-02-01 06:12:11

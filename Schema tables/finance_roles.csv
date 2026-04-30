@@ -1,4 +1,0 @@
-id,code,name,nameAr,description,level,isSystemRole,isActive,organizationId,isDeleted,deletedAt,deletedBy,createdAt,updatedAt
-1,finance_officer,Finance Officer,موظف مالي,Entry-level finance staff,1,0,1,30001,0,,,2026-02-02 01:26:08,2026-02-02 01:26:08
-2,finance_manager,Finance Manager,مدير مالي,Mid-level finance management,1,0,1,30001,0,,,2026-02-02 01:26:08,2026-02-02 01:26:08
-3,finance_director,Finance Director,مدير الشؤون المالية,Senior finance leadership,1,0,1,30001,0,,,2026-02-02 01:26:08,2026-02-02 01:26:08

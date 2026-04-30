@@ -1,7 +1,0 @@
-id,caseId,projectId,organizationId,activityType,activityDate,provider,notes,linkedActivityId,linkedIndicatorId,createdAt,updatedAt,createdBy,isDeleted
-1,1,60002,30001,awareness,2026-01-30 00:00:00,Community Health Worker,,,,2026-01-31 21:36:12,2026-02-03 18:36:44,,0
-30002,30006,150027,30001,awareness,2026-02-05 00:00:00,UNICEF Field Team,Child protection awareness session conducted with family members.,,,2026-02-06 12:03:31,2026-02-06 12:03:31,,0
-30003,30005,150027,30001,health_support,2026-02-03 00:00:00,WHO Health Clinic,Medical checkup and nutritional assessment completed.,,,2026-02-06 12:03:31,2026-02-06 12:03:31,,0
-30004,30004,150027,30001,legal_counselling,2026-02-01 00:00:00,Legal Aid Center,Legal consultation regarding documentation and registration.,,,2026-02-06 12:03:31,2026-02-06 12:03:31,,0
-30005,30003,150027,30001,livelihood,2026-01-28 00:00:00,Mercy Corps,Vocational training referral - tailoring skills program.,,,2026-02-06 12:03:31,2026-02-06 12:03:31,,0
-30006,30002,150027,30001,awareness,2026-01-25 00:00:00,Save the Children,GBV awareness and prevention workshop for community.,,,2026-02-06 12:03:31,2026-02-06 12:03:31,,0

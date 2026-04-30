@@ -1,1 +1,0 @@
-id,transferCode,assetId,fromLocation,toLocation,fromAssignee,toAssignee,fromAssigneeUserId,toAssigneeUserId,transferDate,reason,status,approvedBy,approvalDate,rejectionReason,notes,organizationId,operatingUnitId,isDeleted,deletedAt,deletedBy,createdBy,createdAt,updatedAt,fromOperatingUnitId,toOperatingUnitId,journalEntryId,attachments

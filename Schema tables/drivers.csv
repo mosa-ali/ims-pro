@@ -1,4 +1,0 @@
-id,driverCode,firstName,lastName,firstNameAr,lastNameAr,fullName,fullNameAr,staffId,licenseNumber,licenseType,licenseExpiry,licenseExpiryDate,licenseIssuingCountry,phone,email,status,photoUrl,notes,operatingUnitId,employeeId,organizationId,isDeleted,deletedAt,deletedBy,createdBy,createdAt,updatedAt
-1,DRV-001,,,,,Mohammed Al-Ahmad,محمد الأحمد,,SY-DL-2024-001,Heavy Vehicle,2028-02-02 00:00:00,,Syria,+963-11-5551234,mohammed.ahmad@org.com,active,,,,,30001,0,,,,2026-02-02 07:47:14,2026-02-02 07:51:13
-2,DRV-002,,,,,Hassan Ibrahim,حسن إبراهيم,,SY-DL-2024-002,Light Vehicle,2027-08-02 00:00:00,,Syria,+963-11-5552345,hassan.ibrahim@org.com,active,,,,,30001,0,,,,2026-02-02 07:47:14,2026-02-02 07:51:13
-3,DRV-003,,,,,Khaled Mustafa,خالد مصطفى,,SY-DL-2024-003,Light Vehicle,2027-02-02 00:00:00,,Syria,+963-11-5553456,khaled.mustafa@org.com,active,,,,,30001,0,,,,2026-02-02 07:47:14,2026-02-02 07:51:13

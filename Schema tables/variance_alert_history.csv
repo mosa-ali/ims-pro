@@ -1,3 +1,0 @@
-id,projectId,budgetItemId,organizationId,operatingUnitId,budgetCode,budgetItem,totalBudget,actualSpent,varianceAmount,variancePercentage,alertLevel,notificationSent,notificationError,acknowledgedAt,acknowledgedBy,acknowledgedNotes,createdAt,isDeleted,deletedAt,deletedBy
-1,150027,120004,30001,30001,BL3,Project Manager,24000.00,25000.00,1000.00,4.17,warning,0,,,,,2026-02-04 19:25:43,0,,
-30001,150027,120004,30001,30001,BL3,Project Manager,24000.00,25000.00,1000.00,4.17,warning,0,,,,,2026-02-06 03:03:09,0,,

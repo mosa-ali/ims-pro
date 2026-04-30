@@ -110,3 +110,6 @@ temp/
 .env.docker
 .env.docker.local
 .env*.docker.env.docker
+
+.cache/puppeteer 
+node_modules/ dist/

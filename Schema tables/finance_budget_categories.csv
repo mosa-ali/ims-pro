@@ -1,5 +1,0 @@
-id,code,name,nameAr,description,parentId,accountId,accountCode,categoryType,isActive,sortOrder,organizationId,operatingUnitId,isDeleted,deletedAt,deletedBy,createdAt,updatedAt,level,donorCategoryCode,isEligibleCost,maxCapPercent,requiresSupportingDocs,isDirectCost
-1,PERSONNEL,Personnel Costs,تكاليف الموظفين,All staff-related expenses,,,,expense,1,1,30001,,0,,,2026-02-02 01:26:03,2026-02-02 01:26:03,1,,1,,0,1
-2,OPERATIONS,Operational Costs,تكاليف التشغيل,Day-to-day operational expenses,,,,expense,1,2,30001,,0,,,2026-02-02 01:26:03,2026-02-02 01:26:03,1,,1,,0,1
-3,PROGRAMS,Program Costs,تكاليف البرامج,Direct program implementation costs,,,,expense,1,3,30001,,0,,,2026-02-02 01:26:03,2026-02-02 01:26:03,1,,1,,0,1
-4,ADMIN,Administrative Costs,تكاليف إدارية,Administrative overhead,,,,expense,1,4,30001,,0,,,2026-02-02 01:26:03,2026-02-02 01:26:03,1,,1,,0,1

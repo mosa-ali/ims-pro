@@ -1,1 +1,0 @@
-id,stockRequestId,stockItemId,lineNumber,description,requestedQty,approvedQty,issuedQty,unit,remarks,createdAt,updatedAt

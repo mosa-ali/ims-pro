@@ -1,1 +1,0 @@
-id,organizationId,operatingUnitId,vehicleId,driverId,fuelLogNumber,fuelDate,fuelType,quantity,unitPrice,totalCost,currency,mileageAtFill,station,receiptNumber,projectCode,remarks,isDeleted,deletedAt,deletedBy,createdAt,updatedAt,createdBy,updatedBy
