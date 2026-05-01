@@ -321,79 +321,93 @@ export function OfficialPrintTemplate({
  </div>
 
  <style>{`
- @media print {
- @page {
- size: ${isLandscape ? 'A4 landscape' : 'A4'};
- margin: 8mm;
- }
- html, body {
- -webkit-print-color-adjust: exact !important;
- print-color-adjust: exact !important;
- color-adjust: exact !important;
- margin: 0 !important;
- padding: 0 !important;
- background: white !important;
- }
- /* Hide ALL non-print elements */
- .print\\:hidden,
- nav,
-aside,
-[data-sidebar],
-[data-header],
-.sidebar,
-.header-nav,
-.app-sidebar,
-.top-navigation {
- display: none !important;
+@media print {
+  @page {
+    size: ${isLandscape ? 'A4 landscape' : 'A4'};
+    margin: 8mm;
+  }
+  
+  html, body {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    color-adjust: exact !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    background: white !important;
+  }
+  
+  /* EXPLICITLY SHOW HEADER FIRST (before hiding other elements) */
+  header,
+  .print-header {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    page-break-inside: avoid !important;
+  }
+  
+  header table {
+    display: table !important;
+    width: 100% !important;
+  }
+  
+  header img {
+    display: inline-block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    max-height: 70px !important;
+  }
+  
+  /* Hide ALL non-print elements (but NOT header) */
+  nav:not(header),
+  aside,
+  [data-sidebar],
+  .sidebar,
+  .header-nav,
+  .app-sidebar,
+  .top-navigation {
+    display: none !important;
+  }
+  
+  /* Ensure the print content takes full width */
+  .min-h-screen {
+    min-height: auto !important;
+    background: white !important;
+  }
+  
+  /* Remove shadows */
+  .shadow-lg {
+    box-shadow: none !important;
+  }
+  
+  /* Table handling */
+  table { 
+    page-break-inside: auto; 
+  }
+  
+  tr { 
+    page-break-inside: avoid; 
+    page-break-after: auto; 
+  }
+  
+  thead { 
+    display: table-header-group; 
+  }
+  
+  /* Avoid page breaks inside sections */
+  section { 
+    page-break-inside: avoid; 
+  }
+  
+  /* Reduce spacing in print */
+  .print\\:mt-4 { margin-top: 1rem !important; }
+  .print\\:mt-3 { margin-top: 0.75rem !important; }
+  .print\\:mt-2 { margin-top: 0.5rem !important; }
+  .print\\:pt-4 { padding-top: 1rem !important; }
+  .print\\:pt-3 { padding-top: 0.75rem !important; }
+  .print\\:pt-2 { padding-top: 0.5rem !important; }
+  .print\\:p-\\[8mm\\] { padding: 8mm !important; }
 }
- /* Ensure the print content takes full width */
- .min-h-screen {
- min-height: auto !important;
- background: white !important;
- }
- /* Remove shadows */
- .shadow-lg {
- box-shadow: none !important;
- }
- /* Force header visibility in Save as PDF */
-header {
-  display: block !important;
-  visibility: visible !important;
-  opacity: 1 !important;
-  page-break-inside: avoid !important;
-}
-
-header table {
-  display: table !important;
-  width: 100% !important;
-}
-
-header img {
-  display: inline-block !important;
-  visibility: visible !important;
-  opacity: 1 !important;
-  max-height: 70px !important;
-}
-
-.print-header {
-  margin-bottom: 20px !important;
-}
- /* Table handling */
- table { page-break-inside: auto; }
- tr { page-break-inside: avoid; page-break-after: auto; }
- thead { display: table-header-group; }
- /* Avoid page breaks inside sections */
- section { page-break-inside: avoid; }
- /* Reduce spacing in print */
- .print\\:mt-4 { margin-top: 1rem !important; }
- .print\\:mt-3 { margin-top: 0.75rem !important; }
- .print\\:mt-2 { margin-top: 0.5rem !important; }
- .print\\:pt-4 { padding-top: 1rem !important; }
- .print\\:pt-3 { padding-top: 0.75rem !important; }
- .print\\:pt-2 { padding-top: 0.5rem !important; }
- .print\\:p-\\[8mm\\] { padding: 8mm !important; }
- }
- `}</style>
+`}</style>
  </div>
  );
 }

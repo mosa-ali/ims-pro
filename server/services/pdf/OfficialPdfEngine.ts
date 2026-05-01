@@ -108,12 +108,11 @@ export async function generateOfficialPdf(
         bottom: '15mm',
         left: '15mm',
       },
-      displayHeaderFooter: true,
+      displayHeaderFooter: false,
     });
-    
-    const pdf = await page.pdf();
-// ✅ Ensure always Buffer
-    return Buffer.from(pdf);
+
+    // ✅ FIX: convert to Buffer
+    return Buffer.from(pdfBuffer);
   } finally {
     await browser.close();
   }
