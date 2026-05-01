@@ -19,8 +19,6 @@
  * ============================================================================
  */
 
-import puppeteer from 'puppeteer';
-
 export interface BidOpeningMinutesPDFData {
   // Organization Info
   organizationName: string;
@@ -463,62 +461,55 @@ function generateBOMHTML(data: BidOpeningMinutesPDFData): string {
  * Generate PDF from HTML using Puppeteer
  * Returns base64-encoded PDF string
  */
-async function generatePDFFromHTML(htmlContent: string): Promise<Buffer> {
-  let browser;
-  
-  try {
-    // Launch Puppeteer with managed browser
-    browser = await puppeteer.launch({
-      headless: 'true',
-      executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || '/home/ubuntu/.cache/puppeteer/chrome/linux-144.0.7559.96/chrome-linux64/chrome',
-      args: [
+
+import puppeteer from "puppeteer";
+
+export async function generatePDFFromHTML(htmlContent: string): Promise<Buffer> {
+  const browser = await puppeteer.launch({
+    headless: true,
+    executablePath:
+      process.env.PUPPETEER_EXECUTABLE_PATH || "/usr/bin/chromium",
+    args: [
         '--no-sandbox',
         '--disable-setuid-sandbox',
         '--disable-dev-shm-usage',
         '--disable-gpu',
         '--disable-crash-reporter',
         '--disable-breakpad',
-      ],
-    });
+    ],
+  });
 
+  try {
     const page = await browser.newPage();
 
-    // Set viewport for consistent rendering
+    // Ensure consistent rendering
     await page.setViewport({ width: 1920, height: 1080 });
 
-    // Set HTML content
+    // Load HTML
     await page.setContent(htmlContent, {
-      waitUntil: 'networkidle0',
+      waitUntil: "networkidle0",
       timeout: 30000,
     });
 
-    // Generate PDF with A4 format
+    // ✅ CRITICAL: wait for fonts (fix header + Arabic)
+    await page.evaluate(() => document.fonts.ready);
+
+    // Generate PDF (same as Project Report)
     const pdfBuffer = await page.pdf({
-      format: 'A4',
+      format: "A4",
       printBackground: true,
+      preferCSSPageSize: true,
       margin: {
-        top: '12mm',
-        right: '12mm',
-        bottom: '15mm',
-        left: '12mm',
+        top: "12mm",
+        right: "12mm",
+        bottom: "15mm",
+        left: "12mm",
       },
     });
 
-    await page.close();
     return Buffer.from(pdfBuffer);
-  } catch (error) {
-    console.error('[BOM PDF] Error generating PDF:', error);
-    throw new Error(
-      `Failed to generate PDF: ${error instanceof Error ? error.message : 'Unknown error'}`
-    );
   } finally {
-    if (browser) {
-      try {
-        await browser.close();
-      } catch (e) {
-        console.warn('[BOM PDF] Error closing browser:', e);
-      }
-    }
+    await browser.close();
   }
 }
 

@@ -15,6 +15,7 @@ import { RiskCalculationResult } from '@/utils/riskCalculation';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useTranslation } from '@/i18n/useTranslation';
 
+
 interface ProjectReportPrintViewProps {
  reportData: ProjectReportData;
  riskCalculation: RiskCalculationResult;
@@ -42,18 +43,18 @@ export const ProjectReportPrintView = forwardRef<HTMLDivElement, ProjectReportPr
  reportData,
  riskCalculation,
  narratives,
- language = 'en',
- organizationName = 'YDH - Yamany Development Foundation',
+ organizationName,
  organizationLogo,
  reportType = 'project',
  reportPeriodStart,
  reportPeriodEnd,
  generatedAt,
 }, ref) {
+ const { t, isRTL } = useTranslation();
+ const { language: contextLanguage } = useLanguage();
  
  // Format helpers
  const formatDate = (dateStr: string) => {
- const { t } = useTranslation();
  if (!dateStr) return 'N/A';
  return new Date(dateStr).toLocaleDateString(isRTL ? 'ar-SA' : 'en-US', {
  year: 'numeric',
@@ -220,7 +221,7 @@ export const ProjectReportPrintView = forwardRef<HTMLDivElement, ProjectReportPr
  <div style={{ opacity: 0.8 }}>{t.printTemplates.period}{reportType === 'monthly' && reportPeriodStart && reportPeriodEnd ? `${formatDate(reportPeriodStart)} - ${formatDate(reportPeriodEnd)}` : `${formatDate(reportData.project?.startDate || '')} - ${formatDate(reportData.project?.endDate || '')}`}</div>
  </div>
  </div>
- <div style={{ fontSize: '14pt', fontWeight: 700, marginBottom: '4px' }}>{reportData.project?.name || 'Unnamed Project'}</div>
+ <div style={{ fontSize: '14pt', fontWeight: 700, marginBottom: '4px' }}>{reportData.project?.titleEn}</div>
  <div style={{ fontSize: '9pt', opacity: 0.9 }}>Project Code: {reportData.project?.projectCode || 'N/A'}</div>
  </div>
 
@@ -351,7 +352,7 @@ export const ProjectReportPrintView = forwardRef<HTMLDivElement, ProjectReportPr
  <tbody>
  {reportData.indicators.details.map((indicator, idx) => (
  <tr key={idx}>
- <td style={{ fontWeight: 600 }}>{indicator.name}</td>
+ <td style={{ fontWeight: 600 }}>{indicator.IndicatorName}</td>
  <td>{indicator.baseline}</td>
  <td>{indicator.target}</td>
  <td>{indicator.actual}</td>

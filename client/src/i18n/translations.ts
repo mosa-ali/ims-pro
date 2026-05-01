@@ -3758,7 +3758,6 @@ export interface Translations {
     active: string;
     // Type 2 Consultancy Flow
     contract: string;
-    create: string;
     contractManagement: string;
     contractNotCreated: string;
     contractDraft: string;
@@ -3826,9 +3825,6 @@ export interface Translations {
     contractPendingApproval: string;
     fillAllRequiredFields: string;
     addAtLeastOneMilestone: string;
-    penaltyPercentage: string;
-    actions: string;
-    waivedByManager: string;
     prNotFoundTitle: string;
     goBack: string;
     cbaRequiredDesc: string;
@@ -5082,8 +5078,6 @@ export interface Translations {
     attendance: string;
     attendanceAnalytics: string;
     attendanceRateByDepartment: string;
-    attendanceRate: string;
-    autoRefresh: string;
     auditGovernance: string;
     auditLog: string;
     auditTrailLog: string;
@@ -6023,16 +6017,6 @@ export interface Translations {
   };
   logistics: {
     accept: string;
-    training: string;
-    cleaning: string;
-    security: string;
-    transportation: string;
-    catering: string;
-    itServices: string;
-    audit: string;
-    legal: string;
-    selectCurrency: string;
-    approveByPM: string;
     accepted: string;
     acceptedQty: string;
     acknowledged: string;
@@ -6490,6 +6474,58 @@ export interface Translations {
     works: string;
     year: string;
   };
+bidOpeningMinutes: {
+  addCommentsAboutApproval: string;
+  approval: string;
+  approveBom: string;
+  approverCommentsOptional: string;
+  bidSummary: string;
+  bidsOpened: string;
+  chairperson: string;
+  conferenceRoomExample: string;
+  createBidOpeningMinutes: string;
+  documentTitle: string;
+  finalizeBom: string;
+  generating: string;
+  irregularities: string;
+  issuesOrIrregularities: string;
+  loading: string;
+  meetingDetails: string;
+  member: string;
+  nameAndRole: string;
+  observationsDuringBidOpening: string;
+  officialRecord: string;
+  openingCommittee: string;
+  openingDate: string;
+  openingMode: string;
+  openingModeHybrid: string;
+  openingModeOnline: string;
+  openingModePhysical: string;
+  openingNotes: string;
+  openingTime: string;
+  optional: string;
+  printPdf: string;
+  saveBidSummary: string;
+  status: string;
+  statusFinalized: string;
+  totalBidsReceived: string;
+  venue: string;
+  digitalSignatures: string;
+  committeeSignatures: string;
+  signatureRequired: string;
+  allMembersMustSign: string;
+  signedMembers: string;
+  pendingSignatures: string;
+  signatureCollected: string;
+  awaitingSignature: string;
+  signNow: string;
+  verificationCode: string;
+  allSignaturesCollected: string;
+  cannotApproveUnsigned: string;
+  revokeSignature: string;
+  revokeSignatureTitle: string;
+  confirmRevoke: string;
+};
   myPRs: {
     allStatuses: string;
     allTypes: string;
@@ -6857,8 +6893,6 @@ export interface Translations {
     attendanceAnalytics: string;
     attendanceAnomalies: string;
     attendanceRateByDepartment: string;
-    attendanceRate: string;
-    autoRefresh: string;
     auditGovernance: string;
     average: string;
     backToHr: string;
@@ -8060,8 +8094,6 @@ export interface Translations {
   hrAttendance: {
     aboutPeriodLocking: string;
     absent: string;
-    year: string;
-    organizations: string;
     absentDays: string;
     absentToday: string;
     actions: string;
@@ -8141,7 +8173,6 @@ export interface Translations {
     month: string;
     monthlyAttendanceSheet: string;
     monthlySheetsForms: string;
-    monthlySheetsExports: string;
     more: string;
     myAttendance: string;
     next: string;
@@ -8214,6 +8245,7 @@ export interface Translations {
     totalStaff: string;
     tue: string;
     unlockPeriod: string;
+    update: string;
     view: string;
     viewAllRecords: string;
     viewCalendar: string;
@@ -8234,16 +8266,6 @@ export interface Translations {
     approvalStatus: string;
     location: string;
     loading: string;
-    overtimeHours: string;
-    noRecordsFound: string;
-    approveOvertime: string;
-    rejectOvertime: string;
-    reason: string;
-    enterReason: string;
-    successMessage: string;
-    update: string;
-    errorMessage: string;
-    filtered: string;
   };
   hrAnnualPlan: {
     actions: string;
@@ -14143,9 +14165,6 @@ export const en: Translations = {
  process: 'Process',
  prNum: 'PR Number',
  reqDate: 'Request Date',
- penaltyPercentage: 'Penalty Percentage',
- actions: 'Actions',
- waivedByManager: 'Waived By Manager',
  requester: 'Requester',
  urgency: 'Urgency',
  status: 'Status',
@@ -14341,7 +14360,6 @@ export const en: Translations = {
     active: 'Active',
     // Type 2 Consultancy Flow
     contract: 'Contract',
-    create: 'Create',
     contractManagement: 'Contract Management',
     contractNotCreated: 'Not Created',
     contractDraft: 'Draft',
@@ -15440,7 +15458,6 @@ export const en: Translations = {
     attendance: 'Attendance',
     attendanceAnalytics: 'Attendance Analytics',
     attendanceRateByDepartment: 'Attendance Rate by Department',
-    attendanceRate: 'Attendance Rate',
     auditGovernance: 'Audit & governance',
     auditLog: 'Audit Log',
     auditTrailLog: 'Audit Trail Log',
@@ -16330,16 +16347,6 @@ export const en: Translations = {
   },
   logistics: {
     accept: 'Accept',
-        training: 'Training',
-    cleaning: 'Cleaning', 
-    security: 'Security',
-    transportation: 'Transportation',
-    catering: 'Catering',
-    itServices: 'IT Services', 
-    audit: 'Audit',
-    legal: 'Legal Services',
-    selectCurrency: 'Selected Currency',
-    approveByPM: 'Approved by PM',
     accepted: 'Accepted',
     acceptedQty: 'Accepted Qty',
     acknowledged: 'Acknowledged',
@@ -17137,8 +17144,6 @@ export const en: Translations = {
     attendanceAnalytics: 'Attendance Analytics',
     attendanceAnomalies: 'Attendance Anomalies',
     attendanceRateByDepartment: 'Attendance Rate by Department',
-    attendanceRate: 'Attendance Rate',
-    autoRefresh: 'Auto Refersh',
     auditGovernance: 'Audit & governance',
     average: 'Average',
     backToHr: 'Back to HR',
@@ -18342,8 +18347,6 @@ export const en: Translations = {
   hrAttendance: {
     aboutPeriodLocking: 'About Period Locking',
     absent: 'Absent',
-    year: 'Year',
-    organizations: 'Organizations',
     absentDays: 'Absent Days',
     absentToday: 'Absent Today',
     actions: 'Actions',
@@ -18423,7 +18426,6 @@ export const en: Translations = {
     month: 'Month',
     monthlyAttendanceSheet: 'Monthly Attendance Sheet',
     monthlySheetsForms: 'Monthly sheets & forms',
-    monthlySheetsExports: 'Monthly sheets Export',
     more: 'more',
     myAttendance: 'My Attendance',
     next: 'Next',
@@ -18517,15 +18519,6 @@ export const en: Translations = {
     approvalStatus: "Approval Status",
     location: "Location",
     loading: "Loading...",
-    overtimeHours: "Overtime Hours",
-    noRecordsFound: "No records found",
-    approveOvertime: "Approve Overtime",
-    rejectOvertime: "Reject Overtime",
-    reason: "Reason",
-    enterReason: "Enter reason",
-    successMessage: "Operation completed successfully",
-    errorMessage: "An error occurred while processing",
-    filtered: "Filtered",
   },
   hrAnnualPlan: {
     actions: 'Actions',
@@ -27917,7 +27910,6 @@ export const ar: Translations = {
     active: 'نشط',
     // Type 2 Consultancy Flow
     contract: 'العقد',
-    create: 'انشاء',
     contractManagement: 'إدارة العقود',
     contractNotCreated: 'لم يتم الإنشاء',
     contractDraft: 'مسودة',
@@ -28012,9 +28004,6 @@ export const ar: Translations = {
     fixedAmount: 'مبلغ ثابت',
     goToSac: 'الانتقال لإدارة شهادات القبول',
     linkedMilestone: 'المرحلة المرتبطة',
-    penaltyPercentage: 'نسبة الغرامة',
-    actions: 'الاجراءات',
-    waivedByManager: 'تم التنازل عنه من قبل المدير',  
     lumpSum: 'مبلغ إجمالي',
     milestoneDesc: 'الوصف',
     milestoneDueDate: 'تاريخ الاستحقاق',
@@ -28052,8 +28041,8 @@ export const ar: Translations = {
     totalApprovedSac: 'إجمالي المعتمد',
     totalMilestones: 'إجمالي المراحل',
     type2Label: 'النوع 2: استشاري',
- },
-  supplierQuotationTab: {
+  },
+ supplierQuotationTab: {
     title: 'إدخال عروض الأسعار',
     titleAr: 'إدخال عروض الأسعار',
     subtitle: 'تسجيل عروض الموردين لكل بند في طلب الشراء للتقييم وإنشاء أمر الشراء',
@@ -29019,7 +29008,6 @@ export const ar: Translations = {
     attendance: 'الحضور',
     attendanceAnalytics: 'تحليلات الحضور',
     attendanceRateByDepartment: 'معدل الحضور حسب القسم',
-    attendanceRate: 'معدل الحضور',
     auditGovernance: 'التدقيق والحوكمة',
     auditLog: 'سجل التدقيق',
     auditTrailLog: 'سجل مسار التدقيق',
@@ -29910,16 +29898,6 @@ export const ar: Translations = {
   },
   logistics: {
     accept: 'قبول',
-        training: 'التدريب',
-    cleaning: 'النظافة', 
-    security: 'الامن',
-    transportation: 'النقل والمواصلات',
-    catering: 'التموين',
-    itServices: 'نظم المعلومات', 
-    audit: 'التدقيق',
-    legal: 'الشئون القانونية',
-    selectCurrency: 'العملة المختارة',
-    approveByPM: 'تم الموافقة من قبل مدير المنظمة',
     accepted: 'مقبول',
     acceptedQty: 'الكمية المقبولة',
     acknowledged: 'مستلم',
@@ -30717,8 +30695,6 @@ export const ar: Translations = {
     attendanceAnalytics: 'تحليلات الحضور',
     attendanceAnomalies: 'شذوذ الحضور',
     attendanceRateByDepartment: 'معدل الحضور حسب القسم',
-    attendanceRate: 'معدل الحضور',
-    autoRefresh: 'تحديث تلقائي',
     auditGovernance: 'التدقيق والحوكمة',
     average: 'المتوسط',
     backToHr: 'العودة إلى الموارد البشرية',
@@ -31922,8 +31898,6 @@ export const ar: Translations = {
   hrAttendance: {
     aboutPeriodLocking: 'حول إغلاق الفترات',
     absent: 'غائب',
-    year: 'السنه',
-    organizations: 'المنظمات',
     absentDays: 'أيام الغياب',
     absentToday: 'غائب اليوم',
     actions: 'الإجراءات',
@@ -32003,7 +31977,6 @@ export const ar: Translations = {
     month: 'شهر',
     monthlyAttendanceSheet: 'كشف الحضور الشهري',
     monthlySheetsForms: 'الأوراق والنماذج الشهرية',
-    monthlySheetsExports: 'النماذج الشهرية للتصدير',
     more: 'المزيد',
     myAttendance: 'حضوري',
     next: 'التالي',
@@ -32097,15 +32070,6 @@ export const ar: Translations = {
     approvalStatus: "حالة الموافقة",
     location: "الموقع",
     loading: "جاري التحميل...",
-    overtimeHours: "ساعات العمل الإضافي",
-    noRecordsFound: "لم يتم العثور على سجلات",
-    approveOvertime: "اعتماد العمل الإضافي",
-    rejectOvertime: "رفض العمل الإضافي",
-    reason: "السبب",
-    enterReason: "أدخل السبب",
-    successMessage: "تمت العملية بنجاح",
-    errorMessage: "حدث خطأ أثناء تنفيذ العملية",
-    filtered: "مفلتر",
   },
   hrAnnualPlan: {
     actions: 'الإجراءات',

@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Loader2, Plus, Trash2, Printer, AlertCircle, CheckCircle, PenTool, ShieldCheck, RotateCcw } from "lucide-react";
+import { Loader2, Plus, Trash2, Printer, AlertCircle, CheckCircle, PenTool, ShieldCheck, RotateCcw, RefreshCw, FileText, Download, ChevronDown, ChevronUp, ArrowUp, ArrowDown, AlertTriangle } from "lucide-react";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { useAuth } from "@/_core/hooks/useAuth";
 import { toast } from "sonner";
@@ -16,6 +16,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useTranslation } from '@/i18n/useTranslation';
 import SignatureCanvas from "@/components/SignatureCanvas";
 import { BackButton } from "@/components/BackButton";
+
+
 /**
  * Bid Opening Minutes (BOM) - Official record of bid opening ceremony
  * 
@@ -43,6 +45,91 @@ export default function BidOpeningMinutes() {
  const [, navigate] = useLocation();
  const prId = parseInt(id || "0");
 
+   // ========== TRANSLATION OBJECT ==========
+  const localT = {
+    // Header & Navigation
+    backToWorkspace: t.logistics.backToWorkspace,
+    documentTitle: t.bidOpeningMinutes?.documentTitle || "Bid Opening Minutes",
+    officialRecord: t.bidOpeningMinutes.officialRecord,
+    
+    // Meeting Details
+    meetingDetails: t.bidOpeningMinutes.meetingDetails,
+    openingDate: t.bidOpeningMinutes.openingDate,
+    openingTime: t.bidOpeningMinutes.openingTime,
+    venue: t.bidOpeningMinutes.venue,
+    conferenceRoomExample: t.bidOpeningMinutes.conferenceRoomExample,
+    openingMode: t.bidOpeningMinutes.openingMode,
+    openingModePhysical: t.bidOpeningMinutes.openingModePhysical,
+    openingModeOnline: t.bidOpeningMinutes.openingModeOnline,
+    openingModeHybrid: t.bidOpeningMinutes.openingModeHybrid,
+    
+    // Committee
+    openingCommittee: t.bidOpeningMinutes.openingCommittee,
+    chairperson: t.bidOpeningMinutes.chairperson,
+    member: t.bidOpeningMinutes.member,
+    nameAndRole: t.bidOpeningMinutes.nameAndRole,
+    
+    // Bid Summary
+    bidSummary: t.bidOpeningMinutes.bidSummary,
+    totalBidsReceived: t.bidOpeningMinutes.totalBidsReceived,
+    bidsOpened: t.bidOpeningMinutes.bidsOpened,
+    
+    // Notes & Observations
+    openingNotes: t.bidOpeningMinutes.openingNotes,
+    observationsDuringBidOpening: t.bidOpeningMinutes.observationsDuringBidOpening,
+    irregularities: t.bidOpeningMinutes.irregularities,
+    issuesOrIrregularities: t.bidOpeningMinutes.issuesOrIrregularities,
+    
+    // Approval
+    approval: t.bidOpeningMinutes.approval,
+    approveBom: t.bidOpeningMinutes.approveBom,
+    approverCommentsOptional: t.bidOpeningMinutes.approverCommentsOptional,
+    addCommentsAboutApproval: t.bidOpeningMinutes.addCommentsAboutApproval,
+    
+    // Signatures
+    digitalSignatures: t.bidOpeningMinutes.digitalSignatures,
+    committeeSignatures: t.bidOpeningMinutes.committeeSignatures,
+    signatureRequired: t.bidOpeningMinutes.signatureRequired,
+    allMembersMustSign: t.bidOpeningMinutes.allMembersMustSign,
+    signedMembers: t.bidOpeningMinutes.signedMembers,
+    pendingSignatures: t.bidOpeningMinutes.pendingSignatures,
+    signatureCollected: t.bidOpeningMinutes.signatureCollected,
+    awaitingSignature: t.bidOpeningMinutes.awaitingSignature,
+    signNow: t.bidOpeningMinutes.signNow,
+    verificationCode: t.bidOpeningMinutes.verificationCode,
+    allSignaturesCollected: t.bidOpeningMinutes.allSignaturesCollected,
+    cannotApproveUnsigned: t.bidOpeningMinutes.cannotApproveUnsigned,
+    revokeSignature: t.bidOpeningMinutes.revokeSignature,
+    revokeSignatureTitle: t.bidOpeningMinutes.revokeSignatureTitle,
+    confirmRevoke: t.bidOpeningMinutes.confirmRevoke,
+    
+    // Actions
+    printPdf: t.bidOpeningMinutes.printPdf,
+    finalizeBom: t.bidOpeningMinutes.finalizeBom,
+    createBidOpeningMinutes: t.bidOpeningMinutes.createBidOpeningMinutes,
+    saveBidSummary: t.bidOpeningMinutes.saveBidSummary,
+    
+    // Status
+    status: t.bidOpeningMinutes.status,
+    statusFinalized: t.bidOpeningMinutes.statusFinalized,
+    optional: t.bidOpeningMinutes.optional,
+    
+    // Loading & Messages
+    loading: t.bidOpeningMinutes.loading,
+    generating: t.bidOpeningMinutes.generating,
+    
+    // Common
+    save: t.common.save,
+    cancel: t.common.cancel,
+    delete: t.common.delete,
+    edit: t.common.edit,
+    add: t.common.add,
+    submit: t.common.submit,
+    required: t.common.required,
+    error: t.common.error,
+  };
+
+  
  // Fetch PR data
  const { data: pr, isLoading: prLoading } = trpc.procurementPhaseA.purchaseRequest.getById.useQuery({ id: prId });
 
@@ -230,16 +317,34 @@ export default function BidOpeningMinutes() {
  });
 
  // Generate PDF mutation
- const generatePDF = trpc.procurementPhaseA.bidOpeningMinutes.generatePDF.useMutation({
- onSuccess: (data) => {
- toast.success(language === 'ar' ? 'تم إنشاء ملف PDF بنجاح' : 'PDF generated successfully');
- window.open(data.pdfUrl, "_blank");
- refetchBom();
- },
- onError: (error) => {
- toast.error(error.message);
- },
- });
+const generatePDF = trpc.procurementPhaseA.bidOpeningMinutes.generatePDF.useMutation({
+  onSuccess: async (data) => {
+    try {
+      const res = await fetch(data.pdfUrl);
+      const blob = await res.blob();
+
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+
+      a.href = url;
+      a.download = data.fileName || "bid-opening-minutes.pdf";
+
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+
+      window.URL.revokeObjectURL(url);
+
+      toast.success(
+        language === "ar"
+          ? "تم تنزيل ملف PDF بنجاح"
+          : "PDF downloaded successfully"
+      );
+    } catch (err) {
+      toast.error("Failed to download PDF");
+    }
+  },
+});
 
  const handleCreateBOM = () => {
  if (!meetingDate || !meetingTime || !location) {
@@ -334,9 +439,9 @@ export default function BidOpeningMinutes() {
  <BackButton onClick={() => navigate(`/organization/logistics/procurement-workspace/${prId}`)} label={t.logistics.backToWorkspace} />
  <div className="flex items-center justify-between">
  <div>
- <h1 className="text-3xl font-bold">{t.bidOpeningMinutes.documentTitle}</h1>
+ <h1 className="text-3xl font-bold">{localT.documentTitle}</h1>
  <p className="text-muted-foreground mt-1">
- {t.bidOpeningMinutes.officialRecord} {pr.prNumber}
+ {localT.officialRecord} {pr.prNumber}
  </p>
  </div>
  </div>
@@ -363,12 +468,12 @@ export default function BidOpeningMinutes() {
  {/* Create BOM Form */}
  <Card className="mb-6">
  <CardHeader>
- <CardTitle>{t.bidOpeningMinutes.meetingDetails}</CardTitle>
+ <CardTitle>{localT.meetingDetails}</CardTitle>
  </CardHeader>
  <CardContent>
  <div className="grid grid-cols-2 gap-4">
  <div>
- <Label htmlFor="meetingDate">{t.bidOpeningMinutes.openingDate} *</Label>
+ <Label htmlFor="meetingDate">{localT.openingDate} *</Label>
  <Input
  id="meetingDate"
  type="date"
@@ -378,7 +483,7 @@ export default function BidOpeningMinutes() {
  />
  </div>
  <div>
- <Label htmlFor="meetingTime">{t.bidOpeningMinutes.openingTime} *</Label>
+ <Label htmlFor="meetingTime">{localT.openingTime} *</Label>
  <Input
  id="meetingTime"
  type="time"
@@ -388,25 +493,25 @@ export default function BidOpeningMinutes() {
  />
  </div>
  <div>
- <Label htmlFor="location">{t.bidOpeningMinutes.venue} *</Label>
+ <Label htmlFor="location">{localT.venue} *</Label>
  <Input
  id="location"
- placeholder={t.bidOpeningMinutes.conferenceRoomExample}
+ placeholder={localT.conferenceRoomExample}
  value={location}
  onChange={(e) => setLocation(e.target.value)}
  required
  />
  </div>
  <div>
- <Label htmlFor="openingMode">{t.bidOpeningMinutes.openingMode} *</Label>
+ <Label htmlFor="openingMode">{localT.openingMode} *</Label>
  <Select value={openingMode} onValueChange={(value) => setOpeningMode(value as "physical" | "online" | "hybrid")}>
  <SelectTrigger id="openingMode">
  <SelectValue />
  </SelectTrigger>
  <SelectContent>
- <SelectItem value="physical">{t.bidOpeningMinutes.openingModePhysical}</SelectItem>
- <SelectItem value="online">{t.bidOpeningMinutes.openingModeOnline}</SelectItem>
- <SelectItem value="hybrid">{t.bidOpeningMinutes.openingModeHybrid}</SelectItem>
+ <SelectItem value="physical">{localT.openingModePhysical}</SelectItem>
+ <SelectItem value="online">{localT.openingModeOnline}</SelectItem>
+ <SelectItem value="hybrid">{localT.openingModeHybrid}</SelectItem>
  </SelectContent>
  </Select>
  </div>
@@ -417,45 +522,45 @@ export default function BidOpeningMinutes() {
  {/* Committee Members */}
  <Card className="mb-6">
  <CardHeader>
- <CardTitle>{t.bidOpeningMinutes.openingCommittee}</CardTitle>
+ <CardTitle>{localT.openingCommittee}</CardTitle>
  </CardHeader>
  <CardContent>
  <div className="space-y-4">
  <div>
- <Label htmlFor="chairperson">{t.bidOpeningMinutes.chairperson} *</Label>
+ <Label htmlFor="chairperson">{localT.chairperson} *</Label>
  <Input
  id="chairperson"
- placeholder={t.bidOpeningMinutes.nameAndRole}
+ placeholder={localT.nameAndRole}
  value={chairpersonName}
  onChange={(e) => setChairpersonName(e.target.value)}
  required
  />
  </div>
  <div>
- <Label htmlFor="member1">{t.bidOpeningMinutes.member} 1 *</Label>
+ <Label htmlFor="member1">{localT.member} 1 *</Label>
  <Input
  id="member1"
- placeholder={t.bidOpeningMinutes.nameAndRole}
+ placeholder={localT.nameAndRole}
  value={member1Name}
  onChange={(e) => setMember1Name(e.target.value)}
  required
  />
  </div>
  <div>
- <Label htmlFor="member2">{t.bidOpeningMinutes.member} 2 *</Label>
+ <Label htmlFor="member2">{localT.member} 2 *</Label>
  <Input
  id="member2"
- placeholder={t.bidOpeningMinutes.nameAndRole}
+ placeholder={localT.nameAndRole}
  value={member2Name}
  onChange={(e) => setMember2Name(e.target.value)}
  required
  />
  </div>
  <div>
- <Label htmlFor="member3">{t.bidOpeningMinutes.member} 3 ({t.bidOpeningMinutes.optional})</Label>
+ <Label htmlFor="member3">{localT.member} 3 ({localT.optional})</Label>
  <Input
  id="member3"
- placeholder={t.bidOpeningMinutes.nameAndRole}
+ placeholder={localT.nameAndRole}
  value={member3Name}
  onChange={(e) => setMember3Name(e.target.value)}
  />
@@ -470,12 +575,12 @@ export default function BidOpeningMinutes() {
  {createBOM.isPending ? (
  <>
  <Loader2 className="w-4 h-4 me-2 animate-spin" />
- {t.bidOpeningMinutes.loading}...
+ {localT.loading}...
  </>
  ) : (
  <>
  <Plus className="w-4 h-4 me-2" />
- {t.bidOpeningMinutes.createBidOpeningMinutes}
+ {localT.createBidOpeningMinutes}
  </>
  )}
  </Button>
@@ -494,9 +599,9 @@ export default function BidOpeningMinutes() {
  <BackButton onClick={() => navigate(`/organization/logistics/procurement-workspace/${prId}`)} label={t.logistics.backToWorkspace} />
  <div className="flex items-center justify-between">
  <div>
- <h1 className="text-3xl font-bold">{t.bidOpeningMinutes.documentTitle}</h1>
+ <h1 className="text-3xl font-bold">{localT.documentTitle}</h1>
  <p className="text-muted-foreground mt-1">
- {t.bidOpeningMinutes.officialRecord} {pr.prNumber}
+ {localT.officialRecord} {pr.prNumber}
  </p>
  </div>
  <div className="flex gap-2">
@@ -505,12 +610,12 @@ export default function BidOpeningMinutes() {
  {generatePDF.isPending ? (
  <>
  <Loader2 className="w-4 h-4 me-2 animate-spin" />
- {t.bidOpeningMinutes.generating}
+ {localT.generating}
  </>
  ) : (
  <>
  <Printer className="w-4 h-4 me-2" />
- {t.bidOpeningMinutes.printPdf}
+ {localT.printPdf}
  </>
  )}
  </Button>
@@ -525,19 +630,19 @@ export default function BidOpeningMinutes() {
  backgroundColor: bom.status === "approved" ? "#d1fae5" : bom.status === "finalized" ? "#dbeafe" : "#fef3c7",
  color: bom.status === "approved" ? "#065f46" : bom.status === "finalized" ? "#1e40af" : "#92400e"
  }}>
- {t.bidOpeningMinutes.status}: {bom.status === 'finalized' ? t.bidOpeningMinutes.statusFinalized : bom.status === 'approved' ? (language === 'ar' ? 'معتمد' : 'Approved') : bom.status === 'draft' ? (language === 'ar' ? 'مسودة' : 'Draft') : bom.status.charAt(0).toUpperCase() + bom.status.slice(1)}
+ {localT.status}: {bom.status === 'finalized' ? localT.statusFinalized : bom.status === 'approved' ? (language === 'ar' ? 'معتمد' : 'Approved') : bom.status === 'draft' ? (language === 'ar' ? 'مسودة' : 'Draft') : (String(bom.status).charAt(0).toUpperCase() + String(bom.status).slice(1))}
  </div>
  </div>
 
  {/* Meeting Details */}
  <Card className="mb-6">
  <CardHeader>
- <CardTitle>{t.bidOpeningMinutes.meetingDetails}</CardTitle>
+ <CardTitle>{localT.meetingDetails}</CardTitle>
  </CardHeader>
  <CardContent>
  <div className="grid grid-cols-2 gap-4">
  <div>
- <Label htmlFor="meetingDate">{t.bidOpeningMinutes.openingDate}</Label>
+ <Label htmlFor="meetingDate">{localT.openingDate}</Label>
  <Input
  id="meetingDate"
  type="date"
@@ -547,7 +652,7 @@ export default function BidOpeningMinutes() {
  />
  </div>
  <div>
- <Label htmlFor="meetingTime">{t.bidOpeningMinutes.openingTime}</Label>
+ <Label htmlFor="meetingTime">{localT.openingTime}</Label>
  <Input
  id="meetingTime"
  type="time"
@@ -557,7 +662,7 @@ export default function BidOpeningMinutes() {
  />
  </div>
  <div>
- <Label htmlFor="location">{t.bidOpeningMinutes.venue}</Label>
+ <Label htmlFor="location">{localT.venue}</Label>
  <Input
  id="location"
  placeholder={t.placeholders.eGConferenceRoomA}
@@ -567,15 +672,15 @@ export default function BidOpeningMinutes() {
  />
  </div>
  <div>
- <Label htmlFor="openingMode">{t.bidOpeningMinutes.openingMode}</Label>
+ <Label htmlFor="openingMode">{localT.openingMode}</Label>
  <Select value={openingMode} onValueChange={(value) => setOpeningMode(value as "physical" | "online" | "hybrid")} disabled={bom.status === "finalized"}>
  <SelectTrigger id="openingMode" disabled={bom.status === "finalized"}>
  <SelectValue />
  </SelectTrigger>
  <SelectContent>
- <SelectItem value="physical">{t.bidOpeningMinutes.openingModePhysical}</SelectItem>
- <SelectItem value="online">{t.bidOpeningMinutes.openingModeOnline}</SelectItem>
- <SelectItem value="hybrid">{t.bidOpeningMinutes.openingModeHybrid}</SelectItem>
+ <SelectItem value="physical">{localT.openingModePhysical}</SelectItem>
+ <SelectItem value="online">{localT.openingModeOnline}</SelectItem>
+ <SelectItem value="hybrid">{localT.openingModeHybrid}</SelectItem>
  </SelectContent>
  </Select>
  </div>
@@ -586,45 +691,45 @@ export default function BidOpeningMinutes() {
  {/* Committee Members */}
  <Card className="mb-6">
  <CardHeader>
- <CardTitle>{t.bidOpeningMinutes.openingCommittee}</CardTitle>
+ <CardTitle>{localT.openingCommittee}</CardTitle>
  </CardHeader>
  <CardContent>
  <div className="space-y-4">
  <div>
- <Label htmlFor="chairperson">{t.bidOpeningMinutes.chairperson}</Label>
+ <Label htmlFor="chairperson">{localT.chairperson}</Label>
  <Input
  id="chairperson"
- placeholder={t.bidOpeningMinutes.nameAndRole}
+ placeholder={localT.nameAndRole}
  value={chairpersonName}
  onChange={(e) => setChairpersonName(e.target.value)}
  disabled={bom.status === "finalized" || bom.status === "approved"}
  />
  </div>
  <div>
- <Label htmlFor="member1">{t.bidOpeningMinutes.member} 1</Label>
+ <Label htmlFor="member1">{localT.member} 1</Label>
  <Input
  id="member1"
- placeholder={t.bidOpeningMinutes.nameAndRole}
+ placeholder={localT.nameAndRole}
  value={member1Name}
  onChange={(e) => setMember1Name(e.target.value)}
  disabled={bom.status === "finalized" || bom.status === "approved"}
  />
  </div>
  <div>
- <Label htmlFor="member2">{t.bidOpeningMinutes.member} 2</Label>
+ <Label htmlFor="member2">{localT.member} 2</Label>
  <Input
  id="member2"
- placeholder={t.bidOpeningMinutes.nameAndRole}
+ placeholder={localT.nameAndRole}
  value={member2Name}
  onChange={(e) => setMember2Name(e.target.value)}
  disabled={bom.status === "finalized" || bom.status === "approved"}
  />
  </div>
  <div>
- <Label htmlFor="member3">{t.bidOpeningMinutes.member} 3 ({t.bidOpeningMinutes.optional})</Label>
+ <Label htmlFor="member3">{localT.member} 3 ({localT.optional})</Label>
  <Input
  id="member3"
- placeholder={t.bidOpeningMinutes.nameAndRole}
+ placeholder={localT.nameAndRole}
  value={member3Name}
  onChange={(e) => setMember3Name(e.target.value)}
  disabled={bom.status === "finalized" || bom.status === "approved"}
@@ -666,12 +771,12 @@ export default function BidOpeningMinutes() {
  {/* Bid Summary */}
  <Card className="mb-6">
  <CardHeader>
- <CardTitle>{t.bidOpeningMinutes.bidSummary}</CardTitle>
+ <CardTitle>{localT.bidSummary}</CardTitle>
  </CardHeader>
  <CardContent>
  <div className="grid grid-cols-2 gap-4 mb-4">
  <div>
- <Label htmlFor="totalBidsReceived">{t.bidOpeningMinutes.totalBidsReceived}</Label>
+ <Label htmlFor="totalBidsReceived">{localT.totalBidsReceived}</Label>
  <Input
  id="totalBidsReceived"
  type="number"
@@ -681,7 +786,7 @@ export default function BidOpeningMinutes() {
  />
  </div>
  <div>
- <Label htmlFor="bidsOpenedCount">{t.bidOpeningMinutes.bidsOpened}</Label>
+ <Label htmlFor="bidsOpenedCount">{localT.bidsOpened}</Label>
  <Input
  id="bidsOpenedCount"
  type="number"
@@ -692,10 +797,10 @@ export default function BidOpeningMinutes() {
  </div>
  </div>
  <div className="mb-4">
- <Label htmlFor="openingNotes">{t.bidOpeningMinutes.openingNotes}</Label>
+ <Label htmlFor="openingNotes">{localT.openingNotes}</Label>
  <Textarea
  id="openingNotes"
- placeholder={t.bidOpeningMinutes.observationsDuringBidOpening}
+ placeholder={localT.observationsDuringBidOpening}
  value={openingNotes}
  onChange={(e) => setOpeningNotes(e.target.value)}
  disabled={bom.status === "finalized"}
@@ -703,10 +808,10 @@ export default function BidOpeningMinutes() {
  />
  </div>
  <div>
- <Label htmlFor="irregularities">{t.bidOpeningMinutes.irregularities}</Label>
+ <Label htmlFor="irregularities">{localT.irregularities}</Label>
  <Textarea
  id="irregularities"
- placeholder={t.bidOpeningMinutes.issuesOrIrregularities}
+ placeholder={localT.issuesOrIrregularities}
  value={irregularities}
  onChange={(e) => setIrregularities(e.target.value)}
  disabled={bom.status === "finalized"}
@@ -723,21 +828,21 @@ export default function BidOpeningMinutes() {
  <div className="flex items-center justify-between">
  <CardTitle className="flex items-center gap-2">
  <PenTool className="w-5 h-5 text-blue-600" />
- {t.bidOpeningMinutes.digitalSignatures}
+ {localT.digitalSignatures}
  </CardTitle>
  <div className="text-sm text-muted-foreground">
- {t.bidOpeningMinutes.signedMembers}: {signedCount}/{totalSignatureSlots}
+ {localT.signedMembers}: {signedCount}/{totalSignatureSlots}
  </div>
  </div>
  {bom.status === 'finalized' && !allSigned && (
  <p className="text-sm text-amber-600 mt-2">
- {t.bidOpeningMinutes.allMembersMustSign}
+ {localT.allMembersMustSign}
  </p>
  )}
  {allSigned && (
  <div className="flex items-center gap-2 mt-2 text-green-600">
  <ShieldCheck className="w-4 h-4" />
- <span className="text-sm font-medium">{t.bidOpeningMinutes.allSignaturesCollected}</span>
+ <span className="text-sm font-medium">{localT.allSignaturesCollected}</span>
  </div>
  )}
  </CardHeader>
@@ -757,10 +862,10 @@ export default function BidOpeningMinutes() {
  {sig.signatureDataUrl ? (
  <div className="flex items-center gap-1 text-green-600">
  <CheckCircle className="w-4 h-4" />
- <span className="text-xs font-medium">{t.bidOpeningMinutes.signatureCollected}</span>
+ <span className="text-xs font-medium">{localT.signatureCollected}</span>
  </div>
  ) : (
- <span className="text-xs text-amber-600 font-medium">{t.bidOpeningMinutes.awaitingSignature}</span>
+ <span className="text-xs text-amber-600 font-medium">{localT.awaitingSignature}</span>
  )}
  </div>
 
@@ -772,7 +877,7 @@ export default function BidOpeningMinutes() {
  </div>
  <div className="flex items-center gap-4 text-xs text-muted-foreground">
  {sig.signedAt && (
- <span>{t.bidOpeningMinutes.signedMembers}: {new Date(sig.signedAt).toLocaleString()}</span>
+ <span>{localT.signedMembers}: {new Date(sig.signedAt).toLocaleString()}</span>
  )}
  {sig.verificationCode && (
  <span className="font-mono bg-gray-100 px-2 py-0.5 rounded">{sig.verificationCode}</span>
@@ -798,12 +903,12 @@ export default function BidOpeningMinutes() {
  ) : (
  <RotateCcw className="w-3 h-3 me-1" />
  )}
- {t.bidOpeningMinutes.revokeSignature}
+ {localT.revokeSignature}
  </Button>
  </AlertDialogTrigger>
  <AlertDialogContent>
  <AlertDialogHeader>
- <AlertDialogTitle>{t.bidOpeningMinutes.revokeSignatureTitle}</AlertDialogTitle>
+ <AlertDialogTitle>{localT.revokeSignatureTitle}</AlertDialogTitle>
  <AlertDialogDescription>
  {language === 'ar'
  ? `هل أنت متأكد من إلغاء توقيع ${sig.memberName} (${language === 'ar' ? sig.roleAr : sig.role})؟ سيحتاج العضو إلى إعادة التوقيع قبل الموافقة على محضر فتح العطاءات.`
@@ -816,7 +921,7 @@ export default function BidOpeningMinutes() {
  onClick={() => revokeSignature.mutate({ signatureId: sig.id })}
  className="bg-red-600 hover:bg-red-700 text-white"
  >
- {t.bidOpeningMinutes.confirmRevoke}
+ {localT.confirmRevoke}
  </AlertDialogAction>
  </AlertDialogFooter>
  </AlertDialogContent>
@@ -858,7 +963,7 @@ export default function BidOpeningMinutes() {
  className="mt-2"
  >
  <PenTool className="w-3 h-3 me-1" />
- {t.bidOpeningMinutes.signNow}
+ {localT.signNow}
  </Button>
  )}
  </div>
@@ -874,14 +979,14 @@ export default function BidOpeningMinutes() {
  {bom.status === "finalized" && (user?.role === "platform_super_admin" || user?.role === "platform_admin" || user?.role === "organization_admin" || user?.role === "admin") && (
  <Card className="mb-6">
  <CardHeader>
- <CardTitle>{t.bidOpeningMinutes.approval}</CardTitle>
+ <CardTitle>{localT.approval}</CardTitle>
  </CardHeader>
  <CardContent>
  <div className="mb-4">
- <Label htmlFor="approverComments">{t.bidOpeningMinutes.approverCommentsOptional}</Label>
+ <Label htmlFor="approverComments">{localT.approverCommentsOptional}</Label>
  <Textarea
  id="approverComments"
- placeholder={t.bidOpeningMinutes.addCommentsAboutApproval}
+ placeholder={localT.addCommentsAboutApproval}
  value={approverComments}
  onChange={(e) => setApproverComments(e.target.value)}
  rows={3}
@@ -890,7 +995,7 @@ export default function BidOpeningMinutes() {
  {!allSigned && totalSignatureSlots > 0 && (
  <div className="mb-4 p-3 bg-amber-50 border border-amber-200 rounded-lg flex items-center gap-2">
  <AlertCircle className="w-4 h-4 text-amber-600 flex-shrink-0" />
- <span className="text-sm text-amber-800">{t.bidOpeningMinutes.cannotApproveUnsigned}</span>
+ <span className="text-sm text-amber-800">{localT.cannotApproveUnsigned}</span>
  </div>
  )}
  <Button 
@@ -906,7 +1011,7 @@ export default function BidOpeningMinutes() {
  ) : (
  <>
  <CheckCircle className="w-4 h-4 me-2" />
- {t.bidOpeningMinutes.approveBom}
+ {localT.approveBom}
  </>
  )}
  </Button>
@@ -947,20 +1052,20 @@ export default function BidOpeningMinutes() {
  {updateBidSummary.isPending ? (
  <>
  <Loader2 className="w-4 h-4 me-2 animate-spin" />
- {t.bidOpeningMinutes.loading}...
+ {localT.loading}...
  </>
  ) : (
- <>{t.bidOpeningMinutes.saveBidSummary}</>
+ <>{localT.saveBidSummary}</>
  )}
  </Button>
  <Button onClick={handleFinalizeBOM} disabled={finalizeBOM.isPending} variant="default">
  {finalizeBOM.isPending ? (
  <>
  <Loader2 className="w-4 h-4 me-2 animate-spin" />
- {t.bidOpeningMinutes.loading}...
+ {localT.loading}...
  </>
  ) : (
- <>{t.bidOpeningMinutes.finalizeBom}</>
+ <>{localT.finalizeBom}</>
  )}
  </Button>
  </>

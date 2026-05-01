@@ -3553,12 +3553,11 @@ export const logisticsRouter = router({
         console.log(`[BOM PDF] PDF generated successfully: ${filename}`);
 
         // Step 5: Return base64 PDF to frontend
-        return {
-          success: true,
-          pdf, // base64 encoded
-          filename,
-          message: `PDF generated successfully for ${bom.minutesNumber}`
-        };
+          return {
+            success: true,
+            pdf, // base64
+            fileName: filename,
+          };
       } catch (error) {
         console.error(`[BOM PDF] Error generating BOM PDF:`, error);
         throw new TRPCError({

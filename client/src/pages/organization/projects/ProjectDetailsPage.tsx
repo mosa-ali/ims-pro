@@ -82,7 +82,7 @@ export default function ProjectDetailsPage() {
  <div className="flex flex-col items-center justify-center min-h-screen">
  <p className="text-lg text-gray-600 mb-4">Project not found</p>
  <Button onClick={() => setLocation('/organization/projects-list')}>
- {t.projectDetailsPage.backToProjects}
+ {t.projectDetail.backToProjects}
  </Button>
  </div>
  );
@@ -115,10 +115,10 @@ export default function ProjectDetailsPage() {
  // Build tabs array conditionally — sensitive tabs require BOTH sector match AND RBAC permission
  const tabs = [
  { id: 'overview' as TabId, label: t.projectDetailsPage.overview },
- { id: 'financial' as TabId, label: t.projectDetailsPage.financial },
+ { id: 'financial' as TabId, label: t.projectDetail.financial },
  { id: 'varianceAlerts' as TabId, label: t.projectDetailsPage.varianceAlerts },
- { id: 'activities' as TabId, label: t.projectDetailsPage.activities },
- { id: 'indicators' as TabId, label: t.projectDetailsPage.indicators },
+ { id: 'activities' as TabId, label: t.projectDetail.activities },
+ { id: 'indicators' as TabId, label: t.projectDetail.indicators },
  // Beneficiaries: requires explicit RBAC permission
  ...(hasBeneficiariesPermission ? [{ id: 'beneficiaries' as TabId, label: t.projectDetailsPage.beneficiaries }] : []),
  // Case Management: requires BOTH protection sector AND explicit RBAC permission
@@ -144,7 +144,7 @@ export default function ProjectDetailsPage() {
  className="mb-4"
  >
  {isRTL ? <ArrowRight className="w-4 h-4 me-2" /> : <ArrowLeft className="w-4 h-4 me-2" />}
- {t.projectDetailsPage.backToProjects}
+ {t.projectDetail.backToProjects}
  </Button>
 
  <div className="mb-4 flex items-start justify-between">
