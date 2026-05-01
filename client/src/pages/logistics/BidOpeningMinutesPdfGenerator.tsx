@@ -1,87 +1,70 @@
 /**
  * Bid Opening Minutes PDF Generator Component
- * Frontend component for BOM PDF generation with in-memory caching
+ * Frontend component for BOM PDF generation with server-side rendering
  * 
  * Flow:
- * 1. Check if pdfFileUrl exists in database
- * 2. If exists, reuse and download immediately
- * 3. If not exists, generate new PDF, save URL to database, download
- * 4. On regenerate, force new PDF generation
+ * 1. User clicks "Generate PDF" button
+ * 2. Frontend calls server-side mutation
+ * 3. Server generates PDF using Puppeteer
+ * 4. Server returns base64-encoded PDF
+ * 5. Frontend converts to Blob and downloads
  */
 
 import { useState } from "react";
 import { trpc } from "@/lib/trpc";
 import { Button } from "@/components/ui/button";
-import { Download, Loader2, FileText, RefreshCw } from "lucide-react";
+import { Download, Loader2, FileText } from "lucide-react";
 import { toast } from "sonner";
 
 interface BidOpeningMinutesPdfGeneratorProps {
   bomId: number;
   bomNumber: string;
-  existingPdfUrl?: string | null;
 }
 
 export function BidOpeningMinutesPdfGenerator({
   bomId,
   bomNumber,
-  existingPdfUrl
 }: BidOpeningMinutesPdfGeneratorProps) {
-  const [pdfUrl, setPdfUrl] = useState<string | null>(existingPdfUrl || null);
-  const [isDownloading, setIsDownloading] = useState(false);
+  const [isGenerating, setIsGenerating] = useState(false);
 
   // Mutation for generating PDF
-  const { mutate: generatePdf, isPending: isGenerating } =
+  const { mutate: generatePdf } =
     trpc.logistics.generateBidOpeningMinutesPdf.useMutation({
       onSuccess: (data) => {
-        setPdfUrl(data.pdfUrl);
-        toast.success(
-          data.cached
-            ? "Using existing PDF. Downloading..."
-            : "PDF generated successfully! Downloading..."
-        );
-        // Auto-download immediately after generation
-        downloadPdf(data.pdfUrl);
+        // Convert base64 to blob and download
+        const byteCharacters = atob(data.pdf);
+        const byteNumbers = new Array(byteCharacters.length);
+        for (let i = 0; i < byteCharacters.length; i++) {
+          byteNumbers[i] = byteCharacters.charCodeAt(i);
+        }
+        const byteArray = new Uint8Array(byteNumbers);
+        const blob = new Blob([byteArray], { type: 'application/pdf' });
+
+        // Download the PDF
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = data.filename;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        window.URL.revokeObjectURL(url);
+
+        toast.success("PDF downloaded successfully!");
+        setIsGenerating(false);
       },
       onError: (error) => {
         toast.error(`Failed to generate PDF: ${error.message}`);
+        setIsGenerating(false);
       },
     });
 
-  // Download PDF by triggering window.location.href
-  const downloadPdf = (url: string) => {
-    try {
-      setIsDownloading(true);
-      window.location.href = url;
-      
-      // Reset download state after a short delay
-      setTimeout(() => {
-        setIsDownloading(false);
-      }, 1000);
-    } catch (error) {
-      toast.error("Failed to download PDF");
-      setIsDownloading(false);
-    }
-  };
-
-  // Use fetched URL if available
-  const displayUrl = pdfUrl;
-
   const handleGeneratePdf = (language: "en" | "ar") => {
+    setIsGenerating(true);
     generatePdf({
       bomId,
       language,
     });
-  };
-
-  const handleDownloadPdf = () => {
-    if (displayUrl) {
-      downloadPdf(displayUrl);
-    }
-  };
-
-  const handleRegenerate = () => {
-    setPdfUrl(null);
-    toast.info("Ready to generate new PDF");
   };
 
   return (
@@ -91,98 +74,47 @@ export function BidOpeningMinutesPdfGenerator({
         <h3 className="font-semibold">PDF Generation</h3>
       </div>
 
-      {/* PDF Status */}
-      {displayUrl ? (
-        <div className="bg-green-50 border border-green-200 rounded p-3">
-          <p className="text-sm text-green-800">
-            ✓ PDF ready for download (cached in-memory, expires in 1 hour)
-          </p>
-        </div>
-      ) : (
-        <div className="bg-blue-50 border border-blue-200 rounded p-3">
-          <p className="text-sm text-blue-800">
-            No PDF generated yet. Click below to generate and download.
-          </p>
-        </div>
-      )}
-
       {/* Action Buttons */}
       <div className="flex flex-wrap gap-2">
-        {/* Generate English PDF - Auto-downloads */}
+        {/* Generate English PDF */}
         <Button
           onClick={() => handleGeneratePdf("en")}
-          disabled={isGenerating || isDownloading}
+          disabled={isGenerating}
           variant="default"
           size="sm"
         >
-          {isGenerating || isDownloading ? (
+          {isGenerating ? (
             <>
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              {isGenerating ? "Generating..." : "Downloading..."}
+              Generating...
             </>
           ) : (
             <>
               <Download className="mr-2 h-4 w-4" />
-              Generate & Download PDF (English)
+              Download PDF (English)
             </>
           )}
         </Button>
 
-        {/* Generate Arabic PDF - Auto-downloads */}
+        {/* Generate Arabic PDF */}
         <Button
           onClick={() => handleGeneratePdf("ar")}
-          disabled={isGenerating || isDownloading}
+          disabled={isGenerating}
           variant="outline"
           size="sm"
         >
-          {isGenerating || isDownloading ? (
+          {isGenerating ? (
             <>
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              {isGenerating ? "جاري الإنشاء..." : "جاري التحميل..."}
+              جاري الإنشاء...
             </>
           ) : (
             <>
               <Download className="mr-2 h-4 w-4" />
-              إنشاء وتحميل PDF (العربية)
+              تحميل PDF (العربية)
             </>
           )}
         </Button>
-
-        {/* Download existing PDF */}
-        {displayUrl && (
-          <Button
-            onClick={handleDownloadPdf}
-            variant="default"
-            size="sm"
-            className="bg-green-600 hover:bg-green-700"
-            disabled={isDownloading}
-          >
-            {isDownloading ? (
-              <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Downloading...
-              </>
-            ) : (
-              <>
-                <Download className="mr-2 h-4 w-4" />
-                Download PDF Again
-              </>
-            )}
-          </Button>
-        )}
-
-        {/* Regenerate PDF (forces new generation, not cached) */}
-        {displayUrl && (
-          <Button
-            onClick={handleRegenerate}
-            variant="ghost"
-            size="sm"
-            disabled={isGenerating}
-          >
-            <RefreshCw className="mr-2 h-4 w-4" />
-            Generate New PDF
-          </Button>
-        )}
       </div>
 
       {/* Info Section */}
@@ -191,13 +123,8 @@ export function BidOpeningMinutesPdfGenerator({
           <span className="font-semibold">BOM Number:</span>{" "}
           <span className="font-mono">{bomNumber}</span>
         </div>
-        <div>
-          <span className="font-semibold">Cache Duration:</span> 1 hour
-        </div>
         <div className="text-xs text-gray-500 italic">
-          PDFs are generated in-memory and cached for fast reuse. If the BOM
-          hasn't changed, the existing PDF will be downloaded instead of
-          regenerating.
+          PDFs are generated on the server with full formatting and branding.
         </div>
       </div>
     </div>

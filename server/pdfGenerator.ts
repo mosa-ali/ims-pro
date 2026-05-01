@@ -486,7 +486,7 @@ function generateHTMLReport(data: ProjectReportPDFData): string {
         </div>
       </div>
       <div class="project-title">${data.project.name}</div>
-      <div class="project-code">Project Code: ${data.project.projectCode}</div>
+      <div class="project-code">Project Code: ${data.project.code}</div>
     </div>
     
     <!-- EXECUTIVE SUMMARY -->

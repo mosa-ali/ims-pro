@@ -56,10 +56,6 @@ import { prWorkflowDashboardRouter } from "./routers/logistics/prWorkflowDashboa
 import { supplierQuotationRouter } from "./routers/procurement/supplierQuotation";
 import { stockManagementRouter } from "./routers/logistics/stockManagementRouter";
 
-// PDF Generation imports
-import { generateOfficialPdf, cachePdfAndGetToken } from "./services/pdf/OfficialPdfEngine";
-import { buildBidOpeningMinutesHtml } from "./services/pdf/templates/logistics/bidOpeningMinutesTemplate";
-import { uploadPdf, generatePdfFileName, isValidPdfBuffer, isFileSizeValid } from "./services/pdf/PdfStorageService";
 
 const formatSqlDate = (dateValue?: string | Date | null) => {
   if (!dateValue) return null;
@@ -3486,128 +3482,85 @@ export const logisticsRouter = router({
    * 5. Save URL to database
    * 6. Return URL to frontend
    */
-  generateBidOpeningMinutesPdf: protectedProcedure
+    generateBidOpeningMinutesPdf: protectedProcedure
     .input(
       z.object({
         bomId: z.number().int().positive(),
         language: z.enum(["en", "ar"]).default("en")
       })
     )
-        .mutation(async ({ ctx, input }) => {
+    .mutation(async ({ ctx, input }) => {
       const { bomId, language } = input;
 
       if (!ctx.user) {
-        throw new Error("User not authenticated");
+        throw new TRPCError({
+          code: "UNAUTHORIZED",
+          message: "User not authenticated"
+        });
       }
 
       try {
-        console.log(`[PDF] Generating BOM PDF: ID=${bomId}, Language=${language}`);
+        console.log(`[BOM PDF] Generating PDF: ID=${bomId}, Language=${language}`);
 
         // Step 1: Fetch BOM from database
         const db = await getDb();
-        const bomData = await db
-          .select()
-          .from(bidOpeningMinutes)
-          .where(eq(bidOpeningMinutes.id, bomId))
-          .limit(1);
-
-        if (!bomData || bomData.length === 0) {
-          throw new Error(`BOM not found: ID=${bomId}`);
-        }
-
-        const bom = bomData[0];
-        console.log(`[PDF] BOM fetched: ${bom.minutesNumber}`);
-
-        // SMART CACHING: Check if PDF already exists in database
-        if (bom.pdfFileUrl) {
-          console.log(`[PDF] Reusing existing PDF URL for BOM ${bomId}: ${bom.pdfFileUrl.substring(0, 50)}...`);
-          return {
-            success: true,
-            pdfUrl: bom.pdfFileUrl,
-            fileName: `BOM-${bom.minutesNumber}.pdf`,
-            cached: true,
-            message: `Using existing PDF for ${bom.minutesNumber}`
-          };
-        }
-
-        // Fetch organization branding
-        const brandingData = await db
-          .select()
-          .from(organizationBranding)
-          .where(eq(organizationBranding.organizationId, bom.organizationId))
-          .limit(1);
-
-        const branding = brandingData[0];
-
-        // Step 2: Build HTML content
-        const htmlContent = buildBidOpeningMinutesHtml(
-          {
-            id: bom.id,
-            bomNumber: bom.minutesNumber,
-            bidDate: bom.openingDate,
-            openingTime: bom.openingTime || "Not specified",
-            location: bom.openingVenue || "Not specified",
-            chairman: bom.chairpersonName || "Not specified",
-            secretary: bom.member1Name || "Not specified",
-            committee: [], // TODO: Fetch from database if available
-            bids: [], // TODO: Fetch from database if available
-            notes: bom.openingNotes || "",
-            language
+        const bom = await db.query.bidOpeningMinutes.findFirst({
+          where: eq(bidOpeningMinutes.id, bomId),
+          with: {
+            purchaseRequest: true,
           },
-          language
-        );
-
-        console.log(`[PDF] HTML content generated`);
-
-        // Step 3: Generate PDF using Puppeteer
-        console.log(`[PDF] Generating PDF...`);
-        const pdfBuffer = await generateOfficialPdf({
-          organizationName: branding?.organizationName || "Organization",
-          operatingUnitName: branding?.systemName || "-",
-          organizationLogo: branding?.logoUrl || "",
-          department: language === "ar" ? "الخدمات اللوجستية" : "Logistics Services",
-          documentTitle: language === "ar" ? "محضر فتح العروض" : "Bid Opening Minutes",
-          formNumber: bom.minutesNumber,
-          formDate: new Date(bom.openingDate).toLocaleDateString(
-            language === "ar" ? "ar-SA" : "en-US"
-          ),
-          bodyHtml: htmlContent,
-          direction: language === "ar" ? "rtl" : "ltr",
-          language
         });
 
-        console.log(`[PDF] PDF generated, size: ${(pdfBuffer.length / 1024).toFixed(2)}KB`);
+        if (!bom) {
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: `BOM not found: ID=${bomId}`
+          });
+        }
 
-        // Step 4: Cache PDF in-memory and get download token/URL
-        // PDF will be cached for 1 hour and auto-expire
-        console.log(`[PDF] Caching PDF in-memory with 1-hour TTL...`);
-        const downloadUrl = cachePdfAndGetToken(pdfBuffer);
-        console.log(`[PDF] PDF cached, download URL: ${downloadUrl}`);
+        console.log(`[BOM PDF] BOM fetched: ${bom.minutesNumber}`);
 
-        // Step 5: Save URL to database
-        console.log(`[PDF] Updating database with PDF URL...`);
-        await db
-          .update(bidOpeningMinutes)
-          .set({
-            pdfFileUrl: downloadUrl,
-            updatedAt: nowSql,
-          })
-          .where(eq(bidOpeningMinutes.id, bomId));
+        // Step 2: Fetch organization branding
+        const branding = await db.query.organizationBranding.findFirst({
+          where: eq(organizationBranding.organizationId, bom.organizationId),
+        });
 
-        console.log(`[PDF] Database updated successfully`);
+        // Step 3: Prepare PDF data
+        const pdfData = {
+          organizationName: branding?.organizationName || "Organization",
+          organizationLogo: branding?.logoUrl || undefined,
+          operatingUnitName: branding?.systemName || undefined,
+          bomNumber: bom.minutesNumber,
+          bidDate: bom.openingDate?.toISOString() || new Date().toISOString(),
+          openingTime: bom.openingTime || "Not specified",
+          location: bom.openingVenue || "Not specified",
+          openingMode: (bom.openingMode || "physical") as "physical" | "online" | "hybrid",
+          chairpersonName: bom.chairpersonName || "Not specified",
+          member1Name: bom.member1Name || undefined,
+          member2Name: bom.member2Name || undefined,
+          member3Name: bom.member3Name || undefined,
+          totalBidsReceived: bom.totalBidsReceived || 0,
+          bidsOpenedCount: bom.bidsOpenedCount || 0,
+          openingNotes: bom.openingNotes || undefined,
+          irregularities: bom.irregularities || undefined,
+          language: language as "en" | "ar",
+        };
 
-        // Step 6: Return result
+        // Step 4: Generate PDF using server-side generator
+        const { generateBidOpeningMinutesPDF } = await import("./services/pdf/bomPdfGenerator");
+        const { pdf, filename } = await generateBidOpeningMinutesPDF(pdfData);
+
+        console.log(`[BOM PDF] PDF generated successfully: ${filename}`);
+
+        // Step 5: Return base64 PDF to frontend
         return {
           success: true,
-          pdfUrl: downloadUrl,
-          pdfKey: downloadUrl,
-          fileName: `BOM-${bom.minutesNumber}.pdf`,
-          generatedAt: new Date().toISOString(),
-          cached: false,
+          pdf, // base64 encoded
+          filename,
           message: `PDF generated successfully for ${bom.minutesNumber}`
         };
       } catch (error) {
-        console.error(`[PDF] Error generating BOM PDF:`, error);
+        console.error(`[BOM PDF] Error generating BOM PDF:`, error);
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
           message: `Failed to generate PDF: ${error instanceof Error ? error.message : String(error)}`
