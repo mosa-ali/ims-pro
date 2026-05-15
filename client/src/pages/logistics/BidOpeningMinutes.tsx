@@ -317,17 +317,29 @@ export default function BidOpeningMinutes() {
  });
 
  // Generate PDF mutation
-const generatePDF = trpc.procurementPhaseA.bidOpeningMinutes.generatePDF.useMutation({
+const generatePDF = trpc.logistics.generatePDF.useMutation({
   onSuccess: async (data) => {
     try {
-      const res = await fetch(data.pdfUrl);
-      const blob = await res.blob();
+      if (!data.success || !data.pdf) {
+        throw new Error("Invalid PDF response");
+      }
+
+      const byteCharacters = atob(data.pdf);
+      const byteNumbers = new Array(byteCharacters.length);
+
+      for (let i = 0; i < byteCharacters.length; i++) {
+        byteNumbers[i] = byteCharacters.charCodeAt(i);
+      }
+
+      const blob = new Blob([new Uint8Array(byteNumbers)], {
+        type: "application/pdf",
+      });
 
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement("a");
 
       a.href = url;
-      a.download = data.fileName || "bid-opening-minutes.pdf";
+      a.download = data.filename || "bid-opening-minutes.pdf";
 
       document.body.appendChild(a);
       a.click();
@@ -337,11 +349,11 @@ const generatePDF = trpc.procurementPhaseA.bidOpeningMinutes.generatePDF.useMuta
 
       toast.success(
         language === "ar"
-          ? "تم تنزيل ملف PDF بنجاح"
+          ? "تم تحميل PDF بنجاح"
           : "PDF downloaded successfully"
       );
     } catch (err) {
-      toast.error("Failed to download PDF");
+      toast.error("Failed to process PDF");
     }
   },
 });
@@ -397,15 +409,24 @@ const generatePDF = trpc.procurementPhaseA.bidOpeningMinutes.generatePDF.useMuta
  };
 
  const handlePrintPDF = () => {
- if (!bom) return;
- // Always regenerate to match current UI language
- generatePDF.mutate({ bomId: bom.id, language: language === 'ar' ? 'ar' : 'en' });
- };
+  if (!bom) return;
 
- const handleApproveBOM = () => {
- if (!bom) return;
- approveBOM.mutate({ bomId: bom.id, approverComments });
- };
+  generatePDF.mutate({
+    documentType: "bom",
+    documentId: bom.id,
+    language: language === "ar" ? "ar" : "en",
+    });
+  }; // ✅ CLOSE FUNCTION HERE
+
+
+  const handleApproveBOM = () => {
+    if (!bom) return;
+
+    approveBOM.mutate({
+      bomId: bom.id,
+      approverComments,
+    });
+  };
 
  // Loading state
  if (prLoading || bomLoading) {

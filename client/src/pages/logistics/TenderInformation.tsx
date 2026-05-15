@@ -27,7 +27,6 @@ import {
  PopoverTrigger,
 } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
-import { Plus, Trash2, FileText, Calendar as CalendarIcon, Pen, CheckCircle, ShieldCheck, ShieldAlert, ShieldX } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import SignatureCapture from "@/components/SignatureCapture";
 import { toast } from "sonner";
@@ -35,6 +34,19 @@ import { format } from "date-fns";
 import { ar } from "date-fns/locale";
 import { useTranslation } from '@/i18n/useTranslation';
 import { BackButton } from "@/components/BackButton";
+import {
+  Plus,
+  Trash2,
+  FileText,
+  Calendar as CalendarIcon,
+  Pen,
+  CheckCircle,
+  ShieldCheck,
+  ShieldAlert,
+  ShieldX,
+  Loader2,
+  Printer,
+} from "lucide-react";
 
 interface Bidder {
  id?: number;
@@ -52,6 +64,8 @@ export default function TenderInformation() {
  const { id } = useParams<{ id: string }>();
  const [, setLocation] = useLocation();
  const { language, isRTL } = useLanguage();
+ const generatePDF = trpc.logistics.generatePDF.useMutation();
+ const [generatingPdfId, setGeneratingPdfId] = useState<number | null>(null);
  const prId = parseInt(id!);
 
  // Fetch BA by PR ID
@@ -71,10 +85,10 @@ export default function TenderInformation() {
  });
 
  useEffect(() => {
-  if (!isLoading && !ba && prId && !autoCreateBA.isLoading) {
+  if (!isLoading && !ba && prId && !autoCreateBA.isPending) {
    autoCreateBA.mutate({ purchaseRequestId: prId });
   }
- }, [isLoading, ba, prId]);
+ }, [isLoading, ba, prId, autoCreateBA.isPending]);
 
  // Fetch bidders
  const { data: bidders = [], refetch: refetchBidders } = trpc.logistics.bidAnalysis.getBidders.useQuery(
@@ -148,6 +162,30 @@ export default function TenderInformation() {
  const [announcementLink, setAnnouncementLink] = useState(ba?.announcementLink || "");
  const [announcementReference, setAnnouncementReference] = useState(ba?.announcementReference || "");
  const [numberOfBidders, setNumberOfBidders] = useState(ba?.numberOfBidders || 0);
+
+ // Sync form state with ba data when it changes (e.g., after page refresh)
+ useEffect(() => {
+  if (ba) {
+   if (ba.announcementStartDate) {
+    try {
+     setAnnouncementStartDate(new Date(ba.announcementStartDate));
+    } catch {
+     setAnnouncementStartDate(undefined);
+    }
+   }
+   if (ba.announcementEndDate) {
+    try {
+     setAnnouncementEndDate(new Date(ba.announcementEndDate));
+    } catch {
+     setAnnouncementEndDate(undefined);
+    }
+   }
+   setAnnouncementChannel(ba.announcementChannel || "");
+   setAnnouncementLink(ba.announcementLink || "");
+   setAnnouncementReference(ba.announcementReference || "");
+   setNumberOfBidders(ba.numberOfBidders || 0);
+  }
+ }, [ba]);
 
  const [newBidder, setNewBidder] = useState<Bidder>({
   bidderName: "",
@@ -236,8 +274,9 @@ export default function TenderInformation() {
    toast.info(isRTL ? `\u2139\uFE0F ${bidderName} \u0645\u0624\u0647\u0644 \u0628\u0634\u0631\u0648\u0637 (${qual.totalScore}/30).` : `\u2139\uFE0F ${bidderName} is conditionally qualified (${qual.totalScore}/30).`, { duration: 4000 });
   }
 
+  if (!ba?.id) return;
   addBidder.mutate({
-   bidAnalysisId: ba.id,
+   bidAnalysisId: ba?.id,
    supplierId,
    bidderName,
    submissionDate: new Date(newBidder.submissionDate),
@@ -290,12 +329,58 @@ export default function TenderInformation() {
   });
  };
 
- const handlePrintAcknowledgement = (bidderId: number) => {
-  if (!ba?.id) return;
-  const lang = t.logistics.en;
-  const orgId = ba.organizationId || 30001;
-  window.open(`/api/logistics/bid-analysis/${ba.id}/bidder/${bidderId}/acknowledgement-pdf?lang=${lang}&orgId=${orgId}`, "_blank");
- };
+  const handlePrintAcknowledgement = async (bidder: any) => {
+    try {
+      setGeneratingPdfId(bidder.id);
+
+      const result = await generatePDF.mutateAsync({
+        documentType: "bidReceiptAcknowledgement",
+
+       documentId: bidder.id,
+
+       language: isRTL ? "ar" : "en",
+      });
+
+      if (!result?.pdf || !result.pdf.startsWith("JVBER")) {
+        toast.error(
+          isRTL
+            ? "غير صالح PDF ملف"
+            : "Invalid PDF generated"
+        );
+        return;
+      }
+
+      // Base64 → Blob
+      const binaryString = atob(result.pdf);
+
+      const bytes = new Uint8Array(binaryString.length);
+
+      for (let i = 0; i < binaryString.length; i++) {
+        bytes[i] = binaryString.charCodeAt(i);
+      }
+
+      const blob = new Blob([bytes], {
+        type: "application/pdf",
+      });
+
+      const url = window.URL.createObjectURL(blob);
+
+      window.open(url, "_blank");
+
+    } catch (error: any) {
+      console.error("Acknowledgement PDF error:", error);
+
+      toast.error(
+        error?.message ||
+        (isRTL
+          ? "خطأ في إنشاء PDF"
+          : "Error generating PDF")
+      );
+
+    } finally {
+      setGeneratingPdfId(null);
+    }
+  };
 
  if (isLoading) {
   return (
@@ -592,11 +677,16 @@ export default function TenderInformation() {
            </TableCell>
            <TableCell className="text-start">
             <Button
-             variant="ghost"
-             size="sm"
-             onClick={() => handlePrintAcknowledgement(bidder.id)}
+              variant="ghost"
+              size="sm"
+              onClick={() => handlePrintAcknowledgement(bidder)}
+              disabled={generatingPdfId === bidder.id}
             >
-             <FileText className="h-4 w-4" />
+              {generatingPdfId === bidder.id ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <Printer className="h-4 w-4" />
+              )}
             </Button>
            </TableCell>
            <TableCell className="text-start">

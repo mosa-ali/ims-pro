@@ -27,7 +27,7 @@ interface CurrencyConfig {
   nameAr?: string;
 }
 
-const currencyConfigs: Record<CurrencyCode, CurrencyConfig> = {
+export const currencyConfigs: Record<CurrencyCode, CurrencyConfig> = {
   // Major Currencies
   USD: { symbol: '$', position: 'before', decimals: 2, nameAr: 'دولار أمريكي' },
   EUR: { symbol: '€', position: 'before', decimals: 2, nameAr: 'يورو' },
@@ -134,7 +134,7 @@ const currencyConfigs: Record<CurrencyCode, CurrencyConfig> = {
   MNT: { symbol: '₮', position: 'after', decimals: 0, nameAr: 'توغريك منغولي' },
   AZN: { symbol: '₼', position: 'after', decimals: 2, nameAr: 'مانات أذربيجاني' },
   GEL: { symbol: '₾', position: 'after', decimals: 2, nameAr: 'لاري جورجي' },
-  ARM: { symbol: '֏', position: 'after', decimals: 2, nameAr: 'درام أرميني' },
+  AMD: { symbol: '֏', position: 'after', decimals: 2, nameAr: 'درام أرميني' },
 
   // South Asia
   PKR: { symbol: '₨', position: 'before', decimals: 2, nameAr: 'روبية باكستانية' },

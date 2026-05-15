@@ -60,6 +60,7 @@ import {
   Image as ImageIcon,
   ClipboardPaste,
   Download,
+  Printer,
   FileText
 } from "lucide-react";
 
@@ -330,7 +331,6 @@ interface LineItem {
  id?: number;
  budgetLine: string;
  description: string;
- descriptionAr: string;
  specifications: string;
  quantity: string;
  unit: string;
@@ -368,7 +368,7 @@ export default function PurchaseRequestForm() {
  const [formData, setFormData] = useState({
  prNumber: "",
  category: "goods" as "goods" | "services" | "works",
- serviceType: "" as string,
+ serviceType:  "" as string,
  serviceTypeOther: "" as string,
  projectId: undefined as number | undefined,
  projectTitle: "",
@@ -391,9 +391,7 @@ export default function PurchaseRequestForm() {
  neededByDate: "",
  urgency: "normal" as "low" | "normal" | "high" | "critical",
  deliveryLocation: "",
- deliveryLocationAr: "",
  justification: "",
- justificationAr: "",
  status: "draft" as string,
  });
 
@@ -408,13 +406,13 @@ export default function PurchaseRequestForm() {
  const [pmSignatureOpen, setPMSignatureOpen] = useState(false);
 
  const [lineItems, setLineItems] = useState<LineItem[]>([
- { budgetLine: "", description: "", descriptionAr: "", specifications: "", quantity: "1", unit: "", unitPrice: "0", recurrence: "" },
+ { budgetLine: "", description: "", specifications: "", quantity: "1", unit: "", unitPrice: "0", recurrence: "1" },
  ]);
 
  // Initialize line items with first unit type once data loads
  useEffect(() => {
  if (unitTypesData && unitTypesData.length > 0 && lineItems[0].unit === "") {
- setLineItems([{ budgetLine: "", description: "", descriptionAr: "", specifications: "", quantity: "1", unit: unitTypesData[0].name, unitPrice: "0", recurrence: "" }]);
+ setLineItems([{ budgetLine: "", description: "", specifications: "", quantity: "1", unit: unitTypesData[0].name, unitPrice: "0", recurrence: "1" }]);
  }
  }, [unitTypesData]);
 
@@ -438,19 +436,7 @@ export default function PurchaseRequestForm() {
  }
  }, [formData.projectId, trpcUtils]);
 
-// Load currencies for exchange dropdown
-const { data: currencies, isLoading: currenciesLoading } =
-  trpc.finance.currencies.list.useQuery(
-    {
-      limit: 300,
-      offset: 0,
-      isActive: true,
-    },
-    {
-      enabled: !!organizationId,
-    }
-  );
-  
+ 
  // Auto-load currency from selected budget
  useEffect(() => {
  if (selectedBudgetId && budgets) {
@@ -544,9 +530,7 @@ serviceType: pr.serviceType ?? "",
  neededByDate: pr.neededBy ? new Date(pr.neededBy).toISOString().split("T")[0] : "",
  urgency: pr.urgency as any || "normal",
  deliveryLocation: pr.deliveryLocation || "",
- deliveryLocationAr: pr.deliveryLocationAr || "",
  justification: pr.justification || "",
- justificationAr: pr.justificationAr || "",
  status: pr.status || "draft",
  });
  if (pr.lineItems?.length) {
@@ -554,12 +538,11 @@ serviceType: pr.serviceType ?? "",
  id: item.id,
  budgetLine: item.budgetLine || "",
  description: item.description || "",
- descriptionAr: item.descriptionAr || "",
  specifications: item.specifications || "",
  quantity: item.quantity || "1",
  unit: item.unit || "Piece",
  unitPrice: item.unitPrice || "0",
- recurrence: item.recurrence || "",
+ recurrence: item.recurrence ? String(item.recurrence) : "1",
  })));
  }
  // Set selectedBudgetId from existingPR if available
@@ -592,7 +575,9 @@ serviceType: pr.serviceType ?? "",
  const validateFinanceMutation = trpc.logistics.purchaseRequests.validateByFinance.useMutation();
  const approvePMMutation = trpc.logistics.purchaseRequests.validateByPM.useMutation();
  const rejectMutation = trpc.logistics.purchaseRequests.reject.useMutation();
+ const generatePrPdf = trpc.logistics.generatePrPdf.useMutation();
  const validateBudgetMutation = trpc.logistics.purchaseRequests.validateBudget.useMutation();
+
 
  // DO NOT auto-select first budget - let user explicitly select
  // This ensures Budget Lines and Currency only appear after user selection
@@ -726,6 +711,51 @@ const canViewPMApproval =
    formData.status === "validated_by_finance" ||
    formData.status === "approved";
 
+   const handleGeneratePdf = async () => {
+  try {
+    if (!params.id) return;
+
+    const result = await generatePrPdf.mutateAsync({
+      documentType: "purchaseRequest",
+      documentId: Number(params.id),
+      language: isRTL ? "ar" : "en",
+    });
+
+    if (!result?.pdf) {
+      toast.error(
+        isRTL
+          ? "فشل إنشاء PDF"
+          : "Failed to generate PDF"
+      );
+      return;
+    }
+
+    // Base64 → Blob
+    const binaryString = atob(result.pdf);
+    const bytes = new Uint8Array(binaryString.length);
+
+    for (let i = 0; i < binaryString.length; i++) {
+      bytes[i] = binaryString.charCodeAt(i);
+    }
+
+    const blob = new Blob([bytes], {
+      type: "application/pdf",
+    });
+
+    const url = window.URL.createObjectURL(blob);
+
+    window.open(url, "_blank");
+
+  } catch (error: any) {
+    console.error("PDF generation error:", error);
+
+    toast.error(
+      isRTL
+        ? "خطأ في إنشاء PDF"
+        : "Error generating PDF"
+    );
+  }
+};
  // Auto-detect approver emails based on user role
  // When logistics signs, auto-populate finance email from Finance Manager role
  // When finance signs, auto-populate PM email from Project Manager/Office Manager/Program Manager role
@@ -770,16 +800,16 @@ const canViewPMApproval =
  justification: formData.justification,
  procurementLadder: "three_quotations" as const,
  lineItems: lineItems.map((item, index) => ({
- lineNumber: index + 1,
- budgetLine: item.budgetLine,
- description: item.description,
- descriptionAr: item.descriptionAr,
- specifications: item.specifications,
- quantity: item.quantity,
- unit: item.unit,
- unitPrice: item.unitPrice,
- totalPrice: (parseFloat(item.quantity) || 0) * (parseFloat(item.unitPrice) || 0),
- })),
+  lineNumber: index + 1,
+  budgetLine: item.budgetLine,
+  description: item.description,
+  specifications: item.specifications,
+  quantity: Number(item.quantity) || 0,  // ✅ Convert to number
+  unit: item.unit,
+  unitPrice: Number(item.unitPrice) || 0,  // ✅ Convert to number
+  recurrence: Number(item.recurrence) || 1,  // ✅ ADD THIS
+  totalPrice: (Number(item.quantity) || 0) * (Number(item.unitPrice) || 0) * (Number(item.recurrence) || 1),  // ✅ Include recurrence
+})),
  });
  prId = created.id;
  }
@@ -881,7 +911,7 @@ const canViewPMApproval =
  const addLineItem = () => {
  const defaultUnit = unitTypesData && unitTypesData.length > 0 ? unitTypesData[0].name : "";
  if (defaultUnit) {
- setLineItems([...lineItems, { budgetLine: "", description: "", descriptionAr: "", specifications: "", quantity: "1", unit: defaultUnit, unitPrice: "0", recurrence: "" }]);
+ setLineItems([...lineItems, { budgetLine: "", description: "", specifications: "", quantity: "1", unit: defaultUnit, unitPrice: "0", recurrence: "1" }]);
  } else {
  toast.error(t.logistics.unitTypesNotLoadedYet);
  }
@@ -944,17 +974,16 @@ const canViewPMApproval =
  justification: formData.justification,
  procurementLadder: "three_quotations" as const,
  lineItems: lineItems.map((item, index) => ({
- lineNumber: index + 1,
- budgetLine: item.budgetLine,
- description: item.description,
- descriptionAr: item.descriptionAr,
- specifications: item.specifications,
- quantity: item.quantity,
- unit: item.unit,
- unitPrice: item.unitPrice,
- recurrence: item.recurrence,
- totalPrice: (parseFloat(item.quantity) || 0) * (parseFloat(item.unitPrice) || 0) * (parseFloat(item.recurrence) || 1),
- })),
+  lineNumber: index + 1,
+  budgetLine: item.budgetLine,
+  description: item.description,
+  specifications: item.specifications,
+  quantity: Number(item.quantity) || 0,  // ✅ Convert to number
+  unit: item.unit,
+  unitPrice: Number(item.unitPrice) || 0,  // ✅ Convert to number
+  recurrence: Number(item.recurrence) || 1,  // ✅ ADD THIS
+  totalPrice: (Number(item.quantity) || 0) * (Number(item.unitPrice) || 0) * (Number(item.recurrence) || 1),  // ✅ Include recurrence
+})),
  };
 
  console.log("[PurchaseRequestForm] Payload being sent:", payload);
@@ -1036,18 +1065,31 @@ const canViewPMApproval =
  </Button>
  </>
  )}
- {/* Download Official PDF Button - Available when PR is submitted or approved */}
+{/* Generate / Print PDF */}
  {(formData.status === "submitted" || formData.status === "validated_by_logistic" || formData.status === "validated_by_finance" || formData.status === "approved") && params.id && (
- <Button 
- variant="outline" 
- onClick={() => {
- window.open(`/api/pdf/purchase-request/${params.id}`, "_blank");
- }}
- >
- <Download className="h-4 w-4 me-2" />
- {isRTL ? "تحميل PDF الرسمي" : "Download Official PDF"}
- </Button>
- )}
+     <Button
+      variant="outline"
+      size="sm"
+      onClick={handleGeneratePdf}
+      disabled={generatePrPdf.isPending}
+    >
+      {generatePrPdf.isPending ? (
+        <>
+          <Loader2 className="w-4 h-4 me-2 animate-spin" />
+          {isRTL
+            ? "جاري إنشاء PDF..."
+            : "Generating PDF..."}
+        </>
+      ) : (
+        <>
+          <Printer className="w-4 h-4 me-2" />
+          {isRTL
+            ? "طباعة PDF"
+            : "Print PDF"}
+        </>
+      )}
+    </Button>
+)}
  </div>
  </div>
  </div>
@@ -1367,7 +1409,6 @@ budgetUtilizationPercent={budgetUtilizationPercent}
                 {new Date(existingPR.logValidatedOn).toLocaleString()}
               </p>
             )}
-
             {existingPR?.logisticsSignatureDataUrl && (
               <img
                 src={existingPR.logisticsSignatureDataUrl}
@@ -1482,73 +1523,7 @@ budgetUtilizationPercent={budgetUtilizationPercent}
   </div>
 )}
 
- {/* Approved Status - Show all signatures as read-only history */}
- {formData.status === "approved" && (
- <div className="space-y-4">
- {/* Logistics Signature - Read-only */}
- {existingPR?.logisticsSignatureDataUrl && (
- <div className="border-l-4 border-green-500 pl-4">
- <h3 className="text-sm font-semibold mb-3">{isRTL ? 'توقيع التحقق من اللوجستيات' : 'Logistics Validation Signature'}</h3>
- <div className="bg-green-50 border border-green-200 rounded-lg p-4">
- <div className="flex items-start gap-3">
- <CheckCircle className="w-5 h-5 text-green-600 mt-1 flex-shrink-0" />
- <div className="flex-1">
- <p className="font-semibold text-green-900">{isRTL ? 'تم التحقق من اللوجستيات' : 'Logistics Validated'}</p>
- <p className="text-sm text-green-700 mt-1">{isRTL ? 'الموقّع: ' : 'Signed by: '}{existingPR?.logisticsSignerName}</p>
- <p className="text-sm text-green-700">{isRTL ? 'المسمى: ' : 'Title: '}{existingPR?.logisticsSignerTitle}</p>
- {existingPR?.logValidatedOn && (
- <p className="text-sm text-green-700">{isRTL ? 'التاريخ: ' : 'Date: '}{new Date(existingPR.logValidatedOn).toLocaleString()}</p>
- )}
- <img src={existingPR.logisticsSignatureDataUrl} alt="Signature" className="mt-3 h-16 border border-green-300 rounded" />
- </div>
- </div>
- </div>
- </div>
- )}
 
- {/* Finance Signature - Read-only */}
- {existingPR?.financeSignatureDataUrl && (
- <div className="border-l-4 border-purple-500 pl-4">
- <h3 className="text-sm font-semibold mb-3">{isRTL ? 'توقيع التحقق من المالية' : 'Finance Validation Signature'}</h3>
- <div className="bg-purple-50 border border-purple-200 rounded-lg p-4">
- <div className="flex items-start gap-3">
- <CheckCircle className="w-5 h-5 text-purple-600 mt-1 flex-shrink-0" />
- <div className="flex-1">
- <p className="font-semibold text-purple-900">{isRTL ? 'تم التحقق من المالية' : 'Finance Validated'}</p>
- <p className="text-sm text-purple-700 mt-1">{isRTL ? 'الموقّع: ' : 'Signed by: '}{existingPR?.financeSignerName}</p>
- <p className="text-sm text-purple-700">{isRTL ? 'المسمى: ' : 'Title: '}{existingPR?.financeSignerTitle}</p>
- {existingPR?.finValidatedOn && (
- <p className="text-sm text-purple-700">{isRTL ? 'التاريخ: ' : 'Date: '}{new Date(existingPR.finValidatedOn).toLocaleString()}</p>
- )}
- <img src={existingPR.financeSignatureDataUrl} alt="Signature" className="mt-3 h-16 border border-purple-300 rounded" />
- </div>
- </div>
- </div>
- </div>
- )}
-
- {/* PM Signature - Read-only */}
- {existingPR?.pmSignatureDataUrl && (
- <div className="border-l-4 border-amber-500 pl-4">
- <h3 className="text-sm font-semibold mb-3">{isRTL ? 'توقيع اعتماد المدير' : 'Manager Approval Signature'}</h3>
- <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
- <div className="flex items-start gap-3">
- <CheckCircle className="w-5 h-5 text-amber-600 mt-1 flex-shrink-0" />
- <div className="flex-1">
- <p className="font-semibold text-amber-900">{isRTL ? 'تم الاعتماد من قبل المدير' : 'Approved by Manager'}</p>
- <p className="text-sm text-amber-700 mt-1">{isRTL ? 'الموقّع: ' : 'Signed by: '}{existingPR?.pmSignerName}</p>
- <p className="text-sm text-amber-700">{isRTL ? 'المسمى: ' : 'Title: '}{existingPR?.pmSignerTitle}</p>
- {existingPR?.approvedOn && (
- <p className="text-sm text-amber-700">{isRTL ? 'التاريخ: ' : 'Date: '}{new Date(existingPR.approvedOn).toLocaleString()}</p>
- )}
- <img src={existingPR.pmSignatureDataUrl} alt="Signature" className="mt-3 h-16 border border-amber-300 rounded" />
- </div>
- </div>
- </div>
- </div>
- )}
- </div>
- )}
  </CardContent>
 </Card>
 

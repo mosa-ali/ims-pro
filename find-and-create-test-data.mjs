@@ -83,7 +83,7 @@ async function findAndCreateTestData() {
     console.log('Organization ID:', orgId);
     console.log('Operating Unit ID:', ouId);
     console.log('\nYou can now test the PDF endpoint:');
-    console.log(`curl "http://localhost:3001/api/logistics/bid-analysis/${baId}/bidder/1/acknowledgement-pdf?orgId=${orgId}&lang=en"`);
+    console.log(`curl "http://localhost:3001/organization/logistics/bid-analysis/${baId}/bidder/1/acknowledgement-pdf?orgId=${orgId}&lang=en"`);
     
   } catch (error) {
     console.error('Error:', error.message);

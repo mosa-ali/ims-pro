@@ -1,5 +1,5 @@
 import { relations } from "drizzle-orm/relations";
-import { projects, activities, organizations, operatingUnits, auditLogExportSchedules, auditLogExportHistory, users, auditLogs, beneficiaries, bidAnalyses, purchaseRequests, bidAnalysisBidders, bidAnalysisLineItems, purchaseRequestLineItems, bidEvaluationCriteria, bidEvaluationScores, bidOpeningMinutes, bomApprovalSignatures, budgetItems, budgets, budgetLines, financeBudgetCategories, chartOfAccounts, budgetMonthlyAllocations, caseRecords, caseActivities, indicators, caseReferrals, childSafeSpaces, cssActivities, deliveryNotes, deliveryNoteLines, purchaseOrderLineItems, purchaseOrders, goodsReceiptNotes, vendors, donorBudgetMapping, donorProjects, donors, drivers, emailTemplates, expenses, financeAdvances, hrEmployees, financeApprovalThresholds, financeAssetCategories, financeAssets, financeAssetDisposals, financeAssetMaintenance, financeAssetTransfers, financeExpenditureCategories, financeExpenditures, financeCurrencies, financeExchangeRates, landingSettings, mealDqaFindings, mealDqaActions, mealDqaVisits, mealLearningItems, mealLearningActions, mitigationActions, mitigationActionAttachments, mitigationActionComments, risks, mitigationTemplates, monthlyReports, monthlyReportAuditHistory, notificationPreferences, optionSets, optionSetValues, procurementPayables, payableApprovalHistory, permissionReviews, procurementAuditTrail, projectReportingSchedules, quotationAnalysisLineItems, quotationAnalyses, quotationAnalysisAuditLog, quotationAnalysisSuppliers, rbacRoles, rbacUserPermissions, rfqVendors, rfqVendorItems, rfqs, riskHistory, stockBatches, stockItems, grnLineItems, stockIssues, stockIssueLines, stockLedger, stockReservations, userActiveScope, userArchiveLog, userPermissionOverrides, varianceAlertConfig, varianceAlertHistory, vendorDocuments, vendorParticipationHistory, vendorPerformanceEvaluations, warehouseTransfers, warehouseTransferLines, contracts, contractPenalties, contractPaymentSchedule, contractRetentionTerms, implementationMonitoring, implementationChecklist, primaryHandover, finalHandover, implementationObservations, contractMilestones } from "./schema";
+import { generatedDocuments, projects, activities, organizations, operatingUnits, auditLogExportSchedules, auditLogExportHistory, users, auditLogs, beneficiaries, bidAnalyses, purchaseRequests, bidAnalysisBidders, bidAnalysisLineItems, purchaseRequestLineItems, bidEvaluationCriteria, bidEvaluationScores, bidOpeningMinutes, bomApprovalSignatures, budgetItems, budgets, budgetLines, financeBudgetCategories, chartOfAccounts, budgetMonthlyAllocations, caseRecords, caseActivities, indicators, caseReferrals, childSafeSpaces, cssActivities, deliveryNotes, deliveryNoteLines, purchaseOrderLineItems, purchaseOrders, goodsReceiptNotes, vendors, donorBudgetMapping, donorProjects, donors, drivers, emailTemplates, expenses, financeAdvances, hrEmployees, financeApprovalThresholds, financeAssetCategories, financeAssets, financeAssetDisposals, financeAssetMaintenance, financeAssetTransfers, financeExpenditureCategories, financeExpenditures, financeCurrencies, financeExchangeRates, landingSettings, mealDqaFindings, mealDqaActions, mealDqaVisits, mealLearningItems, mealLearningActions, mitigationActions, mitigationActionAttachments, mitigationActionComments, risks, mitigationTemplates, monthlyReports, monthlyReportAuditHistory, notificationPreferences, optionSets, optionSetValues, procurementPayables, payableApprovalHistory, permissionReviews, procurementAuditTrail, projectReportingSchedules, quotationAnalysisLineItems, quotationAnalyses, quotationAnalysisAuditLog, quotationAnalysisSuppliers, rbacRoles, rbacUserPermissions, rfqVendors, rfqVendorItems, rfqs, riskHistory, stockBatches, stockItems, grnLineItems, stockIssues, stockIssueLines, stockLedger, stockReservations, userActiveScope, userArchiveLog, userPermissionOverrides, varianceAlertConfig, varianceAlertHistory, vendorDocuments, vendorParticipationHistory, vendorPerformanceEvaluations, warehouseTransfers, warehouseTransferLines, contracts, contractPenalties, contractPaymentSchedule, contractRetentionTerms, implementationMonitoring, implementationChecklist, primaryHandover, finalHandover, implementationObservations, contractMilestones } from "./schema";
 
 export const activitiesRelations = relations(activities, ({one, many}) => ({
 	project: one(projects, {
@@ -2290,3 +2290,126 @@ export const implementationObservationsRelations = relations(implementationObser
 		references: [organizations.id]
 	}),
 }));
+/**
+ * Relations for generatedDocuments table
+ * Defines relationships to organizations, operating units, and users
+ */
+export const generatedDocumentsRelations = relations(generatedDocuments, ({ one }) => ({
+  /**
+   * Organization that owns this document
+   */
+  organization: one(organizations, {
+    fields: [generatedDocuments.organizationId],
+    references: [organizations.id],
+  }),
+
+  /**
+   * Operating unit (optional) for this document
+   */
+  operatingUnit: one(operatingUnits, {
+    fields: [generatedDocuments.operatingUnitId],
+    references: [operatingUnits.id],
+  }),
+
+  /**
+   * User who generated this document
+   */
+  generatedByUser: one(users, {
+    fields: [generatedDocuments.generatedBy],
+    references: [users.id],
+  }),
+}));
+
+/**
+ * Update organizationsRelations to include generatedDocuments
+ * Add this to the existing organizationsRelations function
+ */
+export const organizationsRelationsUpdate = {
+  // ... existing relations ...
+  generatedDocuments: 'many(generatedDocuments)', // Add this line
+};
+
+/**
+ * Update operatingUnitsRelations to include generatedDocuments
+ * Add this to the existing operatingUnitsRelations function
+ */
+export const operatingUnitsRelationsUpdate = {
+  // ... existing relations ...
+  generatedDocuments: 'many(generatedDocuments)', // Add this line
+};
+
+/**
+ * Update usersRelations to include generatedDocuments
+ * Add this to the existing usersRelations function
+ */
+export const usersRelationsUpdate = {
+  // ... existing relations ...
+  generatedDocuments: 'many(generatedDocuments)', // Add this line
+};
+
+/**
+ * ============================================================================
+ * HOW TO INTEGRATE INTO relations.ts
+ * ============================================================================
+ * 
+ * 1. Add the import at the top of relations.ts:
+ *    import { generatedDocuments } from './schema';
+ * 
+ * 2. Add the generatedDocumentsRelations export:
+ *    export const generatedDocumentsRelations = relations(generatedDocuments, ({ one }) => ({
+ *      organization: one(organizations, {
+ *        fields: [generatedDocuments.organizationId],
+ *        references: [organizations.id],
+ *      }),
+ *      operatingUnit: one(operatingUnits, {
+ *        fields: [generatedDocuments.operatingUnitId],
+ *        references: [operatingUnits.id],
+ *      }),
+ *      generatedByUser: one(users, {
+ *        fields: [generatedDocuments.generatedBy],
+ *        references: [users.id],
+ *      }),
+ *    }));
+ * 
+ * 3. Update existing relations to include generatedDocuments:
+ * 
+ *    a) In organizationsRelations, add:
+ *       generatedDocuments: many(generatedDocuments),
+ * 
+ *    b) In operatingUnitsRelations, add:
+ *       generatedDocuments: many(generatedDocuments),
+ * 
+ *    c) In usersRelations, add:
+ *       generatedDocuments: many(generatedDocuments),
+ * 
+ * ============================================================================
+ * USAGE EXAMPLES
+ * ============================================================================
+ * 
+ * // Get a document with its organization
+ * const doc = await db.query.generatedDocuments.findFirst({
+ *   where: eq(generatedDocuments.id, docId),
+ *   with: {
+ *     organization: true,
+ *     generatedByUser: true,
+ *   },
+ * });
+ * 
+ * // Get all documents for an organization
+ * const docs = await db.query.organizations.findFirst({
+ *   where: eq(organizations.id, orgId),
+ *   with: {
+ *     generatedDocuments: true,
+ *   },
+ * });
+ * 
+ * // Get all documents generated by a user
+ * const docs = await db.query.users.findFirst({
+ *   where: eq(users.id, userId),
+ *   with: {
+ *     generatedDocuments: true,
+ *   },
+ * });
+ * 
+ * ============================================================================
+ */

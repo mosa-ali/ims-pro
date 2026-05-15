@@ -219,12 +219,12 @@ Every PDF must be tested in both languages before deployment. Use the following 
 
 ```
 # English (LTR)
-/api/logistics/bid-analysis/{id}/evaluation-checklist-pdf?lang=en&orgId={orgId}
-/api/logistics/bid-analysis/{id}/cba-pdf?lang=en&orgId={orgId}
+/organization/logistics/bid-analysis/{id}/evaluation-checklist-pdf?lang=en&orgId={orgId}
+/organization/logistics/bid-analysis/{id}/cba-pdf?lang=en&orgId={orgId}
 
 # Arabic (RTL)
-/api/logistics/bid-analysis/{id}/evaluation-checklist-pdf?lang=ar&orgId={orgId}
-/api/logistics/bid-analysis/{id}/cba-pdf?lang=ar&orgId={orgId}
+/organization/logistics/bid-analysis/{id}/evaluation-checklist-pdf?lang=ar&orgId={orgId}
+/organization/logistics/bid-analysis/{id}/cba-pdf?lang=ar&orgId={orgId}
 ```
 
 For each test, verify the header visually against this reference:

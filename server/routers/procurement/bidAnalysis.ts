@@ -15,6 +15,7 @@ import {
   supplierQuotationHeaders,
   supplierQuotationLines,
   bidAnalysisLineItems,
+  vendorQualificationScores,
 } from "../../../drizzle/schema";
 import { storagePut } from "../../storage";
 import { nanoid } from "nanoid";
@@ -30,6 +31,16 @@ import { createProcurementBaseline } from "../../vendorBaselineAutomation";
  * BA is used ONLY for PRs > USD 25,000 (Tenders)
  * Uses standard db.select() queries for TiDB compatibility
  */
+
+const formatSqlDate = (dateValue?: string | Date | null) => {
+  if (!dateValue) return null;
+
+  return new Date(dateValue)
+    .toISOString()
+    .split("T")[0]; // YYYY-MM-DD
+};
+
+const nowSql = new Date().toISOString().slice(0, 19).replace('T', ' ');
 
 export const bidAnalysisRouter = router({
   /**
@@ -151,7 +162,7 @@ export const bidAnalysisRouter = router({
       await db.update(bidAnalyses)
         .set({
           ...tenderInfo,
-          updatedAt: new Date(),
+          updatedAt: nowSql,
           updatedBy: ctx.user.id,
         })
         .where(eq(bidAnalyses.id, bidAnalysisId));
@@ -196,7 +207,7 @@ export const bidAnalysisRouter = router({
       }
 
       // Check if announcement has closed (hard lock)
-      if (ba.announcementEndDate && new Date() < ba.announcementEndDate) {
+      if (ba.announcementEndDate && nowSql < ba.announcementEndDate) {
         throw new TRPCError({
           code: "BAD_REQUEST",
           message: "Cannot add bidders before announcement end date. This is a hard lock to ensure compliance.",
@@ -215,7 +226,7 @@ export const bidAnalysisRouter = router({
           organizationId,
           operatingUnitId: ctx.scope.operatingUnitId,
         });
-        vendorId = vendor.id;
+        vendorId = vendorId;
       }
 
       // Check if supplier already exists in this tender
@@ -242,8 +253,8 @@ export const bidAnalysisRouter = router({
         ...bidderData,
         supplierId: vendorId,
         totalBidAmount: bidderData.totalBidAmount?.toString(),
-        createdAt: new Date(),
-        updatedAt: new Date(),
+        createdAt: nowSql,
+        updatedAt: nowSql,
       });
 
       // Record participation in vendor history (optional - operatingUnitId may be undefined)
@@ -270,7 +281,7 @@ export const bidAnalysisRouter = router({
       await db.update(bidAnalyses)
         .set({
           numberOfBidders: biddersList.length,
-          updatedAt: new Date(),
+          updatedAt: nowSql,
         })
         .where(eq(bidAnalyses.id, bidAnalysisId));
 
@@ -301,7 +312,7 @@ export const bidAnalysisRouter = router({
           await db.update(bidAnalysisBidders)
             .set({
               totalBidAmount: quotationTotal.toString(),
-              updatedAt: new Date(),
+              updatedAt: nowSql,
             })
             .where(eq(bidAnalysisBidders.id, newBidderId));
 
@@ -309,7 +320,7 @@ export const bidAnalysisRouter = router({
           await db.update(supplierQuotationHeaders)
             .set({
               bidAnalysisBidderId: newBidderId,
-              updatedAt: new Date(),
+              updatedAt: nowSql,
             })
             .where(eq(supplierQuotationHeaders.id, bestQuotation.id));
 
@@ -371,7 +382,7 @@ export const bidAnalysisRouter = router({
       await db.update(bidAnalysisBidders)
         .set({
           technicalScore: technicalScore.toString(),
-          updatedAt: new Date(),
+          updatedAt: nowSql,
         })
         .where(eq(bidAnalysisBidders.id, bidderId));
 
@@ -453,7 +464,7 @@ export const bidAnalysisRouter = router({
             .set({
               financialScore: financialScore.toFixed(2),
               combinedScore: combinedScore.toFixed(2),
-              updatedAt: new Date(),
+              updatedAt: nowSql,
             })
             .where(eq(bidAnalysisBidders.id, bidder.id));
         } else {
@@ -461,9 +472,9 @@ export const bidAnalysisRouter = router({
             .set({
               financialScore: "0",
               combinedScore: "0",
-              isResponsive: false,
+              isResponsive: 0,
               nonResponsiveReason: `Failed to meet minimum technical score of ${minimumTechnicalScore}%`,
-              updatedAt: new Date(),
+              updatedAt: nowSql,
             })
             .where(eq(bidAnalysisBidders.id, bidder.id));
         }
@@ -548,27 +559,27 @@ export const bidAnalysisRouter = router({
           selectedBidderId: bidderId,
           selectionJustification: justification,
           status: "awarded",
-          updatedAt: new Date(),
+          updatedAt: nowSql,
           updatedBy: ctx.user.id,
         })
         .where(eq(bidAnalyses.id, bidAnalysisId));
 
       // Mark selected bidder
       await db.update(bidAnalysisBidders)
-        .set({ isSelected: true })
+        .set({ isSelected: 1 })
         .where(eq(bidAnalysisBidders.id, bidderId));
 
       // Auto-create procurement baseline for the awarded vendor
-      if (bidder.vendorId) {
+      if (bidder.supplierId) {
         try {
           await createProcurementBaseline({
-            vendorId: bidder.vendorId,
+            vendorId: bidder.supplierId,
             organizationId: organizationId,
             operatingUnitId: ctx.scope.operatingUnitId || null,
             bidAnalysisId: bidAnalysisId,
             purchaseRequestId: ba.purchaseRequestId || null,
             prNumber: ba.prNumber || null,
-            cbaNumber: ba.baNumber || null,
+            cbaNumber: ba.cbaNumber || null,
             bidderId: bidderId,
             totalBidAmount: bidder.totalBidAmount,
             currency: bidder.currency || null,
@@ -620,8 +631,8 @@ export const bidAnalysisRouter = router({
       await db.update(bidAnalyses)
         .set({
           approvedBy: ctx.user.id,
-          approvedAt: new Date(),
-          updatedAt: new Date(),
+          approvedAt: nowSql,
+          updatedAt: nowSql,
           updatedBy: ctx.user.id,
         })
         .where(eq(bidAnalyses.id, bidAnalysisId));
@@ -913,8 +924,8 @@ export const bidAnalysisRouter = router({
       // Update tender information
       await db.update(bidAnalyses)
         .set({
-          announcementStartDate: data.announcementStartDate,
-          announcementEndDate: data.announcementEndDate,
+          announcementStartDate: formatSqlDate(data.announcementStartDate),
+          announcementEndDate: formatSqlDate(data.announcementEndDate),
           announcementChannel: data.announcementChannel,
           announcementLink: data.announcementLink,
           announcementReference: data.announcementReference,
@@ -1011,8 +1022,8 @@ export const bidAnalysisRouter = router({
   //         submissionStatus: data.status,
   //         totalBidAmount: data.totalOfferCost?.toString(),
   //         currency: data.currency,
-  //         createdAt: new Date(),
-  //         updatedAt: new Date(),
+  //         createdAt: nowSql,
+  //         updatedAt: nowSql,
   //       });
   // 
   //       const [createdBidder] = await db.select()
@@ -1065,7 +1076,7 @@ export const bidAnalysisRouter = router({
       await db.update(bidAnalysisBidders)
         .set({
           submissionStatus: status,
-          updatedAt: new Date(),
+          updatedAt: nowSql,
         })
         .where(and(
           eq(bidAnalysisBidders.id, id),
@@ -1260,7 +1271,7 @@ export const bidAnalysisRouter = router({
         await db.insert(bidEvaluationCriteria).values({
           bidAnalysisId,
           ...c,
-          isDeleted: 0,
+          isDeleted: false,
         });
       }
 
@@ -1316,7 +1327,7 @@ export const bidAnalysisRouter = router({
           .set({
             score: score.toString(),
             status,
-            updatedAt: new Date(),
+            updatedAt: nowSql,
           })
           .where(eq(bidEvaluationScores.id, existingScore.id));
       } else {
@@ -1332,6 +1343,143 @@ export const bidAnalysisRouter = router({
       }
 
       return { success: true };
+    }),
+
+  /**
+   * Bulk sync vendor qualification scores into BEC evaluation matrix
+   * Maps vendor qualification fields → BEC criteria rows (only fills 0-score rows)
+   */
+  bulkSyncQualificationScores: scopedProcedure
+    .input(z.object({ bidAnalysisId: z.number() }))
+    .mutation(async ({ input, ctx }) => {
+      const { bidAnalysisId } = input;
+      const { organizationId } = ctx.scope;
+      const db = await getDb();
+
+      // Verify BA exists
+      const [ba] = await db.select()
+        .from(bidAnalyses)
+        .where(and(
+          eq(bidAnalyses.id, bidAnalysisId),
+          eq(bidAnalyses.organizationId, organizationId),
+          isNull(bidAnalyses.deletedAt)
+        ))
+        .limit(1);
+      if (!ba) throw new TRPCError({ code: 'NOT_FOUND', message: 'Bid Analysis not found' });
+
+      // Get all bidders with their supplierId
+      const bidders = await db.select()
+        .from(bidAnalysisBidders)
+        .where(eq(bidAnalysisBidders.bidAnalysisId, bidAnalysisId));
+
+      // Get all criteria for this BA
+      const criteria = await db.select()
+        .from(bidEvaluationCriteria)
+        .where(eq(bidEvaluationCriteria.bidAnalysisId, bidAnalysisId));
+
+      // Get existing scores
+      const existingScores = await db.select()
+        .from(bidEvaluationScores)
+        .where(eq(bidEvaluationScores.bidAnalysisId, bidAnalysisId));
+
+      // Build existing score lookup: "criterionId-bidderId" -> score value
+      const existingScoreMap = new Map<string, number>();
+      for (const s of existingScores) {
+        existingScoreMap.set(`${s.criterionId}-${s.bidderId}`, parseFloat(s.score || '0'));
+      }
+
+      // Mapping: BEC criterion name → vendorQualificationScores field
+      const CRITERIA_TO_QUAL_FIELD: Record<string, string> = {
+        'Company Registration': 's1_companyRegistration',
+        'Tax Card': 's1_taxCard',
+        'Insurance Card': 's1_insuranceCard',
+        'Signed Declarations': 's1_signedDeclarations',
+        'Sanctions / Screening': 's1_sanctionsScreening',
+        'Company Profile': 's2_companyProfile',
+        'Years of Experience': 's2_yearsExperience',
+        'INGO Experience': 's2_ingoExperience',
+        'Target Geography Presence': 's3_targetGeography',
+        'Bank Account Details': 's3_bankAccountDetails',
+        'References': 's4_references',
+      };
+
+      // Get vendor IDs from bidders
+      const vendorIds = bidders
+        .filter(b => b.supplierId)
+        .map(b => b.supplierId as number);
+
+      if (vendorIds.length === 0) return { synced: 0 };
+
+      // Fetch qualification scores for all vendors
+      const qualScores = await db.select()
+        .from(vendorQualificationScores)
+        .where(and(
+          eq(vendorQualificationScores.organizationId, organizationId),
+          eq(vendorQualificationScores.isDeleted, 0),
+          sql`${vendorQualificationScores.vendorId} IN (${sql.join(vendorIds.map(id => sql`${id}`), sql`, `)})`
+        ));
+
+      // Build latest qualification map: vendorId -> qual record
+      const qualMap = new Map<number, typeof qualScores[0]>();
+      for (const q of qualScores) {
+        const existing = qualMap.get(q.vendorId);
+        if (!existing || q.version > existing.version) {
+          qualMap.set(q.vendorId, q);
+        }
+      }
+
+      let synced = 0;
+      const upserts: Array<{ criterionId: number; bidderId: number; score: string }> = [];
+
+      for (const bidder of bidders) {
+        if (!bidder.supplierId) continue;
+        const qual = qualMap.get(bidder.supplierId);
+        if (!qual) continue;
+
+        for (const criterion of criteria) {
+          const qualField = CRITERIA_TO_QUAL_FIELD[criterion.name];
+          if (!qualField) continue;
+
+          const scoreKey = `${criterion.id}-${bidder.id}`;
+          const existingScore = existingScoreMap.get(scoreKey) ?? 0;
+
+          // Only auto-fill if no score has been entered yet (score = 0)
+          if (existingScore === 0) {
+            const qualScore = parseFloat((qual as any)[qualField] || '0');
+            if (qualScore > 0) {
+              upserts.push({
+                criterionId: criterion.id,
+                bidderId: bidder.id,
+                score: qualScore.toString(),
+              });
+            }
+          }
+        }
+      }
+
+      // Upsert all scores
+      for (const u of upserts) {
+        const existingRow = existingScores.find(
+          s => s.criterionId === u.criterionId && s.bidderId === u.bidderId
+        );
+        if (existingRow) {
+          await db.update(bidEvaluationScores)
+            .set({ score: u.score, status: 'scored', updatedAt: nowSql })
+            .where(eq(bidEvaluationScores.id, existingRow.id));
+        } else {
+          await db.insert(bidEvaluationScores).values({
+            bidAnalysisId,
+            criterionId: u.criterionId,
+            bidderId: u.bidderId,
+            score: u.score,
+            status: 'scored',
+            isDeleted: 0,
+          });
+        }
+        synced++;
+      }
+
+      return { synced };
     }),
 
   /**
@@ -1370,7 +1518,7 @@ export const bidAnalysisRouter = router({
         .set({
           selectionJustification: justification,
           selectedBidderId: selectedWinnerId,
-          updatedAt: new Date(),
+          updatedAt: nowSql,
         })
         .where(eq(bidAnalyses.id, id));
 
@@ -1429,8 +1577,8 @@ export const bidAnalysisRouter = router({
           bomAttendees: JSON.stringify(attendees),
           bomNotes: notes,
           bomSignatures: JSON.stringify(signatures),
-          bomCompleted: true,
-          updatedAt: new Date(),
+          bomCompleted: 1,
+          updatedAt: nowSql,
         })
         .where(eq(bidAnalyses.id, bidAnalysisId));
 
@@ -1448,7 +1596,7 @@ export const bidAnalysisRouter = router({
       const db = await getDb();
       const now = new Date().toISOString().slice(0, 19).replace('T', ' ');
       await db.update(bidAnalyses)
-        .set({ scoringLockedAt: now, scoringLockedBy: ctx.user.id, updatedAt: new Date() })
+        .set({ scoringLockedAt: now, scoringLockedBy: ctx.user.id, updatedAt: now })
         .where(and(
           eq(bidAnalyses.id, bidAnalysisId),
           eq(bidAnalyses.organizationId, organizationId),
@@ -1467,7 +1615,7 @@ export const bidAnalysisRouter = router({
       const { organizationId } = ctx.scope;
       const db = await getDb();
       await db.update(bidAnalyses)
-        .set({ scoringLockedAt: null, scoringLockedBy: null, updatedAt: new Date() })
+        .set({ scoringLockedAt: null, scoringLockedBy: null, updatedAt: nowSql })
         .where(and(
           eq(bidAnalyses.id, bidAnalysisId),
           eq(bidAnalyses.organizationId, organizationId),
@@ -1637,8 +1785,8 @@ export const bidAnalysisRouter = router({
           cbaFinalizedAt: nowStr,
           cbaFinalizedBy: ctx.user.id,
           approvedBy: ctx.user.id,
-          approvedAt: now,
-          updatedAt: now,
+          approvedAt: nowSql,
+          updatedAt: nowSql,
           updatedBy: ctx.user.id,
         })
         .where(eq(bidAnalyses.id, bidAnalysisId));
@@ -1867,11 +2015,11 @@ export const bidAnalysisRouter = router({
         ));
 
       // Return a map of bidderId -> signature info
-      const statusMap: Record<number, { signerName: string; signedAt: Date | null; verificationCode: string }> = {};
+      const statusMap: Record<number, { signerName: string; verificationCode: string }> = {};
       for (const sig of sigs) {
         statusMap[sig.bidderId] = {
           signerName: sig.signerName,
-          signedAt: sig.signedAt,
+          signedAt: nowSql,
           verificationCode: sig.verificationCode,
         };
       }
@@ -2089,7 +2237,7 @@ export const bidAnalysisRouter = router({
             await db.update(bidAnalysisBidders)
               .set({
                 totalBidAmount: quotationTotal.toString(),
-                updatedAt: new Date(),
+                updatedAt: nowSql,
               })
               .where(eq(bidAnalysisBidders.id, bidder.id));
             syncedCount++;
@@ -2202,7 +2350,7 @@ export const bidAnalysisRouter = router({
           description: item.description,
           quantity: parseFloat(String(item.quantity || 0)),
           unit: item.unit || "",
-          estimatedUnitCost: parseFloat(String(item.estimatedUnitCost || 0)),
+          estimatedUnitCost: parseFloat(String(item.unitPrice || 0)),
           bidderPrices,
         };
       });
@@ -2328,8 +2476,8 @@ export const bidAnalysisRouter = router({
             bidAnalysisId: input.bidAnalysisId,
             bidderId: bidder.id,
             prLineItemId: line.prLineItemId,
-            organizationId,
-            operatingUnitId: operatingUnitId || null,
+            organizationId: ctx.scope.organizationId,
+            operatingUnitId: ctx.scope.operatingUnitId,
             unitPrice: line.unitPrice,
             lineTotal: line.lineTotal,
             createdBy: ctx.user.id,
@@ -2348,4 +2496,3 @@ export const bidAnalysisRouter = router({
       };
     }),
 });
-

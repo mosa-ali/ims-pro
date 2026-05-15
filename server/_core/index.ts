@@ -325,7 +325,7 @@ app.post("/api/auth/email-signin", express.json(), async (req, res) => {
       console.error("[Microsoft OAuth] Failed to start auth flow:", err);
       res.status(500).json({ error: "Failed to start Microsoft OAuth flow" });
     }
-  });
+  }); 
 
   // File upload endpoint for quotation attachments
   app.post("/api/upload", express.raw({ type: "application/octet-stream", limit: "50mb" }), async (req, res) => {
@@ -352,15 +352,15 @@ app.post("/api/auth/email-signin", express.json(), async (req, res) => {
     try {
       const pdfRoutes = await import("../routes/pdfRoutes");
       if (pdfRoutes && pdfRoutes.default) {
-        app.use("/api/pdf", pdfRoutes.default);
-        console.log("[Server] PDF routes registered at /api/pdf");
+        app.use("/api/download-pdf", pdfRoutes.default);
+        console.log("[Server] PDF routes registered at /api/download-pdf");
       }
     } catch (error) {
       console.error("[Server] Failed to load PDF routes:", error);
     }
   // tRPC API
   app.use(
-    "/api/trpc",
+    "/_core/trpc",
     createExpressMiddleware({
       router: appRouter,
       createContext,
@@ -368,7 +368,7 @@ app.post("/api/auth/email-signin", express.json(), async (req, res) => {
   );
   
   // PDF Export Routes
-  app.get("/api/logistics/issued/:id/pdf", async (req, res) => {
+  app.get("/organization/logistics/issued/:id/pdf", async (req, res) => {
     try {
       const { generateIssuedItemsPDF } = await import("./issuedItemsPDF");
       const { getDb } = await import("../db");
@@ -412,7 +412,7 @@ app.post("/api/auth/email-signin", express.json(), async (req, res) => {
   });
   
   // Bid Receipt Acknowledgement PDF Route
-  app.get("/api/logistics/bid-analysis/:baId/bidder/:bidderId/acknowledgement-pdf", async (req, res) => {
+  app.get("/organization/logisticslogistics/bid-analysis/:baId/bidder/:bidderId/acknowledgement-pdf", async (req, res) => {
     try {
       const { generateBidReceiptAcknowledgementPDF } = await import("./bidReceiptAcknowledgementPDF");
       const { getDb } = await import("../db");
@@ -498,7 +498,7 @@ app.post("/api/auth/email-signin", express.json(), async (req, res) => {
   });
 
   // CBA (Competitive Bid Analysis) PDF Route
-  app.get("/api/logistics/bid-analysis/:id/cba-pdf", async (req, res) => {
+  app.get("/organization/logistics/bid-analysis/:id/cba-pdf", async (req, res) => {
     try {
       const { generateCBAPDF } = await import("./cbaPDF");
       const baId = parseInt(req.params.id);
@@ -529,7 +529,7 @@ app.post("/api/auth/email-signin", express.json(), async (req, res) => {
   });
 
   // SAC (Service Acceptance Certificate) PDF Route
-  app.get("/api/logistics/sac/:id/pdf", async (req, res) => {
+  app.get("/organization/logistics/sac/:id/pdf", async (req, res) => {
     try {
       const { generateSACPDF } = await import("./sacPDF");
       const sacId = parseInt(req.params.id);
@@ -560,7 +560,7 @@ app.post("/api/auth/email-signin", express.json(), async (req, res) => {
   });
 
   // QA (Quotation Analysis) PDF Route — Puppeteer + HTML (matches CBA approach)
-  app.get("/api/logistics/quotation-analysis/:id/qa-pdf", async (req, res) => {
+  app.get("/organization/logistics/quotation-analysis/:id/qa-pdf", async (req, res) => {
     try {
       const { generateQAPDF } = await import("./qaPDF");
       const qaId = parseInt(req.params.id);
@@ -592,7 +592,7 @@ app.post("/api/auth/email-signin", express.json(), async (req, res) => {
   });
 
   // BOM (Bid Opening Minutes) PDF Route
-  app.get("/api/logistics/bid-analysis/:id/bom-pdf", async (req, res) => {
+  app.get("/organization/logisticslogisticslogistics/bid-analysis/:id/bom-pdf", async (req, res) => {
     try {
       const { generateBOMPDF } = await import("./bomPDF");
       const { getDb } = await import("../db");
@@ -690,7 +690,7 @@ app.post("/api/auth/email-signin", express.json(), async (req, res) => {
   });
 
   // ── Bid Evaluation Checklist PDF ──────────────────────────────────────
-  app.get("/api/logistics/bid-analysis/:id/evaluation-checklist-pdf", async (req, res) => {
+  app.get("/organization/logistics/bid-analysis/:id/evaluation-checklist-pdf", async (req, res) => {
     try {
       const { generateBidEvaluationChecklistPDF } = await import("./bidEvaluationChecklistPDF");
       const baId = parseInt(req.params.id);
@@ -719,7 +719,7 @@ app.post("/api/auth/email-signin", express.json(), async (req, res) => {
   });
 
   // ── Bid Evaluation Checklist Excel Export ──────────────────────────────
-  app.get("/api/logistics/bid-analysis/:id/evaluation-checklist-excel", async (req, res) => {
+  app.get("/organization/logistics/bid-analysis/:id/evaluation-checklist-excel", async (req, res) => {
     try {
       const { generateBidEvaluationChecklistExcel } = await import("./bidEvaluationChecklistExcel");
       const baId = parseInt(req.params.id);
@@ -749,7 +749,7 @@ app.post("/api/auth/email-signin", express.json(), async (req, res) => {
     }
   });
 
-  app.get("/api/logistics/returns/:id/pdf", async (req, res) => {
+  app.get("/organization/logistics/returns/:id/pdf", async (req, res) => {
     try {
         const { generateReturnedItemsPDF } = await import("./returnedItemsPDF");
       const { getDb } = await import("../db");
@@ -817,7 +817,7 @@ app.post("/api/auth/email-signin", express.json(), async (req, res) => {
         serveStatic(app);
       }
 
-  const preferredPort = parseInt(process.env.PORT || "8181", 10);
+  const preferredPort = parseInt(process.env.PORT || "5000", 10);
   const port = ENV.isProduction
     ? preferredPort
     : await findAvailablePort(preferredPort);

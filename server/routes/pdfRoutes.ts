@@ -14,7 +14,7 @@ import {
 const router = express.Router();
 
 /**
- * GET /api/pdf/purchase-request/:id
+ * GET /organization/logistics/purchase-request/:id
  * Generate and download a Purchase Request PDF
  */
 router.get("/purchase-request/:id", async (req, res) => {

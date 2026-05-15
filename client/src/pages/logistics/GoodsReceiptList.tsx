@@ -19,6 +19,7 @@ import { toast } from "sonner";
 import { format } from "date-fns";
 import { useTranslation } from '@/i18n/useTranslation';
 import { BackButton } from "@/components/BackButton";
+import { Loader2 } from "lucide-react";
 
 const statusColors: Record<string, string> = {
  draft: "bg-gray-500", pending_inspection: "bg-yellow-500", inspected: "bg-blue-500",
@@ -33,15 +34,22 @@ export default function GoodsReceiptList() {
  const [search, setSearch] = useState("");
  const [statusFilter, setStatusFilter] = useState<string>("all");
  const { currentOrganization } = useOrganization();
- const organizationId = currentOrganization?.id || 1;
- 
+ const organizationId = currentOrganization?.id || '';
+ const generatePDF = trpc.logistics.generatePDF.useMutation();
+ const [generatingPdfId, setGeneratingPdfId] = useState<number | null>(null);
+
  // Extract prId from URL query parameters
  const prId = typeof window !== 'undefined' ? new URLSearchParams(window.location.search).get('prId') ? parseInt(new URLSearchParams(window.location.search).get('prId')!) : null : null;
 
  const { data, isLoading, refetch } = trpc.logistics.grn.list.useQuery({
- organizationId, search: search || undefined,
- status: statusFilter !== "all" ? statusFilter as any : undefined, limit: 50, offset: 0,
- });
+  search: search || undefined,
+  status:
+    statusFilter !== "all"
+      ? (statusFilter as any)
+      : undefined,
+  limit: 50,
+  offset: 0,
+});
 
  const deleteMutation = trpc.logistics.grn.delete.useMutation({
  onSuccess: () => { toast.success(t.logistics.grnDeleted); refetch(); },
@@ -51,6 +59,65 @@ export default function GoodsReceiptList() {
  const handleDelete = (id: number) => {
  if (confirm(t.logistics.areYouSureYouWantTo)) deleteMutation.mutate({ id });
  };
+
+ const handleGeneratePdf = async (grn: any) => {
+  try {
+    setGeneratingPdfId(grn.id);
+
+    const result = await generatePDF.mutateAsync({
+      documentType: "grn",
+      documentId: Number(grn.id),
+      language: isRTL ? "ar" : "en",
+    });
+
+    // Validate PDF base64 header
+      if (!result?.pdf || !result.pdf.startsWith("JVBER")) {
+      toast.error(
+        isRTL
+          ? "ملف PDF غير صالح"
+          : "Invalid PDF generated"
+      );
+
+      return;
+    }
+
+    // Base64 → Blob
+    const binaryString = atob(result.pdf);
+
+    const bytes = new Uint8Array(binaryString.length);
+
+    for (let i = 0; i < binaryString.length; i++) {
+      bytes[i] = binaryString.charCodeAt(i);
+    }
+
+    const blob = new Blob([bytes], {
+      type: "application/pdf",
+    });
+
+    const url = window.URL.createObjectURL(blob);
+
+    window.open(url, "_blank");
+
+    toast.success(
+      isRTL
+        ? "تم إنشاء ملف PDF بنجاح"
+        : "PDF generated successfully"
+    );
+
+  } catch (error: any) {
+    console.error("GRN PDF generation error:", error);
+
+    toast.error(
+      error?.message ||
+      (isRTL
+        ? "خطأ في إنشاء PDF"
+        : "Error generating PDF")
+    );
+
+  } finally {
+    setGeneratingPdfId(null);
+  }
+};
 
  // Define table columns (will be reversed in RTL)
  const columns = useMemo(() => {
@@ -102,14 +169,18 @@ export default function GoodsReceiptList() {
  }}>
  <Edit className="h-4 w-4" />
  </Button>
- <Button variant="ghost" size="icon" onClick={() => {
- const params = new URLSearchParams();
- if (prId) params.append('prId', prId.toString());
- const queryString = params.toString();
- navigate(`/organization/logistics/goods-receipts/${grn.id}/print${queryString ? '?' + queryString : ''}`);
- }}>
- <Printer className="h-4 w-4" />
- </Button>
+ <Button
+  variant="ghost"
+  size="icon"
+  onClick={() => handleGeneratePdf(grn)}
+  disabled={generatingPdfId === grn.id}
+>
+  {generatingPdfId === grn.id ? (
+    <Loader2 className="h-4 w-4 animate-spin" />
+  ) : (
+    <Printer className="h-4 w-4" />
+  )}
+</Button>
  <Button variant="ghost" size="icon" onClick={() => handleDelete(grn.id)}>
  <Trash2 className="h-4 w-4 text-destructive" />
  </Button>

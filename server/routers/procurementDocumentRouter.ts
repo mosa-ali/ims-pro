@@ -1,39 +1,42 @@
 /**
  * Procurement Document Router - tRPC Procedures
- * 
- * Handles document discovery and routing for the procurement workflow
- * Automatically routes documents through 13-stage procurement lifecycle
+ * Handles document discovery, routing, and generation for the procurement workflow
+ * Integrates smart caching with existing PDF generators
  */
 
 import { z } from "zod";
-import { router, scopedProcedure } from "../_core/trpc";
+import { router, scopedProcedure, protectedProcedure } from "../_core/trpc";
 import { getDb } from "../db";
-import { documents, purchaseRequests } from "../../drizzle/schema";
-import { eq, and } from "drizzle-orm";
+import { documents, purchaseRequests, generatedDocuments } from "../../drizzle/schema";
+import { eq, and, desc } from "drizzle-orm";
+import { storagePut } from "../storage";
+import { TRPCError } from "@trpc/server";
+import { generatePRDocument } from "../_core/prDocumentGenerator";
 import {
-  routeProcurementDocuments,
-  getProcurementDocumentPath,
-  procurementStatusToDocumentStage,
-  getDocumentFolderKey,
-} from "../services/procurementDocumentRouter";
+  PdfDocumentType,
+} from '../services/pdf/pdfRegistry';
+
+const documentTypeMap = {
+  PR: "PR_PDF",
+  RFQ: "RFQ_PDF",
+  PO: "PO_PDF",
+  GRN: "GRN_PDF",
+  DELIVERY: "DELIVERY_PDF",
+  PAYMENT: "PAYMENT_PDF",
+};
 
 export const procurementDocumentRouter = router({
   /**
    * Get all documents for a PR organized by procurement stage
    */
   getByPR: scopedProcedure
-    .input(
-      z.object({
-        prId: z.number(),
-      })
-    )
+    .input(z.object({ prId: z.number() }))
     .query(async ({ input, ctx }) => {
       const db = await getDb();
       if (!db) throw new Error("Database not available");
 
       const { organizationId, operatingUnitId } = ctx.scope;
 
-      // Get the PR to verify access
       const [pr] = await db
         .select()
         .from(purchaseRequests)
@@ -49,19 +52,18 @@ export const procurementDocumentRouter = router({
         throw new Error("Purchase Request not found");
       }
 
-      // Get all documents for this PR
       const prDocuments = await db
         .select()
         .from(documents)
         .where(
           and(
-            eq(documents.relatedPrId, input.prId),
+            eq(documents.entityId, String(input.prId)),
+            eq(documents.entityType, "purchase_request"),
             eq(documents.organizationId, organizationId),
             eq(documents.operatingUnitId, operatingUnitId)
           )
         );
 
-      // Group documents by folder path (procurement stage)
       const stageMap = new Map<
         string,
         {
@@ -88,7 +90,7 @@ export const procurementDocumentRouter = router({
       };
 
       for (const doc of prDocuments) {
-        const folderKey = doc.folderPath || "01_Purchase_Requests";
+        const folderKey = "01_Purchase_Requests";
         if (!stageMap.has(folderKey)) {
           stageMap.set(folderKey, {
             stage: stageNames[folderKey] || folderKey,
@@ -99,7 +101,6 @@ export const procurementDocumentRouter = router({
         stageMap.get(folderKey)!.documents.push(doc);
       }
 
-      // Convert to array and sort by folder key
       const stages = Array.from(stageMap.values()).sort((a, b) => {
         const aNum = parseInt(a.folderKey.split("_")[0]);
         const bNum = parseInt(b.folderKey.split("_")[0]);
@@ -116,207 +117,410 @@ export const procurementDocumentRouter = router({
     }),
 
   /**
-   * Get document discovery path for a PR
-   * Shows which stages have documents and how many
+   * Generate procurement document with smart caching
+   * Checks cache before generating, uses existing PDF generators
    */
-  getDocumentPath: scopedProcedure
+  generateDocument: scopedProcedure
     .input(
       z.object({
         prId: z.number(),
+        documentType: z.enum(["PR", "RFQ", "PO", "GRN", "DELIVERY", "PAYMENT"]),
+        language: z.enum(["en", "ar"]).default("en"),
       })
     )
-    .query(async ({ input, ctx }) => {
-      const { organizationId, operatingUnitId } = ctx.scope;
+    .mutation(async ({ ctx, input }) => {
+      try {
+        const db = await getDb();
+        const { prId, documentType, language } = input;
 
-      const path = await getProcurementDocumentPath(
-        input.prId,
-        organizationId,
-        operatingUnitId
-      );
+        // Verify PR exists
+        const pr = await db
+          .select()
+          .from(purchaseRequests)
+          .where(
+            and(
+              eq(purchaseRequests.id, prId),
+              eq(purchaseRequests.organizationId, ctx.scope.organizationId),
+              eq(purchaseRequests.operatingUnitId, ctx.scope.operatingUnitId)
+            )
+          )
+          .then((rows) => rows[0]);
 
-      return {
-        prId: input.prId,
-        documentPath: path,
-      };
+        if (!pr) {
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Purchase request not found",
+          });
+        }
+
+        // Check cache first
+        const existingPdf = await db
+          .select()
+          .from(generatedDocuments)
+          .where(
+            and(
+              eq(generatedDocuments.organizationId, ctx.scope.organizationId),
+              eq(generatedDocuments.operatingUnitId, ctx.scope.operatingUnitId),
+              eq(generatedDocuments.entityId, prId),
+              eq(generatedDocuments.documentType, documentTypeMap[documentType]),
+              eq(generatedDocuments.language, language),
+              eq(generatedDocuments.isLatest, 1),
+              eq(generatedDocuments.status, "active")
+            )
+          )
+          .then((rows) => rows[0]);
+
+        if (existingPdf) {
+          // Check expiration
+          if (existingPdf.expiresAt) {
+            const now = new Date();
+            const expiresAt = new Date(existingPdf.expiresAt);
+            if (now <= expiresAt) {
+              console.log(
+                `[Procurement] Cache hit for ${documentType} v${existingPdf.version}`
+              );
+              return {
+                success: true,
+                documentId: existingPdf.id,
+                fileName: existingPdf.fileName || "",
+                url: existingPdf.filePath,
+                version: existingPdf.version || 1,
+                isNewGeneration: false,
+                message: `${documentType} retrieved from cache (v${existingPdf.version || 1})`,
+              };
+            }
+          } else {
+            console.log(
+              `[Procurement] Cache hit for ${documentType} v${existingPdf.version}`
+            );
+            return {
+              success: true,
+              documentId: existingPdf.id,
+              fileName: existingPdf.fileName || "",
+              url: existingPdf.filePath,
+              version: existingPdf.version || 1,
+              isNewGeneration: false,
+              message: `${documentType} retrieved from cache (v${existingPdf.version || 1})`,
+            };
+          }
+        }
+
+        // Generate new PDF
+        console.log(
+          `[Procurement] Generating ${documentType} for PR-${pr.prNumber}`
+        );
+
+        const pdfBuffer = await generatePRDocument(
+          pr,
+          documentType as "PR" | "RFQ" | "PO" | "GRN" | "DELIVERY" | "PAYMENT",
+          ctx.scope.organizationId
+        );
+
+        if (!pdfBuffer || pdfBuffer.length === 0) {
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: "Failed to generate PDF",
+          });
+        }
+
+        // Upload to S3
+        const fileName = `${documentType}-${pr.prNumber}-${language}-${Date.now()}.pdf`;
+        const fileKey = `procurement/${ctx.scope.organizationId}/${ctx.scope.operatingUnitId}/${documentType.toLowerCase()}-${prId}/${fileName}`;
+
+        const { url } = await storagePut(fileKey, pdfBuffer, "application/pdf");
+
+        // Mark old versions as not latest
+        await db
+          .update(generatedDocuments)
+          .set({ isLatest: 0 })
+          .where(
+            and(
+              eq(generatedDocuments.organizationId, ctx.scope.organizationId),
+              eq(generatedDocuments.entityId, prId),
+              eq(generatedDocuments.documentType, documentType),
+              eq(generatedDocuments.language, language),
+              eq(generatedDocuments.isLatest, 1)
+            )
+          );
+
+        // Get next version
+        const lastVersion = await db
+          .select()
+          .from(generatedDocuments)
+          .where(
+            and(
+              eq(generatedDocuments.organizationId, ctx.scope.organizationId),
+              eq(generatedDocuments.entityId, prId),
+              eq(generatedDocuments.documentType, documentType),
+              eq(generatedDocuments.language, language)
+            )
+          )
+          .orderBy(desc(generatedDocuments.version))
+          .then((rows) => rows[0]);
+
+        const nextVersion = (lastVersion?.version || 0) + 1;
+
+        // Insert new version
+        const result = await db.insert(generatedDocuments).values({
+          organizationId: ctx.scope.organizationId,
+          operatingUnitId: ctx.scope.operatingUnitId,
+          module: "procurement",
+          entityType: "purchase_request",
+          entityId: prId,
+          documentType,
+          filePath: url,
+          fileName,
+          fileSize: pdfBuffer.length,
+          mimeType: "application/pdf",
+          version: nextVersion,
+          isLatest: 1,
+          language,
+          status: "active",
+          generatedBy: ctx.user.id,
+          generatedAt: new Date().toISOString(),
+        });
+
+        console.log(
+          `[Procurement] Generated ${documentType} v${nextVersion}`
+        );
+
+        return {
+          success: true,
+          documentId: Number((result as any).insertId || 0),
+          fileName,
+          url,
+          version: nextVersion,
+          isNewGeneration: true,
+          message: `${documentType} generated successfully (v${nextVersion})`,
+        };
+      } catch (error) {
+        console.error("[Procurement] Generation error:", error);
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: error instanceof Error ? error.message : "Failed to generate document",
+        });
+      }
     }),
 
   /**
-   * Manually trigger document routing for a PR
-   * Usually called when PR procurement status changes
+   * Get all document versions for a PR
    */
-  routeDocuments: scopedProcedure
+  getDocumentVersions: scopedProcedure
     .input(
       z.object({
         prId: z.number(),
-        procurementStatus: z.string(),
+        documentType: z.enum(["PR", "RFQ", "PO", "GRN", "DELIVERY", "PAYMENT"]),
       })
     )
-    .mutation(async ({ input, ctx }) => {
-      const { organizationId, operatingUnitId } = ctx.scope;
+    .query(async ({ ctx, input }) => {
+      try {
+        const db = await getDb();
+        const { prId, documentType } = input;
 
-      // Verify PR exists and user has access
-      const db = await getDb();
-      if (!db) throw new Error("Database not available");
-
-      const [pr] = await db
-        .select()
-        .from(purchaseRequests)
-        .where(
-          and(
-            eq(purchaseRequests.id, input.prId),
-            eq(purchaseRequests.organizationId, organizationId),
-            eq(purchaseRequests.operatingUnitId, operatingUnitId)
+        const pr = await db
+          .select()
+          .from(purchaseRequests)
+          .where(
+            and(
+              eq(purchaseRequests.id, prId),
+              eq(purchaseRequests.organizationId, ctx.scope.organizationId),
+              eq(purchaseRequests.operatingUnitId, ctx.scope.operatingUnitId)
+            )
           )
-        );
+          .then((rows) => rows[0]);
 
-      if (!pr) {
-        throw new Error("Purchase Request not found");
+        if (!pr) {
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Purchase request not found",
+          });
+        }
+
+        const versions = await db
+          .select()
+          .from(generatedDocuments)
+          .where(
+            and(
+              eq(generatedDocuments.organizationId, ctx.scope.organizationId),
+              eq(generatedDocuments.entityId, prId),
+              eq(generatedDocuments.documentType, documentType)
+            )
+          )
+          .orderBy(desc(generatedDocuments.version));
+
+        return versions.map((v) => ({
+          id: v.id,
+          version: v.version,
+          fileName: v.fileName,
+          url: v.filePath,
+          language: v.language,
+          isLatest: v.isLatest === 1,
+          generatedAt: v.generatedAt,
+          fileSize: v.fileSize,
+        }));
+      } catch (error) {
+        console.error("[Procurement] Error fetching versions:", error);
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to fetch document versions",
+        });
       }
-
-      // Route documents to the new stage
-      await routeProcurementDocuments(
-        input.prId,
-        organizationId,
-        operatingUnitId,
-        input.procurementStatus
-      );
-
-      return {
-        success: true,
-        message: `Documents routed to ${input.procurementStatus}`,
-      };
     }),
 
   /**
-   * Get procurement workflow stages with document counts
-   * Used for Central Documents workspace display
+   * Get generation status for all document types
    */
-  getWorkflowStages: scopedProcedure
-    .input(
-      z.object({
-        organizationId: z.number().optional(), // Ignored, uses ctx.scope
-      })
-    )
-    .query(async ({ ctx }) => {
-      const db = await getDb();
-      if (!db) throw new Error("Database not available");
+  getAllDocumentsStatus: scopedProcedure
+    .input(z.object({ prId: z.number() }))
+    .query(async ({ ctx, input }) => {
+      try {
+        const db = await getDb();
+        const { prId } = input;
 
-      const { organizationId, operatingUnitId } = ctx.scope;
-
-      // Get all documents for this org/ou grouped by folder
-      const allDocuments = await db
-        .select()
-        .from(documents)
-        .where(
-          and(
-            eq(documents.organizationId, organizationId),
-            eq(documents.operatingUnitId, operatingUnitId)
+        const pr = await db
+          .select()
+          .from(purchaseRequests)
+          .where(
+            and(
+              eq(purchaseRequests.id, prId),
+              eq(purchaseRequests.organizationId, ctx.scope.organizationId),
+              eq(purchaseRequests.operatingUnitId, ctx.scope.operatingUnitId)
+            )
           )
-        );
+          .then((rows) => rows[0]);
 
-      // Group by folder path
-      const stageMap = new Map<string, number>();
-      for (const doc of allDocuments) {
-        const folderKey = doc.folderPath || "01_Purchase_Requests";
-        stageMap.set(folderKey, (stageMap.get(folderKey) || 0) + 1);
+        if (!pr) {
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Purchase request not found",
+          });
+        }
+
+        const documentTypes = ["PR", "RFQ", "PO", "GRN", "DELIVERY", "PAYMENT"];
+        const status: Record<
+          string,
+          {
+            generated: boolean;
+            version: number;
+            isLatest: boolean;
+            url?: string;
+            generatedAt?: string;
+          }
+        > = {};
+
+        for (const type of documentTypes) {
+          const doc = await db
+            .select()
+            .from(generatedDocuments)
+            .where(
+              and(
+                eq(generatedDocuments.organizationId, ctx.scope.organizationId),
+                eq(generatedDocuments.entityId, prId),
+                eq(generatedDocuments.documentType, type),
+                eq(generatedDocuments.isLatest, 1)
+              )
+            )
+            .then((rows) => rows[0]);
+
+          status[type] = {
+            generated: !!doc,
+            version: doc?.version || 0,
+            isLatest: doc?.isLatest === 1,
+            url: doc?.filePath,
+            generatedAt: doc?.generatedAt,
+          };
+        }
+
+        return status;
+      } catch (error) {
+        console.error("[Procurement] Error getting status:", error);
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to get document status",
+        });
       }
-
-      const stageNames: Record<string, string> = {
-        "01_Purchase_Requests": "Purchase Requests",
-        "02_RFQ_Tender_Documents": "RFQ / Tender Documents",
-        "03_Bid_Opening_Minutes": "Bid Opening Minutes",
-        "04_Supplier_Quotations": "Supplier Quotations / Offer Matrix",
-        "05_Bid_Evaluation": "Bid Evaluation",
-        "06_Competitive_Bid_Analysis": "Quotation Analysis / Competitive Bid Analysis",
-        "07_Contracts": "Contracts",
-        "08_Purchase_Orders": "Purchase Orders",
-        "09_Goods_Receipt_Notes": "Goods Receipt Notes",
-        "10_Delivery_Notes": "Delivery Notes",
-        "11_Service_Acceptance_Certificates": "Service Acceptance Certificates",
-        "12_Payments": "Payments / Supporting Finance Documents",
-        "13_Audit_Logs": "Audit Logs / Supporting Attachments",
-      };
-
-      // Build response with all 13 stages
-      const stages = [
-        "01_Purchase_Requests",
-        "02_RFQ_Tender_Documents",
-        "03_Bid_Opening_Minutes",
-        "04_Supplier_Quotations",
-        "05_Bid_Evaluation",
-        "06_Competitive_Bid_Analysis",
-        "07_Contracts",
-        "08_Purchase_Orders",
-        "09_Goods_Receipt_Notes",
-        "10_Delivery_Notes",
-        "11_Service_Acceptance_Certificates",
-        "12_Payments",
-        "13_Audit_Logs",
-      ].map((folderKey) => ({
-        folderKey,
-        stageName: stageNames[folderKey],
-        documentCount: stageMap.get(folderKey) || 0,
-      }));
-
-      return {
-        organizationId,
-        operatingUnitId,
-        stages,
-        totalDocuments: allDocuments.length,
-      };
     }),
 
   /**
-   * Get documents for a specific procurement stage
+   * Invalidate cache for a document
    */
-  getByStage: scopedProcedure
+  invalidateCache: scopedProcedure
     .input(
       z.object({
-        folderKey: z.string(),
-        limit: z.number().default(50),
-        offset: z.number().default(0),
+        prId: z.number(),
+        documentType: z
+          .enum(["PR", "RFQ", "PO", "GRN", "DELIVERY", "PAYMENT"])
+          .optional(),
       })
     )
-    .query(async ({ input, ctx }) => {
-      const db = await getDb();
-      if (!db) throw new Error("Database not available");
+    .mutation(async ({ ctx, input }) => {
+      try {
+        const db = await getDb();
+        const { prId, documentType } = input;
 
-      const { organizationId, operatingUnitId } = ctx.scope;
-
-      const stageDocuments = await db
-        .select()
-        .from(documents)
-        .where(
-          and(
-            eq(documents.folderPath, input.folderKey),
-            eq(documents.organizationId, organizationId),
-            eq(documents.operatingUnitId, operatingUnitId)
+        const pr = await db
+          .select()
+          .from(purchaseRequests)
+          .where(
+            and(
+              eq(purchaseRequests.id, prId),
+              eq(purchaseRequests.organizationId, ctx.scope.organizationId),
+              eq(purchaseRequests.operatingUnitId, ctx.scope.operatingUnitId)
+            )
           )
-        )
-        .limit(input.limit)
-        .offset(input.offset);
+          .then((rows) => rows[0]);
 
-      const stageNames: Record<string, string> = {
-        "01_Purchase_Requests": "Purchase Requests",
-        "02_RFQ_Tender_Documents": "RFQ / Tender Documents",
-        "03_Bid_Opening_Minutes": "Bid Opening Minutes",
-        "04_Supplier_Quotations": "Supplier Quotations / Offer Matrix",
-        "05_Bid_Evaluation": "Bid Evaluation",
-        "06_Competitive_Bid_Analysis": "Quotation Analysis / Competitive Bid Analysis",
-        "07_Contracts": "Contracts",
-        "08_Purchase_Orders": "Purchase Orders",
-        "09_Goods_Receipt_Notes": "Goods Receipt Notes",
-        "10_Delivery_Notes": "Delivery Notes",
-        "11_Service_Acceptance_Certificates": "Service Acceptance Certificates",
-        "12_Payments": "Payments / Supporting Finance Documents",
-        "13_Audit_Logs": "Audit Logs / Supporting Attachments",
-      };
+        if (!pr) {
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Purchase request not found",
+          });
+        }
 
-      return {
-        folderKey: input.folderKey,
-        stageName: stageNames[input.folderKey],
-        documents: stageDocuments,
-        count: stageDocuments.length,
-      };
+        if (documentType) {
+          await db
+            .update(generatedDocuments)
+            .set({
+              status: "invalidated",
+              updatedAt: new Date().toISOString(),
+            })
+            .where(
+              and(
+                eq(generatedDocuments.organizationId, ctx.scope.organizationId),
+                eq(generatedDocuments.entityId, prId),
+                eq(generatedDocuments.documentType, documentType)
+              )
+            );
+
+          return {
+            success: true,
+            message: `${documentType} cache invalidated`,
+          };
+        } else {
+          await db
+            .update(generatedDocuments)
+            .set({
+              status: "invalidated",
+              updatedAt: new Date().toISOString(),
+            })
+            .where(
+              and(
+                eq(generatedDocuments.organizationId, ctx.scope.organizationId),
+                eq(generatedDocuments.entityId, prId)
+              )
+            );
+
+          return {
+            success: true,
+            message: "All document caches invalidated",
+          };
+        }
+      } catch (error) {
+        console.error("[Procurement] Error invalidating cache:", error);
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to invalidate cache",
+        });
+      }
     }),
 });

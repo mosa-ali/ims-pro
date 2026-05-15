@@ -547,21 +547,112 @@ export const bidEvaluationCriteria = mysqlTable("bid_evaluation_criteria", {
 });
 
 export const bidEvaluationScores = mysqlTable("bid_evaluation_scores", {
-	id: int().autoincrement().primaryKey().notNull(),
-	bidAnalysisId: int().notNull().references(() => bidAnalyses.id, { onDelete: "cascade" } ),
-	criterionId: int().notNull().references(() => bidEvaluationCriteria.id, { onDelete: "cascade" } ),
-	bidderId: int().notNull().references(() => bidAnalysisBidders.id, { onDelete: "cascade" } ),
-	score: decimal({ precision: 5, scale: 2 }).default('0'),
-	status: mysqlEnum(['scored','none','na','not_yet_completed']).default('scored'),
-	notes: text(),
-	createdAt: timestamp({ mode: 'string' }).defaultNow().notNull(),
-	updatedAt: timestamp({ mode: 'string' }).defaultNow().onUpdateNow().notNull(),
-},
-(table) => [
-	index("idx_bes_ba").on(table.bidAnalysisId),
-	index("idx_bes_criterion").on(table.criterionId),
-	index("idx_bes_bidder").on(table.bidderId),
-	index("uq_bes_criterion_bidder").on(table.criterionId, table.bidderId),
+    id: int().autoincrement().primaryKey().notNull(),
+
+    bidAnalysisId: int()
+      .notNull()
+      .references(() => bidAnalyses.id, { onDelete: "cascade" }),
+
+    criterionId: int()
+      .notNull()
+      .references(() => bidEvaluationCriteria.id, { onDelete: "cascade" }),
+
+    bidderId: int()
+      .notNull()
+      .references(() => bidAnalysisBidders.id, { onDelete: "cascade" }),
+
+    score: decimal({ precision: 5, scale: 2 }).default('0'),
+
+    status: mysqlEnum([
+      'scored',
+      'none',
+      'na',
+      'not_yet_completed'
+    ]).default('scored'),
+
+    notes: text(),
+
+    // =========================================
+    // AUTO-LOAD & AUDIT FIELDS
+    // =========================================
+
+    sourceType: mysqlEnum([
+      'qualification_auto',
+      'procurement_manual',
+      'financial_auto',
+    ]).default('procurement_manual'),
+
+    isAutoLoaded: tinyint()
+      .default(0)
+      .notNull(),
+
+    isLocked: tinyint()
+      .default(0)
+      .notNull(),
+
+    evaluationSource: mysqlEnum([
+      'qualification_auto',
+      'manual_committee',
+      'financial_auto',
+    ]).default('manual_committee'),
+
+    baselineId: int().references(
+      () => vendorProcurementBaselines.id,
+      { onDelete: "restrict" }
+    ),
+
+    qualificationScoreId: int().references(
+      () => vendorQualificationScores.id,
+      { onDelete: "restrict" }
+    ),
+
+    lockedAt: timestamp({ mode: 'string' }),
+
+    lockedBy: int().references(
+      () => users.id,
+      { onDelete: "set null" }
+    ),
+
+    manualOverrideReason: text(),
+
+    manualOverrideBy: int().references(
+      () => users.id,
+      { onDelete: "set null" }
+    ),
+
+    manualOverrideAt: timestamp({ mode: 'string' }),
+
+    createdAt: timestamp({ mode: 'string' })
+      .defaultNow()
+      .notNull(),
+
+    updatedAt: timestamp({ mode: 'string' })
+      .defaultNow()
+      .onUpdateNow()
+      .notNull(),
+
+}, (table) => [
+
+    index("idx_bes_ba")
+      .on(table.bidAnalysisId),
+
+    index("idx_bes_criterion")
+      .on(table.criterionId),
+
+    index("idx_bes_bidder")
+      .on(table.bidderId),
+
+    index("idx_bes_baseline")
+      .on(table.baselineId),
+
+    index("idx_bes_qualification")
+      .on(table.qualificationScoreId),
+
+    index("idx_bes_locked")
+      .on(table.isLocked),
+
+    index("uq_bes_criterion_bidder")
+      .on(table.criterionId, table.bidderId),
 ]);
 
 export const bidOpeningMinutes = mysqlTable("bid_opening_minutes", {
@@ -1074,6 +1165,7 @@ export const contractMilestones = mysqlTable("contract_milestones", {
 	description: text(),
 	amount: decimal({ precision: 15, scale: 2 }),
 	currency: varchar({ length: 10 }).default('USD'),
+	completionPercentage: int().default(0).notNull(),
 	dueDate: timestamp({ mode: 'string' }),
 	status: mysqlEnum(['pending','in_progress','completed','overdue']).default('pending').notNull(),
 	completedAt: timestamp({ mode: 'string' }),
@@ -7395,25 +7487,93 @@ export const documentMetadata = mysqlTable("document_metadata", {
 
 // Two-Factor Authentication (TOTP & SMS)
 export const twoFactorAuth = mysqlTable("two_factor_auth", {
-	id: int().autoincrement().primaryKey().notNull(),
-	userId: int().notNull(),
-	organizationId: int().notNull(),
-	method: mysqlEnum(['totp', 'sms']).notNull(), // TOTP or SMS
-	secret: varchar({ length: 255 }).notNull(), // Encrypted TOTP secret
-	phoneNumber: varchar({ length: 20 }), // For SMS method
-	isEnabled: tinyint().default(0).notNull(),
-	isVerified: tinyint().default(0).notNull(),
-	backupCodes: json().$type<string[]>(), // Array of backup codes (hashed)
-	lastUsedAt: timestamp({ mode: 'string' }),
-	createdAt: timestamp({ mode: 'string' }).defaultNow().notNull(),
-	updatedAt: timestamp({ mode: 'string' }).defaultNow().onUpdateNow().notNull(),
-	createdBy: int(),
-	updatedBy: int(),
-	deletedAt: timestamp({ mode: 'string' }),
-	deletedBy: int(),
+  id: int().autoincrement().primaryKey().notNull(),
+  userId: int().notNull(),
+  organizationId: int().notNull(),
+  operatingUnitId: int(), // Data isolation
+  method: mysqlEnum(['totp', 'sms', 'email']).notNull(), // TOTP, SMS, or Email
+  
+  // Encrypted secret (AES-256-GCM)
+  secret: varchar({ length: 255 }).notNull(), // Encrypted TOTP secret
+  secretIv: varchar({ length: 32 }), // Initialization vector for encryption
+  secretTag: varchar({ length: 32 }), // Authentication tag for encryption
+  
+  // Phone number for SMS method
+  phoneNumber: varchar({ length: 20 }), // For SMS method
+  
+  // Backup codes (JSON array of hashed codes)
+  backupCodes: json().$type<string[]>(), // Array of backup codes (hashed)
+  
+  // Status
+  isEnabled: tinyint().default(0).notNull(),
+  isVerified: tinyint().default(0).notNull(),
+  
+  // Expiry for SMS/email codes
+  expiresAt: timestamp({ mode: 'string' }),
+  lastUsedAt: timestamp({ mode: 'string' }),
+  
+  // Audit fields
+  createdAt: timestamp({ mode: 'string' }).defaultNow().notNull(),
+  updatedAt: timestamp({ mode: 'string' }).defaultNow().onUpdateNow().notNull(),
+  createdBy: int(),
+  updatedBy: int(),
+  deletedAt: timestamp({ mode: 'string' }),
+  deletedBy: int(),
 }, (table) => [
-	index("idx_2fa_user_org").on(table.userId, table.organizationId),
-	index("idx_2fa_method").on(table.method),
+  index("idx_2fa_user_org").on(table.userId, table.organizationId),
+  index("idx_2fa_method").on(table.method),
+  index("idx_2fa_enabled").on(table.isEnabled),
+  index("idx_2fa_org_method").on(table.organizationId, table.method),
+]);
+
+export const twoFactorAttempts = mysqlTable("two_factor_attempts", {
+  id: int().autoincrement().primaryKey().notNull(),
+  userId: int().notNull(),
+  organizationId: int().notNull(),
+  
+  // Action type (totp_login, sms_verify, backup_code, totp_setup, etc.)
+  action: varchar({ length: 50 }).notNull(),
+  
+  // Success or failure
+  success: tinyint().notNull(),
+  
+  // IP address (optional, for security tracking)
+  ipAddress: varchar({ length: 45 }),
+  
+  // User agent (optional, for security tracking)
+  userAgent: varchar({ length: 255 }),
+  
+  // Timestamp
+  createdAt: timestamp({ mode: 'string' }).defaultNow().notNull(),
+}, (table) => [
+  index("idx_attempts_user_action_time").on(table.userId, table.action, table.createdAt),
+  index("idx_attempts_user_success_time").on(table.userId, table.success, table.createdAt),
+  index("idx_attempts_org_action").on(table.organizationId, table.action),
+]);
+
+export const twoFactorAuditLog = mysqlTable("two_factor_audit_log", {
+  id: int().autoincrement().primaryKey().notNull(),
+  userId: int().notNull(),
+  organizationId: int().notNull(),
+  
+  // Event type (totp_enabled, totp_disabled, backup_code_used, sms_sent, etc.)
+  event: varchar({ length: 50 }).notNull(),
+  
+  // Event details (JSON)
+  details: json().$type<Record<string, any>>(),
+  
+  // IP address (optional, for security tracking)
+  ipAddress: varchar({ length: 45 }),
+  
+  // User agent (optional, for security tracking)
+  userAgent: varchar({ length: 255 }),
+  
+  // Timestamp
+  createdAt: timestamp({ mode: 'string' }).defaultNow().notNull(),
+}, (table) => [
+  index("idx_audit_user_event").on(table.userId, table.event),
+  index("idx_audit_org_event").on(table.organizationId, table.event),
+  index("idx_audit_created").on(table.createdAt),
 ]);
 
 // Email Verification Tokens
@@ -7933,3 +8093,75 @@ export const platformEmailSettings = mysqlTable("platform_email_settings", {
 
 export type InsertPlatformEmailSettings = typeof platformEmailSettings.$inferInsert;
 export type SelectPlatformEmailSettings = typeof platformEmailSettings.$inferSelect;
+
+export const generatedDocuments = mysqlTable(
+  'generatedDocuments',
+  {
+    id: int('id').autoincrement().primaryKey().notNull(),
+
+    organizationId: int('organizationId')
+      .notNull()
+      .references(() => organizations.id, { onDelete: 'cascade' }),
+
+    operatingUnitId: int('operatingUnitId')
+      .references(() => operatingUnits.id, { onDelete: 'set null' }),
+
+    module: varchar('module', { length: 50 }).notNull(),
+
+    entityType: varchar('entityType', { length: 100 }).notNull(),
+    entityId: int('entityId').notNull(),
+
+    documentType: varchar('documentType', { length: 100 }).notNull(),
+
+    filePath: text('filePath').notNull(),
+    fileName: varchar('fileName', { length: 255 }),
+    fileSize: int('fileSize'),
+
+    mimeType: varchar('mimeType', { length: 100 }).default('application/pdf'),
+
+    version: int('version').default(1),
+
+    isLatest: tinyint('isLatest').default(1).notNull(),
+
+    language: varchar('language', { length: 5 }).default('en'),
+
+    checksum: varchar('checksum', { length: 64 }),
+
+    status: varchar('status', { length: 20 }).default('active'),
+
+    generatedBy: int('generatedBy')
+      .references(() => users.id, { onDelete: 'set null' }),
+
+    generatedAt: timestamp('generatedAt', { mode: 'string' })
+      .defaultNow()
+      .notNull(),
+
+    expiresAt: timestamp('expiresAt', { mode: 'string' }),
+
+    createdAt: timestamp('createdAt', { mode: 'string' })
+      .defaultNow()
+      .notNull(),
+
+    updatedAt: timestamp('updatedAt', { mode: 'string' })
+      .defaultNow()
+      .onUpdateNow()
+      .notNull(),
+  },
+  (table) => [
+    index('idx_entity').on(table.entityType, table.entityId),
+    index('idx_org').on(table.organizationId),
+    index('idx_ou').on(table.operatingUnitId),
+    index('idx_module').on(table.module),
+    index('idx_doc_type').on(table.documentType),
+    index('idx_latest').on(table.isLatest),
+
+    index('unique_latest_doc').on(
+      table.organizationId,
+      table.entityType,
+      table.entityId,
+      table.documentType,
+      table.language,
+      table.isLatest
+    ),
+  ]
+);

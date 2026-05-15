@@ -372,7 +372,7 @@ export default function ProcurementWorkspace() {
  requestedBy: "",
  urgency: "normal",
  currency: "USD",
- exchangeRateToUSD: 1,
+ exchangeRate: 1,
  budgetLine: "",
  justification: "",
  deliveryLocation: "",

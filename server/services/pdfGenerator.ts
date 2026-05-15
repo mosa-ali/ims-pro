@@ -486,7 +486,7 @@ function generateHTMLReport(data: ProjectReportPDFData): string {
         </div>
       </div>
       <div class="project-title">${data.project.name}</div>
-      <div class="project-code">Project Code: ${data.project.projectCode}</div>
+      <div class="project-code">Project Code: ${data.project.code}</div>
     </div>
     
     <!-- EXECUTIVE SUMMARY -->
@@ -719,13 +719,16 @@ export async function generateProjectReportPDF(data: ProjectReportPDFData): Prom
   
   const browser = await puppeteer.launch({
     headless: true,
-    executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || '/home/ubuntu/.cache/puppeteer/chrome/linux-144.0.7559.96/chrome-linux64/chrome',
+    executablePath:
+      process.env.PUPPETEER_EXECUTABLE_PATH ||
+      '/usr/bin/chromium',
     args: [
       '--no-sandbox',
       '--disable-setuid-sandbox',
       '--disable-dev-shm-usage',
       '--disable-gpu',
-      '--font-render-hinting=none',
+      '--disable-crash-reporter',
+      '--disable-breakpad',
     ],
   });
   

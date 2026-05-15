@@ -84,7 +84,7 @@ export const projectsRouter = router({
       let conditions = [
         eq(projects.organizationId, organizationId),
         eq(projects.operatingUnitId, operatingUnitId),
-        eq(projects.isDeleted, false),
+        eq(projects.isDeleted, 0),
       ];
 
       // Add status filter
@@ -175,7 +175,7 @@ export const projectsRouter = router({
         })
         .from(projects)
         .leftJoin(organizations, eq(projects.organizationId, organizations.id))
-        .where(and(eq(projects.id, input.id), eq(projects.isDeleted, false)))
+        .where(and(eq(projects.id, input.id), eq(projects.isDeleted, 0)))
         .limit(1);
       
       const project = projectResult.map(r => ({
@@ -255,7 +255,7 @@ export const projectsRouter = router({
             eq(projects.organizationId, organizationId),
             eq(projects.operatingUnitId, operatingUnitId),
             eq(projects.status, "active"),
-            eq(projects.isDeleted, false)
+            eq(projects.isDeleted, 0)
           )
         );
 
@@ -301,7 +301,7 @@ export const projectsRouter = router({
           and(
             eq(reportingSchedulesTable.organizationId, organizationId),
             eq(reportingSchedulesTable.operatingUnitId, operatingUnitId),
-            eq(reportingSchedulesTable.isDeleted, false)
+            eq(reportingSchedulesTable.isDeleted, 0)
           )
         );
 
@@ -419,7 +419,7 @@ export const projectsRouter = router({
           implementingPartner: projectData.implementingPartner || null,
           location: projectData.location || null,
           locationAr: projectData.locationAr || null,
-          isDeleted: false,
+          isDeleted: 0,
           createdBy: ctx.user.id,
           updatedBy: ctx.user.id,
         });
@@ -449,7 +449,7 @@ export const projectsRouter = router({
             responsible: 'Project Manager',
             reportingFrequency: 'quarterly',
             coFunding: false,
-            isDeleted: false,
+            isDeleted: 0,
             createdBy: ctx.user.id,
             updatedBy: ctx.user.id,
           });
@@ -543,7 +543,7 @@ export const projectsRouter = router({
       const existing = await db
         .select()
         .from(projects)
-        .where(and(eq(projects.id, id), eq(projects.isDeleted, false)))
+        .where(and(eq(projects.id, id), eq(projects.isDeleted, 0)))
         .limit(1);
 
       if (!existing[0]) {
@@ -652,7 +652,7 @@ export const projectsRouter = router({
       const existing = await db
         .select()
         .from(projects)
-        .where(and(eq(projects.id, id), eq(projects.isDeleted, false)))
+        .where(and(eq(projects.id, id), eq(projects.isDeleted, 0)))
         .limit(1);
 
       if (!existing[0]) {
@@ -666,8 +666,8 @@ export const projectsRouter = router({
       await db
         .update(projects)
         .set({
-          isDeleted: true,
-          deletedAt: new Date(),
+          isDeleted: 1,
+          deletedAt: new Date().toISOString().slice(0, 19).replace('T', ' '),
           deletedBy: ctx.user.id,
         })
         .where(eq(projects.id, id));
@@ -814,10 +814,10 @@ export const projectsRouter = router({
         });
         
         // Generate filename
-        const filename = `${input.reportData.project.projectCode}_Report_${new Date().toISOString().split('T')[0]}.pdf`;
+        const filename = `${input.reportData.project.code}_Report_${new Date().toISOString().split('T')[0]}.pdf`;
         
         // Upload to S3
-        const fileKey = `projects/${input.reportData.project.projectCode}/reports/${filename}`;
+        const fileKey = `projects/${input.reportData.project.code}/reports/${filename}`;
         const { url: s3Url } = await storagePut(fileKey, pdfBuffer, 'application/pdf');
         
         // Sync to Central Documents
@@ -827,7 +827,7 @@ export const projectsRouter = router({
           
           await db.insert(documents).values({
             documentId,
-            projectId: input.reportData.project.projectCode,
+            projectId: input.reportData.project.code,
             folderCode: '11_Project_Report',
             fileName: filename,
             filePath: s3Url,

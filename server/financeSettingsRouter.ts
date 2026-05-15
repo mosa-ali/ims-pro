@@ -27,6 +27,8 @@ import {
 import { eq, and, desc, asc, like, or, sql, isNull } from "drizzle-orm";
 import { TRPCError } from "@trpc/server";
 
+const nowSql = new Date().toISOString().slice(0, 19).replace('T', ' ');
+
 export const financeSettingsRouter = router({
   // ==================== CURRENCIES ====================
   
@@ -43,7 +45,7 @@ export const financeSettingsRouter = router({
       const results = await db.select().from(financeCurrencies)
         .where(and(
           eq(financeCurrencies.organizationId, organizationId),
-          eq(financeCurrencies.isDeleted, false)
+          eq(financeCurrencies.isDeleted, 0)
         ))
         .orderBy(asc(financeCurrencies.code));
       
@@ -69,7 +71,7 @@ export const financeSettingsRouter = router({
       name: z.string().min(1),
       nameAr: z.string().optional(),
       symbol: z.string().optional(),
-      exchangeRateToUSD: z.string().optional(),
+      exchangeRateToUsd: z.string().optional(),
       isBaseCurrency: z.boolean().optional(),
       decimalPlaces: z.number().optional(),
     }))
@@ -80,7 +82,7 @@ export const financeSettingsRouter = router({
       
       if (input.isBaseCurrency) {
         await db.update(financeCurrencies)
-          .set({ isBaseCurrency: false })
+          .set({ isBaseCurrency: 0 })
           .where(eq(financeCurrencies.organizationId, organizationId));
       }
       
@@ -90,11 +92,11 @@ export const financeSettingsRouter = router({
         name: input.name,
         nameAr: input.nameAr || null,
         symbol: input.symbol || input.code,
-        exchangeRateToUSD: input.exchangeRateToUSD || "1.00",
-        isBaseCurrency: input.isBaseCurrency || false,
+        exchangeRateToUsd: input.exchangeRateToUsd || "1.00",
+        isBaseCurrency: input.isBaseCurrency || 0,
         decimalPlaces: input.decimalPlaces || 2,
-        isActive: true,
-        isDeleted: false,
+        isActive: 1,
+        isDeleted: 0,
         createdBy: ctx.user?.id || null,
       }).$returningId();
       
@@ -108,7 +110,7 @@ export const financeSettingsRouter = router({
       name: z.string().optional(),
       nameAr: z.string().optional(),
       symbol: z.string().optional(),
-      exchangeRateToUSD: z.string().optional(),
+      exchangeRateToUsd: z.string().optional(),
       isBaseCurrency: z.boolean().optional(),
       decimalPlaces: z.number().optional(),
       isActive: z.boolean().optional(),
@@ -122,12 +124,12 @@ export const financeSettingsRouter = router({
       
       if (updates.isBaseCurrency) {
         await db.update(financeCurrencies)
-          .set({ isBaseCurrency: false })
+          .set({ isBaseCurrency: 0 })
           .where(eq(financeCurrencies.organizationId, organizationId));
       }
       
       await db.update(financeCurrencies)
-        .set({ ...updates, updatedBy: ctx.user?.id || null, updatedAt: new Date() })
+        .set({ ...updates, updatedBy: ctx.user?.id || null, updatedAt: nowSql })
         .where(and(eq(financeCurrencies.id, id), eq(financeCurrencies.organizationId, organizationId)));
       
       return { success: true };
@@ -141,7 +143,7 @@ export const financeSettingsRouter = router({
       if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Database not available" });
       
       await db.update(financeCurrencies)
-        .set({ isDeleted: true, deletedBy: ctx.user?.id || null, deletedAt: new Date() })
+        .set({ isDeleted: 0, deletedBy: ctx.user?.id || null, deletedAt: nowSql })
         .where(and(eq(financeCurrencies.id, input.id), eq(financeCurrencies.organizationId, organizationId)));
       
       return { success: true };
@@ -154,7 +156,7 @@ export const financeSettingsRouter = router({
         name: z.string(),
         nameAr: z.string().optional(),
         symbol: z.string().optional(),
-        exchangeRateToUSD: z.string().optional(),
+        exchangeRateToUsd: z.string().optional(),
       })),
     }))
     .mutation(async ({ ctx, input }) => {
@@ -170,9 +172,9 @@ export const financeSettingsRouter = router({
           name: curr.name,
           nameAr: curr.nameAr || null,
           symbol: curr.symbol || curr.code,
-          exchangeRateToUSD: curr.exchangeRateToUSD || "1.00",
-          isActive: true,
-          isDeleted: false,
+          exchangeRateToUsd: curr.exchangeRateToUsd || "1.00",
+          isActive: 1,
+          isDeleted: 0,
           createdBy: ctx.user?.id || null,
         });
         imported++;
@@ -193,7 +195,7 @@ export const financeSettingsRouter = router({
       return await db.select().from(financeFiscalYears)
         .where(and(
           eq(financeFiscalYears.organizationId, organizationId),
-          eq(financeFiscalYears.isDeleted, false)
+          eq(financeFiscalYears.isDeleted, 0)
         ))
         .orderBy(desc(financeFiscalYears.startDate));
     }),
@@ -215,7 +217,7 @@ export const financeSettingsRouter = router({
       
       if (input.isCurrent) {
         await db.update(financeFiscalYears)
-          .set({ isCurrent: false })
+          .set({ isCurrent: 0 })
           .where(eq(financeFiscalYears.organizationId, organizationId));
       }
       
@@ -227,8 +229,8 @@ export const financeSettingsRouter = router({
         startDate: new Date(input.startDate),
         endDate: new Date(input.endDate),
         status: input.status || "planning",
-        isCurrent: input.isCurrent || false,
-        isDeleted: false,
+        isCurrent: input.isCurrent || 0,
+        isDeleted: 0,
         createdBy: ctx.user?.id || null,
       }).$returningId();
       
@@ -255,7 +257,7 @@ export const financeSettingsRouter = router({
       
       if (updates.isCurrent) {
         await db.update(financeFiscalYears)
-          .set({ isCurrent: false })
+          .set({ isCurrent: 0 })
           .where(eq(financeFiscalYears.organizationId, organizationId));
       }
       
@@ -278,7 +280,7 @@ export const financeSettingsRouter = router({
       if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Database not available" });
       
       await db.update(financeFiscalYears)
-        .set({ isDeleted: true, deletedBy: ctx.user?.id || null, deletedAt: new Date() })
+        .set({ isDeleted: 1, deletedBy: ctx.user?.id || null, deletedAt: nowSql })
         .where(and(eq(financeFiscalYears.id, input.id), eq(financeFiscalYears.organizationId, organizationId)));
       
       return { success: true };
@@ -296,7 +298,7 @@ export const financeSettingsRouter = router({
       return await db.select().from(financeApprovalThresholds)
         .where(and(
           eq(financeApprovalThresholds.organizationId, organizationId),
-          eq(financeApprovalThresholds.isDeleted, false)
+          eq(financeApprovalThresholds.isDeleted, 0)
         ))
         .orderBy(asc(financeApprovalThresholds.minAmount));
     }),
@@ -329,8 +331,8 @@ export const financeSettingsRouter = router({
         approverRole: input.approverRole || null,
         requiresMultipleApprovers: input.requiresMultipleApprovers || false,
         minimumApprovers: input.minimumApprovers || 1,
-        isActive: true,
-        isDeleted: false,
+        isActive: 1,
+        isDeleted: 0,
         createdBy: ctx.user?.id || null,
       }).$returningId();
       
@@ -358,7 +360,7 @@ export const financeSettingsRouter = router({
       
       const { id, ...updates } = input;
       await db.update(financeApprovalThresholds)
-        .set({ ...updates, updatedBy: ctx.user?.id || null, updatedAt: new Date() })
+        .set({ ...updates, updatedBy: ctx.user?.id || null, updatedAt: nowSql })
         .where(and(eq(financeApprovalThresholds.id, id), eq(financeApprovalThresholds.organizationId, organizationId)));
       
       return { success: true };
@@ -372,7 +374,7 @@ export const financeSettingsRouter = router({
       if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Database not available" });
       
       await db.update(financeApprovalThresholds)
-        .set({ isDeleted: true, deletedBy: ctx.user?.id || null, deletedAt: new Date() })
+        .set({ isDeleted: 1, deletedBy: ctx.user?.id || null, deletedAt: nowSql })
         .where(and(eq(financeApprovalThresholds.id, input.id), eq(financeApprovalThresholds.organizationId, organizationId)));
       
       return { success: true };
@@ -392,7 +394,7 @@ export const financeSettingsRouter = router({
       const results = await db.select().from(financeBudgetCategories)
         .where(and(
           eq(financeBudgetCategories.organizationId, organizationId),
-          eq(financeBudgetCategories.isDeleted, false)
+          eq(financeBudgetCategories.isDeleted, 0)
         ))
         .orderBy(asc(financeBudgetCategories.sortOrder), asc(financeBudgetCategories.code));
       
@@ -434,8 +436,8 @@ export const financeSettingsRouter = router({
         accountCode: input.accountCode || null,
         budgetType: input.budgetType,
         sortOrder: input.sortOrder || 0,
-        isActive: true,
-        isDeleted: false,
+        isActive: 1,
+        isDeleted: 0,
         createdBy: ctx.user?.id || null,
       }).$returningId();
       
@@ -462,7 +464,7 @@ export const financeSettingsRouter = router({
       
       const { id, ...updates } = input;
       await db.update(financeBudgetCategories)
-        .set({ ...updates, updatedBy: ctx.user?.id || null, updatedAt: new Date() })
+        .set({ ...updates, updatedBy: ctx.user?.id || null, updatedAt: nowSql })
         .where(and(eq(financeBudgetCategories.id, id), eq(financeBudgetCategories.organizationId, organizationId)));
       
       return { success: true };
@@ -476,7 +478,7 @@ export const financeSettingsRouter = router({
       if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Database not available" });
       
       await db.update(financeBudgetCategories)
-        .set({ isDeleted: true, deletedBy: ctx.user?.id || null, deletedAt: new Date() })
+        .set({ isDeleted: 1, deletedBy: ctx.user?.id || null, deletedAt: nowSql })
         .where(and(eq(financeBudgetCategories.id, input.id), eq(financeBudgetCategories.organizationId, organizationId)));
       
       return { success: true };
@@ -506,8 +508,8 @@ export const financeSettingsRouter = router({
           nameAr: cat.nameAr || null,
           budgetType: (cat.budgetType as any) || "operational",
           accountCode: cat.accountCode || null,
-          isActive: true,
-          isDeleted: false,
+          isActive: 1,
+          isDeleted: 0,
           createdBy: ctx.user?.id || null,
         });
         imported++;
@@ -528,7 +530,7 @@ export const financeSettingsRouter = router({
       return await db.select().from(financeRoles)
         .where(and(
           eq(financeRoles.organizationId, organizationId),
-          eq(financeRoles.isDeleted, false)
+          eq(financeRoles.isDeleted, 0)
         ))
         .orderBy(asc(financeRoles.level), asc(financeRoles.code));
     }),
@@ -553,8 +555,8 @@ export const financeSettingsRouter = router({
         nameAr: input.nameAr || null,
         description: input.description || null,
         level: input.level || 1,
-        isActive: true,
-        isDeleted: false,
+        isActive: 1,
+        isDeleted: 0,
         createdBy: ctx.user?.id || null,
       }).$returningId();
       
@@ -578,7 +580,7 @@ export const financeSettingsRouter = router({
       
       const { id, ...updates } = input;
       await db.update(financeRoles)
-        .set({ ...updates, updatedBy: ctx.user?.id || null, updatedAt: new Date() })
+        .set({ ...updates, updatedBy: ctx.user?.id || null, updatedAt: nowSql })
         .where(and(eq(financeRoles.id, id), eq(financeRoles.organizationId, organizationId)));
       
       return { success: true };
@@ -592,7 +594,7 @@ export const financeSettingsRouter = router({
       if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Database not available" });
       
       await db.update(financeRoles)
-        .set({ isDeleted: true, deletedBy: ctx.user?.id || null, deletedAt: new Date() })
+        .set({ isDeleted: 1, deletedBy: ctx.user?.id || null, deletedAt: nowSql })
         .where(and(eq(financeRoles.id, input.id), eq(financeRoles.organizationId, organizationId)));
       
       return { success: true };
@@ -610,7 +612,7 @@ export const financeSettingsRouter = router({
       return await db.select().from(financePermissions)
         .where(and(
           eq(financePermissions.organizationId, organizationId),
-          eq(financePermissions.isDeleted, false)
+          eq(financePermissions.isDeleted, 0)
         ))
         .orderBy(asc(financePermissions.module), asc(financePermissions.action));
     }),
@@ -637,7 +639,7 @@ export const financeSettingsRouter = router({
         description: input.description || null,
         module: input.module,
         action: input.action,
-        isDeleted: false,
+        isDeleted: 0,
         createdBy: ctx.user?.id || null,
       }).$returningId();
       
@@ -652,7 +654,7 @@ export const financeSettingsRouter = router({
       if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Database not available" });
       
       await db.update(financePermissions)
-        .set({ isDeleted: true, deletedBy: ctx.user?.id || null, deletedAt: new Date() })
+        .set({ isDeleted: 1, deletedBy: ctx.user?.id || null, deletedAt: nowSql })
         .where(and(eq(financePermissions.id, input.id), eq(financePermissions.organizationId, organizationId)));
       
       return { success: true };
@@ -671,42 +673,42 @@ export const financeSettingsRouter = router({
         .from(financeCurrencies)
         .where(and(
           eq(financeCurrencies.organizationId, organizationId),
-          eq(financeCurrencies.isDeleted, false)
+          eq(financeCurrencies.isDeleted, 0)
         ));
       
       const [fiscalYearsResult] = await db.select({ count: sql<number>`count(*)` })
         .from(financeFiscalYears)
         .where(and(
           eq(financeFiscalYears.organizationId, organizationId),
-          eq(financeFiscalYears.isDeleted, false)
+          eq(financeFiscalYears.isDeleted, 0)
         ));
       
       const [thresholdsResult] = await db.select({ count: sql<number>`count(*)` })
         .from(financeApprovalThresholds)
         .where(and(
           eq(financeApprovalThresholds.organizationId, organizationId),
-          eq(financeApprovalThresholds.isDeleted, false)
+          eq(financeApprovalThresholds.isDeleted, 0)
         ));
       
       const [categoriesResult] = await db.select({ count: sql<number>`count(*)` })
         .from(financeBudgetCategories)
         .where(and(
           eq(financeBudgetCategories.organizationId, organizationId),
-          eq(financeBudgetCategories.isDeleted, false)
+          eq(financeBudgetCategories.isDeleted, 0)
         ));
       
       const [rolesResult] = await db.select({ count: sql<number>`count(*)` })
         .from(financeRoles)
         .where(and(
           eq(financeRoles.organizationId, organizationId),
-          eq(financeRoles.isDeleted, false)
+          eq(financeRoles.isDeleted, 0)
         ));
       
       const [permissionsResult] = await db.select({ count: sql<number>`count(*)` })
         .from(financePermissions)
         .where(and(
           eq(financePermissions.organizationId, organizationId),
-          eq(financePermissions.isDeleted, false)
+          eq(financePermissions.isDeleted, 0)
         ));
       
       return {

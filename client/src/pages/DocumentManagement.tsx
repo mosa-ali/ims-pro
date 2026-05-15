@@ -51,6 +51,7 @@ interface DriveItem {
   webUrl: string;
 }
 
+
 export default function DocumentManagement() {
 
   const { t } = useTranslation();  const { user, loading } = useAuth();
@@ -213,15 +214,15 @@ export default function DocumentManagement() {
     <div className={`min-h-screen bg-background p-8 ${isRTL ? 'rtl' : 'ltr'}`}>
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-foreground mb-2">{t.title}</h1>
-        <p className="text-muted-foreground">{t.subtitle}</p>
+        <h1 className="text-3xl font-bold text-foreground mb-2">{labels.title}</h1>
+        <p className="text-muted-foreground">{labels.subtitle}</p>
       </div>
 
       {/* Controls */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         <Select value={selectedSite} onValueChange={setSelectedSite}>
           <SelectTrigger>
-            <SelectValue placeholder={t.selectSite} />
+            <SelectValue placeholder={labels.selectSite} />
           </SelectTrigger>
           <SelectContent>
             {sites.map(site => (
@@ -234,7 +235,7 @@ export default function DocumentManagement() {
 
         <Select value={selectedLibrary} onValueChange={setSelectedLibrary} disabled={!selectedSite}>
           <SelectTrigger>
-            <SelectValue placeholder={t.selectLibrary} />
+            <SelectValue placeholder={labels.selectLibrary} />
           </SelectTrigger>
           <SelectContent>
             {libraries.map(lib => (
@@ -248,7 +249,7 @@ export default function DocumentManagement() {
         <div className="relative">
           <SearchIcon className="absolute left-3 top-3 w-4 h-4 text-muted-foreground" />
           <Input
-            placeholder={t.search}
+            placeholder={labels.search}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="pl-10"
@@ -259,12 +260,12 @@ export default function DocumentManagement() {
           <DialogTrigger asChild>
             <Button className="gap-2">
               <UploadIcon className="w-4 h-4" />
-              {t.upload}
+              {labels.upload}
             </Button>
           </DialogTrigger>
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>{t.upload}</DialogTitle>
+              <DialogTitle>{labels.upload}</DialogTitle>
               <DialogDescription>Upload a file to the selected library</DialogDescription>
             </DialogHeader>
             <div className="space-y-4">
@@ -277,7 +278,7 @@ export default function DocumentManagement() {
                   />
                 </div>
               )}
-              <Button onClick={() => toast.success(t.uploadSuccess)}>Upload</Button>
+              <Button onClick={() => toast.success(labels.uploadSuccess)}>Upload</Button>
             </div>
           </DialogContent>
         </Dialog>
@@ -291,17 +292,17 @@ export default function DocumentManagement() {
         </CardHeader>
         <CardContent>
           {filteredItems.length === 0 ? (
-            <div className="text-center py-8 text-muted-foreground">{t.noItems}</div>
+            <div className="text-center py-8 text-muted-foreground">{labels.noItems}</div>
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
                   <tr className="border-b">
-                    <th className="text-left py-3 px-4">{t.name}</th>
-                    <th className="text-left py-3 px-4">{t.type}</th>
-                    <th className="text-right py-3 px-4">{t.size}</th>
-                    <th className="text-left py-3 px-4">{t.modified}</th>
-                    <th className="text-center py-3 px-4">{t.actions}</th>
+                    <th className="text-left py-3 px-4">{labels.name}</th>
+                    <th className="text-left py-3 px-4">{labels.type}</th>
+                    <th className="text-right py-3 px-4">{labels.size}</th>
+                    <th className="text-left py-3 px-4">{labels.modified}</th>
+                    <th className="text-center py-3 px-4">{labels.actions}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -328,7 +329,7 @@ export default function DocumentManagement() {
                             <Button
                               variant="ghost"
                               size="sm"
-                              onClick={() => toast.success(t.downloadSuccess)}
+                              onClick={() => toast.success(labels.downloadSuccess)}
                             >
                               <DownloadIcon className="w-4 h-4" />
                             </Button>
@@ -336,14 +337,14 @@ export default function DocumentManagement() {
                           <Button
                             variant="ghost"
                             size="sm"
-                            onClick={() => toast.success(t.shareSuccess)}
+                            onClick={() => toast.success(labels.shareSuccess)}
                           >
                             <ShareIcon className="w-4 h-4" />
                           </Button>
                           <Button
                             variant="ghost"
                             size="sm"
-                            onClick={() => toast.success(t.deleteSuccess)}
+                            onClick={() => toast.success(labels.deleteSuccess)}
                           >
                             <TrashIcon className="w-4 h-4" />
                           </Button>

@@ -158,7 +158,7 @@ export default function BidAnalysisPrint() {
  });
  };
 
- const orgName = currentOrganization?.name || "Organization";
+ const orgName = currentOrganization?.name || "";
  const orgLogo = currentOrganization?.logoUrl;
  const { language, isRTL} = useLanguage();
 

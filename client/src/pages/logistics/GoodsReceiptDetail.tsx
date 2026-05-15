@@ -7,11 +7,16 @@ import { Badge } from "@/components/ui/badge";
 import { Printer, FileText } from "lucide-react";
 import { useTranslation } from '@/i18n/useTranslation';
 import { BackButton } from "@/components/BackButton";
+import { Loader2 } from "lucide-react";
+import { toast } from "sonner";
+import { useState } from "react";
 
 export default function GoodsReceiptDetail() {
  const { t } = useTranslation();
  const { id } = useParams();
  const { isRTL } = useLanguage();
+ const [generatingPdfId, setGeneratingPdfId] = useState<number | null>(null);
+ const generatePDF = trpc.logistics.generatePDF.useMutation();
  const grnId = parseInt(id!);
  
  // Extract prId and qaId from URL query parameters for navigation context
@@ -43,6 +48,63 @@ export default function GoodsReceiptDetail() {
  }
  };
 
+ const handleGeneratePdf = async () => {
+  try {
+    setGeneratingPdfId(Number(grn.id));
+
+    const result = await generatePDF.mutateAsync({
+      documentType: "grn",
+      documentId: Number(grn.id),
+      language: isRTL ? "ar" : "en",
+    });
+
+    if (!result?.pdf || !result.pdf.startsWith("JVBER")) {
+      toast.error(
+        isRTL
+          ? "ملف PDF غير صالح"
+          : "Invalid PDF generated"
+      );
+
+      return;
+    }
+
+    const binaryString = atob(result.pdf);
+
+    const bytes = new Uint8Array(binaryString.length);
+
+    for (let i = 0; i < binaryString.length; i++) {
+      bytes[i] = binaryString.charCodeAt(i);
+    }
+
+    const blob = new Blob([bytes], {
+      type: "application/pdf",
+    });
+
+    const url = window.URL.createObjectURL(blob);
+
+    window.open(url, "_blank");
+
+    toast.success(
+      isRTL
+        ? "تم إنشاء ملف PDF بنجاح"
+        : "PDF generated successfully"
+    );
+
+  } catch (error: any) {
+    console.error("GRN PDF generation error:", error);
+
+    toast.error(
+      error?.message ||
+      (isRTL
+        ? "خطأ في إنشاء PDF"
+        : "Error generating PDF")
+    );
+
+  } finally {
+    setGeneratingPdfId(null);
+  }
+};
+
  return (
  <div className="container py-8 space-y-6" dir={isRTL ? 'rtl' : 'ltr'}>
  <div className="flex items-center justify-between">
@@ -55,21 +117,40 @@ export default function GoodsReceiptDetail() {
  </div>
 
  <div className="flex gap-2">
- <Button variant="outline" size="sm" asChild>
- <Link href={`/organization/logistics/goods-receipts/${grn.id}/print`}>
- <Printer className="h-4 w-4 me-2" />
- Print GRN
- </Link>
- </Button>
- {po?.purchaseRequestId && (
- <Button variant="outline" size="sm" asChild>
- <Link href={`/organization/logistics/procurement-package/${po.purchaseRequestId}/print`}>
- <FileText className="h-4 w-4 me-2" />
- Print All
- </Link>
- </Button>
- )}
- </div>
+
+  {/* Print GRN PDF */}
+  <Button
+    variant="outline"
+    size="sm"
+    onClick={handleGeneratePdf}
+    disabled={generatingPdfId === grn.id}
+  >
+    {generatingPdfId === grn.id ? (
+      <>
+        <Loader2 className="h-4 w-4 me-2 animate-spin" />
+        {isRTL ? "جاري الإنشاء..." : "Generating..."}
+      </>
+    ) : (
+      <>
+        <Printer className="h-4 w-4 me-2" />
+        {isRTL ? "طباعة GRN" : "Print GRN"}
+      </>
+    )}
+  </Button>
+
+  {/* Print Full Procurement Package */}
+  {po?.purchaseRequestId && (
+    <Button variant="outline" size="sm" asChild>
+      <Link
+        href={`/organization/logistics/procurement-package/${po.purchaseRequestId}/print`}
+      >
+        <FileText className="h-4 w-4 me-2" />
+        {isRTL ? "طباعة الحزمة كاملة" : "Print All"}
+      </Link>
+    </Button>
+  )}
+
+</div>
  </div>
 
  <Card className="p-6">
@@ -85,7 +166,7 @@ export default function GoodsReceiptDetail() {
  </div>
  <div>
  <p className="text-sm text-muted-foreground">{isRTL ? 'تاريخ الاستلام' : 'Receipt Date'}</p>
- <p>{grn.receiptDate || "-"}</p>
+ <p>{grn.grnDate || "-"}</p>
  </div>
  </div>
  </Card>

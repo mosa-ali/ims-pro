@@ -4,11 +4,12 @@
  * Uses OrganizationContext for data isolation (same pattern as Finance and HR modules)
  */
 
-import { useAuth } from "@/_core/hooks/useAuth";
-import { useOrganization } from "@/contexts/OrganizationContext";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { trpc } from "@/lib/trpc";
+import { useAuth } from "../../_core/hooks/useAuth";
+import { useOrganization } from "../../contexts/OrganizationContext";
+import { Button } from "../../components/ui/button";
+import { useTranslation } from "../../hooks/useTranslation";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../../components/ui/card";
+import { trpc } from "../../lib/trpc";
 import {
   Package,
   FileText,
@@ -26,7 +27,6 @@ import {
   Loader2,
 } from "lucide-react";
 import { Link, useLocation } from "wouter";
-import { useTranslation } from "@/hooks/useTranslation";
 
 export default function LogisticsWorkspace() {
   const { user } = useAuth();

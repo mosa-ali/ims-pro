@@ -120,7 +120,7 @@ export default function IssuedItemsList() {
  size="icon" 
  onClick={() => {
  const lang = language === 'ar' ? 'ar' : 'en';
- window.open(`/api/logistics/issued/${item.id}/pdf?lang=${lang}`, '_blank');
+ window.open(`/organization/logistics/issued/${item.id}/pdf?lang=${lang}`, '_blank');
  }}
  title={t.logistics.exportPdf}
  >

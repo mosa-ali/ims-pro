@@ -330,9 +330,9 @@ export async function generateGRNPDF(options: GRNPDFOptions): Promise<Buffer> {
   const fullHtml = buildPdfDocument({
     organizationName: orgName,
     operatingUnitName: ouName || undefined,
+    organizationLogo: logoUrl || undefined,
     department: t.department,
     documentTitle: t.title,
-    organizationLogo: logoUrl || undefined,
     refNumber: grn.grnNumber,
     date: dateText,
     direction: dir,
@@ -342,11 +342,17 @@ export async function generateGRNPDF(options: GRNPDFOptions): Promise<Buffer> {
 
   // ── Generate PDF with Puppeteer ────────────────────────────────────────
   const browser = await puppeteer.launch({
-    headless: "new",
+    headless: true,
+    executablePath:
+      process.env.PUPPETEER_EXECUTABLE_PATH ||
+      '/usr/bin/chromium',
     args: [
-      "--no-sandbox",
-      "--disable-setuid-sandbox",
-      "--disable-dev-shm-usage",
+      '--no-sandbox',
+      '--disable-setuid-sandbox',
+      '--disable-dev-shm-usage',
+      '--disable-gpu',
+      '--disable-crash-reporter',
+      '--disable-breakpad',
     ],
   });
 

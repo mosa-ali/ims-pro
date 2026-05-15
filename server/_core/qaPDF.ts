@@ -697,32 +697,40 @@ export async function generateQAPDF(
 
   // ── Generate PDF with Puppeteer ───────────────────────────────────────
   const browser = await puppeteer.launch({
-    headless: "new",
-    args: ["--no-sandbox", "--disable-setuid-sandbox", "--disable-dev-shm-usage"],
+    headless: true,
+    executablePath:
+      process.env.PUPPETEER_EXECUTABLE_PATH ||
+      '/usr/bin/chromium',
+    args: [
+      '--no-sandbox',
+      '--disable-setuid-sandbox',
+      '--disable-dev-shm-usage',
+      '--disable-gpu',
+      '--disable-crash-reporter',
+      '--disable-breakpad',
+    ],
   });
 
   try {
     const page = await browser.newPage();
-    await page.setViewport({ width: 1400, height: 1200 });
     await page.setContent(fullHtml, {
       waitUntil: "domcontentloaded",
       timeout: 30000,
     });
 
-    const pdf = await page.pdf({
-      landscape: true,
+    const pdfBuffer = await page.pdf({
       format: "A4",
+      printBackground: true,
+      preferCSSPageSize: true,
       margin: {
-        top: "6mm",
+        top: "8mm",
+        right: "8mm",
         bottom: "8mm",
         left: "8mm",
-        right: "8mm",
       },
-      printBackground: true,
-      preferCSSPageSize: false,
     });
 
-    return pdf;
+    return Buffer.from(pdfBuffer);
   } finally {
     await browser.close();
   }

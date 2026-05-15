@@ -14,7 +14,7 @@
  * 2. Budgets → Budget headers
  * 3. BudgetLineItems → Budget line details
  * 4. Expenditures → Actual spending
- * 5. ExchangeRates → InfoEuro rates
+ * 5. exchangeRateToUsd → InfoEuro rates
  * 6. FinancialApprovals → Approval workflow
  * ============================================================================
  */
@@ -66,7 +66,7 @@ export interface Budget {
  totalBudgetOriginalCurrency: number;
  originalCurrency: string; // ISO code (EUR, USD, YER, etc.)
  totalBudgetUSD: number; // Always store USD equivalent
- exchangeRateUsed: number; // Rate at time of budget creation
+ exchangeRateToUsd: number; // Rate at time of budget creation
  exchangeRateSource: string; // 'InfoEuro', 'Manual', etc.
  exchangeRateDate: string;
  status: 'DRAFT' | 'SUBMITTED' | 'APPROVED' | 'REJECTED' | 'REVISED';
@@ -129,7 +129,7 @@ export interface Expenditure {
  amountOriginalCurrency: number;
  originalCurrency: string;
  amountUSD: number;
- exchangeRateUsed: number;
+ exchangeRateToUsd: number;
  exchangeRateSource: string;
  exchangeRateDate: string;
  vendor?: string;

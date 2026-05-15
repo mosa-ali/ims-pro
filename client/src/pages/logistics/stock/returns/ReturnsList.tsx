@@ -121,7 +121,7 @@ export default function ReturnsList() {
  size="icon" 
  onClick={() => {
  const lang = language === 'ar' ? 'ar' : 'en';
- window.open(`/api/logistics/returns/${item.id}/pdf?lang=${lang}`, '_blank');
+ window.open(`/organization/logistics/returns/${item.id}/pdf?lang=${lang}`, '_blank');
  }}
  title={t.logistics.exportPdf}
  >

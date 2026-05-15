@@ -23,12 +23,10 @@ export const financeRouter = router({
         // Currencies are global - no organization filtering
         // All organizations have access to all 128 ISO 4217 currencies
 
-        const whereConditions = [];
-        
-        // Only include active currencies unless explicitly requested
-        if (!input.includeInactive) {
-          whereConditions.push(eq(financeCurrencies.isActive, 1));
-        }
+        // Always filter by active status, unless includeInactive is true
+        const whereConditions = input.includeInactive 
+          ? [] 
+          : [eq(financeCurrencies.isActive, 1)];
 
         const currencies = await db
           .select()
@@ -42,7 +40,7 @@ export const financeRouter = router({
           name: currency.name,
           nameAr: currency.nameAr,
           symbol: currency.symbol,
-          exchangeRateToUsd: Number(currency.exchangeRateToUsd),
+          exchangeRateToUsd: Number(currency.exchangeRate),
           isBaseCurrency: currency.isBaseCurrency === 1,
           isActive: currency.isActive === 1,
           decimalPlaces: currency.decimalPlaces || 2,
@@ -80,7 +78,7 @@ export const financeRouter = router({
           name: c.name,
           nameAr: c.nameAr,
           symbol: c.symbol,
-          exchangeRateToUsd: Number(c.exchangeRateToUsd),
+          exchangeRateToUsd: Number(c.exchangeRate),
           isBaseCurrency: c.isBaseCurrency === 1,
           isActive: c.isActive === 1,
           decimalPlaces: c.decimalPlaces || 2,
@@ -129,7 +127,7 @@ export const financeRouter = router({
           name: c.name,
           nameAr: c.nameAr,
           symbol: c.symbol,
-          exchangeRateToUsd: Number(c.exchangeRateToUsd),
+          exchangeRateToUsd: Number(c.exchangeRate),
           isBaseCurrency: c.isBaseCurrency === 1,
           isActive: c.isActive === 1,
           decimalPlaces: c.decimalPlaces || 2,
@@ -143,7 +141,7 @@ export const financeRouter = router({
         name: c.name,
         nameAr: c.nameAr,
         symbol: c.symbol,
-        exchangeRateToUsd: Number(c.exchangeRateToUsd),
+        exchangeRateToUsd: Number(c.exchangeRate),
         isBaseCurrency: c.isBaseCurrency === 1,
         isActive: c.isActive === 1,
         decimalPlaces: c.decimalPlaces || 2,

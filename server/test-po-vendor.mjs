@@ -17,7 +17,7 @@ async function testPOVendor() {
     // Get the PO
     const [pos] = await connection.query(
       'SELECT id, poNumber, supplierId FROM purchase_orders WHERE poNumber = ? LIMIT 1',
-      ['PO-EFADAH01-2026-008']
+      ['']
     );
     
     if (pos.length === 0) {

@@ -12,6 +12,7 @@ import { implementationMonitoringRouter } from './implementationMonitoring';
 import { contractFinancialDashboardRouter } from './contractFinancialDashboard';
 import { contractVariationsRouter } from './contractVariations';
 import { vendorEvaluationRouter } from './vendorEvaluation';
+import { grnRouter } from "./grn";
 
 /**
  * Procurement Phase A Router
@@ -32,4 +33,5 @@ export const procurementPhaseARouter = router({
   contractFinancialDashboard: contractFinancialDashboardRouter,
   contractVariations: contractVariationsRouter,
   vendorEvaluation: vendorEvaluationRouter,
+  grn: grnRouter,
 });

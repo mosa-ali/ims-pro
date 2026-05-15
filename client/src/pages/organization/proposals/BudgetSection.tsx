@@ -1,6 +1,7 @@
 import { Download, Upload } from 'lucide-react';
-import { useLanguage } from '@/contexts/LanguageContext';
 import { useTranslation } from '@/i18n/useTranslation';
+import { useLanguage, formatCurrency } from '@/contexts/LanguageContext';
+
 
 interface BudgetSectionProps {
  budget: any;
@@ -11,6 +12,43 @@ export function BudgetSection({
  budget, updateBudget }: BudgetSectionProps) {
  const { t } = useTranslation();
  const { isRTL } = useLanguage();
+
+const labels = {
+ title: t.proposals.fundingOpportunities,
+ subtitle: t.proposals.trackFundingCallsAndOpportunitiesBefore,
+ addOpportunity: t.proposals.addOpportunity,
+ donor: t.proposals.donor,
+ interestArea: t.proposals.interestArea,
+ geographicAreas: t.proposals.geographicAreas,
+ deadline: t.proposals.deadline,
+ budget: t.proposals.budget,
+ coFunding: t.proposals.cofunding,
+ yes: t.proposals.yes,
+ no: t.proposals.no,
+ edit: t.proposals.edit,
+ delete: t.proposals.delete,
+ archive: t.proposals.archive,
+ sendToPipeline: t.proposals.sendToPipeline,
+ cancel: t.proposals.cancel,
+ save: t.proposals.save,
+ addNew: t.proposals.addNewOpportunity,
+ editOpportunity: t.proposals.editOpportunity,
+ deleteConfirm: t.proposals.areYouSureYouWantTo,
+ notes: t.proposals.notes,
+ required: t.proposals.required,
+ cfpLink: t.proposals.cfpLink,
+ applicationLink: t.proposals.applicationLink,
+ donorType: t.proposals.donorType,
+ status: {
+ open: t.proposals.open,
+ closingSoon: t.proposals.closingSoon,
+ urgent: t.proposals.urgent,
+ closed: t.proposals.closed
+ },
+ sendToPipelineTitle: t.proposals.sendToPipeline,
+ sendToPipelineDesc: t.proposals.aNewPipelineOpportunityWillBe,
+ confirm: t.proposals.confirm
+ };
 
  // Calculate totals
  const programStaffTotal = (budget?.programStaff || []).reduce((sum: number, item: any) => {

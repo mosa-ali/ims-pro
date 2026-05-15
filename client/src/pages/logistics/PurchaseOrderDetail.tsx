@@ -6,7 +6,16 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Printer, FileText, Edit, Save, X, Plus, Trash2 } from "lucide-react";
+import {
+  Printer,
+  FileText,
+  Edit,
+  Save,
+  X,
+  Plus,
+  Trash2,
+  Loader2,
+} from "lucide-react";
 import { useState, useEffect } from "react";
 import { useParams, useLocation, Link } from "wouter";
 import { toast } from "sonner";
@@ -59,6 +68,7 @@ export default function PurchaseOrderDetail() {
  }, [po, lineItems]);
 
  // Mutations
+ const generatePDF = trpc.logistics.generatePDF.useMutation();
  const updatePO = trpc.logistics.po.update.useMutation({
  onSuccess: () => {
  toast.success("Purchase Order updated successfully");
@@ -70,6 +80,7 @@ export default function PurchaseOrderDetail() {
  },
  });
 
+ const [generatingPdfId, setGeneratingPdfId] = useState<number | null>(null);
  const approvePO = trpc.logistics.po.approvePO.useMutation({
  onSuccess: () => {
  toast.success("PO approved successfully");
@@ -144,6 +155,68 @@ export default function PurchaseOrderDetail() {
  rejectPO.mutate({ id: poId, reason });
  }
  };
+
+ const handleGeneratePdf = async () => {
+  try {
+    setGeneratingPdfId(Number(poId));
+
+    const result = await generatePDF.mutateAsync({
+      documentType: "purchaseOrder",
+      documentId: Number(poId),
+      language: isRTL ? "ar" : "en",
+    });
+
+    // Validate PDF base64 header
+    if (!result?.pdf || !result.pdf.startsWith("JVBER")) {
+      toast.error(
+        isRTL
+          ? "ملف PDF غير صالح"
+          : "Invalid PDF generated"
+      );
+
+      return;
+    }
+
+    // Base64 → Blob
+    const binaryString = atob(result.pdf);
+
+    const bytes = new Uint8Array(binaryString.length);
+
+    for (let i = 0; i < binaryString.length; i++) {
+      bytes[i] = binaryString.charCodeAt(i);
+    }
+
+    const blob = new Blob(
+      [bytes],
+      {
+        type: "application/pdf",
+      }
+    );
+
+    const url = window.URL.createObjectURL(blob);
+
+    window.open(url, "_blank");
+
+    toast.success(
+      isRTL
+        ? "تم إنشاء ملف PDF بنجاح"
+        : "PDF generated successfully"
+    );
+
+  } catch (error: any) {
+    console.error("PO PDF generation error:", error);
+
+    toast.error(
+      error?.message ||
+      (isRTL
+        ? "خطأ في إنشاء PDF"
+        : "Error generating PDF")
+    );
+
+  } finally {
+    setGeneratingPdfId(null);
+  }
+};
 
  if (isLoading) {
  return (
@@ -231,12 +304,22 @@ export default function PurchaseOrderDetail() {
 
  {!isEditing && (
  <>
- <Button variant="outline" size="sm" asChild>
- <Link href={`/organization/logistics/purchase-orders/${po.id}/print`}>
- <Printer className="h-4 w-4 me-2" />
- Print PO
- </Link>
- </Button>
+ <Button
+  variant="outline"
+  size="sm"
+  onClick={handleGeneratePdf}
+  disabled={generatingPdfId === po.id}
+>
+  {generatingPdfId === po.id ? (
+    <Loader2 className="h-4 w-4 me-2 animate-spin" />
+  ) : (
+    <Printer className="h-4 w-4 me-2" />
+  )}
+
+  {generatingPdfId === po.id
+    ? (isRTL ? "جاري الطباعة..." : "Printing...")
+    : (isRTL ? "طباعة PO" : "Print PO")}
+</Button>
  <Button variant="outline" size="sm" asChild>
  <Link href={`/organization/logistics/procurement-package/${po.purchaseRequestId}/print`}>
  <FileText className="h-4 w-4 me-2" />

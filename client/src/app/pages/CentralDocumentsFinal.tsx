@@ -140,6 +140,14 @@ export function CentralDocumentsFinal() {
  portfolio: t.common.portfolio,
  };
 
+ const formatSqlDate = (dateValue?: string | Date | null) => {
+  if (!dateValue) return null;
+
+  return new Date(dateValue)
+    .toISOString()
+    .split("T")[0]; // YYYY-MM-DD
+};
+
  // Get folder document count
  const getFolderCount = (folderCode: string) => {
  if (!documentsData?.folders) return 0;
@@ -232,10 +240,10 @@ export function CentralDocumentsFinal() {
  <span>CENTRAL DOCUMENTS</span>
  </div>
  <h1 className={`text-3xl font-bold text-gray-900 mb-2 text-start`}>
- {t.title}
+ {labels.title}
  </h1>
  <p className={`text-sm text-gray-600 text-start`}>
- {t.subtitle}
+ {labels.subtitle}
  </p>
  </div>
 
@@ -246,7 +254,7 @@ export function CentralDocumentsFinal() {
  className="mb-4 flex items-center gap-2 text-gray-600 hover:text-gray-900"
  >
  {isRTL ? <ArrowRight className="w-4 h-4"  /> : <ArrowLeft className="w-4 h-4"  />}
- {t.back}
+ {labels.back}
  </button>
  )}
 
@@ -295,7 +303,7 @@ export function CentralDocumentsFinal() {
  {viewState === 'projects' && selectedWorkspace === 'projects' && (
  <div>
  <h2 className={`text-xl font-semibold text-gray-700 mb-4 uppercase text-start`}>
- {t.selectProject}
+ {labels.selectProject}
  </h2>
  
  {projectsLoading ? (
@@ -320,7 +328,7 @@ export function CentralDocumentsFinal() {
  {language === 'en' ? project.title : project.titleAr}
  </div>
  <div className="text-sm text-gray-500">
- {project.startDate && new Date(project.startDate).getFullYear()} {t.portfolio}
+ {project.startDate && new Date(project.startDate).getFullYear()} {labels.portfolio}
  </div>
  <div className="mt-4 flex items-center justify-between text-xs text-gray-500">
  <ChevronRight className="w-4 h-4" />
@@ -448,7 +456,7 @@ export function CentralDocumentsFinal() {
  {selectedWorkspace !== 'logistics' && selectedWorkspace !== 'donor_crm' && selectedWorkspace !== 'risk_compliance' && viewState !== 'logistics_sub' && (
  <>
  <h2 className={`text-xl font-semibold text-gray-700 mb-4 uppercase text-start`}>
- {t.moduleFolders}
+ {labels.moduleFolders}
  </h2>
 
  {(selectedWorkspace === 'projects' ? documentsLoading : workspaceFoldersLoading) ? (
@@ -482,7 +490,7 @@ export function CentralDocumentsFinal() {
  {folder.code}
  </div>
  <div className="mt-3 text-xs text-gray-400 uppercase">
- {count} {t.repositoryRecords}
+ {count} {labels.repositoryRecords}
  </div>
  </button>
  );
@@ -505,7 +513,7 @@ export function CentralDocumentsFinal() {
  {folder.folderName}
  </div>
  <div className="mt-3 text-xs text-gray-400 uppercase">
- {folder.documentCount || 0} {t.repositoryRecords}
+ {folder.documentCount || 0} {labels.repositoryRecords}
  </div>
  </button>
  ))
@@ -531,14 +539,14 @@ export function CentralDocumentsFinal() {
  </div>
 
  <h2 className={`text-xl font-semibold text-gray-700 mb-4 uppercase text-start`}>
- {t.documentRegistry}
+ {labels.documentRegistry}
  </h2>
 
  {/* Search */}
  <div className="mb-4">
  <Input
  type="text"
- placeholder={t.search}
+ placeholder={labels.search}
  value={searchQuery}
  onChange={(e) => setSearchQuery(e.target.value)}
  className="max-w-md"
@@ -556,19 +564,19 @@ export function CentralDocumentsFinal() {
  <thead className="bg-gray-50 border-b border-gray-200">
  <tr>
  <th className={`px-6 py-3 text-xs font-semibold text-gray-700 uppercase text-start`}>
- {t.fileName}
+ {labels.fileName}
  </th>
  <th className={`px-6 py-3 text-xs font-semibold text-gray-700 uppercase text-start`}>
- {t.uploadedBy}
+ {labels.uploadedBy}
  </th>
  <th className={`px-6 py-3 text-xs font-semibold text-gray-700 uppercase text-start`}>
- {t.uploadedAt}
+ {labels.uploadedAt}
  </th>
  <th className={`px-6 py-3 text-xs font-semibold text-gray-700 uppercase text-start`}>
- {t.version}
+ {labels.version}
  </th>
  <th className={`px-6 py-3 text-xs font-semibold text-gray-700 uppercase text-start`}>
- {t.actions}
+ {labels.actions}
  </th>
  </tr>
  </thead>
@@ -628,7 +636,7 @@ export function CentralDocumentsFinal() {
  <div className="text-center py-12">
  <Database className="w-16 h-16 text-gray-300 mx-auto mb-4" />
  <p className="text-sm font-semibold text-gray-400 uppercase tracking-widest">
- {t.noDocuments}
+ {labels.noDocuments}
  </p>
  </div>
  )}

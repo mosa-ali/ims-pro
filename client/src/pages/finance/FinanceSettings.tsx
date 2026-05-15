@@ -320,7 +320,7 @@ export default function FinanceSettings() {
  code: currencyDialog.data?.code ||"",
  name: currencyDialog.data?.name ||"",
  symbol: currencyDialog.data?.symbol ||"",
- exchangeRateToUSD: currencyDialog.data?.exchangeRateToUSD ||"1.00",
+ exchangeRate: currencyDialog.data?.exchangeRateToUsd||"1.00",
  isBaseCurrency: currencyDialog.data?.isBaseCurrency || false,
  decimalPlaces: currencyDialog.data?.decimalPlaces || 2,
  });
@@ -357,8 +357,8 @@ export default function FinanceSettings() {
 
  <div className="grid grid-cols-2 gap-4">
  <div>
- <Label>{t.financeSettings.exchangeRateToUSD}</Label>
- <Input type="number" step="0.0001" value={form.exchangeRateToUSD} onChange={(e) => setForm({ ...form, exchangeRateToUSD: e.target.value })} />
+ <Label>{t.financeSettings.exchangeRate}</Label>
+ <Input type="number" step="0.0001" value={form.exchangeRate} onChange={(e) => setForm({ ...form, exchangeRate: e.target.value })} />
  </div>
  <div>
  <Label>{t.financeSettings.decimalPlaces}</Label>
@@ -810,7 +810,7 @@ export default function FinanceSettings() {
  <TableHead>{t.financeSettings.currencyCode}</TableHead>
  <TableHead>{t.financeSettings.currencyName}</TableHead>
  <TableHead>{t.financeSettings.currencySymbol}</TableHead>
- <TableHead>{t.financeSettings.exchangeRateToUSD}</TableHead>
+ <TableHead>{t.financeSettings.exchangeRate}</TableHead>
  <TableHead>{t.financeSettings.isBaseCurrency}</TableHead>
  <TableHead>{t.financeSettings.status}</TableHead>
  <TableHead className="text-center">{t.financeSettings.action}</TableHead>
@@ -829,7 +829,7 @@ export default function FinanceSettings() {
  <TableCell className="font-mono font-bold">{currency.code}</TableCell>
  <TableCell>{language ==="ar" && currency.nameAr ? currency.nameAr : currency.name}</TableCell>
  <TableCell>{currency.symbol}</TableCell>
- <TableCell>{currency.exchangeRateToUSD}</TableCell>
+ <TableCell>{currency.exchangeRate}</TableCell>
  <TableCell>
  {currency.isBaseCurrency && <Star className="h-4 w-4 text-yellow-500 fill-yellow-500" />}
  </TableCell>

@@ -30,7 +30,7 @@ export const procurementRouter = router({
             eq(procurementPlan.projectId, input.projectId),
             eq(procurementPlan.organizationId, organizationId),
             eq(procurementPlan.operatingUnitId, operatingUnitId),
-            eq(procurementPlan.isDeleted, false)
+            eq(procurementPlan.isDeleted, 0)
           )
         ).orderBy(desc(procurementPlan.createdAt));
     }),
@@ -52,7 +52,7 @@ export const procurementRouter = router({
             eq(procurementPlan.projectId, input.projectId),
             eq(procurementPlan.organizationId, organizationId),
             eq(procurementPlan.operatingUnitId, operatingUnitId),
-            eq(procurementPlan.isDeleted, false)
+            eq(procurementPlan.isDeleted, 0)
           )
         );
       
@@ -346,8 +346,8 @@ export const procurementRouter = router({
       }
       
       await db.update(procurementPlan).set({
-          isDeleted: true,
-          deletedAt: new Date(),
+          isDeleted: 1,
+          deletedAt: new Date().toISOString().slice(0, 19).replace('T', ' '),
           deletedBy: ctx.user?.id,
         }).where(and(
           eq(procurementPlan.id, input.id),
@@ -398,7 +398,7 @@ export const procurementRouter = router({
             eq(activities.projectId, input.projectId),
             eq(activities.organizationId, organizationId),
             eq(activities.operatingUnitId, operatingUnitId),
-            eq(activities.isDeleted, false)
+            eq(activities.isDeleted, 0)
           )
         );
 
@@ -436,15 +436,15 @@ export const procurementRouter = router({
 
       // Clear existing procurement items for this project (reinitialize)
       await db.update(procurementPlan).set({
-        isDeleted: true,
-        deletedAt: new Date(),
+        isDeleted: 1,
+        deletedAt: new Date().toISOString().slice(0, 19).replace('T', ' '),
         deletedBy: ctx.user?.id,
       }).where(
         and(
           eq(procurementPlan.projectId, input.projectId),
           eq(procurementPlan.organizationId, organizationId),
           eq(procurementPlan.operatingUnitId, operatingUnitId),
-          eq(procurementPlan.isDeleted, false)
+          eq(procurementPlan.isDeleted, 0)
         )
       );
 

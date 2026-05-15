@@ -72,6 +72,143 @@ export default function BidEvaluationChecklist() {
  const printRef = useRef<HTMLDivElement>(null);
  const utils = trpc.useUtils();
 
+ // Auto-sync vendor qualification scores into evaluation matrix
+const bulkSyncQualificationScores =
+  trpc.logistics.bidAnalysis.bulkSyncQualificationScores.useMutation({
+    onSuccess: async () => {
+      await utils.logistics.bidAnalysis.getScores.invalidate({
+        bidAnalysisId: parseInt(id!),
+      });
+
+      await utils.logistics.bidEvaluation.getCalculatedScores.invalidate({
+        bidAnalysisId: parseInt(id!),
+      });
+
+      await refetchScores();
+      await refetchCalculatedScores();
+
+      toast.success(
+        isRTL
+          ? "تم تحميل درجات تأهيل الموردين تلقائياً"
+          : "Vendor qualification scores auto-loaded successfully"
+      );
+    },
+
+    onError: (error: any) => {
+      console.error("Qualification sync failed:", error);
+
+      toast.error(
+        error?.message ||
+        (isRTL
+          ? "فشل في تحميل درجات التأهيل"
+          : "Failed to auto-load qualification scores")
+      );
+    },
+  });
+
+ // ========== TRANSLATION OBJECT (BOM PATTERN) ==========
+ const localT = {
+   // Header & Navigation
+   backToWorkspace: t.logistics.backToWorkspace,
+   documentTitle: t.bidEvaluationChecklist?.bidEvaluationChecklist || "Bid Evaluation Checklist",
+   officialRecord: t.bidEvaluationChecklist?.officialRecordFor || "Official record for",
+   
+   // Evaluation Criteria
+   bidEvaluationCriteria: t.bidEvaluationChecklist?.bidEvaluationCriteria || "Bid Evaluation Criteria",
+   evaluationCriteriaInitialized: t.bidEvaluationChecklist?.evaluationCriteriaInitialized || "Evaluation criteria initialized",
+   evaluationCriteriaNotInitialized: t.bidEvaluationChecklist?.evaluationCriteriaNotInitialized || "Evaluation criteria have not been initialized yet",
+   initializeEvaluationCriteria: t.bidEvaluationChecklist?.initializeEvaluationCriteria || "Initialize Evaluation Criteria",
+   
+   // Bidders & Summary
+   bidder: t.bidEvaluationChecklist?.bidder || "Bidder",
+   biddersSummary: t.bidEvaluationChecklist?.biddersSummary || "Bidders Summary",
+   qualified: t.bidEvaluationChecklist?.qualified || "Qualified",
+   notQualified: t.bidEvaluationChecklist?.notQualified || "Not Qualified",
+   
+   // Scores & Evaluation
+   score: t.bidEvaluationChecklist?.score || "Score",
+   maxScore: t.bidEvaluationChecklist?.maxScore || "Max Score",
+   finalScore: t.bidEvaluationChecklist?.finalScore || "Final Score",
+   technical: t.bidEvaluationChecklist?.technical || "Technical",
+   financial: t.bidEvaluationChecklist?.financial || "Financial",
+   final: t.bidEvaluationChecklist?.final || "Final",
+   technicalPlusFinancial: t.bidEvaluationChecklist?.technicalPlusFinancial || "Technical + Financial",
+   totalTechnicalScore: t.bidEvaluationChecklist?.totalTechnicalScore || "Total Technical Score",
+   financialScore: t.bidEvaluationChecklist?.financialScore || "Financial Score",
+   
+   // Sections
+   section: t.bidEvaluationChecklist?.section || "Section",
+   sectionTotal: t.bidEvaluationChecklist?.sectionTotal || "Section Total",
+   sumOfSections: t.bidEvaluationChecklist?.sumOfSections || "Sum of Sections 1–5",
+   requirement: t.bidEvaluationChecklist?.requirement || "Requirement",
+   details: t.bidEvaluationChecklist?.details || "Details",
+   
+   // Price & Currency
+   price: t.bidEvaluationChecklist?.price || "Price",
+   currency: t.bidEvaluationChecklist?.currency || "Currency",
+   totalOfferPrice: t.bidEvaluationChecklist?.totalOfferPrice || "Total Offer Price",
+   priceMissingOrInvalid: t.bidEvaluationChecklist?.priceMissingOrInvalid || "Total Offer Price is missing or invalid (must be > 0)",
+   paymentTerms: t.bidEvaluationChecklist?.paymentTerms || "Payment Terms",
+   
+   // Status & Qualification
+   status: t.bidEvaluationChecklist?.status || "Status",
+   screening: t.bidEvaluationChecklist?.screening || "Screening",
+   mandatoryCriteriaFailed: t.bidEvaluationChecklist?.mandatoryCriteriaFailed || "Mandatory criteria failed",
+   mandatoryHardStop: t.bidEvaluationChecklist?.mandatoryHardStop || "Mandatory hard-stop criterion. Score of 0 results in automatic disqualification.",
+   technicalBelowThreshold: t.bidEvaluationChecklist?.technicalBThreshold || "Technical score is below 70% threshold",
+   
+   // Remarks
+   remarks: t.bidEvaluationChecklist?.remarks || "Remarks",
+   remarksDescription: t.bidEvaluationChecklist?.remarksDescription || "Auto-collected feedback for Not Qualified bidders",
+   noRemarksAllQualified: t.bidEvaluationChecklist?.noRemarksAllQualified || "All bidders are qualified — no remarks to display.",
+   selectOnePerBidder: t.bidEvaluationChecklist?.selectOnePerBidder || "select one per bidder",
+   
+   // Scoring Actions
+   saveAllScores: t.bidEvaluationChecklist?.saveAllScores || "Save All Scores",
+   allScoresSavedSuccessfully: t.bidEvaluationChecklist?.allScoresSavedSuccessfully || "All scores saved successfully",
+   lockScores: t.bidEvaluationChecklist?.scoresAreLocked || "Scores are locked",
+   scoresLockedSuccessfully: t.bidEvaluationChecklist?.scoresLockedSuccessfully || "Scores locked successfully",
+   scoresUnlockedForEditing: t.bidEvaluationChecklist?.scoresUnlockedForEditing || "Scores unlocked for editing",
+   failedToLockScores: t.bidEvaluationChecklist?.failedToLockScores || "Failed to lock scores",
+   failedToUnlockScores: t.bidEvaluationChecklist?.failedToUnlockScores || "Failed to unlock scores",
+   failedToSaveTotalOfferPrice: t.bidEvaluationChecklist?.failedToSaveTotalOfferPrice || "Failed to save total offer price",
+   unlockScores: t.bidEvaluationChecklist?.unlockScores || "Unlock Scores",
+   
+   // Finalization
+   finalizeEvaluation: t.bidEvaluationChecklist?.finalizeEvaluation || "Finalize Evaluation",
+   confirmFinalize: t.bidEvaluationChecklist?.confirmFinalize || "Are you sure you want to finalize this evaluation?",
+   evaluationFinalized: t.bidEvaluationChecklist?.evaluationFinalized || "Evaluation finalized successfully",
+   evaluationAlreadyFinalized: t.bidEvaluationChecklist?.evaluationAlreadyFinalized || "This evaluation has already been finalized.",
+   finalizing: t.bidEvaluationChecklist?.finalizing || "Finalizing...",
+   
+   // Export & Print
+   exportPdf: t.bidEvaluationChecklist?.exportPdf || "Export PDF",
+   exportExcel: t.bidEvaluationChecklist?.exportExcel || "Export Excel",
+   exportExcelWithData: t.bidEvaluationChecklist?.exportExcelWithData || "Export with Data",
+   exportExcelTemplate: t.bidEvaluationChecklist?.exportExcelTemplate || "Export Empty Template",
+   printExportPdf: t.bidEvaluationChecklist?.printExportPdf || "Print / Export PDF",
+   generatingPdf: t.bidEvaluationChecklist?.generatingPdf || "Generating PDF...",
+   generatingExcel: t.bidEvaluationChecklist?.generatingExcel || "Generating Excel...",
+   
+   // UI Controls
+   expandAll: t.bidEvaluationChecklist?.expandAll || "Expand All",
+   collapseAll: t.bidEvaluationChecklist?.collapseAll || "Collapse All",
+   loading: t.bidEvaluationChecklist?.loading || "Loading...",
+   
+   // PR Reference
+   prReference: t.bidEvaluationChecklist?.prReference || "PR Reference",
+   
+   // Common
+   save: t.common.save,
+   cancel: t.common.cancel,
+   delete: t.common.delete,
+   edit: t.common.edit,
+   add: t.common.add,
+   submit: t.common.submit,
+   required: t.common.required,
+   error: t.common.error,
+ };
+
  // Fetch BA data
  const { data: ba, isLoading: baLoading } = trpc.logistics.bidAnalysis.getById.useQuery(
  { id: parseInt(id!) },
@@ -214,12 +351,55 @@ export default function BidEvaluationChecklist() {
  setLocalCurrencies(currencyMap);
  // eslint-disable-next-line react-hooks/exhaustive-deps
  }, [biddersFingerprint]);
-
+ 
  const activeBidders = useMemo(() =>
  bidders.filter((b: any) => b.submissionStatus !== "disqualified"),
  [bidders]
  );
 
+ // ════════════════════════════════════════════════════════
+// AUTO-SYNC VENDOR QUALIFICATION SCORES
+// Layer 1 (Vendor Qualification)
+// → Layer 2 (Bid Evaluation Matrix)
+// ════════════════════════════════════════════════════════
+
+  const autoSyncTriggered = useRef(false);
+
+  useEffect(() => {
+    // Prevent duplicate sync calls
+    if (autoSyncTriggered.current) return;
+
+    // Wait until all required data loaded
+    if (
+      !id ||
+      criteria.length === 0 ||
+      bidders.length === 0 ||
+      Object.keys(qualificationMap).length === 0
+    ) {
+      return;
+    }
+
+    // Ensure at least one bidder has qualification data
+    const hasQualificationData = bidders.some(
+      (b: any) => qualificationMap[b.supplierId]
+    );
+
+    if (!hasQualificationData) {
+      return;
+    }
+
+    autoSyncTriggered.current = true;
+
+    bulkSyncQualificationScores.mutate({
+      bidAnalysisId: parseInt(id!),
+    });
+
+  }, [
+    id,
+    criteria,
+    bidders,
+    qualificationMap,
+  ]);
 
  const handleScoreChange = (criterionId: number, bidderId: number, value: string, maxScore?: number) => {
  const key = `${criterionId}-${bidderId}`;
@@ -326,24 +506,69 @@ export default function BidEvaluationChecklist() {
  const [pdfLoading, setPdfLoading] = useState(false);
  const [excelLoading, setExcelLoading] = useState(false);
 
- const handleExportPdf = useCallback(() => {
-   if (!ba || !id) return;
-   setPdfLoading(true);
-   const orgId = ba.organizationId || 30001;
-   const lang = language === 'ar' ? 'ar' : 'en';
-   const url = `/api/logistics/bid-analysis/${id}/evaluation-checklist-pdf?lang=${lang}&orgId=${orgId}`;
-   // Open in new tab
-   window.open(url, "_blank");
-   // Reset loading after a short delay (PDF opens in new tab)
-   setTimeout(() => setPdfLoading(false), 2000);
- }, [ba, id, language]);
+ const generatePDF =
+  trpc.logistics.generatePDF.useMutation();
+
+const handleExportPdf = useCallback(async () => {
+  if (!id) return;
+
+  try {
+    setPdfLoading(true);
+
+    const result = await generatePDF.mutateAsync({
+      documentType: "bidEvaluationChecklist",
+      documentId: Number(id),
+      language: isRTL ? "ar" : "en",
+    });
+
+    if (!result?.pdf || !result.pdf.startsWith("JVBER")) {
+      toast.error(
+        isRTL
+          ? "ملف PDF غير صالح"
+          : "Invalid PDF generated"
+      );
+
+      return;
+    }
+
+    // Base64 → Blob
+    const binaryString = atob(result.pdf);
+
+    const bytes = new Uint8Array(binaryString.length);
+
+    for (let i = 0; i < binaryString.length; i++) {
+      bytes[i] = binaryString.charCodeAt(i);
+    }
+
+    const blob = new Blob([bytes], {
+      type: "application/pdf",
+    });
+
+    const url = window.URL.createObjectURL(blob);
+
+    window.open(url, "_blank");
+
+  } catch (error: any) {
+    console.error(error);
+
+    toast.error(
+      error?.message ||
+      (isRTL
+        ? "خطأ في إنشاء PDF"
+        : "Error generating PDF")
+    );
+
+  } finally {
+    setPdfLoading(false);
+  }
+}, [id, isRTL]);
 
  const handleExportExcel = useCallback((mode: "data" | "template") => {
    if (!ba || !id) return;
    setExcelLoading(true);
-   const orgId = ba.organizationId || 30001;
+   const orgId = ba.organizationId || '';
    const lang = language === 'ar' ? 'ar' : 'en';
-   const url = `/api/logistics/bid-analysis/${id}/evaluation-checklist-excel?lang=${lang}&orgId=${orgId}&mode=${mode}`;
+   const url = `/organization/logistics/bid-analysis/${id}/evaluation-checklist-excel?lang=${lang}&orgId=${orgId}&mode=${mode}`;
    // Trigger download via hidden anchor
    const a = document.createElement("a");
    a.href = url;
@@ -1274,12 +1499,12 @@ export default function BidEvaluationChecklist() {
                  // "Technical score (X/50) is below 70% threshold (Y/50)"
                  const techMatch = reason.match(/^Technical score \(([\d.]+)\/?(\d+)?\).*(?:below|threshold).*\(([\d.]+)\/?(\d+)?\)/);
                  if (techMatch) {
-                   return `${t.bidEvaluationChecklist.technicalBelowThreshold} (${techMatch[1]}/${techMatch[2] || '50'}) - (${techMatch[3]}/${techMatch[4] || '50'})`;
+                   return `${localT.technicalBelowThreshold} (${techMatch[1]}/${techMatch[2] || '50'}) - (${techMatch[3]}/${techMatch[4] || '50'})`;
                  }
                  // "Technical score (X) below minimum threshold (Y)"
                  const techSimpleMatch = reason.match(/^Technical score \(([\d.]+)\) below minimum threshold \(([\d.]+)\)/);
                  if (techSimpleMatch) {
-                   return `${t.bidEvaluationChecklist.technicalBelowThreshold} (${techSimpleMatch[1]}) - (${techSimpleMatch[2]})`;
+                   return `${localT.technicalBelowThreshold} (${techSimpleMatch[1]}) - (${techSimpleMatch[2]})`;
                  }
                  // "Total Offer Price is missing or invalid"
                  if (reason.includes('Total Offer Price is missing') || reason.includes('Total Offer Price')) {

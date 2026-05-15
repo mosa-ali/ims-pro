@@ -45,8 +45,8 @@ export default function PurchaseOrderPrint() {
  {/* Metadata */}
  <div className="grid grid-cols-2 gap-4 mb-6">
  <div className="space-y-2">
- <div className="flex"><span className="text-sm text-muted-foreground w-32">Supplier:</span><span className="text-sm font-medium">{po.supplierName || "-"}</span></div>
- <div className="flex"><span className="text-sm text-muted-foreground w-32">PR Reference:</span><span className="text-sm font-medium">{po.prNumber || "-"}</span></div>
+ <div className="flex"><span className="text-sm text-muted-foreground w-32">Supplier:</span><span className="text-sm font-medium">{po.supplierId || "-"}</span></div>
+ <div className="flex"><span className="text-sm text-muted-foreground w-32">PR Reference:</span><span className="text-sm font-medium">{po.poNumber || "-"}</span></div>
  <div className="flex"><span className="text-sm text-muted-foreground w-32">{isRTL ? 'شروط الدفع:' : 'Payment Terms:'}</span><span className="text-sm font-medium">{po.paymentTerms || "-"}</span></div>
  </div>
  <div className="space-y-2">

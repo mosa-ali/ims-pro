@@ -1,34 +1,41 @@
 
 import { officialPdfStyles } from "../styles/officialPdfStyles";
+import type { OfficialPdfContext } from "../../buildOfficialPdfContext";
 
 export interface OfficialWrapperOptions {
-  organizationName: string;
-  operatingUnitName?: string;
-  organizationLogo?: string; // should be a data URL or absolute URL accessible to renderer
+  context: OfficialPdfContext;
   department: string;
   documentTitle: string;
   formNumber: string;
   formDate: string;
   bodyHtml: string;
-  direction?: "ltr" | "rtl";
-  language?: "en" | "ar";
   // footerLabels is no longer used - footer has been removed per user request
   footerLabels?: { page: string; of: string };
 }
 
 export function generateOfficialPdfHtml(options: OfficialWrapperOptions): string {
   const {
-    organizationName,
-    operatingUnitName,
-    organizationLogo,
+    context,
     department,
     documentTitle,
     formNumber,
     formDate,
     bodyHtml,
-    direction = "ltr",
-    language = "en",
   } = options;
+
+  const direction = context.direction || "ltr";
+const language = context.language || "en";
+
+const organizationName =
+  language === "ar"
+    ? context.organizationNameAr || context.organizationName
+    : context.organizationName;
+
+    const operatingUnitName =
+      context.language === "ar"
+        ? context.operatingUnitName || context.operatingUnitName: context.operatingUnitName;
+
+  const organizationLogo = context.organizationLogo;
 
   const officialCss = officialPdfStyles;
 

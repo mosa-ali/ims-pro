@@ -5,7 +5,7 @@
  *
  * Uses inline translations pattern per IMSInlineTranslationsGuideline.md
  */
-import { useMemo } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import { useParams, useLocation } from "wouter";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { trpc } from "@/lib/trpc";
@@ -23,7 +23,6 @@ import {
 
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-
 import { Progress } from "@/components/ui/progress";
 import {
   ArrowLeft,
@@ -169,6 +168,8 @@ export default function SACManagement() {  const { id } = useParams<{ id: string
   const { user } = useAuth();
   const t = translations[language as keyof typeof translations] || translations.en;
   const prId = parseInt(id!, 10);
+  const [generatingPdfId, setGeneratingPdfId] = useState<number | null>(null);
+  const generatePDF = trpc.logistics.generatePDF.useMutation();
 
   // Helper: get translated status label
   const getStatusLabel = (status: string) => {
@@ -185,8 +186,8 @@ export default function SACManagement() {  const { id } = useParams<{ id: string
   // Determine if this is a Goods PR >= $25K (contract chain but SAC depends on GRN, not contract approval)
   const prCategory = pr?.category?.toLowerCase() || '';
   const isGoodsCategory = prCategory === 'goods';
-  const prTotalCost = parseFloat(pr?.totalCost || '0');
-  const isGoodsContractRequired = isGoodsCategory && prTotalCost >= 25000;
+  const prTotalUsd = Number(pr?.totalAmount || 0);
+  const isGoodsContractRequired = isGoodsCategory && prTotalUsd >= 25000;
 
   // Fetch contract for this PR
   const { data: contract, isLoading: contractLoading } =
@@ -196,7 +197,10 @@ export default function SACManagement() {  const { id } = useParams<{ id: string
     );
 
   // Fetch GRN list for Goods PRs (SAC depends on GRN, not contract approval)
-  const { data: grnList } = trpc.logistics.grn.listByPR.useQuery(
+  const {
+    data: grnList,
+    isLoading: grnLoading,
+  } = trpc.procurementPhaseA.grn.getByPR.useQuery(
     { purchaseRequestId: prId },
     { enabled: isGoodsContractRequired && !!id && prId > 0 }
   );
@@ -258,17 +262,76 @@ export default function SACManagement() {  const { id } = useParams<{ id: string
     );
   };
 
-  const handlePrintSac = (sacId: number) => {
-    const orgId = localStorage.getItem("pms_current_org") || "30001";
-    const lang = language || "en";
-    window.open(`/api/logistics/sac/${sacId}/pdf?lang=${lang}&orgId=${orgId}`, "_blank");
-  };
+  const handlePrintSac = async (sacId: number) => {
+
+  try {
+
+    setGeneratingPdfId(sacId);
+
+    const result = await generatePDF.mutateAsync({
+      documentType: "sac",
+      documentId: Number(sacId),
+      language: isRTL ? "ar" : "en",
+    });
+
+    if (!result?.pdf || !result.pdf.startsWith("JVBER")) {
+
+      toast.error(
+        isRTL
+          ? "ملف PDF غير صالح"
+          : "Invalid PDF generated"
+      );
+
+      return;
+    }
+
+    const binaryString = atob(result.pdf);
+
+    const bytes = new Uint8Array(binaryString.length);
+
+    for (let i = 0; i < binaryString.length; i++) {
+      bytes[i] = binaryString.charCodeAt(i);
+    }
+
+    const blob = new Blob([bytes], {
+      type: "application/pdf",
+    });
+
+    const url = window.URL.createObjectURL(blob);
+
+    window.open(url, "_blank");
+
+    toast.success(
+      isRTL
+        ? "تم إنشاء ملف PDF بنجاح"
+        : "PDF generated successfully"
+    );
+
+  } catch (error: any) {
+
+    console.error("PDF generation error:", error);
+
+    toast.error(
+      error?.message ||
+      (isRTL
+        ? "خطأ في إنشاء PDF"
+        : "Error generating PDF")
+    );
+
+  } finally {
+
+    setGeneratingPdfId(null);
+
+  }
+};
 
   // Computed
   const contractApproved = contract && ["approved", "active"].includes(contract.status);
   // For Goods >= $25K, SAC is allowed after GRN exists (contract may still be draft)
-  const hasGRN = grnList && grnList.length > 0;
-  const sacAccessAllowed = isGoodsContractRequired ? (!!contract && hasGRN) : contractApproved;
+  const hasGRN = Array.isArray(grnList) && grnList.length > 0;
+  const sacAccessAllowed = isGoodsContractRequired
+  ? Boolean(contract?.id) && hasGRN
+  : contractApproved;
   const sacCreationBlocked = canCreateResult && !canCreateResult.allowed;
   const isMonitoringBlock = canCreateResult?.reason === 'WORKS_MONITORING_REQUIRED' || canCreateResult?.reason === 'WORKS_MONITORING_INCOMPLETE';
   const progressPercent = sacSummary
@@ -282,7 +345,11 @@ export default function SACManagement() {  const { id } = useParams<{ id: string
   };
 
   // Loading
-  if (prLoading || contractLoading) {
+  if (
+  prLoading ||
+    contractLoading ||
+    (isGoodsContractRequired && grnLoading)
+    ) {
     return (
       <div className="p-6 space-y-4">
         <Skeleton className="h-10 w-64" />
@@ -335,7 +402,7 @@ export default function SACManagement() {  const { id } = useParams<{ id: string
                     : t.pageTitle}
                 </h1>
                 <p className="text-sm text-gray-500">
-                  {contract.contractNumber} — {pr?.prNumber}
+                  {contract?.contractNumber || "-"} — {pr?.prNumber}
                 </p>
               </div>
             </div>
@@ -488,7 +555,7 @@ export default function SACManagement() {  const { id } = useParams<{ id: string
                       <TableCell className="font-mono text-sm">{sac.sacNumber}</TableCell>
                       <TableCell className="max-w-[200px] truncate">{sac.deliverables}</TableCell>
                       <TableCell className="text-end font-medium">
-                        <span dir="ltr">{sac.currency || contract.currency} {Number(sac.approvedAmount || 0).toLocaleString()}</span>
+                        <span dir="ltr">{sac.currency || contract?.currency || ""} {Number(sac.approvedAmount || 0).toLocaleString()}</span>
                       </TableCell>
                       <TableCell>
                         {sac.acceptanceDate ? new Date(sac.acceptanceDate).toLocaleDateString() : "—"}
@@ -534,7 +601,11 @@ export default function SACManagement() {  const { id } = useParams<{ id: string
                             onClick={() => handlePrintSac(sac.id)}
                             title={t.print}
                           >
-                            <Printer className="w-4 h-4 text-gray-500" />
+                            {generatingPdfId === sac.id ? (
+                              <Loader2 className="w-4 h-4 animate-spin text-gray-500" />
+                            ) : (
+                              <Printer className="w-4 h-4 text-gray-500" />
+                            )}
                           </Button>
 
                           {/* Delete (draft only) */}

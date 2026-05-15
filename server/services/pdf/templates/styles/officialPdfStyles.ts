@@ -139,11 +139,25 @@ html[dir="rtl"] .header-right {
 /* Logo */
 .org-logo {
   display: block;
-  margin: 0 auto;           /* ✅ extra safety */
-  width: 56px;              /* slightly larger to match expected header screenshot */
-  height: 56px;
+  margin: 0 auto;
+
+  /* Better scaling for NGO logos */
+  max-width: 140px;
+  max-height: 70px;
+
+  width: auto;
+  height: auto;
+
   object-fit: contain;
   border-radius: 4px;
+}
+
+/* Fallback when no logo exists */
+.org-name-fallback {
+  font-size: 11pt;
+  font-weight: 700;
+  text-align: center;
+  color: #444;
 }
 
 /* Org block typography */

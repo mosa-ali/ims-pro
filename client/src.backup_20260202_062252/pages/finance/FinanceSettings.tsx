@@ -116,7 +116,7 @@ const translations = {
     currencyName: "Currency Name",
     currencyNameAr: "Currency Name (Arabic)",
     currencySymbol: "Symbol",
-    exchangeRateToUSD: "Exchange Rate",
+    exchangeRate: "Exchange Rate",
     isBaseCurrency: "Base Currency",
     decimalPlaces: "Decimal Places",
     
@@ -254,7 +254,7 @@ const translations = {
     currencyName: "اسم العملة",
     currencyNameAr: "اسم العملة (عربي)",
     currencySymbol: "الرمز",
-    exchangeRateToUSD: "سعر الصرف",
+    exchangeRate: "سعر الصرف",
     isBaseCurrency: "العملة الأساسية",
     decimalPlaces: "الخانات العشرية",
     
@@ -598,7 +598,7 @@ export default function FinanceSettings() {
       name: currencyDialog.data?.name || "",
       nameAr: currencyDialog.data?.nameAr || "",
       symbol: currencyDialog.data?.symbol || "",
-      exchangeRateToUSD: currencyDialog.data?.exchangeRateToUSD || "1.00",
+      exchangeRate: currencyDialog.data?.exchangeRate || "1.00",
       isBaseCurrency: currencyDialog.data?.isBaseCurrency || false,
       decimalPlaces: currencyDialog.data?.decimalPlaces || 2,
     });
@@ -638,8 +638,8 @@ export default function FinanceSettings() {
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <Label>{t.exchangeRateToUSD}</Label>
-                <Input type="number" step="0.0001" value={form.exchangeRateToUSD} onChange={(e) => setForm({ ...form, exchangeRateToUSD: e.target.value })} />
+                <Label>{t.exchangeRate}</Label>
+                <Input type="number" step="0.0001" value={form.exchangeRate} onChange={(e) => setForm({ ...form, exchangeRate: e.target.value })} />
               </div>
               <div>
                 <Label>{t.decimalPlaces}</Label>
@@ -1114,7 +1114,7 @@ export default function FinanceSettings() {
                       <TableHead>{t.currencyCode}</TableHead>
                       <TableHead>{t.currencyName}</TableHead>
                       <TableHead>{t.currencySymbol}</TableHead>
-                      <TableHead>{t.exchangeRateToUSD}</TableHead>
+                      <TableHead>{t.exchangeRate}</TableHead>
                       <TableHead>{t.isBaseCurrency}</TableHead>
                       <TableHead>{t.status}</TableHead>
                       <TableHead className="text-right">{t.action}</TableHead>
@@ -1133,7 +1133,7 @@ export default function FinanceSettings() {
                           <TableCell className="font-mono font-bold">{currency.code}</TableCell>
                           <TableCell>{language === "ar" && currency.nameAr ? currency.nameAr : currency.name}</TableCell>
                           <TableCell>{currency.symbol}</TableCell>
-                          <TableCell>{currency.exchangeRateToUSD}</TableCell>
+                          <TableCell>{currency.exchangeRate}</TableCell>
                           <TableCell>
                             {currency.isBaseCurrency && <Star className="h-4 w-4 text-yellow-500 fill-yellow-500" />}
                           </TableCell>

@@ -11,8 +11,10 @@ import {
   type Vendor,
   type InsertVendor,
   type InsertVendorParticipationHistory,
-} from "../drizzle/schema";
+} from "drizzle/schema";
 import { eq, and, or, sql } from "drizzle-orm";
+
+const nowSql = new Date().toISOString().slice(0, 19).replace('T', ' ');
 
 /**
  * Duplicate Detection Strategy
@@ -74,6 +76,7 @@ export async function autoRegisterVendor(params: {
   organizationId: number;
   operatingUnitId?: number;
   legalName: string;
+  vendorType: string;
   legalNameAr?: string;
   tradeName?: string;
   contactPerson?: string;
@@ -87,7 +90,7 @@ export async function autoRegisterVendor(params: {
   taxId?: string;
   primaryCategory?: string;
   sourceModule: "procurement" | "logistics" | "finance" | "manual";
-  sourceReferenceId?: number;
+  sourceReferenceId?: string;
   sourceReferenceType?: string;
   createdBy?: number;
 }): Promise<{ vendor: Vendor; isNew: boolean }> {
@@ -260,7 +263,7 @@ export async function updateVendorStatistics(vendorId: number): Promise<void> {
       totalPRParticipations: participationStats.totalParticipations || 0,
       totalContractsAwarded: participationStats.totalWins || 0,
       totalContractsValue: participationStats.totalContractValue || "0",
-      updatedAt: new Date(),
+      updatedAt: nowSql,
     })
     .where(eq(vendors.id, vendorId));
 }
@@ -284,7 +287,7 @@ export async function activateVendorFinancially(params: {
   await db
     .update(vendors)
     .set({
-      isFinanciallyActive: true,
+      isFinanciallyActive: 1,
       financialActivationDate: new Date(),
       financialActivatedBy: params.activatedBy,
       bankName: params.bankName,
@@ -295,7 +298,7 @@ export async function activateVendorFinancially(params: {
       glAccountId: params.glAccountId,
       paymentTerms: params.paymentTerms,
       approvalStatus: "approved",
-      updatedAt: new Date(),
+      updatedAt: nowSql,
     })
     .where(eq(vendors.id, params.vendorId));
 }
@@ -338,7 +341,7 @@ export async function calculateVendorPerformanceRating(vendorId: number): Promis
     .update(vendors)
     .set({
       performanceRating: finalRating.toFixed(2),
-      updatedAt: new Date(),
+      updatedAt: nowSql,
     })
     .where(eq(vendors.id, vendorId));
 

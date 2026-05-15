@@ -91,8 +91,8 @@ export default function BidEvaluationChecklistPrint() {
  maxScore,
  sectionNumber: sNum,
  sectionName: c.sectionName || "",
- isScreening: c.isScreening || false,
- isApplicable: c.isApplicable !== false, // default true
+ isScreening: c.isScreening !== 0,
+ isApplicable: c.isApplicable !== 1, // default true
  sortOrder: c.sortOrder || 0,
  });
  section.totalWeight += maxScore;
@@ -193,7 +193,7 @@ export default function BidEvaluationChecklistPrint() {
  <h1 className="font-bold" style={{ fontSize: "14pt" }}>{isRTL ? 'قائمة تقييم العطاءات' : 'Bid Evaluation Checklist'}</h1>
  </div>
  <div className="text-end" style={{ fontSize: "7pt" }}>
- <p><strong>CBA#:</strong> {ba.cbaNumber || ba.baNumber || "-"}</p>
+ <p><strong>CBA#:</strong> {ba.cbaNumber || ba.cbaNumber || "-"}</p>
  <p><strong>PR#:</strong> {ba.purchaseRequest?.prNumber || "-"}</p>
  <p><strong>Date:</strong> {new Date().toLocaleDateString()}</p>
  </div>

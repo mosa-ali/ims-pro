@@ -21,12 +21,15 @@ const STOCK_STAGES = [
 
 export function StockWorkspace({ onBack }: StockWorkspaceProps) {
   const { language, isRTL } = useLanguage();
-  const { organizationId } = useOrganization();
+  const { currentOrganization } = useOrganization();
+ const brandingQuery = trpc.settings.branding.get.useQuery();
+ const branding = brandingQuery.data;
+ const organizationId = currentOrganization?.id;
   const [selectedStage, setSelectedStage] = useState<string | null>(null);
 
   // Fetch workflow stages
   const { data: stages = [] } = trpc.stockDocument.getWorkflowStages.useQuery(
-    { organizationId: organizationId || 0 },
+    { organizationId: currentOrganization?.id || 0 },
     { enabled: !!organizationId }
   );
 

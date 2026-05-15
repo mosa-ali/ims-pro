@@ -25,6 +25,15 @@ interface Opportunity {
   updatedAt: string;
 }
 
+const formatSqlDate = (dateValue?: string | Date | null) => {
+  if (!dateValue) return null;
+
+  return new Date(dateValue)
+    .toISOString()
+    .split("T")[0]; // YYYY-MM-DD
+};
+const nowSql = new Date().toISOString().slice(0, 19).replace('T', ' ');
+
 type DeadlineStatus = 'open' | 'closing-soon' | 'closed';
 
 export function FundingOpportunities() {
@@ -60,14 +69,14 @@ export function FundingOpportunities() {
       cfpLink: record.cfpLink || undefined,
       interestArea: Array.isArray(record.interestArea) ? record.interestArea : [],
       geographicAreas: record.geographicAreas || '',
-      applicationDeadline: record.applicationDeadline ? (typeof record.applicationDeadline === 'string' ? record.applicationDeadline : record.applicationDeadline.toISOString().split('T')[0]) : '',
+      applicationDeadline: record.applicationDeadline ? (typeof record.applicationDeadline === 'string' ? record.applicationDeadline : record.applicationDeadline.toISOString().slice(0, 19).replace('T', ' ')) : '',
       allocatedBudget: record.allocatedBudget ? parseFloat(record.allocatedBudget.toString()) : undefined,
       currency: record.currency || 'USD',
       isCoFunding: record.isCoFunding || false,
       applicationLink: record.applicationLink || undefined,
       notes: record.notes || undefined,
-      createdAt: typeof record.createdAt === 'string' ? record.createdAt : (record.createdAt?.toISOString() || new Date().toISOString()),
-      updatedAt: typeof record.updatedAt === 'string' ? record.updatedAt : (record.updatedAt?.toISOString() || new Date().toISOString()),
+      createdAt: nowSql,
+      updatedAt: nowSql,
     }));
   }, [opportunitiesData]);
 

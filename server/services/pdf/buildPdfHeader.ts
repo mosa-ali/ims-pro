@@ -19,27 +19,30 @@
 
 import fs from "fs";
 import path from "path";
+import type { OfficialPdfContext } from "./buildOfficialPdfContext";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
 export interface PdfHeaderOptions {
-  /** Organization name (always English, e.g. "Efadah Organization for Development (EFADAH)") */
-  organizationName: string;
-  /** Operating unit name (e.g. "EFADAH Headquarters") — optional */
-  operatingUnitName?: string;
-  /** Department / module name (translated, e.g. "Logistics & Procurement" or "الخدمات اللوجستية والمشتريات") */
-  department?: string;
-  /** Document title (translated, e.g. "BID EVALUATION CHECKLIST" or "قائمة تقييم العطاءات") */
+  /** Centralized official PDF context */
+  context: OfficialPdfContext;
+
+  /** Document title */
   documentTitle: string;
-  /** Organization logo — data URL or absolute URL accessible to Puppeteer */
-  organizationLogo?: string;
-  /** Reference / form number (e.g. "PR-EFADAH01-2026-031") */
+
+  /** Reference number */
   refNumber?: string;
-  /** Date string (e.g. "3/5/2026" or "٢٠٢٦/٣/٥") */
+
+  /** Display date */
   date?: string;
-  /** Optional inline style overrides for the doc-title element (e.g. "font-size:14pt;") */
+
+  /** Department / Module */
+  department?: string;
+
+  /** Optional inline style overrides */
   titleStyle?: string;
-  /** Optional inline style overrides for the org-logo element (e.g. "width:48px;height:48px;") */
+
+  /** Optional logo style overrides */
   logoStyle?: string;
 }
 
@@ -70,31 +73,29 @@ export function loadOfficialPdfCss(): string {
  * Does NOT include `<html>`, `<head>`, `<body>`, or `<style>` tags — the caller is responsible
  * for wrapping this in a full HTML document with the correct `dir` and `lang` attributes.
  *
- * @example
- * ```ts
- * const headerHtml = buildPdfHeader({
- *   organizationName: "Efadah Organization for Development (EFADAH)",
- *   operatingUnitName: "EFADAH Headquarters",
- *   department: "Logistics & Procurement",
- *   documentTitle: "BID EVALUATION CHECKLIST",
- *   organizationLogo: logoDataUrl,
- *   refNumber: "PR-EFADAH01-2026-031",
- *   date: "3/5/2026",
- * });
  * ```
  */
 export function buildPdfHeader(options: PdfHeaderOptions): string {
   const {
-    organizationName,
-    operatingUnitName,
-    department,
-    documentTitle,
-    organizationLogo,
-    refNumber,
-    date,
-    titleStyle,
-    logoStyle,
-  } = options;
+      context,
+      documentTitle,
+      refNumber,
+      department,
+      date,
+      titleStyle,
+      logoStyle,
+    } = options;
+
+    const organizationName =
+      context.language === "ar"
+        ? context.organizationNameAr || context.organizationName
+        : context.organizationName;
+
+    const operatingUnitName =
+      context.language === "ar"
+        ? context.operatingUnitName || context.operatingUnitName: context.operatingUnitName;
+
+    const organizationLogo = context.organizationLogo;
 
   const titleStyleAttr = titleStyle ? ` style="${titleStyle}"` : "";
   const logoStyleAttr = logoStyle ? ` style="${logoStyle}"` : "";
@@ -112,18 +113,27 @@ export function buildPdfHeader(options: PdfHeaderOptions): string {
       <div class="header-center">
         <div class="doc-title"${titleStyleAttr}>${escapeHtml(documentTitle)}</div>
       </div>
-
-      <div class="header-right">
-        ${organizationLogo ? `<img class="org-logo" src="${escapeHtml(organizationLogo)}" alt="Logo"${logoStyleAttr} />` : ""}
-        <div class="ref-date">
-          ${refNumber ? `<div class="value ltr-safe">${escapeHtml(refNumber)}</div>` : ""}
-          ${date ? `<div class="value ltr-safe">${escapeHtml(date)}</div>` : ""}
-        </div>
-      </div>
-    </div>
-    <hr class="hr-strong" />
-  `;
-}
+        <div class="header-right">
+        ${
+          organizationLogo
+            ? `
+              <img
+                class="org-logo"
+                src="${escapeHtml(organizationLogo)}"
+                alt="Logo"
+                ${logoStyleAttr}
+              />
+            `
+            : `
+              <div class="org-name-fallback">
+                ${escapeHtml(organizationName)}
+              </div>
+                `
+            }
+          </div>
+      <hr class="hr-strong" />
+    `;
+  }
 
 // ─── Full Document Builder ───────────────────────────────────────────────────
 

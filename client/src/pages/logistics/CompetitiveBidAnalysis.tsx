@@ -125,7 +125,7 @@ export default function CompetitiveBidAnalysis() {
   const [approvalMembers, setApprovalMembers] = useState<ApprovalMember[]>([]);
   const [signatureDialogOpen, setSignatureDialogOpen] = useState(false);
   const [activeSignatureIdx, setActiveSignatureIdx] = useState<number | null>(null);
-  const [pdfLoading, setPdfLoading] = useState(false);
+  const [generatingPdfId, setGeneratingPdfId] = useState<number | null>(null);
   const [saving, setSaving] = useState(false);
   const [finalizeDialogOpen, setFinalizeDialogOpen] = useState(false);
   const [finalizing, setFinalizing] = useState(false);
@@ -312,6 +312,7 @@ export default function CompetitiveBidAnalysis() {
     .map((key) => ({ number: parseInt(key), ...groupedCriteria[key] }));
 
   // ── Mutations ───────────────────────────────────────────────────────
+  const generatePDF = trpc.logistics.generatePDF.useMutation();
   const updateCBA = trpc.logistics.bidAnalysis.updateCBA.useMutation({
     onSuccess: () => {
       toast.success(t.common.savedSuccessfully);
@@ -423,15 +424,66 @@ export default function CompetitiveBidAnalysis() {
     saveSignaturesMutation,
   ]);
 
-  const handleExportPdf = useCallback(() => {
-    if (!ba || !id) return;
-    setPdfLoading(true);
-    const orgId = ba.organizationId || 30001;
-    const lang = language === 'ar' ? 'ar' : 'en';
-    const url = `/api/logistics/bid-analysis/${id}/cba-pdf?lang=${lang}&orgId=${orgId}`;
-    window.open(url, "_blank");
-    setTimeout(() => setPdfLoading(false), 2000);
-  }, [ba, id, language]);
+    const handleGeneratePdf = async () => {
+    try {
+      setGeneratingPdfId(Number(id));
+
+      const result = await generatePDF.mutateAsync({
+        documentType: "cba",
+        documentId: Number(id),
+        language: isRTL ? "ar" : "en",
+      });
+
+      if (!result?.pdf || !result.pdf.startsWith("JVBER")) {
+        toast.error(
+          isRTL
+            ? "ملف PDF غير صالح"
+            : "Invalid PDF generated"
+        );
+
+        return;
+      }
+
+      // Base64 → Blob
+      const binaryString = atob(result.pdf);
+
+      const bytes = new Uint8Array(binaryString.length);
+
+      for (let i = 0; i < binaryString.length; i++) {
+        bytes[i] = binaryString.charCodeAt(i);
+      }
+
+      const blob = new Blob(
+        [bytes],
+        {
+          type: "application/pdf",
+        }
+      );
+
+      const url = window.URL.createObjectURL(blob);
+
+      window.open(url, "_blank");
+
+      toast.success(
+        isRTL
+          ? "تم إنشاء ملف PDF بنجاح"
+          : "PDF generated successfully"
+      );
+
+    } catch (error: any) {
+      console.error("PDF generation error:", error);
+
+      toast.error(
+        error?.message ||
+        (isRTL
+          ? "خطأ في إنشاء PDF"
+          : "Error generating PDF")
+      );
+
+    } finally {
+      setGeneratingPdfId(null);
+    }
+  };
 
   // ── Approval member management ──────────────────────────────────────
   const addMember = () => {
@@ -586,15 +638,19 @@ export default function CompetitiveBidAnalysis() {
           </Button>
           <Button
             variant="outline"
-            onClick={handleExportPdf}
-            disabled={pdfLoading}
+            onClick={handleGeneratePdf}
+            className="gap-2"
+            disabled={generatingPdfId === Number(id)}
           >
-            {pdfLoading ? (
-              <Loader2 className="h-4 w-4 me-2 animate-spin" />
+            {generatingPdfId === Number(id) ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
             ) : (
-              <FileText className="h-4 w-4 me-2" />
+              <Printer className="h-4 w-4" />
             )}
-            {t.procurement.exportPdfLandscape}
+
+            {generatingPdfId === Number(id)
+              ? t.procurement.print
+              : t.procurement.exportPdfLandscape}
           </Button>
         </div>
       </div>
@@ -621,7 +677,7 @@ export default function CompetitiveBidAnalysis() {
                   ba?.purchaseRequest?.totalBudgetLine
                     ? parseFloat(ba.purchaseRequest.totalBudgetLine as string).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })
                     : (ba as any)?.totalCost ||
-                      ba?.purchaseRequest?.prTotalUsd || ba?.purchaseRequest?.prTotalUSD ||
+                      ba?.purchaseRequest?.prTotalUsd || ba?.purchaseRequest?.prTotalUsd ||
                       "0"
                 }`}
                 disabled

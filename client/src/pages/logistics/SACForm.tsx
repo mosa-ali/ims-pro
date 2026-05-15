@@ -324,7 +324,9 @@ export default function SACForm() {  const params = useParams<{ sacId: string }>
   const { language, isRTL } = useLanguage();
   const { user } = useAuth();
   const t = translations[language as keyof typeof translations] || translations.en;
-
+  const [generatingPdfId, setGeneratingPdfId] = useState<number | null>(null);
+  const generatePDF = trpc.logistics.generatePDF.useMutation();
+  
   const sacId = params.sacId;
   const isNew = sacId === "new";
   const contractIdParam = searchParams.get("contractId");
@@ -635,12 +637,67 @@ export default function SACForm() {  const params = useParams<{ sacId: string }>
     });
   };
 
-  const handlePrintPdf = () => {
+  const handlePrintPdf = async () => {
     if (!existingSacId) return;
-    // Get current org from localStorage (set by OrganizationContext)
-    const orgId = localStorage.getItem('pms_current_org') || '';
-    const lang = language === 'ar' ? 'ar' : 'en';
-    window.open(`/api/logistics/sac/${existingSacId}/pdf?lang=${lang}&orgId=${orgId}`, "_blank");
+
+    try {
+      setGeneratingPdfId(existingSacId);
+
+      const result = await generatePDF.mutateAsync({
+        documentType: "sac",
+        documentId: Number(existingSacId),
+        language: isRTL ? "ar" : "en",
+      });
+
+      if (!result?.pdf || !result.pdf.startsWith("JVBER")) {
+        toast.error(
+          isRTL
+            ? "ملف PDF غير صالح"
+            : "Invalid PDF generated"
+        );
+
+        return;
+      }
+
+      // Convert Base64 → Blob
+      const binaryString = atob(result.pdf);
+
+      const bytes = new Uint8Array(binaryString.length);
+
+      for (let i = 0; i < binaryString.length; i++) {
+        bytes[i] = binaryString.charCodeAt(i);
+      }
+
+      const blob = new Blob([bytes], {
+        type: "application/pdf",
+      });
+
+      const url = window.URL.createObjectURL(blob);
+
+      window.open(url, "_blank");
+
+      toast.success(
+        isRTL
+          ? "تم إنشاء ملف PDF بنجاح"
+          : "PDF generated successfully"
+      );
+
+    } catch (error: any) {
+
+      console.error("PDF generation error:", error);
+
+      toast.error(
+        error?.message ||
+        (isRTL
+          ? "خطأ في إنشاء PDF"
+          : "Error generating PDF")
+      );
+
+    } finally {
+
+      setGeneratingPdfId(null);
+
+    }
   };
 
   // Update deliverable row
@@ -696,9 +753,21 @@ export default function SACForm() {  const params = useParams<{ sacId: string }>
 
           {/* Print/PDF button (always available for existing SACs) */}
           {!isNew && (
-            <Button variant="outline" onClick={handlePrintPdf} className="gap-2">
-              <Printer className="w-4 h-4" />
-              {t.printPdf}
+            <Button
+              variant="outline"
+              onClick={handlePrintPdf}
+              className="gap-2"
+              disabled={generatingPdfId === existingSacId}
+            >
+              {generatingPdfId === existingSacId ? (
+                <Loader2 className="w-4 h-4 animate-spin" />
+              ) : (
+                <Printer className="w-4 h-4" />
+              )}
+
+              {generatingPdfId === existingSacId
+                ? t.printing
+                : t.printPdf}
             </Button>
           )}
         </div>

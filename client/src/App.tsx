@@ -66,7 +66,7 @@ const Opportunities = lazy(() => import("@/pages/organization/donor-crm/Opportun
 const DonorRegistry = lazy(() => import("@/pages/organization/donor-crm/DonorRegistry"));
 const DonorCommunications = lazy(() => import("@/pages/organization/donor-crm/DonorCommunications"));
 const DonorReports = lazy(() => import("@/pages/organization/donor-crm/DonorReports"));
-const FundingOpportunities = lazy(() => import("@/pages/organization/proposals/FundingOpportunities"));
+const FundingOpportunities = lazy(() => import("@/pages/organization/proposals/FundingOpportunities").then(m => ({ default: m.FundingOpportunities })));
 const AdminDashboard = lazy(() => import("./pages/AdminDashboard"));
 // --- Organization Settings Pages ---
 const SettingsDashboard = lazy(() => import("./pages/settings/SettingsDashboard"));
@@ -308,13 +308,12 @@ const RoleBasedAccessControl = lazy(() => import("./pages/logistics/governance/R
 const AuditTrailCompliance = lazy(() => import("./pages/logistics/governance/AuditTrailCompliance"));
 const WorkflowAutomation = lazy(() => import("./pages/logistics/governance/WorkflowAutomation"));
 const ProcurementTracker = lazy(() => import("./pages/logistics/ProcurementTracker"));
-const PurchaseRequestPrint = lazy(() => import("./pages/logistics/PurchaseRequestPrint"));
 const PurchaseOrderPrint = lazy(() => import("./pages/logistics/PurchaseOrderPrint"));
-const GoodsReceiptPrint = lazy(() => import("./pages/logistics/GoodsReceiptPrint"));
 const ProcurementWorkspace = lazy(() => import("./pages/logistics/ProcurementWorkspace"));
 const TenderInformation = lazy(() => import("./pages/logistics/TenderInformation"));
 const BidEvaluationChecklist = lazy(() => import("@/pages/logistics/BidEvaluationChecklist"));
 const BidOpeningMinutes = lazy(() => import("@/pages/logistics/BidOpeningMinutes"));
+
 const CompetitiveBidAnalysis = lazy(() => import("./pages/logistics/CompetitiveBidAnalysis"));
 const RFQManagementPage = lazy(() => import("./pages/logistics/RFQManagementPage"));
 const RFQPrint = lazy(() => import("./pages/logistics/RFQPrint"));
@@ -325,8 +324,6 @@ const ProcurementPackagePrint = lazy(() => import("./pages/logistics/Procurement
 const QuotationAnalysisPrint = lazy(() => import("./pages/logistics/QuotationAnalysisPrint"));
 const QuotationAnalysisExtendedPrint = lazy(() => import("./pages/logistics/QuotationAnalysisExtendedPrint"));
 const BidAnalysisPrint = lazy(() => import("./pages/logistics/BidAnalysisPrint"));
-const BidOpeningMinutesPrint = lazy(() => import("./pages/logistics/BidOpeningMinutesPrint"));
-const BidEvaluationChecklistPrint = lazy(() => import("./pages/logistics/BidEvaluationChecklistPrint"));
 const PRPayablesList = lazy(() => import("./pages/logistics/PRPayablesList"));
 const ContractManagement = lazy(() => import("./pages/logistics/ContractManagement"));
 const SACManagement = lazy(() => import("./pages/logistics/SACManagement"));
@@ -412,7 +409,6 @@ function Router() {
  <Route path="/organization/projects-list" component={ProjectsCRUDPage} />
  <Route path="/organization/projects/:id" component={ProjectDetailsPage} />
  <Route path="/organization/grants" component={ActiveGrantsPage} />
- <Route path="/organization/reporting" component={ReportingSchedulePage} />
  <Route path="/organization/reporting-schedule" component={ReportingSchedulePage} />
  <Route path="/organization/proposals" component={ProposalPipeline} />
  <Route path="/organization/donor-crm" component={DonorCRMDashboard} />
@@ -633,7 +629,6 @@ function Router() {
  <Route path="/organization/logistics/reports/scheduled" component={ScheduledReports} />
  <Route path="/organization/logistics/purchase-requests" component={PurchaseRequestList} />
  <Route path="/organization/logistics/purchase-requests/new" component={PurchaseRequestForm} />
- <Route path="/organization/logistics/purchase-requests/:id/print" component={PurchaseRequestPrint} />
  <Route path="/organization/logistics/purchase-requests/:id/edit" component={PurchaseRequestForm} />
  <Route path="/organization/logistics/purchase-requests/:id" component={PurchaseRequestForm} />
 
@@ -742,12 +737,9 @@ function Router() {
  <Route path="/organization/logistics/payables" component={PRPayablesList} />
  <Route path="/organization/logistics/procurement-package/:prId/print" component={ProcurementPackagePrint} />
  <Route path="/organization/logistics/purchase-orders/:id/print" component={PurchaseOrderPrint} />
- <Route path="/organization/logistics/grn/:id/print" component={GoodsReceiptPrint} />
  <Route path="/organization/logistics/quotation-analysis/:id/print" component={QuotationAnalysisPrint} />
  <Route path="/organization/logistics/quotation-analysis-extended/:id/print" component={QuotationAnalysisExtendedPrint} />
  <Route path="/organization/logistics/bid-analysis/:id/print" component={BidAnalysisPrint} />
- <Route path="/organization/logistics/bid-opening-minutes/:id/print" component={BidOpeningMinutesPrint} />
- <Route path="/organization/logistics/bid-evaluation-checklist/:id/print" component={BidEvaluationChecklistPrint} />
  
  {/* Redirects for legacy routes */}
  <Route path="/projects">

@@ -30,14 +30,11 @@ import { Badge } from "@/components/ui/badge";
 import {
  Plus,
  Search,
- Download,
  Upload,
  Eye,
  Edit,
  Trash2,
  Printer,
- ArrowLeft,
- ArrowRight,
  FileText,
  Loader2,
  FolderOpen,
@@ -45,7 +42,6 @@ import {
  RefreshCw,
 } from "lucide-react";
 import { UnifiedExportButton } from "@/components/exports/UnifiedExportButton";
-import { exportToStandardExcel, exportExcelTemplate, type ExcelColumn } from "@/lib/standardExcelExport";
 import { Link, useLocation } from "wouter";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { toast } from "sonner";
@@ -110,7 +106,6 @@ function getCurrentProcurementStage(stages: any[]): string {
 
 export default function PurchaseRequestList() {
  const { t } = useTranslation();
- const { user } = useAuth();
  const { currentOrganization } = useOrganization();
  const { isRTL } = useLanguage();
  const [, navigate] = useLocation();
@@ -119,10 +114,8 @@ export default function PurchaseRequestList() {
  const [statusFilter, setStatusFilter] = useState<string>("all");
  const [categoryFilter, setCategoryFilter] = useState<string>("all");
  const [stageFilter, setStageFilter] = useState<string>("all");
+ const [generatingPdfId, setGeneratingPdfId] = useState<number | null>(null);
  
- // Get organizationId from context (same pattern as Finance and HR modules)
- const organizationId = currentOrganization?.id || 1;
-
  // Use getMyPRs endpoint to get procurement progress data
  const { data, isLoading, refetch } = trpc.logistics.prWorkflowDashboard.getMyPRs.useQuery({
  search: search || undefined,
@@ -181,14 +174,13 @@ export default function PurchaseRequestList() {
  }
  };
 
- const trpcUtils = trpc.useUtils();
-
- const importMutation = trpc.logistics.purchaseRequests.importFromExcel.useMutation({
+ const importMutation = trpc.logistics.purchaseRequestExportImport.importFromExcel.useMutation({
  onSuccess: (result) => {
  if (result.success) {
- toast.success(`Successfully imported ${result.imported} purchase requests`);
+ const count = result.importedPRIds?.length || 0;
+ toast.success(`Successfully imported ${count} purchase requests with line items`);
  } else {
- toast.warning(`Imported ${result.imported}, failed ${result.failed}`);
+ toast.warning(`Import completed with some issues`);
  }
  refetch();
  },
@@ -197,7 +189,9 @@ export default function PurchaseRequestList() {
  },
  });
 
+ const generatePDF = trpc.logistics.generatePDF.useMutation();
  const exportTemplateMutation = trpc.logistics.purchaseRequests.exportTemplate.useMutation();
+ const utils = trpc.useUtils(); 
 
  const handleExportTemplate = async () => {
  try {
@@ -232,80 +226,176 @@ export default function PurchaseRequestList() {
  return;
  }
 
- const exportData = items.map((pr: any) => ({
- prNumber: pr.prNumber,
- projectTitle: pr.projectTitle || pr.projectTitleEn || "-",
- category: pr.category,
- requesterName: pr.requesterName || "-",
- currency: pr.currency,
- totalAmount: Number(pr.totalAmount || 0), exchangeTo: pr.exchangeTo,
- status: isRTL ? statusLabels[pr.status]?.ar || pr.status : statusLabels[pr.status]?.en || pr.status,
- prDate: pr.prDate ? format(new Date(pr.prDate), "yyyy-MM-dd") : "-",
- procurementStage: pr.currentStageLabel || "-",
- }));
+ toast.info("Exporting purchase requests with line items...");
 
- const columns: ExcelColumn[] = [
- { name: t.logistics.prNumber, key: "prNumber", width: 20, type: "text" },
- { name: t.logistics.project, key: "projectTitle", width: 30, type: "text" },
- { name: t.logistics.category, key: "category", width: 15, type: "text" },
- { name: t.logistics.requester, key: "requesterName", width: 20, type: "text" },
- { name: t.logistics.currency, key: "currency", width: 10, type: "text" },
- { name: t.logistics.amount, key: "totalAmount", width: 15, type: "number", totals: "sum" },
- { name: t.logistics.status, key: "status", width: 15, type: "text" },
- { name: t.logistics.date, key: "prDate", width: 15, type: "text" },
- { name: t.logistics.procurementStage, key: "procurementStage", width: 20, type: "text" },
- ];
+ const result =
+  await utils.logistics.purchaseRequests.exportData.fetch();
 
- // Build file name with filter indicators
- let fileName = "PR_Export";
- if (statusFilter !== "all") fileName += `_${statusFilter}`;
- if (categoryFilter !== "all") fileName += `_${categoryFilter}`;
- if (stageFilter !== "all") fileName += `_${stageFilter}`;
- if (search) fileName += "_filtered";
- fileName += `_${new Date().toISOString().split("T")[0]}`;
+ // Base64 → Blob
+ const binaryString = atob(result.data);
+ const bytes = new Uint8Array(binaryString.length);
 
- await exportToStandardExcel({
- sheetName: t.logistics.purchaseRequests,
- columns,
- data: exportData,
- fileName,
- includeTotals: true,
- isRTL,
- });
- 
- const message = `Exported ${exportData.length} record${exportData.length !== 1 ? 's' : ''}`;
- toast.success(message);
+ for (let i = 0; i < binaryString.length; i++) {
+ bytes[i] = binaryString.charCodeAt(i);
+ }
+
+ const blob = new Blob(
+ [bytes],
+ {
+ type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+ }
+ );
+
+ const url = URL.createObjectURL(blob);
+
+ const a = document.createElement("a");
+ a.href = url;
+ a.download = result.filename;
+ a.click();
+ setTimeout(() => {
+  URL.revokeObjectURL(url);
+}, 1000);
+ URL.revokeObjectURL(url);
+
+ toast.success(
+  "Purchase requests exported successfully"
+);
  } catch (error: any) {
  console.error("Export error:", error);
  toast.error(error.message || (t.logistics.exportFailed));
  }
- };
+ }
 
  const handleImport = () => {
- const input = document.createElement("input");
- input.type = "file";
- input.accept = ".xlsx,.xls";
- input.onchange = async (e: any) => {
- const file = e.target?.files?.[0];
- if (!file) return;
+  const input = document.createElement("input");
 
- const reader = new FileReader();
- reader.onload = async (event) => {
- try {
- const base64 = event.target?.result as string;
- const base64Data = base64.split(",")[1];
- 
- toast.info(t.logistics.importing);
- await importMutation.mutateAsync({ fileData: base64Data });
- } catch (error: any) {
- console.error("Import error:", error);
- toast.error(error.message || (t.logistics.importFailed));
- }
- };
- reader.readAsDataURL(file);
- };
- input.click();
- };
+  input.type = "file";
+  input.accept = ".xlsx,.xls";
+
+  input.onchange = async (e: any) => {
+    const file = e.target?.files?.[0];
+
+    if (!file) return;
+
+    // File type validation
+    const allowed = [
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      "application/vnd.ms-excel",
+    ];
+
+    if (!allowed.includes(file.type)) {
+      toast.error(
+        isRTL
+          ? "ملف Excel غير صالح"
+          : "Invalid Excel file"
+      );
+
+      return;
+    }
+
+    // File size validation (10MB)
+    if (file.size > 10 * 1024 * 1024) {
+      toast.error(
+        isRTL
+          ? "حجم الملف يتجاوز 10MB"
+          : "File exceeds 10MB limit"
+      );
+
+      return;
+    }
+
+    const reader = new FileReader();
+
+    reader.onload = async (event) => {
+      try {
+        const base64 = event.target?.result as string;
+
+        const base64Data = base64.split(",")[1];
+
+        toast.info(
+          isRTL
+            ? "جاري استيراد البيانات..."
+            : "Importing purchase requests..."
+        );
+
+        await importMutation.mutateAsync({
+          fileData: base64Data,
+        });
+
+      } catch (error: any) {
+        console.error("Import error:", error);
+
+        toast.error(
+          error.message ||
+          (isRTL
+            ? "فشل استيراد الملف"
+            : "Import failed")
+        );
+      }
+    };
+
+    reader.readAsDataURL(file);
+  };
+
+  input.click();
+};
+
+ const handleGeneratePdf = async (pr: any) => {
+  try {
+    setGeneratingPdfId(pr.id);
+
+    const result = await generatePDF.mutateAsync({
+      documentType: "purchaseRequest",
+      documentId: Number(pr.id),
+      language: isRTL ? "ar" : "en",
+    });
+
+    if (!result?.pdf || !result.pdf.startsWith("JVBER")) {
+      toast.error(
+        isRTL
+          ? "ملف PDF غير صالح"
+          : "Invalid PDF generated"
+      );
+
+      return;
+    }
+
+    // Convert base64 → Blob
+    const binaryString = atob(result.pdf);
+    const bytes = new Uint8Array(binaryString.length);
+
+    for (let i = 0; i < binaryString.length; i++) {
+      bytes[i] = binaryString.charCodeAt(i);
+    }
+
+    const blob = new Blob([bytes], {
+      type: "application/pdf",
+    });
+
+    const url = window.URL.createObjectURL(blob);
+
+    window.open(url, "_blank");
+
+    toast.success(
+      isRTL
+        ? "تم إنشاء ملف PDF بنجاح"
+        : "PDF generated successfully"
+    );
+
+  } catch (error: any) {
+    console.error("PDF generation error:", error);
+
+    toast.error(
+      error?.message ||
+      (isRTL
+        ? "خطأ في إنشاء PDF"
+        : "Error generating PDF")
+    );
+
+  } finally {
+    setGeneratingPdfId(null);
+  }
+};
 
  return (
  <div className="min-h-screen bg-background" dir={isRTL ? 'rtl' : 'ltr'}>
@@ -500,13 +590,7 @@ export default function PurchaseRequestList() {
  </TableCell>
  <TableCell>{pr.requesterName || "-"}</TableCell>
  <TableCell>
- {pr.currency} {Number(pr.totalAmount || 0).toLocaleString(undefined, { minimumFractionDigits: 2 })}
- {pr.exchangeTo && pr.exchangeTo !== pr.currency && (
-   <>
-     {" "}
-     ({pr.exchangeTo} {Number(pr.convertedAmount || 0).toLocaleString(undefined, { minimumFractionDigits: 2 })})
-   </>
- )}
+ USD {pr.totalAmount?.toLocaleString() || "0"}
  </TableCell>
  <TableCell>
  <Badge className={statusColors[pr.status] || "bg-gray-500"}>
@@ -537,14 +621,17 @@ export default function PurchaseRequestList() {
  </Link>
  </Button>
  <Button
- variant="ghost"
- size="icon"
- asChild
- >
- <Link href={`/organization/logistics/purchase-requests/${pr.id}/print`}>
- <Printer className="h-4 w-4" />
- </Link>
- </Button>
+  variant="ghost"
+  size="icon"
+  onClick={() => handleGeneratePdf(pr)}
+  disabled={generatingPdfId === pr.id}
+>
+  {generatingPdfId === pr.id ? (
+    <Loader2 className="h-4 w-4 animate-spin" />
+  ) : (
+    <Printer className="h-4 w-4" />
+  )}
+</Button>
  <Button
  variant="ghost"
  size="icon"

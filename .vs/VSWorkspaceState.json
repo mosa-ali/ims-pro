@@ -2,11 +2,10 @@
   "ExpandedNodes": [
     "",
     "\\client\\src\\pages",
-    "\\client\\src\\pages\\admin",
-    "\\client\\src\\pages\\platform",
-    "\\server",
-    "\\server\\routers"
+    "\\client\\src\\pages\\logistics",
+    "\\server\\services",
+    "\\server\\services\\procurement"
   ],
-  "SelectedNode": "\\server\\routers\\authRouter.ts",
+  "SelectedNode": "\\.gitkeep",
   "PreviewInSolutionExplorer": false
 }

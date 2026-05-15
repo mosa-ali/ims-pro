@@ -22,6 +22,14 @@ import { format } from "date-fns";
 import { useTranslation } from '@/i18n/useTranslation';
 import { BackButton } from "@/components/BackButton";
 
+const formatSqlDate = (dateValue?: string | Date | null) => {
+  if (!dateValue) return null;
+
+  return new Date(dateValue)
+    .toISOString()
+    .split("T")[0]; // YYYY-MM-DD
+};
+
 const statusColors: Record<string, string> = {
  draft: "bg-gray-500", issued: "bg-blue-500", acknowledged: "bg-yellow-500", partially_delivered: "bg-orange-500",
  delivered: "bg-green-500", completed: "bg-emerald-600", cancelled: "bg-red-500",
@@ -124,8 +132,8 @@ export default function PurchaseOrderListV2() {
  }
  createFromQAMutation.mutate({
  quotationAnalysisId: qaId,
- deliveryDate: new Date(poForm.deliveryDate),
- deliveryLocation: poForm.deliveryLocation,
+ deliveryDate: formatSqlDate(poForm.deliveryDate) || undefined,
+ deliveryLocation: poForm.deliveryLocation || undefined,
  paymentTerms: poForm.paymentTerms || undefined,
  notes: poForm.notes || undefined,
  });

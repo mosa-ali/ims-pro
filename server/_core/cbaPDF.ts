@@ -504,7 +504,7 @@ export async function generateCBAPDF(
   `;
 
   // ── Decision & Justification ──────────────────────────────────────────
-  const winner = calculatedScores.find(b => b.bidderId === ba.selectedWinnerId) || calculatedScores[0];
+  const winner = calculatedScores.find(b => b.bidderId === ba.selectedBidderId) || calculatedScores[0];
   const justificationHtml = `
     <div class="avoid-break" style="margin-bottom:3mm;">
       <h3 style="font-size:10pt;font-weight:900;margin:2mm 0 1.5mm 0;${isRTL ? 'text-align:right;' : ''}">${escapeHtml(l.decisionJustification)}</h3>
@@ -512,10 +512,10 @@ export async function generateCBAPDF(
         <div style="font-size:8pt;color:#4b5563;">${escapeHtml(l.selectedSupplier)}:</div>
         <div style="font-size:11pt;font-weight:900;color:#15803d;">${escapeHtml(winner?.bidderName || "")}</div>
       </div>
-      ${ba.justification ? `
+      ${ba.selectionJustification ? `
         <div style="padding:2mm 4mm;background:#f8fafc;border:1px solid #e2e8f0;border-radius:3px;">
           <div style="font-size:8pt;color:#4b5563;margin-bottom:1mm;">${escapeHtml(l.justification)}:</div>
-          <div style="font-size:9pt;line-height:1.4;">${escapeHtml(ba.justification)}</div>
+          <div style="font-size:9pt;line-height:1.4;">${escapeHtml(ba.selectionJustification)}</div>
         </div>
       ` : ''}
     </div>
@@ -692,11 +692,17 @@ export async function generateCBAPDF(
 
   // ── Generate PDF with Puppeteer ───────────────────────────────────────
   const browser = await puppeteer.launch({
-    headless: "new",
+    headless: true,
+    executablePath:
+      process.env.PUPPETEER_EXECUTABLE_PATH ||
+      '/usr/bin/chromium',
     args: [
-      "--no-sandbox",
-      "--disable-setuid-sandbox",
-      "--disable-dev-shm-usage",
+      '--no-sandbox',
+      '--disable-setuid-sandbox',
+      '--disable-dev-shm-usage',
+      '--disable-gpu',
+      '--disable-crash-reporter',
+      '--disable-breakpad',
     ],
   });
 
@@ -708,7 +714,7 @@ export async function generateCBAPDF(
       timeout: 30000,
     });
 
-    const pdf = await page.pdf({
+    const pdfBuffer = await page.pdf({
       landscape: true,
       format: "A4",
       margin: {
@@ -721,7 +727,7 @@ export async function generateCBAPDF(
       preferCSSPageSize: false,
     });
 
-    return pdf;
+    return Buffer.from(pdfBuffer);
   } finally {
     await browser.close();
   }

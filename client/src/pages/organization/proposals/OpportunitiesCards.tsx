@@ -106,10 +106,10 @@ export function OpportunitiesCards() {
  // Get status badge
  const getStatusBadge = (status: DeadlineStatus) => {
  const badges = {
- 'open': { label: t.status.open, className: 'bg-green-100 text-green-700' },
- 'closing-soon': { label: t.status.closingSoon, className: 'bg-yellow-100 text-yellow-700' },
- 'urgent': { label: t.status.urgent, className: 'bg-red-100 text-red-700' },
- 'closed': { label: t.status.closed, className: 'bg-gray-100 text-gray-500' }
+ 'open': { label: t.proposals.status, className: 'bg-green-100 text-green-700' },
+ 'closing-soon': { label: t.proposals.status, className: 'bg-yellow-100 text-yellow-700' },
+ 'urgent': { label: t.proposals.status, className: 'bg-red-100 text-red-700' },
+ 'closed': { label: t.proposals.status, className: 'bg-gray-100 text-gray-500' }
  };
  return badges[status];
  };
@@ -523,7 +523,7 @@ export function OpportunitiesCards() {
  />
  </div>
  <div>
- <label className="block text-sm font-medium text-gray-700 mb-1">{t.currency}</label>
+ <label className="block text-sm font-medium text-gray-700 mb-1">{t.proposals.currency}</label>
  <select
  value={formData.currency}
  onChange={(e) => setFormData({ ...formData, currency: e.target.value })}
@@ -621,7 +621,7 @@ export function OpportunitiesCards() {
  onClick={() => handleSendToPipeline(showSendToPipeline)}
  className="bg-primary text-white hover:bg-primary/90"
  >
- {t.confirm}
+ {t.proposals.confirm}
  </Button>
  </div>
  </div>

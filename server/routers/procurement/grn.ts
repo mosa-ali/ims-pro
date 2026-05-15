@@ -103,13 +103,12 @@ export const grnRouter = router({
           poLineItemId: item.id,
           lineNumber: index + 1,
           description: item.description || "",
-          orderedQty: item.quantity || 0,
-          receivedQty: 0,
-          acceptedQty: 0,
-          rejectedQty: 0,
+          orderedQty: String(item.quantity || "0"),
+          receivedQty: "0",
+          acceptedQty: "0",
+          rejectedQty: "0",
           unit: item.unit || "Piece",
           remarks: "",
-          createdBy: ctx.user.id,
         }));
 
         await db.insert(grnLineItems).values(grnLineItemsToInsert);
@@ -119,29 +118,30 @@ export const grnRouter = router({
     }),
 
   /**
-   * Create GRN from PO
+   * Create GRN from PO 
    */
   createFromPO: scopedProcedure
     .input(
       z.object({
         purchaseOrderId: z.number(),
-        receivedDate: z.date(),
+        grnDate: z.string().optional(),
         receivedBy: z.string(),
         deliveryNoteNumber: z.string().optional(),
-        inspectionStatus: z.enum(["pending", "passed", "failed", "partial"]).default("pending"),
-        inspectionNotes: z.string().optional(),
+        invoiceNumber: z.string().optional(),
+        warehouse: z.string().optional(),
+        remarks: z.string().optional(),
         lineItems: z.array(
           z.object({
             lineNumber: z.number(),
             description: z.string(),
-            orderedQuantity: z.number(),
-            receivedQuantity: z.number(),
-            acceptedQuantity: z.number(),
-            rejectedQuantity: z.number().default(0),
+            orderedQty: z.union([z.string(), z.number()]),
+            receivedQty: z.union([z.string(), z.number()]),
+            acceptedQty: z.union([z.string(), z.number()]),
+            rejectedQty: z.union([z.string(), z.number()]).optional(),
             unit: z.string().default("Piece"),
             remarks: z.string().optional(),
           })
-        ).optional(), // Make optional to allow auto-copy from PO
+        ).optional(),
       })
     )
     .mutation(async ({ input, ctx }) => {
@@ -186,15 +186,17 @@ export const grnRouter = router({
         organizationId: ctx.scope.organizationId,
         operatingUnitId: ctx.scope.operatingUnitId,
         purchaseOrderId: input.purchaseOrderId,
+        supplierId: po.supplierId,
         grnNumber,
-        receivedDate: input.receivedDate,
+        grnDate: input.grnDate || new Date().toISOString(),
         receivedBy: input.receivedBy,
         deliveryNoteNumber: input.deliveryNoteNumber,
-        inspectionStatus: input.inspectionStatus,
-        inspectionNotes: input.inspectionNotes,
-        status: "draft",
+        invoiceNumber: input.invoiceNumber,
+        warehouse: input.warehouse,
+        remarks: input.remarks,
+        status: "pending_inspection",
+        isDeleted: 0,
         createdBy: ctx.user.id,
-        isDeleted: 0,  // Dual-column synchronization
       });
 
       const grnId = result.insertId;
@@ -212,12 +214,12 @@ export const grnRouter = router({
         lineItemsToInsert = poLineItems.map((item, index) => ({
           lineNumber: index + 1,
           description: item.description || "",
-          orderedQty: parseFloat(item.quantity || "0"),
-          receivedQty: parseFloat(item.quantity || "0"), // Default: assume full receipt
-          acceptedQty: parseFloat(item.quantity || "0"), // Default: assume full acceptance
-          rejectedQty: 0,
+          orderedQty: String(item.quantity || "0"),
+          receivedQty: String(item.quantity || "0"),
+          acceptedQty: String(item.quantity || "0"),
+          rejectedQty: "0",
           unit: item.unit || "Piece",
-          remarks: item.specifications,
+          remarks: item.specifications || undefined,
         }));
       }
 
@@ -228,11 +230,11 @@ export const grnRouter = router({
             grnId,
             lineNumber: item.lineNumber,
             description: item.description,
-            orderedQty: item.orderedQty,
-            receivedQty: item.receivedQty,
-            acceptedQty: item.acceptedQty,
-            rejectedQty: item.rejectedQty,
-            unit: item.unit,
+            orderedQty: String(item.orderedQty || "0"),
+            receivedQty: String(item.receivedQty || "0"),
+            acceptedQty: String(item.acceptedQty || "0"),
+            rejectedQty: String(item.rejectedQty || "0"),
+            unit: item.unit || "Piece",
             remarks: item.remarks,
           }))
         );
@@ -318,9 +320,9 @@ export const grnRouter = router({
     .input(
       z.object({
         id: z.number(),
-        inspectionStatus: z.enum(["pending", "passed", "failed", "partial"]),
-        inspectionNotes: z.string().optional(),
+        status: z.enum(["pending_inspection", "inspected", "accepted", "partially_accepted", "rejected"]),
         inspectedBy: z.string().optional(),
+        remarks: z.string().optional(),
       })
     )
     .mutation(async ({ input, ctx }) => {
@@ -329,11 +331,11 @@ export const grnRouter = router({
       await db
         .update(goodsReceiptNotes)
         .set({
-          inspectionStatus: input.inspectionStatus,
-          inspectionNotes: input.inspectionNotes,
+          status: input.status,
           inspectedBy: input.inspectedBy,
-          inspectedOn: new Date(),
+          remarks: input.remarks,
           updatedBy: ctx.user.id,
+          updatedAt: new Date().toISOString(),
         })
         .where(
           and(
@@ -380,8 +382,8 @@ export const grnRouter = router({
 
       // Validate receiving quantities don't exceed PO quantities
       for (const grnItem of grnItems) {
-        const receivedQty = parseFloat(String(grnItem.receivedQuantity || "0"));
-        const orderedQty = parseFloat(String(grnItem.orderedQuantity || "0"));
+        const receivedQty = parseFloat(String(grnItem.receivedQty || "0"));
+        const orderedQty = parseFloat(String(grnItem.orderedQty || "0"));
 
         if (receivedQty > orderedQty) {
           throw new TRPCError({
@@ -395,37 +397,46 @@ export const grnRouter = router({
       await db
         .update(goodsReceiptNotes)
         .set({
-          status: "approved",
+          status: "accepted",
           approvedBy: ctx.user.id,
-          approvedOn: new Date(),
+          approvedAt: new Date().toISOString(),
+          updatedBy: ctx.user.id,
+          updatedAt: new Date().toISOString(),
         })
-        .where(eq(goodsReceiptNotes.id, input.id));
+        .where(
+          and(
+            eq(goodsReceiptNotes.id, input.id),
+            eq(goodsReceiptNotes.organizationId, ctx.scope.organizationId)
+          )
+        );
 
       // ============================================================================
       // PR-FINANCE INTEGRATION: Update Payable Status After GRN
       // ============================================================================
 
       // Get PO to find PR
-      const [poForPayable] = await db
-        .select()
-        .from(purchaseOrders)
-        .where(eq(purchaseOrders.id, grn.purchaseOrderId))
-        .limit(1);
+      if (grn.purchaseOrderId) {
+        const [poForPayable] = await db
+          .select()
+          .from(purchaseOrders)
+          .where(eq(purchaseOrders.id, grn.purchaseOrderId))
+          .limit(1);
 
-      if (poForPayable?.purchaseRequestId) {
-        // Update payable status to pending_invoice
-        await db
-          .update(procurementPayables)
-          .set({
-            status: "pending_invoice",
-            updatedAt: new Date(),
-          })
-          .where(
-            and(
-              eq(procurementPayables.purchaseRequestId, poForPayable.purchaseRequestId),
-              eq(procurementPayables.status, "pending_grn")
-            )
-          );
+        if (poForPayable?.purchaseRequestId) {
+          // Update payable status to pending_invoice
+          await db
+            .update(procurementPayables)
+            .set({
+              status: "pending_invoice",
+              updatedAt: new Date().toISOString(),
+            })
+            .where(
+              and(
+                eq(procurementPayables.purchaseRequestId, poForPayable.purchaseRequestId),
+                eq(procurementPayables.status, "pending_grn")
+              )
+            );
+        }
       }
 
       return {
@@ -442,7 +453,7 @@ export const grnRouter = router({
       z.object({
         limit: z.number().min(1).max(100).default(50),
         offset: z.number().min(0).default(0),
-        status: z.enum(["draft", "approved", "cancelled"]).optional(),
+        status: z.enum(["pending_inspection", "inspected", "accepted", "partially_accepted", "rejected"]).optional(),
       })
     )
     .query(async ({ input, ctx }) => {
@@ -526,12 +537,13 @@ export const grnRouter = router({
         .from(purchaseRequests)
         .where(eq(purchaseRequests.id, input.purchaseRequestId))
         .limit(1);
-      if (prForGuard?.category === 'consultancy') {
-        throw new TRPCError({
-          code: "BAD_REQUEST",
-          message: "GRN cannot be created for consultancy (Type 2) procurement. Use the Contract \u2192 SAC \u2192 Invoice flow instead.",
-        });
-      }
+      if (prForGuard?.category === 'services') {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message:
+              "GRN cannot be created for service/consultancy procurement. Use the Contract → SAC → Invoice flow instead.",
+          });
+        }
 
       // Generate GRN number
       const grnNumber = await generateGRNNumber(
@@ -567,13 +579,12 @@ export const grnRouter = router({
           poLineItemId: item.id,
           lineNumber: index + 1,
           description: item.description || "",
-          orderedQty: item.quantity || 0,
-          receivedQty: 0,
-          acceptedQty: 0,
-          rejectedQty: 0,
+          orderedQty: String(item.quantity || "0"),
+          receivedQty: "0",
+          acceptedQty: "0",
+          rejectedQty: "0",
           unit: item.unit || "Piece",
           remarks: "",
-          createdBy: ctx.user.id,
         }));
 
         await db.insert(grnLineItems).values(grnLineItemsToInsert);
@@ -653,10 +664,10 @@ export const grnRouter = router({
     .input(
       z.object({
         id: z.number(),
-        receivedQty: z.number().optional(),
-        acceptedQty: z.number().optional(),
-        rejectedQty: z.number().optional(),
-        condition: z.enum(["good", "damaged", "expired", "defective"]).optional(),
+        receivedQty: z.union([z.string(), z.number()]).optional(),
+        acceptedQty: z.union([z.string(), z.number()]).optional(),
+        rejectedQty: z.union([z.string(), z.number()]).optional(),
+        rejectionReason: z.string().optional(),
         remarks: z.string().optional(),
       })
     )
@@ -697,10 +708,21 @@ export const grnRouter = router({
       }
 
       // Validate quantities
-      const receivedQty = input.receivedQty ?? parseFloat(String(lineItem.receivedQty || "0"));
-      const acceptedQty = input.acceptedQty ?? parseFloat(String(lineItem.acceptedQty || "0"));
-      const rejectedQty = input.rejectedQty ?? parseFloat(String(lineItem.rejectedQty || "0"));
-      const orderedQty = parseFloat(String(lineItem.orderedQty || "0"));
+      const receivedQty = parseFloat(
+          String(input.receivedQty ?? lineItem.receivedQty ?? "0")
+        );
+
+        const acceptedQty = parseFloat(
+          String(input.acceptedQty ?? lineItem.acceptedQty ?? "0")
+        );
+
+        const rejectedQty = parseFloat(
+          String(input.rejectedQty ?? lineItem.rejectedQty ?? "0")
+        );
+
+        const orderedQty = parseFloat(
+          String(lineItem.orderedQty ?? "0")
+        );
 
       if (receivedQty > orderedQty) {
         throw new TRPCError({
@@ -717,22 +739,21 @@ export const grnRouter = router({
       }
 
       // Update line item
+      const updateData: any = {};
+      if (input.receivedQty !== undefined) updateData.receivedQty = String(input.receivedQty);
+      if (input.acceptedQty !== undefined) updateData.acceptedQty = String(input.acceptedQty);
+      if (input.rejectedQty !== undefined) updateData.rejectedQty = String(input.rejectedQty);
+      if (input.rejectionReason !== undefined) updateData.rejectionReason = input.rejectionReason;
+      if (input.remarks !== undefined) updateData.remarks = input.remarks;
+      updateData.updatedAt = new Date().toISOString();
+
       await db
         .update(grnLineItems)
-        .set({
-          receivedQty: input.receivedQty !== undefined ? input.receivedQty : undefined,
-          acceptedQty: input.acceptedQty !== undefined ? input.acceptedQty : undefined,
-          rejectedQty: input.rejectedQty !== undefined ? input.rejectedQty : undefined,
-          condition: input.condition,
-          remarks: input.remarks,
-          updatedBy: ctx.user.id,
-        })
+        .set(updateData)
         .where(eq(grnLineItems.id, input.id));
 
       // 🔄 CRITICAL FIX: If GRN is already accepted and acceptedQty was changed, recalculate payable
       if (grn.status === "accepted" && input.acceptedQty !== undefined) {
-        const { procurementPayables, purchaseOrderLineItems, purchaseOrders } = await import("../../../drizzle/schema");
-        
         // Get all GRN line items to recalculate total
         const updatedGrnLines = await db
           .select()
@@ -740,46 +761,47 @@ export const grnRouter = router({
           .where(eq(grnLineItems.grnId, lineItem.grnId));
         
         // Get PO to access line items and prices
-        const [po] = await db
-          .select()
-          .from(purchaseOrders)
-          .where(eq(purchaseOrders.id, grn.poId))
-          .limit(1);
-        
-        if (po) {
-          // Get PO line items for price lookup
-          const poLines = await db
+        if (grn.purchaseOrderId) {
+          const [po] = await db
             .select()
-            .from(purchaseOrderLineItems)
-            .where(eq(purchaseOrderLineItems.poId, po.id));
-          
-          // Recalculate total payable amount based on NEW acceptedQty values
-          let newTotalAmount = 0;
-          for (const grnLine of updatedGrnLines) {
-            const poLine = poLines.find(pl => pl.lineNumber === grnLine.lineNumber);
-            if (poLine) {
-              const acceptedQtyForLine = parseFloat(String(grnLine.acceptedQty || "0"));
-              const unitPrice = parseFloat(String(poLine.unitPrice || "0"));
-              newTotalAmount += acceptedQtyForLine * unitPrice;
-            }
-          }
-          
-          // Update payable with new amount
-          const [existingPayable] = await db
-            .select()
-            .from(procurementPayables)
-            .where(eq(procurementPayables.grnId, lineItem.grnId))
+            .from(purchaseOrders)
+            .where(eq(purchaseOrders.id, grn.purchaseOrderId))
             .limit(1);
           
-          if (existingPayable && newTotalAmount !== parseFloat(String(existingPayable.totalAmount || "0"))) {
-            await db
-              .update(procurementPayables)
-              .set({
-                totalAmount: newTotalAmount,
-                updatedBy: ctx.user.id,
-                updatedAt: new Date(),
-              })
-              .where(eq(procurementPayables.id, existingPayable.id));
+          if (po) {
+            // Get PO line items for price lookup
+            const poLines = await db
+              .select()
+              .from(purchaseOrderLineItems)
+              .where(eq(purchaseOrderLineItems.purchaseOrderId, po.id));
+            
+            // Recalculate total payable amount based on NEW acceptedQty values
+            let newTotalAmount = 0;
+            for (const grnLine of updatedGrnLines) {
+              const poLine = poLines.find(pl => pl.lineNumber === grnLine.lineNumber);
+              if (poLine) {
+                const acceptedQtyForLine = parseFloat(String(grnLine.acceptedQty || "0"));
+                const unitPrice = parseFloat(String(poLine.unitPrice || "0"));
+                newTotalAmount += acceptedQtyForLine * unitPrice;
+              }
+            }
+            
+            // Update payable with new amount
+            const [existingPayable] = await db
+              .select()
+              .from(procurementPayables)
+              .where(eq(procurementPayables.purchaseOrderId, grn.purchaseOrderId))
+              .limit(1);
+            
+            if (existingPayable && newTotalAmount !== parseFloat(String(existingPayable.totalAmount || "0"))) {
+              await db
+                .update(procurementPayables)
+                .set({
+                  totalAmount: String(newTotalAmount),
+                  updatedAt: new Date().toISOString().slice(0, 19).replace('T', ' '),
+                })
+                .where(eq(procurementPayables.id, existingPayable.id));
+            }
           }
         }
       }
@@ -794,8 +816,8 @@ export const grnRouter = router({
     .input(
       z.object({
         id: z.number(),
-        status: z.enum(["pending_inspection", "inspected", "accepted", "rejected"]),
-        inspectionNotes: z.string().optional(),
+        status: z.enum(["pending_inspection", "inspected", "accepted", "partially_accepted", "rejected"]),
+        remarks: z.string().optional(),
       })
     )
     .mutation(async ({ input, ctx }) => {
@@ -840,12 +862,17 @@ export const grnRouter = router({
         .update(goodsReceiptNotes)
         .set({
           status: input.status,
-          inspectionNotes: input.inspectionNotes || grn.inspectionNotes,
-          inspectedBy: input.status !== "pending_inspection" ? ctx.user.name || ctx.user.email : grn.inspectedBy,
-          inspectedOn: input.status !== "pending_inspection" ? new Date() : grn.inspectedOn,
+          remarks: input.remarks || grn.remarks,
+          inspectedBy: input.status !== "pending_inspection" ? (ctx.user.name || ctx.user.email) : grn.inspectedBy,
           updatedBy: ctx.user.id,
+          updatedAt: new Date().toISOString(),
         })
-        .where(eq(goodsReceiptNotes.id, input.id));
+        .where(
+          and(
+            eq(goodsReceiptNotes.id, input.id),
+            eq(goodsReceiptNotes.organizationId, ctx.scope.organizationId)
+          )
+        );
 
       // If accepted, create stock batches and Delivery Note
       if (input.status === "accepted") {
@@ -1000,7 +1027,7 @@ export const grnRouter = router({
           "GRN",
           input.id,
           ctx.scope.organizationId,
-          ctx.user.id,
+          String(ctx.user.id),
           "User initiated deletion"
         );
       }

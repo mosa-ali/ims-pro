@@ -301,7 +301,6 @@ export async function generateQANumber(
 
 /**
  * Generate Contract Number: CON-[OU]-[Year]-[Seq]
- * Example: CON-EFADAH01-2026-001
  */
 export async function generateContractNumber(
   organizationId: number,

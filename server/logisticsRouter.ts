@@ -55,7 +55,8 @@ import { vendorRouter } from "./vendorRouter";
 import { prWorkflowDashboardRouter } from "./routers/logistics/prWorkflowDashboard";
 import { supplierQuotationRouter } from "./routers/procurement/supplierQuotation";
 import { stockManagementRouter } from "./routers/logistics/stockManagementRouter";
-
+import { generatePdfProcedure } from "./services/pdf/generateLogisticsPDF";
+import { purchaseRequestExportImportRouter } from './routers/procurement/purchaseRequestExportImport';
 
 const formatSqlDate = (dateValue?: string | Date | null) => {
   if (!dateValue) return null;
@@ -278,9 +279,7 @@ const purchaseRequestsRouter = router({
       lineItems: z.array(z.object({
         budgetLine: z.string().optional(),
         description: z.string(),
-        descriptionAr: z.string().optional(),
         specifications: z.string().optional(),
-        specificationsAr: z.string().optional(),
         quantity: z.string(),
         unit: z.string().optional(),
         unitPrice: z.string().optional(),
@@ -345,9 +344,7 @@ const purchaseRequestsRouter = router({
             lineNumber: index + 1,
             budgetLine: item.budgetLine,
             description: item.description,
-            descriptionAr: item.descriptionAr,
             specifications: item.specifications,
-            specificationsAr: item.specificationsAr,
             quantity: String(item.quantity ?? "0"),
             unit: item.unit || "Piece",
             unitPrice: String(item.unitPrice ?? "0"),
@@ -399,9 +396,7 @@ const purchaseRequestsRouter = router({
         id: z.number().optional(),
         budgetLine: z.string().optional(),
         description: z.string(),
-        descriptionAr: z.string().optional(),
         specifications: z.string().optional(),
-        specificationsAr: z.string().optional(),
         quantity: z.string(),
         unit: z.string().optional(),
         unitPrice: z.string().optional(),
@@ -529,9 +524,7 @@ const purchaseRequestsRouter = router({
             lineNumber: index + 1,
             budgetLine: item.budgetLine,
             description: item.description,
-            descriptionAr: item.descriptionAr,
             specifications: item.specifications,
-            specificationsAr: item.specificationsAr,
             quantity: String(item.quantity ?? "0"),
             unit: item.unit || "Piece",
             unitPrice: String(item.unitPrice ?? "0"),
@@ -1629,7 +1622,6 @@ const purchaseOrdersRouter = router({
       status: z.enum(["draft", "sent", "acknowledged"]).optional(),
       lineItems: z.array(z.object({
         description: z.string(),
-        descriptionAr: z.string().optional(),
         specifications: z.string().optional(),
         quantity: z.string(),
         unit: z.string().optional(),
@@ -1764,7 +1756,6 @@ const purchaseOrdersRouter = router({
               purchaseOrderId: poId,
               lineNumber: index + 1,
               description: item.description,
-              descriptionAr: item.descriptionAr,
               specifications: item.specifications,
               quantity: item.quantity,
               unit: item.unit || "Piece",
@@ -3423,6 +3414,9 @@ const fleetRouter = router({
 // ============================================================================
 export const logisticsRouter = router({
   purchaseRequests: purchaseRequestsRouter,
+  purchaseRequestExportImport: purchaseRequestExportImportRouter,
+  generatePrPdf: generatePdfProcedure,
+  generatePDF: generatePdfProcedure,
   purchaseOrders: purchaseOrdersRouter,
   grn: grnRouter,
   stock: stockRouter,
@@ -3468,138 +3462,6 @@ export const logisticsRouter = router({
   // Batch-based Stock Management
   stockMgmt: stockManagementRouter,
 
-  // ============================================================================
-  // PDF GENERATION PROCEDURES
-  // ============================================================================
-
-  /**
-   * Generate PDF for Bid Opening Minutes
-   * Flow:
-   * 1. Fetch BOM from database
-   * 2. Build HTML content
-   * 3. Generate PDF using Puppeteer
-   * 4. Upload to S3
-   * 5. Save URL to database
-   * 6. Return URL to frontend
-   */
-    generateBidOpeningMinutesPdf: protectedProcedure
-    .input(
-      z.object({
-        bomId: z.number().int().positive(),
-        language: z.enum(["en", "ar"]).default("en")
-      })
-    )
-    .mutation(async ({ ctx, input }) => {
-      const { bomId, language } = input;
-
-      if (!ctx.user) {
-        throw new TRPCError({
-          code: "UNAUTHORIZED",
-          message: "User not authenticated"
-        });
-      }
-
-      try {
-        console.log(`[BOM PDF] Generating PDF: ID=${bomId}, Language=${language}`);
-
-        // Step 1: Fetch BOM from database
-        const db = await getDb();
-        const bom = await db.query.bidOpeningMinutes.findFirst({
-          where: eq(bidOpeningMinutes.id, bomId),
-          with: {
-            purchaseRequest: true,
-          },
-        });
-
-        if (!bom) {
-          throw new TRPCError({
-            code: "NOT_FOUND",
-            message: `BOM not found: ID=${bomId}`
-          });
-        }
-
-        console.log(`[BOM PDF] BOM fetched: ${bom.minutesNumber}`);
-
-        // Step 2: Fetch organization branding
-        const branding = await db.query.organizationBranding.findFirst({
-          where: eq(organizationBranding.organizationId, bom.organizationId),
-        });
-
-        // Step 3: Prepare PDF data
-        const pdfData = {
-          organizationName: branding?.organizationName || "Organization",
-          organizationLogo: branding?.logoUrl || undefined,
-          operatingUnitName: branding?.systemName || undefined,
-          bomNumber: bom.minutesNumber,
-          bidDate: bom.openingDate?.toISOString() || new Date().toISOString(),
-          openingTime: bom.openingTime || "Not specified",
-          location: bom.openingVenue || "Not specified",
-          openingMode: (bom.openingMode || "physical") as "physical" | "online" | "hybrid",
-          chairpersonName: bom.chairpersonName || "Not specified",
-          member1Name: bom.member1Name || undefined,
-          member2Name: bom.member2Name || undefined,
-          member3Name: bom.member3Name || undefined,
-          totalBidsReceived: bom.totalBidsReceived || 0,
-          bidsOpenedCount: bom.bidsOpenedCount || 0,
-          openingNotes: bom.openingNotes || undefined,
-          irregularities: bom.irregularities || undefined,
-          language: language as "en" | "ar",
-        };
-
-        // Step 4: Generate PDF using server-side generator
-        const { generateBidOpeningMinutesPDF } = await import("./services/pdf/bomPdfGenerator");
-        const { pdf, filename } = await generateBidOpeningMinutesPDF(pdfData);
-
-        console.log(`[BOM PDF] PDF generated successfully: ${filename}`);
-
-        // Step 5: Return base64 PDF to frontend
-          return {
-            success: true,
-            pdf, // base64
-            fileName: filename,
-          };
-      } catch (error) {
-        console.error(`[BOM PDF] Error generating BOM PDF:`, error);
-        throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
-          message: `Failed to generate PDF: ${error instanceof Error ? error.message : String(error)}`
-        });
-      }
-    }),
-
-  /**
-   * Get existing PDF URL for BOM
-   */
-  getBidOpeningMinutesPdfUrl: protectedProcedure
-    .input(z.object({ bomId: z.number().int().positive() }))
-    .query(async ({ input }) => {
-      const { bomId } = input;
-
-      try {
-        const db = await getDb(); // FIX: Get db instance
-        const bomData = await db
-          .select()
-          .from(bidOpeningMinutes)
-          .where(eq(bidOpeningMinutes.id, bomId))
-          .limit(1);
-
-        if (!bomData || bomData.length === 0) {
-          return { pdfUrl: null, exists: false };
-        }
-
-        const bom = bomData[0];
-        return {
-          pdfUrl: bom.pdfFileUrl,
-          exists: !!bom.pdfFileUrl,
-          generatedAt: bom.updatedAt
-        };
-      } catch (error) {
-        console.error(`[PDF] Error fetching PDF URL:`, error);
-        throw new Error(
-          `Failed to fetch PDF URL: ${error instanceof Error ? error.message : String(error)}`
-        );
-      }
-    })
 });
 
 export type LogisticsRouter = typeof logisticsRouter;

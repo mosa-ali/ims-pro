@@ -278,7 +278,7 @@ export default function QuotationAnalysisDetail() {
  </div>
  <div>
  <span className="text-muted-foreground">Total PR Amount</span>
- <p className="font-medium">${parseFloat(pr?.prTotalUsd || pr?.prTotalUSD || "0").toFixed(2)}</p>
+ <p className="font-medium">${parseFloat(String(pr?.prTotalUsd || pr?.prTotalUsd || pr?.totalAmount || '0')).toFixed(2)}</p>
  </div>
  </div>
  </Card>
@@ -355,7 +355,7 @@ export default function QuotationAnalysisDetail() {
  <TabsTrigger value="overview">{isRTL ? 'نظرة عامة' : 'Overview'}</TabsTrigger>
  <TabsTrigger value="lineItems">{isRTL ? 'البنود' : 'Line Items'}</TabsTrigger>
  <TabsTrigger value="scores">Scoring</TabsTrigger>
- {pr && parseFloat(pr.prTotalUsd || pr.prTotalUSD || "0") > 5000 && parseFloat(pr.prTotalUsd || pr.prTotalUSD || "0") <= 25000 && (
+ {pr && parseFloat(String(pr?.prTotalUsd || '0')) > 5000 && parseFloat(String(pr?.prTotalUsd || '0')) <= 25000 && (
  <TabsTrigger value="extended">Multi-Criteria Scoring</TabsTrigger>
  )}
  </TabsList>
@@ -532,7 +532,7 @@ export default function QuotationAnalysisDetail() {
  <Card className="p-4 bg-blue-50 border-blue-200">
  <h3 className="font-semibold text-blue-900 mb-2">{isRTL ? 'وضع التقييم' : 'Scoring Mode'}</h3>
  <p className="text-sm text-blue-800">
- {parseFloat(pr?.prTotalUsd || pr?.prTotalUSD || "0") <= 5000 ? (
+ {parseFloat(String(pr?.prTotalUsd || pr?.totalAmount || '0')) <= 5000 ? (
  <>
  <strong>Cost-Only Scoring</strong> (PR ≤ $5,000)<br />
  Lowest bidder receives 100 points, others proportional.
@@ -547,7 +547,7 @@ export default function QuotationAnalysisDetail() {
  </Card>
 
  {/* Criteria Breakdown (Multi-Criteria Only) */}
- {parseFloat(pr?.prTotalUsd || pr?.prTotalUSD || "0") > 5000 && (
+ {parseFloat(String(pr?.prTotalUsd || pr?.totalAmount || '0')) > 5000 && (
  <div className="text-sm text-muted-foreground space-y-1">
  <p><strong>{isRTL ? 'درجة السعر (60%):' : 'Price Score (60%):'}</strong> Lowest price gets 60 points, others proportional</p>
  <p><strong>{isRTL ? 'درجة التسليم (20%):' : 'Delivery Score (20%):'}</strong> Fastest delivery gets 20 points, others proportional</p>
@@ -595,7 +595,7 @@ export default function QuotationAnalysisDetail() {
  </TabsContent>
 
  {/* Extended QA Form Tab (for PRs $5,001-$25,000) */}
- {pr && parseFloat(pr.prTotalUsd || pr.prTotalUSD || "0") > 5000 && parseFloat(pr.prTotalUsd || pr.prTotalUSD || "0") <= 25000 && (
+ {pr && parseFloat(String(pr?.prTotalUsd || '0')) > 5000 && parseFloat(String(pr?.prTotalUsd || '0')) <= 25000 && (
  <TabsContent value="extended" className="mt-4">
  <QuotationAnalysisExtendedTab
  qaId={qaId.toString()}

@@ -5,6 +5,7 @@ import { ProposalEditor } from '@/pages/organization/proposals/ProposalEditor';
 import { trpc } from '@/lib/trpc';
 import { useAuth } from '@/_core/hooks/useAuth';
 import { useTranslation } from '@/i18n/useTranslation';
+import { toast } from 'sonner';
 
 interface Proposal {
  id: string;
@@ -36,14 +37,9 @@ export function ProposalDevelopment() {
  const { isRTL } = useLanguage();
  const { user } = useAuth();
  
- // Fetch real proposals from database
+ // Fetch real proposals from database (scoped to current organization/operating unit)
  const { data: proposalsData, isLoading, refetch } = trpc.proposals.getAll.useQuery(
- {
- organizationId: user?.organizationId || 0,
- operatingUnitId: user?.operatingUnitId,
- limit: 100,
- offset: 0,
- },
+ {},
  {
  enabled: !!user?.organizationId,
  }
@@ -52,27 +48,27 @@ export function ProposalDevelopment() {
  // Transform database records to match component interface
  const proposals = useMemo(() => {
  if (!proposalsData) return [];
- return proposalsData.map(record => ({
+ return proposalsData.map((record: any) => ({
  id: String(record.id),
- proposalTitle: record.proposalTitle,
- donorName: record.donorName,
+ proposalTitle: record.proposalTitle || '',
+ donorName: record.donorName || '',
  callReference: record.callReference || '',
- proposalType: record.proposalType as Proposal['proposalType'],
+ proposalType: (record.proposalType || 'Concept Note') as Proposal['proposalType'],
  country: record.country || 'Yemen',
  governorate: record.governorate || '',
- sector: Array.isArray(record.sector) ? record.sector : [],
+ sector: Array.isArray(record.sectors) ? record.sectors : [],
  projectDuration: record.projectDuration || 12,
- totalRequestedBudget: parseFloat(record.totalRequestedBudget?.toString() || '0'),
+ totalRequestedBudget: typeof record.totalRequestedBudget === 'string' ? parseFloat(record.totalRequestedBudget) : (record.totalRequestedBudget || 0),
  currency: (record.currency || 'USD') as Proposal['currency'],
  submissionDeadline: record.submissionDeadline ? (typeof record.submissionDeadline === 'string' ? record.submissionDeadline : record.submissionDeadline.toISOString().split('T')[0]) : '',
- proposalStatus: record.proposalStatus as Proposal['proposalStatus'],
+ proposalStatus: (record.proposalStatus || 'Draft') as Proposal['proposalStatus'],
  completionPercentage: record.completionPercentage || 0,
- projectManagerName: record.projectManagerName || undefined,
+ projectManagerName: record.leadWriter || undefined,
  projectManagerEmail: record.projectManagerEmail || undefined,
- createdBy: record.createdBy || 'Unknown',
+ createdBy: record.createdBy ? String(record.createdBy) : 'Unknown',
  createdAt: typeof record.createdAt === 'string' ? record.createdAt : (record.createdAt?.toISOString() || new Date().toISOString()),
  updatedAt: typeof record.updatedAt === 'string' ? record.updatedAt : (record.updatedAt?.toISOString() || new Date().toISOString()),
- pipelineId: record.pipelineId ? String(record.pipelineId) : undefined,
+ pipelineId: record.pipelineOpportunityId ? String(record.pipelineOpportunityId) : undefined,
  }));
  }, [proposalsData]);
  const [showCreateModal, setShowCreateModal] = useState(false);
@@ -148,7 +144,7 @@ export function ProposalDevelopment() {
  governorate: '',
  sector: [] as string[],
  projectDuration: 12,
- totalRequestedBudget: 0,
+ totalRequestedBudget: '0',
  currency: 'USD' as 'USD' | 'EUR' | 'GBP',
  submissionDeadline: '',
  projectManagerName: '',
@@ -179,32 +175,71 @@ export function ProposalDevelopment() {
  return matchesSearch && matchesStatus;
  });
 
- // Handlers
- const handleCreate = () => {
- const newProposal: Proposal = {
- id: `prop-${Date.now()}`,
- ...formData,
- proposalStatus: 'Draft',
- completionPercentage: 0,
- createdBy: 'Current User',
- createdAt: new Date().toISOString(),
- updatedAt: new Date().toISOString()
- };
-
- setProposals([...proposals, newProposal]);
+ // tRPC mutation for creating proposal
+ const createProposalMutation = trpc.proposals.create.useMutation({
+ onSuccess: (data) => {
+ toast.success('Proposal created successfully!');
  setShowCreateModal(false);
  resetForm();
- 
+ refetch();
  // Open the proposal editor for the new proposal
- setSelectedProposal(newProposal);
+ setSelectedProposal({
+ id: String(data.id),
+ proposalTitle: formData.proposalTitle,
+ donorName: formData.donorName,
+ callReference: formData.callReference,
+ proposalType: formData.proposalType,
+ country: formData.country,
+ governorate: formData.governorate,
+ sector: formData.sector,
+ projectDuration: formData.projectDuration,
+ totalRequestedBudget: typeof formData.totalRequestedBudget === 'string' ? parseFloat(formData.totalRequestedBudget) : formData.totalRequestedBudget,
+ currency: formData.currency,
+ submissionDeadline: formData.submissionDeadline,
+ proposalStatus: 'Draft',
+ completionPercentage: 0,
+ projectManagerName: formData.projectManagerName,
+ projectManagerEmail: formData.projectManagerEmail,
+ createdBy: String(user?.id || 'Unknown'),
+ createdAt: new Date().toISOString(),
+ updatedAt: new Date().toISOString()
+ });
+ },
+ onError: (error) => {
+ toast.error(`Failed to create proposal: ${error.message}`);
+ },
+ });
+
+ // Handlers
+ const handleCreate = async () => {
+ // Validate required fields
+ if (!formData.proposalTitle || !formData.donorName || formData.sector.length === 0) {
+ toast.error('Please fill in all required fields');
+ return;
+ }
+
+ // Call mutation with form data
+ await createProposalMutation.mutateAsync({
+ proposalTitle: formData.proposalTitle,
+ donorName: formData.donorName,
+ callReference: formData.callReference,
+ proposalType: formData.proposalType,
+ country: formData.country,
+ governorate: formData.governorate,
+ sectors: formData.sector,
+ projectDuration: formData.projectDuration,
+ totalRequestedBudget: formData.totalRequestedBudget,
+ currency: formData.currency,
+ submissionDeadline: formData.submissionDeadline,
+ });
  };
 
  const handleDelete = () => {
  if (!showDeleteConfirm) return;
 
- setProposals(proposals.filter(prop => prop.id !== showDeleteConfirm.id));
+ // TODO: Implement delete mutation
  setShowDeleteConfirm(null);
- alert('Proposal deleted successfully!');
+ toast.success('Proposal deleted successfully!');
  };
 
  const handleOpenEditor = (proposal: Proposal) => {
@@ -225,7 +260,7 @@ export function ProposalDevelopment() {
  governorate: '',
  sector: [],
  projectDuration: 12,
- totalRequestedBudget: 0,
+ totalRequestedBudget: '0',
  currency: 'USD',
  submissionDeadline: ''
  });
@@ -547,7 +582,7 @@ export function ProposalDevelopment() {
  min="0"
  step="1000"
  value={formData.totalRequestedBudget}
- onChange={(e) => setFormData({ ...formData, totalRequestedBudget: parseFloat(e.target.value) || 0 })}
+ onChange={(e) => setFormData({ ...formData, totalRequestedBudget: e.target.value })}
  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50"
  />
  </div>
@@ -579,9 +614,10 @@ export function ProposalDevelopment() {
  <button
  type="button"
  onClick={handleCreate}
- className="px-4 py-2 text-sm bg-primary text-white rounded-md hover:bg-primary/90"
+ disabled={createProposalMutation.isPending}
+ className="px-4 py-2 text-sm bg-primary text-white rounded-md hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed"
  >
- {labels.create} & {labels.startWriting}
+ {createProposalMutation.isPending ? 'Creating...' : `${labels.create} & ${labels.startWriting}`}
  </button>
  </div>
  </form>

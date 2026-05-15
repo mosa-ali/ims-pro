@@ -11,7 +11,8 @@
  * Auto-loads org logo, name, operating unit from database.
  */
 
-import puppeteer from "puppeteer";
+import puppeteer, { type Browser } from 'puppeteer';  // ✅ This exists
+import crypto from 'crypto';
 import fs from "fs";
 import path from "path";
 import { getDb } from "../db";
@@ -703,40 +704,40 @@ export async function generateBidEvaluationChecklistPDF(
 
   // ── Generate PDF with Puppeteer ─────────────────────────────────────────
   const browser = await puppeteer.launch({
-    headless: "new",
+    headless: true,
+    executablePath:
+      process.env.PUPPETEER_EXECUTABLE_PATH ||
+      '/usr/bin/chromium',
     args: [
-      "--no-sandbox",
-      "--disable-setuid-sandbox",
-      "--disable-dev-shm-usage",
+      '--no-sandbox',
+      '--disable-setuid-sandbox',
+      '--disable-dev-shm-usage',
+      '--disable-gpu',
+      '--disable-crash-reporter',
+      '--disable-breakpad',
     ],
   });
 
   try {
     const page = await browser.newPage();
-
-    // Set viewport wide enough for all bidder columns
-    const viewportWidth = Math.max(1400, pageUsableWidth + 200);
-    await page.setViewport({ width: viewportWidth, height: 1200 });
-
     await page.setContent(fullHtml, {
       waitUntil: "domcontentloaded",
       timeout: 30000,
     });
 
-    const pdf = await page.pdf({
-      landscape: true,
+    const pdfBuffer = await page.pdf({
       format: "A4",
+      printBackground: true,
+      preferCSSPageSize: true,
       margin: {
         top: "8mm",
-        bottom: "12mm",
-        left: "10mm",
-        right: "10mm",
+        right: "8mm",
+        bottom: "8mm",
+        left: "8mm",
       },
-      printBackground: true,
-      preferCSSPageSize: false,
     });
 
-    return pdf;
+    return Buffer.from(pdfBuffer);
   } finally {
     await browser.close();
   }

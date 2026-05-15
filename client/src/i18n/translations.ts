@@ -6298,6 +6298,7 @@ export interface Translations {
     purchaseOrderCreatedSuccessfully: string;
     purchaseOrderDeleted: string;
     purchaseOrders: string;
+    purchaseOrdersForProcurementRequest: string;
     purchaseOrdersForQuotationAnalysis: string;
     purchasePrice: string;
     purchaseRequestCreated: string;
@@ -6525,6 +6526,11 @@ bidOpeningMinutes: {
   revokeSignature: string;
   revokeSignatureTitle: string;
   confirmRevoke: string;
+  bidderName: string;
+  bidderSection: string;
+  submissionStatus: string;
+  submissionDate: string;
+  noBidders: string;
 };
   myPRs: {
     allStatuses: string;
@@ -8891,6 +8897,71 @@ bidOpeningMinutes: {
     hrModuleSubtitle: string,
     hrDashboardSubtitle: string,
   };
+  bidEvaluationChecklist: {
+  allScoresSavedSuccessfully: string,
+    bidEvaluationChecklist: string,
+    bidEvaluationCriteria: string,
+    bidder: string,
+    biddersSummary: string,
+    collapseAll: string,
+    confirmFinalize: string,
+    currency: string,
+    details: string,
+    evaluationAlreadyFinalized: string,
+    evaluationCriteriaInitialized: string,
+    evaluationCriteriaNotInitialized: string,
+    evaluationFinalized: string,
+    expandAll: string,
+    exportExcel: string,
+    exportExcelTemplate: string,
+    exportExcelWithData: string,
+    exportPdf: string,
+    failedToLockScores: string,
+    failedToSaveTotalOfferPrice: string,
+    failedToUnlockScores: string,
+    final: string,
+    finalScore: string,
+    finalizeEvaluation: string,
+    finalizing: string,
+    financial: string,
+    financialScore: string,
+    generatingExcel: string, 
+    generatingPdf: string,
+    initializeEvaluationCriteria: string,
+    loading: string,
+    mandatoryCriteriaFailed: string,
+    mandatoryHardStop: string,
+    maxScore: string,
+    noRemarksAllQualified: string,
+    notQualified: string,
+    officialRecordFor: string,
+    paymentTerms: string,
+    prReference: string,
+    price: string,
+    priceMissingOrInvalid: string,
+    printExportPdf: string,
+    qualified: string,
+    remarks: 'Remarks',
+    remarksDescription: string,
+    requirement: string,
+    saveAllScores: string,
+    score: string,
+    scoresAreLocked: string,
+    scoresLockedSuccessfully: string,
+    scoresUnlockedForEditing: string,
+    screening: string,
+    section: string,
+    sectionTotal: string,
+    selectOnePerBidder: string,
+    status: string,
+    sumOfSections: string,
+    technical: string,
+    technicalBThreshold: string,
+    technicalPlusFinancial: string,
+    totalOfferPrice: string,
+    totalTechnicalScore: string,
+    unlockScores: string,
+  };
   financeModule: {
     accumulatedDepreciation: string;
     acquisitionCost: string;
@@ -10444,8 +10515,85 @@ bidOpeningMinutes: {
       name: string;
       position: string;
       department: string;
-    };
-    
+    }; 
+
+rFQManagementPage: {
+  rfqManagement: string;
+  inviteVendor: string;
+  selectVendor: string;
+  addNewSupplier: string;
+  noSuppliersFound: string;
+
+  invitationMethod: string;
+  email: string;
+  portal: string;
+  handDelivery: string;
+  mail: string;
+
+  notes: string;
+  invite: string;
+
+  submitQuotation: string;
+  quotationDetails: string;
+  selectRfqVendor: string;
+
+  quotedAmount: string;
+  currency: string;
+  deliveryDays: string;
+  warrantyMonths: string;
+  yearsOfExperience: string;
+
+  supplierQuoteNumber: string;
+  quotationDocument: string;
+  attachment: string;
+
+  uploadFile: string;
+  viewDocument: string;
+  uploaded: string;
+
+  fileUploadedSuccessfully: string;
+  fileUploadFailed: string;
+  uploadingFile: string;
+
+  lineItems: string;
+  description: string;
+  quantity: string;
+  unit: string;
+  unitPrice: string;
+  total: string;
+  grandTotal: string;
+  itemNotes: string;
+
+  pending: string;
+  submitted: string;
+  late: string;
+  withdrawn: string;
+
+  rfqNumber: string;
+  vendorName: string;
+  invitationDate: string;
+  submissionDeadline: string;
+  quotationStatus: string;
+  actions: string;
+
+  downloadRFQPDF: string;
+
+  invitationSent: string;
+  quotationRecorded: string;
+  vendorInvitationDeleted: string;
+
+  rfqPdfDownloadedSuccessfully: string;
+  failedToGenerateRfqPdf: string;
+  noHtmlContentReceived: string;
+  unknownError: string;
+
+  summary: string;
+  totalVendorsInvited: string;
+  quotationsReceived: string;
+  quotationsPending: string;
+};
+
+   
     // System Health
     systemHealth: {
       ready: string;
@@ -16629,6 +16777,7 @@ export const en: Translations = {
     purchaseOrderCreatedSuccessfully: 'Purchase order created successfully',
     purchaseOrderDeleted: 'Purchase order deleted',
     purchaseOrders: 'Purchase Orders',
+    purchaseOrdersForProcurementRequest: 'Purchase Orders for Procurement Request',
     purchaseOrdersForQuotationAnalysis: 'Purchase Orders for Quotation Analysis',
     purchasePrice: 'Purchase Price',
     purchaseRequestCreated: 'Purchase request created',
@@ -21197,7 +21346,7 @@ export const en: Translations = {
       edit: 'Edit',
       editAction: 'Edit',
       endDate: 'End Date',
-      exchangeRateToUSD: 'Exchange Rate',
+      exchangeRate: 'Exchange Rate',
       expense: 'Expense',
       export: 'Export',
       exportAction: 'Export',
@@ -22050,6 +22199,11 @@ export const en: Translations = {
       revokeSignature: 'Revoke Signature',
       revokeSignatureTitle: 'Revoke Signature',
       confirmRevoke: 'Yes, Revoke',
+      bidderName: 'Bidder Name',
+      biddersSection: 'Bidders Section',
+      submissionStatus: 'Submission Status',
+      submissionDate: 'Submission Date',
+      noBidders: 'Number Bidders',
     },
     invoiceUploadDialog: {
       cancel: 'Cancel',
@@ -22214,46 +22368,82 @@ export const en: Translations = {
       workspaceNotActivated: 'Workspace not activated yet. PR must be approved first.',
     },
     rFQManagementPage: {
-      actions: 'Actions',
-      addNewSupplier: 'Add New Supplier',
-      attachment: 'Attachment',
-      backToWorkspace: 'Back to PR Workspace',
-      cancel: 'Cancel',
-      currency: 'Currency',
-      declined: 'Declined',
-      deliveryDays: 'Delivery Days',
-      email: 'Email',
-      error: 'An error occurred',
-      handDelivery: 'Hand Delivery',
-      invitationDate: 'Invitation Date',
-      invitationMethod: 'Invitation Method',
-      invitationSent: 'Invitation sent successfully',
-      invite: 'Invite',
-      inviteVendor: 'Invite Vendor',
-      loading: 'Loading...',
-      lowestQuote: 'Lowest Quote',
-      mail: 'Mail',
-      noResponse: 'No Response',
-      noSuppliersFound: 'No suppliers found. Please add suppliers first.',
-      notes: 'Notes',
-      pending: 'Pending',
-      portal: 'Portal',
-      quotationRecorded: 'Quotation recorded successfully',
-      quotedAmount: 'Quoted Amount',
-      recordQuotation: 'Record Quotation',
-      rfqManagement: 'RFQ Management',
-      selectVendor: 'Select Vendor',
-      status: 'Status',
-      submit: 'Submit',
-      submitted: 'Submitted',
-      summary: 'Summary',
-      totalInvited: 'Total Invited',
-      update: 'Update',
-      vendor: 'Vendor',
-      vendorInvitations: 'Vendor Invitations',
-      warrantyMonths: 'Warranty (Months)',
-      yearsOfExperience: 'Years of Experience',
-    },
+    rfqManagement: "RFQ Management",
+
+    inviteVendor: "Invite Vendor",
+    selectVendor: "Select Vendor",
+    addNewSupplier: "Add New Supplier",
+    noSuppliersFound: "No Suppliers Found",
+
+    invitationMethod: "Invitation Method",
+    email: "Email",
+    portal: "Portal",
+    handDelivery: "Hand Delivery",
+    mail: "Mail",
+
+    notes: "Notes",
+    invite: "Invite",
+
+    submitQuotation: "Submit Quotation",
+    quotationDetails: "Quotation Details",
+    selectRfqVendor: "Select Vendor",
+
+    quotedAmount: "Quoted Amount",
+    currency: "Currency",
+    deliveryDays: "Delivery Days",
+    warrantyMonths: "Warranty Months",
+    yearsOfExperience: "Years of Experience",
+
+    supplierQuoteNumber: "Supplier Quote Number",
+    quotationDocument: "Quotation Document",
+    attachment: "Attachment",
+
+    uploadFile: "Upload File",
+    viewDocument: "View Document",
+    uploaded: "Uploaded",
+
+    fileUploadedSuccessfully: "File uploaded successfully",
+    fileUploadFailed: "File upload failed",
+    uploadingFile: "Uploading file...",
+
+    lineItems: "Line Items",
+    description: "Description",
+    quantity: "Quantity",
+    unit: "Unit",
+    unitPrice: "Unit Price",
+    total: "Total",
+    grandTotal: "Grand Total",
+    itemNotes: "Item Notes",
+
+    pending: "Pending",
+    submitted: "Submitted",
+    late: "Late",
+    withdrawn: "Withdrawn",
+
+    rfqNumber: "RFQ Number",
+    vendorName: "Vendor Name",
+    invitationDate: "Invitation Date",
+    submissionDeadline: "Submission Deadline",
+    quotationStatus: "Quotation Status",
+    actions: "Actions",
+
+    downloadRFQPDF: "Download PDF",
+
+    invitationSent: "Invitation sent successfully",
+    quotationRecorded: "Quotation recorded successfully",
+    vendorInvitationDeleted: "Vendor invitation deleted successfully",
+
+    rfqPdfDownloadedSuccessfully: "RFQ PDF downloaded successfully",
+    failedToGenerateRfqPdf: "Failed to generate RFQ PDF",
+    noHtmlContentReceived: "No HTML content received from server",
+    unknownError: "Unknown error",
+
+    summary: "Summary",
+    totalVendorsInvited: "Total Vendors Invited",
+    quotationsReceived: "Quotations Received",
+    quotationsPending: "Quotations Pending",
+  },
+
     vendorDetail2: {
       accountHolderName: 'Account Holder Name',
       accountNumber: 'Account Number',
@@ -30180,6 +30370,7 @@ export const ar: Translations = {
     purchaseOrderCreatedSuccessfully: 'تم إنشاء أمر الشراء بنجاح',
     purchaseOrderDeleted: 'تم حذف أمر الشراء',
     purchaseOrders: 'أوامر الشراء',
+    purchaseOrdersForProcurementRequest: 'أوامر الشراء لطلبان الشراء',
     purchaseOrdersForQuotationAnalysis: 'أوامر الشراء لتحليل العروض',
     purchasePrice: 'سعر الشراء',
     purchaseRequestCreated: 'تم إنشاء طلب الشراء',
@@ -34750,7 +34941,7 @@ export const ar: Translations = {
       edit: 'تعديل',
       editAction: 'تعديل',
       endDate: 'تاريخ الانتهاء',
-      exchangeRateToUSD: 'سعر الصرف',
+      exchangeRate: 'سعر الصرف',
       expense: 'مصروف',
       export: 'تصدير',
       exportAction: 'تصدير',
@@ -35492,69 +35683,69 @@ export const ar: Translations = {
       viewDetails: 'عرض التفاصيل',
     },
     bidEvaluationChecklist: {
-      allScoresSavedSuccessfully: '\u062A\u0645 \u062D\u0641\u0638 \u062C\u0645\u064A\u0639 \u0627\u0644\u062F\u0631\u062C\u0627\u062A \u0628\u0646\u062C\u0627\u062D',
-      bidEvaluationChecklist: '\u0642\u0627\u0626\u0645\u0629 \u062A\u0642\u064A\u064A\u0645 \u0627\u0644\u0639\u0637\u0627\u0621\u0627\u062A',
-      bidEvaluationCriteria: '\u0645\u0639\u0627\u064A\u064A\u0631 \u062A\u0642\u064A\u064A\u0645 \u0627\u0644\u0639\u0637\u0627\u0621\u0627\u062A',
-      bidder: '\u0627\u0644\u0645\u0646\u0627\u0642\u0635',
-      biddersSummary: '\u0645\u0644\u062E\u0635 \u0627\u0644\u0645\u0646\u0627\u0642\u0635\u064A\u0646',
-      collapseAll: '\u0637\u064A \u0627\u0644\u0643\u0644',
-      confirmFinalize: '\u0647\u0644 \u0623\u0646\u062A \u0645\u062A\u0623\u0643\u062F \u0645\u0646 \u0627\u0639\u062A\u0645\u0627\u062F \u0647\u0630\u0627 \u0627\u0644\u062A\u0642\u064A\u064A\u0645\u061F \u0633\u064A\u062A\u0645 \u0642\u0641\u0644 \u062C\u0645\u064A\u0639 \u0627\u0644\u062F\u0631\u062C\u0627\u062A \u0648\u0625\u0646\u0634\u0627\u0621 \u0645\u0633\u062A\u0646\u062F \u062A\u062D\u0644\u064A\u0644 \u0627\u0644\u0639\u0631\u0648\u0636 \u0627\u0644\u062A\u0646\u0627\u0641\u0633\u064A\u0629.',
-      currency: '\u0627\u0644\u0639\u0645\u0644\u0629',
-      details: '\u0627\u0644\u062A\u0641\u0627\u0635\u064A\u0644',
-      evaluationAlreadyFinalized: '\u062A\u0645 \u0627\u0639\u062A\u0645\u0627\u062F \u0647\u0630\u0627 \u0627\u0644\u062A\u0642\u064A\u064A\u0645 \u0628\u0627\u0644\u0641\u0639\u0644.',
-      evaluationCriteriaInitialized: '\u062A\u0645 \u062A\u0647\u064A\u0626\u0629 \u0645\u0639\u0627\u064A\u064A\u0631 \u0627\u0644\u062A\u0642\u064A\u064A\u0645',
-      evaluationCriteriaNotInitialized: '\u0644\u0645 \u064A\u062A\u0645 \u062A\u0647\u064A\u0626\u0629 \u0645\u0639\u0627\u064A\u064A\u0631 \u0627\u0644\u062A\u0642\u064A\u064A\u0645 \u0628\u0639\u062F. \u0627\u0646\u0642\u0631 \u0639\u0644\u0649 \u0627\u0644\u0632\u0631 \u0623\u062F\u0646\u0627\u0647 \u0644\u0625\u0646\u0634\u0627\u0621 \u0645\u0639\u0627\u064A\u064A\u0631 \u0627\u0644\u062A\u0642\u064A\u064A\u0645 \u0627\u0644\u0642\u064A\u0627\u0633\u064A\u0629.',
-      evaluationFinalized: '\u062A\u0645 \u0627\u0639\u062A\u0645\u0627\u062F \u0627\u0644\u062A\u0642\u064A\u064A\u0645 \u0628\u0646\u062C\u0627\u062D. \u062A\u0645 \u0625\u0646\u0634\u0627\u0621 \u0628\u0637\u0627\u0642\u0629 \u062A\u062D\u0644\u064A\u0644 \u0627\u0644\u0639\u0631\u0648\u0636 \u0627\u0644\u062A\u0646\u0627\u0641\u0633\u064A\u0629.',
-      expandAll: '\u062A\u0648\u0633\u064A\u0639 \u0627\u0644\u0643\u0644',
-      exportExcel: '\u062A\u0635\u062F\u064A\u0631 Excel',
-      exportExcelTemplate: '\u062A\u0635\u062F\u064A\u0631 \u0646\u0645\u0648\u0630\u062C \u0641\u0627\u0631\u063A',
-      exportExcelWithData: '\u062A\u0635\u062F\u064A\u0631 \u0645\u0639 \u0627\u0644\u0628\u064A\u0627\u0646\u0627\u062A',
-      exportPdf: '\u062A\u0635\u062F\u064A\u0631 PDF',
-      failedToLockScores: '\u0641\u0634\u0644 \u0641\u064A \u0642\u0641\u0644 \u0627\u0644\u062F\u0631\u062C\u0627\u062A',
-      failedToSaveTotalOfferPrice: '\u0641\u0634\u0644 \u0641\u064A \u062D\u0641\u0638 \u0625\u062C\u0645\u0627\u0644\u064A \u0633\u0639\u0631 \u0627\u0644\u0639\u0631\u0636',
-      failedToUnlockScores: '\u0641\u0634\u0644 \u0641\u064A \u0641\u062A\u062D \u0642\u0641\u0644 \u0627\u0644\u062F\u0631\u062C\u0627\u062A',
-      final: '\u0627\u0644\u0646\u0647\u0627\u0626\u064A',
-      finalScore: '\u0627\u0644\u062F\u0631\u062C\u0629 \u0627\u0644\u0646\u0647\u0627\u0626\u064A\u0629',
-      finalizeEvaluation: '\u0627\u0639\u062A\u0645\u0627\u062F \u0627\u0644\u062A\u0642\u064A\u064A\u0645',
-      finalizing: '\u062C\u0627\u0631\u064A \u0627\u0644\u0627\u0639\u062A\u0645\u0627\u062F...',
-      financial: '\u0645\u0627\u0644\u064A',
-      financialScore: '\u0627\u0644\u062F\u0631\u062C\u0629 \u0627\u0644\u0645\u0627\u0644\u064A\u0629',
-      generatingExcel: '\u062C\u0627\u0631\u064A \u0625\u0646\u0634\u0627\u0621 Excel...',
-      generatingPdf: '\u062C\u0627\u0631\u064A \u0625\u0646\u0634\u0627\u0621 PDF...',
-      initializeEvaluationCriteria: '\u062A\u0647\u064A\u0626\u0629 \u0645\u0639\u0627\u064A\u064A\u0631 \u0627\u0644\u062A\u0642\u064A\u064A\u0645',
-      loading: '\u062C\u0627\u0631\u064A \u0627\u0644\u062A\u062D\u0645\u064A\u0644...',
-      mandatoryCriteriaFailed: '\u0645\u0639\u0627\u064A\u064A\u0631 \u0625\u0644\u0632\u0627\u0645\u064A\u0629 \u0644\u0645 \u064A\u062A\u0645 \u0627\u0633\u062A\u064A\u0641\u0627\u0624\u0647\u0627',
-      mandatoryHardStop: '\u0645\u0639\u064A\u0627\u0631 \u0625\u0644\u0632\u0627\u0645\u064A. \u0627\u0644\u062D\u0635\u0648\u0644 \u0639\u0644\u0649 \u062F\u0631\u062C\u0629 0 \u064A\u0624\u062F\u064A \u0625\u0644\u0649 \u0627\u0644\u0627\u0633\u062A\u0628\u0639\u0627\u062F \u0627\u0644\u062A\u0644\u0642\u0627\u0626\u064A.',
-      maxScore: '\u0627\u0644\u062F\u0631\u062C\u0629 \u0627\u0644\u0642\u0635\u0648\u0649',
-      noRemarksAllQualified: '\u062C\u0645\u064A\u0639 \u0627\u0644\u0645\u0646\u0627\u0642\u0635\u064A\u0646 \u0645\u0624\u0647\u0644\u0648\u0646 \u2014 \u0644\u0627 \u062A\u0648\u062C\u062F \u0645\u0644\u0627\u062D\u0638\u0627\u062A \u0644\u0644\u0639\u0631\u0636.',
-      notQualified: '\u063A\u064A\u0631 \u0645\u0624\u0647\u0644',
-      officialRecordFor: '\u0633\u062C\u0644 \u0631\u0633\u0645\u064A \u0644\u0640',
-      paymentTerms: '\u0634\u0631\u0648\u0637 \u0627\u0644\u062F\u0641\u0639',
-      prReference: '\u0645\u0631\u062C\u0639 \u0637\u0644\u0628 \u0627\u0644\u0634\u0631\u0627\u0621',
-      price: '\u0627\u0644\u0633\u0639\u0631',
-      priceMissingOrInvalid: '\u0625\u062C\u0645\u0627\u0644\u064A \u0633\u0639\u0631 \u0627\u0644\u0639\u0631\u0636 \u0645\u0641\u0642\u0648\u062F \u0623\u0648 \u063A\u064A\u0631 \u0635\u0627\u0644\u062D (\u064A\u062C\u0628 \u0623\u0646 \u064A\u0643\u0648\u0646 > 0)',
-      printExportPdf: '\u0637\u0628\u0627\u0639\u0629 / \u062A\u0635\u062F\u064A\u0631 PDF',
-      qualified: '\u0645\u0624\u0647\u0644',
-      remarks: '\u0645\u0644\u0627\u062D\u0638\u0627\u062A',
-      remarksDescription: '\u0645\u0644\u0627\u062D\u0638\u0627\u062A \u0645\u062C\u0645\u0639\u0629 \u062A\u0644\u0642\u0627\u0626\u064A\u064B\u0627 \u0644\u0644\u0645\u0646\u0627\u0642\u0635\u064A\u0646 \u063A\u064A\u0631 \u0627\u0644\u0645\u0624\u0647\u0644\u064A\u0646',
-      requirement: '\u0627\u0644\u0645\u062A\u0637\u0644\u0628',
-      saveAllScores: '\u062D\u0641\u0638 \u062C\u0645\u064A\u0639 \u0627\u0644\u062F\u0631\u062C\u0627\u062A',
-      score: '\u0627\u0644\u062F\u0631\u062C\u0629',
-      scoresAreLocked: '\u0627\u0644\u062F\u0631\u062C\u0627\u062A \u0645\u0642\u0641\u0644\u0629. \u0627\u0646\u0642\u0631 \u0639\u0644\u0649 "\u0641\u062A\u062D \u0627\u0644\u0642\u0641\u0644" \u0644\u0625\u062C\u0631\u0627\u0621 \u0627\u0644\u062A\u0639\u062F\u064A\u0644\u0627\u062A.',
-      scoresLockedSuccessfully: '\u062A\u0645 \u0642\u0641\u0644 \u0627\u0644\u062F\u0631\u062C\u0627\u062A \u0628\u0646\u062C\u0627\u062D',
-      scoresUnlockedForEditing: '\u062A\u0645 \u0641\u062A\u062D \u0642\u0641\u0644 \u0627\u0644\u062F\u0631\u062C\u0627\u062A \u0644\u0644\u062A\u0639\u062F\u064A\u0644',
-      screening: '\u0641\u062D\u0635',
-      section: '\u0627\u0644\u0642\u0633\u0645',
-      sectionTotal: '\u0625\u062C\u0645\u0627\u0644\u064A \u0627\u0644\u0642\u0633\u0645',
-      selectOnePerBidder: '\u0627\u062E\u062A\u0631 \u0648\u0627\u062D\u062F\u0627\u064B \u0644\u0643\u0644 \u0645\u0646\u0627\u0642\u0635',
-      status: '\u0627\u0644\u062D\u0627\u0644\u0629',
-      sumOfSections: '\u0645\u062C\u0645\u0648\u0639 \u0627\u0644\u0623\u0642\u0633\u0627\u0645 1\u20135',
-      technical: '\u0641\u0646\u064A',
-      technicalBelowThreshold: '\u0627\u0644\u062F\u0631\u062C\u0629 \u0627\u0644\u0641\u0646\u064A\u0629 \u0623\u0642\u0644 \u0645\u0646 \u062D\u062F 70%',
-      technicalPlusFinancial: '\u0641\u0646\u064A + \u0645\u0627\u0644\u064A',
-      totalOfferPrice: '\u0625\u062C\u0645\u0627\u0644\u064A \u0633\u0639\u0631 \u0627\u0644\u0639\u0631\u0636',
-      totalTechnicalScore: '\u0625\u062C\u0645\u0627\u0644\u064A \u0627\u0644\u062F\u0631\u062C\u0629 \u0627\u0644\u0641\u0646\u064A\u0629',
-      unlockScores: '\u0641\u062A\u062D \u0642\u0641\u0644 \u0627\u0644\u062F\u0631\u062C\u0627\u062A',
+          allScoresSavedSuccessfully: 'تم حفظ جميع الدرجات بنجاح',
+          bidEvaluationChecklist: 'قائمة تقييم العطاءات',
+          bidEvaluationCriteria: 'معايير تقييم العطاءات',
+          bidder: 'المناقص',
+          biddersSummary: 'ملخص المناقصين',
+          collapseAll: 'طي الكل',
+          confirmFinalize: 'هل أنت متأكد من اعتماد هذا التقييم؟ سيتم قفل جميع الدرجات وإنشاء مستند تحليل العروض التنافسية.',
+          currency: 'العملة',
+          details: 'التفاصيل',
+          evaluationAlreadyFinalized: 'تم اعتماد هذا التقييم بالفعل.',
+          evaluationCriteriaInitialized: 'تم تهيئة معايير التقييم',
+          evaluationCriteriaNotInitialized: 'لم يتم تهيئة معايير التقييم بعد. انقر على الزر أدناه لإنشاء معايير التقييم القياسية.',
+          evaluationFinalized: 'تم اعتماد التقييم بنجاح. تم إنشاء بطاقة تحليل العروض التنافسية.',
+          expandAll: 'توسيع الكل',
+          exportExcel: 'تصدير Excel',
+          exportExcelTemplate: 'تصدير نموذج فارغ',
+          exportExcelWithData: 'تصدير مع البيانات',
+          exportPdf: 'تصدير PDF',
+          failedToLockScores: 'فشل في قفل الدرجات',
+          failedToSaveTotalOfferPrice: 'فشل في حفظ إجمالي سعر العرض',
+          failedToUnlockScores: 'فشل في فتح قفل الدرجات',
+          final: 'النهائية',
+          finalScore: 'الدرجة النهائية',
+          finalizeEvaluation: 'اعتماد التقييم',
+          finalizing: 'جاري الاعتماد...',
+          financial: 'مالي',
+          financialScore: 'الدرجة المالية',
+          generatingExcel: 'جاري إنشاء Excel...',
+          generatingPdf: 'جاري إنشاء PDF...',
+          initializeEvaluationCriteria: 'تهيئة معايير التقييم',
+          loading: 'جاري التحميل...',
+          mandatoryCriteriaFailed: 'معايير إلزامية لم يتم استيفاؤها',
+          mandatoryHardStop: 'معيار إلزامي. الحصول على درجة 0 يؤدي إلى الاستبعاد التلقائي.',
+          maxScore: 'الدرجة القصوى',
+          noRemarksAllQualified: 'جميع المناقصين مؤهلون — لا توجد ملاحظات للعرض.',
+          notQualified: 'غير مؤهل',
+          officialRecordFor: 'سجل رسمي لـ',
+          paymentTerms: 'شروط الدفع',
+          prReference: 'مرجع طلب الشراء',
+          price: 'السعر',
+          priceMissingOrInvalid: 'إجمالي سعر العرض مفقود أو غير صالح (يجب أن يكون > 0)',
+          printExportPdf: 'طباعة / تصدير PDF',
+          qualified: 'مؤهل',
+          remarks: 'ملاحظات',
+          remarksDescription: 'ملاحظات مجمعة تلقائياً للمناقصين غير المؤهلين',
+          requirement: 'المتطلب',
+          saveAllScores: 'حفظ جميع الدرجات',
+          score: 'الدرجة',
+          scoresAreLocked: 'الدرجات مقفلة. انقر على "فتح القفل" لإجراء التعديلات.',
+          scoresLockedSuccessfully: 'تم قفل الدرجات بنجاح',
+          scoresUnlockedForEditing: 'تم فتح قفل الدرجات للتعديل',
+          screening: 'فحص',
+          section: 'القسم',
+          sectionTotal: 'إجمالي القسم',
+          selectOnePerBidder: 'اختر واحداً لكل مناقص',
+          status: 'الحالة',
+          sumOfSections: 'مجموع الأقسام 1–5',
+          technical: 'فني',
+          technicalBelowThreshold: 'الدرجة الفنية أقل من حد 70%',
+          technicalPlusFinancial: 'فني + مالي',
+          totalOfferPrice: 'إجمالي سعر العرض',
+          totalTechnicalScore: 'إجمالي الدرجة الفنية',
+          unlockScores: 'فتح قفل الدرجات',
     },
     bidOpeningMinutes: {
       addCommentsAboutApproval: 'أضف أي تعليقات أو ملاحظات حول الموافقة',
@@ -35607,6 +35798,11 @@ export const ar: Translations = {
       revokeSignature: 'إلغاء التوقيع',
       revokeSignatureTitle: 'إلغاء التوقيع',
       confirmRevoke: 'نعم، إلغاء',
+      bidderName: 'اسم مقدم العرض',
+      biddersSection: 'قسم مقدمي العطاءات',
+      submissionStatus: 'حالة التقديم',
+      submissionDate:  'تأريخ التقديم',
+      noBidders:  'عدد مقدمي العطاءات',
     },
     invoiceUploadDialog: {
       cancel: 'إلغاء',
@@ -35770,49 +35966,83 @@ export const ar: Translations = {
       workflowTracker: 'متتبع سير العمل',
       workspaceNotActivated: 'مساحة العمل غير مفعلة بعد. يجب الموافقة على طلب الشراء أولاً.',
     },
-    rFQManagementPage: {
-      actions: 'الإجراءات',
-      addNewSupplier: 'إضافة مورد جديد',
-      attachment: 'مرفق',
-      backToWorkspace: 'العودة إلى مساحة عمل طلب الشراء',
-      cancel: 'إلغاء',
-      currency: 'العملة',
-      declined: 'مرفوض',
-      deliveryDays: 'أيام التسليم',
-      downloadRFQ: 'تنزيل RFQ',
-      email: 'بريد إلكتروني',
-      error: 'حدث خطأ',
-      handDelivery: 'تسليم يدوي',
-      invitationDate: 'تاريخ الدعوة',
-      invitationMethod: 'طريقة الدعوة',
-      invitationSent: 'تم إرسال الدعوة بنجاح',
-      invite: 'دعوة',
-      inviteVendor: 'دعوة مورد',
-      loading: 'جاري التحميل...',
-      lowestQuote: 'أقل عرض',
-      mail: 'بريد',
-      noResponse: 'لا رد',
-      noSuppliersFound: 'لم يتم العثور على موردين. يرجى إضافة موردين أولاً.',
-      notes: 'ملاحظات',
-      pending: 'قيد الانتظار',
-      portal: 'البوابة',
-      quotationRecorded: 'تم تسجيل عرض السعر بنجاح',
-      quotedAmount: 'المبلغ المعروض',
-      recordQuotation: 'تسجيل عرض السعر',
-      rfqManagement: 'إدارة طلبات عروض الأسعار',
-      rfqNumber: 'رقم RFQ',
-      selectVendor: 'اختر مورد',
-      status: 'الحالة',
-      submit: 'إرسال',
-      submitted: 'مقدم',
-      summary: 'ملخص',
-      totalInvited: 'إجمالي المدعوين',
-      update: 'تحديث',
-      vendor: 'المورد',
-      vendorInvitations: 'دعوات الموردين',
-      warrantyMonths: 'الضمان (أشهر)',
-      yearsOfExperience: 'سنوات الخبرة',
+      rFQManagementPage: {
+      rfqManagement: "إدارة طلبات عروض الأسعار",
+
+      inviteVendor: "دعوة مورد",
+      selectVendor: "اختيار المورد",
+      addNewSupplier: "إضافة مورد جديد",
+      noSuppliersFound: "لا يوجد موردون",
+
+      invitationMethod: "طريقة الدعوة",
+      email: "البريد الإلكتروني",
+      portal: "البوابة",
+      handDelivery: "تسليم يدوي",
+      mail: "البريد",
+
+      notes: "ملاحظات",
+      invite: "دعوة",
+
+      submitQuotation: "تقديم عرض سعر",
+      quotationDetails: "تفاصيل عرض السعر",
+      selectRfqVendor: "اختيار المورد",
+
+      quotedAmount: "المبلغ المعروض",
+      currency: "العملة",
+      deliveryDays: "أيام التسليم",
+      warrantyMonths: "أشهر الضمان",
+      yearsOfExperience: "سنوات الخبرة",
+
+      supplierQuoteNumber: "رقم عرض المورد",
+      quotationDocument: "مستند عرض السعر",
+      attachment: "مرفق",
+
+      uploadFile: "رفع ملف",
+      viewDocument: "عرض المستند",
+      uploaded: "تم الرفع",
+
+      fileUploadedSuccessfully: "تم رفع الملف بنجاح",
+      fileUploadFailed: "فشل رفع الملف",
+      uploadingFile: "جاري رفع الملف...",
+
+      lineItems: "بنود العرض",
+      description: "الوصف",
+      quantity: "الكمية",
+      unit: "الوحدة",
+      unitPrice: "سعر الوحدة",
+      total: "الإجمالي",
+      grandTotal: "الإجمالي الكلي",
+      itemNotes: "ملاحظات البند",
+
+      pending: "قيد الانتظار",
+      submitted: "تم التقديم",
+      late: "متأخر",
+      withdrawn: "مسحوب",
+
+      rfqNumber: "رقم RFQ",
+      vendorName: "اسم المورد",
+      invitationDate: "تاريخ الدعوة",
+      submissionDeadline: "الموعد النهائي",
+      quotationStatus: "حالة العرض",
+      actions: "الإجراءات",
+
+      downloadRFQPDF: "تحميل PDF",
+
+      invitationSent: "تم إرسال الدعوة بنجاح",
+      quotationRecorded: "تم تسجيل عرض السعر بنجاح",
+      vendorInvitationDeleted: "تم حذف دعوة المورد",
+
+      rfqPdfDownloadedSuccessfully: "تم تحميل ملف RFQ بنجاح",
+      failedToGenerateRfqPdf: "فشل إنشاء ملف RFQ",
+      noHtmlContentReceived: "لم يتم استلام محتوى HTML",
+      unknownError: "خطأ غير معروف",
+
+      summary: "الملخص",
+      totalVendorsInvited: "إجمالي الموردين المدعوين",
+      quotationsReceived: "العروض المستلمة",
+      quotationsPending: "العروض المعلقة",
     },
+
     vendorDetail2: {
       accountHolderName: 'اسم صاحب الحساب',
       accountNumber: 'رقم الحساب',

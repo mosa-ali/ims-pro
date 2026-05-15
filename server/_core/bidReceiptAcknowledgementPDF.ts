@@ -232,7 +232,7 @@ export async function generateBidReceiptAcknowledgementPDF(
           </tr>
           <tr>
             <td style="font-weight: 700;">${l.operatingUnit}</td>
-            <td>${esc(isRTL ? (ou?.nameAr || ou?.name || "N/A") : (ou?.name || "N/A"))}</td>
+            <td>${esc(isRTL ? (ou?.name || "N/A") : (ou?.name || "N/A"))}</td>
           </tr>
           <tr>
             <td style="font-weight: 700;">${l.receiptDateTime}</td>
@@ -385,23 +385,40 @@ export async function generateBidReceiptAcknowledgementPDF(
     // ── 8. Render PDF with Puppeteer ───────────────────────────────────────
 
     const browser = await puppeteer.launch({
-      headless: "new",
-      args: ["--no-sandbox", "--disable-setuid-sandbox", "--disable-dev-shm-usage"],
+    headless: true,
+    executablePath:
+      process.env.PUPPETEER_EXECUTABLE_PATH ||
+      '/usr/bin/chromium',
+    args: [
+      '--no-sandbox',
+      '--disable-setuid-sandbox',
+      '--disable-dev-shm-usage',
+      '--disable-gpu',
+      '--disable-crash-reporter',
+      '--disable-breakpad',
+    ],
+  });
+
+  try {
+    const page = await browser.newPage();
+    await page.setContent(html, {
+      waitUntil: "domcontentloaded",
+      timeout: 30000,
     });
 
-    try {
-      const page = await browser.newPage();
-      await page.setViewport({ width: 1200, height: 1600 });
-      await page.setContent(html, { waitUntil: "domcontentloaded", timeout: 30000 });
+    const pdfBuffer = await page.pdf({
+      format: "A4",
+      printBackground: true,
+      preferCSSPageSize: true,
+      margin: {
+        top: "8mm",
+        right: "8mm",
+        bottom: "8mm",
+        left: "8mm",
+      },
+    });
 
-      const pdf = await page.pdf({
-        format: "A4",
-        margin: { top: "20mm", bottom: "20mm", left: "15mm", right: "15mm" },
-        printBackground: true,
-        preferCSSPageSize: true,
-      });
-
-      return pdf;
+    return Buffer.from(pdfBuffer);
     } finally {
       await browser.close();
     }
