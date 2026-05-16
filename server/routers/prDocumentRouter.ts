@@ -1,5 +1,5 @@
 import { TRPCError } from "@trpc/server";
-import { protectedProcedure, scopedProcedure, router } from "../_core/trpc";
+import { protectedProcedure, router, scopedProcedure } from "../_core/trpc";
 import { z } from "zod";
 import { getDb } from "../db";
 import {
@@ -8,14 +8,11 @@ import {
   organizations,
   operatingUnits,
   purchaseRequestLineItems,
-  users,
+  bomApprovalSignatures,
 } from "../../drizzle/schema";
 import { eq, and, desc } from "drizzle-orm";
 import { storagePut } from "../storage";
 import { generatePRDocument } from "../_core/prDocumentGenerator";
-
-
-const nowSql = new Date().toISOString().slice(0, 19).replace('T', ' ');
 
 /**
  * ============================================================================
@@ -186,7 +183,7 @@ async function savePdfMetadata(
     language,
     status: "active",
     generatedBy: userId,
-    generatedAt: nowSql,
+    generatedAt: new Date().toISOString(),
   });
 
   return {
@@ -226,7 +223,7 @@ export const prDocumentRouter = router({
    * 5. Store metadata in generatedDocuments
    * 6. Return URL
    */
-  generateDocument: scopedProcedure
+  generatePRDocument: scopedProcedure
     .input(
       z.object({
         prId: z.number(),
@@ -513,7 +510,7 @@ export const prDocumentRouter = router({
           .update(generatedDocuments)
           .set({
             status: "deleted",
-            updatedAt: nowSql,
+            updatedAt: new Date().toISOString(),
           })
           .where(eq(generatedDocuments.id, documentId));
 
@@ -569,7 +566,7 @@ export const prDocumentRouter = router({
             .update(generatedDocuments)
             .set({
               status: "invalidated",
-              updatedAt: nowSql,
+              updatedAt: new Date().toISOString(),
             })
             .where(
               and(
@@ -590,7 +587,7 @@ export const prDocumentRouter = router({
             .update(generatedDocuments)
             .set({
               status: "invalidated",
-              updatedAt: nowSql,
+              updatedAt: new Date().toISOString(),
             })
             .where(
               and(

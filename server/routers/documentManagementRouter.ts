@@ -3,9 +3,11 @@ import { z } from 'zod';
 import { eq, and, isNull, desc } from 'drizzle-orm';
 import { TRPCError } from '@trpc/server';
 import { getDb } from '../db';
-import { documents, documentAuditLogs, purchaseRequests } from '../../drizzle/schema';
+import { documents, documentAuditLogs, purchaseRequests, generatedDocuments } from '../../drizzle/schema';
 import { storagePut, storageGet } from '../storage';
 import { getStorageProvider } from '../services/storageProvider';
+
+const nowSql = new Date().toISOString().slice(0, 19).replace('T', ' ');
 
 export const documentManagementRouter = router({
   /**
@@ -19,17 +21,20 @@ export const documentManagementRouter = router({
       mimeType: z.string(),
       fileBuffer: z.instanceof(Uint8Array),
       documentType: z.enum([
-        'purchase_request',
-        'rfq_document',
-        'bid_opening_minutes',
-        'supplier_quotation',
-        'bid_evaluation',
-        'competitive_bid_analysis',
-        'contract',
-        'purchase_order',
-        'goods_receipt_note',
-        'delivery_note',
-        'service_acceptance_certificate',
+        "purchaseRequest",
+        "rfq",
+        "purchaseOrder",
+        "grn",
+        "deliveryNote",
+        "paymentDocument",
+        "bom",
+        "bidReceiptAcknowledgement",
+        "bidEvaluationChecklist",
+        "cba",
+        "qa",
+        "sac",
+        "stockIssue",
+        "returnedItems",
         'payment_document',
         'audit_log'
       ]),
@@ -44,8 +49,8 @@ export const documentManagementRouter = router({
         const pr = await db.query.purchaseRequests.findFirst({
           where: and(
             eq(purchaseRequests.id, input.prId),
-            eq(purchaseRequests.organizationId, ctx.user.organizationId),
-            eq(purchaseRequests.operatingUnitId, ctx.user.operatingUnitId),
+            eq(purchaseRequests.organizationId, ctx.scope.organizationId),
+            eq(purchaseRequests.operatingUnitId, ctx.scope.operatingUnitId),
             isNull(purchaseRequests.deletedAt)
           ),
         });
@@ -78,7 +83,7 @@ export const documentManagementRouter = router({
         const documentStage = stageMapping[pr.procurementStatus || 'draft'] || '01_Purchase_Requests';
 
         // Upload file to storage provider
-        const fileKey = `procurement/${ctx.user.organizationId}/${pr.id}/${documentStage}/${Date.now()}-${input.fileName}`;
+        const fileKey = `procurement/${ctx.scope.organizationId}/${pr.id}/${documentStage}/${Date.now()}-${input.fileName}`;
         
         const { url } = await storagePut(fileKey, Buffer.from(input.fileBuffer), input.mimeType);
 
@@ -101,8 +106,8 @@ export const documentManagementRouter = router({
           createdByName: ctx.user.name || ctx.user.email,
           updatedBy: ctx.user.id,
           updatedByName: ctx.user.name || ctx.user.email,
-          organizationId: ctx.user.organizationId,
-          operatingUnitId: ctx.user.operatingUnitId,
+          organizationId: ctx.scope.organizationId,
+          operatingUnitId: ctx.scope.operatingUnitId,
           createdAt: new Date(),
           updatedAt: new Date(),
           deletedAt: null,
@@ -133,9 +138,9 @@ export const documentManagementRouter = router({
             documentStage,
             procurementStatus: pr.procurementStatus,
           }),
-          organizationId: ctx.user.organizationId,
-          operatingUnitId: ctx.user.operatingUnitId,
-          createdAt: new Date(),
+          organizationId: ctx.scope.organizationId,
+          operatingUnitId: ctx.scope.operatingUnitId,
+          createdAt: nowSql,
         });
 
         return {
@@ -143,7 +148,7 @@ export const documentManagementRouter = router({
           fileName: input.fileName,
           fileUrl: url,
           documentStage,
-          uploadedAt: new Date(),
+          uploadedAt: nowSql,
         };
       } catch (error) {
         console.error('Document upload error:', error);
@@ -165,8 +170,8 @@ export const documentManagementRouter = router({
         const document = await db.query.documents.findFirst({
           where: and(
             eq(documents.id, input.documentId),
-            eq(documents.organizationId, ctx.user.organizationId),
-            eq(documents.operatingUnitId, ctx.user.operatingUnitId),
+            eq(documents.organizationId, ctx.scope.organizationId),
+            eq(documents.operatingUnitId, ctx.scope.operatingUnitId),
             isNull(documents.deletedAt)
           ),
         });
@@ -190,9 +195,9 @@ export const documentManagementRouter = router({
             fileSize: document.fileSize,
             mimeType: document.mimeType,
           }),
-          organizationId: ctx.user.organizationId,
-          operatingUnitId: ctx.user.operatingUnitId,
-          createdAt: new Date(),
+          organizationId: ctx.scope.organizationId,
+          operatingUnitId: ctx.scope.operatingUnitId,
+          createdAt: nowSql,
         });
 
         // Generate presigned URL for download
@@ -204,7 +209,7 @@ export const documentManagementRouter = router({
           fileSize: document.fileSize,
           mimeType: document.mimeType,
           downloadUrl: downloadUrl.url,
-          createdAt: document.createdAt,
+          createdAt: nowSql,
         };
       } catch (error) {
         console.error('Document download error:', error);
@@ -226,8 +231,8 @@ export const documentManagementRouter = router({
         const docs = await db.query.documents.findMany({
           where: and(
             eq(documents.prId, input.prId),
-            eq(documents.organizationId, ctx.user.organizationId),
-            eq(documents.operatingUnitId, ctx.user.operatingUnitId),
+            eq(documents.organizationId, ctx.scope.organizationId),
+            eq(documents.operatingUnitId, ctx.scope.operatingUnitId),
             isNull(documents.deletedAt)
           ),
           orderBy: [desc(documents.createdAt)],
@@ -267,8 +272,8 @@ export const documentManagementRouter = router({
         const document = await db.query.documents.findFirst({
           where: and(
             eq(documents.id, input.documentId),
-            eq(documents.organizationId, ctx.user.organizationId),
-            eq(documents.operatingUnitId, ctx.user.operatingUnitId),
+            eq(documents.organizationId, ctx.scope.organizationId),
+            eq(documents.operatingUnitId, ctx.scope.operatingUnitId),
             isNull(documents.deletedAt)
           ),
         });
@@ -283,9 +288,8 @@ export const documentManagementRouter = router({
         // Soft delete
         await db.update(documents)
           .set({
-            deletedAt: new Date(),
+            deletedAt: nowSql,
             deletedBy: ctx.user.id,
-            deletedByName: ctx.user.name || ctx.user.email,
           })
           .where(eq(documents.id, input.documentId));
 
@@ -301,8 +305,8 @@ export const documentManagementRouter = router({
             fileSize: document.fileSize,
             mimeType: document.mimeType,
           }),
-          organizationId: ctx.user.organizationId,
-          operatingUnitId: ctx.user.operatingUnitId,
+          organizationId: ctx.scope.organizationId,
+          operatingUnitId: ctx.scope.operatingUnitId,
           createdAt: new Date(),
         });
 
@@ -327,8 +331,8 @@ export const documentManagementRouter = router({
         const docs = await db.query.documents.findMany({
           where: and(
             eq(documents.prId, input.prId),
-            eq(documents.organizationId, ctx.user.organizationId),
-            eq(documents.operatingUnitId, ctx.user.operatingUnitId),
+            eq(documents.organizationId, ctx.scope.organizationId),
+            eq(documents.operatingUnitId, ctx.scope.operatingUnitId),
             isNull(documents.deletedAt)
           ),
         });

@@ -1,5 +1,5 @@
 /**
- * Procurement Document Router - tRPC Procedures
+ * Procurement Document Router - tRPC Procedures (FIXED)
  * Handles document discovery, routing, and generation for the procurement workflow
  * Integrates smart caching with existing PDF generators
  */
@@ -16,6 +16,7 @@ import {
   PdfDocumentType,
 } from '../services/pdf/pdfRegistry';
 
+// ✅ FIXED: Proper mapping from input type to database type
 const documentTypeMap = {
   PR: "PR_PDF",
   RFQ: "RFQ_PDF",
@@ -23,6 +24,12 @@ const documentTypeMap = {
   GRN: "GRN_PDF",
   DELIVERY: "DELIVERY_PDF",
   PAYMENT: "PAYMENT_PDF",
+} as const;
+
+// ✅ ADDED: Helper to format dates correctly for MySQL
+const formatMySqlDateTime = (date: Date | string): string => {
+  const d = new Date(date);
+  return d.toISOString().slice(0, 19).replace('T', ' ');
 };
 
 export const procurementDocumentRouter = router({
@@ -133,6 +140,9 @@ export const procurementDocumentRouter = router({
         const db = await getDb();
         const { prId, documentType, language } = input;
 
+        // ✅ FIXED: Get mapped type for database queries
+        const mappedDocumentType = documentTypeMap[documentType];
+
         // Verify PR exists
         const pr = await db
           .select()
@@ -153,7 +163,7 @@ export const procurementDocumentRouter = router({
           });
         }
 
-        // Check cache first
+        // ✅ FIXED: Check cache with entityType filter
         const existingPdf = await db
           .select()
           .from(generatedDocuments)
@@ -161,8 +171,9 @@ export const procurementDocumentRouter = router({
             and(
               eq(generatedDocuments.organizationId, ctx.scope.organizationId),
               eq(generatedDocuments.operatingUnitId, ctx.scope.operatingUnitId),
+              eq(generatedDocuments.entityType, "purchase_request"),  // ✅ ADDED
               eq(generatedDocuments.entityId, prId),
-              eq(generatedDocuments.documentType, documentTypeMap[documentType]),
+              eq(generatedDocuments.documentType, mappedDocumentType),  // ✅ FIXED: Use mapped type
               eq(generatedDocuments.language, language),
               eq(generatedDocuments.isLatest, 1),
               eq(generatedDocuments.status, "active")
@@ -229,29 +240,31 @@ export const procurementDocumentRouter = router({
 
         const { url } = await storagePut(fileKey, pdfBuffer, "application/pdf");
 
-        // Mark old versions as not latest
+        // ✅ FIXED: Mark old versions as not latest with correct filters
         await db
           .update(generatedDocuments)
           .set({ isLatest: 0 })
           .where(
             and(
               eq(generatedDocuments.organizationId, ctx.scope.organizationId),
+              eq(generatedDocuments.entityType, "purchase_request"),  // ✅ ADDED
               eq(generatedDocuments.entityId, prId),
-              eq(generatedDocuments.documentType, documentType),
+              eq(generatedDocuments.documentType, mappedDocumentType),  // ✅ FIXED
               eq(generatedDocuments.language, language),
               eq(generatedDocuments.isLatest, 1)
             )
           );
 
-        // Get next version
+        // ✅ FIXED: Get next version with correct filters
         const lastVersion = await db
           .select()
           .from(generatedDocuments)
           .where(
             and(
               eq(generatedDocuments.organizationId, ctx.scope.organizationId),
+              eq(generatedDocuments.entityType, "purchase_request"),  // ✅ ADDED
               eq(generatedDocuments.entityId, prId),
-              eq(generatedDocuments.documentType, documentType),
+              eq(generatedDocuments.documentType, mappedDocumentType),  // ✅ FIXED
               eq(generatedDocuments.language, language)
             )
           )
@@ -260,14 +273,14 @@ export const procurementDocumentRouter = router({
 
         const nextVersion = (lastVersion?.version || 0) + 1;
 
-        // Insert new version
+        // ✅ FIXED: Insert with all required fields and correct values
         const result = await db.insert(generatedDocuments).values({
           organizationId: ctx.scope.organizationId,
           operatingUnitId: ctx.scope.operatingUnitId,
           module: "procurement",
-          entityType: "purchase_request",
+          entityType: "purchase_request",  // ✅ ADDED
           entityId: prId,
-          documentType,
+          documentType: mappedDocumentType,  // ✅ FIXED: Store mapped type
           filePath: url,
           fileName,
           fileSize: pdfBuffer.length,
@@ -277,7 +290,7 @@ export const procurementDocumentRouter = router({
           language,
           status: "active",
           generatedBy: ctx.user.id,
-          generatedAt: new Date().toISOString(),
+          generatedAt: formatMySqlDateTime(new Date()),  // ✅ FIXED: MySQL format
         });
 
         console.log(
@@ -317,6 +330,8 @@ export const procurementDocumentRouter = router({
         const db = await getDb();
         const { prId, documentType } = input;
 
+        const mappedDocumentType = documentTypeMap[documentType];
+
         const pr = await db
           .select()
           .from(purchaseRequests)
@@ -342,8 +357,9 @@ export const procurementDocumentRouter = router({
           .where(
             and(
               eq(generatedDocuments.organizationId, ctx.scope.organizationId),
+              eq(generatedDocuments.entityType, "purchase_request"),  // ✅ ADDED
               eq(generatedDocuments.entityId, prId),
-              eq(generatedDocuments.documentType, documentType)
+              eq(generatedDocuments.documentType, mappedDocumentType)  // ✅ FIXED
             )
           )
           .orderBy(desc(generatedDocuments.version));
@@ -396,7 +412,7 @@ export const procurementDocumentRouter = router({
           });
         }
 
-        const documentTypes = ["PR", "RFQ", "PO", "GRN", "DELIVERY", "PAYMENT"];
+        const documentTypes = ["PR", "RFQ", "PO", "GRN", "DELIVERY", "PAYMENT"] as const;
         const status: Record<
           string,
           {
@@ -409,14 +425,16 @@ export const procurementDocumentRouter = router({
         > = {};
 
         for (const type of documentTypes) {
+          const mappedType = documentTypeMap[type];
           const doc = await db
             .select()
             .from(generatedDocuments)
             .where(
               and(
                 eq(generatedDocuments.organizationId, ctx.scope.organizationId),
+                eq(generatedDocuments.entityType, "purchase_request"),  // ✅ ADDED
                 eq(generatedDocuments.entityId, prId),
-                eq(generatedDocuments.documentType, type),
+                eq(generatedDocuments.documentType, mappedType),  // ✅ FIXED
                 eq(generatedDocuments.isLatest, 1)
               )
             )
@@ -478,17 +496,19 @@ export const procurementDocumentRouter = router({
         }
 
         if (documentType) {
+          const mappedType = documentTypeMap[documentType];
           await db
             .update(generatedDocuments)
             .set({
               status: "invalidated",
-              updatedAt: new Date().toISOString(),
+              updatedAt: formatMySqlDateTime(new Date()),  // ✅ FIXED
             })
             .where(
               and(
                 eq(generatedDocuments.organizationId, ctx.scope.organizationId),
+                eq(generatedDocuments.entityType, "purchase_request"),  // ✅ ADDED
                 eq(generatedDocuments.entityId, prId),
-                eq(generatedDocuments.documentType, documentType)
+                eq(generatedDocuments.documentType, mappedType)  // ✅ FIXED
               )
             );
 
@@ -501,11 +521,12 @@ export const procurementDocumentRouter = router({
             .update(generatedDocuments)
             .set({
               status: "invalidated",
-              updatedAt: new Date().toISOString(),
+              updatedAt: formatMySqlDateTime(new Date()),  // ✅ FIXED
             })
             .where(
               and(
                 eq(generatedDocuments.organizationId, ctx.scope.organizationId),
+                eq(generatedDocuments.entityType, "purchase_request"),  // ✅ ADDED
                 eq(generatedDocuments.entityId, prId)
               )
             );
