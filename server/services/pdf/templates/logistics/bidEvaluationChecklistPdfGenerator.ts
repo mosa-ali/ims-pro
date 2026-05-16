@@ -18,6 +18,17 @@
  * - Approval signatures
  * 
  * ============================================================================
+ * FIX: scoreMap-based evaluation matrix generation
+ * ============================================================================
+ * ROOT CAUSE: Backend now sends scoreMap: Map<number, Map<number, number>>
+ *             but template was looking for criterion.scores[bidderId]
+ * 
+ * SOLUTION: Updated evaluation matrix HTML generation to use:
+ *           data.scoreMap?.get(criterion.id)?.get(bidder.id) ?? 0
+ *           instead of criterion.scores?.[bidder.id]
+ * 
+ * RESULT: PDF matrix now displays actual bidder scores, not 0
+ * ============================================================================
  */
 
 import { generateOfficialPdf } from '../../OfficialPdfEngine';
@@ -54,6 +65,7 @@ export interface BidEvaluationChecklistPDFData {
   activeBidders: BidderCalc[];
   calculatedScores: BidderCalc[];
   remarks: any[];
+  scoreMap?: Map<number, Map<number, number>>;
 
   // Language & Direction
   language: 'en' | 'ar';
@@ -111,11 +123,10 @@ function formatDate(dateStr: string | undefined, isRTL: boolean = false): string
 }
 
 /**
- * Generate HTML body for Bid Evaluation Checklist
- */
-/**
  * Generate HTML body for Bid Evaluation Checklist with FULL EVALUATION MATRIX
  * Includes all criteria rows, scores, and color coding from old print
+ * 
+ * FIX: Now uses data.scoreMap for score lookups instead of criterion.scores
  */
 function generateBidEvaluationChecklistBodyHTML(data: BidEvaluationChecklistPDFData): string {
   const isRTL = data.language === 'ar';
@@ -143,24 +154,30 @@ function generateBidEvaluationChecklistBodyHTML(data: BidEvaluationChecklistPDFD
     .join('');
 
   // Build evaluation criteria matrix
+  // ============================================================================
+  // FIX: Use data.scoreMap instead of criterion.scores
+  // ============================================================================
   const criteriaMatrixHtml = (data.sections || [])
     .map((section: any) => {
       const criteriaRows = (section.criteria || [])
         .map((criterion: any) => {
           const bidderScores = (data.activeBidders || [])
             .map((bidder: any) => {
-              // Find score for this criterion-bidder pair
-              const score = criterion.scores?.[bidder.id] || 0;
-              const status = criterion.statuses?.[bidder.id] || 'scored';
+              // ✅ FIX: Get score from scoreMap using proper nested lookup
+              // scoreMap structure: Map<criterionId, Map<bidderId, score>>
+              const score = data.scoreMap?.get(criterion.id)?.get(bidder.id) ?? 0;
               
+              // ✅ Determine cell styling based on score and criterion type
               let cellStyle = '';
               let cellContent = score;
               
-              if (status === 'none') {
-                cellStyle = `background-color: ${YELLOW_BG}; font-weight: bold;`;
-                cellContent = 'None';
-              } else if (criterion.isScreening) {
+              // Screening criteria show green background (always)
+              if (criterion.isScreening) {
                 cellStyle = `background-color: ${GREEN_BG}; color: white; font-weight: bold;`;
+              } 
+              // Missing scores (0) show yellow background (unless N/A)
+              else if (score === 0 && !criterion.isNA) {
+                cellStyle = `background-color: ${YELLOW_BG}; font-weight: bold;`;
               }
               
               return `<td style="text-align: center; ${cellStyle}">${cellContent}</td>`;

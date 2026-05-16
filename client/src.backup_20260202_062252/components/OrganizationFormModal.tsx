@@ -138,10 +138,11 @@ export function OrganizationFormModal({
     if (mode === "edit" && organization) {
       setFormData({
         name: organization.name,
+        nameAr: organization.nameAr || null,
         country: organization.country || "",
         domain: organization.domain || "",
         status: organization.status as "active" | "inactive" | "suspended",
-        organizationCode: organization.organizationCode || "",
+        organizationCode: organization.shortCode || "",
         tenantId: organization.tenantId || "",
         primaryAdminId: organization.primaryAdminId || null,
         adminName: adminUser?.name || "",

@@ -215,32 +215,43 @@ export default function CompetitiveBidAnalysis() {
   }, [bidders, scores]);
 
   const bidderFinancialScores = useMemo(() => {
-    const scoreMap: Record<number, number> = {};
-    const validBids = bidders
-      .filter(
-        (b: any) => b.totalBidAmount && parseFloat(b.totalBidAmount) > 0
-      )
-      .map((b: any) => ({
-        id: b.id,
-        amount: parseFloat(b.totalBidAmount),
-      }));
+  // ✅ FIX #1: Guard against empty bidders array
+  if (!bidders || bidders.length === 0) {
+    return {};
+  }
 
-    if (validBids.length === 0) {
-      bidders.forEach((b: any) => {
-        scoreMap[b.id] = 0;
-      });
-      return scoreMap;
-    }
+  const scoreMap: Record<number, number> = {};
+  const validBids = bidders
+    .filter(
+      (b: any) => b.totalBidAmount && parseFloat(b.totalBidAmount) > 0
+    )
+    .map((b: any) => ({
+      id: b.id,
+      amount: parseFloat(b.totalBidAmount),
+    }));
 
-    const lowestBid = Math.min(...validBids.map((b) => b.amount));
-    validBids.forEach(({ id, amount }) => {
-      scoreMap[id] = (lowestBid / amount) * 50;
-    });
+  // If no valid bids, all bidders get 0
+  if (validBids.length === 0) {
     bidders.forEach((b: any) => {
-      if (!scoreMap[b.id]) scoreMap[b.id] = 0;
+      scoreMap[b.id] = 0;
     });
     return scoreMap;
-  }, [bidders]);
+  }
+
+  const lowestBid = Math.min(...validBids.map((b) => b.amount));
+  validBids.forEach(({ id, amount }) => {
+    scoreMap[id] = (lowestBid / amount) * 50;
+  });
+  
+  // ✅ FIX #2: Use 'in' operator for safer checking
+  bidders.forEach((b: any) => {
+    if (!(b.id in scoreMap)) {
+      scoreMap[b.id] = 0;
+    }
+  });
+  
+  return scoreMap;
+}, [bidders]); // ✅ FIX #3: Dependency already correct, but verify
 
   interface RankedBidder {
     id: number;
@@ -899,51 +910,71 @@ export default function CompetitiveBidAnalysis() {
       </Card>
 
       {/* Financial Evaluation (50%) */}
-      <Card className="mb-6">
-        <CardHeader className="bg-teal-600 text-white">
-          <CardTitle>{t.procurement.financialEvaluation50Points}</CardTitle>
-        </CardHeader>
-        <CardContent className="pt-6">
-          <p className="text-sm text-muted-foreground mb-4">
-            {t.procurement.pleaseCompleteAllPricingAndTechnical}
-          </p>
+        <Card className="mb-6">
+          <CardHeader className="bg-teal-600 text-white">
+            <CardTitle>{t.procurement.financialEvaluation50Points}</CardTitle>
+          </CardHeader>
+          <CardContent className="pt-6">
+            <div className="flex items-center justify-center py-8">
+              {biddersLoading ? (
+                <>
+                  <Loader2 className="h-5 w-5 animate-spin me-2 text-muted-foreground" />
+                  <p className="text-sm text-muted-foreground">{t.common.loading}</p>
+                </>
+              ) : (
+                <p className="text-sm text-muted-foreground">
+                  {isRTL ? 'لا توجد عروض أسعار متاحة' : 'No bidders with pricing available'}
+                </p>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+      ) : (
+        <Card className="mb-6">
+          <CardHeader className="bg-teal-600 text-white">
+            <CardTitle>{t.procurement.financialEvaluation50Points}</CardTitle>
+          </CardHeader>
+          <CardContent className="pt-6">
+            <p className="text-sm text-muted-foreground mb-4">
+              {t.procurement.pleaseCompleteAllPricingAndTechnical}
+            </p>
 
-          <div className="overflow-x-auto">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>{t.procurement.supplier}</TableHead>
-                  <TableHead className="text-end">
-                    {t.procurement.offeredPrice}
-                  </TableHead>
-                  <TableHead className="text-end">
-                    {t.procurement.financialScore}
-                  </TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {rankedBidders.map((bidder) => (
-                  <TableRow key={bidder.id}>
-                    <TableCell className="font-medium">
-                      {bidder.bidderName}
-                    </TableCell>
-                    <TableCell className="text-end">
-                      {bidder.totalBidAmount
-                        ? `${bidder.currency} ${parseFloat(
-                            bidder.totalBidAmount
-                          ).toFixed(2)}`
-                        : "N/A"}
-                    </TableCell>
-                    <TableCell className="text-end font-bold">
-                      {bidder.isQualified
-                        ? bidder.financialScore.toFixed(2)
-                        : "N/A"}
-                    </TableCell>
+            <div className="overflow-x-auto">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>{t.procurement.supplier}</TableHead>
+                    <TableHead className="text-end">
+                      {t.procurement.offeredPrice}
+                    </TableHead>
+                    <TableHead className="text-end">
+                      {t.procurement.financialScore}
+                    </TableHead>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </div>
+                </TableHeader>
+                <TableBody>
+                  {rankedBidders.map((bidder) => (
+                    <TableRow key={bidder.id}>
+                      <TableCell className="font-medium">
+                        {bidder.bidderName}
+                      </TableCell>
+                      <TableCell className="text-end">
+                        {bidder.totalBidAmount
+                          ? `${bidder.currency} ${parseFloat(
+                              bidder.totalBidAmount
+                            ).toFixed(2)}`
+                          : "N/A"}
+                      </TableCell>
+                      <TableCell className="text-end font-bold">
+                        {bidder.isQualified
+                          ? bidder.financialScore.toFixed(2)
+                          : "N/A"}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
 
           <div className="mt-4 p-4 bg-gray-50 dark:bg-gray-900 rounded">
             <Label className="font-bold">
@@ -957,7 +988,7 @@ export default function CompetitiveBidAnalysis() {
           </div>
         </CardContent>
       </Card>
-
+      
       {/* PCE: Supplier Offer Matrix — auto-loaded from Supplier Quotation Entry */}
       <Card className="mb-6">
         <CardHeader className="bg-teal-600 text-white">

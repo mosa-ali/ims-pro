@@ -98,7 +98,7 @@ export const onboardingRouter = router({
           onboardingTokenExpiry: expiresAt.toISOString().slice(0, 19).replace("T", " "),
           onboardingLinkSentAt: new Date().toISOString().slice(0, 19).replace("T", " "),
           onboardingLinkSentTo: adminEmail,
-          microsoft365Enabled: true,
+          microsoft365Enabled: 1,
         })
         .where(eq(organizations.id, org.id));
 
@@ -537,7 +537,7 @@ export const onboardingRouter = router({
         orgs = orgs.filter(
           (org) =>
             org.name.toLowerCase().includes(query) ||
-            org.organizationCode?.toLowerCase().includes(query)
+            org.shortCode?.toLowerCase().includes(query)
         );
       }
 
@@ -575,7 +575,8 @@ export const onboardingRouter = router({
           return {
             id: org.id,
             name: org.name,
-            organizationCode: org.organizationCode,
+            nameAr: org.nameAr,
+            organizationCode: org.shortCode,
             status: org.onboardingStatus,
             microsoft365Enabled: org.microsoft365Enabled === 1,
             tenantId: org.tenantId,

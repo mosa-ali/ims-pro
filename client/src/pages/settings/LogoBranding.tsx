@@ -141,26 +141,26 @@ export function LogoBranding() {
  return (
  <div className="space-y-6">
  <div className={`flex items-center gap-3`}>
- <BackButton onClick={() => navigate('/organization/settings')} label={t.back} />
+ <BackButton onClick={() => navigate('/organization/settings')} label={localT.back} />
  </div>
  <div className={`flex items-center justify-between`}>
  <div className={`flex items-center gap-3`}>
  <div className="p-3 bg-pink-50 rounded-lg"><Palette className="w-6 h-6 text-pink-600" /></div>
  <div>
- <h1 className={`text-2xl font-bold text-gray-900 ${isRTL ? 'text-end' : ''}`}>{t.title}</h1>
- <p className={`text-sm text-gray-500 ${isRTL ? 'text-end' : ''}`}>{t.subtitle}</p>
+ <h1 className={`text-2xl font-bold text-gray-900 ${isRTL ? 'text-end' : ''}`}>{localT.title}</h1>
+ <p className={`text-sm text-gray-500 ${isRTL ? 'text-end' : ''}`}>{localT.subtitle}</p>
  </div>
  </div>
  <button onClick={handleSave} disabled={updateMutation.isPending} className="px-4 py-2 bg-pink-600 text-white rounded-lg text-sm font-medium hover:bg-pink-700 flex items-center gap-2 disabled:opacity-50">
- <Save className="w-4 h-4" />{t.save}
+ <Save className="w-4 h-4" />{localT.save}
  </button>
  </div>
 
  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
  {/* Logo Upload */}
  <div className="bg-white rounded-lg border border-gray-200 p-6 space-y-4">
- <h2 className="font-semibold text-gray-900">{t.logoUpload}</h2>
- <p className="text-sm text-gray-500">{t.logoDesc}</p>
+ <h2 className="font-semibold text-gray-900">{localT.logoUpload}</h2>
+ <p className="text-sm text-gray-500">{localT.logoDesc}</p>
  <input
  ref={logoInputRef}
  type="file"
@@ -194,9 +194,9 @@ export function LogoBranding() {
  className="px-4 py-2 border border-gray-300 rounded-lg text-sm hover:bg-gray-50 flex items-center gap-2 disabled:opacity-50"
  >
  {uploadingLogo ? (
- <><div className="w-4 h-4 border-2 border-gray-400 border-t-transparent rounded-full animate-spin" />{t.uploading}</>
+ <><div className="w-4 h-4 border-2 border-gray-400 border-t-transparent rounded-full animate-spin" />{localT.uploading}</>
  ) : (
- <><Upload className="w-4 h-4" />{t.uploadLogo}</>
+ <><Upload className="w-4 h-4" />{localT.uploadLogo}</>
  )}
  </button>
  </div>
@@ -204,8 +204,8 @@ export function LogoBranding() {
 
  {/* Favicon Upload */}
  <div className="bg-white rounded-lg border border-gray-200 p-6 space-y-4">
- <h2 className="font-semibold text-gray-900">{t.faviconUpload}</h2>
- <p className="text-sm text-gray-500">{t.faviconDesc}</p>
+ <h2 className="font-semibold text-gray-900">{localT.faviconUpload}</h2>
+ <p className="text-sm text-gray-500">{localT.faviconDesc}</p>
  <input
  ref={faviconInputRef}
  type="file"
@@ -239,9 +239,9 @@ export function LogoBranding() {
  className="px-4 py-2 border border-gray-300 rounded-lg text-sm hover:bg-gray-50 flex items-center gap-2 disabled:opacity-50"
  >
  {uploadingFavicon ? (
- <><div className="w-4 h-4 border-2 border-gray-400 border-t-transparent rounded-full animate-spin" />{t.uploading}</>
+ <><div className="w-4 h-4 border-2 border-gray-400 border-t-transparent rounded-full animate-spin" />{localT.uploading}</>
  ) : (
- <><Upload className="w-4 h-4" />{t.uploadFavicon}</>
+ <><Upload className="w-4 h-4" />{localT.uploadFavicon}</>
  )}
  </button>
  </div>
@@ -249,37 +249,37 @@ export function LogoBranding() {
 
  {/* System Identity */}
  <div className="bg-white rounded-lg border border-gray-200 p-6 space-y-4">
- <h2 className="font-semibold text-gray-900">{t.systemIdentity}</h2>
+ <h2 className="font-semibold text-gray-900">{localT.systemIdentity}</h2>
  <div>
- <label className="text-sm font-medium text-gray-700 block mb-1">{t.systemName}</label>
+ <label className="text-sm font-medium text-gray-700 block mb-1">{localT.systemName}</label>
  <input type="text" value={systemName} onChange={(e) => setSystemName(e.target.value)} className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm" />
  </div>
  <div>
- <label className="text-sm font-medium text-gray-700 block mb-1">{t.systemNameAr}</label>
+ <label className="text-sm font-medium text-gray-700 block mb-1">{localT.systemNameAr}</label>
  <input type="text" value={systemNameAr} onChange={(e) => setSystemNameAr(e.target.value)} className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm" dir="rtl" />
  </div>
  </div>
 
  {/* Color Palette */}
  <div className="bg-white rounded-lg border border-gray-200 p-6 space-y-4">
- <h2 className="font-semibold text-gray-900">{t.colorPalette}</h2>
+ <h2 className="font-semibold text-gray-900">{localT.colorPalette}</h2>
  <div className="grid grid-cols-3 gap-4">
  <div>
- <label className="text-sm font-medium text-gray-700 block mb-1">{t.primaryColor}</label>
+ <label className="text-sm font-medium text-gray-700 block mb-1">{localT.primaryColor}</label>
  <div className="flex items-center gap-2">
  <input type="color" value={primaryColor} onChange={(e) => setPrimaryColor(e.target.value)} className="w-10 h-10 rounded border cursor-pointer" />
  <input type="text" value={primaryColor} onChange={(e) => setPrimaryColor(e.target.value)} className="flex-1 border border-gray-200 rounded px-2 py-1.5 text-xs font-mono" />
  </div>
  </div>
  <div>
- <label className="text-sm font-medium text-gray-700 block mb-1">{t.secondaryColor}</label>
+ <label className="text-sm font-medium text-gray-700 block mb-1">{localT.secondaryColor}</label>
  <div className="flex items-center gap-2">
  <input type="color" value={secondaryColor} onChange={(e) => setSecondaryColor(e.target.value)} className="w-10 h-10 rounded border cursor-pointer" />
  <input type="text" value={secondaryColor} onChange={(e) => setSecondaryColor(e.target.value)} className="flex-1 border border-gray-200 rounded px-2 py-1.5 text-xs font-mono" />
  </div>
  </div>
  <div>
- <label className="text-sm font-medium text-gray-700 block mb-1">{t.accentColor}</label>
+ <label className="text-sm font-medium text-gray-700 block mb-1">{localT.accentColor}</label>
  <div className="flex items-center gap-2">
  <input type="color" value={accentColor} onChange={(e) => setAccentColor(e.target.value)} className="w-10 h-10 rounded border cursor-pointer" />
  <input type="text" value={accentColor} onChange={(e) => setAccentColor(e.target.value)} className="flex-1 border border-gray-200 rounded px-2 py-1.5 text-xs font-mono" />
@@ -287,7 +287,7 @@ export function LogoBranding() {
  </div>
  </div>
  <div className="mt-4 p-4 rounded-lg border border-gray-100">
- <p className="text-xs font-medium text-gray-500 mb-2">{t.preview}</p>
+ <p className="text-xs font-medium text-gray-500 mb-2">{localT.preview}</p>
  <div className="flex items-center gap-3">
  <div className="w-12 h-12 rounded-lg" style={{ backgroundColor: primaryColor }} />
  <div className="w-12 h-12 rounded-lg" style={{ backgroundColor: secondaryColor }} />
@@ -298,14 +298,14 @@ export function LogoBranding() {
 
  {/* Footer Config */}
  <div className="bg-white rounded-lg border border-gray-200 p-6 space-y-4 lg:col-span-2">
- <h2 className="font-semibold text-gray-900">{t.footerConfig}</h2>
+ <h2 className="font-semibold text-gray-900">{localT.footerConfig}</h2>
  <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
  <div>
- <label className="text-sm font-medium text-gray-700 block mb-1">{t.footerText}</label>
+ <label className="text-sm font-medium text-gray-700 block mb-1">{localT.footerText}</label>
  <textarea value={footerText} onChange={(e) => setFooterText(e.target.value)} className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm" rows={3} />
  </div>
  <div>
- <label className="text-sm font-medium text-gray-700 block mb-1">{t.footerTextAr}</label>
+ <label className="text-sm font-medium text-gray-700 block mb-1">{localT.footerTextAr}</label>
  <textarea value={footerTextAr} onChange={(e) => setFooterTextAr(e.target.value)} className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm" rows={3} dir="rtl" />
  </div>
  </div>

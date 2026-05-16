@@ -154,20 +154,50 @@ export async function generateCBAPDF(
   const isRTL = language === "ar";
   const l = t[language];
 
-  console.log(`[CBA PDF] Generating CBA PDF for bidAnalysisId=${bidAnalysisId}, language=${language}`);
+  console.log(`[CBA PDF] Generating CBA PDF for bidAnalysisId=${bidAnalysisId}, org=${organizationId}, ou=${operatingUnitId}, language=${language}`); // ✅ FIXED: Added OU to logging
 
   // ── Fetch data ──────────────────────────────────────────────────────────
-  const ba = await db.query.bidAnalyses.findFirst({
-    where: and(
-      eq(bidAnalyses.id, bidAnalysisId),
-      eq(bidAnalyses.organizationId, organizationId),
-      isNull(bidAnalyses.deletedAt)
-    ),
+  console.log("[CBA PDF] Input Parameters", {
+  bidAnalysisId,
+  organizationId,
+  operatingUnitId,
+  userId,
+  language,
+});
+
+const existingBa = await db.query.bidAnalyses.findFirst({
+  where: eq(bidAnalyses.id, bidAnalysisId),
+});
+
+console.log("[CBA PDF] Existing BA Check", existingBa);
+
+if (!existingBa) {
+  throw new Error(
+    `Bid Analysis ${bidAnalysisId} does not exist`
+  );
+}
+
+if (existingBa.deletedAt) {
+  throw new Error(
+    `Bid Analysis ${bidAnalysisId} is deleted`
+  );
+}
+
+if (
+  Number(existingBa.organizationId) !==
+  Number(organizationId)
+) {
+  console.error("[CBA PDF] Organization mismatch", {
+    baOrganizationId: existingBa.organizationId,
+    requestOrganizationId: organizationId,
   });
 
-  if (!ba) {
-    throw new Error("Bid Analysis not found");
-  }
+  throw new Error(
+    `Organization mismatch. BA Org=${existingBa.organizationId}, Request Org=${organizationId}`
+  );
+}
+
+const ba = existingBa;
 
   console.log(`[CBA PDF] Fetched bid analysis: ${ba.announcementReference}`);
 
@@ -602,7 +632,11 @@ export async function generateCBAPDF(
   `;
 
   // ✅ Use OfficialPdfEngine for PDF generation
-  console.log(`[CBA PDF] Generating PDF using OfficialPdfEngine`);
+  console.log(`[CBA PDF] Generating PDF using OfficialPdfEngine`, {
+    documentTitle: l.documentTitle,
+    formNumber: ba.announcementReference || `CBA-${ba.id}`,
+    bidderCount: activeBidders.length,
+  });
   
   const pdfBuffer = await generateOfficialPdf({
     context: officialContext,
@@ -613,7 +647,16 @@ export async function generateCBAPDF(
     bodyHtml,
   });
 
-  console.log(`[CBA PDF] CBA PDF generated successfully`);
+  if (!pdfBuffer || pdfBuffer.length === 0) {
+    console.error(`[CBA PDF] Generated PDF buffer is empty`);
+    throw new Error("PDF generation failed: empty buffer");
+  }
+
+  console.log(`[CBA PDF] CBA PDF generated successfully`, {
+    bufferSize: pdfBuffer.length,
+    baId: ba.id,
+    formNumber: ba.announcementReference,
+  });
   
   return pdfBuffer;
 }

@@ -3143,6 +3143,8 @@ export interface Translations {
  // ========== USER MANAGEMENT ==========
  userMgmt: {
  pageTitle: string;
+ userAddedSuccessfully: string;
+ userUpdatedSuccessfully: string;
  pageSubtitle: string;
  title: string;
  subtitle: string;
@@ -4179,6 +4181,7 @@ export interface Translations {
   };
   settingsModule: {
     accentColor: string;
+    updateTheUnitInformation: string;
     actions: string;
     active: string;
     activeSystemRules: string;
@@ -13893,6 +13896,8 @@ export const en: Translations = {
  // ========== USER MANAGEMENT ==========
  userMgmt: {
  pageTitle: 'User Management',
+ userAddedSuccessfully: 'User added successfully',
+ userUpdatedSuccessfully: 'User updated successfully',
  pageSubtitle: 'Manage user accounts and permissions',
  title: 'User Management',
  subtitle: 'Manage system users, assign roles, and control permissions',
@@ -14707,6 +14712,7 @@ export const en: Translations = {
   },
   settingsModule: {
     accentColor: 'Accent Color',
+    updateTheUnitInformation: 'Update The Unit Information',
     actions: 'Actions',
     active: 'Active',
     activeSystemRules: 'Active System Rules',
@@ -27485,6 +27491,8 @@ export const ar: Translations = {
  // ========== USER MANAGEMENT ==========
  userMgmt: {
  pageTitle: 'إدارة المستخدمين',
+ userAddedSuccessfully: 'تم اضافة المستخدم بنجاح',
+ userUpdatedSuccessfully: 'تم تحديث المستخدم بنجاح',
  pageSubtitle: 'إدارة حسابات المستخدمين والصلاحيات',
  title: 'إدارة المستخدمين',
  subtitle: 'إدارة مستخدمي النظام وتعيين الأدوار والتحكم في الصلاحيات',
@@ -28299,6 +28307,7 @@ export const ar: Translations = {
   },
   settingsModule: {
     accentColor: 'لون التمييز',
+    updateTheUnitInformation: 'تحديث معلومات الوحدة',
     actions: 'الإجراءات',
     active: 'نشط',
     activeSystemRules: 'قواعد النظام الحالية',

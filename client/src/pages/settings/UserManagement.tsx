@@ -163,8 +163,8 @@ export default function UserManagement() {
  <div className="flex items-center justify-center h-64">
  <div className="text-center">
  <Shield className="w-12 h-12 text-red-500 mx-auto mb-4" />
- <p className="text-lg font-semibold text-gray-900">{t.accessDenied}</p>
- <p className="text-sm text-gray-600">{t.adminOnlyAccess}</p>
+ <p className="text-lg font-semibold text-gray-900">{t.userMgmt.accessDenied}</p>
+ <p className="text-sm text-gray-600">{t.userMgmt.adminOnlyAccess}</p>
  </div>
  </div>
  );
@@ -183,7 +183,7 @@ export default function UserManagement() {
  // Mutations
  const addUserMutation = trpc.settings.users.add.useMutation({
  onSuccess: () => {
- toast.success(t.userMgmt?.userAddedSuccessfully || 'User added successfully');
+ toast.success(t.userMgmt.userAddedSuccessfully);
  setNewUser({ fullName: '', email: '', roleId: '', password: '', confirmPassword: '', selectedOUs: [] });
  setUserType('microsoft');
  setShowAddUser(false);
@@ -222,7 +222,7 @@ export default function UserManagement() {
 
  const updateUserMutation = trpc.settings.users.updatePermissions.useMutation({
  onSuccess: () => {
- toast.success(t.userMgmt?.userUpdatedSuccessfully || 'User updated successfully');
+ toast.success(t.userMgmt.userUpdatedSuccessfully);
  setShowEditModal(false);
  setEditingUser(null);
  setEditingRoleId('');
@@ -305,7 +305,7 @@ export default function UserManagement() {
  className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
  >
  <Plus className="w-4 h-4" />
- {t.addUser}
+ {t.userMgmt.addUser}
  </button>
  {/* OU Filter */}
  {operatingUnits.length > 1 && (
@@ -453,7 +453,7 @@ export default function UserManagement() {
  <div className={`flex items-center justify-between`}>
  <div className={`flex items-center gap-3`}>
  <UserPlus className="w-6 h-6 text-blue-600" />
- <h2 className="text-xl font-bold text-gray-900">{t.addUserTitle}</h2>
+ <h2 className="text-xl font-bold text-gray-900">{t.userMgmt.addUserTitle}</h2>
  </div>
  <button onClick={() => setShowAddUser(false)} className="p-2 hover:bg-gray-100 rounded-lg"><X className="w-5 h-5" /></button>
  </div>
@@ -500,10 +500,10 @@ export default function UserManagement() {
  }}
  isRTL={isRTL}
  placeholder={t.userMgmt?.enterFullName}
- label={t.fullName}
+ label={t.userMgmt.fullName}
  />
  <div>
- <label className={`text-sm font-medium text-gray-700 mb-1 block ${isRTL ? 'text-end' : ''}`}>{t.emailLabel}</label>
+ <label className={`text-sm font-medium text-gray-700 mb-1 block ${isRTL ? 'text-end' : ''}`}>{t.userMgmt.emailLabel}</label>
  <input
  type="email"
  value={newUser.email}
@@ -519,7 +519,7 @@ export default function UserManagement() {
  {userType === 'local' && (
  <>
  <div>
- <label className={`text-sm font-medium text-gray-700 mb-1 block ${isRTL ? 'text-end' : ''}`}>{t.fullName}</label>
+ <label className={`text-sm font-medium text-gray-700 mb-1 block ${isRTL ? 'text-end' : ''}`}>{t.userMgmt.fullName}</label>
  <input
  type="text"
  value={newUser.fullName}
@@ -529,7 +529,7 @@ export default function UserManagement() {
  />
  </div>
  <div>
- <label className={`text-sm font-medium text-gray-700 mb-1 block ${isRTL ? 'text-end' : ''}`}>{t.emailLabel}</label>
+ <label className={`text-sm font-medium text-gray-700 mb-1 block ${isRTL ? 'text-end' : ''}`}>{t.userMgmt.emailLabel}</label>
  <input
  type="email"
  value={newUser.email}
@@ -563,13 +563,13 @@ export default function UserManagement() {
 
  {/* Role Selection */}
  <div>
- <label className={`text-sm font-medium text-gray-700 mb-1 block ${isRTL ? 'text-end' : ''}`}>{t.assignRole}</label>
+ <label className={`text-sm font-medium text-gray-700 mb-1 block ${isRTL ? 'text-end' : ''}`}>{t.userMgmt.assignRole}</label>
  <select
  value={newUser.roleId}
  onChange={(e) => setNewUser(prev => ({ ...prev, roleId: e.target.value }))}
  className={`w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 ${isRTL ? 'text-end' : ''}`}
  >
- <option value="">{t.selectRole}</option>
+ <option value="">{t.userMgmt.selectRole}</option>
  {roles.map(r => <option key={r.id} value={r.id}>{language === 'en' ? r.name : (r.nameAr || r.name)}</option>)}
  </select>
  </div>
@@ -629,7 +629,7 @@ export default function UserManagement() {
  onClick={() => setShowAddUser(false)}
  className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200"
  >
- {t.cancel}
+ {t.userMgmt.cancel}
  </button>
  <button
  onClick={() => {
@@ -670,7 +670,7 @@ export default function UserManagement() {
  className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 disabled:opacity-50 flex items-center gap-2"
  >
  <UserPlus className="w-4 h-4" />
- {addUserMutation.isPending ? t.adding : t.addUser}
+ {addUserMutation.isPending ? t.userMgmt.adding : t.userMgmt.addUser}
  </button>
  </div>
  </div>
@@ -684,7 +684,7 @@ export default function UserManagement() {
  <div className="p-6 border-b border-gray-200">
  <div className="flex items-center gap-3">
  <AlertTriangle className="w-6 h-6 text-red-600" />
- <h2 className="text-xl font-bold text-gray-900">{t.confirmDelete}</h2>
+ <h2 className="text-xl font-bold text-gray-900">{t.userMgmt.confirmDelete}</h2>
  </div>
  </div>
  <div className="p-6 space-y-4">
@@ -706,7 +706,7 @@ export default function UserManagement() {
  }}
  className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200"
  >
- {t.cancel}
+ {t.userMgmt.cancel}
  </button>
  <button
  onClick={() => {
@@ -719,7 +719,7 @@ export default function UserManagement() {
  className="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-lg hover:bg-red-700 disabled:opacity-50 flex items-center gap-2"
  >
  <Trash2 className="w-4 h-4" />
- {deleteUserMutation.isPending ? t.removing : t.remove}
+ {deleteUserMutation.isPending ? t.userMgmt.removing : t.userMgmt.remove}
  </button>
  </div>
  </div>
@@ -733,7 +733,7 @@ export default function UserManagement() {
  <div className="p-6 border-b border-gray-200">
  <div className="flex items-center gap-3">
  <AlertTriangle className="w-6 h-6 text-red-600" />
- <h2 className="text-xl font-bold text-gray-900">{t.confirmDelete}</h2>
+ <h2 className="text-xl font-bold text-gray-900">{t.userMgmt.confirmDelete}</h2>
  </div>
  </div>
  <div className="p-6 space-y-4">
@@ -754,7 +754,7 @@ export default function UserManagement() {
  }}
  className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200"
  >
- {t.cancel}
+ {t.userMgmt.cancel}
  </button>
  <button
  onClick={() => {
@@ -767,7 +767,7 @@ export default function UserManagement() {
  className="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-lg hover:bg-red-700 disabled:opacity-50 flex items-center gap-2"
  >
  <Trash2 className="w-4 h-4" />
- {bulkDeleteMutation.isPending ? t.removing : t.remove}
+ {bulkDeleteMutation.isPending ? t.userMgmt.removing : t.userMgmt.remove}
  </button>
  </div>
  </div>
@@ -912,7 +912,7 @@ export default function UserManagement() {
  }}
  className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200"
  >
- {t.cancel}
+ {t.userMgmt.cancel}
  </button>
  <button
  onClick={() => {

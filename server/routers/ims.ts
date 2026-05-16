@@ -51,7 +51,7 @@ export const organizationsRouter = router({
     }),
 
   // Check if current user can manage an organization
-  canManage: protectedProcedure
+  canManage: scopedProcedure
     .input(z.object({ organizationId: z.number() }))
     .query(async ({ input, ctx }) => {
       return await db.canUserManageOrganization(ctx.user.id, input.organizationId);

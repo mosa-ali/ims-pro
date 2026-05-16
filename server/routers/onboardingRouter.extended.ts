@@ -172,7 +172,7 @@ export const onboardingExtendedProcedures = {
         orgs = orgs.filter(
           (org) =>
             org.name.toLowerCase().includes(query) ||
-            org.organizationCode?.toLowerCase().includes(query)
+            org.shortCode?.toLowerCase().includes(query)
         );
       }
 
@@ -209,7 +209,7 @@ export const onboardingExtendedProcedures = {
           return {
             id: org.id,
             name: org.name,
-            organizationCode: org.organizationCode,
+            organizationCode: org.shortCode,
             status: org.onboardingStatus,
             microsoft365Enabled: org.microsoft365Enabled === 1,
             tenantId: org.tenantId,
