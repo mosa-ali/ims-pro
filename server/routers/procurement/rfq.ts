@@ -14,10 +14,12 @@ import {
 
 import { router, scopedProcedure } from "../../_core/trpc";
 import { getDb } from "../../db";
-import { rfqs, rfqVendors, purchaseRequests, suppliers, rfqVendorItems, purchaseRequestLineItems } from "../../../drizzle/schema";
-import { eq, and, desc, leftJoin, isNull } from 'drizzle-orm';
+import { rfqs, rfqVendors, purchaseRequests, vendors, rfqVendorItems, purchaseRequestLineItems, quotationAnalyses, users } from "../../../drizzle/schema";
+import { eq, and, desc, isNull } from 'drizzle-orm';
 import { TRPCError } from "@trpc/server";
-import { generateRFQPDFOfficial } from "../../_core/rfqPDFOfficial";
+import { generateRFQPDF } from "../../services/pdf/templates/logistics/rfqPdfGenerator";
+import { generateOfficialPdf } from '../../services/pdf/OfficialPdfEngine';
+
 // RFQ number generation helper
 const generateRFQNumber = async (orgId: number, ouId: number): Promise<string> => {
   const db = await getDb();
@@ -84,7 +86,7 @@ export const rfqRouter = router({
         purchaseRequestId: input.purchaseRequestId,
         rfqNumber,
         status: "active",
-        issueDate: new Date(),
+        issueDate: new Date().toISOString().slice(0, 19).replace('T', ' '),
         createdBy: ctx.user.id,
         isDeleted: 0,  // Dual-column synchronization
       });
@@ -244,7 +246,7 @@ export const rfqRouter = router({
           purchaseRequestId: input.purchaseRequestId,
           rfqNumber,
           status: "draft",
-          issueDate: new Date(),
+          issueDate: new Date().toISOString().slice(0, 19).replace('T', ' '),
           createdBy: ctx.user.id,
         isDeleted: 0,  // Dual-column synchronization
         });
@@ -259,7 +261,7 @@ export const rfqRouter = router({
         rfqId, // Link to parent RFQ
         quotationAnalysisId: null, // Linked after quotation analysis
         supplierId: input.supplierId,
-        invitationSentDate: new Date(),
+        invitationSentDate: new Date().toISOString().slice(0, 19).replace('T', ' '),
         invitationMethod: input.invitationMethod,
         invitationStatus: "invited",
         submissionStatus: "pending",
@@ -304,7 +306,7 @@ export const rfqRouter = router({
       await db
         .update(rfqVendors)
         .set({
-          submissionDate: new Date(),
+          submissionDate: new Date().toISOString().slice(0, 19).replace('T', ' '),
           submissionMethod: "portal",
           quotedAmount: input.quotedAmount.toString(),
           currency: input.currency,
@@ -599,7 +601,7 @@ export const rfqRouter = router({
     .input(z.object({ rfqVendorId: z.number(), language: z.enum(['en', 'ar']).optional() }))
     .query(async ({ input, ctx }) => {
       const { rfqVendorId, language } = input;
-      const result = await generateRFQPDFOfficial(rfqVendorId, ctx.scope.organizationId, language || 'en');
+      const result = await generateOfficialPdf(rfqVendorId, ctx.scope.organizationId, language || 'en');
       return result;
     }),
 

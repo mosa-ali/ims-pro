@@ -6,7 +6,7 @@
 import { router, protectedProcedure } from "../_core/trpc";
 import { z } from "zod";
 import { TRPCError } from "@trpc/server";
-import { db } from "../db";
+import { getDb } from "../db";
 import { sql } from "drizzle-orm";
 
 // ============================================================================

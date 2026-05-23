@@ -67,6 +67,7 @@ import {
   bidderAcknowledgementSignatures,
   bidEvaluationCriteria,
   bidEvaluationScores,
+  cbaApprovalSignatures,
 } from 'drizzle/schema';
 
 // ✅ IMPORTS: Use storagePut and generatedDocuments
@@ -74,8 +75,9 @@ import { storagePut } from '../../storage';
 import fs from 'fs/promises';
 import path from 'path';
 import { buildOfficialPdfContext } from '../pdf/buildOfficialPdfContext';
-import { generateCBAPDF } from './templates/logistics/cbaPdfGenerator';
 import { generatePurchaseOrderPDF } from './templates/logistics/poGeneratePDF';
+import type { CompetitiveBidAnalysisPDFData } from './templates/logistics/cbaPdfGenerator';
+
 
 // ============================================================================
 // TYPES & CONSTANTS
@@ -1600,6 +1602,229 @@ async function generatePurchaseOrderPdf(
   };
 }
 
+// ============================================================================
+// ADD THIS WRAPPER FUNCTION (similar to generateBomPdf)
+// ============================================================================
+
+async function generateCbaPdf(
+  db: any,
+  ctx: any,
+  documentId: number,
+  language: string
+): Promise<{ buffer: Buffer; documentNumber: string }> {
+  // ✅ STEP 1: Fetch CBA data
+  const cbaData = await db.query.bidAnalyses.findFirst({
+    where: eq(bidAnalyses.id, documentId),
+  });
+
+  if (!cbaData) {
+    throw new TRPCError({
+      code: 'NOT_FOUND',
+      message: `Competitive Bid Analysis not found: ID=${documentId}`,
+    });
+  }
+
+  console.log(`[Logistics PDF] Fetching COMPLETE CBA data for ID=${documentId}`);
+
+  // ✅ STEP 2: Fetch bidders with scores
+  const bidders = await db.query.bidAnalysisBidders.findMany({
+    where: eq(bidAnalysisBidders.bidAnalysisId, documentId),
+    with: {
+      supplier: true,
+    },
+  });
+
+  console.log(`[Logistics PDF] Fetched ${bidders.length} bidders for CBA`);
+
+  // ✅ STEP 3: Fetch evaluation criteria
+  const criteria = await db.query.bidEvaluationCriteria.findMany({
+    where: eq(bidEvaluationCriteria.bidAnalysisId, documentId),
+  });
+
+  console.log(`[Logistics PDF] Fetched ${criteria.length} criteria for CBA`);
+
+  // ✅ STEP 4: Fetch evaluation scores
+  const scores = await db.query.bidEvaluationScores.findMany({
+    where: eq(bidEvaluationScores.bidAnalysisId, documentId),
+  });
+
+  console.log(`[Logistics PDF] Fetched ${scores.length} scores for CBA`);
+
+  // ✅ STEP 5: Fetch approval signatures (COMPLETE)
+  const signatures = await db.query.cbaApprovalSignatures.findMany({
+    where: eq(cbaApprovalSignatures.bidAnalysisId, documentId),
+  });
+
+  console.log(`[Logistics PDF] Fetched ${signatures.length} signatures for CBA`);
+
+  // ✅ STEP 6: Fetch purchase request for PR number and currency
+  const pr = await db.query.purchaseRequests.findFirst({
+    where: eq(purchaseRequests.id, cbaData.purchaseRequestId || 0),
+  });
+
+  // ✅ STEP 7: Build official context
+  const userId = ctx.user?.id;
+  if (!userId) {
+    console.warn('[Logistics PDF] ⚠️ ctx.user.id is undefined, using empty string');
+  }
+
+  const officialContext = await buildOfficialPdfContext({
+    db,
+    organizationId: cbaData.organizationId,
+    operatingUnitId: cbaData.operatingUnitId || '',
+    userId: userId || '',
+    language: language as 'en' | 'ar',
+    documentType: 'cba',
+    documentId,
+    documentModule: 'Logistics',
+  });
+
+  // ✅ STEP 8: Build score map: criterionId-bidderId -> score
+  const scoreMap: Record<string, number> = {};
+  scores.forEach((s: any) => {
+    scoreMap[`${s.criterionId}-${s.bidderId}`] = Number(s.score || 0);
+  });
+
+  // ✅ STEP 9: Calculate bidder scores
+  const bidderScoresMap: Record<number, { technical: number; financial: number; total: number }> = {};
+  
+  bidders.forEach((bidder: any) => {
+    let technicalScore = 0;
+    let financialScore = 0;
+
+    // Sum technical scores from criteria
+    criteria.forEach((c: any) => {
+      if (c.criteriaType === 'technical') {
+        const score = scoreMap[`${c.id}-${bidder.id}`] || 0;
+        technicalScore += score;
+      }
+    });
+
+    // Sum financial scores from criteria
+    criteria.forEach((c: any) => {
+      if (c.criteriaType === 'financial') {
+        const score = scoreMap[`${c.id}-${bidder.id}`] || 0;
+        financialScore += score;
+      }
+    });
+
+    bidderScoresMap[bidder.id] = {
+      technical: technicalScore,
+      financial: financialScore,
+      total: technicalScore + financialScore,
+    };
+  });
+
+  // ✅ STEP 10: Determine bidder status and ranking
+  const minimumTechnicalScore = Number(cbaData.minimumTechnicalScore || 70);
+  const rankedBidders = bidders
+    .map((bidder: any, idx: number) => {
+      const bScores = bidderScoresMap[bidder.id] || { technical: 0, financial: 0, total: 0 };
+      const technicalPercentage = (bScores.technical / 50) * 100; // 50 is max technical
+      
+      let status: 'qualified' | 'not_qualified' | 'disqualified' = 'qualified';
+      if (bidder.submissionStatus === 'disqualified') {
+        status = 'disqualified';
+      } else if (technicalPercentage < minimumTechnicalScore) {
+        status = 'not_qualified';
+      }
+
+      return {
+        rank: idx + 1,
+        supplierName: bidder.bidderName || bidder.supplier?.name || bidder.supplier?.vendorName || 'Unknown',
+        technicalScore: bScores.technical,
+        financialScore: bScores.financial,
+        totalScore: bScores.total,
+        status,
+        offeredPrice: Number(bidder.offeredPrice || 0),
+      };
+    })
+    .sort((a: any, b: any) => b.totalScore - a.totalScore) // Sort by total score descending
+    .map((b: any, idx: number) => ({ ...b, rank: idx + 1 })); // Re-rank after sorting
+
+  // ✅ STEP 11: Calculate lowest bid from qualified bidders
+  const qualifiedBidders = rankedBidders.filter(
+    (b: any) => b.status === 'qualified' && b.offeredPrice > 0
+  );
+  const lowestBidAmount = qualifiedBidders.length > 0
+    ? Math.min(...qualifiedBidders.map((b: any) => b.offeredPrice))
+    : 0;
+
+  // ✅ STEP 12: Get selected supplier name
+  const selectedBidder = bidders.find((b: any) => b.isSelected === 1 || b.isAwarded === 1);
+  const selectedSupplierName = selectedBidder
+    ? (selectedBidder.bidderName || selectedBidder.supplier?.name || selectedBidder.supplier?.vendorName || '')
+    : (cbaData.selectedBidderName || cbaData.awardedBidderName || '');
+
+  // ✅ STEP 13: Get currency
+  const currency = pr?.currency || cbaData.currency || 'USD';
+
+  // ✅ STEP 14: Build criteria WITH scores per bidder (THIS WAS MISSING!)
+  const criteriaWithScores = criteria.map((c: any) => ({
+    section: c.sectionNumber?.toString() || '1',
+    name: c.name,
+    maxScore: Number(c.maxScore || 100),
+    // ✅ THIS IS THE KEY FIX - include scores array for each criterion
+    scores: bidders.map((bidder: any) => ({
+      bidderId: bidder.id,
+      score: Number(scoreMap[`${c.id}-${bidder.id}`] || 0),
+    })),
+  }));
+
+  console.log(`[Logistics PDF] Built ${criteriaWithScores.length} criteria with scores for ${bidders.length} bidders`);
+
+  // ✅ STEP 15: Build COMPLETE PDF data
+  const pdfData: CompetitiveBidAnalysisPDFData = {
+    context: officialContext,
+    cbaNumber: cbaData.cbaNumber || '',
+    prNumber: pr?.prNumber || '',
+    tenderDate: cbaData.tenderDate ? new Date(cbaData.tenderDate).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
+    budgetAmount: pr?.totalBudgetAmount ? Number(pr.totalBudgetAmount) : undefined,
+    itemDescription: pr?.itemDescription || '',
+    currency: currency,
+    bidders: rankedBidders,
+
+    // ✅ FIX: Include criteria WITH scores (was missing scores array before)
+    criteria: criteriaWithScores,
+
+    // ✅ FIX: Include decision data (was completely missing before)
+    selectedSupplierName: selectedSupplierName,
+    justification: cbaData.selectionJustification || cbaData.justification || '',
+    lowestBidAmount: lowestBidAmount,
+
+    // ✅ FIX: Include COMPLETE signatures (was missing signedAt, verificationCode, roleAr)
+    signatures: signatures.map((s: any) => ({
+      memberName: s.memberName || '',
+      role: s.role || '',
+      roleAr: s.roleAr || '',
+      signatureDataUrl: s.signatureDataUrl || '',
+      signedAt: s.signedAt || '',
+      verificationCode: s.verificationCode || '',
+    })),
+
+    language: language as 'en' | 'ar',
+  };
+
+  console.log(`[Logistics PDF] CBA PDF data built: ${rankedBidders.length} bidders, ${criteriaWithScores.length} criteria, ${signatures.length} signatures, selectedSupplier="${selectedSupplierName}", justification="${pdfData.justification ? 'YES' : 'NO'}"`);
+
+  // ✅ STEP 16: Generate PDF using template
+  const { generateCompetitiveBidAnalysisPDF } = await import('./templates/logistics/cbaPdfGenerator');
+  const result = await generateCompetitiveBidAnalysisPDF(pdfData);
+
+  if (!isValidPdfBuffer(result.buffer)) {
+    throw new TRPCError({
+      code: 'INTERNAL_SERVER_ERROR',
+      message: 'Generated CBA PDF is invalid',
+    });
+  }
+
+  console.log(`[Logistics PDF] ✅ CBA PDF generated successfully: ${result.fileName} (${result.buffer.length} bytes)`);
+
+  return {
+    buffer: result.buffer,
+    documentNumber: cbaData.cbaNumber || `CBA-${cbaData.id}`,
+  };
+}
 
 // ============================================================================
 // MAIN PDF GENERATION PROCEDURE
@@ -1851,15 +2076,14 @@ export const generatePdfProcedure = scopedProcedure
           break;
         }
         case 'cba': {
-          const buffer = await generateCBAPDF(
+          const result = await generateCbaPdf(
             db,
             ctx,
             documentId,
             language
           );
-          pdfBuffer = Buffer.from(buffer);
-
-          documentNumber = `CBA-${documentId}`;
+          pdfBuffer = result.buffer;
+          documentNumber = result.documentNumber;
           break;
         }
 

@@ -1,155 +1,99 @@
 import express from "express";
-import puppeteer from "puppeteer";
-import { getDb } from "../db";
-import { eq } from "drizzle-orm";
-import { generatePRHtml } from "../utils/generatePRHtml";
-import {
-  purchaseRequests,
-  purchaseRequestLineItems,
-  organizations,
-  operatingUnits,
-  organizationBranding,
-} from "../../drizzle/schema";
+import { generateBidEvaluationChecklistExcel } from "../_core/bidEvaluationChecklistExcel";
+import { sdk } from "../_core/sdk";
 
 const router = express.Router();
 
 /**
- * GET /organization/logistics/purchase-request/:id
- * Generate and download a Purchase Request PDF
+ * GET /api/pdf/bid-analysis/:id/evaluation-checklist-excel
+ * Generate and download the Bid Evaluation Checklist as Excel (.xlsx)
+ *
+ * Query params:
+ *   lang  - "en" | "ar"  (default: "en")
+ *   mode  - "data" | "template"  (default: "data")
+ *
+ * Auth: requires valid session cookie + X-Organization-ID header
+ * (same as tRPC procedures)
  */
-router.get("/purchase-request/:id", async (req, res) => {
+router.get("/bid-analysis/:id/evaluation-checklist-excel", async (req, res) => {
   try {
-    const id = Number(req.params.id);
+    const bidAnalysisId = Number(req.params.id);
 
-    if (isNaN(id)) {
+    if (isNaN(bidAnalysisId) || bidAnalysisId <= 0) {
+      return res.status(400).json({ message: "Invalid bid analysis ID" });
+    }
+
+    // ── Authenticate request ──────────────────────────────────────────────
+    let user: any = null;
+    try {
+      user = await sdk.authenticateRequest(req as any);
+    } catch {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+
+    if (!user) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+
+    // ── Extract organization scope (same as tRPC context) ─────────────────
+    const orgIdHeader = req.headers["x-organization-id"];
+    const orgIdQuery  = req.query.orgId as string | undefined;
+
+    const organizationId = orgIdHeader
+      ? parseInt(String(orgIdHeader), 10)
+      : orgIdQuery
+        ? parseInt(orgIdQuery, 10)
+        : NaN;
+
+    if (isNaN(organizationId) || organizationId <= 0) {
       return res.status(400).json({
-        message: "Invalid purchase request ID",
+        message: "Missing or invalid organization ID. Send X-Organization-ID header or orgId query param.",
       });
     }
 
-    // Fetch purchase request with related data
-    const db = await getDb();
-    const pr = await db.query.purchaseRequests.findFirst({
-      where: eq(purchaseRequests.id, id),
-    });
+    // ── Parse optional params ─────────────────────────────────────────────
+    const lang  = (req.query.lang  as string) === "ar" ? "ar" : "en";
+    const mode  = (req.query.mode  as string) === "template" ? "template" : "data";
 
-    if (!pr) {
-      return res.status(404).json({
-        message: "Purchase request not found",
-      });
+    console.log(
+      `[Excel Route] bid-analysis=${bidAnalysisId} org=${organizationId} lang=${lang} mode=${mode}`
+    );
+
+    // ── Generate Excel ────────────────────────────────────────────────────
+    const buffer = await generateBidEvaluationChecklistExcel(
+      bidAnalysisId,
+      organizationId,
+      lang,
+      mode
+    );
+
+    if (!buffer || buffer.byteLength === 0) {
+      return res.status(500).json({ message: "Generated Excel file is empty" });
     }
 
-    /**
-     * Tenant isolation check
-     * Replace req.user fields based on your auth system
-     */
-        /**
-     * TODO:
-     * Add tenant isolation check based on your actual auth session structure.
-     *
-     * Example:
-     * const currentOrgId = req.session?.organizationId;
-     *
-     * if (currentOrgId && pr.organizationId !== currentOrgId) {
-     *   return res.status(403).json({
-     *     message: "Unauthorized access"
-     *   });
-     * }
-     */
+    const filename =
+      mode === "template"
+        ? `bid-evaluation-template-${bidAnalysisId}.xlsx`
+        : `bid-evaluation-${bidAnalysisId}.xlsx`;
 
-    // Fetch organization (if available in your schema)
-    // For now, we'll use data from the PR record
-
-    // Generate HTML
-    // Fetch line items
-  const lineItems = await db.query.purchaseRequestLineItems.findMany({
-    where: eq(purchaseRequestLineItems.purchaseRequestId, id),
-  });
-
-  // Fetch organization details
-  const organization = await db.query.organizations.findFirst({
-    where: eq(organizations.id, pr.organizationId),
-  });
-
-  // Fetch operating unit details
-  const operatingUnit = await db.query.operatingUnits.findFirst({
-    where: eq(operatingUnits.id, pr.operatingUnitId),
-  });
-  // Fetch branding
-const branding = await db.query.organizationBranding.findFirst({
-  where: eq(
-    organizationBranding.organizationId,
-    pr.organizationId
-  ),
-});
-  // Generate HTML
-  const html = generatePRHtml({
-  ...pr,
-    lineItems: lineItems.map((item) => ({
-      ...item,
-      quantity: Number(item.quantity || 0),
-      recurrence: Number(item.recurrence || 1),
-      unitPrice: Number(item.unitPrice || 0),
-      totalPrice: Number(item.totalPrice || 0),
-      unit: item.unit || "-",
-    })),
-
-    organizationName: organization?.name || "",
-    organizationLogo: branding?.logoUrl || "",
-    operatingUnitName: operatingUnit?.name || "",
-  });
-
-    // Launch Puppeteer with Azure-safe configuration
-      let browser;
-      let pdf;
-
-      try {
-        browser = await puppeteer.launch({
-          headless: true,
-          args: [
-            "--no-sandbox",
-            "--disable-setuid-sandbox",
-            "--disable-dev-shm-usage",
-          ],
-        });
-
-        const page = await browser.newPage();
-
-        await page.setContent(html, {
-          waitUntil: "networkidle0",
-        });
-
-        pdf = await page.pdf({
-          format: "A4",
-          printBackground: true,
-          margin: {
-            top: "15mm",
-            bottom: "15mm",
-            left: "10mm",
-            right: "10mm",
-          },
-        });
-
-      } finally {
-        if (browser) {
-          await browser.close();
-        }
-      }
-
-    // Set response headers for PDF download
-    res.setHeader("Content-Type", "application/pdf");
+    // ── Send response ─────────────────────────────────────────────────────
+    res.setHeader(
+      "Content-Type",
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    );
     res.setHeader(
       "Content-Disposition",
-      `attachment; filename="${pr.prNumber || `PR-${pr.id}`}.pdf"`
+      `attachment; filename="${filename}"`
     );
-    res.setHeader("Content-Length", pdf.length);
+    res.setHeader("Content-Length", buffer.byteLength.toString());
 
-    // Send PDF
-    res.send(pdf);
+    console.log(`[Excel Route] Sending ${buffer.byteLength} bytes as ${filename}`);
+    res.send(buffer);
+
   } catch (error) {
-    console.error("[PDF Generation Error]", error);
+    console.error("[Excel Route] Error:", error);
     res.status(500).json({
-      message: "Failed to generate PDF",
+      message: "Failed to generate Excel file",
       error: error instanceof Error ? error.message : "Unknown error",
     });
   }

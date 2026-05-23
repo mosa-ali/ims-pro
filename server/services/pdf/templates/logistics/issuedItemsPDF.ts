@@ -109,7 +109,7 @@ function escapeHtml(
 // MAIN GENERATOR
 // ============================================================================
 
-export async function generateStockIssuePDF(
+export async function generateIssuedItemsPDF(
   stockIssueId: number,
   organizationId: number,
   operatingUnitId: string,

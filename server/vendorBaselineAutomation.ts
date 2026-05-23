@@ -17,7 +17,7 @@ interface BaselineCreationParams {
   operatingUnitId?: number | null;
   bidAnalysisId: number;
   purchaseRequestId?: number | null;
-  prNumber?: string | null;
+  prNumber?: string | null; 
   cbaNumber?: string | null;
   bidderId: number;
   totalBidAmount?: number | string | null;
@@ -66,7 +66,7 @@ export async function createProcurementBaseline(params: BaselineCreationParams) 
     try {
       const scores = await db
         .select({
-          criterionName: bidEvaluationCriteria.criterionName,
+          criterionName: bidEvaluationCriteria.name,
           score: bidEvaluationScores.score,
           maxScore: bidEvaluationCriteria.maxScore,
         })

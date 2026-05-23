@@ -334,7 +334,7 @@ export const donorCommunicationsRouter = router({
       await db
         .update(donorCommunications)
         .set({
-          deletedAt: new Date(),
+          deletedAt: new Date().toISOString().slice(0, 19).replace('T', ' '),
           deletedBy: ctx.user.id,
         })
         .where(eq(donorCommunications.id, input.id));

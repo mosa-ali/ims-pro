@@ -77,7 +77,7 @@ export async function createPayableFromGRN(
     const poLines = await dbOrTrx
       .select()
       .from(purchaseOrderLineItems)
-      .where(eq(purchaseOrderLineItems.poId, po.id));
+      .where(eq(purchaseOrderLineItems.purchaseOrderId, po.id));
 
     if (!poLines || poLines.length === 0) {
       console.error(`❌ [GRN→Payable] No PO line items found for PO ${po.id}`);

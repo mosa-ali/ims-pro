@@ -17,7 +17,7 @@
  * ============================================================================
  */
 
-import { db } from '../db';
+import { getDb } from '../db';
 import { hrAttendanceRecords } from '../../drizzle/schema';
 import { MicrosoftGraphClient, TeamsShift, AzureAdUser } from '../_core/microsoftGraphClient';
 import { eq, and, gte, lte } from 'drizzle-orm';

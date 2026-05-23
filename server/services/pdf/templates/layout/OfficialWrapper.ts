@@ -18,22 +18,21 @@ export function generateOfficialPdfHtml(options: OfficialWrapperOptions): string
     context,
     department,
     documentTitle,
-    formNumber,
-    formDate,
     bodyHtml,
   } = options;
 
   const direction = context.direction || "ltr";
-const language = context.language || "en";
+  const language = context.language || "en";
 
-const organizationName =
-  language === "ar"
-    ? context.organizationNameAr || context.organizationName
-    : context.organizationName;
+  const organizationName =
+    language === "ar"
+      ? context.organizationNameAr || context.organizationName
+      : context.organizationName;
 
-    const operatingUnitName =
-      context.language === "ar"
-        ? context.operatingUnitName || context.operatingUnitName: context.operatingUnitName;
+  const operatingUnitName =
+    context.language === "ar"
+      ? context.operatingUnitName || context.operatingUnitName
+      : context.operatingUnitName;
 
   const organizationLogo = context.organizationLogo;
 
@@ -56,11 +55,7 @@ const organizationName =
       </div>
 
       <div class="header-right">
-        ${organizationLogo ? `<img src="${organizationLogo}" alt="Logo" class="org-logo" />` : ""}
-        <div class="ref-date">
-          ${formNumber ? `<div class="value ltr-safe">${formNumber}</div>` : ''}
-          ${formDate ? `<div class="value ltr-safe">${formDate}</div>` : ''}
-        </div>
+        ${organizationLogo ? `<img src="${organizationLogo}" alt="Organization Logo" class="org-logo" />` : ""}
       </div>
     </div>
     <hr class="hr-strong" />

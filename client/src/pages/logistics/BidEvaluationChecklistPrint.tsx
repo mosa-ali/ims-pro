@@ -195,7 +195,7 @@ export default function BidEvaluationChecklistPrint() {
  <div className="text-end" style={{ fontSize: "7pt" }}>
  <p><strong>CBA#:</strong> {ba.cbaNumber || ba.cbaNumber || "-"}</p>
  <p><strong>PR#:</strong> {ba.purchaseRequest?.prNumber || "-"}</p>
- <p><strong>Date:</strong> {new Date().toLocaleDateString()}</p>
+ <p><strong>Date:</strong> {new Date().toISOString()}</p>
  </div>
  </div>
 
@@ -433,7 +433,7 @@ export default function BidEvaluationChecklistPrint() {
 
  {/* Footer */}
  <div className="mt-4 text-center text-gray-400" style={{ fontSize: "6pt" }}>
- <p>Generated from {currentOrganization?.name || "IMS"} | {new Date().toLocaleDateString()}</p>
+ <p>Generated from {currentOrganization?.name || "IMS"} | {new Date().toISOString()}</p>
  </div>
  </div>
  </div>

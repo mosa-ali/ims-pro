@@ -163,7 +163,7 @@ export function ProgramOverviewReportPrintModal({
  reportingPeriod: t.printTemplates.reportingPeriod,
  reportDate: t.printTemplates.reportDate,
  
- dashboard: t.printTemplates.programDashboard,
+ dashboard: t.printTemplates.ProjectManagementDashboard,
  totalBudget: t.printTemplates.totalBudget,
  totalSpent: t.printTemplates.totalSpent,
  beneficiaries: t.printTemplates.totalBeneficiaries,

@@ -80,7 +80,7 @@ export const procurementRouter = router({
       unit: z.string(),
       estimatedCost: z.string(),
       actualCost: z.string().optional(),
-      currency: z.enum(['USD', 'EUR', 'GBP', 'CHF']).default('USD'),
+      currency: z.string(),
       plannedProcurementDate: z.string(),
       actualProcurementDate: z.string().optional(),
       deliveryDate: z.string().optional(),
@@ -164,7 +164,7 @@ export const procurementRouter = router({
       unit: z.string().optional(),
       estimatedCost: z.string().optional(),
       actualCost: z.string().optional(),
-      currency: z.enum(['USD', 'EUR', 'GBP', 'CHF']).optional(),
+      currency: z.string(),
       plannedProcurementDate: z.string().optional(),
       actualProcurementDate: z.string().optional(),
       deliveryDate: z.string().optional(),
@@ -472,7 +472,7 @@ export const procurementRouter = router({
           unit: 'Unit', // Default unit (NOT NULL field)
           // Estimated Total Cost - from Financial Overview budget
           estimatedCost: budget.total.toFixed(2),
-          currency: budget.currency as 'USD' | 'EUR' | 'GBP' | 'CHF',
+          currency: budget.currency,
           // Planned Start Date - use project start date as default (NOT NULL field)
           plannedProcurementDate: defaultDate,
           // Status - default PLANNED

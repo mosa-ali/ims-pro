@@ -439,7 +439,7 @@ export function GrantDetailsModal({ isOpen, onClose, grant }: GrantDetailsModalP
  grantNumber={grant.grantNumber}
  grantName={grant.grantName}
  donorName={grant.donorName}
- reportingPeriod={`${new Date(grant.startDate).toLocaleDateString()} - ${new Date().toLocaleDateString()}`}
+ reportingPeriod={`${new Date(grant.startDate).toLocaleDateString()} - ${new Date().toISOString()}`}
  grantAmount={grant.grantAmount}
  currency={grant.currency}
  totalSpent={0}

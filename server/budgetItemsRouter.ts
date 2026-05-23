@@ -96,7 +96,7 @@ export const budgetItemsRouter = router({
           eq(budgetItems.projectId, projectId),
           eq(budgetItems.organizationId, organizationId),
           eq(budgetItems.operatingUnitId, operatingUnitId),
-          eq(budgetItems.isDeleted, false)
+          eq(budgetItems.isDeleted, 0)
         ))
         .limit(limit)
         .offset(offset)
@@ -109,7 +109,7 @@ export const budgetItemsRouter = router({
           eq(budgetItems.projectId, projectId),
           eq(budgetItems.organizationId, organizationId),
           eq(budgetItems.operatingUnitId, operatingUnitId),
-          eq(budgetItems.isDeleted, false)
+          eq(budgetItems.isDeleted, 0)
         ));
 
       return {
@@ -139,7 +139,7 @@ export const budgetItemsRouter = router({
           eq(budgetItems.id, input.id),
           eq(budgetItems.organizationId, organizationId),
           eq(budgetItems.operatingUnitId, operatingUnitId),
-          eq(budgetItems.isDeleted, false)
+          eq(budgetItems.isDeleted, 0)
         ))
         .limit(1);
 
@@ -186,7 +186,7 @@ export const budgetItemsRouter = router({
           eq(budgetItems.projectId, input.projectId),
           eq(budgetItems.organizationId, organizationId),
           eq(budgetItems.operatingUnitId, operatingUnitId),
-          eq(budgetItems.isDeleted, false)
+          eq(budgetItems.isDeleted, 0)
         ))
         .orderBy(desc(budgetItems.createdAt));
 
@@ -259,8 +259,8 @@ export const budgetItemsRouter = router({
         const totalBudgetLine = input.qty * input.unitCost * input.recurrence;
 
         // Convert dates to proper format for Drizzle date fields
-        const startDate = typeof project.startDate === 'string' ? project.startDate : project.startDate?.toISOString?.()?.split('T')[0] || project.startDate;
-        const endDate = typeof project.endDate === 'string' ? project.endDate : project.endDate?.toISOString?.()?.split('T')[0] || project.endDate;
+        const startDate = typeof project.startDate === 'string' ? project.startDate : new Date().toISOString().slice(0, 19).split('T')[0] || project.startDate;
+        const endDate = typeof project.endDate === 'string' ? project.endDate : new Date().toISOString().slice(0, 19).split('T')[0] || project.endDate;
 
         // Insert with scope from context
         const result = await db.insert(budgetItems).values({
@@ -496,7 +496,7 @@ export const budgetItemsRouter = router({
       // Soft delete
       await db
         .update(budgetItems)
-        .set({ isDeleted: true, deletedAt: new Date(), deletedBy: ctx.user?.id ?? null })
+        .set({ isDeleted: 1, deletedAt: new Date().toISOString().slice(0, 19).split('T')[0], deletedBy: ctx.user?.id ?? null })
         .where(and(
           eq(budgetItems.id, input.id),
           eq(budgetItems.organizationId, organizationId),
@@ -552,7 +552,7 @@ export const budgetItemsRouter = router({
             projectIds.add(item.projectId);
             await db
               .update(budgetItems)
-              .set({ isDeleted: true, deletedAt: new Date(), deletedBy: ctx.user?.id ?? null })
+              .set({ isDeleted: 1, deletedAt: new Date().toISOString().slice(0, 19).split('T')[0], deletedBy: ctx.user?.id ?? null })
               .where(and(
                 eq(budgetItems.id, id),
                 eq(budgetItems.organizationId, organizationId),

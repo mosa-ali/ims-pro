@@ -11,10 +11,10 @@ import { documents, purchaseRequests, generatedDocuments } from "../../drizzle/s
 import { eq, and, desc } from "drizzle-orm";
 import { storagePut } from "../storage";
 import { TRPCError } from "@trpc/server";
-import { generatePRDocument } from "../_core/prDocumentGenerator";
-import {
-  PdfDocumentType,
-} from '../services/pdf/pdfRegistry';
+import { generatePDF } from "../services/pdf/templates/logistics/prPdfGenerator";
+import { generateRFQPDF } from "../services/pdf/templates/logistics/rfqPdfGenerator";
+import { generatePurchaseOrderPDF } from "../services/pdf/templates/logistics/poGeneratePDF";
+import { generateGRNPDF } from "../services/pdf/templates/logistics/grnPDFGenerator";
 
 // ✅ FIXED: Proper mapping from input type to database type
 const documentTypeMap = {
@@ -221,13 +221,25 @@ export const procurementDocumentRouter = router({
           `[Procurement] Generating ${documentType} for PR-${pr.prNumber}`
         );
 
-        const pdfBuffer = await generatePRDocument(
-          pr,
-          documentType as "PR" | "RFQ" | "PO" | "GRN" | "DELIVERY" | "PAYMENT",
-          ctx.scope.organizationId
-        );
+        let pdfResult: { buffer: Buffer; fileName: string } | null = null;
 
-        if (!pdfBuffer || pdfBuffer.length === 0) {
+        // ✅ FIXED: Call appropriate generator and extract buffer
+        if (documentType === "PR") {
+          pdfResult = await generatePDF(pr as any);
+        } else if (documentType === "RFQ") {
+          pdfResult = await generateRFQPDF(pr as any);
+        } else if (documentType === "PO") {
+          pdfResult = await generatePurchaseOrderPDF(pr as any);
+        } else if (documentType === "GRN") {
+          pdfResult = await generateGRNPDF(pr as any);
+        } else {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: `Document type ${documentType} not yet supported`,
+          });
+        }
+
+        if (!pdfResult || !pdfResult.buffer || pdfResult.buffer.length === 0) {
           throw new TRPCError({
             code: "INTERNAL_SERVER_ERROR",
             message: "Failed to generate PDF",
@@ -238,7 +250,7 @@ export const procurementDocumentRouter = router({
         const fileName = `${documentType}-${pr.prNumber}-${language}-${Date.now()}.pdf`;
         const fileKey = `procurement/${ctx.scope.organizationId}/${ctx.scope.operatingUnitId}/${documentType.toLowerCase()}-${prId}/${fileName}`;
 
-        const { url } = await storagePut(fileKey, pdfBuffer, "application/pdf");
+        const { url } = await storagePut(fileKey, pdfResult.buffer, "application/pdf");
 
         // ✅ FIXED: Mark old versions as not latest with correct filters
         await db
@@ -283,7 +295,7 @@ export const procurementDocumentRouter = router({
           documentType: mappedDocumentType,  // ✅ FIXED: Store mapped type
           filePath: url,
           fileName,
-          fileSize: pdfBuffer.length,
+          fileSize: pdfResult.buffer.length,
           mimeType: "application/pdf",
           version: nextVersion,
           isLatest: 1,

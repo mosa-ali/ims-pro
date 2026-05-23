@@ -19,7 +19,7 @@ import { eq, and, desc, isNull, inArray } from 'drizzle-orm';
 import { TRPCError } from "@trpc/server";
 import { generateGRNNumber } from "../../services/procurementNumbering";
 import { grnApprovalProcedures } from "./grn-approvals";
-import { generateGRNPDF } from "../../_core/grnPDF";
+import { generateGRNPDF } from "../../services/pdf/templates/logistics/grnPDFGenerator";
 
 export const grnRouter = router({
   /**

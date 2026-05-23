@@ -27,6 +27,7 @@ import {
   users,
   organizations,
   operatingUnits,
+  projects,
 } from "../../drizzle/schema";
 import {  eq, and, sql, desc, asc, gte, lte, count, sum, inArray, isNull } from "drizzle-orm";
 import { TRPCError } from "@trpc/server";
@@ -229,8 +230,8 @@ export const risksRouter = router({
 
       // Insert risk
       const [newRisk] = await db.insert(risks).values({
-        organizationId,
-        operatingUnitId,
+        organizationId: ctx.scope.organizationId,
+        operatingUnitId: ctx.scope.operatingUnitId,
         riskCode: input.riskCode,
         title: input.title,
         titleAr: input.titleAr,
@@ -701,7 +702,7 @@ export const incidentsRouter = router({
         descriptionAr: input.descriptionAr,
         category: input.category,
         severity: input.severity,
-        incidentDate: new Date(input.incidentDate),
+        incidentDate: new Date().toISOString().slice(0, 19).replace('T', ' '),
         location: input.location,
         reportedBy: input.reportedBy ?? userId,
         affectedParties: input.affectedParties,
@@ -948,6 +949,42 @@ export const riskComplianceDashboardRouter = router({
     }),
 
   /**
+   * Evaluate single project for risk triggers
+   * Auto-detects risks for a specific project
+   */
+  projectsEvaluated: scopedProcedure
+    .input(
+      z.object({
+        projectId: z.number(),
+      })
+    )
+    .mutation(async ({ input, ctx }) => {
+      const { evaluateProjectRisks } = await import('../_core/riskIntelligenceEngine');
+      
+      try {
+        const result = await evaluateProjectRisks(
+          input.projectId,
+          ctx.scope.organizationId,
+          ctx.scope.operatingUnitId,
+          ctx.user.id
+        );
+        
+        return {
+          success: true,
+          risksCreated: result.risksCreated,
+          risksUpdated: result.risksUpdated,
+          message: `Evaluation complete: ${result.risksCreated} risks created, ${result.risksUpdated} risks updated`,
+        };
+      } catch (error) {
+        console.error('[Risk Intelligence] Evaluation failed:', error);
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'Failed to evaluate project risks',
+        });
+      }
+    }),
+
+  /**
    * Evaluate project for risk triggers and auto-generate risks
    * Calls Risk Intelligence Engine to detect financial, operational, and MEAL risks
    */
@@ -995,14 +1032,15 @@ export const riskComplianceDashboardRouter = router({
       
       try {
         // Fetch all active projects in the organization/OU
-        const activeProjects = await ctx.db
+        const db = await getDb();
+        const activeProjects = await db
           .select()
           .from(projects)
           .where(
             and(
-              eq(projects.organizationId, input.organizationId),
-              input.operatingUnitId
-                ? eq(projects.operatingUnitId, input.operatingUnitId)
+              eq(projects.organizationId, ctx.scope.organizationId),
+              ctx.scope.operatingUnitId
+                ? eq(projects.organizationId, ctx.scope.operatingUnitId)
                 : sql`1=1`,
               eq(projects.status, 'active')
             )
@@ -1017,8 +1055,8 @@ export const riskComplianceDashboardRouter = router({
           try {
             const result = await evaluateProjectRisks(
               project.id,
-              input.organizationId,
-              input.operatingUnitId,
+              ctx.scope.organizationId,
+              ctx.scope.operatingUnitId,
               ctx.user.id
             );
             totalRisksGenerated += result.risksCreated;

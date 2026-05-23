@@ -37,7 +37,7 @@ const SAMPLE_DATA = {
   organizationNameAr: "مؤسسة اليماني للتنمية",
   onboardingLink: "https://app.example.com/onboarding/abc123",
   supportEmail: "support@example.com",
-  currentDate: new Date().toLocaleDateString(),
+  currentDate: new Date().toISOString(),
 };
 
 // Merge tag definitions for reference

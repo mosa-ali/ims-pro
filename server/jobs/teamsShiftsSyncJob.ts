@@ -17,8 +17,8 @@
  */
 
 import cron from 'node-cron';
-import { db } from '../db';
-import { teamsShiftsSyncService } from '../services/teamsShiftsSyncService';
+import { getDb } from '../db';
+import { TeamsShiftsSyncService } from '../services/teamsShiftsSyncService';
 import { organizations } from '../../drizzle/schema';
 
 /**
@@ -73,6 +73,7 @@ export class TeamsShiftsSyncJob {
       console.log('Starting Teams Shifts sync job...');
 
       // Get all organizations with Teams sync enabled
+      const db = await getDb();
       const orgs = await db.select().from(organizations);
 
       let successCount = 0;

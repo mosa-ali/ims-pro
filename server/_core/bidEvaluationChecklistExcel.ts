@@ -115,9 +115,14 @@ export async function generateBidEvaluationChecklistExcel(
   language: ExcelLang = "en",
   mode: ExcelMode = "data"
 ): Promise<Buffer> {
+  console.log(`[Excel Export] Starting generation: bidAnalysisId=${bidAnalysisId}, orgId=${organizationId}, lang=${language}, mode=${mode}`);
+  
   const db = await getDb();
   const isRTL = language === "ar";
   const labels = t[language];
+  
+  console.log(`[Excel Export] RTL=${isRTL}, Mode=${mode}`);
+  console.log(`[Excel Export] Sheet name: ${labels.sheetName}`);
 
   // ── Fetch data ──────────────────────────────────────────────────────────
   const [ba] = await db.select()
@@ -508,20 +513,20 @@ export async function generateBidEvaluationChecklistExcel(
     remarksHeaderRow.getCell(1).font = { bold: true, size: 13, color: { argb: "FF1E3A8A" } };
     remarksHeaderRow.getCell(1).fill = sectionFill;
     remarksHeaderRow.getCell(1).border = thinBorder;
-    remarksHeaderRow.getCell(1).alignment = { horizontal: isRTL ? "right" : "left", vertical: "middle", readingOrder: isRTL ? 2 : 1 };
+    remarksHeaderRow.getCell(1).alignment = { horizontal: isRTL ? "right" : "left", vertical: "middle", readingOrder: isRTL ? "rtl" : "ltr" };
     remarksHeaderRow.height = 24;
 
     const remarksDescRow = ws.addRow([labels.remarksDescription]);
     ws.mergeCells(remarksDescRow.number, 1, remarksDescRow.number, totalCols);
     remarksDescRow.getCell(1).font = { size: 9, italic: true, color: { argb: "FF4B5563" } };
-    remarksDescRow.getCell(1).alignment = { horizontal: isRTL ? "right" : "left", readingOrder: isRTL ? 2 : 1 };
+    remarksDescRow.getCell(1).alignment = { horizontal: isRTL ? "right" : "left", readingOrder: isRTL ? "rtl" : "ltr" };
 
     const notQualifiedBidders = calculatedScores.filter(c => c.status !== labels.qualified);
     if (notQualifiedBidders.length === 0) {
       const allQualRow = ws.addRow([labels.noRemarksAllQualified]);
       ws.mergeCells(allQualRow.number, 1, allQualRow.number, totalCols);
       allQualRow.getCell(1).font = { size: 10, color: { argb: "FF15803D" } };
-      allQualRow.getCell(1).alignment = { horizontal: isRTL ? "right" : "left", readingOrder: isRTL ? 2 : 1 };
+      allQualRow.getCell(1).alignment = { horizontal: isRTL ? "right" : "left", readingOrder: isRTL ? "rtl" : "ltr" };
     } else {
       for (const nqBidder of notQualifiedBidders) {
         const bidderData = activeBidders.find(b => b.id === nqBidder.bidderId);
@@ -560,7 +565,7 @@ export async function generateBidEvaluationChecklistExcel(
         bidderRow.getCell(1).fill = remarkHeaderFill;
         bidderRow.getCell(1).font = remarkHeaderFont;
         bidderRow.getCell(1).border = thinBorder;
-        bidderRow.getCell(1).alignment = { horizontal: isRTL ? "right" : "left", readingOrder: isRTL ? 2 : 1 };
+        bidderRow.getCell(1).alignment = { horizontal: isRTL ? "right" : "left", readingOrder: isRTL ? "rtl" : "ltr" };
 
         // Reason rows
         for (let i = 0; i < reasons.length; i++) {
@@ -568,13 +573,13 @@ export async function generateBidEvaluationChecklistExcel(
           ws.mergeCells(reasonRow.number, 1, reasonRow.number, totalCols);
           reasonRow.getCell(1).font = remarkReasonFont;
           reasonRow.getCell(1).border = thinBorder;
-          reasonRow.getCell(1).alignment = { horizontal: isRTL ? "right" : "left", readingOrder: isRTL ? 2 : 1, wrapText: true };
+          reasonRow.getCell(1).alignment = { horizontal: isRTL ? "right" : "left", readingOrder: isRTL ? "rtl" : "ltr", wrapText: true };
         }
         if (reasons.length === 0) {
           const noReasonRow = ws.addRow([`  ${labels.notQualified}`]);
           ws.mergeCells(noReasonRow.number, 1, noReasonRow.number, totalCols);
           noReasonRow.getCell(1).font = remarkReasonFont;
-          noReasonRow.getCell(1).alignment = { horizontal: isRTL ? "right" : "left", readingOrder: isRTL ? 2 : 1 };
+          noReasonRow.getCell(1).alignment = { horizontal: isRTL ? "right" : "left", readingOrder: isRTL ? "rtl" : "ltr" };
         }
       }
     }
@@ -589,6 +594,22 @@ export async function generateBidEvaluationChecklistExcel(
   }
 
   // ── Generate buffer ───────────────────────────────────────────────────
-  const arrayBuffer = await workbook.xlsx.writeBuffer();
-  return Buffer.from(arrayBuffer);
+  console.log('[Excel Export] Starting Excel buffer generation...');
+  
+  try {
+    const arrayBuffer = await workbook.xlsx.writeBuffer();
+    
+    if (!arrayBuffer || (arrayBuffer as any).byteLength === 0) {
+      console.error('[Excel Export] ERROR: Generated empty buffer');
+      throw new Error('Excel workbook generated empty buffer');
+    }
+    
+    const buffer = Buffer.from(arrayBuffer);
+    console.log(`[Excel Export] SUCCESS: Generated Excel buffer (${buffer.byteLength} bytes)`);
+    
+    return buffer;
+  } catch (error) {
+    console.error('[Excel Export] ERROR generating Excel buffer:', error);
+    throw new Error(`Failed to generate Excel file: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
 }

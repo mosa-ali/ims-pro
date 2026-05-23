@@ -1,11 +1,8 @@
 {
   "ExpandedNodes": [
     "",
-    "\\server",
-    "\\server\\routers",
-    "\\server\\services",
-    "\\server\\services\\procurement"
+    "\\client\\src",
+    "\\client\\src\\pages\\organization"
   ],
-  "SelectedNode": "\\server\\notifications",
   "PreviewInSolutionExplorer": false
 }

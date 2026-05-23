@@ -41,6 +41,7 @@ import { trpc } from "@/lib/trpc";
  */
 export default function OrganizationDashboard() {
  const { user } = useAuth();
+   const { t, language } = useTranslation();
  const { currentOrganizationId, userOrganizations } = useOrganization();
  const { currentOperatingUnitId, userOperatingUnits } = useOperatingUnit();
 const { direction, isRTL} = useLanguage();

@@ -1697,7 +1697,7 @@ export const quotationAnalysisRouter = router({
         organizationName: pr.organizationName || undefined,
         organizationLogo: undefined, // TODO: Get from organization settings
         qaNumber: qa.qaNumber,
-        date: qa.createdAt ? new Date(qa.createdAt).toLocaleDateString() : new Date().toLocaleDateString(),
+        date: qa.createdAt ? new Date(qa.createdAt).toLocaleDateString() : new Date().toISOString(),
         prNumber: pr.prNumber,
         prTitle: pr.title || "N/A",
         prTotal: pr.totalCost || "0",

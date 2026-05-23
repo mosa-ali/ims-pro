@@ -31,7 +31,7 @@ export interface PurchaseRequestLineItem {
   totalPrice: number;
   prTotalUsd: number;
 }
-
+ 
 export interface PurchaseRequestPDFData {
   // Organization Info
   context: OfficialPdfContext;

@@ -200,8 +200,8 @@ export const donorReportsRouter = router({
           deletedAt: donorReports.deletedAt,
           donorName: donors.name,
           donorNameAr: donors.nameAr,
-          projectName: projects.name,
-          projectNameAr: projects.nameAr,
+          projectName: projects.title,
+          projectNameAr: projects.titleAr,
           grantTitle: grants.title,
           grantTitleAr: grants.titleAr,
         })
@@ -292,7 +292,7 @@ export const donorReportsRouter = router({
         organizationId: ctx.scope.organizationId,
         operatingUnitId: ctx.scope.operatingUnitId,
         generatedByUserId: ctx.user.id,
-        generatedAt: new Date(),
+        generatedAt: new Date().toISOString().slice(0, 19).replace('T', ' '),
         createdBy: ctx.user.id,
       });
 
@@ -364,7 +364,7 @@ export const donorReportsRouter = router({
       await db
         .update(donorReports)
         .set({
-          deletedAt: new Date(),
+          deletedAt: new Date().toISOString().slice(0, 19).replace('T', ' '),
           deletedBy: ctx.user.id,
         })
         .where(eq(donorReports.id, input.id));
@@ -637,7 +637,7 @@ export const donorReportsRouter = router({
           periodStart: donorReports.periodStart,
           periodEnd: donorReports.periodEnd,
           donorName: donors.name,
-          projectName: projects.name,
+          projectName: projects.title,
           grantTitle: grants.title,
         })
         .from(donorReports)

@@ -63,7 +63,7 @@ export default function ReportsTab() {
  addText(title, 20, 20, 18);
  
  const dateLabel = t.financeModule.generated;
- addText(`${dateLabel}: ${new Date().toLocaleDateString()}`, 20, 30, 10);
+ addText(`${dateLabel}: ${new Date().toISOString()}`, 20, 30, 10);
  
  const summaryTitle = t.financeModule.financialSummary;
  addText(summaryTitle, 20, 45, 12);
@@ -127,7 +127,7 @@ export default function ReportsTab() {
  
  const summaryData = [
  [t.reportsTab.financialSummaryReport],
- [t.reportsTab.generated, new Date().toLocaleDateString()],
+ [t.reportsTab.generated, new Date().toISOString()],
  [],
  [t.reportsTab.metric, t.reportsTab.amount],
  [t.reportsTab.totalBudget, totalBudget],

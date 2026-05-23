@@ -13,7 +13,7 @@
 
 import { TRPCError } from "@trpc/server";
 import { and, eq, gt } from "drizzle-orm";
-import type { Database } from "../_core/db";
+import type { Database } from "../db";
 import {
   purchaseRequests,
   quotationAnalyses,
@@ -127,7 +127,7 @@ async function checkDownstreamDocuments(
           .where(
             and(
               eq(quotationAnalyses.purchaseRequestId, docId),
-              eq(quotationAnalyses.isDeleted, false),
+              eq(quotationAnalyses.isDeleted, 0),
               eq(quotationAnalyses.organizationId, organizationId)
             )
           )
@@ -150,7 +150,7 @@ async function checkDownstreamDocuments(
           .where(
             and(
               eq(purchaseOrders.quotationAnalysisId, docId),
-              eq(purchaseOrders.isDeleted, false),
+              eq(purchaseOrders.isDeleted, 0),
               eq(purchaseOrders.organizationId, organizationId)
             )
           )
@@ -173,7 +173,7 @@ async function checkDownstreamDocuments(
           .where(
             and(
               eq(goodsReceiptNotes.purchaseOrderId, docId),
-              eq(goodsReceiptNotes.isDeleted, false),
+              eq(goodsReceiptNotes.isDeleted, 0),
               eq(goodsReceiptNotes.organizationId, organizationId)
             )
           )
@@ -196,7 +196,7 @@ async function checkDownstreamDocuments(
           .where(
             and(
               eq(deliveryNotes.grnId, docId),
-              eq(deliveryNotes.isDeleted, false),
+              eq(deliveryNotes.isDeleted, 0),
               eq(deliveryNotes.organizationId, organizationId)
             )
           )
@@ -359,7 +359,7 @@ export async function performHardDelete(
           .where(
             and(
               eq(purchaseRequestLineItems.purchaseRequestId, docId),
-              eq(purchaseRequestLineItems.organizationId, organizationId)
+              eq(purchaseRequestLineItems.purchaseRequestId, organizationId)
             )
           );
 
@@ -380,7 +380,7 @@ export async function performHardDelete(
           .where(
             and(
               eq(quotationAnalysisLineItems.quotationAnalysisId, docId),
-              eq(quotationAnalysisLineItems.organizationId, organizationId)
+              eq(quotationAnalysisLineItems.quotationAnalysisId, organizationId)
             )
           );
 
@@ -422,7 +422,7 @@ export async function performHardDelete(
           .where(
             and(
               eq(grnLineItems.grnId, docId),
-              eq(grnLineItems.organizationId, organizationId)
+              eq(grnLineItems.grnId, organizationId)
             )
           );
 
@@ -443,7 +443,7 @@ export async function performHardDelete(
           .where(
             and(
               eq(deliveryNoteLines.dnId, docId),
-              eq(deliveryNoteLines.organizationId, organizationId)
+              eq(deliveryNoteLines.dnId, organizationId)
             )
           );
 

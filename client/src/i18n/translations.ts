@@ -115,6 +115,7 @@ export interface Translations {
     version: string;
     backToOrganization: string;
     backToPlatformDashboard: string;
+    backToDashboard: string;
     goToLogin: string;
     backToPayables: string;
     backToSuppliersList: string;
@@ -182,6 +183,7 @@ export interface Translations {
  dashboard: {
  title: string;
  subtitle: string;
+ activeGrants: string;
  accessRestrictionTitle: string;
  accessRestrictionDesc: string;
  totalOrganizations: string;
@@ -210,10 +212,12 @@ export interface Translations {
  orgName: string;
  orgCode: string;
  orgStatus: string;
+ compliance: string;
  orgProjects: string;
  orgActions: string;
  viewOrg: string;
  noOrganizations: string;
+ operatingUnitContext: string;
  };
  organizationManagement: string;
  platformSettings: string;
@@ -230,8 +234,10 @@ export interface Translations {
  completed: string;
  cancelled: string;
  createNewProject: string;
+ acrossAllPrograms: string;
  editProject: string;
  projectCode: string;
+ activeProjects: string;
  projectCodePlaceholder: string;
  projectTitle: string;
  projectTitlePlaceholder: string;
@@ -330,6 +336,7 @@ export interface Translations {
  subtitle: string;
  createNew: string;
  editProject: string;
+ backToProjectsDashboard: string;
  deleteProject: string;
  deleteConfirm: string;
  projectDetails: string;
@@ -373,7 +380,7 @@ export interface Translations {
  risks: string;
  documents: string;
  reporting: string;
- financials: string;
+ financial: string;
  progress: string;
  progressPercent: string;
  timeline: string;
@@ -455,10 +462,10 @@ export interface Translations {
  settings: string;
  };
  };
-
+ 
  // ========== PROJECT DETAIL ==========
  projectDetail: {
- backToProjects: string;
+ backToProjectsList: string;
  editProject: string;
  projectCode: string;
  donorGrant: string;
@@ -6505,6 +6512,7 @@ bidOpeningMinutes: {
   openingModeHybrid: string;
   openingModeOnline: string;
   openingModePhysical: string;
+  biddersSection: string;
   openingNotes: string;
   openingTime: string;
   optional: string;
@@ -10081,6 +10089,7 @@ bidOpeningMinutes: {
       supplierDuplicate: string;
     };
   placeholders: {
+    accountNameInArabic: string;
     activityMilestoneName: string;
     activityName: string;
     addAProgressUpdateOrComment: string;
@@ -10123,7 +10132,7 @@ bidOpeningMinutes: {
     describeTheMitigationActionInDetail: string;
     describeWhatWasCorrectedOrChanged: string;
     description: string;
-    description1: string;
+    descriptionLabel: string;
     detailedEvaluationNotes: string;
     documentNumber: string;
     eG1000: string;
@@ -10148,7 +10157,7 @@ bidOpeningMinutes: {
     eGG5G6G7: string;
     eGGr2024001: string;
     eGGrade5: string;
-    eGGrant_approved: string;
+    eGGrantApproved: string;
     eGHouseholdsSessions: string;
     eGIdCards: string;
     eGImplementBudgetMonitoringDashboard: string;
@@ -10186,8 +10195,8 @@ bidOpeningMinutes: {
     echoYem001: string;
     educationSupportProgram: string;
     email: string;
-    email1: string;
     emailExampleCom: string;
+    emailRequired: string;
     enterBeneficiaryCount: string;
     enterCustomReportType: string;
     enterDescription: string;
@@ -10259,7 +10268,7 @@ bidOpeningMinutes: {
     personsPercentageEvents: string;
     phone: string;
     pleaseProvideAReasonForRejection: string;
-    pleaseProvideAReasonForRejection1: string;
+    pleaseProvideAReasonForRejectionOptional: string;
     programManagerExampleComLogisticsExampleComFinance: string;
     progress: string;
     projectCode: string;
@@ -10306,18 +10315,7 @@ bidOpeningMinutes: {
     yourEmailOrganizationOrg: string;
     yourdomainOrgPartnerOrg: string;
     yyyy: string;
-    أدخلسببالرفض: string;
-    أدخلسببالعكس: string;
-    أدخلعنوانالمهمة: string;
-    أدخلعنوانالنتيجة: string;
-    أدخلعنوانالهدف: string;
-    اسمالحساببالعربية: string;
-    توزيعالتكاليفالعامةالشهري: string;
-    مثالالقانونيةوالإدارية: string;
-    مثالبطاقاتالهوية: string;
-    مثالتسجيلشركةساريالسجلالتجاري: string;
-    مثالمسؤولالقياسوالتقييم: string;
-    يجبتقديمهمعالعطاء: string;
+    
   };
 
   // ========== SYSTEM MODULE ==========
@@ -10772,6 +10770,7 @@ export const en: Translations = {
     version: 'Version',
     backToOrganization: 'Back to Organization',
     backToPlatformDashboard: 'Back to Platform Dashboard',
+    backToDashboard: 'Back to Dashboard',
     goToLogin: 'Go to Login',
     backToPayables: 'Back to Payables',
     backToSuppliersList: 'Back to Suppliers List',
@@ -10989,6 +10988,7 @@ export const en: Translations = {
  title: 'Projects',
  subtitle: 'Manage all projects',
  createNew: 'Create New Project',
+ backToProjectsDashboard: 'Back To Projects Dashboard',
  editProject: 'Edit Project',
  deleteProject: 'Delete Project',
  deleteConfirm: 'Are you sure you want to delete this project?',
@@ -11033,7 +11033,7 @@ export const en: Translations = {
  risks: 'Risks',
  documents: 'Documents',
  reporting: 'Reporting',
- financials: 'Financials',
+ financial: 'Financial',
  progress: 'Progress',
  progressPercent: 'Progress',
  timeline: 'Timeline',
@@ -11061,8 +11061,8 @@ export const en: Translations = {
  bulkActions: 'Bulk Actions',
  selectedProjects: 'Selected Projects',
  // Project Dashboard Specific
- dashboardTitle: 'Project Management Dashboard',
- dashboardSubtitle: 'Comprehensive overview of all projects, budgets, and performance metrics',
+ dashboardTitle: 'Programs Management Dashboard',
+ dashboardSubtitle: 'Overview of all projects, budgets, and performance metrics',
  grantManagement: 'Grant Management',
  grantManagementDesc: 'Manage and track grants effectively',
  reportingSchedule: 'Project Reporting Schedule',
@@ -11152,7 +11152,7 @@ export const en: Translations = {
  },
 
  projectDetail: {
- backToProjects: 'Back to Projects',
+ backToProjectsList: 'Back to Projects List',
  editProject: 'Edit Project',
  projectCode: 'Project Code',
  donorGrant: 'Donor/Grant',
@@ -23396,7 +23396,7 @@ export const en: Translations = {
     },
     projectDetailsPage: {
       activities: 'Activities',
-      backToProjects: 'Back to Projects',
+      backToProjectsList: 'Back to Projects List',
       beneficiaries: 'Beneficiaries',
       caseManagement: 'Case Management',
       evidence: 'Evidence Documents',
@@ -23815,6 +23815,7 @@ export const en: Translations = {
       supplierDuplicate: 'Supplier has already been added to this tender. Duplicate bidders are not allowed.',
     },
   placeholders: {
+    accountNameInArabic: "اسم الحساب بالعربية",
     activityMilestoneName: "Activity/Milestone name...",
     activityName: "Activity name",
     addAProgressUpdateOrComment: "Add a progress update or comment...",
@@ -23857,7 +23858,7 @@ export const en: Translations = {
     describeTheMitigationActionInDetail: "Describe the mitigation action in detail...",
     describeWhatWasCorrectedOrChanged: "Describe what was corrected or changed...",
     description: "Description...",
-    description1: "Description",
+    descriptionLabel: "Description",
     detailedEvaluationNotes: "Detailed evaluation notes...",
     documentNumber: "Document number",
     eG1000: "e.g., 1000",
@@ -23882,7 +23883,7 @@ export const en: Translations = {
     eGG5G6G7: "e.g., G5, G6, G7",
     eGGr2024001: "e.g., GR-2024-001",
     eGGrade5: "e.g., Grade 5",
-    eGGrant_approved: "e.g., grant_approved",
+    eGGrantApproved: "e.g., grant_approved",
     eGHouseholdsSessions: "e.g., households, sessions",
     eGIdCards: "e.g., ID Cards",
     eGImplementBudgetMonitoringDashboard: "e.g., Implement budget monitoring dashboard",
@@ -23920,8 +23921,8 @@ export const en: Translations = {
     echoYem001: "ECHO-YEM-001",
     educationSupportProgram: "Education Support Program",
     email: "Email",
-    email1: "Email *",
     emailExampleCom: "email@example.com",
+    emailRequired: "Email *",
     enterBeneficiaryCount: "Enter beneficiary count",
     enterCustomReportType: "Enter custom report type",
     enterDescription: "Enter description",
@@ -23993,7 +23994,7 @@ export const en: Translations = {
     personsPercentageEvents: "Persons / Percentage / Events",
     phone: "Phone",
     pleaseProvideAReasonForRejection: "Please provide a reason for rejection",
-    pleaseProvideAReasonForRejection1: "Please provide a reason for rejection...",
+    pleaseProvideAReasonForRejectionOptional: "Please provide a reason for rejection...",
     programManagerExampleComLogisticsExampleComFinance: "program.manager@example.com, logistics@example.com, finance@example.com",
     progress: "Progress %",
     projectCode: "Project code",
@@ -24040,19 +24041,8 @@ export const en: Translations = {
     yourEmailOrganizationOrg: "your.email@organization.org",
     yourdomainOrgPartnerOrg: "yourdomain.org, partner.org",
     yyyy: "YYYY",
-    أدخلسببالرفض: "أدخل سبب الرفض...",
-    أدخلسببالعكس: "أدخل سبب العكس...",
-    أدخلعنوانالمهمة: "أدخل عنوان المهمة",
-    أدخلعنوانالنتيجة: "أدخل عنوان النتيجة",
-    أدخلعنوانالهدف: "أدخل عنوان الهدف",
-    اسمالحساببالعربية: "اسم الحساب بالعربية",
-    توزيعالتكاليفالعامةالشهري: "توزيع التكاليف العامة الشهري",
-    مثالالقانونيةوالإدارية: "مثال: القانونية والإدارية",
-    مثالبطاقاتالهوية: "مثال: بطاقات الهوية",
-    مثالتسجيلشركةساريالسجلالتجاري: "مثال: تسجيل شركة ساري (السجل التجاري)",
-    مثالمسؤولالقياسوالتقييم: "مثال: مسؤول القياس والتقييم",
-    يجبتقديمهمعالعطاء: "يجب تقديمه مع العطاء",
   },
+
   system: {
     adminDashboard: {
       adminDashboardTitle: 'Admin Dashboard',
@@ -24389,6 +24379,7 @@ export const ar: Translations = {
     version: 'الإصدار',
     backToOrganization: 'العودة إلى المنظمة',
     backToPlatformDashboard: 'العودة إلى لوحة المنصة',
+    backToDashboard: 'العودة إلى لوحة البرامج',
     goToLogin: 'الذهاب إلى تسجيل الدخول',
     backToPayables: 'العودة إلى المستحقات',
     backToSuppliersList: 'العودة إلى قائمة الموردين',
@@ -24607,6 +24598,7 @@ export const ar: Translations = {
  subtitle: 'إدارة جميع المشاريع',
  createNew: 'إنشاء مشروع جديد',
  editProject: 'تعديل المشروع',
+ backToProjectsDashboard: 'العودة الى لوحة معلومات المشاريع',
  deleteProject: 'حذف المشروع',
  deleteConfirm: 'هل أنت متأكد من حذف هذا المشروع؟',
  projectDetails: 'تفاصيل المشروع',
@@ -24650,7 +24642,7 @@ export const ar: Translations = {
  risks: 'المخاطر',
  documents: 'الوثائق',
  reporting: 'التقارير',
- financials: 'الماليات',
+ financial: 'الماليات',
  progress: 'التقدم',
  progressPercent: 'نسبة التقدم',
  timeline: 'الجدول الزمني',
@@ -24769,7 +24761,7 @@ export const ar: Translations = {
  },
 
  projectDetail: {
- backToProjects: 'العودة إلى المشاريع',
+ backToProjectsList: 'العودة إلى قائمة المشاريع',
  editProject: 'تعديل المشروع',
  projectCode: 'رمز المشروع',
  donorGrant: 'الممول/المنحة',
@@ -37002,7 +36994,7 @@ export const ar: Translations = {
     },
     projectDetailsPage: {
       activities: 'الأنشطة',
-      backToProjects: 'العودة إلى المشاريع',
+      backToProjectsList: 'العودة إلى قائمة المشاريع',
       beneficiaries: 'المستفيدون',
       caseManagement: 'إدارة الحالات',
       evidence: 'مستندات الإثبات',
@@ -37416,245 +37408,236 @@ export const ar: Translations = {
       website: 'موقع إلكتروني',
       supplierDuplicate: 'تمت إضافة المورد بالفعل إلى هذه المناقصة. لا يُسمح بتكرار مقدمي العروض.',
     },
+
   placeholders: {
-    activityMilestoneName: "النشاط/Milestone name...",
-    activityName: "النشاط name",
-    addAProgressUpdateOrComment: "أضف a التقدم تحديث or تعليق...",
-    additionalInformationPartnerDiscussionsEtc: "إضافي المعلومات, الشريك discussions, etc.",
-    additionalNotes: "إضافي ملاحظات...",
-    additionalNotesAboutThisQuotation: "إضافي ملاحظات about this quotation",
-    additionalNotesForThePo: "إضافي ملاحظات for the PO",
-    additionalNotesOrComments: "إضافي ملاحظات or تعليقات",
-    additionalNotesOrCommentsAboutTheBeneficiary: "إضافي ملاحظات or تعليقات about the المستفيد...",
-    ahmedMohammedAli: "Ahmed Mohammed Ali",
-    alSalamCamp: "Al-Salam Camp",
-    allStatuses: "الكل statuses",
-    anyAdditionalNotesOrInstructions: "أي additional ملاحظات or التعليمات...",
-    anyAdditionalObservationsOrComments: "أي additional ملاحظةs or تعليقات...",
-    anySpecialConditionsOrNotes: "أي special الشروط or ملاحظات...",
-    assets: "Assets",
-    attendanceSheets: "Attendance Sheets",
-    auditYourdomainOrg: "audit@الخاص بكdomain.org",
-    autoGenerated: "Auto-generated",
-    autoGeneratedAchievementsBasedOnData: "Auto-generated achievements based on البيانات...",
-    autoGeneratedSummaryBasedOnReportingPeriodData: "Auto-generated summary based on reporting period البيانات...",
-    bankTransactionReference: "Bank transإجراء المرجع",
+    accountNameInArabic: "اسم الحساب بالعربية",
+    activityMilestoneName: "اسم النشاط/المرحلة...",
+    activityName: "اسم النشاط",
+    addAProgressUpdateOrComment: "أضف تحديثاً للتقدم أو تعليقاً...",
+    additionalInformationPartnerDiscussionsEtc: "معلومات إضافية، مناقشات الشركاء، إلخ.",
+    additionalNotes: "ملاحظات إضافية...",
+    additionalNotesAboutThisQuotation: "ملاحظات إضافية حول هذا العرض",
+    additionalNotesForThePo: "ملاحظات إضافية لأمر الشراء",
+    additionalNotesOrComments: "ملاحظات أو تعليقات إضافية",
+    additionalNotesOrCommentsAboutTheBeneficiary: "ملاحظات أو تعليقات إضافية حول المستفيد...",
+    ahmedMohammedAli: "أحمد محمد علي",
+    alSalamCamp: "مخيم السلام",
+    allStatuses: "جميع الحالات",
+    anyAdditionalNotesOrInstructions: "أي ملاحظات أو تعليمات إضافية...",
+    anyAdditionalObservationsOrComments: "أي ملاحظات أو تعليقات إضافية...",
+    anySpecialConditionsOrNotes: "أي شروط أو ملاحظات خاصة...",
+    assets: "الأصول",
+    attendanceSheets: "كشوف الحضور",
+    auditYourdomainOrg: "audit@yourdomain.org",
+    autoGenerated: "تم إنشاؤه تلقائياً",
+    autoGeneratedAchievementsBasedOnData: "إنجازات تم إنشاؤها تلقائياً بناءً على البيانات...",
+    autoGeneratedSummaryBasedOnReportingPeriodData: "ملخص تم إنشاؤه تلقائياً بناءً على بيانات فترة التقرير...",
+    bankTransactionReference: "مرجع المعاملة البنكية",
     bc001: "BC001",
-    briefDescriptionOfTheIndicator: "موجز description of the indicator",
-    budgets: "budgets",
-    capital: "Capital",
-    cashOnHand: "Cash on Hand",
-    ccYourdomainOrg: "cc@الخاص بكdomain.org",
-    centralDistrict: "Central District",
-    cityCountry: "City, Country",
-    communityCenterHealthClinicSchoolEtc: "Commالوحدةy Center, Health Clinic, School, etc.",
-    companyLegalName: "Company Legal الاسم",
-    companyOrganization: "Company/المنظمة",
-    conferenceRoomA: "Conference Room A",
-    confirmNewPassword: "Confirm new password",
-    contactPerson: "Contact Person",
-    contributionDescription: "Contribution description",
-    describeTheActivity: "صف the activity...",
-    describeTheExpectedResult: "صف the expected result...",
-    describeTheMitigationActionInDetail: "صف the mitigation إجراء in detail...",
-    describeWhatWasCorrectedOrChanged: "صف what was corrected or changed...",
+    briefDescriptionOfTheIndicator: "وصف موجز للمؤشر",
+    budgets: "الميزانيات",
+    capital: "رأس المال",
+    cashOnHand: "النقد المتوفر",
+    ccYourdomainOrg: "cc@yourdomain.org",
+    centralDistrict: "المنطقة المركزية",
+    cityCountry: "المدينة، الدولة",
+    communityCenterHealthClinicSchoolEtc: "مركز مجتمعي، عيادة صحية، مدرسة، إلخ.",
+    companyLegalName: "الاسم القانوني للشركة",
+    companyOrganization: "الشركة/المنظمة",
+    conferenceRoomA: "غرفة الاجتماعات أ",
+    confirmNewPassword: "تأكيد كلمة المرور الجديدة",
+    contactPerson: "الشخص المسؤول",
+    contributionDescription: "وصف المساهمة",
+    describeTheActivity: "صف النشاط...",
+    describeTheExpectedResult: "صف النتيجة المتوقعة...",
+    describeTheMitigationActionInDetail: "صف إجراء التخفيف بالتفصيل...",
+    describeWhatWasCorrectedOrChanged: "صف ما تم تصحيحه أو تغييره...",
     description: "الوصف...",
-    description1: "الوصف",
-    detailedEvaluationNotes: "تفصيلي التقييم ملاحظات...",
-    documentNumber: "المستند الرقم",
-    eG1000: "مثال:, 1000",
-    eG10005100: "مثال:, 1000, 5100",
-    eG111: "مثال:, 1.1.1",
-    eG123: "مثال:, 1, 2, 3",
-    eG500: "مثال:, 500",
-    eG500000: "مثال:, 500000",
-    eGAge18AndCountrySyria: "مثال:, ${age} > 18 and ${country} = 'Syria'",
-    eGAhmedHassanMohamed: "مثال:, Ahmed Hassan Mohamed",
-    eGAmmanJordan: "مثال:, Amman, Jordan",
-    eGAnnualOperatingBudget2024: "مثال:, Annual Operating الميزانية 2024",
-    eGCashSalariesExpense: "مثال:, Cash, Salaries Expense",
-    eGComputerScience: "مثال:, Computer Science",
-    eGConferenceRoomA: "مثال:, Conference Room A",
-    eGCountRatio: "مثال: %, count, ratio",
-    eGDonRef2024123: "مثال:, DON-REF-2024-123",
-    eGEducationHealth: "مثال:, Education, Health",
-    eGEducationSupportProgram: "مثال:, Education Support Program",
-    eGEmergencyEducationSupportProgram: "مثال:, Emergency Education Support Program",
-    eGFoundationGrantGovernmentFund: "مثال:, Foundation Grant, Government Fund",
-    eGG5G6G7: "مثال:, G5, G6, G7",
-    eGGr2024001: "مثال:, GR-2024-001",
-    eGGrade5: "مثال:, Grade 5",
-    eGGrant_approved: "مثال:, المنحة_approved",
-    eGHouseholdsSessions: "مثال:, households, sessions",
-    eGIdCards: "مثال:, ID Cards",
-    eGImplementBudgetMonitoringDashboard: "مثال:, Implement budget monitoring dashboard",
+    descriptionLabel: "الوصف",
+    detailedEvaluationNotes: "ملاحظات تقييم مفصلة...",
+    documentNumber: "رقم المستند",
+    eG1000: "مثال: 1000",
+    eG10005100: "مثال: 1000، 5100",
+    eG111: "مثال: 1.1.1",
+    eG123: "مثال: 1، 2، 3",
+    eG500: "مثال: 500",
+    eG500000: "مثال: 500000",
+    eGAge18AndCountrySyria: "مثال: ${age} > 18 و ${country} = 'Syria'",
+    eGAhmedHassanMohamed: "مثال: أحمد حسن محمد",
+    eGAmmanJordan: "مثال: عمان، الأردن",
+    eGAnnualOperatingBudget2024: "مثال: الميزانية التشغيلية السنوية 2024",
+    eGCashSalariesExpense: "مثال: نقد، مصاريف رواتب",
+    eGComputerScience: "مثال: علوم الكمبيوتر",
+    eGConferenceRoomA: "مثال: غرفة الاجتماعات أ",
+    eGCountRatio: "مثال: %، عدد، نسبة",
+    eGDonRef2024123: "مثال: DON-REF-2024-123",
+    eGEducationHealth: "مثال: التعليم، الصحة",
+    eGEducationSupportProgram: "مثال: برنامج دعم التعليم",
+    eGEmergencyEducationSupportProgram: "مثال: برنامج دعم التعليم في حالات الطوارئ",
+    eGFoundationGrantGovernmentFund: "مثال: منحة مؤسسة، صندوق حكومي",
+    eGG5G6G7: "مثال: G5, G6, G7",
+    eGGr2024001: "مثال: GR-2024-001",
+    eGGrade5: "مثال: الصف الخامس",
+    eGGrantApproved: "مثال: تمت الموافقة على المنحة",
+    eGHouseholdsSessions: "مثال: أسر، جلسات",
+    eGIdCards: "مثال: بطاقات الهوية",
+    eGImplementBudgetMonitoringDashboard: "مثال: تنفيذ لوحة مراقبة الميزانية",
     eGInd001: "مثال: IND-001",
-    eGJohnDoe: "مثال:, John Doe",
-    eGJordanian: "مثال:, Jordanian",
-    eGLegalAndAdministrative: "مثال:, Legal and Administrative",
-    eGMainOfficeWarehouseAden: "مثال:, Main Office Warehouse, Aden",
-    eGMealOfficer: "مثال: MEAL Officer",
-    eGNet30Days: "مثال:, Net 30 days",
-    eGNet30DaysAfterDelivery: "مثال:, Net 30 days after delivery",
-    eGOfficeRentUtilities: "مثال:, Office rent, utilities",
-    eGOfficeRoom301OrHttpsZoomUs: "مثال:, Office Room 301 or https://zoom.us/...",
-    eGPcsKg: "مثال:, pcs, kg",
-    eGPcsKgUnits: "مثال:, pcs, kg, الوحدةs",
-    eGPhysicalVisualHearingCognitive: "مثال:, Physical, Visual, Hearing, Cognitive",
-    eGProgramManagerFieldOfficer: "مثال:, Program Manager, Field Officer",
-    eGPrograms: "مثال:, Programs",
-    eGProgramsOperationsFinance: "مثال:, Programs, Operations, Finance",
-    eGProjectManager: "مثال:, المشروع Manager",
-    eGProjectManagerSalary: "مثال:, المشروع Manager Salary",
-    eGQ12024JanMar2024: "مثال:, Q1 2024, Jan-Mar 2024",
-    eGQ12026: "مثال:, Q1 2026",
-    eGQ32024Call: "مثال:, Q3 2024 Call",
-    eGSq2026001: "مثال:, SQ-2026-001",
-    eGTask001: "مثال:, TASK-001",
+    eGJohnDoe: "مثال: جون دو",
+    eGJordanian: "مثال: أردني",
+    eGLegalAndAdministrative: "مثال: قانوني وإداري",
+    eGMainOfficeWarehouseAden: "مثال: المكتب الرئيسي، مستودع عدن",
+    eGMealOfficer: "مثال: مسؤول الرصد والتقييم والمساءلة والتعلم",
+    eGNet30Days: "مثال: صافي 30 يوماً",
+    eGNet30DaysAfterDelivery: "مثال: صافي 30 يوماً بعد التسليم",
+    eGOfficeRentUtilities: "مثال: إيجار المكتب، المرافق",
+    eGOfficeRoom301OrHttpsZoomUs: "مثال: مكتب غرفة 301 أو https://zoom.us/...",
+    eGPcsKg: "مثال: قطعة، كجم",
+    eGPcsKgUnits: "مثال: قطعة، كجم، وحدات",
+    eGPhysicalVisualHearingCognitive: "مثال: جسدي، بصري، سمعي، إدراكي",
+    eGProgramManagerFieldOfficer: "مثال: مدير البرنامج، مسؤول ميداني",
+    eGPrograms: "مثال: البرامج",
+    eGProgramsOperationsFinance: "مثال: البرامج، العمليات، المالية",
+    eGProjectManager: "مثال: مدير المشروع",
+    eGProjectManagerSalary: "مثال: راتب مدير المشروع",
+    eGQ12024JanMar2024: "مثال: الربع الأول 2024، يناير-مارس 2024",
+    eGQ12026: "مثال: الربع الأول 2026",
+    eGQ32024Call: "مثال: مكالمة الربع الثالث 2024",
+    eGSq2026001: "مثال: SQ-2026-001",
+    eGTask001: "مثال: TASK-001",
     eGTender2026001: "مثال: TENDER-2026-001",
-    eGUnicef: "مثال:, UNICEF",
-    eGValidCompanyRegistrationCommercialRegister: "مثال:, Valid company registration (Commercial Register)",
-    eGWorldBank: "مثال:, World Bank",
-    eGYearsOfExperience: "مثال:, Years of experience",
-    eGYemen: "مثال:, Yemen",
-    eGYemenFieldOffice: "مثال:, Yemen Field Office",
-    eGYourGrantGrantnameHasBeenApproved: "مثال:, Your المنحة {{المنحةالاسم}} has been approved",
+    eGUnicef: "مثال: يونيسف",
+    eGValidCompanyRegistrationCommercialRegister: "مثال: تسجيل شركة ساري (السجل التجاري)",
+    eGWorldBank: "مثال: البنك الدولي",
+    eGYearsOfExperience: "مثال: سنوات الخبرة",
+    eGYemen: "مثال: اليمن",
+    eGYemenFieldOffice: "مثال: مكتب اليمن الميداني",
+    eGYourGrantGrantnameHasBeenApproved: "مثال: تمت الموافقة على منحتك {{grantName}}",
     echoYem001: "ECHO-YEM-001",
-    educationSupportProgram: "Education Support Program",
+    educationSupportProgram: "برنامج دعم التعليم",
     email: "البريد الإلكتروني",
-    email1: "البريد الإلكتروني *",
     emailExampleCom: "email@example.com",
-    enterBeneficiaryCount: "أدخل المستفيد count",
-    enterCustomReportType: "أدخل custom report type",
-    enterDescription: "أدخل description",
-    enterGrantDescriptionAndObjectives: "أدخل المنحة description and الهدفs...",
-    enterItemDescription: "أدخل العنصر description",
-    enterLocation: "أدخل location",
-    enterLocationInArabic: "أدخل location in Arabic",
-    enterName: "أدخل name",
-    enterNewPassword: "أدخل new password",
-    enterObjectiveTitle: "أدخل الهدف title",
-    enterProjectDescription: "أدخل project description",
-    enterProjectDescriptionInArabic: "أدخل project description in Arabic",
-    enterProjectManagerName: "أدخل project المدير name",
-    enterProjectObjectives: "أدخل project الهدفs",
-    enterProjectObjectivesInArabic: "أدخل project الهدفs in Arabic",
-    enterProjectTitle: "أدخل project title",
-    enterProjectTitleInArabic: "أدخل project title in Arabic",
-    enterReasonForRejection: "أدخل السبب for الرفض...",
-    enterReasonForRejectionCancellation: "أدخل السبب for الرفض/الإلغاء",
-    enterReasonForReversal: "أدخل السبب for reversal...",
-    enterResultTitle: "أدخل result title",
+    emailRequired: "البريد الإلكتروني *",
+    enterBeneficiaryCount: "أدخل عدد المستفيدين",
+    enterCustomReportType: "أدخل نوع التقرير المخصص",
+    enterDescription: "أدخل الوصف",
+    enterGrantDescriptionAndObjectives: "أدخل وصف المنحة وأهدافها...",
+    enterItemDescription: "أدخل وصف العنصر",
+    enterLocation: "أدخل الموقع",
+    enterLocationInArabic: "أدخل الموقع باللغة العربية",
+    enterName: "أدخل الاسم",
+    enterNewPassword: "أدخل كلمة المرور الجديدة",
+    enterObjectiveTitle: "أدخل عنوان الهدف",
+    enterProjectDescription: "أدخل وصف المشروع",
+    enterProjectDescriptionInArabic: "أدخل وصف المشروع باللغة العربية",
+    enterProjectManagerName: "أدخل اسم مدير المشروع",
+    enterProjectObjectives: "أدخل أهداف المشروع",
+    enterProjectObjectivesInArabic: "أدخل أهداف المشروع باللغة العربية",
+    enterProjectTitle: "أدخل عنوان المشروع",
+    enterProjectTitleInArabic: "أدخل عنوان المشروع باللغة العربية",
+    enterReasonForRejection: "أدخل سبب الرفض...",
+    enterReasonForRejectionCancellation: "أدخل سبب الرفض/الإلغاء",
+    enterReasonForReversal: "أدخل سبب العكس...",
+    enterResultTitle: "أدخل عنوان النتيجة",
     enterSalary: "أدخل الراتب",
-    enterTaskTitle: "أدخل task title",
-    enterUserSFullName: "أدخل user's full name",
-    enterYourFullName: "أدخل الخاص بك full name",
-    enterYourPassword: "أدخل الخاص بك password",
+    enterTaskTitle: "أدخل عنوان المهمة",
+    enterUserSFullName: "أدخل الاسم الكامل للمستخدم",
+    enterYourFullName: "أدخل اسمك الكامل",
+    enterYourPassword: "أدخل كلمة المرور الخاصة بك",
     eqp: "EQP",
-    equipment: "Equipment",
-    evaluationCommentsAndRecommendations: "Evaluation تعليقات and توصيةs",
-    explainWhyThisPositionIsNeeded: "اشرح why this position is needed...",
-    explainWhyThisSupplierWasSelected: "اشرح why this supplier was selected...",
-    fieldVisitsReports: "Field visits, التقريرs",
-    filterByModule: "تصفية by module",
-    fin_mgr: "FIN_MGR",
-    financeManager: "Finance Manager",
-    fiscalYear2026: "Fiscal Year 2026",
-    fullNameOfAssignee: "Full name of assignee",
-    fy2026: "FY2026",
-    goalsForNextReviewPeriod: "Goals for next review period",
-    hrManager: "HR Manager",
-    imsNotifications: "IMS Notifications",
-    imsYourdomainOrg: "ims@الخاص بكdomain.org",
-    invoiceDescriptionOrNotes: "Invoice description or ملاحظات",
-    invoicePoNumber: "Invoice/PO الرقم",
-    january2026: "January 2026",
-    johnDoe: "John Doe",
+    equipment: "المعدات",
+    evaluationCommentsAndRecommendations: "تعليقات وتوصيات التقييم",
+    explainWhyThisPositionIsNeeded: "اشرح سبب الحاجة لهذا المنصب...",
+    explainWhyThisSupplierWasSelected: "اشرح سبب اختيار هذا المورد...",
+    fieldVisitsReports: "تقارير الزيارات الميدانية",
+    filterByModule: "تصفية حسب الوحدة",
+    fin_mgr: "مدير مالي",
+    financeManager: "المدير المالي",
+    fiscalYear2026: "السنة المالية 2026",
+    fullNameOfAssignee: "الاسم الكامل للمكلف",
+    fy2026: "السنة المالية 2026",
+    goalsForNextReviewPeriod: "الأهداف لفترة المراجعة القادمة",
+    hrManager: "مدير الموارد البشرية",
+    imsNotifications: "تنبيهات نظام إدارة المعلومات",
+    imsYourdomainOrg: "ims@yourdomain.org",
+    invoiceDescriptionOrNotes: "وصف الفاتورة أو ملاحظات",
+    invoicePoNumber: "رقم الفاتورة/أمر الشراء",
+    january2026: "يناير 2026",
+    johnDoe: "جون دو",
     johnDoeExampleCom: "john.doe@example.com",
-    level1Approval: "Level 1 Approval",
-    listAreasForImprovement: "List areas for improvement...",
-    listTheCandidateSKeyStrengths: "List the candidate's key strengths...",
+    level1Approval: "موافقة المستوى 1",
+    listAreasForImprovement: "قائمة مجالات التحسين...",
+    listTheCandidateSKeyStrengths: "قائمة نقاط القوة الرئيسية للمرشح...",
     logisticsOrganizationOrg: "logistics@organization.org",
-    managerName: "Manager name",
-    mandatoryJustificationForSupplierSelection: "Mandatory التبرير for supplier selection...",
-    mm: "MM",
-    monthlyOverheadAllocation: "Monthly Overhead الكلocation",
-    mustBeSubmittedWithTheBid: "MUST be Submitted with the Bid",
-    nC: "N/C",
+    managerName: "اسم المدير",
+    mandatoryJustificationForSupplierSelection: "تبرير إلزامي لاختيار المورد...",
+    mm: "مم",
+    monthlyOverheadAllocation: "توزيع التكاليف العامة الشهري",
+    mustBeSubmittedWithTheBid: "يجب تقديمه مع العطاء",
+    nC: "غير متاح",
     name: "الاسم",
-    nameOfVerifier: "الاسم of verifier",
-    net30: "Net 30",
-    noreplyYourdomainOrg: "noreply@الخاص بكdomain.org",
-    numberOfBeneficiariesReached: "Number of beneficiaries reached",
-    ongoing: "Ongoing",
-    optional: "Optional",
-    optionalNotesForAllItems: "Optional ملاحظات for all العنصرs...",
-    panelMemberName: "Panel member name",
-    personTripItem: "person, trip, العنصر...",
-    personnelCosts: "Personnel Costs",
-    personsPercentageEvents: "Persons / Percentage / Events",
+    nameOfVerifier: "اسم المدقق",
+    net30: "صافي 30",
+    noreplyYourdomainOrg: "noreply@yourdomain.org",
+    numberOfBeneficiariesReached: "عدد المستفيدين الذين تم الوصول إليهم",
+    ongoing: "مستمر",
+    optional: "اختياري",
+    optionalNotesForAllItems: "ملاحظات اختيارية لجميع العناصر...",
+    panelMemberName: "اسم عضو اللجنة",
+    personTripItem: "شخص، رحلة، عنصر...",
+    personnelCosts: "تكاليف الموظفين",
+    personsPercentageEvents: "أشخاص / نسبة مئوية / فعاليات",
     phone: "الهاتف",
-    pleaseProvideAReasonForRejection: "Please provide a السبب for الرفض",
-    pleaseProvideAReasonForRejection1: "Please provide a السبب for الرفض...",
-    programManagerExampleComLogisticsExampleComFinance: "program.المدير@example.com, logistics@example.com, finance@example.com",
-    progress: "Progress %",
-    projectCode: "المشروع الرمز",
-    provideDetailedJustificationForSupplierSelection: "قدم detailed التبرير for supplier selection...",
-    provideDetailedJustificationForYourDecision: "قدم detailed التبرير for الخاص بك decision...",
-    q22026: "Q2 2026",
+    pleaseProvideAReasonForRejection: "يرجى تقديم سبب للرفض",
+    pleaseProvideAReasonForRejectionOptional: "يرجى تقديم سبب للرفض...",
+    programManagerExampleComLogisticsExampleComFinance: "program.manager@example.com, logistics@example.com, finance@example.com",
+    progress: "التقدم %",
+    projectCode: "رمز المشروع",
+    provideDetailedJustificationForSupplierSelection: "قدم تبريراً مفصلاً لاختيار المورد...",
+    provideDetailedJustificationForYourDecision: "قدم تبريراً مفصلاً لقرارك...",
+    q22026: "الربع الثاني 2026",
     realloc001: "REALLOC-001",
-    responsiblePerson: "Responsible person",
-    roleDescription: "Role description...",
-    searchByGrantNumberNameOrDonor: "بحث by المنحة الرقم, name, or المانح...",
-    searchByNameOrType: "بحث by name or type...",
-    searchFrameworks: "بحث frameworks...",
-    searchProjects: "بحث projects...",
-    searchVendor: "بحث vendor...",
-    selectAFruit: "اختر a fruit",
-    selectAProject: "اختر a project",
-    selectChannel: "اختر channel",
-    selectCountry: "اختر country",
-    selectDocumentType: "اختر document type",
-    selectOperatingUnit: "اختر operating الوحدة",
-    selectOrganization: "اختر organization",
+    responsiblePerson: "الشخص المسؤول",
+    roleDescription: "وصف الدور...",
+    searchByGrantNumberNameOrDonor: "بحث برقم المنحة، الاسم، أو المانح...",
+    searchByNameOrType: "بحث بالاسم أو النوع...",
+    searchFrameworks: "بحث في الأطر...",
+    searchProjects: "بحث في المشاريع...",
+    searchVendor: "بحث عن مورد...",
+    selectAFruit: "اختر فاكهة",
+    selectAProject: "اختر مشروعاً",
+    selectChannel: "اختر القناة",
+    selectCountry: "اختر الدولة",
+    selectDocumentType: "اختر نوع المستند",
+    selectOperatingUnit: "اختر وحدة التشغيل",
+    selectOrganization: "اختر المنظمة",
     smtpOffice365Com: "smtp.office365.com",
-    specifyCommunityType: "حدد commالوحدةy type",
-    specifyIdentificationType: "حدد identification type",
-    specifyServiceType: "حدد service type",
-    specifyVulnerabilityCategory: "حدد vulnerability الفئة",
-    supplierName: "المورد الاسم *",
-    supportYourdomainOrg: "support@الخاص بكdomain.org",
-    teamPerson: "Team/Person",
-    trySendingAMessage: "Try sending a message...",
-    typeSomething: "النوع something...",
-    typeYourMessageHere: "النوع الخاص بك message هنا.",
-    unicefEchoUsaid: "UNICEF, ECHO, USAID...",
-    unit: "Unit",
-    unlimited: "Unlimited",
-    usDollar: "US Dollar",
+    specifyCommunityType: "حدد نوع المجتمع",
+    specifyIdentificationType: "حدد نوع الهوية",
+    specifyServiceType: "حدد نوع الخدمة",
+    specifyVulnerabilityCategory: "حدد فئة الضعف",
+    supplierName: "اسم المورد *",
+    supportYourdomainOrg: "support@yourdomain.org",
+    teamPerson: "فريق/شخص",
+    trySendingAMessage: "حاول إرسال رسالة...",
+    typeSomething: "اكتب شيئاً...",
+    typeYourMessageHere: "اكتب رسالتك هنا.",
+    unicefEchoUsaid: "يونيسف، إيكو، الوكالة الأمريكية للتنمية الدولية...",
+    unit: "الوحدة",
+    unlimited: "غير محدود",
+    usDollar: "دولار أمريكي",
     userExampleCom: "user@example.com",
-    viewBudgets: "View الميزانيةs",
-    whatAreasNeedDevelopment: "What areas need development?",
-    whatHasTheEmployeeDoneWell: "What has the employee done well?",
-    yemenSanaAHodeidah: "Yemen (Sana'a, Hodeidah)",
-    yourCurrentRole: "Your current role",
-    yourEmailExampleCom: "الخاص بك.email@example.com",
-    yourEmailOrganizationOrg: "الخاص بك.email@organization.org",
-    yourdomainOrgPartnerOrg: "الخاص بكdomain.org, الشريك.org",
+    viewBudgets: "عرض الميزانيات",
+    whatAreasNeedDevelopment: "ما هي المجالات التي تحتاج إلى تطوير؟",
+    whatHasTheEmployeeDoneWell: "ما الذي قام به الموظف بشكل جيد؟",
+    yemenSanaAHodeidah: "اليمن (صنعاء، الحديدة)",
+    yourCurrentRole: "دورك الحالي",
+    yourEmailExampleCom: "your.email@example.com",
+    yourEmailOrganizationOrg: "your.email@organization.org",
+    yourdomainOrgPartnerOrg: "yourdomain.org, partner.org",
     yyyy: "YYYY",
-    أدخلسببالرفض: "أدخل سبب الرفض...",
-    أدخلسببالعكس: "أدخل سبب العكس...",
-    أدخلعنوانالمهمة: "أدخل عنوان المهمة",
-    أدخلعنوانالنتيجة: "أدخل عنوان النتيجة",
-    أدخلعنوانالهدف: "أدخل عنوان الهدف",
-    اسمالحساببالعربية: "اسم الحساب بالعربية",
-    توزيعالتكاليفالعامةالشهري: "توزيع التكاليف العامة الشهري",
-    مثالالقانونيةوالإدارية: "مثال: القانونية والإدارية",
-    مثالبطاقاتالهوية: "مثال: بطاقات الهوية",
-    مثالتسجيلشركةساريالسجلالتجاري: "مثال: تسجيل شركة ساري (السجل التجاري)",
-    مثالمسؤولالقياسوالتقييم: "مثال: مسؤول القياس والتقييم",
-    يجبتقديمهمعالعطاء: "يجب تقديمه مع العطاء",
   },
+
   system: {
     adminDashboard: {
       adminDashboardTitle: 'Admin Dashboard',

@@ -39,9 +39,9 @@ export async function checkAndSendPaymentReminders(db: any, ctx: any) {
         and(
           eq(procurementPayables.organizationId, ctx.scope.organizationId),
           eq(procurementPayables.operatingUnitId, ctx.scope.operatingUnitId),
-          eq(procurementPayables.status, "approved"),
-          gte(procurementPayables.payableDueDate, today),
-          lte(procurementPayables.payableDueDate, threeDaysFromNow)
+          eq(procurementPayables.status, "pending_invoice"),
+          gte(procurementPayables.dueDate, today),
+          lte(procurementPayables.dueDate, threeDaysFromNow)
         )
       );
 
@@ -53,8 +53,8 @@ export async function checkAndSendPaymentReminders(db: any, ctx: any) {
         and(
           eq(procurementPayables.organizationId, ctx.scope.organizationId),
           eq(procurementPayables.operatingUnitId, ctx.scope.operatingUnitId),
-          eq(procurementPayables.status, "approved"),
-          lt(procurementPayables.payableDueDate, oneDayAgo)
+          eq(procurementPayables.status, "pending_invoice"),
+          lt(procurementPayables.dueDate, oneDayAgo)
         )
       );
 
@@ -165,9 +165,9 @@ export async function getPaymentReminders(db: any, ctx: any) {
         and(
           eq(procurementPayables.organizationId, ctx.scope.organizationId),
           eq(procurementPayables.operatingUnitId, ctx.scope.operatingUnitId),
-          eq(procurementPayables.status, "approved"),
-          gte(procurementPayables.payableDueDate, thirtyDaysAgo),
-          lte(procurementPayables.payableDueDate, threeDaysFromNow)
+          eq(procurementPayables.status, "pending_invoice"),
+          gte(procurementPayables.dueDate, thirtyDaysAgo),
+          lte(procurementPayables.dueDate, threeDaysFromNow)
         )
       );
 

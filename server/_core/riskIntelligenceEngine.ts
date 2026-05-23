@@ -28,6 +28,7 @@ import {
   budgetItems,
   indicators,
   users,
+  forecastPlan,
 } from "../../drizzle/schema";
 import { eq, and, sql, isNull, or, gte, lte } from "drizzle-orm";
 
@@ -90,7 +91,7 @@ export async function evaluateBudgetOverspendRisk(
 
   // Calculate burn rate
   const totalBudget = Number(project.totalBudget) || 0;
-  const actualSpent = Number(project.actualSpent) || 0;
+  const actualSpent = Number(project.spent) || 0;
   const burnRate = totalBudget > 0 ? (actualSpent / totalBudget) * 100 : 0;
 
   // Calculate timeline elapsed
@@ -110,10 +111,10 @@ export async function evaluateBudgetOverspendRisk(
     return {
       shouldCreateRisk: true,
       riskData: {
-        title: `Budget Overspend Risk - ${project.projectName}`,
-        titleAr: `مخاطر تجاوز الميزانية - ${project.projectNameAr || project.projectName}`,
-        description: `Project "${project.projectName}" has spent ${burnRate.toFixed(1)}% of budget while only ${timelineElapsed.toFixed(1)}% of timeline has elapsed. This indicates potential budget overspend.`,
-        descriptionAr: `المشروع "${project.projectNameAr || project.projectName}" أنفق ${burnRate.toFixed(1)}٪ من الميزانية بينما مضى ${timelineElapsed.toFixed(1)}٪ فقط من الجدول الزمني. هذا يشير إلى احتمال تجاوز الميزانية.`,
+        title: `Budget Overspend Risk - ${project.title}`,
+        titleAr: `مخاطر تجاوز الميزانية - ${project.titleAr || project.title}`,
+        description: `Project "${project.title}" has spent ${burnRate.toFixed(1)}% of budget while only ${timelineElapsed.toFixed(1)}% of timeline has elapsed. This indicates potential budget overspend.`,
+        descriptionAr: `المشروع "${project.titleAr || project.title}" أنفق ${burnRate.toFixed(1)}٪ من الميزانية بينما مضى ${timelineElapsed.toFixed(1)}٪ فقط من الجدول الزمني. هذا يشير إلى احتمال تجاوز الميزانية.`,
         category: "financial",
         likelihood: 4, // High likelihood
         impact: 4, // High impact
@@ -163,24 +164,24 @@ export async function evaluateForecastAccuracyRisk(
   }
 
   // Calculate forecast variance
-  const actualSpent = Number(project.actualSpent) || 0;
-  const forecast = Number(project.forecast) || 0;
+  const actualSpent = Number(project.spent) || 0;
+  const totalBudget = Number(project.totalBudget) || 0;
 
-  if (forecast === 0) {
+  if (totalBudget === 0) {
     return { shouldCreateRisk: false };
   }
 
-  const variance = ((actualSpent - forecast) / forecast) * 100;
+  const variance = ((actualSpent - totalBudget) / totalBudget) * 100;
 
   // Check trigger condition
   if (variance > 15) {
     return {
       shouldCreateRisk: true,
       riskData: {
-        title: `Forecast Accuracy Risk - ${project.projectName}`,
-        titleAr: `مخاطر دقة التوقعات - ${project.projectNameAr || project.projectName}`,
-        description: `Project "${project.projectName}" actual spending ($${actualSpent.toFixed(2)}) exceeds forecast ($${forecast.toFixed(2)}) by ${variance.toFixed(1)}%. This indicates poor forecast accuracy.`,
-        descriptionAr: `الإنفاق الفعلي للمشروع "${project.projectNameAr || project.projectName}" ($${actualSpent.toFixed(2)}) يتجاوز التوقعات ($${forecast.toFixed(2)}) بنسبة ${variance.toFixed(1)}٪. هذا يشير إلى ضعف دقة التوقعات.`,
+        title: `Forecast Accuracy Risk - ${project.title}`,
+        titleAr: `مخاطر دقة التوقعات - ${project.titleAr || project.title}`,
+        description: `Project "${project.title}" actual spending ($${actualSpent.toFixed(2)}) exceeds forecast ($${totalBudget.toFixed(2)}) by ${variance.toFixed(1)}%. This indicates poor forecast accuracy.`,
+        descriptionAr: `الإنفاق الفعلي للمشروع "${project.titleAr || project.title}" ($${actualSpent.toFixed(2)}) يتجاوز التوقعات ($${totalBudget.toFixed(2)}) بنسبة ${variance.toFixed(1)}٪. هذا يشير إلى ضعف دقة التوقعات.`,
         category: "financial",
         likelihood: 3, // Medium likelihood
         impact: 3, // Medium impact
@@ -231,7 +232,7 @@ export async function evaluateNegativeBalanceRisk(
 
   // Calculate balance
   const totalBudget = Number(project.totalBudget) || 0;
-  const actualSpent = Number(project.actualSpent) || 0;
+  const actualSpent = Number(project.spent) || 0;
   const balance = totalBudget - actualSpent;
 
   // Check trigger condition
@@ -239,10 +240,10 @@ export async function evaluateNegativeBalanceRisk(
     return {
       shouldCreateRisk: true,
       riskData: {
-        title: `Critical Financial Risk - Negative Balance - ${project.projectName}`,
-        titleAr: `مخاطر مالية حرجة - رصيد سلبي - ${project.projectNameAr || project.projectName}`,
-        description: `Project "${project.projectName}" has a negative balance of $${Math.abs(balance).toFixed(2)}. Immediate action required.`,
-        descriptionAr: `المشروع "${project.projectNameAr || project.projectName}" لديه رصيد سلبي قدره $${Math.abs(balance).toFixed(2)}. مطلوب إجراء فوري.`,
+        title: `Critical Financial Risk - Negative Balance - ${project.title}`,
+        titleAr: `مخاطر مالية حرجة - رصيد سلبي - ${project.titleAr || project.title}`,
+        description: `Project "${project.title}" has a negative balance of $${Math.abs(balance).toFixed(2)}. Immediate action required.`,
+        descriptionAr: `المشروع "${project.titleAr || project.title}" لديه رصيد سلبي قدره $${Math.abs(balance).toFixed(2)}. مطلوب إجراء فوري.`,
         category: "financial",
         likelihood: 5, // Very high likelihood
         impact: 5, // Critical impact
@@ -298,12 +299,28 @@ export async function evaluateImplementationDelayRisk(
   // Get progress percentage
   const progressPercentage = Number(activity.progressPercentage) || 0;
 
-  // Calculate timeline elapsed
-  const startDate = activity.startDate ? new Date(activity.startDate) : null;
-  const endDate = activity.endDate ? new Date(activity.endDate) : null;
-  const now = new Date();
+  // Get parent project for timeline dates
+const [project] = await db
+  .select()
+  .from(projects)
+  .where(eq(projects.id, activity.projectId))
+  .limit(1);
+
+if (!project) {
+  return { shouldCreateRisk: false };
+}
+
+// Calculate timeline elapsed using project dates
+const startDate = project.startDate
+  ? new Date(project.startDate)
+  : null;
+
+const endDate = project.endDate
+  ? new Date(project.endDate)
+  : null;
 
   let timelineElapsed = 0;
+
   if (startDate && endDate) {
     const totalDuration = endDate.getTime() - startDate.getTime();
     const elapsedDuration = now.getTime() - startDate.getTime();
@@ -375,13 +392,13 @@ export async function evaluateIndicatorUnderperformanceRisk(
   // Calculate achievement percentage
   const baseline = Number(indicator.baseline) || 0;
   const target = Number(indicator.target) || 0;
-  const actual = Number(indicator.actual) || 0;
+  const achievedValue = Number(indicator.achievedValue) || 0;
 
   if (target === 0) {
     return { shouldCreateRisk: false };
   }
 
-  const achievementPercentage = ((actual - baseline) / (target - baseline)) * 100;
+  const achievementPercentage = ((achievedValue - baseline) / (target - baseline)) * 100;
 
   // Get project timeline to determine if past mid-term
   const [project] = await db
@@ -469,7 +486,7 @@ export async function createOrUpdateRisk(
         riskData.projectId ? eq(risks.projectId, riskData.projectId) : sql`1=1`,
         riskData.activityId ? eq(risks.activityId, riskData.activityId) : sql`1=1`,
         riskData.indicatorId ? eq(risks.indicatorId, riskData.indicatorId) : sql`1=1`,
-        eq(risks.isDeleted, false),
+        eq(risks.isDeleted, 0),
         or(
           eq(risks.status, "identified"),
           eq(risks.status, "assessed"),
@@ -504,9 +521,9 @@ export async function createOrUpdateRisk(
         level,
         triggerValue: riskData.triggerValue,
         trendDirection: riskData.trendDirection,
-        lastEvaluatedAt: new Date(),
+        lastEvaluatedAt: new Date().toISOString().slice(0, 19).replace('T', ' '),
         autoMitigationSuggestions: JSON.stringify(riskData.autoMitigationSuggestions),
-        updatedAt: new Date(),
+        updatedAt: new Date().toISOString().slice(0, 19).replace('T', ' '),
       })
       .where(eq(risks.id, existingRisk.id));
 
@@ -530,11 +547,11 @@ export async function createOrUpdateRisk(
       activityId: riskData.activityId,
       budgetItemId: riskData.budgetItemId,
       indicatorId: riskData.indicatorId,
-      isSystemGenerated: true,
+      isSystemGenerated: 1,
       source: riskData.source,
       triggerValue: riskData.triggerValue,
       trendDirection: riskData.trendDirection,
-      lastEvaluatedAt: new Date(),
+      lastEvaluatedAt: new Date().toISOString().slice(0, 19).replace('T', ' '),
       autoMitigationSuggestions: JSON.stringify(riskData.autoMitigationSuggestions),
       createdBy: userId,
     });
@@ -613,7 +630,7 @@ export async function evaluateProjectRisks(
         eq(activities.projectId, projectId),
         eq(activities.organizationId, organizationId),
         operatingUnitId ? eq(activities.operatingUnitId, operatingUnitId) : sql`1=1`,
-        eq(activities.isDeleted, false)
+        eq(activities.isDeleted, 0)
       )
     );
 
@@ -642,7 +659,7 @@ export async function evaluateProjectRisks(
         eq(indicators.projectId, projectId),
         eq(indicators.organizationId, organizationId),
         operatingUnitId ? eq(indicators.operatingUnitId, operatingUnitId) : sql`1=1`,
-        eq(indicators.isDeleted, false)
+        eq(indicators.isDeleted, 0)
       )
     );
 

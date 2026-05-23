@@ -477,7 +477,7 @@ export default function BidAnalysisPrint() {
 
  {/* Footer */}
  <div className="mt-6 text-center" style={{ fontSize: "6.5pt", color: "#999" }}>
- <p>Generated from {orgName} - Integrated Management System (IMS) | {new Date().toLocaleDateString()}</p>
+ <p>Generated from {orgName} - Integrated Management System (IMS) | {new Date().toISOString()}</p>
  </div>
  </div>
  </div>

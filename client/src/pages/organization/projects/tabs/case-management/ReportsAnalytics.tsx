@@ -261,7 +261,7 @@ const currentYear = new Date().getFullYear();
  summarySheet.addRow({ metric: 'Project Name', value: projectName });
  summarySheet.addRow({ metric: 'Donor', value: donorName });
  summarySheet.addRow({ metric: 'Reporting Period', value: `${dateFrom} to ${dateTo}` });
- summarySheet.addRow({ metric: 'Generated On', value: new Date().toLocaleDateString() });
+ summarySheet.addRow({ metric: 'Generated On', value: new Date().toISOString() });
  summarySheet.addRow({ metric: '', value: '' });
  summarySheet.addRow({ metric: 'Total Beneficiaries', value: reportData.data?.cases.total || 0 });
  summarySheet.addRow({ metric: 'New Cases', value: reportData.data?.cases.new || 0 });
@@ -512,7 +512,7 @@ const currentYear = new Date().getFullYear();
  </div>
  <div className={'text-start'}>
  <div className="opacity-80">{t.caseManagement.generatedOn}</div>
- <div className="ltr-safe font-semibold">{new Date().toLocaleDateString()}</div>
+ <div className="ltr-safe font-semibold">{new Date().toISOString()}</div>
  </div>
  </div>
  </div>

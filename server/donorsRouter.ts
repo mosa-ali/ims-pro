@@ -1,7 +1,12 @@
+// ============================================================================
+// DONORS ROUTER - COMPLETE WITH DASHBOARD PROCEDURES
+// tRPC procedures for donor management and dashboard operations
+// ============================================================================
+
 import { z } from "zod";
 import { router, scopedProcedure } from "./_core/trpc";
 import { getDb } from "./db";
-import { donors } from "../drizzle/schema";
+import { donors, grants, budgets } from "../drizzle/schema";
 import { eq, and, isNull, desc, asc, sql, like, or } from "drizzle-orm";
 import { TRPCError } from "@trpc/server";
 
@@ -43,33 +48,31 @@ const listDonorsSchema = z.object({
 });
 
 export const donorsRouter = router({
-  // List donors with pagination, search, and filtering
+  // ============================================================================
+  // EXISTING PROCEDURES - CRUD OPERATIONS
+  // ============================================================================
+
   list: scopedProcedure
     .input(listDonorsSchema)
     .query(async ({ ctx, input }) => {
-
       const db = await getDb();
       if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Database unavailable" });
 
       const { page, pageSize, search, type, isActive, sortBy, sortOrder, includeDeleted } = input;
       const offset = (page - 1) * pageSize;
 
-      // Build where conditions
       const conditions = [
         eq(donors.organizationId, ctx.scope.organizationId),
       ];
 
-      // Filter by operating unit if set
       if (ctx.scope.operatingUnitId) {
         conditions.push(eq(donors.operatingUnitId, ctx.scope.operatingUnitId));
       }
 
-      // Exclude deleted unless requested
       if (!includeDeleted) {
         conditions.push(isNull(donors.deletedAt));
       }
 
-      // Search filter
       if (search) {
         conditions.push(
           or(
@@ -81,25 +84,20 @@ export const donorsRouter = router({
         );
       }
 
-      // Type filter
       if (type) {
         conditions.push(eq(donors.type, type));
       }
 
-      // Active filter
       if (isActive !== undefined) {
-        conditions.push(eq(donors.isActive, isActive));
+        conditions.push(eq(donors.isActive, 1));
       }
 
-      // Get total count
       const countResult = await db
         .select({ count: sql<number>`count(*)` })
         .from(donors)
         .where(and(...conditions));
       const total = countResult[0]?.count || 0;
 
-
-      // Build order by
       let orderByClause;
       const order = sortOrder === "asc" ? asc : desc;
       switch (sortBy) {
@@ -117,7 +115,6 @@ export const donorsRouter = router({
           orderByClause = desc(donors.createdAt);
       }
 
-      // Fetch donors
       const donorsList = await db
         .select()
         .from(donors)
@@ -137,7 +134,6 @@ export const donorsRouter = router({
       };
     }),
 
-  // Get single donor by ID
   getById: scopedProcedure
     .input(z.object({ id: z.number() }))
     .query(async ({ ctx, input }) => {
@@ -163,14 +159,12 @@ export const donorsRouter = router({
       return donor[0];
     }),
 
-  // Create new donor
   create: scopedProcedure
     .input(createDonorSchema)
     .mutation(async ({ ctx, input }) => {
       const db = await getDb();
       if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Database unavailable" });
 
-      // Check for duplicate code within organization
       const existing = await db
         .select({ id: donors.id })
         .from(donors)
@@ -199,7 +193,6 @@ export const donorsRouter = router({
       return { id: insertId, message: "Donor created successfully" };
     }),
 
-  // Update donor
   update: scopedProcedure
     .input(updateDonorSchema)
     .mutation(async ({ ctx, input }) => {
@@ -208,7 +201,6 @@ export const donorsRouter = router({
 
       const { id, ...updateData } = input;
 
-      // Verify donor exists and belongs to organization
       const existing = await db
         .select({ id: donors.id })
         .from(donors)
@@ -225,7 +217,6 @@ export const donorsRouter = router({
         throw new TRPCError({ code: "NOT_FOUND", message: "Donor not found" });
       }
 
-      // Check for duplicate code if code is being updated
       if (updateData.code) {
         const duplicate = await db
           .select({ id: donors.id })
@@ -256,14 +247,12 @@ export const donorsRouter = router({
       return { message: "Donor updated successfully" };
     }),
 
-  // Soft delete donor
   softDelete: scopedProcedure
     .input(z.object({ id: z.number() }))
     .mutation(async ({ ctx, input }) => {
       const db = await getDb();
       if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Database unavailable" });
 
-      // Verify donor exists and belongs to organization
       const existing = await db
         .select({ id: donors.id })
         .from(donors)
@@ -283,7 +272,7 @@ export const donorsRouter = router({
       await db
         .update(donors)
         .set({
-          deletedAt: new Date(),
+          deletedAt: new Date().toISOString().slice(0, 19).replace('T', ' '),
           deletedBy: ctx.user.id,
         })
         .where(eq(donors.id, input.id));
@@ -291,14 +280,12 @@ export const donorsRouter = router({
       return { message: "Donor deleted successfully" };
     }),
 
-  // Restore soft-deleted donor
   restore: scopedProcedure
     .input(z.object({ id: z.number() }))
     .mutation(async ({ ctx, input }) => {
       const db = await getDb();
       if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Database unavailable" });
 
-      // Verify donor exists, belongs to organization, and is deleted
       const existing = await db
         .select({ id: donors.id, deletedAt: donors.deletedAt })
         .from(donors)
@@ -330,7 +317,6 @@ export const donorsRouter = router({
       return { message: "Donor restored successfully" };
     }),
 
-  // Get KPIs for dashboard
   getKPIs: scopedProcedure.query(async ({ ctx }) => {
     const db = await getDb();
     if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Database unavailable" });
@@ -344,19 +330,16 @@ export const donorsRouter = router({
       conditions.push(eq(donors.operatingUnitId, ctx.scope.operatingUnitId));
     }
 
-    // Total donors
     const totalResult = await db
       .select({ count: sql<number>`count(*)` })
       .from(donors)
       .where(and(...conditions));
 
-    // Active donors
     const activeResult = await db
       .select({ count: sql<number>`count(*)` })
       .from(donors)
-      .where(and(...conditions, eq(donors.isActive, true)));
+      .where(and(...conditions, eq(donors.isActive, 1)));
 
-    // Donors by type
     const byTypeResult = await db
       .select({
         type: donors.type,
@@ -373,7 +356,6 @@ export const donorsRouter = router({
     };
   }),
 
-  // Export donors to Excel format (returns data for client-side export)
   exportData: scopedProcedure
     .input(z.object({
       search: z.string().optional(),
@@ -410,7 +392,7 @@ export const donorsRouter = router({
       }
 
       if (isActive !== undefined) {
-        conditions.push(eq(donors.isActive, isActive));
+        conditions.push(eq(donors.isActive, 1));
       }
 
       const donorsList = await db
@@ -424,6 +406,243 @@ export const donorsRouter = router({
         exportedAt: new Date().toISOString(),
       };
     }),
+
+  // ============================================================================
+  // DASHBOARD PROCEDURES
+  // ============================================================================
+
+  getTopDonorsForDashboard: scopedProcedure
+    .input(z.object({
+      limit: z.number().min(1).max(20).default(5),
+    }))
+    .query(async ({ ctx, input }) => {
+      const db = await getDb();
+      if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Database unavailable" });
+
+      const { organizationId, operatingUnitId } = ctx.scope;
+      const { limit } = input;
+
+      const conditions = [
+        eq(donors.organizationId, organizationId),
+        isNull(donors.deletedAt),
+      ];
+
+      if (operatingUnitId) {
+        conditions.push(eq(donors.operatingUnitId, operatingUnitId));
+      }
+
+      const topDonors = await db
+        .select({
+          id: donors.id,
+          name: donors.name,
+          type: donors.type,
+        })
+        .from(donors)
+        .where(and(...conditions))
+        .orderBy(desc(donors.id))
+        .limit(limit);
+
+      const donorData = await Promise.all(
+        topDonors.map(async (donor) => {
+          const grantsList = await db
+            .select({
+              id: grants.id,
+              grantAmount: grants.grantAmount,
+              amount: grants.amount,
+              status: grants.status,
+            })
+            .from(grants)
+            .where(
+              and(
+                eq(grants.donorId, donor.id),
+                eq(grants.organizationId, organizationId)
+              )
+            );
+
+          // Calculate utilized amount from budgets linked to grants
+          let totalUtilized = 0;
+          for (const grant of grantsList) {
+            const budgetResult = await db
+              .select({ totalActualAmount: sql<number>`COALESCE(SUM(CAST(${budgets.totalActualAmount} AS DECIMAL(15,2))), 0)` })
+              .from(budgets)
+              .where(eq(budgets.grantId, grant.id));
+            totalUtilized += Number(budgetResult[0]?.totalActualAmount || 0);
+          }
+
+          const totalCommitted = grantsList.reduce((sum, g) => sum + (Number(g.grantAmount) || Number(g.amount) || 0), 0);
+          const activeGrants = grantsList.filter(g => g.status === 'ongoing' || g.status === 'approved').length;
+          const utilizationRate = totalCommitted > 0 ? (totalUtilized / totalCommitted) * 100 : 0;
+
+          return {
+            id: donor.id,
+            name: donor.name,
+            type: donor.type,
+            activeGrants,
+            totalCommitted: Math.round(totalCommitted),
+            totalUtilized: Math.round(totalUtilized),
+            utilizationRate: Math.round(utilizationRate),
+          };
+        })
+      );
+
+      return donorData;
+    }),
+
+  getDonorIntelligence: scopedProcedure.query(async ({ ctx }) => {
+    const db = await getDb();
+    if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Database unavailable" });
+
+    const { organizationId, operatingUnitId } = ctx.scope;
+
+    const conditions = [
+      eq(donors.organizationId, organizationId),
+      isNull(donors.deletedAt),
+    ];
+
+    if (operatingUnitId) {
+      conditions.push(eq(donors.operatingUnitId, operatingUnitId));
+    }
+
+    const allDonors = await db
+      .select({
+        id: donors.id,
+        name: donors.name,
+        type: donors.type,
+        isActive: donors.isActive,
+      })
+      .from(donors)
+      .where(and(...conditions));
+
+    const donorMetrics = await Promise.all(
+      allDonors.map(async (donor) => {
+        const grantsList = await db
+          .select({
+            id: grants.id,
+            grantAmount: grants.grantAmount,
+            amount: grants.amount,
+            status: grants.status,
+          })
+          .from(grants)
+          .where(
+            and(
+              eq(grants.donorId, donor.id),
+              eq(grants.organizationId, organizationId)
+            )
+          );
+
+        // Calculate utilized amount from budgets linked to grants
+        let totalUtilized = 0;
+        for (const grant of grantsList) {
+          const budgetResult = await db
+            .select({ totalActualAmount: sql<number>`COALESCE(SUM(CAST(${budgets.totalActualAmount} AS DECIMAL(15,2))), 0)` })
+            .from(budgets)
+            .where(eq(budgets.grantId, grant.id));
+          totalUtilized += Number(budgetResult[0]?.totalActualAmount || 0);
+        }
+
+        const totalCommitted = grantsList.reduce((sum, g) => sum + (Number(g.grantAmount) || Number(g.amount) || 0), 0);
+        const activeGrants = grantsList.filter(g => g.status === 'ongoing' || g.status === 'approved').length;
+        const completedGrants = grantsList.filter(g => g.status === 'closed').length;
+        const utilizationRate = totalCommitted > 0 ? (totalUtilized / totalCommitted) * 100 : 0;
+
+        return {
+          id: donor.id,
+          name: donor.name,
+          type: donor.type,
+          isActive: donor.isActive,
+          activeGrants,
+          completedGrants,
+          totalCommitted: Math.round(totalCommitted),
+          totalUtilized: Math.round(totalUtilized),
+          utilizationRate: Math.round(utilizationRate),
+        };
+      })
+    );
+
+    return donorMetrics;
+  }),
+
+  getDonorTypeDistribution: scopedProcedure.query(async ({ ctx }) => {
+    const db = await getDb();
+    if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Database unavailable" });
+
+    const { organizationId, operatingUnitId } = ctx.scope;
+
+    const conditions = [
+      eq(donors.organizationId, organizationId),
+      isNull(donors.deletedAt),
+    ];
+
+    if (operatingUnitId) {
+      conditions.push(eq(donors.operatingUnitId, operatingUnitId));
+    }
+
+    const distribution = await db
+      .select({
+        type: donors.type,
+        count: sql<number>`count(*)`,
+      })
+      .from(donors)
+      .where(and(...conditions))
+      .groupBy(donors.type);
+
+    return distribution.map(item => ({
+      type: item.type || 'other',
+      count: item.count,
+    }));
+  }),
+
+  getTotalDonorCommitment: scopedProcedure.query(async ({ ctx }) => {
+    const db = await getDb();
+    if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Database unavailable" });
+
+    const { organizationId, operatingUnitId } = ctx.scope;
+
+    const conditions = [
+      eq(donors.organizationId, organizationId),
+      isNull(donors.deletedAt),
+    ];
+
+    if (operatingUnitId) {
+      conditions.push(eq(donors.operatingUnitId, operatingUnitId));
+    }
+
+    const allDonors = await db
+      .select({ id: donors.id })
+      .from(donors)
+      .where(and(...conditions));
+
+    const allGrants = await db
+      .select({
+        id: grants.id,
+        grantAmount: grants.grantAmount,
+        amount: grants.amount,
+        status: grants.status,
+      })
+      .from(grants)
+      .where(eq(grants.organizationId, organizationId));
+
+    // Calculate total utilized from all grant budgets
+    let totalUtilized = 0;
+    for (const grant of allGrants) {
+      const budgetResult = await db
+        .select({ totalActualAmount: sql<number>`COALESCE(SUM(CAST(${budgets.totalActualAmount} AS DECIMAL(15,2))), 0)` })
+        .from(budgets)
+        .where(eq(budgets.grantId, grant.id));
+      totalUtilized += Number(budgetResult[0]?.totalActualAmount || 0);
+    }
+
+    const totalCommitted = allGrants.reduce((sum, g) => sum + (Number(g.grantAmount) || Number(g.amount) || 0), 0);
+    const activeGrants = allGrants.filter(g => g.status === 'ongoing' || g.status === 'approved').length;
+
+    return {
+      totalDonors: allDonors.length,
+      totalCommitted: Math.round(totalCommitted),
+      totalUtilized: Math.round(totalUtilized),
+      activeGrants,
+      utilizationRate: totalCommitted > 0 ? Math.round((totalUtilized / totalCommitted) * 100) : 0,
+    };
+  }),
 });
 
 export type DonorsRouter = typeof donorsRouter;

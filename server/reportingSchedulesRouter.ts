@@ -45,7 +45,7 @@ export const reportingSchedulesRouter = router({
       const whereConditions = [
         eq(reportingSchedules.organizationId, organizationId),
         eq(reportingSchedules.operatingUnitId, operatingUnitId),
-        eq(reportingSchedules.isDeleted, false)
+        eq(reportingSchedules.isDeleted, 0)
       ];
       
       if (projectId) {
@@ -60,7 +60,7 @@ export const reportingSchedulesRouter = router({
         .select({
           id: reportingSchedules.id,
           projectId: reportingSchedules.projectId,
-          projectCode: projects.code,
+          projectCode: projects.projectCode,
           projectName: projects.title,
           reportType: reportingSchedules.reportType,
           reportTypeOther: reportingSchedules.reportTypeOther,
@@ -99,7 +99,7 @@ export const reportingSchedulesRouter = router({
             eq(reportingSchedules.id, input.id),
             eq(reportingSchedules.organizationId, organizationId),
             eq(reportingSchedules.operatingUnitId, operatingUnitId),
-            eq(reportingSchedules.isDeleted, false)
+            eq(reportingSchedules.isDeleted, 0)
           )
         )
         .limit(1);
@@ -193,7 +193,7 @@ export const reportingSchedulesRouter = router({
             eq(reportingSchedules.id, input.id),
             eq(reportingSchedules.organizationId, organizationId),
             eq(reportingSchedules.operatingUnitId, operatingUnitId),
-            eq(reportingSchedules.isDeleted, false)
+            eq(reportingSchedules.isDeleted, 0)
           )
         )
         .limit(1);
@@ -255,7 +255,7 @@ export const reportingSchedulesRouter = router({
             eq(reportingSchedules.id, input.id),
             eq(reportingSchedules.organizationId, organizationId),
             eq(reportingSchedules.operatingUnitId, operatingUnitId),
-            eq(reportingSchedules.isDeleted, false)
+            eq(reportingSchedules.isDeleted, 0)
           )
         )
         .limit(1);
@@ -277,8 +277,8 @@ export const reportingSchedulesRouter = router({
       await db
         .update(reportingSchedules)
         .set({
-          isDeleted: true,
-          deletedAt: new Date(),
+          isDeleted: 1,
+          deletedAt: new Date().toISOString().slice(0, 19).replace('T', ' '),
           deletedBy: ctx.user.id,
         })
         .where(eq(reportingSchedules.id, input.id));
@@ -306,7 +306,7 @@ export const reportingSchedulesRouter = router({
             eq(reportingSchedules.id, input.id),
             eq(reportingSchedules.organizationId, organizationId),
             eq(reportingSchedules.operatingUnitId, operatingUnitId),
-            eq(reportingSchedules.isDeleted, false)
+            eq(reportingSchedules.isDeleted, 0)
           )
         )
         .limit(1);
@@ -321,8 +321,8 @@ export const reportingSchedulesRouter = router({
       await db
         .update(reportingSchedules)
         .set({
-          isLocked: true,
-          lockedAt: new Date(),
+          isLocked: 1,
+          lockedAt: new Date().toISOString().slice(0, 19).replace('T', ' '),
           lockedBy: ctx.user.id,
           reportStatus: 'SUBMITTED_TO_DONOR',
           updatedBy: ctx.user.id,
@@ -349,7 +349,7 @@ export const reportingSchedulesRouter = router({
           and(
             eq(reportingSchedules.organizationId, organizationId),
             eq(reportingSchedules.operatingUnitId, operatingUnitId),
-            eq(reportingSchedules.isDeleted, false),
+            eq(reportingSchedules.isDeleted, 0),
             eq(reportingSchedules.reportStatus, 'PLANNED')
           )
         );

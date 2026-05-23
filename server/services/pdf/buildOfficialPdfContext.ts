@@ -156,7 +156,7 @@ export async function buildOfficialPdfContext(
   const orgContext = await getPdfOrganizationContext(db, organizationId, operatingUnitId);
 
   // ========== STEP 2: Get user information ==========
-  const user = await db.query.users.findMany({
+  const user = await db.query.users.findFirst({
     where: eq(users.id, userId),
   });
 
@@ -222,6 +222,8 @@ export async function buildOfficialPdfContext(
   };
 
   console.log(`[Official PDF Context] ✅ Official PDF context ready`);
+  console.log(`[Official PDF Context] Logo URL: ${context.organizationLogo || 'NOT SET'}`);
+  console.log(`[Official PDF Context] Branding Logo URL: ${context.brandingLogoUrl || 'NOT SET'}`);
 
   return context;
 }
@@ -311,9 +313,9 @@ function buildFooterContext(
   const generatedByText = user.name || user.email || 'System';
 
   return {
-    footerOrganizationName: orgContext.organizationName || '',
-    footerOperatingUnitName: orgContext.operatingUnitName || '',
-    footerText: `${orgContext.organizationName} - ${orgContext.operatingUnitName}`,
+    footerOrganizationName: orgContext.organizationName ?? '',
+    footerOperatingUnitName: orgContext.operatingUnitName ?? '',
+    footerText: `${orgContext.organizationName ?? ''} - ${orgContext.operatingUnitName ?? ''}`,
     footerDate,
     footerGeneratedBy: generatedByText,
   };

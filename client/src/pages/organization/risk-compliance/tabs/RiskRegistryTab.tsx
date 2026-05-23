@@ -66,15 +66,19 @@ const { t, language } = useTranslation();
  const { data: projects = [] } = trpc.projects.list.useQuery({});
 
  // Auto-Detect mutation
- const evaluateProject = trpc.risks.evaluateProject.useMutation({
- onSuccess: (result) => {
+ const projectsEvaluatedMutation =
+  trpc.risks.projectsEvaluated.useMutation({
+ onSuccess: (result: {
+  risksCreated: number;
+  risksUpdated: number;
+}) => {
  toast.success(
  `Risks evaluated successfully: ${result.risksCreated} risks created, ${result.risksUpdated} risks updated`
  );
  // Refresh risks list
  window.location.reload();
  },
- onError: (error) => {
+ onError: (error: Error) => {
  toast.error(
  `Failed to evaluate risks: ${error.message}`
  );
@@ -82,15 +86,20 @@ const { t, language } = useTranslation();
  });
 
  // Evaluate All Projects mutation
- const evaluateAll = trpc.risks.evaluateAllProjects.useMutation({
- onSuccess: (result) => {
+ const evaluateAll =
+  trpc.risks.evaluateAllProjects.useMutation({
+  onSuccess: (result: {
+  projectsEvaluated: number;
+  totalRisksGenerated: number;
+  totalRisksUpdated: number;
+}) => {
  toast.success(
  `Evaluated ${result.projectsEvaluated} projects: ${result.totalRisksGenerated} risks generated, ${result.totalRisksUpdated} risks updated`
  );
  // Refresh risks list
  window.location.reload();
  },
- onError: (error) => {
+ onError: (error: Error) => {
  toast.error(
  `Failed to evaluate projects: ${error.message}`
  );
@@ -107,7 +116,7 @@ const { t, language } = useTranslation();
  toast.info(
  'Evaluating risks...'
  );
- evaluateProject.mutate({ projectId: parseInt(selectedProjectId) });
+ projectsEvaluatedMutation.mutate({ projectId: parseInt(selectedProjectId) });
  };
 
  const handleEvaluateAll = () => {
@@ -201,7 +210,7 @@ const { t, language } = useTranslation();
  <div className="flex gap-2">
  <Button
  onClick={handleAutoDetect}
- disabled={!selectedProjectId || evaluateProject.isPending}
+ disabled={!selectedProjectId || projectsEvaluatedMutation.isPending}
  className="w-full sm:w-auto"
  >
  <Zap className={`h-4 w-4 me-2`} />

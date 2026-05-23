@@ -11,6 +11,7 @@ import { isUserAdmin } from '@/lib/adminCheck';
 import { trpc } from '@/lib/trpc';
 import { toast } from 'sonner';
 import { BackButton } from "@/components/BackButton";
+import type { TRPCClientErrorLike } from '@trpc/client';
 
 type ActionType = 'view' | 'create' | 'edit' | 'delete' | 'export' | 'approve' | 'submit';
 const ALL_ACTIONS: ActionType[] = ['view', 'create', 'edit', 'delete', 'export', 'approve', 'submit'];
@@ -172,7 +173,7 @@ export default function UserManagement() {
 
  // Queries
  const usersQuery = trpc.settings.users.list.useQuery({ ouFilter: ouFilterId });
- const rolesQuery = trpc.settings.roles.list.useQuery({ limit: 100 });
+ const rolesQuery = trpc.settings.roles.list.useQuery();
  const permissionTreeQuery = trpc.settings.roles.getPermissionTree.useQuery();
   const operatingUnitsQuery = trpc.ims.operatingUnits.listByOrganization.useQuery(
     { organizationId: currentOrgId! },
@@ -194,7 +195,7 @@ export default function UserManagement() {
  },
  });
 
- const deleteUserMutation = trpc.settings.users.delete.useMutation({
+ const deleteUserMutation = trpc.settings.users.deleteUser.useMutation({
  onSuccess: () => {
  toast.success(t.userMgmt?.userRemovedSuccessfully || 'User removed successfully');
  setDeleteUserId(null);
@@ -207,7 +208,7 @@ export default function UserManagement() {
  },
  });
 
- const bulkDeleteMutation = trpc.settings.users.bulkDelete.useMutation({
+ const bulkDeleteMutation = trpc.settings.users.bulkDeleteUsers.useMutation({
  onSuccess: () => {
  toast.success(t.userMgmt?.usersRemovedSuccessfully || 'Users removed successfully');
  setSelectedUserIds(new Set());
@@ -225,7 +226,7 @@ export default function UserManagement() {
  toast.success(t.userMgmt.userUpdatedSuccessfully);
  setShowEditModal(false);
  setEditingUser(null);
- setEditingRoleId('');
+ setEditingRoleId(null);
  utils.settings.users.list.invalidate();
  },
  onError: (error) => {
@@ -594,7 +595,7 @@ export default function UserManagement() {
  <span>
  {language === 'en' 
  ? `Auto-assigned to: ${operatingUnits[0].name}` 
- : `تم التعيين التلقائي إلى: ${operatingUnits[0].nameAr || operatingUnits[0].name}`}
+ : `تم التعيين التلقائي إلى: ${operatingUnits[0].name}`}
  </span>
  </div>
  </div>
@@ -684,7 +685,7 @@ export default function UserManagement() {
  <div className="p-6 border-b border-gray-200">
  <div className="flex items-center gap-3">
  <AlertTriangle className="w-6 h-6 text-red-600" />
- <h2 className="text-xl font-bold text-gray-900">{t.userMgmt.confirmDelete}</h2>
+ <h2 className="text-xl font-bold text-gray-900">{t.userMgmt.deleteConfirmMsg}</h2>
  </div>
  </div>
  <div className="p-6 space-y-4">
@@ -733,11 +734,11 @@ export default function UserManagement() {
  <div className="p-6 border-b border-gray-200">
  <div className="flex items-center gap-3">
  <AlertTriangle className="w-6 h-6 text-red-600" />
- <h2 className="text-xl font-bold text-gray-900">{t.userMgmt.confirmDelete}</h2>
+ <h2 className="text-xl font-bold text-gray-900">{t.userMgmt.confirm}</h2>
  </div>
  </div>
  <div className="p-6 space-y-4">
- <p className="text-gray-600">{t.userMgmt?.confirmRemoveUsers || `Remove ${selectedUserIds.size} selected users?`}</p>
+ <p className="text-gray-600">{t.userMgmt?.confirmRemoveUser || `Remove ${selectedUserIds.size} selected users?`}</p>
  <textarea
  value={bulkDeletionReason}
  onChange={(e) => setBulkDeletionReason(e.target.value)}

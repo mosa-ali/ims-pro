@@ -16,6 +16,7 @@ import {
   supplierQuotationLines,
   bidAnalysisLineItems,
   vendorQualificationScores,
+  vendors,
 } from "../../../drizzle/schema";
 import { storagePut } from "../../storage";
 import { nanoid } from "nanoid";
@@ -74,7 +75,7 @@ export const bidAnalysisRouter = router({
       // Check if PR total is > $25,000 (Tender process)
       // Use prTotalUsd (correct field name) if available, otherwise use total or totalBudgetLine
       const prTotal = parseFloat(pr.prTotalUsd || pr.total || pr.totalBudgetLine || "0");
-      if (prTotal <= 25000) {
+      if (prTotal < 25000) {
         throw new TRPCError({
           code: "BAD_REQUEST",
           message: "BA is only for PRs > USD 25,000. This PR requires QA (Quotation Analysis).",
@@ -162,7 +163,7 @@ export const bidAnalysisRouter = router({
       await db.update(bidAnalyses)
         .set({
           ...tenderInfo,
-          updatedAt: nowSql,
+          updatedAt: new Date().toISOString().slice(0, 19).replace('T', ' '),
           updatedBy: ctx.user.id,
         })
         .where(eq(bidAnalyses.id, bidAnalysisId));
@@ -234,7 +235,7 @@ export const bidAnalysisRouter = router({
         .from(bidAnalysisBidders)
         .where(and(
           eq(bidAnalysisBidders.bidAnalysisId, bidAnalysisId),
-          eq(bidAnalysisBidders.supplierId, vendorId)
+          eq(bidAnalysisBidders.supplierId, vendors.id)
         ))
         .limit(1);
 
@@ -251,7 +252,7 @@ export const bidAnalysisRouter = router({
         organizationId: organizationId,
         operatingUnitId: ctx.scope.operatingUnitId,
         ...bidderData,
-        supplierId: vendorId,
+        supplierId: bidderData.supplierId,
         totalBidAmount: bidderData.totalBidAmount?.toString(),
         createdAt: nowSql,
         updatedAt: nowSql,
@@ -290,14 +291,29 @@ export const bidAnalysisRouter = router({
       const newBidderId = Number(result.insertId);
       
       // Look for supplier quotation headers linked to this vendor for this PR
-      const matchingQuotations = await db.select()
-        .from(supplierQuotationHeaders)
-        .where(and(
-          eq(supplierQuotationHeaders.purchaseRequestId, ba.purchaseRequestId),
-          eq(supplierQuotationHeaders.organizationId, organizationId),
-          isNull(supplierQuotationHeaders.deletedAt),
-          vendorId ? eq(supplierQuotationHeaders.vendorId, vendorId) : sql`1=0`
-        ));
+      if (!ba.purchaseRequestId) {
+  throw new TRPCError({
+    code: "BAD_REQUEST",
+    message: "Purchase Request ID missing from Bid Analysis",
+  });
+}
+
+const matchingQuotations = await db.select()
+    .from(supplierQuotationHeaders)
+    .where(and(
+      eq(
+        supplierQuotationHeaders.purchaseRequestId,
+        ba.purchaseRequestId
+      ),
+      eq(
+        supplierQuotationHeaders.organizationId,
+        organizationId
+      ),
+      isNull(supplierQuotationHeaders.deletedAt),
+      vendorId
+        ? eq(supplierQuotationHeaders.vendorId, vendorId)
+        : sql`1=0`
+    ));
 
       let autoSyncedFromQuotation = false;
       if (matchingQuotations.length > 0) {
@@ -662,11 +678,20 @@ export const bidAnalysisRouter = router({
         .limit(1);
 
       if (!ba) {
-        throw new TRPCError({
-          code: "NOT_FOUND",
-          message: "Bid Analysis not found",
-        });
-      }
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Bid Analysis not found",
+          });
+        }
+
+        if (!ba.purchaseRequestId) {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "Purchase Request ID missing from Bid Analysis",
+          });
+        }
+
+        const purchaseRequestId = ba.purchaseRequestId;
 
       // Get PR
       const [purchaseRequest] = await db.select()
@@ -760,6 +785,20 @@ export const bidAnalysisRouter = router({
         .limit(1);
 
       if (!ba) return null;
+
+      if (!ba) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Bid Analysis not found",
+        });
+      }
+
+      if (!ba.purchaseRequestId) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "Purchase Request ID missing from Bid Analysis",
+        });
+      }
 
       // Get PR
       const [purchaseRequest] = await db.select()
@@ -1646,54 +1685,67 @@ export const bidAnalysisRouter = router({
   /**
    * Save CBA approval signatures (upsert all members)
    */
-  saveCBASignatures: scopedProcedure
-    .input(z.object({
-      bidAnalysisId: z.number(),
-      members: z.array(z.object({
-        id: z.number().optional(),
-        sortOrder: z.number(),
-        role: z.string().optional(),
-        roleAr: z.string().optional(),
-        memberName: z.string().optional(),
-        signatureDataUrl: z.string().optional(),
-        signedAt: z.string().optional(),
-        verificationCode: z.string().optional(),
-        qrCodeDataUrl: z.string().optional(),
-      })),
-    }))
-    .mutation(async ({ input, ctx }) => {
-      const { bidAnalysisId, members } = input;
-      const { organizationId, operatingUnitId } = ctx.scope;
-      const db = await getDb();
+saveCBASignatures: scopedProcedure
+  .input(z.object({
+    bidAnalysisId: z.number(),
+    members: z.array(z.object({
+      id: z.number().optional(),
+      sortOrder: z.number(),
+      role: z.string().optional(),
+      roleAr: z.string().optional(),
+      memberName: z.string().optional(),
+      signatureDataUrl: z.string().optional(),
+      signedAt: z.string().optional(),
+      verificationCode: z.string().optional(),
+      // ✅ REMOVED: qrCodeDataUrl - will be generated dynamically
+    })),
+  }))
+  .mutation(async ({ input, ctx }) => {
+    const { bidAnalysisId, members } = input;
+    const { organizationId, operatingUnitId } = ctx.scope;
+    const db = await getDb();
 
-      // Verify BA exists
-      const [ba] = await db.select()
-        .from(bidAnalyses)
-        .where(and(
-          eq(bidAnalyses.id, bidAnalysisId),
-          eq(bidAnalyses.organizationId, organizationId),
-          isNull(bidAnalyses.deletedAt)
-        ))
-        .limit(1);
+    // ✅ Log payload size for diagnostics
+    const payloadSize = JSON.stringify(members).length / 1024;
+    console.log(
+      `[CBA SIGNATURES] Saving ${members.length} signatures, payload size: ${payloadSize.toFixed(2)} KB`
+    );
 
-      if (!ba) {
-        throw new TRPCError({
-          code: "NOT_FOUND",
-          message: "Bid Analysis not found",
-        });
-      }
+    // Verify BA exists
+    const [ba] = await db.select()
+      .from(bidAnalyses)
+      .where(and(
+        eq(bidAnalyses.id, bidAnalysisId),
+        eq(bidAnalyses.organizationId, organizationId),
+        isNull(bidAnalyses.deletedAt)
+      ))
+      .limit(1);
 
+    if (!ba) {
+      throw new TRPCError({
+        code: "NOT_FOUND",
+        message: "Bid Analysis not found",
+      });
+    }
+
+    // ✅ CRITICAL FIX: Wrap in transaction to ensure atomicity
+    // If any insert fails, entire transaction rolls back (no partial deletion)
+    await db.transaction(async (tx) => {
       // Delete existing signatures for this BA
-      await db.delete(cbaApprovalSignatures)
+      await tx.delete(cbaApprovalSignatures)
         .where(and(
           eq(cbaApprovalSignatures.bidAnalysisId, bidAnalysisId),
           eq(cbaApprovalSignatures.organizationId, organizationId)
         ));
 
-      // Insert new signatures
+      // ✅ CRITICAL FIX: Sequential insert instead of batch
+      // Insert one signature at a time to avoid TiDB parameter binding issues
+      // Batch insert fails: INSERT ... VALUES (...), (...), (...)
+      // Sequential insert works: INSERT ... VALUES (...) x3
+      
       if (members.length > 0) {
-        await db.insert(cbaApprovalSignatures).values(
-          members.map((m) => ({
+        for (const m of members) {
+          await tx.insert(cbaApprovalSignatures).values({
             bidAnalysisId,
             organizationId,
             operatingUnitId: operatingUnitId || null,
@@ -1702,16 +1754,27 @@ export const bidAnalysisRouter = router({
             roleAr: m.roleAr || null,
             memberName: m.memberName || null,
             signatureDataUrl: m.signatureDataUrl || null,
-            signedAt: m.signedAt || null,
+            // ✅ FIX: Convert ISO 8601 (2026-05-21T09:37:51.090Z) to MySQL datetime (2026-05-21 09:37:51)
+            // MySQL DATETIME columns reject ISO 8601 format with T and Z
+            signedAt: m.signedAt
+              ? m.signedAt.slice(0, 19).replace('T', ' ')
+              : null,
             signedByUserId: ctx.user?.id || null,
             verificationCode: m.verificationCode || null,
-            qrCodeDataUrl: m.qrCodeDataUrl || null,
-          }))
-        );
+            // ✅ REMOVED: qrCodeDataUrl - always null
+            // QR code will be regenerated dynamically from verificationCode
+            qrCodeDataUrl: null,
+          });
+        }
       }
+    });
 
-      return { success: true };
-    }),
+    console.log(
+      `[CBA SIGNATURES] Successfully saved ${members.length} signatures for BA ${bidAnalysisId}`
+    );
+
+    return { success: true };
+  }),
 
   /**
    * Finalize CBA - locks the CBA and sets BA status to 'awarded'
@@ -2015,12 +2078,12 @@ export const bidAnalysisRouter = router({
         ));
 
       // Return a map of bidderId -> signature info
-      const statusMap: Record<number, { signerName: string; verificationCode: string }> = {};
+      const statusMap: Record<number, { signerName: string; signedAt: string; verificationCode: string }> = {};
       for (const sig of sigs) {
         statusMap[sig.bidderId] = {
-          signerName: sig.signerName,
-          signedAt: nowSql,
-          verificationCode: sig.verificationCode,
+          signerName: sig.signerName || "",
+          signedAt: new Date().toISOString().slice(0, 19).replace("T", " "),
+          verificationCode: sig.verificationCode || "",
         };
       }
       return statusMap;
@@ -2209,6 +2272,13 @@ export const bidAnalysisRouter = router({
         });
       }
 
+      if (!ba.purchaseRequestId) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "Purchase Request ID is missing from Bid Analysis",
+        });
+      }
+
       // Get all bidders for this BA
       const bidders = await db.select()
         .from(bidAnalysisBidders)
@@ -2266,7 +2336,7 @@ export const bidAnalysisRouter = router({
         valid: true,
         signerName: sig.signerName,
         signerTitle: sig.signerTitle,
-        signedAt: sig.signedAt,
+        signedAt: sig.signedAt? sig.signedAt.slice(0, 19).replace('T', ' ') : null,
         bidAnalysisId: sig.bidAnalysisId,
         bidderId: sig.bidderId,
       };
@@ -2310,6 +2380,12 @@ export const bidAnalysisRouter = router({
         throw new TRPCError({ code: "NOT_FOUND", message: "Bid Analysis not found" });
       }
 
+      if (!ba.purchaseRequestId) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "Purchase Request ID is missing from Bid Analysis",
+        });
+      }
       // Get PR line items (canonical item list + estimated unit cost)
       const prLineItems = await db
         .select()
@@ -2403,6 +2479,13 @@ export const bidAnalysisRouter = router({
         throw new TRPCError({ code: "NOT_FOUND", message: "Bid Analysis not found" });
       }
 
+      if (!ba.purchaseRequestId) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "Purchase Request ID is missing from Bid Analysis",
+        });
+      }
+
       // Get all bidders for this BA
       const bidders = await db
         .select()
@@ -2416,6 +2499,13 @@ export const bidAnalysisRouter = router({
 
       let totalRowsCreated = 0;
       let biddersProcessed = 0;
+
+      if (!ba.purchaseRequestId) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "Purchase Request ID is missing from Bid Analysis",
+        });
+      }
 
       for (const bidder of bidders) {
         // Find the supplier quotation for this bidder (linked by bidAnalysisBidderId)

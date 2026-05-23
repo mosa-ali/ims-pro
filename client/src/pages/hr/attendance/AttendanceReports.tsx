@@ -293,7 +293,7 @@ export function AttendanceReports() {
      </div>
      <div>
        <span className="font-semibold">{labels.generatedOn}: </span>
-       <span>{new Date().toLocaleDateString()}</span>
+       <span>{new Date().toISOString()}</span>
      </div>
    </div>
  </div>
@@ -407,7 +407,7 @@ export function AttendanceReports() {
  </div>
  <div>
  <span className="font-semibold">{labels.generatedOn}: </span>
- <span>{new Date().toLocaleDateString()}</span>
+ <span>{new Date().toISOString()}</span>
  </div>
  </div>
  </div>

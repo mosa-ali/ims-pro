@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { router, protectedProcedure, scopedProcedure } from "./_core/trpc";
 import { getDb } from "./db";
-import { varianceAlertConfig, varianceAlertHistory, budgetItems, projects } from "../drizzle/schema";
+import { varianceAlertConfig, varianceAlertHistory, budgetItems, projects, organizations, operatingUnits } from "../drizzle/schema";
 import { eq, and, desc } from "drizzle-orm";
 import { TRPCError } from "@trpc/server";
 import { notifyOwner } from "./_core/notification";

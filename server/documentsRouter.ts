@@ -51,7 +51,7 @@ export const documentsRouter = router({
           .where(
             and(
               eq(documents.workspace, workspace.code as any),
-              eq(documents.isFolder, false),
+              eq(documents.isFolder, 0),
               eq(documents.organizationId, organizationId),
               eq(documents.operatingUnitId, operatingUnitId),
               isNull(documents.deletedAt)
@@ -73,7 +73,7 @@ export const documentsRouter = router({
    * For projects workspace: returns list of projects
    * For other workspaces: returns predefined folders
    */
-  getFolders: orgScopedProcedure
+  getFolders: scopedProcedure
     .input(
       z.object({
         workspace: workspaceEnum,
@@ -121,7 +121,7 @@ export const documentsRouter = router({
         .where(
           and(
             eq(documents.workspace, input.workspace),
-            eq(documents.isFolder, true),
+            eq(documents.isFolder, 1),
             eq(documents.organizationId, organizationId),
             eq(documents.operatingUnitId, operatingUnitId),
             isNull(documents.deletedAt)
@@ -175,7 +175,7 @@ export const documentsRouter = router({
         .where(
           and(
             eq(documents.workspace, "projects"),
-            eq(documents.isFolder, true),
+            eq(documents.isFolder, 1),
             eq(documents.parentFolderId, input.projectCode),
             eq(documents.organizationId, organizationId),
             eq(documents.operatingUnitId, operatingUnitId),
@@ -190,7 +190,7 @@ export const documentsRouter = router({
         .where(
           and(
             eq(documents.workspace, "projects"),
-            eq(documents.isFolder, false),
+            eq(documents.isFolder, 1),
             eq(documents.projectId, input.projectCode),
             eq(documents.organizationId, organizationId),
             eq(documents.operatingUnitId, operatingUnitId),
@@ -227,7 +227,7 @@ export const documentsRouter = router({
 
       const conditions = [
         eq(documents.workspace, input.workspace),
-        eq(documents.isFolder, false),
+        eq(documents.isFolder, 0),
         eq(documents.folderCode, input.folderCode),
         eq(documents.organizationId, organizationId),
         eq(documents.operatingUnitId, operatingUnitId),
@@ -252,7 +252,7 @@ export const documentsRouter = router({
    * Sync document (called automatically when exporting from modules)
    * Handles versioning - if document with same name exists, increment version
    */
-  syncDocument: orgScopedProcedure
+  syncDocument: scopedProcedure
     .input(
       z.object({
         workspace: workspaceEnum,
@@ -294,7 +294,7 @@ export const documentsRouter = router({
         documentId,
         workspace: input.workspace,
         parentFolderId: input.projectCode || null,
-        isFolder: false,
+        isFolder: 0,
         projectId: input.projectCode || null,
         folderCode: input.folderCode,
         fileName: input.fileName,
@@ -356,7 +356,7 @@ export const documentsRouter = router({
   /**
    * Delete document (soft delete)
    */
-  deleteDocument: orgScopedProcedure
+  deleteDocument: scopedProcedure
     .input(
       z.object({
         documentId: z.string(),
@@ -390,7 +390,7 @@ export const documentsRouter = router({
       await db
         .update(documents)
         .set({
-          deletedAt: new Date(),
+          deletedAt: new Date().toISOString().slice(0, 19).replace('T', ' '),
           deletedBy: ctx.user.id,
         })
         .where(eq(documents.documentId, input.documentId));
@@ -404,7 +404,7 @@ export const documentsRouter = router({
    * Upload file and sync to Central Documents
    * For client-generated files (Excel, PDF) that need to be uploaded to S3 and synced
    */
-  uploadAndSyncFile: orgScopedProcedure
+  uploadAndSyncFile: scopedProcedure
     .input(
       z.object({
         workspace: workspaceEnum,
@@ -461,7 +461,7 @@ export const documentsRouter = router({
         documentId,
         workspace: input.workspace,
         parentFolderId: input.projectCode || null,
-        isFolder: false,
+        isFolder: 0,
         projectId: input.projectCode || null,
         folderCode: input.folderCode,
         fileName: input.fileName,

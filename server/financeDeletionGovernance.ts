@@ -100,7 +100,7 @@ export const financeDeletionGovernanceRouter = router({
       }
 
       // Soft delete: Mark as deleted, retain record
-      const now = new Date().toISOString();
+      const now = new Date().toISOString().slice(0, 19).replace('T', ' ');
       await db
         .update(procurementPayables)
         .set({
@@ -146,7 +146,7 @@ export const financeDeletionGovernanceRouter = router({
       await db
         .update(procurementPayables)
         .set({
-          deletedAt: null,
+          deletedAt: new Date().toISOString().slice(0, 19).replace('T', ' '),
           deletedBy: null,
         })
         .where(eq(procurementPayables.id, input.payableId));

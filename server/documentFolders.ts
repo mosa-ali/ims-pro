@@ -416,7 +416,7 @@ export async function workspaceFoldersExist(
     .where(
       and(
         eq(documents.workspace, workspace as any),
-        eq(documents.isFolder, true),
+        eq(documents.isFolder, 1),
         eq(documents.organizationId, organizationId),
         eq(documents.operatingUnitId, operatingUnitId)
       )

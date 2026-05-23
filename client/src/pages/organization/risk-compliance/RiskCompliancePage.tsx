@@ -29,12 +29,12 @@ import { BackButton } from "@/components/BackButton";
 
 export default function RiskCompliancePage() {
  const { t } = useTranslation();
-  const { isRTL } = useLanguage();
-console.log('DEBUG: t.riskCompliance.title =', t.riskCompliance.title);
- console.log('DEBUG: full t.riskCompliance =', t.riskCompliance);
- const { t, language } = useTranslation();
+ const { isRTL } = useLanguage();
  const [, setLocation] = useLocation();
  const [activeTab, setActiveTab] = useState('dashboard');
+console.log('DEBUG: t.riskCompliance.title =', t.riskCompliance.title);
+ console.log('DEBUG: full t.riskCompliance =', t.riskCompliance);
+
 
  return (
  <div className="min-h-screen bg-gray-50/50 p-4 md:p-6 lg:p-8" dir={isRTL ? 'rtl' : 'ltr'}>

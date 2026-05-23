@@ -95,7 +95,7 @@ export async function getPdfOrganizationContext(
 
   // ========== FETCH ORGANIZATION DATA ==========
   const org = await db.query.organizations.findFirst({
-  where: eq(organizations.id, organizationId),
+    where: eq(organizations.id, organizationId),
   });
 
   if (!org) {
@@ -107,9 +107,9 @@ export async function getPdfOrganizationContext(
 
   // ========== FETCH OPERATING UNIT DATA ==========
   const ou = await db.query.operatingUnits.findFirst({
-  where: and(
-    eq(operatingUnits.id, operatingUnitId),
-    eq(operatingUnits.organizationId, organizationId)
+    where: and(
+      eq(operatingUnits.id, operatingUnitId),
+      eq(operatingUnits.organizationId, organizationId)
     ),
   });
 
@@ -124,11 +124,11 @@ export async function getPdfOrganizationContext(
 
   // ========== FETCH BRANDING DATA ==========
   const branding = await db.query.organizationBranding.findFirst({
-  where: eq(
-    organizationBranding.organizationId,
-    organizationId
-      ),
-    });
+    where: eq(
+      organizationBranding.organizationId,
+      organizationId
+    ),
+  });
 
   console.log(`[PDF Context] ✅ Branding data ${branding ? 'found' : 'not found'}`);
 
@@ -138,7 +138,7 @@ export async function getPdfOrganizationContext(
     organizationId: org.id,
     organizationName: org.name,
     organizationNameAr: org.nameAr || undefined,
-    organizationLogo: branding?.logoUrl || undefined,
+    organizationLogo: branding?.logoUrl ? branding.logoUrl : undefined,
     organizationDomain: org.domain || undefined,
     organizationCountry: org.country || undefined,
     organizationTimezone: org.timezone || 'UTC',

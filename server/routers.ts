@@ -115,6 +115,8 @@ import { z } from "zod";
 import { bidderAcknowledgementSignatures, serviceAcceptanceCertificates, contracts, vendors, users } from "../drizzle/schema";
 import { rbacRolesRouter } from "./routers/auth/rbacRolesRouter";
 import { mealExportRouter } from "./mealExportRouter";
+import { autoProgramsReportRouter } from './routers/autoProgramsReportRouter';
+
 
 export const appRouter = router({
   // Public signature verification (no auth required)
@@ -471,6 +473,7 @@ export const appRouter = router({
 
   // Email Verification
   emailVerification: emailVerificationRouter,
+  generateAutoReport: autoProgramsReportRouter,
 });
 
 export type AppRouter = typeof appRouter;

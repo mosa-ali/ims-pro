@@ -1,4 +1,4 @@
-import { BackButton } from "@/components/BackButton";
+ import { BackButton } from "@/components/BackButton";
 /**
  * ============================================================================
  * RISK REGISTRY PAGE (Standalone)
@@ -52,10 +52,13 @@ const { t, language } = useTranslation();
 
  // Fetch projects for dropdown (context will fill organizationId/operatingUnitId)
  const { data: projectsData = [] } = trpc.projects.list.useQuery({});
-
+ 
  // Mutation for evaluating project risks
- const evaluateProjectMutation = trpc.riskCompliance.risks.evaluateProject.useMutation({
- onSuccess: (data) => {
+ const evaluateProjectMutation = trpc.riskCompliance.evaluateProject.useMutation({
+ onSuccess: (data: {
+  risksCreated: number;
+  risksUpdated: number;
+}) => {
  toast.success(
  `${data.risksCreated} risks created, ${data.risksUpdated} risks updated`
  );
@@ -63,7 +66,7 @@ const { t, language } = useTranslation();
  // Refresh risks list
  window.location.reload();
  },
- onError: (error) => {
+ onError: (error: Error) => {
  toast.error(
  'Failed to evaluate project risks'
  );

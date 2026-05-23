@@ -1,193 +1,221 @@
-// ============================================================================
-// PROJECT MANAGEMENT DASHBOARD
-// Comprehensive overview of all projects, budgets, and performance metrics
-// Integrated Management System (IMS)
-// ============================================================================
+// ProgramDashboard.tsx
+// Executive Program Management Dashboard for humanitarian NGO/INGO portfolio oversight.
+// Replaces ProjectManagementDashboard.tsx
 
-import { 
- DollarSign, 
- Calendar, 
- FileText,
- Loader2
-} from 'lucide-react';
+import React, { memo } from 'react';
+import { FileText, Calendar, BarChart3 } from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { useLocation } from 'wouter';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { useTranslation } from '@/i18n/useTranslation';
-import { useOrganization } from '@/contexts/OrganizationContext';
-import { useOperatingUnit } from '@/contexts/OperatingUnitContext';
-import { trpc } from '@/lib/trpc';
-import { Link } from 'wouter';
-import { RecentActivityFeed } from '@/components/RecentActivityFeed';
-export default function ProjectManagementDashboard() {
- const { language, direction, isRTL} = useLanguage();
- const { t } = useTranslation();
- const { currentOrganizationId } = useOrganization();
- const { currentOperatingUnitId } = useOperatingUnit();
-// Project CRUD operations moved to /organization/projects-list
+import { dashboardTranslations } from '@/i18n/projectMgmtDashboard.i18n';
+import { useProgramDashboard } from './useProgramDashboard';
+import { KPISection } from './KPISection';
+import { BurnRateAnalytics } from './BurnRateAnalytics';
+import { ProjectStatusChart } from './ProjectStatusChart';
+import { ExecutiveAlerts } from './ExecutiveAlerts';
+import { ComplianceOverview } from './ComplianceOverview';
+import { BeneficiaryProgress } from './BeneficiaryProgress';
+import { ProjectOverviewTable } from './ProjectOverviewTable';
+import TopGrantsWidget from './TopGrantsWidget';
+import { UpcomingReportingDeadlines } from './UpcomingReportingDeadlines';
+import { ExpiringProjects } from './ExpiringProjects';
 
- // Get reporting schedules count
- const { data: reportingSchedulesCount = 0 } = trpc.reportingSchedules.getCount.useQuery({
- organizationId: currentOrganizationId || 1,
- operatingUnitId: currentOperatingUnitId || 1,
- }, {
- enabled: !!currentOrganizationId && !!currentOperatingUnitId,
- });
+// ─── Navigation card ──────────────────────────────────────────────────────────
 
- const { data: kpis, isLoading: kpisLoading } = trpc.projects.getDashboardKPIs.useQuery(
- {},
- { enabled: !!currentOrganizationId && !!currentOperatingUnitId }
- );
+interface NavCardProps {
+  icon: React.ReactNode;
+  count: number | string;
+  title: string;
+  description: string;
+  linkText: string;
+  href: string;
+  accent: string;
+  isLoading?: boolean;
+}
 
- // All project CRUD handlers moved to /organization/projects-list
+const NavCard = memo(function NavCard({
+  icon, count, title, description, linkText, href, accent, isLoading,
+}: NavCardProps) {
+  const [, setLocation] = useLocation();
 
- ;
-if (!currentOrganizationId) {
- return (
- <div className="p-8 flex items-center justify-center" dir={isRTL ? 'rtl' : 'ltr'}>
- <p className="text-gray-500">Please select an organization to view projects.</p>
- </div>
- );
- }
+  if (isLoading) {
+    return (
+      <div className="bg-white border border-gray-200 rounded-xl p-5 animate-pulse">
+        <div className="h-8 bg-gray-200 rounded w-1/2 mb-3" />
+        <div className="h-4 bg-gray-100 rounded w-full mb-2" />
+        <div className="h-4 bg-gray-100 rounded w-3/4" />
+      </div>
+    );
+  }
 
- return (
- <div className="p-8 space-y-8">
+  return (
+    <div
+      className="bg-white border border-gray-200 rounded-xl p-5 cursor-pointer hover:shadow-md hover:border-gray-300 transition-all group"
+      onClick={() => setLocation(href)}
+    >
+      <div className="flex items-start justify-between mb-3">
+        <div className={`p-2.5 rounded-lg ${accent}`}>{icon}</div>
+        <span className="text-3xl font-bold text-gray-900">{count}</span>
+      </div>
+      <h3 className="text-sm font-semibold text-gray-900">{title}</h3>
+      <p className="text-xs text-gray-500 mt-1 mb-3">{description}</p>
+      <button className="text-xs font-medium text-indigo-600 group-hover:underline">
+        {linkText} →
+      </button>
+    </div>
+  );
+});
 
- {/* Header */}
- <div>
- <h1 className="text-2xl font-bold text-gray-900">{t.projectMgmtDashboard.title}</h1>
- <p className="text-sm text-gray-600 mt-1">{t.projectMgmtDashboard.subtitle}</p>
- </div>
+// ─── Main dashboard ───────────────────────────────────────────────────────────
 
- {/* Top 5 Primary Cards - Cards Grid Landing View */}
- {/* Top Cards Row */}
- <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
- {/* 1. Projects Management (CORE CARD) */}
- <Link href="/organization/projects-list">
- <div className="bg-white rounded-lg border border-gray-200 p-6 hover:shadow-lg transition-shadow cursor-pointer">
- <div className="flex items-center justify-between mb-4">
- <div className="w-12 h-12 bg-indigo-100 rounded-lg flex items-center justify-center">
- <FileText className="w-6 h-6 text-indigo-600" />
- </div>
- <div className="text-3xl font-bold text-gray-900">{kpis?.totalProjects || 0}</div>
- </div>
- <div className="text-sm font-semibold text-gray-900 mb-1">{t.projectMgmtDashboard.projectsManagement}</div>
- <div className="text-xs text-gray-600 mb-2">{t.projectMgmtDashboard.projectsManagementDesc}</div>
- <div className="text-xs text-indigo-600 font-medium">{t.projectMgmtDashboard.projectsManagementLink}</div>
- </div>
- </Link>
+export default function ProgramDashboard() {
+  const { language, isRTL } = useLanguage();
+  const [, setLocation] = useLocation();
+  const t = dashboardTranslations[language as keyof typeof dashboardTranslations] || dashboardTranslations.en;
 
- {/* 2. Project Reporting Schedule */}
- <Link href="/organization/reporting-schedule">
- <div className="bg-white rounded-lg border border-gray-200 p-6 hover:shadow-lg transition-shadow cursor-pointer">
- <div className="flex items-center justify-between mb-4">
- <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
- <Calendar className="w-6 h-6 text-purple-600" />
- </div>
- <div className="text-3xl font-bold text-gray-900">{reportingSchedulesCount}</div>
- </div>
- <div className="text-sm font-semibold text-gray-900 mb-1">{t.projectMgmtDashboard.reportingSchedule}</div>
- <div className="text-xs text-gray-600 mb-2">{t.projectMgmtDashboard.reportingScheduleDesc}</div>
- <div className="text-xs text-purple-600 font-medium">{t.projectMgmtDashboard.reportingScheduleLink}</div>
- </div>
- </Link>
+  const {
+    kpis, alerts, budgetTrend, statusDistribution, snapshot,
+    compliance, activeCount, reportingCount, riskTable, beneficiarySummary,
+    topGrants, upcomingReportingDeadlines, expiringProjects,
+    kpisLoading, alertsLoading, budgetTrendLoading, statusDistributionLoading,
+    snapshotLoading, complianceLoading, activeCountLoading, reportingCountLoading,
+    riskTableLoading, beneficiarySummaryLoading, topGrantsLoading, upcomingReportingDeadlinesLoading, expiringProjectsLoading,
+  } = useProgramDashboard();
 
- {/* 5. Annual Programs Report */}
- <Link href="/organization/annual-report">
- <div className="bg-white rounded-lg border border-gray-200 p-6 hover:shadow-lg transition-shadow cursor-pointer">
- <div className="flex items-center justify-between mb-4">
- <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
- <FileText className="w-6 h-6 text-green-600" />
- </div>
- {t.projectMgmtDashboard.annualReportValue && (
- <div className="text-3xl font-bold text-gray-900">{t.projectMgmtDashboard.annualReportValue}</div>
- )}
- </div>
- <div className="text-sm font-semibold text-gray-900 mb-1">{t.projectMgmtDashboard.annualReport}</div>
- <div className="text-xs text-gray-600 mb-2">{t.projectMgmtDashboard.annualReportDesc}</div>
- <div className="text-xs text-green-600 font-medium">{t.projectMgmtDashboard.annualReportLink}</div>
- </div>
- </Link>
- </div>
+  return (
+    <div dir={isRTL ? 'rtl' : 'ltr'} className="min-h-screen bg-gray-50/50 p-4 md:p-6 space-y-6">
 
- {/* KPIs Row - Portfolio Health, Performance, Compliance */}
- <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
- {kpisLoading ? (
- <div className="flex items-center justify-center col-span-3">
- <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
- </div>
- ) : (
- <>
- {/* Portfolio Health - Equal width with Performance */}
- <div className="bg-white rounded-lg border border-gray-200 p-6">
- <h3 className="text-sm font-semibold text-gray-700 mb-4 uppercase tracking-wide">{t.projectMgmtDashboard.portfolioHealth}</h3>
- <div className="grid grid-cols-3 gap-4">
- <div>
- <div className="text-xs text-gray-500 mb-2 h-8">{t.projectMgmtDashboard.totalBudget}</div>
- <div className="text-2xl font-bold text-gray-900">
- ${((kpis?.totalBudgetUSD || 0) / 1000000).toFixed(1)}M
- </div>
- </div>
- <div>
- <div className="text-xs text-gray-500 mb-2 h-8">{t.projectMgmtDashboard.actualSpent}</div>
- <div className="text-2xl font-bold text-gray-900">
- ${((kpis?.actualSpentUSD || 0) / 1000000).toFixed(1)}M
- </div>
- </div>
- <div>
- <div className="text-xs text-gray-500 mb-2 h-8">{t.projectMgmtDashboard.balance}</div>
- <div className="text-2xl font-bold text-gray-900">
- ${((kpis?.balanceUSD || 0) / 1000000).toFixed(1)}M
- </div>
- </div>
- </div>
- </div>
+      {/* ── Header ── */}
+      <div>
+        <h1 className="text-2xl md:text-3xl font-bold text-gray-900">{t.title}</h1>
+        <p className="text-sm text-gray-500 mt-1">{t.subtitle}</p>
+      </div>
 
- {/* Performance */}
- <div className="bg-white rounded-lg border border-gray-200 p-6">
- <h3 className="text-sm font-semibold text-gray-700 mb-4 uppercase tracking-wide">{t.projectMgmtDashboard.performance}</h3>
- <div className="grid grid-cols-2 gap-4">
- <div>
- <div className="text-xs text-gray-500 mb-2 h-8">{t.projectMgmtDashboard.avgCompletionRate}</div>
- <div className="text-2xl font-bold text-gray-900">{(kpis?.avgCompletionRate || 0).toFixed(1)}%</div>
- </div>
- <div>
- <div className="text-xs text-gray-500 mb-2 h-8">{t.projectMgmtDashboard.projectsOnTrack}</div>
- <div className="text-2xl font-bold text-gray-900">
- <span className="text-green-600">{kpis?.projectsOnTrack || 0}</span>
- {' / '}
- <span className="text-red-600">{kpis?.projectsAtRisk || 0}</span>
- </div>
- </div>
- </div>
- </div>
+      {/* ── Top navigation cards ── */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <NavCard
+          icon={<FileText className="w-5 h-5 text-indigo-600" />}
+          count={activeCount || 0}
+          title={t.activeProjects?.title || 'Active Projects'}
+          description={t.activeProjects?.description || 'View all active projects in portfolio'}
+          linkText={t.activeProjects?.linkText || 'View Projects'}
+          href="/organization/projects-list"
+          accent="bg-indigo-50"
+          isLoading={activeCountLoading}
+        />
+        <NavCard
+          icon={<Calendar className="w-5 h-5 text-purple-600" />}
+          count={reportingCount || 0}
+          title={t.reportingSchedule?.title || 'Reporting Schedule'}
+          description={t.reportingSchedule?.description || 'Track reporting cycles and compliance'}
+          linkText={t.reportingSchedule?.linkText || 'View Schedule'}
+          href="/organization/reporting-schedule"
+          accent="bg-purple-50"
+          isLoading={reportingCountLoading}
+        />
+        <NavCard
+          icon={<BarChart3 className="w-5 h-5 text-emerald-600" />}
+          count={activeCount || 0}
+          title={t.autoProgramsReport?.title || 'Auto Programs Report'}
+          description={t.autoProgramsReport?.description || 'Executive dashboard with project health, budget analytics, and compliance metrics'}
+          linkText={t.autoProgramsReport?.linkText || 'View Report'}
+          href="/organization/auto-programs-report"
+          accent="bg-emerald-50"
+          isLoading={activeCountLoading}
+        />
+      </div>
 
- {/* Compliance */}
- <div className="bg-white rounded-lg border border-gray-200 p-6">
- <h3 className="text-sm font-semibold text-gray-700 mb-4 uppercase tracking-wide">{t.projectMgmtDashboard.compliance}</h3>
- <div className="grid grid-cols-2 gap-4">
- <div>
- <div className="text-xs text-gray-500 mb-2 h-8">{t.projectMgmtDashboard.reportingComplianceRate}</div>
- <div className="text-2xl font-bold text-gray-900">{(kpis?.reportingComplianceRate || 0).toFixed(1)}%</div>
- </div>
- <div>
- <div className="text-xs text-gray-500 mb-2 h-8">{t.projectMgmtDashboard.pendingApprovals}</div>
- <div className="text-2xl font-bold text-gray-900">{kpis?.pendingApprovals || 0}</div>
- </div>
- </div>
- </div>
- </>
- )}
- </div>
+      {/* ── Executive KPI strip ── */}
+      <KPISection
+        kpis={kpis}
+        compliance={compliance}
+        alerts={alerts}
+        isLoading={kpisLoading || complianceLoading}
+        t={t}
+      />
 
- {/* Recent Activity Feed */}
- <div className="mt-8">
- <RecentActivityFeed limit={20} autoRefresh={true} refreshInterval={30000} />
- </div>
+      {/* ── Alerts (only when there are active alerts) ── */}
+      {(alertsLoading || (alerts && (
+        (alerts.atRisk?.length || 0) +
+        (alerts.overBudget?.length || 0) +
+        (alerts.expiringSoon?.length || 0) +
+        (alerts.overdueReports?.length || 0) > 0
+      ))) && (
+        <ExecutiveAlerts
+          alerts={alerts}
+          compliance={compliance}
+          isLoading={alertsLoading}
+          t={t}
+        />
+      )}
 
- {/* Project List moved to /organization/projects-list */}
- {/* Use the Projects Management card to navigate to the full project list */}
+      {/* ── Charts row: Burn Analytics + Status Distribution ── */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+        <div className="lg:col-span-2">
+          <BurnRateAnalytics
+            data={(budgetTrend || []) as any}
+            isLoading={budgetTrendLoading}
+            organizationId={0}
+            t={t}
+            isRTL={isRTL}
+          />
+        </div>
+        <div>
+          <ProjectStatusChart
+            distribution={statusDistribution}
+            isLoading={statusDistributionLoading}
+            t={t}
+          />
+        </div>
+      </div>
 
+      {/* ── Compliance + Beneficiary row ── */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <ComplianceOverview
+          compliance={compliance ?? null}
+          isLoading={complianceLoading}
+          isRTL={isRTL}
+          t={t}
+        />
+        <BeneficiaryProgress
+          data={beneficiarySummary}
+          isLoading={beneficiarySummaryLoading}
+          t={t}
+        />
+      </div>
 
- {/* Project CRUD modals moved to /organization/projects-list */}
- </div>
- );
+      {/* ── Top Grants + Upcoming Deadlines row ── */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <TopGrantsWidget
+          grants={topGrants}
+          loading={topGrantsLoading}
+          isRTL={isRTL}
+          t={t}
+        />
+        <UpcomingReportingDeadlines
+          deadlines={(upcomingReportingDeadlines ?? null) as any}
+          isLoading={upcomingReportingDeadlinesLoading}
+          isRTL={isRTL}
+          t={t}
+        />
+      </div>
+
+      {/* ── Expiring Projects widget ── */}
+        <ExpiringProjects
+          projects={expiringProjects}
+          isLoading={expiringProjectsLoading}
+          isRTL={isRTL}
+          t={t}
+        />
+
+      {/* ── Unified Project Overview Table (Risk + Snapshot merged) ── */}
+      <ProjectOverviewTable
+        data={(riskTable || []) as any}
+        isLoading={riskTableLoading}
+        t={t}
+        isRTL={isRTL}
+        onProjectClick={(id) => setLocation(`/organization/projects/${id}`)}
+      />
+    </div>
+  );
 }

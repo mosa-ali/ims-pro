@@ -218,7 +218,7 @@ export const donorProjectsRouter = router({
         .where(and(
           eq(projects.id, input.projectId),
           eq(projects.organizationId, ctx.scope.organizationId),
-          eq(projects.isDeleted, false)
+          eq(projects.isDeleted, 0)
         ))
         .limit(1);
 
@@ -317,7 +317,7 @@ export const donorProjectsRouter = router({
       await db
         .update(donorProjects)
         .set({
-          deletedAt: new Date(),
+          deletedAt: new Date().toISOString().slice(0, 19).replace('T', ' '),
           deletedBy: ctx.user.id,
         })
         .where(eq(donorProjects.id, input.id));

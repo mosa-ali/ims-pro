@@ -147,7 +147,7 @@ async function sendRiskNotificationEmail(
             ? 'هذا تنبيه تلقائي من نظام إدارة المخاطر. يرجى تسجيل الدخول لعرض التفاصيل الكاملة واتخاذ الإجراءات.'
             : 'This is an automated alert from the Risk Management System. Please log in to view full details and take action.'
           }</p>
-          <p>${isArabic ? 'تم الإرسال بواسطة IMS' : 'Sent by IMS'} - ${new Date().toLocaleDateString()}</p>
+          <p>${isArabic ? 'تم الإرسال بواسطة IMS' : 'Sent by IMS'} - ${new Date().toISOString()}</p>
         </div>
       </div>
     </body>

@@ -563,21 +563,100 @@ const handleExportPdf = useCallback(async () => {
   }
 }, [id, isRTL]);
 
- const handleExportExcel = useCallback((mode: "data" | "template") => {
-   if (!ba || !id) return;
-   setExcelLoading(true);
-   const orgId = ba.organizationId || '';
-   const lang = language === 'ar' ? 'ar' : 'en';
-   const url = `/organization/logistics/bid-analysis/${id}/evaluation-checklist-excel?lang=${lang}&orgId=${orgId}&mode=${mode}`;
-   // Trigger download via hidden anchor
-   const a = document.createElement("a");
-   a.href = url;
-   a.download = "";
-   document.body.appendChild(a);
-   a.click();
-   document.body.removeChild(a);
-   setTimeout(() => setExcelLoading(false), 2000);
- }, [ba, id, language]);
+ const handleExportExcel = useCallback(
+  async (mode: "data" | "template") => {
+
+    if (!ba || !id) return;
+
+    try {
+
+      setExcelLoading(true);
+
+      const orgId = ba.organizationId || "";
+      const lang = language === "ar" ? "ar" : "en";
+
+      const response = await fetch(
+        `/api/pdf/bid-analysis/${id}/evaluation-checklist-excel?lang=${lang}&orgId=${orgId}&mode=${mode}`,
+        {
+          method: "GET",
+          credentials: "include",
+          headers: {
+            "X-Organization-ID": String(orgId),
+          },
+        }
+      );
+
+      if (!response.ok) {
+
+        const errorText = await response.text();
+
+        console.error(
+          "[Excel Export] Response error:",
+          errorText
+        );
+
+        throw new Error(
+          `Failed to export Excel (${response.status})`
+        );
+      }
+
+      const blob = await response.blob();
+
+      console.log(
+        "[Excel Export] Blob size:",
+        blob.size
+      );
+
+      if (blob.size === 0) {
+        throw new Error("Generated Excel file is empty");
+      }
+
+      const url = window.URL.createObjectURL(blob);
+
+      const a = document.createElement("a");
+
+      a.href = url;
+
+      a.download =
+        mode === "template"
+          ? `bid-evaluation-template-${id}.xlsx`
+          : `bid-evaluation-${id}.xlsx`;
+
+      document.body.appendChild(a);
+
+      a.click();
+
+      a.remove();
+
+      window.URL.revokeObjectURL(url);
+
+      toast.success(
+        isRTL
+          ? "تم تصدير ملف Excel بنجاح"
+          : "Excel exported successfully"
+      );
+
+    } catch (error: any) {
+
+      console.error(
+        "[Excel Export] ERROR:",
+        error
+      );
+
+      toast.error(
+        error?.message ||
+        (isRTL
+          ? "فشل تصدير Excel"
+          : "Failed to export Excel")
+      );
+
+    } finally {
+
+      setExcelLoading(false);
+    }
+  },
+  [ba, id, language, isRTL]
+);
 
  // Group criteria by section
  const groupedSections = useMemo(() => {

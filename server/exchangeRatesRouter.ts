@@ -29,7 +29,7 @@ export const exchangeRatesRouter = router({
 
       const conditions = [
         eq(financeExchangeRates.organizationId, organizationId),
-        eq(financeExchangeRates.isDeleted, false),
+        eq(financeExchangeRates.isDeleted, 0),
       ];
 
       if (input.fromCurrencyCode) {
@@ -74,7 +74,7 @@ export const exchangeRatesRouter = router({
         .where(and(
           eq(financeExchangeRates.id, input.id),
           eq(financeExchangeRates.organizationId, organizationId),
-          eq(financeExchangeRates.isDeleted, false)
+          eq(financeExchangeRates.isDeleted, 0)
         ))
         .limit(1);
 
@@ -114,7 +114,7 @@ export const exchangeRatesRouter = router({
               isNull(financeExchangeRates.expiryDate),
               gte(financeExchangeRates.expiryDate, date)
             ),
-            eq(financeExchangeRates.isDeleted, false)
+            eq(financeExchangeRates.isDeleted, 0)
           )
         )
         .orderBy(desc(financeExchangeRates.effectiveDate))
@@ -171,7 +171,7 @@ export const exchangeRatesRouter = router({
               isNull(financeExchangeRates.expiryDate),
               gte(financeExchangeRates.expiryDate, date)
             ),
-            eq(financeExchangeRates.isDeleted, false)
+            eq(financeExchangeRates.isDeleted, 0)
           )
         )
         .orderBy(desc(financeExchangeRates.effectiveDate))
@@ -298,8 +298,8 @@ export const exchangeRatesRouter = router({
       await db
         .update(financeExchangeRates)
         .set({
-          isDeleted: true,
-          deletedAt: new Date(),
+          isDeleted: 1,
+          deletedAt: new Date().toISOString().slice(0, 19).replace('T', ' '),
           deletedBy: ctx.user?.id,
         })
         .where(and(
@@ -359,7 +359,7 @@ export const exchangeRatesRouter = router({
                 eq(financeExchangeRates.fromCurrencyCode, input.baseCurrency),
                 eq(financeExchangeRates.toCurrencyCode, currency.code),
                 eq(financeExchangeRates.effectiveDate, effectiveDate),
-                eq(financeExchangeRates.isDeleted, false)
+                eq(financeExchangeRates.isDeleted, 0)
               )
             )
             .limit(1);

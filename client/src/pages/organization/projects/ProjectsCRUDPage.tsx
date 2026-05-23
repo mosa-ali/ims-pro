@@ -4,7 +4,8 @@
 // Integrated Management System (IMS)
 // ============================================================================
 
-import { useState } from 'react';
+import { useState, useEffect, useMemo, useRef, useCallback } from "react";
+import React from "react";
 import { 
  Search,
  Download,
@@ -17,6 +18,7 @@ import {
  ArrowLeft, ArrowRight
 } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { useParams, useLocation } from "wouter";
 import { useOrganization } from '@/contexts/OrganizationContext';
 import { useOperatingUnit } from '@/contexts/OperatingUnitContext';
 import { Button } from '@/components/ui/button';
@@ -30,33 +32,124 @@ import ExcelJS from 'exceljs';
 import { useTranslation } from '@/i18n/useTranslation';
 import { BackButton } from "@/components/BackButton";
 
-type ProjectStatus = 'all' | 'ongoing' | 'planned' | 'completed' | 'not_started';
+
+type ProjectStatus =
+  | "all"
+  | "planning"
+  | "active"
+  | "on_hold"
+  | "completed"
+  | "cancelled";
 
 export default function ProjectsCRUDPage() {
- const { t } = useTranslation();
- const { language, direction, isRTL} = useLanguage();
- const { currentOrganizationId } = useOrganization();
- const { currentOperatingUnitId } = useOperatingUnit();
- 
- const [searchTerm, setSearchTerm] = useState('');
- const [statusFilter, setStatusFilter] = useState<ProjectStatus>('all');
- const [showCreateModal, setShowCreateModal] = useState(false);
- const [showEditModal, setShowEditModal] = useState(false);
- const [showDeleteModal, setShowDeleteModal] = useState(false);
- const [selectedProject, setSelectedProject] = useState<any>(null);
+  const { t } = useTranslation();
+  const { language, direction, isRTL } = useLanguage();
+  const { currentOrganizationId } = useOrganization();
+  const { currentOperatingUnitId } = useOperatingUnit();
 
- // tRPC queries and mutations
- const utils = trpc.useUtils();
- 
- const { data: projects = [], isLoading: projectsLoading } = trpc.projects.list.useQuery(
- {
- status: statusFilter === 'all' ? undefined : statusFilter,
- searchTerm: searchTerm || undefined,
- },
- {
- enabled: !!currentOrganizationId && !!currentOperatingUnitId,
- }
- );
+   // ========== TRANSLATION OBJECT (PROJECTS CRUD PATTERN) ==========
+const localT = {
+  // Header & Navigation
+  backToProjectsDashboard: t.projects.backToProjectsDashboard,
+  addNewProject: t.projectMgmtDashboard?.addNewProject,
+
+  // Filters & Search
+  all: t.projectMgmtDashboard?.all,
+  searchByTitle: t.projectMgmtDashboard?.searchByTitle,
+
+  // Statuses
+  active: t.projects?.active,
+  planning: t.projectDetail?.planning,
+  onHold: t.projectDetail?.onHold,
+  completed: t.projectDetail?.completed,
+  cancelled: t.projectDetail?.cancelled,
+
+  // Project Info
+  projectList: t.projectMgmtDashboard?.projectList,
+  projectCode: t.projectMgmtDashboard?.projectCode,
+  donor: t.projectMgmtDashboard?.donor,
+  startDate: t.projectMgmtDashboard?.startDate,
+  endDate: t.projectMgmtDashboard?.endDate,
+  daysRemaining: t.projectMgmtDashboard?.daysRemaining,
+  days: t.projectMgmtDashboard?.days,
+  currency: t.projectMgmtDashboard?.currency,
+  spent: t.projectMgmtDashboard?.spent,
+  balance: t.projectMgmtDashboard?.balance,
+  totalBudgetLabel: t.projectMgmtDashboard?.totalBudgetLabel,
+  budgetUtilization: t.projectMgmtDashboard?.budgetUtilization,
+  sectors: t.projectMgmtDashboard?.sectors,
+
+  // Actions
+  viewDetails: t.projectMgmtDashboard?.viewDetails,
+  update: t.projectMgmtDashboard?.update,
+  deleteProject: t.projectMgmtDashboard?.deleteProject,
+  exportExcel: t.projectMgmtDashboard?.exportExcel,
+  importExcel: t.projectMgmtDashboard?.importExcel,
+
+  // States
+  loading: t.projectMgmtDashboard?.loading,
+  noProjects: t.projectMgmtDashboard?.noProjects,
+  expired: t.projectMgmtDashboard?.expired,
+};
+
+  // =====================================================
+  // State
+  // =====================================================
+
+  const [searchTerm, setSearchTerm] = useState<string>("");
+  const [statusFilter, setStatusFilter] =
+    useState<ProjectStatus>("all");
+  const [showCreateModal, setShowCreateModal] =
+    useState<boolean>(false);
+  const [showEditModal, setShowEditModal] =
+    useState<boolean>(false);
+  const [showDeleteModal, setShowDeleteModal] =
+    useState<boolean>(false);
+  const [selectedProject, setSelectedProject] =
+    useState<any>(null);
+
+  // =====================================================
+  // tRPC Utils
+  // =====================================================
+
+  const utils = trpc.useUtils();
+
+  // =====================================================
+  // Status Filters
+  // =====================================================
+
+  const statusFilters: readonly ProjectStatus[] = [
+    "all",
+    "planning",
+    "active",
+    "on_hold",
+    "completed",
+    "cancelled",
+    ];
+
+  // =====================================================
+  // Projects Query
+  // =====================================================
+
+  const {
+  data: projects = [],
+  isLoading: projectsLoading,
+} = trpc.projects.list.useQuery(
+  {
+    status:
+      statusFilter !== "all"
+        ? statusFilter
+        : undefined,
+
+    searchTerm:
+      searchTerm.trim() || undefined,
+  },
+  {
+    enabled:
+      !!currentOrganizationId &&
+      !!currentOperatingUnitId,
+  }
+);
 
  const createMutation = trpc.projects.create.useMutation({
  onSuccess: async () => {
@@ -204,7 +297,7 @@ export default function ProjectsCRUDPage() {
  if (rowNumber === 1) return;
 
  const sectors = row.getCell(11).value?.toString().split(',').map((s: string) => s.trim()) || [];
- 
+
  importedProjects.push({
  code: row.getCell(1).value?.toString() || '',
  title: row.getCell(2).value?.toString() || '',
@@ -254,21 +347,21 @@ export default function ProjectsCRUDPage() {
  
  <div className="container mx-auto px-6 py-8">
  <Link href="/organization/projects">
- <BackButton label={t.projectsCRUDPage.backToDashboard} />
+ <BackButton label={localT.backToProjectsDashboard} />
  </Link>
 
  <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
  <div className="p-6 border-b border-gray-200 flex items-center justify-between">
- <h3 className="text-lg font-semibold text-gray-900">{t.projectsCRUDPage.projectList}</h3>
+ <h3 className="text-lg font-semibold text-gray-900">{localT.projectList}</h3>
  <div className="flex items-center gap-3">
  <Button variant="outline" size="sm" onClick={handleExportExcel} disabled={projects.length === 0}>
  <Download className="w-4 h-4 me-2" />
- {t.projectsCRUDPage.exportExcel}
+ {localT.exportExcel}
  </Button>
  <label>
  <Button variant="outline" size="sm" as="span">
  <Upload className="w-4 h-4 me-2" />
- {t.projectsCRUDPage.importExcel}
+ {localT.importExcel}
  </Button>
  <input
  type="file"
@@ -279,7 +372,7 @@ export default function ProjectsCRUDPage() {
  </label>
  <Button size="sm" onClick={() => setShowCreateModal(true)}>
  <Plus className="w-4 h-4 me-2" />
- {t.projectsCRUDPage.addNewProject}
+ {localT.addNewProject}
  </Button>
  </div>
  </div>
@@ -289,35 +382,57 @@ export default function ProjectsCRUDPage() {
  <Search className="absolute start-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
  <Input
  type="text"
- placeholder={t.projectsCRUDPage.searchByTitle}
+ placeholder={localT.searchByTitle}
  value={searchTerm}
  onChange={(e) => setSearchTerm(e.target.value)}
  className="ps-10"
  />
  </div>
- <div className="flex items-center gap-2">
- {(['all', 'ongoing', 'planned', 'completed', 'not_started'] as const).map((status) => (
- <Button
- key={status}
- variant={statusFilter === status ? 'default' : 'outline'}
- size="sm"
- onClick={() => setStatusFilter(status)}
- >
- {t[status === 'not_started' ? 'notStarted' : status]}
- </Button>
- ))}
- </div>
+ <div className="flex flex-wrap items-center gap-2">
+  {statusFilters.map((status) => (
+    <Button
+      key={status}
+      type="button"
+      size="sm"
+      variant={
+        statusFilter === status
+          ? "default"
+          : "outline"
+      }
+      onClick={() => setStatusFilter(status)}
+      className="capitalize"
+    >
+      {status === "all" &&
+        (isRTL ? "الكل" : "All")}
+
+      {status === "planning" &&
+        (isRTL ? "التخطيط" : "Planning")}
+
+      {status === "active" &&
+        (isRTL ? "نشط" : "Active")}
+
+      {status === "on_hold" &&
+        (isRTL ? "معلق" : "On Hold")}
+
+      {status === "completed" &&
+        (isRTL ? "مكتمل" : "Completed")}
+
+      {status === "cancelled" &&
+        (isRTL ? "ملغي" : "Cancelled")}
+    </Button>
+  ))}
+</div>
  </div>
 
  <div className="p-6 space-y-4">
  {projectsLoading ? (
  <div className="flex items-center justify-center py-12">
  <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
- <span className="ms-3 text-gray-600">{t.projectsCRUDPage.loading}</span>
+ <span className="ms-3 text-gray-600">{localT.loading}</span>
  </div>
  ) : projects.length === 0 ? (
  <div className="text-center py-12 text-gray-500">
- {t.projectsCRUDPage.noProjects}
+ {localT.noProjects}
  </div>
  ) : (
  projects.map((project: any) => (
@@ -335,25 +450,25 @@ export default function ProjectsCRUDPage() {
  project.status === 'on_hold' ? 'bg-yellow-100 text-yellow-700' :
  'bg-red-100 text-red-700'
  }`}>
- {project.status === 'active' ? (t.projectsCRUDPage.active) :
- project.status === 'planning' ? (t.projectsCRUDPage.planning) :
- project.status === 'on_hold' ? (t.projectsCRUDPage.onHold) :
- project.status === 'completed' ? (t.projectsCRUDPage.completed) :
- project.status === 'cancelled' ? (t.projectsCRUDPage.cancelled) :
+ {project.status === 'active' ? (localT.active) :
+ project.status === 'planning' ? (localT.planning) :
+ project.status === 'on_hold' ? (localT.onHold) :
+ project.status === 'completed' ? (localT.completed) :
+ project.status === 'cancelled' ? (localT.cancelled) :
  project.status}
  </span>
  </div>
  <div className="text-sm text-gray-600 mb-1">
- {t.projectsCRUDPage.projectCode}: <span className="font-mono font-semibold">{project.projectCode}</span>
+ {localT.projectCode}: <span className="font-mono font-semibold">{project.projectCode}</span>
  </div>
  {project.donor && (
  <div className="text-sm text-gray-600">
- {t.projectsCRUDPage.donor}: <span className="font-semibold">{project.donor}</span>
+ {localT.donor}: <span className="font-semibold">{project.donor}</span>
  </div>
  )}
  </div>
  <div className="text-end">
- <div className="text-sm text-gray-600 mb-1">{t.projectsCRUDPage.budgetUtilization}</div>
+ <div className="text-sm text-gray-600 mb-1">{localT.budgetUtilization}</div>
  <div className="text-lg font-bold text-gray-900 mb-2">{project.budgetUtilization.toFixed(1)}%</div>
  <div className="w-32 h-2 bg-gray-200 rounded-full overflow-hidden">
  <div 
@@ -366,7 +481,7 @@ export default function ProjectsCRUDPage() {
 
  <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-4">
  <div>
- <div className="text-xs text-gray-600 mb-1">{t.projectsCRUDPage.startDate}</div>
+ <div className="text-xs text-gray-600 mb-1">{localT.startDate}</div>
  <div className="text-sm font-semibold text-gray-900">
  {project.startDate instanceof Date 
  ? project.startDate.toLocaleDateString() 
@@ -374,7 +489,7 @@ export default function ProjectsCRUDPage() {
  </div>
  </div>
  <div>
- <div className="text-xs text-gray-600 mb-1">{t.projectsCRUDPage.endDate}</div>
+ <div className="text-xs text-gray-600 mb-1">{localT.endDate}</div>
  <div className="text-sm font-semibold text-gray-900">
  {project.endDate instanceof Date 
  ? project.endDate.toLocaleDateString() 
@@ -382,40 +497,40 @@ export default function ProjectsCRUDPage() {
  </div>
  </div>
  <div>
- <div className="text-xs text-gray-600 mb-1">{t.projectsCRUDPage.daysRemaining}</div>
+ <div className="text-xs text-gray-600 mb-1">{localT.daysRemaining}</div>
  <div className="text-sm font-semibold text-gray-900">
  {(() => {
  const endDate = project.endDate instanceof Date ? project.endDate : new Date(project.endDate);
  const today = new Date();
  const diffTime = endDate.getTime() - today.getTime();
  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
- return diffDays > 0 ? `${diffDays} ${t.projectsCRUDPage.days}` : t.projectsCRUDPage.expired;
+ return diffDays > 0 ? `${diffDays} ${localT.days}` : localT.expired;
  })()}
  </div>
  </div>
  <div>
- <div className="text-xs text-gray-600 mb-1">{t.projectsCRUDPage.totalBudgetLabel}</div>
+ <div className="text-xs text-gray-600 mb-1">{localT.totalBudgetLabel}</div>
  <div className="text-sm font-semibold text-gray-900">{Number(project.totalBudget).toLocaleString()}</div>
  </div>
  <div>
- <div className="text-xs text-gray-600 mb-1">{t.projectsCRUDPage.currency}</div>
+ <div className="text-xs text-gray-600 mb-1">{localT.currency}</div>
  <div className="text-sm font-semibold text-gray-900">{project.currency}</div>
  </div>
  </div>
 
  <div className="grid grid-cols-2 gap-4 mb-4">
  <div>
- <div className="text-xs text-gray-600 mb-1">{t.projectsCRUDPage.spent}</div>
+ <div className="text-xs text-gray-600 mb-1">{localT.spent}</div>
  <div className="text-sm font-semibold text-gray-900">{Number(project.spent).toLocaleString()}</div>
  </div>
  <div>
- <div className="text-xs text-gray-600 mb-1">{t.projectsCRUDPage.balance}</div>
+ <div className="text-xs text-gray-600 mb-1">{localT.balance}</div>
  <div className="text-sm font-semibold text-gray-900">{project.balance.toLocaleString()}</div>
  </div>
  </div>
 
  <div className="mb-4">
- <div className="text-xs text-gray-600 mb-2">{t.projectsCRUDPage.sectors}</div>
+ <div className="text-xs text-gray-600 mb-2">{localT.sectors}</div>
  <div className="flex flex-wrap gap-2">
  {Array.isArray(project.sectors) && project.sectors.map((sector: string, idx: number) => (
  <span key={idx} className="px-2 py-1 text-xs font-medium bg-blue-50 text-blue-700 rounded">
@@ -434,7 +549,7 @@ export default function ProjectsCRUDPage() {
  }}
  >
  <Eye className="w-4 h-4 me-2" />
- {t.projectsCRUDPage.viewDetails}
+ {localT.viewDetails}
  </Button>
  <Button
  variant="outline"
@@ -445,7 +560,7 @@ export default function ProjectsCRUDPage() {
  }}
  >
  <Edit className="w-4 h-4 me-2" />
- {t.projectsCRUDPage.update}
+ {localT.update}
  </Button>
  <Button
  variant="outline"
@@ -457,7 +572,7 @@ export default function ProjectsCRUDPage() {
  }}
  >
  <Trash2 className="w-4 h-4 me-2" />
- {t.projectsCRUDPage.deleteProject}
+ {localT.deleteProject}
  </Button>
  </div>
  </div>

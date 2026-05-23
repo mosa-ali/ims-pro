@@ -50,7 +50,7 @@ export const beneficiariesRouter = router({
             eq(beneficiaries.projectId, input.projectId),
             eq(beneficiaries.organizationId, organizationId),
             eq(beneficiaries.operatingUnitId, operatingUnitId),
-            eq(beneficiaries.isDeleted, false)
+            eq(beneficiaries.isDeleted, 0)
           )
         ).orderBy(desc(beneficiaries.createdAt));
     }),
@@ -72,7 +72,7 @@ export const beneficiariesRouter = router({
             eq(beneficiaries.projectId, input.projectId),
             eq(beneficiaries.organizationId, organizationId),
             eq(beneficiaries.operatingUnitId, operatingUnitId),
-            eq(beneficiaries.isDeleted, false)
+            eq(beneficiaries.isDeleted, 0)
           )
         );
       
@@ -375,7 +375,7 @@ export const beneficiariesRouter = router({
                 eq(beneficiaries.projectId, input.projectId),
                 eq(beneficiaries.organizationId, organizationId),
                 eq(beneficiaries.operatingUnitId, operatingUnitId),
-                eq(beneficiaries.isDeleted, false)
+                eq(beneficiaries.isDeleted, 0)
               ));
             
             if (existing.length > 0) {
@@ -438,6 +438,109 @@ export const beneficiariesRouter = router({
       return results;
     }),
 
+  /**
+   * Portfolio-level beneficiary summary for the Program Management Dashboard.
+   * Aggregates beneficiary counts across ALL projects in the current org/OU scope.
+   * Returns totals and a per-project breakdown for the BeneficiaryProgress component.
+   */
+  getBeneficiarySummary: beneficiaryProcedure
+    .input(z.object({
+      organizationId: z.number().optional(),
+      operatingUnitId: z.union([z.number(), z.string()]).optional(),
+    }))
+    .query(async ({ ctx }) => {
+      const db = await getDb();
+      if (!db) throw new Error('Database not available');
+
+      const { organizationId, operatingUnitId } = ctx.scope;
+
+      // Fetch all non-deleted beneficiaries for the scope
+      const all = await db
+        .select({
+          id: beneficiaries.id,
+          projectId: beneficiaries.projectId,
+          gender: beneficiaries.gender,
+          verificationStatus: beneficiaries.verificationStatus,
+          serviceStatus: beneficiaries.serviceStatus,
+          communityType: beneficiaries.communityType,
+          disabilityStatus: beneficiaries.disabilityStatus,
+        })
+        .from(beneficiaries)
+        .where(
+          and(
+            eq(beneficiaries.organizationId, organizationId),
+            eq(beneficiaries.operatingUnitId, operatingUnitId),
+            eq(beneficiaries.isDeleted, 0)
+          )
+        );
+
+      // Portfolio-level totals
+      const total = all.length;
+      const males = all.filter(b => b.gender === 'MALE').length;
+      const females = all.filter(b => b.gender === 'FEMALE').length;
+      const verified = all.filter(b => b.verificationStatus === 'VERIFIED').length;
+      const pending = all.filter(b => b.verificationStatus === 'PENDING').length;
+      const notEligible = all.filter(b => b.verificationStatus === 'NOT_ELIGIBLE').length;
+      const withDisability = all.filter(b => b.disabilityStatus).length;
+      const completed = all.filter(b => b.serviceStatus === 'COMPLETED').length;
+      const active = all.filter(b => b.serviceStatus === 'ACTIVE').length;
+
+      // Per-project breakdown — join with projects table to get names
+      const projectIds = [...new Set(all.map(b => b.projectId).filter(Boolean))] as number[];
+
+      let projectNames: Record<number, string> = {};
+      if (projectIds.length > 0) {
+        const projectRows = await db
+          .select({ id: projects.id, title: projects.title })
+          .from(projects)
+          .where(
+            and(
+              eq(projects.organizationId, organizationId),
+              eq(projects.operatingUnitId, operatingUnitId),
+              eq(projects.isDeleted, 0)
+            )
+          );
+        for (const p of projectRows) {
+          projectNames[p.id] = p.title;
+        }
+      }
+
+      // Aggregate per project
+      const byProjectMap: Record<number, { total: number; verified: number; males: number; females: number }> = {};
+      for (const b of all) {
+        if (!b.projectId) continue;
+        if (!byProjectMap[b.projectId]) {
+          byProjectMap[b.projectId] = { total: 0, verified: 0, males: 0, females: 0 };
+        }
+        byProjectMap[b.projectId].total++;
+        if (b.verificationStatus === 'VERIFIED') byProjectMap[b.projectId].verified++;
+        if (b.gender === 'MALE') byProjectMap[b.projectId].males++;
+        if (b.gender === 'FEMALE') byProjectMap[b.projectId].females++;
+      }
+
+      const byProject = Object.entries(byProjectMap).map(([projectId, stats]) => ({
+        projectId: Number(projectId),
+        projectName: projectNames[Number(projectId)] || `Project #${projectId}`,
+        total: stats.total,
+        verified: stats.verified,
+        males: stats.males,
+        females: stats.females,
+      })).sort((a, b) => b.total - a.total);
+
+      return {
+        total,
+        males,
+        females,
+        verified,
+        pending,
+        notEligible,
+        withDisability,
+        completed,
+        active,
+        byProject,
+      };
+    }),
+
   // SOFT DELETE ONLY - NO HARD DELETE ALLOWED
   // Uses beneficiaryProcedure - organizationId and operatingUnitId come from ctx.scope
   delete: beneficiaryProcedure
@@ -464,8 +567,8 @@ export const beneficiariesRouter = router({
       }
       
       await db.update(beneficiaries).set({
-          isDeleted: true,
-          deletedAt: new Date(),
+          isDeleted: 1,
+          deletedAt: new Date().toISOString().slice(0, 19).replace('T', ' '),
           deletedBy: ctx.user?.id,
         }).where(and(
           eq(beneficiaries.id, input.id),

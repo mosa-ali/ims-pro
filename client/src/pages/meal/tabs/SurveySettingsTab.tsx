@@ -101,7 +101,7 @@ export function SurveySettingsTab({
  id: user.id,
  username: user.username,
  role: 'owner',
- addedAt: new Date().toLocaleDateString(),
+ addedAt: new Date().toISOString(),
  }]);
 
  // Add initial activity log for survey creation
@@ -289,7 +289,7 @@ export function SurveySettingsTab({
  id: `user-${Date.now()}`,
  username: newUsername,
  role: 'editor',
- addedAt: new Date().toLocaleDateString(),
+ addedAt: new Date().toISOString(),
  };
  setTeamMembers([...teamMembers, newMember]);
  setNewUsername('');

@@ -32,7 +32,7 @@ export async function syncProjectSpent(projectId: number): Promise<void> {
       .update(projects)
       .set({
         spent: totalSpent,
-        updatedAt: new Date(),
+        updatedAt: new Date().toISOString().slice(0, 19).replace('T', ' '),
       })
       .where(eq(projects.id, projectId));
 

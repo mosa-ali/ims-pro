@@ -36,7 +36,16 @@ import { initializeDefaultRoles, MODULE_DEFINITIONS, SCREEN_DEFINITIONS, getPerm
 function assertAdmin(ctx: any) {
   const role = ctx.user?.role?.toLowerCase();
   const platformRole = ctx.user?.platformRole?.toLowerCase();
-  
+
+  const formatSqlDate = (dateValue?: string | Date | null) => {
+  if (!dateValue) return null;
+
+  return new Date(dateValue)
+    .toISOString()
+    .split("T")[0]; // YYYY-MM-DD
+};
+const nowSql = new Date().toISOString().slice(0, 19).replace('T', ' ');
+
   // Allow various admin role formats
   const allowedRoles = ['platform_admin', 'platform super_admin', 'admin', 'system admin', 'organization_admin'];
   const isAdmin = allowedRoles.some(r => role?.includes(r.replace('_', ' ')) || role?.includes(r) || platformRole?.includes(r.replace('_', ' ')) || platformRole?.includes(r));
@@ -88,7 +97,7 @@ const rbacRolesRouter = router({
       name: input.name, nameAr: input.nameAr || null,
       description: input.description || null, descriptionAr: input.descriptionAr || null,
       permissions: JSON.stringify(input.permissions),
-      isSystem: false, isLocked: false, createdBy: ctx.user.id,
+      isSystem: 0, isLocked: 0, createdBy: ctx.user.id,
     });
     // Log the role creation
     await logSensitiveAccess(ctx.user.id, ctx.scope.organizationId, null, "role.create", "settings", "roles", "rbac_role", Number(result[0].insertId), JSON.stringify({ roleName: input.name }));
@@ -164,8 +173,8 @@ const rbacRolesRouter = router({
       description: input.newDescription || source.description || null,
       descriptionAr: input.newDescriptionAr || source.descriptionAr || null,
       permissions: source.permissions, // Copy all permissions
-      isSystem: false,
-      isLocked: false,
+      isSystem: 0,
+      isLocked: 0,
       createdBy: ctx.user.id,
     });
     const newRoleId = Number(result[0].insertId);
@@ -393,7 +402,7 @@ const rbacUsersRouter = router({
       });
     }
     
-    await db.update(rbacUserPermissions).set({ isActive: input.isActive, updatedBy: ctx.user.id })
+    await db.update(rbacUserPermissions).set({ isActive: Number(input.isActive), updatedBy: ctx.user.id })
       .where(and(eq(rbacUserPermissions.userId, input.userId), eq(rbacUserPermissions.organizationId, orgId)));
     await logSensitiveAccess(ctx.user.id, orgId, ouId, input.isActive ? 'permission.activate' : 'permission.deactivate', 'settings', 'roles', 'user_permission', input.userId);
     return { success: true };
@@ -943,7 +952,7 @@ const rbacUsersRouter = router({
       overrideType: input.overrideType,
       reason: input.reason || null,
       expiresAt: input.expiresAt ? new Date(input.expiresAt) : null,
-      isActive: true,
+      isActive: 1,
       createdBy: ctx.user.id,
     });
     await logSensitiveAccess(ctx.user.id, orgId, null, 'override.create', 'settings', 'roles', 'user_override', input.userId,
@@ -1598,7 +1607,7 @@ const rbacUsersRouter = router({
           actions: [ov.action],
           grantedBy: adminMap.get(ov.createdBy) || 'Unknown',
           grantedAt: (typeof ov.createdAt === 'string' ? ov.createdAt : ov.createdAt?.toISOString?.()) || new Date().toISOString(),
-          expiresAt: ov.expiresAt?.toISOString() || null,
+          expiresAt: ov.expiresAt?.toISOString() || new Date().toISOString(),
           overrideReason: ov.reason,
         });
       }
@@ -2184,7 +2193,7 @@ const landingRouter = router({
     if (existing.length > 0) {
       await db.update(landingSettings).set({ ...input, updatedBy: ctx.user.id }).where(eq(landingSettings.organizationId, orgId));
     } else {
-      await db.insert(landingSettings).values({ organizationId: orgId, ...input, updatedBy: ctx.user.id });
+      await db.insert(landingSettings).values({ organizationId: ctx.scope.organizationId, ...input, updatedBy: ctx.user.id });
     }
     return { success: true };
   }),
@@ -2362,7 +2371,7 @@ const notificationEventsRouter = router({
           category: evt.category,
           description: evt.description,
           emailEnabled: evt.eventKey !== "user_activity", // Disable user_activity by default
-          inAppEnabled: true,
+          inAppEnabled: 1,
           recipientsMode: "role",
         });
       }
@@ -2477,7 +2486,7 @@ const emailTemplatesRouter = router({
     const result = await db.insert(emailTemplates).values({
       organizationId: ctx.scope.organizationId,
       ...input,
-      isActive: input.isActive ?? 1,
+      isActive: 1,
     });
     return { success: true, id: result[0].insertId };
   }),
@@ -2627,7 +2636,7 @@ const deletedRecordsRouter = router({
       // Restore organization
       await db.update(organizations).set({
         isDeleted: 0,
-        isActive: 1,
+        isActive: true,
         deletedAt: null,
         deletedBy: null,
       }).where(eq(organizations.id, input.id));

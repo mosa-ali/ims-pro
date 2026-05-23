@@ -41,9 +41,9 @@ interface ReportingScheduleProps {
 }
 
 export default function ReportingSchedulePage({ projectId, embedded = false }: ReportingScheduleProps) {
-  const { t } = useTranslation();
-  const { isRTL } = useLanguage();
+ const { isRTL } = useLanguage();
  const { user } = useAuth();
+ const { t } = useTranslation();
  const { currentOrganizationId } = useOrganization();
  const { currentOperatingUnitId } = useOperatingUnit();
  
@@ -73,11 +73,14 @@ export default function ReportingSchedulePage({ projectId, embedded = false }: R
 
  // Load reporting schedules
  const { data: schedules = [], refetch } = trpc.reportingSchedules.list.useQuery({
- projectId: projectId
- });
-
+ projectId: projectId,
+})
+ 
  // Load projects for dropdown
- const { data: projects = [] } = trpc.projects.list.useQuery({}, {
+ const { data: projects = [] } = trpc.projects.list.useQuery({
+ organizationId: currentOrganizationId || 0,
+ operatingUnitId: currentOperatingUnitId ? (typeof currentOperatingUnitId === 'string' ? parseInt(currentOperatingUnitId, 10) : currentOperatingUnitId) : 0
+ }, {
  enabled: !!currentOrganizationId && !!currentOperatingUnitId,
  });
 
@@ -230,7 +233,7 @@ export default function ReportingSchedulePage({ projectId, embedded = false }: R
  {!embedded && (
  <>
  <Link href="/projects">
- <BackButton label={t.common.back} />
+ <BackButton label={t.common.backToDashboard} />
  </Link>
 
  <div className="flex items-center justify-between">

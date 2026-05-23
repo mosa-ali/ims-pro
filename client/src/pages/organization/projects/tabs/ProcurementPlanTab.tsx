@@ -16,18 +16,6 @@ import { exportToStandardExcel, exportExcelTemplate, type ExcelColumn } from '@/
 import { trpc } from '@/lib/trpc';
 import { ProcurementPlanTabSkeleton } from "@/components/ProjectTabSkeletons";
 
-// ✅ Helper function to get currency symbol
-const getCurrencySymbol = (currency: string): string => {
- const symbols: Record<string, string> = {
-  'EUR': '€',
-  'USD': '$',
-  'CHF': 'CHF ',
-  'GBP': '£',
-  'YER': 'YER ',
-  'SAR': 'SAR ',
- };
- return symbols[currency] || currency + ' ';
-};
 
 // organizationId and operatingUnitId now come from project data via tRPC query
 
@@ -157,7 +145,7 @@ export function ProcurementPlanTab({
  budgetCode: '',
  budgetLine: '',
  approvedBudget: 0,
- currency: 'USD' as 'USD' | 'EUR' | 'GBP' | 'CHF',
+ currency: '',
  procurementMethod: 'ONE_QUOTATION' as 'ONE_QUOTATION' | 'THREE_QUOTATION' | 'NEGOTIABLE_QUOTATION' | 'TENDER' | 'DIRECT_PURCHASE' | 'OTHER',
  recurrence: 'ONE_TIME' as 'ONE_TIME' | 'RECURRING',
  plannedStartDate: '',
@@ -311,7 +299,7 @@ export function ProcurementPlanTab({
  quantity: item.quantity,
  unit: item.unitOfMeasure,
  estimatedCost: totalCost.toString(),
- currency: formData.currency,
+ currency: project?.currency || 'USD',
  procurementMethod: item.procurementMethod as any,
  recurrence: item.recurrence as any,
  plannedProcurementDate: item.plannedStartDate,
@@ -343,7 +331,7 @@ export function ProcurementPlanTab({
  currency: formData.currency,
  procurementMethod: formData.procurementMethod,
  plannedProcurementDate: formData.plannedStartDate,
- status: formData.status,
+ status: formData.status as any,
  budgetLine: formData.budgetLine,
  notes: formData.notes,
  });
@@ -567,7 +555,7 @@ export function ProcurementPlanTab({
  </div>
  <div>
  <span className="text-gray-600">{t.projectDetail.projectName}: </span>
- <span className="font-medium">{project?.projectTitle}</span>
+ <span className="font-medium">{project?.title}</span>
  </div>
  {project && (
  <div>

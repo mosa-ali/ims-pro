@@ -1139,7 +1139,7 @@ export default function SACForm() {  const params = useParams<{ sacId: string }>
               <div className="space-y-2">
                 <Label>{t.dateOfPreparation}</Label>
                 <Input
-                  value={sacData?.createdAt ? new Date(sacData.createdAt).toLocaleDateString() : new Date().toLocaleDateString()}
+                  value={sacData?.createdAt ? new Date(sacData.createdAt).toLocaleDateString() : new Date().toISOString()}
                   disabled
                   className="bg-gray-50"
                 />

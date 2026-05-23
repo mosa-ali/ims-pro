@@ -4844,7 +4844,7 @@ export const projects = mysqlTable("projects", {
 	endDate: timestamp({ mode: 'string' }).notNull(),
 	totalBudget: decimal({ precision: 15, scale: 2 }),
 	spent: decimal({ precision: 15, scale: 2 }),
-	currency: mysqlEnum(['USD','EUR','GBP','CHF']),
+	currency: varchar({ length: 10 }).default('USD'),
 	physicalProgressPercentage: decimal({ precision: 5, scale: 2 }),
 	sectors: json(),
 	donor: varchar({ length: 255 }),

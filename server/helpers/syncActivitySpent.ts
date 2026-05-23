@@ -42,7 +42,7 @@ export async function syncActivitySpent(activityId: number): Promise<void> {
       .where(
         and(
           eq(budgetItems.activityId, activityId),
-          eq(budgetItems.isDeleted, false)
+          eq(budgetItems.isDeleted, 0)
         )
       );
 
@@ -63,7 +63,7 @@ export async function syncActivitySpent(activityId: number): Promise<void> {
       .set({
         actualSpent: totalSpent.toFixed(2),
         progressPercentage: progressPercentage,
-        updatedAt: new Date(),
+        updatedAt: new Date().toISOString().slice(0, 19).replace('T', ' '),
       })
       .where(eq(activities.id, activityId));
 

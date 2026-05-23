@@ -33,8 +33,6 @@ import {
  AlertCircle,
  Printer,
  Megaphone,
- Download,
- Upload,
  RefreshCw,
  Lock,
  FileCheck,
@@ -187,6 +185,7 @@ export default function ProcurementWorkspace() {
  const [activeTab, setActiveTab] = useState<WorkspaceTab | null>(null);
  const [financialRefreshTrigger, setFinancialRefreshTrigger] = useState(0);
 
+
  // Fetch PR data
  const numericPrId = prId ? parseInt(prId, 10) : 0;
  const { data: pr, isLoading, refetch, isRefetching } = trpc.logistics.prWorkspace.getById.useQuery(
@@ -314,91 +313,120 @@ export default function ProcurementWorkspace() {
  const qaApproved = (qaData as any)?.status === "approved";
  const baAwarded = (baData as any)?.status === "awarded";
 
- // Import/Export mutations
- const exportPRMutation = trpc.logistics.prWorkspace.export.useMutation({
- onSuccess: (data) => {
- // Download as JSON file
- const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
- const url = URL.createObjectURL(blob);
- const a = document.createElement("a");
- a.href = url;
- a.download = `PR-${pr?.prNumber || prId}-export.json`;
- a.click();
- URL.revokeObjectURL(url);
- toast.success(t.procurement.exportSuccess);
- },
- onError: (error) => {
- toast.error(error.message);
- },
- });
+ // =====================================================
+// PDF Generation State
+// =====================================================
 
- const importPRMutation = trpc.logistics.prWorkspace.import.useMutation({
- onSuccess: () => {
- toast.success(t.procurement.importSuccess);
- },
- onError: (error) => {
- toast.error(error.message);
- },
- });
+const [generatingPdfId, setGeneratingPdfId] = useState<number | null>(null);
 
- const handleExportPR = () => {
- if (!prId || !numericPrId) return;
- exportPRMutation.mutate({ prId: numericPrId });
- };
+// =====================================================
+// PDF Mutation
+// =====================================================
 
- const handleImportPR = () => {
- const input = document.createElement("input");
- input.type = "file";
- input.accept = ".json";
- input.onchange = async (e) => {
- const file = (e.target as HTMLInputElement).files?.[0];
- if (!file) return;
- 
- const text = await file.text();
- const data = JSON.parse(text);
- importPRMutation.mutate(data);
- };
- input.click();
- };
+ const generatePDF = trpc.logistics.generatePDF.useMutation();
 
- const handleImportEmptyTemplate = () => {
- // Download empty PR template
- const template = {
- prNumber: "PR-[AUTO]",
- requestDate: new Date().toISOString().split("T")[0],
- projectId: "",
- donorName: "",
- departmentId: "",
- requestedBy: "",
- urgency: "normal",
- currency: "USD",
- exchangeRate: 1,
- budgetLine: "",
- justification: "",
- deliveryLocation: "",
- neededBy: "",
- items: [
- {
- itemNumber: 1,
- description: "",
- specifications: "",
- quantity: 0,
- unit: "",
- estimatedUnitCost: 0,
- estimatedTotalCost: 0,
- },
- ],
- };
- 
- const blob = new Blob([JSON.stringify(template, null, 2)], { type: "application/json" });
- const url = URL.createObjectURL(blob);
- const a = document.createElement("a");
- a.href = url;
- a.download = "PR-Empty-Template.json";
- a.click();
- URL.revokeObjectURL(url);
- toast.success("Empty template downloaded");
- };
+// =====================================================
+// Generate Purchase Request PDF
+// =====================================================
+
+const handleGeneratePdf = async (pr: any): Promise<void> => {
+  try {
+    if (!pr?.id) {
+      toast.error(
+        isRTL
+          ? "معرف الطلب غير صالح"
+          : "Invalid purchase request ID"
+      );
+
+      return;
+    }
+
+    setGeneratingPdfId(pr.id);
+
+    const result = await generatePDF.mutateAsync({
+      documentType: "purchaseRequest",
+      documentId: Number(pr.id),
+      language: isRTL ? "ar" : "en",
+    });
+
+    // Validate PDF response
+    if (
+      !result ||
+      !result.pdf ||
+      typeof result.pdf !== "string" ||
+      !result.pdf.startsWith("JVBER")
+    ) {
+      toast.error(
+        isRTL
+          ? "ملف PDF غير صالح"
+          : "Invalid PDF generated"
+      );
+
+      return;
+    }
+
+    // =====================================================
+    // Convert Base64 → Blob
+    // =====================================================
+
+    const binaryString = atob(result.pdf);
+
+    const bytes = new Uint8Array(binaryString.length);
+
+    for (let i = 0; i < binaryString.length; i++) {
+      bytes[i] = binaryString.charCodeAt(i);
+    }
+
+    const blob = new Blob([bytes], {
+      type: "application/pdf",
+    });
+
+    // =====================================================
+    // Download File
+    // =====================================================
+
+    const url = window.URL.createObjectURL(blob);
+
+    const link = document.createElement("a");
+
+    link.href = url;
+
+    link.download = `${
+      pr?.prNumber || `PR-${pr.id}`
+    }.pdf`;
+
+    document.body.appendChild(link);
+
+    link.click();
+
+    // Cleanup
+    document.body.removeChild(link);
+
+    window.URL.revokeObjectURL(url);
+
+    toast.success(
+      isRTL
+        ? "تم تنزيل ملف PDF بنجاح"
+        : "PDF downloaded successfully"
+    );
+
+  } catch (error: any) {
+    console.error(
+      "Purchase Request PDF generation error:",
+      error
+    );
+
+    toast.error(
+      error?.message ||
+      (isRTL
+        ? "خطأ في إنشاء ملف PDF"
+        : "Error generating PDF")
+    );
+
+  } finally {
+    setGeneratingPdfId(null);
+  }
+};
 
  if (isLoading) {
  return (
@@ -985,22 +1013,17 @@ onClick={() => {
  >
  <RefreshCw className={`w-4 h-4 ${isLoading || isRefetching ? "animate-spin" : ""}`} />
  </Button>
- <Button variant="outline" onClick={handleImportEmptyTemplate} className="gap-2">
- <Download className="w-4 h-4" />
- {t.procurement.importEmpty}
- </Button>
- <Button variant="outline" onClick={handleImportPR} className="gap-2">
- <Upload className="w-4 h-4" />
- {t.procurement.importWithData}
- </Button>
- <Button variant="outline" onClick={handleExportPR} className="gap-2">
- <Download className="w-4 h-4" />
- {t.procurement.exportPR}
- </Button>
- <Button variant="outline" onClick={() => navigate(`/organization/logistics/purchase-requests/${prId}/print`)} className="gap-2">
- <Printer className="w-4 h-4" />
- {t.procurement.print}
- </Button>
+ <Button
+	variant="outline"
+	onClick={() => handleGeneratePdf(pr)}
+	className="gap-2"
+	disabled={generatingPdfId === pr.id}
+	>
+	<Printer className="w-4 h-4" />
+	{generatingPdfId === pr.id
+	? (isRTL ? "جاري الإنشاء..." : "Generating...")
+	: t.procurement.print}
+	</Button>
  </div>
  </div>
  </div>

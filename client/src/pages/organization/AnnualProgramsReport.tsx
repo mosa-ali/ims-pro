@@ -21,7 +21,7 @@ import { useLanguage, formatNumber, formatCurrency } from '@/contexts/LanguageCo
 import { useAnnualProgramsData } from '@/hooks/useAnnualProgramsData';
 import { updateAPRSection } from '@/services/aprDataService';
 import { useAuth } from '@/_core/hooks/useAuth';
-import { MENA_COUNTRIES } from '@/constants/countries';
+import { GLOBAL_COUNTRIES } from '@/constants/countries';
 import {
  PieChart,
  Pie,
@@ -73,15 +73,13 @@ export default function AnnualProgramsReport() {
  setEditingSection(null);
  }, [selectedYear, reportData.executiveSummary.narrative, reportData.challenges.narrative, reportData.pipelineOutlook.strategicOutlook, reportData.managementNotes.notes]);
 
+ const userRoleStr = (user?.role as string) || '';
  const canEdit = 
- user?.role === 'admin' || 
- user?.role === 'Admin' ||
- user?.role === 'Country Director' ||
- user?.role === 'country_director' ||
- user?.role === 'Program Manager' ||
- user?.role === 'program_manager' ||
- user?.role === 'Executive Manager' ||
- user?.role === 'executive_manager';
+ userRoleStr === 'platform_admin' || 
+ userRoleStr === 'platform_super_admin' ||
+ userRoleStr === 'office_manager' ||
+ userRoleStr === 'organization_admin' ||
+ userRoleStr === 'manager';
  
  // DEBUG: Check permissions
  console.log('APR Permissions Debug:', {
@@ -132,7 +130,7 @@ export default function AnnualProgramsReport() {
  autoAggregated: t.organizationModule.autoaggregatedFromRealSystemData,
  readOnly: t.organizationModule.readonly,
  editable: t.organizationModule.editable,
- noEditPermission: t.organizationModule.youDontHavePermissionToEdit,
+ noEditPermission: t.organizationModule.youDontHavePermission,
  editableByRoles: t.organizationModule.editableByAdminCountryDirectorProgram,
  noDataForYear: `No project data available for year ${selectedYear}`,
  noDataMessage: t.organizationModule.noActiveProjectsOrGrantsFound,
@@ -146,9 +144,9 @@ export default function AnnualProgramsReport() {
 
  const handleSaveNarrative = (section: keyof typeof narrativeData) => {
  try {
- updateAPRSection(selectedYear, section, narrativeData[section], user?.id);
+ updateAPRSection(selectedYear, section, narrativeData[section], user?.id?.toString());
  setEditingSection(null);
- alert(`${t.savedSuccessfully} (${selectedYear})`);
+ alert(`${labels.savedSuccessfully} (${selectedYear})`);
  } catch (error) {
  console.error('Error saving APR narrative:', error);
  alert(t.organizationModule.saveFailed);
@@ -201,7 +199,7 @@ export default function AnnualProgramsReport() {
  className="px-3 py-1.5 border border-gray-300 rounded-md text-sm"
  >
  <option value="">{labels.allCountries}</option>
- {MENA_COUNTRIES.map((country) => (
+ {GLOBAL_COUNTRIES.map((country) => (
  <option key={country} value={country}>{country}</option>
  ))}
  </select>
@@ -219,7 +217,7 @@ export default function AnnualProgramsReport() {
  <AlertCircle className="w-5 h-5 text-yellow-600 flex-shrink-0 mt-0.5" />
  <div className={'text-start'}>
  <h3 className="font-semibold text-yellow-900">{labels.noDataForYear}</h3>
- <p className="text-sm text-yellow-700 mt-1">{t.noDataMessage}</p>
+ <p className="text-sm text-yellow-700 mt-1">{labels.noDataMessage}</p>
  </div>
  </div>
  </div>
@@ -272,6 +270,7 @@ export default function AnnualProgramsReport() {
  t={t}
  canEdit={canEdit}
  badge="editable"
+ labels={labels}
  >
  {editingSection === 'executiveSummary' ? (
  <textarea
@@ -298,6 +297,7 @@ export default function AnnualProgramsReport() {
  isRTL={isRTL}
  t={t}
  badge="auto"
+ labels={labels}
  >
  <div className="space-y-6">
  <div className="grid grid-cols-3 gap-4">
@@ -344,6 +344,7 @@ export default function AnnualProgramsReport() {
  isRTL={isRTL}
  t={t}
  badge="auto"
+ labels={labels}
  >
  <div className="space-y-6">
  <div className="grid grid-cols-2 gap-6">
@@ -373,7 +374,7 @@ export default function AnnualProgramsReport() {
  </ResponsiveContainer>
  ) : (
  <div className="h-[250px] flex items-center justify-center bg-gray-50 rounded-lg border border-gray-200">
- <span className="text-gray-400">{t.noDataMessage}</span>
+ <span className="text-gray-400">{labels.noDataMessage}</span>
  </div>
  )}
  </div>
@@ -396,7 +397,7 @@ export default function AnnualProgramsReport() {
  </ResponsiveContainer>
  ) : (
  <div className="h-[250px] flex items-center justify-center bg-gray-50 rounded-lg border border-gray-200">
- <span className="text-gray-400">{t.noDataMessage}</span>
+ <span className="text-gray-400">{labels.noDataMessage}</span>
  </div>
  )}
  </div>
@@ -421,26 +422,26 @@ export default function AnnualProgramsReport() {
  </ResponsiveContainer>
  ) : (
  <div className="h-[250px] flex items-center justify-center bg-gray-50 rounded-lg border border-gray-200">
- <span className="text-gray-400">{t.noDataMessage}</span>
+ <span className="text-gray-400">{labels.noDataMessage}</span>
  </div>
  )}
  </div>
 
  <div className="grid grid-cols-4 gap-4">
  <StatBox
- label={t.activeGrants}
+ label={labels.activeGrants}
  value={reportData.grantPerformance.activeGrants}
  icon={<FileText className="w-4 h-4 text-blue-600" />}
  isRTL={isRTL}
  />
  <StatBox
- label={t.closedGrants}
+ label={labels.closedGrants}
  value={reportData.grantPerformance.closedGrants}
  icon={<CheckCircle2 className="w-4 h-4 text-green-600" />}
  isRTL={isRTL}
  />
  <StatBox
- label={t.totalGrantValue}
+ label={labels.totalGrantValue}
  value={formatCurrency(reportData.grantPerformance.totalGrantValue, 'USD', language)}
  icon={<DollarSign className="w-4 h-4 text-purple-600" />}
  isRTL={isRTL}
@@ -467,6 +468,7 @@ export default function AnnualProgramsReport() {
  t={t}
  canEdit={canEdit}
  badge="editable"
+ labels={labels}
  >
  {editingSection === 'challenges' ? (
  <textarea
@@ -498,6 +500,7 @@ export default function AnnualProgramsReport() {
  t={t}
  canEdit={canEdit}
  badge="mixed"
+ labels={labels}
  >
  <div className="space-y-6">
  {hasRealData && (
@@ -531,7 +534,7 @@ export default function AnnualProgramsReport() {
 
  <div>
  <h4 className={`text-sm font-semibold text-gray-700 mb-3 text-start`}>
- {t.strategicOutlook} ({labels.editable})
+ {labels.strategicOutlook} ({labels.editable})
  </h4>
  {editingSection === 'strategicOutlook' ? (
  <textarea
@@ -565,6 +568,7 @@ export default function AnnualProgramsReport() {
  t={t}
  canEdit={canEdit}
  badge="editable"
+ labels={labels}
  >
  {editingSection === 'managementNotes' ? (
  <textarea
@@ -601,9 +605,18 @@ interface SectionProps {
  t: any;
  canEdit?: boolean;
  badge?: 'auto' | 'editable' | 'mixed';
+ labels?: {
+ readOnly?: string;
+ editable?: string;
+ save?: string;
+ cancel?: string;
+ edit?: string;
+ noEditPermission?: string;
+ };
 }
 
-function Section({ id, title, editable, isEditing, onEdit, onSave, onCancel, children, isRTL, t, canEdit = true, badge }: SectionProps) {
+function Section({ id, title, editable, isEditing, onEdit, onSave, onCancel, children, isRTL, t, canEdit = true, badge, labels }: SectionProps) {
+ const sectionLabels = labels || {};
  return (
  <div className="bg-white rounded-lg border border-gray-200 p-6">
  <div className={`flex items-center justify-between mb-4`}>
@@ -613,7 +626,7 @@ function Section({ id, title, editable, isEditing, onEdit, onSave, onCancel, chi
  <span
  className={`px-2 py-0.5 text-xs rounded-full ${ badge === 'auto' ? 'bg-blue-100 text-blue-700' : badge === 'editable' ? 'bg-green-100 text-green-700' : 'bg-purple-100 text-purple-700' }`}
  >
- {badge === 'auto' ? labels.readOnly : badge === 'editable' ? labels.editable : 'Mixed'}
+ {badge === 'auto' ? (sectionLabels.readOnly || 'Read Only') : badge === 'editable' ? (sectionLabels.editable || 'Editable') : 'Mixed'}
  </span>
  )}
  </div>
@@ -626,14 +639,14 @@ function Section({ id, title, editable, isEditing, onEdit, onSave, onCancel, chi
  className={`px-3 py-1.5 text-xs bg-green-600 text-white rounded-md hover:bg-green-700 flex items-center gap-1`}
  >
  <Save className="w-3.5 h-3.5" />
- {labels.save}
+ {sectionLabels.save || 'Save'}
  </button>
  <button
  onClick={onCancel}
  className={`px-3 py-1.5 text-xs border border-gray-300 rounded-md hover:bg-gray-50 flex items-center gap-1`}
  >
  <X className="w-3.5 h-3.5" />
- {labels.cancel}
+ {sectionLabels.cancel || 'Cancel'}
  </button>
  </>
  ) : (
@@ -641,11 +654,11 @@ function Section({ id, title, editable, isEditing, onEdit, onSave, onCancel, chi
  onClick={onEdit}
  disabled={!canEdit}
  className={`px-3 py-1.5 text-xs border border-gray-300 rounded-md hover:bg-gray-50 flex items-center gap-1 ${!canEdit ? 'opacity-50 cursor-not-allowed' : ''}`}
- title={!canEdit ? labels.noEditPermission : ''}
+ title={!canEdit ? (sectionLabels.noEditPermission || 'No permission') : ''}
  >
  {!canEdit && <Lock className="w-3.5 h-3.5" />}
  <Edit2 className="w-3.5 h-3.5" />
- {labels.edit}
+ {sectionLabels.edit || 'Edit'}
  </button>
  )}
  </div>

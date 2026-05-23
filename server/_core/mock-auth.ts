@@ -55,7 +55,7 @@ export async function mockAuthMiddleware(
       name: mockUser.name,
       email: mockUser.email,
       loginMethod: 'mock',
-      lastSignedIn: new Date(),
+      lastSignedIn: new Date().toISOString().slice(0, 19).replace('T', ' '),
     });
     const sessionToken = await sdk.createSessionToken(mockUser.openId, { name: mockUser.name });
     const cookieOptions = getSessionCookieOptions(req);
@@ -79,7 +79,7 @@ export async function handleMockLogin(req: Request, res: Response): Promise<void
       name: mockUser.name,
       email: mockUser.email,
       loginMethod: 'mock',
-      lastSignedIn: new Date(),
+      lastSignedIn: new Date().toISOString().slice(0, 19).replace('T', ' '),
     });
     const sessionToken = await sdk.createSessionToken(mockUser.openId, { name: mockUser.name });
     const cookieOptions = getSessionCookieOptions(req);

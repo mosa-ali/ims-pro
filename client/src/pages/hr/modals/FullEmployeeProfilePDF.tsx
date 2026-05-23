@@ -442,7 +442,7 @@ export function FullEmployeeProfilePDF({
  {'This is an official document generated from the HR Management System'}
  </p>
  <p className="text-xs text-gray-400 text-center mt-2">
- {employee.staffId} | {new Date().toLocaleDateString()}
+ {employee.staffId} | {new Date().toISOString()}
  </p>
  </div>
  </div>

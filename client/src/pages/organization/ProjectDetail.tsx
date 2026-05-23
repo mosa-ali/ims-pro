@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { useParams, Link, useNavigate } from 'react-router';
+import { useParams, Link } from 'wouter';
+import { useNavigate } from"@/lib/router-compat";
 import { Edit, Calendar, DollarSign } from 'lucide-react';
 import * as Tabs from '@radix-ui/react-tabs';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -8,17 +9,17 @@ import { shouldShowCaseManagement, formatProjectSectors } from '@/utils/projectH
 import { useProjectData, calculateDaysRemaining } from '@/hooks/useProjectData';
 
 // Import tab components
-import { OverviewTab } from './tabs/OverviewTab';
-import { ActivitiesTab } from './tabs/ActivitiesTab';
-import { TasksTab } from './tabs/TasksTab';
-import { IndicatorsTab } from './tabs/IndicatorsTab';
-import { BeneficiariesTab } from './tabs/BeneficiariesTab';
-import { FinancialOverviewTab } from './tabs/FinancialOverviewTab';
-import { ForecastPlanTab } from './tabs/ForecastPlanTab';
-import { ProcurementPlanTab } from './tabs/ProcurementPlanTab';
-import { ProjectReportTab } from './tabs/ProjectReportTab';
-import { CaseManagementTab } from './tabs/CaseManagementTab';
-import { ProjectPlanTab } from './tabs/ProjectPlanTab';
+import { OverviewTab } from './projects/tabs/OverviewTab';
+import { ActivitiesTab } from './projects/tabs/ActivitiesTab';
+import { TasksTab } from './projects/tabs/TasksTab';
+import { IndicatorsTab } from './projects/tabs/IndicatorsTab';
+import { BeneficiariesTab } from './projects/tabs/BeneficiariesTab';
+import { FinancialOverviewTab } from './projects/tabs/FinancialOverviewTab';
+import { ForecastPlanTab } from './projects/tabs/ForecastPlanTab';
+import { ProcurementPlanTab } from './projects/tabs/ProcurementPlanTab';
+import { ProjectReportTab } from './projects/tabs/ProjectReportTab';
+import { CaseManagementTab } from './projects/tabs/CaseManagementTab';
+import { ProjectPlanTab } from './projects/tabs/ProjectPlanTab';
 import { BackButton } from "@/components/BackButton";
 
 export function ProjectDetail() {
@@ -134,7 +135,7 @@ export function ProjectDetail() {
  <div className="project-grid-2 mt-4 pt-4 border-t border-gray-200">
  <div className={'text-start'}>
  <p className="project-meta-text">{t.projectDetail.projectCode}</p>
- <p className="project-body-text font-medium">{project.projectCode}</p>
+ <p className="project-body-text font-medium">{project.code}</p>
  </div>
  <div className={'text-start'}>
  <p className="project-meta-text">{t.projectDetail.donorGrant}</p>

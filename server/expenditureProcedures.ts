@@ -6,9 +6,9 @@
 
 import { z } from 'zod';
 import { eq, and, desc, gte, lte, like } from 'drizzle-orm';
-import { db } from './db';
+import { getDb } from "./db";
 import { financeExpenditures, financeExpenditureCategories } from '../drizzle/schema';
-import { protectedProcedure } from './_core/trpc';
+import { protectedProcedure, scopedProcedure } from './_core/trpc';
 import { TRPCError } from '@trpc/server';
 
 // Validation schemas
@@ -30,6 +30,7 @@ const createExpenditureSchema = z.object({
 });
 
 const updateExpenditureSchema = createExpenditureSchema.partial();
+const db = await getDb();     
 
 const approveExpenditureSchema = z.object({
   expenditureId: z.number(),
@@ -57,7 +58,7 @@ export const expenditureProcedures = {
    * Create a new expenditure record
    * Status: draft (requires approval)
    */
-  createExpenditure: protectedProcedure
+  createExpenditure: scopedProcedure
     .input(createExpenditureSchema)
     .mutation(async ({ ctx, input }) => {
       try {
@@ -67,7 +68,7 @@ export const expenditureProcedures = {
           .from(financeExpenditures)
           .where(
             and(
-              eq(financeExpenditures.organizationId, ctx.organizationId),
+              eq(financeExpenditures.organizationId, ctx.scope.organizationId),
               eq(financeExpenditures.expenditureNumber, input.expenditureNumber)
             )
           )
@@ -81,7 +82,7 @@ export const expenditureProcedures = {
         }
 
         const result = await db.insert(financeExpenditures).values({
-          organizationId: ctx.organizationId,
+          organizationId: ctx.scope.organizationId,
           operatingUnitId: ctx.operatingUnitId,
           expenditureNumber: input.expenditureNumber,
           expenditureDate: input.expenditureDate,
@@ -120,7 +121,7 @@ export const expenditureProcedures = {
   /**
    * Update an expenditure record (draft only)
    */
-  updateExpenditure: protectedProcedure
+  updateExpenditure: scopedProcedure
     .input(
       z.object({
         id: z.number(),
@@ -136,7 +137,7 @@ export const expenditureProcedures = {
           .where(
             and(
               eq(financeExpenditures.id, input.id),
-              eq(financeExpenditures.organizationId, ctx.organizationId)
+              eq(financeExpenditures.organizationId, ctx.scope.organizationId)
             )
           )
           .limit(1);
@@ -161,7 +162,7 @@ export const expenditureProcedures = {
           .set({
             ...input.data,
             updatedBy: ctx.user.id,
-            updatedAt: new Date(),
+            updatedAt: new Date().toISOString().slice(0, 19).replace('T', ' '),
           })
           .where(eq(financeExpenditures.id, input.id));
 
@@ -181,7 +182,7 @@ export const expenditureProcedures = {
   /**
    * Get expenditure details
    */
-  getExpenditure: protectedProcedure
+  getExpenditure: scopedProcedure
     .input(z.object({ id: z.number() }))
     .query(async ({ ctx, input }) => {
       const expenditure = await db
@@ -190,7 +191,7 @@ export const expenditureProcedures = {
         .where(
           and(
             eq(financeExpenditures.id, input.id),
-            eq(financeExpenditures.organizationId, ctx.organizationId)
+            eq(financeExpenditures.organizationId, ctx.scope.organizationId)
           )
         )
         .limit(1);
@@ -208,7 +209,7 @@ export const expenditureProcedures = {
   /**
    * List expenditures with filtering
    */
-  listExpenditures: protectedProcedure
+  listExpenditures: scopedProcedure
     .input(listExpendituresSchema)
     .query(async ({ ctx, input }) => {
       let query = db
@@ -216,8 +217,8 @@ export const expenditureProcedures = {
         .from(financeExpenditures)
         .where(
           and(
-            eq(financeExpenditures.organizationId, ctx.organizationId),
-            eq(financeExpenditures.deletedAt, null)
+            eq(financeExpenditures.organizationId, ctx.scope.organizationId),
+            eq(financeExpenditures.deletedAt, new Date().toISOString().slice(0, 19).replace('T', ' '))
           )
         );
 
@@ -277,7 +278,7 @@ export const expenditureProcedures = {
   /**
    * Approve or reject expenditure
    */
-  approveExpenditure: protectedProcedure
+  approveExpenditure: scopedProcedure
     .input(approveExpenditureSchema)
     .mutation(async ({ ctx, input }) => {
       try {
@@ -288,7 +289,7 @@ export const expenditureProcedures = {
           .where(
             and(
               eq(financeExpenditures.id, input.expenditureId),
-              eq(financeExpenditures.organizationId, ctx.organizationId)
+              eq(financeExpenditures.organizationId, ctx.scope.organizationId)
             )
           )
           .limit(1);
@@ -328,7 +329,7 @@ export const expenditureProcedures = {
           .set({
             ...updateData,
             updatedBy: ctx.user.id,
-            updatedAt: new Date(),
+            updatedAt: new Date().toISOString().slice(0, 19).replace('T', ' '),
           })
           .where(eq(financeExpenditures.id, input.expenditureId));
 
@@ -349,7 +350,7 @@ export const expenditureProcedures = {
   /**
    * Delete expenditure (soft delete)
    */
-  deleteExpenditure: protectedProcedure
+  deleteExpenditure: scopedProcedure
     .input(z.object({ id: z.number() }))
     .mutation(async ({ ctx, input }) => {
       try {
@@ -359,7 +360,7 @@ export const expenditureProcedures = {
           .where(
             and(
               eq(financeExpenditures.id, input.id),
-              eq(financeExpenditures.organizationId, ctx.organizationId)
+              eq(financeExpenditures.organizationId, ctx.scope.organizationId)
             )
           )
           .limit(1);
@@ -382,7 +383,7 @@ export const expenditureProcedures = {
         await db
           .update(financeExpenditures)
           .set({
-            deletedAt: new Date(),
+            deletedAt: new Date().toISOString().slice(0, 19).replace('T', ' '),
             deletedBy: ctx.user.id,
           })
           .where(eq(financeExpenditures.id, input.id));
@@ -403,14 +404,14 @@ export const expenditureProcedures = {
   /**
    * Get expenditure categories
    */
-  getCategories: protectedProcedure.query(async ({ ctx }) => {
+  getCategories: scopedProcedure.query(async ({ ctx }) => {
     const categories = await db
       .select()
       .from(financeExpenditureCategories)
       .where(
         and(
-          eq(financeExpenditureCategories.organizationId, ctx.organizationId),
-          eq(financeExpenditureCategories.isActive, true)
+          eq(financeExpenditureCategories.organizationId, ctx.scope.organizationId),
+          eq(financeExpenditureCategories.isActive, 1)
         )
       )
       .orderBy(financeExpenditureCategories.categoryName);
@@ -421,7 +422,7 @@ export const expenditureProcedures = {
   /**
    * Create expenditure category
    */
-  createCategory: protectedProcedure
+  createCategory: scopedProcedure
     .input(
       z.object({
         categoryName: z.string().min(1),
@@ -434,13 +435,13 @@ export const expenditureProcedures = {
     .mutation(async ({ ctx, input }) => {
       try {
         const result = await db.insert(financeExpenditureCategories).values({
-          organizationId: ctx.organizationId,
+          organizationId: ctx.scope.organizationId,
           categoryName: input.categoryName,
           categoryNameAr: input.categoryNameAr,
           description: input.description,
           descriptionAr: input.descriptionAr,
           glAccountId: input.glAccountId,
-          isActive: true,
+          isActive: 1,
         });
 
         return {

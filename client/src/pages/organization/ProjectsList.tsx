@@ -1,4 +1,4 @@
-import { Link } from 'react-router';
+import { Link } from 'wouter';
 import { Plus, Search } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useTranslation } from '@/i18n/useTranslation';
@@ -72,7 +72,7 @@ export function ProjectsList() {
  </span>
  </div>
  <p className={`text-sm text-gray-600 mb-4 text-start`}>
- {project.projectCode}
+ {project.code}
  </p>
  <div className="space-y-2">
  <div className={`flex justify-between text-sm`}>

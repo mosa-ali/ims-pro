@@ -1,7 +1,7 @@
-import { lazy, Suspense } from "react";
+import { lazy, Suspense, useEffect } from "react";
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { Route, Switch } from "wouter";
+import { Route, Switch, useLocation } from "wouter";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
 // Direction is handled centrally by LanguageContext (sets html[dir]) + index.css
@@ -61,6 +61,7 @@ const ActiveGrantsPage = lazy(() => import("@/pages/organization/ActiveGrantsPag
 const ReportingSchedulePage = lazy(() => import("@/pages/organization/ReportingSchedulePage"));
 const ProposalPipeline = lazy(() => import("@/pages/organization/proposals/ProposalPipeline"));
 const AnnualProgramsReport = lazy(() => import("@/pages/organization/AnnualProgramsReport"));
+const AutoProgramsReport = lazy(() => import("@/pages/organization/AutoProgramsReport"));
 const DonorCRMDashboard = lazy(() => import("@/pages/organization/donor-crm/DonorCRMDashboard"));
 const Opportunities = lazy(() => import("@/pages/organization/donor-crm/Opportunities"));
 const DonorRegistry = lazy(() => import("@/pages/organization/donor-crm/DonorRegistry"));
@@ -417,7 +418,9 @@ function Router() {
  <Route path="/organization/donor-crm/communications" component={DonorCommunications} />
  <Route path="/organization/donor-crm/reports" component={DonorReports} />
  <Route path="/organization/donor-crm/funding-opportunities" component={FundingOpportunities} />
- <Route path="/organization/annual-report" component={AnnualProgramsReport} />
+ <Route path="/organization/auto-programs-report" component={AutoProgramsReport} />
+ {/* Redirect old URL to new URL for backward compatibility */}
+ <Route path="/organization/annual-report" component={AnnualReportRedirect} />
  <Route path="/organization/settings" component={SettingsDashboard} />
  <Route path="/organization/settings/users" component={SettingsUserManagement} />
  <Route path="/organization/settings/roles" component={SettingsRolesPermissions} />
@@ -761,6 +764,21 @@ function Router() {
  </Suspense>
  </AppShell>
  );
+}
+
+// ============================================================================
+// REDIRECT COMPONENT FOR BACKWARD COMPATIBILITY
+// ============================================================================
+
+function AnnualReportRedirect() {
+  const [, setLocation] = useLocation();
+  
+  // Redirect to new URL
+  useEffect(() => {
+    setLocation('/organization/auto-programs-report');
+  }, [setLocation]);
+  
+  return null; // No UI needed, just redirect
 }
 
 // NOTE: About Theme

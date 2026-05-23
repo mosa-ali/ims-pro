@@ -40,7 +40,7 @@ export const expensesRouter = router({
           eq(projects.id, projectId),
           eq(projects.organizationId, organizationId),
           eq(projects.operatingUnitId, operatingUnitId),
-          eq(projects.isDeleted, false)
+          eq(projects.isDeleted, 0)
         ))
         .limit(1);
 

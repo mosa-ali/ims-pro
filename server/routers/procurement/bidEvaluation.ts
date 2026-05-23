@@ -36,6 +36,7 @@ import {
   type CriterionConfig,
   type ScoringConfig,
 } from "../../services/bidEvaluationScoringService";
+import { generateBidEvaluationChecklistExcel } from "../../_core/bidEvaluationChecklistExcel";
 
 export const bidEvaluationRouter = router({
   /**
@@ -112,6 +113,36 @@ export const bidEvaluationRouter = router({
 
       return { id: qaId, qaNumber, success: true };
     }),
+
+    exportChecklistExcel: scopedProcedure
+  .input(
+    z.object({
+      bidAnalysisId: z.number(),
+      language: z.enum(["en", "ar"]).default("en"),
+      mode: z.enum(["template", "data"]).default("data"),
+    })
+  )
+  .query(async ({ input, ctx }) => {
+
+    const buffer =
+      await generateBidEvaluationChecklistExcel(
+        input.bidAnalysisId,
+        ctx.scope.organizationId,
+        input.language,
+        input.mode
+      );
+
+    return {
+      success: true,
+      file: buffer.toString("base64"),
+      mimeType:
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      filename:
+        input.mode === "template"
+          ? `bid-evaluation-template-${input.bidAnalysisId}.xlsx`
+          : `bid-evaluation-${input.bidAnalysisId}.xlsx`,
+    };
+  }),
 
   /**
    * Create Bid Analysis (for tender procurement)
@@ -433,7 +464,7 @@ export const bidEvaluationRouter = router({
               score: s.score.toString(),
               status: s.status,
               notes: s.notes,
-              updatedAt: new Date(),
+              updatedAt: new Date().toISOString().slice(0, 19).replace('T', ' '),
             })
             .where(eq(bidEvaluationScores.id, existing.id));
         } else {
@@ -566,7 +597,7 @@ export const bidEvaluationRouter = router({
           .set({
             status: "approved",
             approvedBy: ctx.user.id,
-            approvedOn: new Date(),
+            approvedAt: new Date().toISOString().slice(0, 19).replace('T', ' '),
           })
           .where(
             and(
@@ -580,7 +611,7 @@ export const bidEvaluationRouter = router({
           .set({
             status: "approved",
             approvedBy: ctx.user.id,
-            approvedOn: new Date(),
+            approvedOn: new Date().toISOString().slice(0, 19).replace('T', ' '),
           })
           .where(
             and(
@@ -722,7 +753,7 @@ export const bidEvaluationRouter = router({
         .set({
           totalBidAmount: input.totalOfferPrice.toString(),
           currency: input.currency,
-          updatedAt: new Date(),
+          updatedAt: new Date().toISOString().slice(0, 19).replace('T', ' '),
         })
         .where(and(
           eq(bidAnalysisBidders.id, input.bidderId),

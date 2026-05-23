@@ -12,6 +12,8 @@ export interface OfficialPdfOptions {
   bodyHtml: string;
   /** Optional template version string for cache invalidation (e.g., 'v3') */
   templateVersion?: string;
+  /** Enable landscape orientation for wide tables */
+  landscape?: boolean;
 }
 
 /**
@@ -93,6 +95,7 @@ async function generateOfficialPdfInternal(
     formNumber,
     formDate,
     bodyHtml,
+    landscape = false,
   } = options;
 
   // Generate complete HTML with wrapper (header and content are rendered in-page)
@@ -138,6 +141,7 @@ async function generateOfficialPdfInternal(
     // Generate PDF
     const pdfBuffer = await page.pdf({
       format: 'A4',
+      landscape,
       printBackground: true,
       preferCSSPageSize: true,
       margin: {

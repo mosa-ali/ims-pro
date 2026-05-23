@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { protectedProcedure, scopedProcedure, router } from "./_core/trpc";
 import { getDb } from "./db";
-import { grants, projects, grantDocuments, budgetItems } from "../drizzle/schema";
+import { grants, projects, grantDocuments, budgetItems, reportingSchedules } from "../drizzle/schema";
 import { eq, and, desc, sql } from "drizzle-orm";
 import { TRPCError } from "@trpc/server";
 import { ensureISOString } from "@shared/dateUtils";
@@ -30,7 +30,7 @@ export const grantsRouter = router({
       const conditions = [
         eq(grants.organizationId, organizationId),
         eq(grants.operatingUnitId, operatingUnitId),
-        eq(grants.isDeleted, false),
+        eq(grants.isDeleted, 0),
       ];
 
       // Filter by project
@@ -81,10 +81,20 @@ export const grantsRouter = router({
         const { startDate, endDate, createdAt, updatedAt, deletedAt, ...restGrant } = grant;
         
         // Calculate budget utilization from project data
-        const totalBudget = projectTotalBudget ? parseFloat(String(projectTotalBudget)) : (grant.grantAmount || 0);
-        const spent = projectSpent ? parseFloat(String(projectSpent)) : 0;
-        const balance = totalBudget - spent;
-        const budgetUtilization = totalBudget > 0 ? Math.round((spent / totalBudget) * 100) : 0;
+          const totalBudget = Number(
+            projectTotalBudget ?? grant.grantAmount ?? 0
+          );
+
+          const spent = Number(
+            projectSpent ?? 0
+          );
+
+          const balance = totalBudget - spent;
+
+          const budgetUtilization =
+            totalBudget > 0
+              ? Math.round((spent / totalBudget) * 100)
+              : 0;
         
         // Use project dates if available, otherwise use grant dates
         const syncedStartDate = projectStartDate || startDate;
@@ -163,7 +173,7 @@ export const grantsRouter = router({
           eq(grants.id, input.id),
           eq(grants.organizationId, organizationId),
           eq(grants.operatingUnitId, operatingUnitId),
-          eq(grants.isDeleted, false)
+          eq(grants.isDeleted, 0)
         ))
         .limit(1);
 
@@ -178,10 +188,20 @@ export const grantsRouter = router({
       const { startDate, endDate, createdAt, updatedAt, deletedAt, ...restGrant } = grantData;
       
       // Calculate budget utilization from project data
-      const totalBudget = projectTotalBudget ? parseFloat(String(projectTotalBudget)) : (grantData.grantAmount || 0);
-      const spent = projectSpent ? parseFloat(String(projectSpent)) : 0;
+      const totalBudget = Number(
+        projectTotalBudget ?? grants.grantAmount ?? 0
+      );
+
+      const spent = Number(
+        projectSpent ?? 0
+      );
+
       const balance = totalBudget - spent;
-      const budgetUtilization = totalBudget > 0 ? Math.round((spent / totalBudget) * 100) : 0;
+
+      const budgetUtilization =
+        totalBudget > 0
+          ? Math.round((spent / totalBudget) * 100)
+          : 0;
       
       // Use project dates if available
       const syncedStartDate = projectStartDate || startDate;
@@ -289,7 +309,7 @@ export const grantsRouter = router({
         }
       }
 
-      const result = await db.insert(grants).values({
+      const insertResult = await db.insert(grants).values({
         ...input,
         organizationId,
         operatingUnitId,
@@ -297,7 +317,7 @@ export const grantsRouter = router({
         updatedBy: ctx.user.id,
       });
 
-      const grantId = Number(result.insertId);
+      const grantId = Number((insertResult as any).insertId);
 
       // Auto-generate reporting schedules based on reporting frequency
       const { reportingSchedules } = await import('../drizzle/schema');
@@ -347,10 +367,10 @@ export const grantsRouter = router({
           organizationId,
           operatingUnitId,
           reportType: 'PROGRESS' as const,
-          periodFrom: periodStart,
-          periodTo: periodEnd,
+          periodFrom: ensureISOString(periodStart),
+          periodTo: ensureISOString(periodEnd),
           reportStatus: 'PLANNED' as const,
-          reportDeadline: deadline,
+          reportDeadline: ensureISOString(deadline),
           notes: `Auto-generated ${input.reportingFrequency} report`,
           createdBy: ctx.user.id,
           updatedBy: ctx.user.id,
@@ -473,8 +493,8 @@ export const grantsRouter = router({
       await db
         .update(grants)
         .set({
-          isDeleted: true,
-          deletedAt: new Date(),
+          isDeleted: 1,
+          deletedAt: new Date().toISOString().slice(0, 19).replace('T', ' '),
           deletedBy: ctx.user.id,
         })
         .where(and(
@@ -505,7 +525,7 @@ export const grantsRouter = router({
       const conditions = [
         eq(grants.organizationId, organizationId),
         eq(grants.operatingUnitId, operatingUnitId),
-        eq(grants.isDeleted, false),
+        eq(grants.isDeleted, 0),
       ];
 
       if (input.projectId) {
@@ -596,7 +616,7 @@ export const grantsRouter = router({
           eq(grants.id, input.grantId),
           eq(grants.organizationId, organizationId),
           eq(grants.operatingUnitId, operatingUnitId),
-          eq(grants.isDeleted, false)
+          eq(grants.isDeleted, 0)
         ))
         .limit(1);
 
@@ -634,7 +654,7 @@ export const grantsRouter = router({
         uploadedBy: ctx.user.id,
       });
 
-      return { success: true, documentId: Number(result.insertId) };
+      return { success: true, documentId: Number(grantDocuments.grantId ?? 0) };
     }),
 
   /**
@@ -660,7 +680,7 @@ export const grantsRouter = router({
           eq(grants.id, input.grantId),
           eq(grants.organizationId, organizationId),
           eq(grants.operatingUnitId, operatingUnitId),
-          eq(grants.isDeleted, false)
+          eq(grants.isDeleted, 0)
         ))
         .limit(1);
 
@@ -674,7 +694,7 @@ export const grantsRouter = router({
       const documents = await db
         .select()
         .from(grantDocuments)
-        .where(and(eq(grantDocuments.grantId, input.grantId), eq(grantDocuments.isDeleted, false)))
+        .where(and(eq(grantDocuments.grantId, input.grantId), eq(grantDocuments.isDeleted, 0)))
         .orderBy(desc(grantDocuments.uploadedAt));
 
       return documents;
@@ -701,7 +721,7 @@ export const grantsRouter = router({
         .from(grantDocuments)
         .where(and(
           eq(grantDocuments.id, input.documentId),
-          eq(grantDocuments.isDeleted, false)
+          eq(grantDocuments.isDeleted, 0)
         ))
         .limit(1);
 
@@ -720,7 +740,7 @@ export const grantsRouter = router({
           eq(grants.id, document[0].grantId),
           eq(grants.organizationId, organizationId),
           eq(grants.operatingUnitId, operatingUnitId),
-          eq(grants.isDeleted, false)
+          eq(grants.isDeleted, 0)
         ))
         .limit(1);
 
@@ -734,8 +754,8 @@ export const grantsRouter = router({
       await db
         .update(grantDocuments)
         .set({
-          isDeleted: true,
-          deletedAt: new Date(),
+          isDeleted: 1,
+          deletedAt: new Date().toISOString().slice(0, 19).replace('T', ' '),
           deletedBy: ctx.user.id,
         })
         .where(eq(grantDocuments.id, input.documentId));
@@ -760,7 +780,7 @@ export const grantsRouter = router({
         .where(and(
           eq(projects.organizationId, organizationId),
           eq(projects.operatingUnitId, operatingUnitId),
-          eq(projects.isDeleted, false)
+          eq(projects.isDeleted, 0)
         ));
 
       // Get all existing grants with projectId
@@ -770,7 +790,7 @@ export const grantsRouter = router({
         .where(and(
           eq(grants.organizationId, organizationId),
           eq(grants.operatingUnitId, operatingUnitId),
-          eq(grants.isDeleted, false)
+          eq(grants.isDeleted, 0)
         ));
 
       const existingProjectIds = new Set(existingGrants.map(g => g.projectId).filter(Boolean));
@@ -808,9 +828,9 @@ export const grantsRouter = router({
             donorReference: `${project.projectCode || 'REF'}-REF`,
             grantAmount: project.totalBudget?.toString() || '0',
             totalBudget: project.totalBudget?.toString() || '0',
-            startDate: project.startDate ? (project.startDate instanceof Date ? project.startDate : new Date(project.startDate)) : null,
-            endDate: project.endDate ? (project.endDate instanceof Date ? project.endDate : new Date(project.endDate)) : null,
-            status: 'planned',
+            startDate: project.startDate ? (projects.startDate instanceof Date ? project.startDate : new Date(project.startDate)) : null,
+            endDate: project.endDate ? (projects.endDate instanceof Date ? project.endDate : new Date(project.endDate)) : null,
+            status: 'active',
             reportingStatus: 'on_track',
             description: project.description,
             descriptionAr: project.descriptionAr,
@@ -848,16 +868,16 @@ export const grantsRouter = router({
                 grantAmount: project.totalBudget?.toString() || '0',
                 currency: project.currency || 'USD',
                 updatedBy: ctx.user.id,
-                updatedAt: new Date(),
+                updatedAt: new Date().toISOString().slice(0, 19).replace('T', ' '),
               };
               
               // Only add optional fields if they have values
               if (project.titleAr) updateData.grantNameAr = project.titleAr;
               if (project.startDate) {
-                updateData.startDate = project.startDate instanceof Date ? project.startDate : new Date(project.startDate);
+                updateData.startDate = projects.startDate instanceof Date ? project.startDate : new Date(project.startDate);
               }
               if (project.endDate) {
-                updateData.endDate = project.endDate instanceof Date ? project.endDate : new Date(project.endDate);
+                updateData.endDate = projects.endDate instanceof Date ? project.endDate : new Date(project.endDate);
               }
               if (project.description) updateData.description = project.description;
               if (project.descriptionAr) updateData.descriptionAr = project.descriptionAr;
@@ -900,6 +920,111 @@ export const grantsRouter = router({
     }),
 
   /**
+   * Get top grants for the program management dashboard
+   * Returns top N grants sorted by grantAmount descending, with expiry countdown
+   * Status is synced from linked project status
+   */
+  getTopGrantsForDashboard: scopedProcedure
+    .input(z.object({
+      limit: z.number().min(1).max(20).default(5),
+    }))
+    .query(async ({ input, ctx }) => {
+      const { organizationId, operatingUnitId } = ctx.scope;
+      const db = await getDb();
+      if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Database not available" });
+
+      const conditions = [
+        eq(grants.organizationId, organizationId),
+        eq(grants.operatingUnitId, operatingUnitId),
+        eq(grants.isDeleted, 0),
+      ];
+
+      const EXCHANGE_RATES_TO_USD: Record<string, number> = {
+        USD: 1.0,
+        EUR: 1.10,
+        GBP: 1.27,
+        CHF: 1.17,
+        YER: 0.0004,
+      };
+
+      const mapProjectStatusToGrantStatus = (projectStatus: string | null): "active" | "completed" | "pending" | "on_hold" => {
+        if (!projectStatus) return "pending";
+        switch (projectStatus) {
+          case "active": return "active";
+          case "completed": return "completed";
+          case "on_hold": return "on_hold";
+          case "cancelled": return "completed";
+          case "planning":
+          default: return "pending";
+        }
+      };
+
+      const grantsWithProjects = await db
+        .select({
+          id: grants.id,
+          grantNumber: grants.grantNumber,
+          grantName: grants.grantName,
+          donorName: grants.donorName,
+          grantAmount: grants.grantAmount,
+          amount: grants.amount,
+          currency: grants.currency,
+          startDate: grants.startDate,
+          endDate: grants.endDate,
+          reportingStatus: grants.reportingStatus,
+          projectStatus: projects.status,
+          projectTitle: projects.title,
+          projectDonor: projects.donor,
+          projectEndDate: projects.endDate,
+          projectTotalBudget: projects.totalBudget,
+          projectSpent: projects.spent,
+          projectCurrency: projects.currency,
+        })
+        .from(grants)
+        .leftJoin(projects, eq(grants.projectId, projects.id))
+        .where(and(...conditions))
+        .orderBy(desc(grants.grantAmount))
+        .limit(input.limit * 3); // fetch extra to allow post-filter sorting by USD amount
+
+      const mapped = grantsWithProjects.map((row) => {
+        const effectiveStatus = mapProjectStatusToGrantStatus(row.projectStatus);
+        const totalBudget = row.projectTotalBudget
+          ? parseFloat(String(row.projectTotalBudget))
+          : (Number(row.grantAmount) || Number(row.amount) || 0);
+        const spent = row.projectSpent ? parseFloat(String(row.projectSpent)) : 0;
+        const currency = row.projectCurrency || row.currency || 'USD';
+        const rate = EXCHANGE_RATES_TO_USD[currency] || 1.0;
+        const totalBudgetUSD = totalBudget * rate;
+        const budgetUtilization = totalBudget > 0 ? Math.round((spent / totalBudget) * 100) : 0;
+        const donorName = row.projectDonor || row.donorName || 'Unknown Donor';
+        const effectiveEndDate = row.projectEndDate || row.endDate;
+        const daysRemaining = effectiveEndDate
+          ? Math.ceil((new Date(effectiveEndDate).getTime() - Date.now()) / (1000 * 60 * 60 * 24))
+          : null;
+
+        return {
+          id: row.id,
+          grantNumber: row.grantNumber,
+          grantName: row.grantName || row.projectTitle || 'Unnamed Grant',
+          donorName,
+          totalBudget,
+          totalBudgetUSD,
+          currency,
+          spent,
+          balance: totalBudget - spent,
+          budgetUtilization,
+          status: effectiveStatus,
+          endDate: effectiveEndDate ? ensureISOString(effectiveEndDate) : null,
+          daysRemaining,
+          reportingStatus: row.reportingStatus || 'on_track',
+        };
+      });
+
+      // Sort by totalBudgetUSD descending and return top N
+      mapped.sort((a, b) => b.totalBudgetUSD - a.totalBudgetUSD);
+      return mapped.slice(0, input.limit);
+    }),
+
+  /**
    * Get budget utilization by category for a grant's linked project
    * Fetches budget items from the project and groups them by category
    * Returns percentage utilization for each category
@@ -923,7 +1048,7 @@ export const grantsRouter = router({
           eq(grants.id, input.grantId),
           eq(grants.organizationId, organizationId),
           eq(grants.operatingUnitId, operatingUnitId),
-          eq(grants.isDeleted, false)
+          eq(grants.isDeleted, 0)
         ))
         .limit(1);
 
