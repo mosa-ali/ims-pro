@@ -10,7 +10,7 @@ export const dashboardTranslations = {
     },
 
     reportingSchedule: {
-      title: 'Project Reporting Schedule',
+      title: 'Projects Reporting Schedule',
       description: 'Track reporting cycles and compliance',
       linkText: 'View Schedule',
     },
@@ -21,8 +21,8 @@ export const dashboardTranslations = {
       linkText: 'View Report',
     },
 
-    autoProgramsReport: {
-      title: 'Auto Programs Report',
+    programsOverviewReport: {
+      title: 'Programs Overview Report',
       description: 'Executive dashboard with project health, budget analytics, and compliance metrics',
       linkText: 'View Report',
     },
@@ -158,9 +158,9 @@ export const dashboardTranslations = {
     dLeft: 'd',
     burnHealth_critical: 'Critical',
     burnHealth_warning: 'Warning',
-    burnHealth_healthy: 'Healthy',
+     burnHealth_healthy: 'Healthy',
 
-    // ── Burn Rate Analytics ──────────────────────────────────────────────────
+    // ── Burn Rate Analytics ───────────────────────────────────────────────────────────────────
     burnRateAnalytics: {
       title: 'Budget Burn Analytics (12 Months)',
       noData: 'No financial data available',
@@ -170,6 +170,17 @@ export const dashboardTranslations = {
       remaining: 'Remaining',
       forecast: 'Forecast',
     },
+
+    // ── Portfolio Financial Snapshot ───────────────────────────────────────────────────────────────────
+    portfolioFinancialSnapshot: 'Portfolio Financial Snapshot',
+    highUtilization: 'High utilization — review remaining funds',
+    onTrack: 'On track',
+    budgetAvailable: 'budget available',
+    activeGrantsValue: 'Active Grants Value',
+    avgRemainingPerProject: 'Avg. remaining per project',
+    noFinancialData: 'No financial data available',
+    across: 'Across',
+    inPortfolio: 'in portfolio',
   },
 
   ar: {
@@ -194,7 +205,7 @@ export const dashboardTranslations = {
       linkText: 'عرض التقرير',
     },
 
-    autoProgramsReport: {
+    programsOverviewReport: {
       title: 'تقرير البرامج التلقائي',
       description: 'لوحة معلومات تنفيذية مع صحة المشروع وتحليلات الميزانية ومقاييس الامتثال',
       linkText: 'عرض التقرير',
@@ -333,7 +344,7 @@ export const dashboardTranslations = {
     burnHealth_warning: 'تحذير',
     burnHealth_healthy: 'صحي',
 
-    // ── Burn Rate Analytics ──────────────────────────────────────────────────
+    // ── Burn Rate Analytics ──────────────────────────────────────────
     burnRateAnalytics: {
       title: 'تحليل حرق الميزانية (12 شهر)',
       noData: 'لا توجد بيانات مالية متاحة',
@@ -343,5 +354,16 @@ export const dashboardTranslations = {
       remaining: 'المتبقي',
       forecast: 'التوقعات',
     },
+
+    // ── لقطة المالية للمحفظة ──────────────────────────────────────────
+    portfolioFinancialSnapshot: 'لقطة المالية للمحفظة',
+    highUtilization: 'استخدام مرتفع — راجع الأموال المتبقية',
+    onTrack: 'على المسار',
+    budgetAvailable: 'ميزانية متاحة',
+    activeGrantsValue: 'قيمة المنح النشطة',
+    avgRemainingPerProject: 'متوسط المتبقي لكل مشروع',
+    noFinancialData: 'لا توجد بيانات مالية متاحة',
+    across: 'عبر',
+    inPortfolio: 'في المحفظة',
   },
 };

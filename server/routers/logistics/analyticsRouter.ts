@@ -41,10 +41,10 @@ export const analyticsRouter = router({
         conditions.push(eq(purchaseRequests.operatingUnitId, operatingUnitId));
       }
       if (startDate) {
-        conditions.push(gte(purchaseRequests.createdAt, new Date(startDate)));
+        conditions.push(gte(purchaseRequests.createdAt, new Date(startDate).toISOString()));
       }
       if (endDate) {
-        conditions.push(lte(purchaseRequests.createdAt, new Date(endDate)));
+        conditions.push(lte(purchaseRequests.createdAt, new Date(endDate).toISOString()));
       }
 
       // Get PRs with their completion times
@@ -53,7 +53,7 @@ export const analyticsRouter = router({
           id: purchaseRequests.id,
           prNumber: purchaseRequests.prNumber,
           createdAt: purchaseRequests.createdAt,
-          approvedAt: purchaseRequests.approvedAt,
+          approvedAt: purchaseRequests.approvedOn,
           status: purchaseRequests.status,
         })
         .from(purchaseRequests)
@@ -107,10 +107,10 @@ export const analyticsRouter = router({
         conditions.push(eq(purchaseOrders.operatingUnitId, operatingUnitId));
       }
       if (startDate) {
-        conditions.push(gte(purchaseOrders.poDate, new Date(startDate)));
+        conditions.push(gte(purchaseOrders.poDate, new Date(startDate).toISOString()));
       }
       if (endDate) {
-        conditions.push(lte(purchaseOrders.poDate, new Date(endDate)));
+        conditions.push(lte(purchaseOrders.poDate, new Date(endDate).toISOString()));
       }
 
       // Get PO data with supplier info
@@ -198,10 +198,10 @@ export const analyticsRouter = router({
         conditions.push(eq(purchaseOrders.operatingUnitId, operatingUnitId));
       }
       if (startDate) {
-        conditions.push(gte(purchaseOrders.poDate, new Date(startDate)));
+        conditions.push(gte(purchaseOrders.poDate, new Date(startDate).toISOString()));
       }
       if (endDate) {
-        conditions.push(lte(purchaseOrders.poDate, new Date(endDate)));
+        conditions.push(lte(purchaseOrders.poDate, new Date(endDate).toISOString()));
       }
 
       const pos = await db
@@ -337,9 +337,9 @@ export const analyticsRouter = router({
         .limit(1000);
 
       const totalItems = items.length;
-      const lowStockItems = items.filter((item) => item.quantity <= (item.reorderLevel || 0)).length;
-      const outOfStockItems = items.filter((item) => item.quantity === 0).length;
-      const totalValue = items.reduce((sum, item) => sum + (item.quantity * parseFloat(item.unitCost || "0")), 0);
+      const lowStockItems = items.filter((item) => Number(item.currentQuantity) <= Number(item.reorderLevel || 0)).length;
+      const outOfStockItems = items.filter((item) => Number(item.currentQuantity) === 0).length;
+      const totalValue = items.reduce((sum, item) => sum + (Number(item.currentQuantity) * parseFloat(item.unitCost || "0")), 0);
 
       return {
         totalItems,

@@ -668,8 +668,8 @@ const rbacUsersRouter = router({
     await db.update(users).set({
       isDeleted: 0,
       isActive: 1,
-      deletedAt: null,
-      deletedBy: null,
+      deletedAt: new Date().toISOString().slice(0, 19).replace('T', ' '),
+      deletedBy: ctx.user.id,
       deletionReason: null,
     }).where(eq(users.id, input.userId));
 
@@ -684,7 +684,7 @@ const rbacUsersRouter = router({
     if (input.reassignRoleId) {
       await db.insert(rbacUserPermissions).values({
         userId: input.userId,
-        organizationId: orgId,
+        organizationId: ctx.scope.organizationId,
         roleId: input.reassignRoleId,
       });
     }
@@ -705,7 +705,7 @@ const rbacUsersRouter = router({
     });
 
     // 5. Audit log
-    await logSensitiveAccess(ctx.user.id, orgId, undefined, 'user.restore', 'settings', 'users', 'user', input.userId,
+    await logSensitiveAccess(ctx.user.id, ctx.scope.organizationId, null, 'user.restore', 'settings', 'users', 'user', input.userId,
       JSON.stringify({ restoredToOrg: orgId, roleId: input.reassignRoleId }));
 
     return { success: true };
@@ -776,6 +776,7 @@ const rbacUsersRouter = router({
     const REVIEW_THRESHOLD_DAYS = 90;
     const thresholdDate = new Date();
     thresholdDate.setDate(thresholdDate.getDate() - REVIEW_THRESHOLD_DAYS);
+    const thresholdIso = thresholdDate.toISOString();
 
     const sensitiveScreenIds = new Set(SENSITIVE_WORKSPACES.map(w => w.screenId));
     const sensitiveModuleIds = new Set(SENSITIVE_WORKSPACES.map(w => w.moduleId));
@@ -797,12 +798,13 @@ const rbacUsersRouter = router({
     // Get latest reviews per user per module
     const reviews = await db.select().from(permissionReviews)
       .where(eq(permissionReviews.organizationId, orgId));
-    const reviewMap = new Map<string, Date>();
+    const reviewMap = new Map<string, string>();
     for (const r of reviews) {
       const key = `${r.userId}-${r.moduleId}-${r.screenId || ''}`;
       const existing = reviewMap.get(key);
-      if (!existing || r.reviewedAt > existing) {
-        reviewMap.set(key, r.reviewedAt);
+      const rAt = typeof r.reviewedAt === 'string' ? r.reviewedAt : (r.reviewedAt as any)?.toISOString?.() || '';
+      if (!existing || rAt > existing) {
+        reviewMap.set(key, rAt);
       }
     }
 
@@ -824,15 +826,15 @@ const rbacUsersRouter = router({
         for (const sw of SENSITIVE_WORKSPACES) {
           const key = `${user.id}-${sw.moduleId}-${sw.screenId}`;
           const lastReview = reviewMap.get(key);
-          if (!lastReview || lastReview < thresholdDate) {
+          if (!lastReview || lastReview < thresholdIso) {
             const modDef = MODULE_DEFINITIONS.find(m => m.id === sw.moduleId);
             const screenDef = (SCREEN_DEFINITIONS[sw.moduleId] || []).find((s: any) => s.id === sw.screenId);
-            const daysSince = lastReview ? Math.floor((Date.now() - lastReview.getTime()) / (1000 * 60 * 60 * 24)) : 999;
+            const daysSince = lastReview ? Math.floor((Date.now() - new Date(lastReview).getTime()) / (1000 * 60 * 60 * 24)) : 999;
             reminders.push({
               userId: user.id, userName: user.name || 'Unknown', userEmail: user.email || '',
               moduleId: sw.moduleId, moduleName: modDef?.name || sw.moduleId,
               screenId: sw.screenId, screenName: screenDef?.name || sw.screenId,
-              daysSinceReview: daysSince, lastReviewedAt: lastReview?.toISOString() || null,
+              daysSinceReview: daysSince, lastReviewedAt: lastReview || null,
               permissionGrantedAt: new Date().toISOString(),
             });
           }
@@ -859,15 +861,15 @@ const rbacUsersRouter = router({
 
           const key = `${user.id}-${modId}-${screen.id}`;
           const lastReview = reviewMap.get(key);
-          if (!lastReview || lastReview < thresholdDate) {
+          if (!lastReview || lastReview < thresholdIso) {
             const modDef = MODULE_DEFINITIONS.find(m => m.id === modId);
-            const daysSince = lastReview ? Math.floor((Date.now() - lastReview.getTime()) / (1000 * 60 * 60 * 24)) : 999;
+            const daysSince = lastReview ? Math.floor((Date.now() - new Date(lastReview).getTime()) / (1000 * 60 * 60 * 24)) : 999;
             reminders.push({
               userId: user.id, userName: user.name || 'Unknown', userEmail: user.email || '',
               moduleId: modId, moduleName: modDef?.name || modId,
               screenId: screen.id, screenName: screen.name,
-              daysSinceReview: daysSince, lastReviewedAt: lastReview?.toISOString() || null,
-              permissionGrantedAt: (typeof perm.createdAt === 'string' ? perm.createdAt : perm.createdAt?.toISOString?.()) || new Date().toISOString(),
+              daysSinceReview: daysSince, lastReviewedAt: lastReview || null,
+              permissionGrantedAt: (typeof perm.createdAt === 'string' ? perm.createdAt : (perm.createdAt as any)?.toISOString?.()) || new Date().toISOString(),
             });
           }
         }
@@ -951,7 +953,7 @@ const rbacUsersRouter = router({
       action: input.action,
       overrideType: input.overrideType,
       reason: input.reason || null,
-      expiresAt: input.expiresAt ? new Date(input.expiresAt) : null,
+      expiresAt: input.expiresAt ? input.expiresAt.slice(0, 19).replace('T', ' ') : null,
       isActive: 1,
       createdBy: ctx.user.id,
     });
@@ -1351,7 +1353,7 @@ const rbacUsersRouter = router({
           action: input.action,
           overrideType: input.overrideType,
           reason: input.reason || null,
-          expiresAt: input.expiresAt ? new Date(input.expiresAt) : null,
+          expiresAt: input.expiresAt ? input.expiresAt.slice(0, 19).replace('T', ' ') : null,
           isActive: 1,
           createdBy: ctx.user.id,
         });
@@ -1538,7 +1540,7 @@ const rbacUsersRouter = router({
               screenId: screen.id, screenName: screen.name,
               isSensitive, accessType: 'platform_admin',
               actions: ALL_ACTIONS.slice(),
-              grantedBy: 'System', grantedAt: (typeof orgUser.createdAt === 'string' ? orgUser.createdAt : orgUser.createdAt?.toISOString?.()) || new Date().toISOString(),
+              grantedBy: 'System', grantedAt: (orgUser.createdAt as string) || new Date().toISOString(),
               expiresAt: null, overrideReason: null,
             });
           }
@@ -1577,7 +1579,7 @@ const rbacUsersRouter = router({
                 isSensitive, accessType: 'role',
                 actions: activeActions,
                 grantedBy: perm.updatedBy ? (adminMap.get(perm.updatedBy) || 'Unknown') : 'System',
-                grantedAt: perm.updatedAt?.toISOString() || new Date().toISOString(),
+                grantedAt: (perm.updatedAt as string) || new Date().toISOString(),
                 expiresAt: null, overrideReason: null,
               });
             }
@@ -1606,8 +1608,8 @@ const rbacUsersRouter = router({
           isSensitive, accessType: 'override_grant',
           actions: [ov.action],
           grantedBy: adminMap.get(ov.createdBy) || 'Unknown',
-          grantedAt: (typeof ov.createdAt === 'string' ? ov.createdAt : ov.createdAt?.toISOString?.()) || new Date().toISOString(),
-          expiresAt: ov.expiresAt?.toISOString() || new Date().toISOString(),
+          grantedAt: (ov.createdAt as string) || new Date().toISOString(),
+          expiresAt: (ov.expiresAt as string) || null,
           overrideReason: ov.reason,
         });
       }
@@ -1750,7 +1752,7 @@ const rbacUsersRouter = router({
         const screenDef = ov.screenId ? (SCREEN_DEFINITIONS[ov.moduleId] || []).find((s: any) => s.id === ov.screenId) : null;
         const isSensitive = sensitiveScreenIds.has(ov.screenId || '') || sensitiveModuleIds.has(ov.moduleId);
         if (input?.sensitiveOnly && !isSensitive) continue;
-        csvRows.push(`"${user.name || ''}","${user.email || ''}","${user.role}","${roleName}","${modDef?.name || ov.moduleId}","${screenDef?.name || ov.screenId || 'Module-level'}","${isSensitive ? 'Yes' : 'No'}","Override (${ov.overrideType})","${ov.action}","","${ov.expiresAt?.toISOString() || 'Never'}","${ov.reason || ''}"`);
+        csvRows.push(`"${user.name || ''}","${user.email || ''}","${user.role}","${roleName}","${modDef?.name || ov.moduleId}","${screenDef?.name || ov.screenId || 'Module-level'}","${isSensitive ? 'Yes' : 'No'}","Override (${ov.overrideType})","${ov.action}","","${(ov.expiresAt as string) || 'Never'}","${ov.reason || ''}"`);
       }
     }
 
@@ -2102,7 +2104,9 @@ const optionSetsRouter = router({
   })).mutation(async ({ ctx, input }) => {
     assertAdmin(ctx);
     const db = await getDb();
-    const { id, ...data } = input;
+    const { id, isActive, ...rest } = input;
+    const data: Record<string, any> = { ...rest };
+    if (isActive !== undefined) data.isActive = isActive ? 1 : 0;
     await db.update(optionSetValues).set(data).where(eq(optionSetValues.id, id));
     return { success: 1 };
   }),
@@ -2130,6 +2134,8 @@ const brandingRouter = router({
     primaryColor: z.string().nullable().optional(), secondaryColor: z.string().nullable().optional(),
     accentColor: z.string().nullable().optional(), footerText: z.string().nullable().optional(),
     footerTextAr: z.string().nullable().optional(),
+    headerColor: z.string().nullable().optional(),
+    headerTextColor: z.string().nullable().optional(),
   })).mutation(async ({ ctx, input }) => {
     assertAdmin(ctx);
     const db = await getDb();
@@ -2189,11 +2195,16 @@ const landingRouter = router({
     assertAdmin(ctx);
     const db = await getDb();
     const orgId = ctx.scope.organizationId;
+    const { showQuickStats, showAnnouncements, showRecentActivity, ...rest } = input;
+    const dbData: Record<string, any> = { ...rest, updatedBy: ctx.user.id };
+    if (showQuickStats !== undefined) dbData.showQuickStats = showQuickStats ? 1 : 0;
+    if (showAnnouncements !== undefined) dbData.showAnnouncements = showAnnouncements ? 1 : 0;
+    if (showRecentActivity !== undefined) dbData.showRecentActivity = showRecentActivity ? 1 : 0;
     const existing = await db.select({ id: landingSettings.id }).from(landingSettings).where(eq(landingSettings.organizationId, orgId)).limit(1);
     if (existing.length > 0) {
-      await db.update(landingSettings).set({ ...input, updatedBy: ctx.user.id }).where(eq(landingSettings.organizationId, orgId));
+      await db.update(landingSettings).set(dbData).where(eq(landingSettings.organizationId, orgId));
     } else {
-      await db.insert(landingSettings).values({ organizationId: ctx.scope.organizationId, ...input, updatedBy: ctx.user.id });
+      await db.insert(landingSettings).values({ organizationId: ctx.scope.organizationId, ...dbData });
     }
     return { success: true };
   }),
@@ -2370,7 +2381,7 @@ const notificationEventsRouter = router({
           name: evt.name,
           category: evt.category,
           description: evt.description,
-          emailEnabled: evt.eventKey !== "user_activity", // Disable user_activity by default
+          emailEnabled: evt.eventKey !== "user_activity" ? 1 : 0, // Disable user_activity by default
           inAppEnabled: 1,
           recipientsMode: "role",
         });
@@ -2395,7 +2406,9 @@ const notificationEventsRouter = router({
   })).mutation(async ({ ctx, input }) => {
     assertAdmin(ctx);
     const db = await getDb();
-    const { id, ...data } = input;
+    const { id, isActive, ...rest } = input;
+    const data: Record<string, any> = { ...rest };
+    if (isActive !== undefined) data.isActive = isActive ? 1 : 0;
     await db.update(notificationEventSettings).set(data)
       .where(and(eq(notificationEventSettings.id, id), eq(notificationEventSettings.organizationId, ctx.scope.organizationId)));
     return { success: true };
@@ -2505,7 +2518,9 @@ const emailTemplatesRouter = router({
   })).mutation(async ({ ctx, input }) => {
     assertAdmin(ctx);
     const db = await getDb();
-    const { id, ...data } = input;
+    const { id, isActive, ...rest } = input;
+    const data: Record<string, any> = { ...rest };
+    if (isActive !== undefined) data.isActive = isActive ? 1 : 0;
     await db.update(emailTemplates).set(data)
       .where(and(eq(emailTemplates.id, id), eq(emailTemplates.organizationId, ctx.scope.organizationId)));
     return { success: true };
@@ -2518,34 +2533,6 @@ const emailTemplatesRouter = router({
     await db.delete(emailTemplates)
       .where(and(eq(emailTemplates.id, input.id), eq(emailTemplates.organizationId, ctx.scope.organizationId)));
     return { success: true };
-  }),
-
-  // Preview a template with sample data
-  preview: scopedProcedure.input(z.object({
-    bodyHtml: z.string(),
-    variables: z.record(z.string()).optional(),
-  })).mutation(async ({ ctx, input }) => {
-    const { renderTemplate } = await import("../services/emailService");
-    const sampleVars: Record<string, string> = {
-      recipientName: "Ahmed Al-Rashid",
-      recipientEmail: "ahmed@example.org",
-      organizationName: "Sample Organization",
-      organizationNameAr: "\u0645\u0646\u0638\u0645\u0629 \u0646\u0645\u0648\u0630\u062c\u064a\u0629",
-      eventName: "Grant Approved",
-      eventDescription: "A grant has been approved and is ready for review.",
-      actionUrl: "https://ims.example.org/grants/123",
-      currentDate: new Date().toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" }),
-      currentYear: new Date().getFullYear().toString(),
-      senderName: "IMS Notifications",
-      projectName: "Community Health Initiative",
-      grantName: "USAID Health Grant 2026",
-      amount: "$50,000.00",
-      deadline: "March 31, 2026",
-      customMessage: "This is a sample custom message for preview purposes.",
-      ...input.variables,
-    };
-    const rendered = renderTemplate(input.bodyHtml, sampleVars);
-    return { html: rendered };
   }),
 
   // Get available merge tags
@@ -2567,7 +2554,9 @@ const emailTemplatesRouter = router({
   })).mutation(async ({ ctx, input }) => {
     assertAdmin(ctx);
     const db = await getDb();
-    const { id, ...data } = input;
+    const { id, isActive, ...rest } = input;
+    const data: Record<string, any> = { ...rest };
+    if (isActive !== undefined) data.isActive = isActive ? 1 : 0;
     await db.update(emailTemplates).set(data).where(eq(emailTemplates.id, id));
     return { success: true };
   }),
@@ -2637,8 +2626,8 @@ const deletedRecordsRouter = router({
       await db.update(organizations).set({
         isDeleted: 0,
         isActive: true,
-        deletedAt: null,
-        deletedBy: null,
+        deletedAt: new Date().toISOString().slice(0, 19).replace('T', ' '),
+        deletedBy: ctx.user.id,
       }).where(eq(organizations.id, input.id));
 
       // Log the restore
@@ -2646,11 +2635,9 @@ const deletedRecordsRouter = router({
         organizationId: orgId,
         userId: ctx.user.id,
         action: 'restore_organization',
-        module: 'organizations',
         entityType: 'organization',
         entityId: input.id,
-        changes: JSON.stringify({ restored: true, restoredAt: new Date() }),
-        timestamp: new Date(),
+        details: JSON.stringify({ restored: true, restoredAt: new Date().toISOString() }),
       });
 
       return { success: true, message: 'Organization restored successfully' };
@@ -2678,11 +2665,9 @@ const deletedRecordsRouter = router({
         organizationId: orgId,
         userId: ctx.user.id,
         action: 'purge_organization',
-        module: 'organizations',
         entityType: 'organization',
         entityId: input.id,
-        changes: JSON.stringify({ purged: true, purgedAt: new Date() }),
-        timestamp: new Date(),
+        details: JSON.stringify({ purged: true, purgedAt: new Date().toISOString() }),
       });
 
       return { success: true, message: 'Record permanently deleted' };

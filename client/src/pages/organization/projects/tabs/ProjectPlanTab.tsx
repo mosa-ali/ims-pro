@@ -4,10 +4,12 @@ import {
  CheckCircle2, Clock, AlertCircle, Target, ListTree, AlertTriangle, Layers
 } from 'lucide-react';
 import { trpc } from '@/lib/trpc';
-import { useLanguage } from '@/contexts/LanguageContext';
+import { useAuth } from '@/_core/hooks/useAuth';
+import { useOrganization } from "@/contexts/OrganizationContext";
+import { useOperatingUnit } from "@/contexts/OperatingUnitContext";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { UnifiedExportButton } from '@/components/exports/UnifiedExportButton';
 import { useProjectData } from '@/hooks/useProjectData';
-import { useOrganization } from '@/contexts/OrganizationContext';
 import { exportToStandardExcel, exportExcelTemplate, type ExcelColumn } from '@/lib/standardExcelExport';
 import { ProjectPlanTabSkeleton } from "@/components/ProjectTabSkeletons";
 import { useTranslation } from '@/i18n/useTranslation';
@@ -171,9 +173,11 @@ function isActiveInMonth(itemStartDate: string, itemEndDate: string, monthDate: 
 }
 
 export function ProjectPlanTab({ projectId }: ProjectPlanTabProps) {
- const { isRTL } = useLanguage();
- const { t } = useTranslation();
-const { organizationId } = useOrganization();
+  const { user } = useAuth();
+  const { t } = useTranslation();
+  const { currentOrganizationId } = useOrganization();
+  const { currentOperatingUnitId } = useOperatingUnit();
+  const { direction, isRTL } = useLanguage();
  
  // ✅ CRITICAL: Load project data to get start/end dates
  const { project, loading: projectLoading, error: projectError } = useProjectData(projectId);
@@ -386,7 +390,7 @@ const { organizationId } = useOrganization();
  const canAddActivityTask = results.length > 0;
 
  // Translations - using t from useTranslation hook
- const lang = t.projectPlan || {};
+ const lang = t.projectDetailsPage.projectPlan || {};
 
  const departments = ['Program', 'MEAL', 'Logistics', 'Finance', 'HR', 'Security', 'Other'];
 
@@ -526,7 +530,6 @@ const { organizationId } = useOrganization();
  ...prev,
  activityTabId,
  title: selectedActivity.activityName,
- titleAr: selectedActivity.activityNameAr || '',
  startDate: selectedActivity.startDate || '',
  endDate: selectedActivity.endDate || ''
  }));
@@ -593,7 +596,7 @@ const { organizationId } = useOrganization();
  });
 
  // Task rows (SEPARATE from Activity)
- const actTasks = planTasks.filter(t => t.projectPlanTab.planActivityId === act.id);
+ const actTasks = planTasks.filter(t => planActivities === activity.id);
  actTasks.forEach(task => {
  exportData.push({
  level: 'Task',
@@ -914,7 +917,7 @@ const { organizationId } = useOrganization();
 
  {/* Activities under this Result */}
  {expandedRows.has(`res-${result.id}`) && resActivities.map(activity => {
- const actTasks = planTasks.filter(t => t.projectPlanTab.planActivityId === activity.id);
+ const actTasks = planTasks.filter(t => planActivities === activity.id);
  return (
  <React.Fragment key={`act-${activity.id}`}>
  {/* ============================================================================
@@ -1061,7 +1064,7 @@ const { organizationId } = useOrganization();
  value={objectiveForm.titleAr}
  onChange={(e) => setObjectiveForm({ ...objectiveForm, titleAr: e.target.value })}
  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50"
- placeholder={t.placeholders.أدخلعنوانالهدف}
+ placeholder={t.placeholders.enterObjectiveTitle}
  dir="rtl"
  />
  </div>
@@ -1146,7 +1149,7 @@ const { organizationId } = useOrganization();
  value={resultForm.titleAr}
  onChange={(e) => setResultForm({ ...resultForm, titleAr: e.target.value })}
  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50"
- placeholder={t.placeholders.أدخلعنوانالنتيجة}
+ placeholder={t.placeholders.enterResultTitle}
  dir="rtl"
  />
  </div>
@@ -1316,7 +1319,7 @@ const { organizationId } = useOrganization();
  value={taskForm.titleAr}
  onChange={(e) => setTaskForm({ ...taskForm, titleAr: e.target.value })}
  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50"
- placeholder={t.placeholders.أدخلعنوانالمهمة}
+ placeholder={t.placeholders.enterTaskTitle}
  dir="rtl"
  />
  </div>

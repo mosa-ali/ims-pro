@@ -1,9 +1,14 @@
 import { z } from 'zod';
 import { TRPCError } from '@trpc/server';
-import { eq, and, desc } from 'drizzle-orm';
+import { eq, and, desc, lte } from 'drizzle-orm';
 import { protectedProcedure, router, scopedProcedure } from './_core/trpc';
 import { getDb } from './db';
-import { reportingSchedules, projects } from '../drizzle/schema';
+import {
+  reportingSchedules,
+  projects,
+  organizations,
+  operatingUnits
+} from '../drizzle/schema';
 
 // Report Type Enum
 const reportTypeEnum = z.enum([
@@ -26,6 +31,20 @@ const reportStatusEnum = z.enum([
   'SUBMITTED_TO_HQ',
   'SUBMITTED_TO_DONOR'
 ]);
+
+type ReportingScheduleItem = {
+  id: number;
+  projectId: number | null;
+  projectCode: string | null;
+  projectTitle: string | null;
+  projectTitleAr: string | null;
+  reportType: string | null;
+  reportTitle: string | null;
+  reportTitleAr: string | null;
+  dueDate: string;
+  status: string | null;
+  frequency: string | null;
+};
 
 export const reportingSchedulesRouter = router({
   // List all reporting schedules (optionally filtered by project or grant)
@@ -147,16 +166,16 @@ export const reportingSchedulesRouter = router({
       }
 
       const [result] = await db.insert(reportingSchedules).values({
+        organizationId: organizationId,
+        operatingUnitId: operatingUnitId,
         projectId: input.projectId,
         grantId: input.grantId, // Optional grant link
-        organizationId,
-        operatingUnitId,
         reportType: input.reportType,
         reportTypeOther: input.reportTypeOther,
-        periodFrom: new Date(input.periodFrom),
-        periodTo: new Date(input.periodTo),
+        periodFrom: input.periodFrom,
+        periodTo: input.periodTo,
         reportStatus: input.reportStatus,
-        reportDeadline: new Date(input.reportDeadline),
+        reportDeadline: input.reportDeadline,
         notes: input.notes,
         createdBy: ctx.user.id,
         updatedBy: ctx.user.id,
@@ -355,5 +374,172 @@ export const reportingSchedulesRouter = router({
         );
 
       return result.length;
+    }),
+
+  // Mark a reporting schedule as submitted
+  markAsSubmitted: scopedProcedure
+    .input(z.object({
+      id: z.number(),
+    }))
+    .mutation(async ({ ctx, input }) => {
+      const { organizationId, operatingUnitId } = ctx.scope;
+      const db = await getDb();
+      if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Database not available" });
+
+      // Verify the schedule exists and belongs to the organization
+      const existing = await db
+        .select()
+        .from(reportingSchedules)
+        .where(
+          and(
+            eq(reportingSchedules.id, input.id),
+            eq(reportingSchedules.organizationId, organizationId),
+            eq(reportingSchedules.operatingUnitId, operatingUnitId),
+            eq(reportingSchedules.isDeleted, 0)
+          )
+        )
+        .limit(1);
+
+      if (!existing[0]) {
+        throw new TRPCError({
+          code: 'NOT_FOUND',
+          message: 'Reporting schedule not found',
+        });
+      }
+
+      // Update the status to submitted
+      await db
+        .update(reportingSchedules)
+        .set({
+          reportStatus: 'SUBMITTED_TO_DONOR',
+          updatedAt: new Date().toISOString().slice(0, 19).replace('T', ' '),
+          updatedBy: ctx.user.id,
+        })
+        .where(eq(reportingSchedules.id, input.id));
+
+      return {
+        success: true,
+        message: 'Report marked as submitted',
+      };
+    }),
+
+  // ─── NEW: Get upcoming reporting deadlines (compact widget) ────────────────────
+  // Returns top 5 deadlines sorted by priority for executive dashboard
+  // Includes overdue, urgent (0-7d), upcoming (8-30d), and future deadlines
+  getUpcomingDeadlines: scopedProcedure
+    .input(z.object({
+      daysAhead: z.number().optional().default(90),
+    }))
+    .query(async ({ ctx, input }) => {
+      const { organizationId, operatingUnitId } = ctx.scope;
+      const { daysAhead } = input;
+      const db = await getDb();
+
+      if (!db) {
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'Database not available',
+        });
+      }
+
+      try {
+        // Calculate date range
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        const todayString = today.toISOString().split('T')[0];
+
+        const futureDate = new Date(today);
+        futureDate.setDate(futureDate.getDate() + daysAhead);
+        const futureDateString = futureDate.toISOString().split('T')[0];
+
+        // Build where clause - includes all deadlines up to daysAhead (including overdue)
+        const whereConditions = [
+          eq(reportingSchedules.organizationId, organizationId),
+          eq(reportingSchedules.operatingUnitId, operatingUnitId),
+          eq(reportingSchedules.isDeleted, 0),
+          lte(reportingSchedules.reportDeadline, futureDateString), // Deadline <= future date
+        ];
+
+        // Fetch deadlines with project code
+        const deadlines = await db
+          .select({
+            id: reportingSchedules.id,
+            projectId: reportingSchedules.projectId,
+            projectCode: projects.projectCode,
+            projectName: projects.title,
+            reportType: reportingSchedules.reportType,
+            reportStatus: reportingSchedules.reportStatus,
+            reportDeadline: reportingSchedules.reportDeadline,
+          })
+          .from(reportingSchedules)
+          .leftJoin(projects, eq(reportingSchedules.projectId, projects.id))
+          .where(and(...whereConditions));
+
+        // Transform and calculate priority
+        const now = new Date();
+        now.setHours(0, 0, 0, 0);
+
+        const transformed = (deadlines || []).map((d) => {
+          const deadline = new Date(d.reportDeadline);
+          deadline.setHours(0, 0, 0, 0);
+
+          const daysUntilDeadline = Math.ceil(
+            (deadline.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)
+          );
+
+          const isOverdue = daysUntilDeadline < 0;
+          const isUrgent = daysUntilDeadline >= 0 && daysUntilDeadline <= 7;
+          const isUpcoming = daysUntilDeadline > 7 && daysUntilDeadline <= 30;
+
+          // Action Required: deadline <= 14 days AND status not submitted
+          const actionRequired =
+            daysUntilDeadline <= 14 &&
+            !['SUBMITTED_TO_DONOR', 'SUBMITTED_TO_HQ'].includes(d.reportStatus || '');
+
+          // Priority sorting: 0 (overdue/urgent) -> 1 (urgent) -> 2 (upcoming) -> 3 (future)
+          let priority = 3;
+          if (isOverdue) priority = 0;
+          else if (isUrgent) priority = 1;
+          else if (isUpcoming) priority = 2;
+
+          return {
+            id: d.id,
+            projectId: d.projectId,
+            projectCode: d.projectCode || 'N/A',
+            projectName: d.projectName || 'Unknown Project',
+            reportType: d.reportType || 'Report',
+            reportStatus: d.reportStatus,
+            reportDeadline: d.reportDeadline
+              ? new Date(d.reportDeadline).toISOString().split('T')[0]
+              : '',
+            daysUntilDeadline,
+            isOverdue,
+            isUrgent,
+            isUpcoming,
+            actionRequired,
+            priority,
+          };
+        });
+
+        // Sort by priority (ascending), then by daysUntilDeadline (ascending)
+        transformed.sort((a, b) => {
+          if (a.priority !== b.priority) {
+            return a.priority - b.priority;
+          }
+          return a.daysUntilDeadline - b.daysUntilDeadline;
+        });
+
+        // Return top 5 + total count
+        return {
+          total: transformed.length,
+          deadlines: transformed.slice(0, 5),
+        };
+      } catch (error) {
+        console.error('Error fetching upcoming reporting deadlines:', error);
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'Failed to fetch reporting deadlines',
+        });
+      }
     }),
 });

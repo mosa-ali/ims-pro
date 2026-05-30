@@ -70,6 +70,14 @@ export function useProgramDashboard() {
     { enabled, refetchInterval: 300000 } // 5 minute auto-refresh
   );
 
+  // Portfolio Financial Snapshot — real budget/grant aggregation for the KPI card.
+  // Replaces BurnRateAnalytics. Reads from approved+revised budgets and ongoing grants.
+  // Procedure uses ctx.scope internally so input is empty object.
+  const financialSnapshotQuery = trpc.projects.getPortfolioFinancialSnapshot.useQuery(
+    {},
+    { enabled, refetchInterval: 300000 } // 5 minute auto-refresh
+  );
+
   const isAnyLoading =
     kpisQuery.isLoading ||
     alertsQuery.isLoading ||
@@ -91,6 +99,7 @@ export function useProgramDashboard() {
     topGrants: topGrantsQuery.data,
     upcomingReportingDeadlines: upcomingReportingDeadlinesQuery.data,
     expiringProjects: expiringProjectsQuery.data,
+    financialSnapshot: financialSnapshotQuery.data,
 
     // Loading states
     kpisLoading: kpisQuery.isLoading,
@@ -106,6 +115,7 @@ export function useProgramDashboard() {
     topGrantsLoading: topGrantsQuery.isLoading,
     upcomingReportingDeadlinesLoading: upcomingReportingDeadlinesQuery.isLoading,
     expiringProjectsLoading: expiringProjectsQuery.isLoading,
+    financialSnapshotLoading: financialSnapshotQuery.isLoading,
     isAnyLoading,
 
     // Context

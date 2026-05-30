@@ -823,7 +823,7 @@ const location = useLocation();
  </div>
 
  <div className="project-card relative">
- {/* Project Reporting Schedule */}
+ {/* Projects Reporting Schedule */}
  <div className={`flex items-start justify-between`}>
  <div className={`flex-1 text-start`}>
  <div className="project-kpi-label mb-2">{t.projects.reportingSchedule}</div>

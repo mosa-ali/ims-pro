@@ -1,4 +1,4 @@
-// Production-only server entry point
+ // Production-only server entry point
 // This file is used when bundling for production
 // It contains NO vite imports or development-only code
 
@@ -120,25 +120,29 @@ async function startServer() {
   const { serveStatic } = await import("./static");
   serveStatic(app);
 
-  // Local file storage fallback
-  if (!process.env.BUILT_IN_FORGE_API_URL) {
-    const uploadsDir = path.resolve(process.cwd(), 'uploads');
-    if (!fs.existsSync(uploadsDir)) {
-      fs.mkdirSync(uploadsDir, { recursive: true });
-    }
-    app.use('/uploads', express.static(uploadsDir));
-    console.log(`[Local Storage] Serving uploads from: ${uploadsDir}`);
+  // ─── /uploads/ directory (logos, favicons, branding files) ──────────────────
+  // Always served so uploaded branding assets are accessible in all environments
+  const uploadsDir = path.resolve(process.cwd(), 'uploads');
+  if (!fs.existsSync(uploadsDir)) {
+    fs.mkdirSync(uploadsDir, { recursive: true });
   }
+  app.use('/uploads', express.static(uploadsDir));
+  console.log(`[Local Storage] Serving uploads from: ${uploadsDir}`);
 
-  const preferredPort = parseInt(process.env.PORT || "3000");
-  const port = await findAvailablePort(preferredPort);
+  // ─── Port binding ────────────────────────────────────────────────────────────
+  // Production (Azure App Service): use PORT env var directly — no port scanning.
+  // Local/dev: scan for an available port starting from PORT (default 3000).
+  const preferredPort = parseInt(process.env.PORT || "3000", 10);
+  const port = ENV.isProduction
+    ? preferredPort
+    : await findAvailablePort(preferredPort);
 
-  if (port !== preferredPort) {
+  if (!ENV.isProduction && port !== preferredPort) {
     console.log(`Port ${preferredPort} is busy, using port ${port} instead`);
   }
 
   server.listen(port, () => {
-    console.log(`Server running on http://localhost:${port}/`);
+    console.log(`[Server] Started on http://localhost:${port}`);
     startOutboxWorker();
     startAutoPurgeJob();
     emailQueueWorker.start();

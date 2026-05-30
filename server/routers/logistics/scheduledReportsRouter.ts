@@ -7,9 +7,9 @@ import { z } from "zod";
 import { publicProcedure, router, scopedProcedure } from "../../_core/trpc";
 import { getDb } from "../../db";
 import { eq, and, desc } from "drizzle-orm";
-// TEMP UNBLOCK PATCH: scheduledReports table missing export from schema.ts
-// import { InsertScheduledReport } from "../../../drizzle/schema";
-type InsertScheduledReport = Record<string, any>; // Stub type until schema is fixed
+import {
+  scheduledReports,
+} from "../../../drizzle/schema";
 
 export const scheduledReportsRouter = router({
   /**
@@ -78,7 +78,7 @@ export const scheduledReportsRouter = router({
       const db = await getDb();
       if (!db) throw new Error("Database not available");
 
-      const newReport: InsertScheduledReport = {
+      const newReport: Record<string, unknown> = {
         organizationId,
         operatingUnitId: operatingUnitId || null,
         reportType: input.reportType,
@@ -88,13 +88,13 @@ export const scheduledReportsRouter = router({
         dayOfMonth: input.dayOfMonth || null,
         enabled: input.enabled,
         lastRunAt: null,
-        nextRunAt: calculateNextRun(input.frequency, input.dayOfWeek, input.dayOfMonth),
-        createdAt: new Date(),
-        updatedAt: new Date(),
+        nextRunAt: calculateNextRun(input.frequency, input.dayOfWeek, input.dayOfMonth).toISOString().slice(0, 19).replace('T', ' '),
+        createdAt: new Date().toISOString().slice(0, 19).replace('T', ' '),
+        updatedAt: new Date().toISOString().slice(0, 19).replace('T', ' '),
       };
 
-      const result = await db.insert(scheduledReports).values(newReport);
-      return { id: Number(result.insertId), ...newReport };
+      const [result] = await db.insert(scheduledReports).values(newReport as any);
+      return { id: Number((result as any).insertId), ...newReport };
     }),
 
   /**
@@ -124,7 +124,7 @@ export const scheduledReportsRouter = router({
       if (!db) throw new Error("Database not available");
 
       const updates: any = {
-        updatedAt: new Date(),
+        updatedAt: new Date().toISOString().slice(0, 19).replace('T', ' '),
       };
 
       if (input.reportType !== undefined) updates.reportType = input.reportType;
@@ -147,7 +147,7 @@ export const scheduledReportsRouter = router({
             input.frequency || existing[0].frequency,
             input.dayOfWeek !== undefined ? input.dayOfWeek : existing[0].dayOfWeek,
             input.dayOfMonth !== undefined ? input.dayOfMonth : existing[0].dayOfMonth
-          );
+          ).toISOString().slice(0, 19).replace('T', ' ');
         }
       }
 

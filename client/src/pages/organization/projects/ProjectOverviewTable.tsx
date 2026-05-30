@@ -1,8 +1,8 @@
 /**
  * ============================================================================
- * PROJECT OVERVIEW TABLE - FINAL VERSION
+ * PROJECT OVERVIEW TABLE - FINAL VERSION (i18n Fixed)
  * ============================================================================
- * 
+ *
  * Unified project overview table combining:
  * - Project identification (name, code, donor)
  * - Status and health indicators
@@ -11,8 +11,8 @@
  * - Reporting compliance (overdue reports)
  * - Burn health with trend indicators
  * - Risk indicators and warnings
- * - Full RTL/LTR and bilingual support
- * 
+ * - Full RTL/LTR and bilingual support via t prop
+ *
  * ============================================================================
  */
 
@@ -65,6 +65,29 @@ export function ProjectOverviewTable({
   isRTL = false,
   onProjectClick,
 }: ProjectOverviewTableProps) {
+  // Translated labels using t prop keys from projectMgmtDashboard.i18n.ts
+  const labels = {
+    title:           t?.projectOverview     || 'Project Overview',
+    colProjectName:  t?.colProjectName      || 'Project Name',
+    colStatus:       t?.colStatus           || 'Status',
+    colDonor:        t?.colDonor            || 'Donor',
+    colRisk:         t?.colRisk             || 'Risk',
+    colBudgetUtil:   t?.colBudgetUtil       || 'Budget Util.',
+    colOverdue:      t?.colOverdueReports   || 'Overdue Rpts',
+    colDaysLeft:     t?.colDaysLeft         || 'Days Left',
+    colBurnHealth:   t?.colBurnHealth       || 'Burn Health',
+    colEndDate:      t?.colEndDate          || 'End Date',
+    noProjects:      t?.noProjects          || 'No projects found',
+    none:            t?.none                || 'None',
+    dOverdue:        t?.dOverdue            || 'd overdue',
+    dLeft:           t?.dLeft               || 'd',
+    burnHealthy:     t?.burnHealth_healthy  || 'Healthy',
+    burnWarning:     t?.burnHealth_warning  || 'Warning',
+    burnCritical:    t?.burnHealth_critical || 'Critical',
+    loading:         t?.loading             || 'Loading projects...',
+    activeRisks:     t?.activeRisks         || 'Active Risks',
+  };
+
   // Get health status color
   const getHealthColor = (status?: string) => {
     switch (status) {
@@ -78,6 +101,22 @@ export function ProjectOverviewTable({
         return 'bg-red-100 text-red-800';
       default:
         return 'bg-gray-100 text-gray-800';
+    }
+  };
+
+  // Get translated burn health label
+  const getBurnHealthLabel = (status?: string) => {
+    switch (status) {
+      case 'Healthy':
+        return labels.burnHealthy;
+      case 'Watch':
+        return labels.burnWarning;
+      case 'At Risk':
+        return labels.burnWarning;
+      case 'Critical':
+        return labels.burnCritical;
+      default:
+        return status || '';
     }
   };
 
@@ -138,12 +177,12 @@ export function ProjectOverviewTable({
     return (
       <Card>
         <CardHeader>
-          <CardTitle>{t.projectOverview?.title || 'Project Overview'}</CardTitle>
+          <CardTitle>{labels.title}</CardTitle>
         </CardHeader>
         <CardContent className="flex items-center justify-center h-64">
           <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4" />
-            <p className="text-muted-foreground">Loading projects...</p>
+            <p className="text-muted-foreground">{labels.loading}</p>
           </div>
         </CardContent>
       </Card>
@@ -154,34 +193,34 @@ export function ProjectOverviewTable({
     return (
       <Card>
         <CardHeader>
-          <CardTitle>{t.projectOverview?.title || 'Project Overview'}</CardTitle>
+          <CardTitle>{labels.title}</CardTitle>
         </CardHeader>
         <CardContent className="flex items-center justify-center h-64">
-          <p className="text-muted-foreground">No projects available</p>
+          <p className="text-muted-foreground">{labels.noProjects}</p>
         </CardContent>
       </Card>
     );
   }
 
   return (
-    <Card>
+    <Card dir={isRTL ? 'rtl' : 'ltr'}>
       <CardHeader>
-        <CardTitle>{t.projectOverview?.title || 'Project Overview'}</CardTitle>
+        <CardTitle>{labels.title}</CardTitle>
       </CardHeader>
       <CardContent>
         <div className="overflow-x-auto">
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>{t.projectOverview?.projectName || 'Project Name'}</TableHead>
-                <TableHead>{t.projectOverview?.status || 'Status'}</TableHead>
-                <TableHead>{t.projectOverview?.donor || 'Donor'}</TableHead>
-                <TableHead>{t.projectOverview?.risk || 'Risk'}</TableHead>
-                <TableHead>{t.projectOverview?.budgetUtil || 'Budget Util.'}</TableHead>
-                <TableHead>{t.projectOverview?.overdueRpts || 'Overdue Rpts'}</TableHead>
-                <TableHead>{t.projectOverview?.daysLeft || 'Days Left'}</TableHead>
-                <TableHead>{t.projectOverview?.burnHealth || 'Burn Health'}</TableHead>
-                <TableHead>{t.projectOverview?.endDate || 'End Date'}</TableHead>
+                <TableHead>{labels.colProjectName}</TableHead>
+                <TableHead>{labels.colStatus}</TableHead>
+                <TableHead>{labels.colDonor}</TableHead>
+                <TableHead>{labels.colRisk}</TableHead>
+                <TableHead>{labels.colBudgetUtil}</TableHead>
+                <TableHead>{labels.colOverdue}</TableHead>
+                <TableHead>{labels.colDaysLeft}</TableHead>
+                <TableHead>{labels.colBurnHealth}</TableHead>
+                <TableHead>{labels.colEndDate}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -216,7 +255,7 @@ export function ProjectOverviewTable({
                   {/* Risk Level */}
                   <TableCell>
                     <Badge variant="outline" className={getRiskColor(project.riskLevel)}>
-                      {project.riskLevel || 'Unknown'}
+                      {project.riskLevel || labels.none}
                     </Badge>
                   </TableCell>
 
@@ -253,12 +292,14 @@ export function ProjectOverviewTable({
                     {project.overdueReports && project.overdueReports > 0 ? (
                       <div className="flex items-center gap-1">
                         <AlertTriangle className="h-4 w-4 text-red-500" />
-                        <span className="font-medium text-red-600">{project.overdueReports}</span>
+                        <span className="font-medium text-red-600">
+                          {project.overdueReports}{labels.dOverdue}
+                        </span>
                       </div>
                     ) : (
                       <div className="flex items-center gap-1">
                         <CheckCircle className="h-4 w-4 text-green-500" />
-                        <span className="text-green-600">None</span>
+                        <span className="text-green-600">{labels.none}</span>
                       </div>
                     )}
                   </TableCell>
@@ -274,7 +315,7 @@ export function ProjectOverviewTable({
                               : 'text-foreground'
                           }
                         >
-                          {project.daysRemaining}d
+                          {project.daysRemaining}{labels.dLeft}
                         </span>
                       ) : (
                         '-'
@@ -286,7 +327,7 @@ export function ProjectOverviewTable({
                   <TableCell>
                     <div className="flex items-center gap-2">
                       <Badge className={getHealthColor(project.burnHealth)}>
-                        {project.burnHealth || 'Unknown'}
+                        {getBurnHealthLabel(project.burnHealth)}
                       </Badge>
                       {project.burnHealth === 'At Risk' && (
                         <TrendingUp className="h-4 w-4 text-orange-500" />
@@ -310,7 +351,7 @@ export function ProjectOverviewTable({
         {/* Risk Summary */}
         {data.some(p => p.risks && p.risks.length > 0) && (
           <div className="mt-6 p-4 bg-red-50 border border-red-200 rounded-lg">
-            <h4 className="font-semibold text-red-900 mb-2">Active Risks</h4>
+            <h4 className="font-semibold text-red-900 mb-2">{labels.activeRisks}</h4>
             <ul className="space-y-1">
               {data
                 .flatMap(p => (p.risks || []).map(r => ({ projectName: p.name, risk: r })))

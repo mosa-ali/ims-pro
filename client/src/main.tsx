@@ -35,6 +35,9 @@ const queryClient = new QueryClient({
  },
 });
 
+// Prevent infinite refresh loops by not invalidating queries on organization changes
+// Organization context manages its own state without triggering global invalidations
+
 const redirectToLoginIfUnauthorized = (error: unknown) => {
  if (!(error instanceof TRPCClientError)) return;
  if (typeof window === "undefined") return;
@@ -43,14 +46,18 @@ const redirectToLoginIfUnauthorized = (error: unknown) => {
 
  if (!isUnauthorized) return;
 
- window.location.href = '/login';
+ window.location.href = getLoginUrl();
 };
 
 queryClient.getQueryCache().subscribe(event => {
  if (event.type === "updated" && event.action.type === "error") {
  const error = event.query.state.error;
  redirectToLoginIfUnauthorized(error);
+ // Auth errors are expected and handled by redirect above — do not log them as errors
+ const isAuthError = error instanceof TRPCClientError && error.message === UNAUTHED_ERR_MSG;
+ if (!isAuthError) {
  console.error("[API Query Error]", error);
+ }
  }
 });
 
@@ -58,7 +65,11 @@ queryClient.getMutationCache().subscribe(event => {
  if (event.type === "updated" && event.action.type === "error") {
  const error = event.mutation.state.error;
  redirectToLoginIfUnauthorized(error);
+ // Auth errors are expected and handled by redirect above — do not log them as errors
+ const isAuthError = error instanceof TRPCClientError && error.message === UNAUTHED_ERR_MSG;
+ if (!isAuthError) {
  console.error("[API Mutation Error]", error);
+ }
  }
 });
 
@@ -69,12 +80,19 @@ const trpcClient = trpc.createClient({
  transformer: superjson,
  fetch(input, init) {
  // Inject scope headers for data isolation
- // Read from localStorage (where OrganizationContext and OperatingUnitContext store values)
+ // Note: Headers are read from localStorage but should be stable during request
+ // to avoid triggering infinite re-fetches
+ const headers = new Headers(init?.headers);
+ 
+ // Only add org/ou headers if they exist
+ // These are set by OrganizationContext and OperatingUnitContext
  const orgId = localStorage.getItem('pms_current_org');
+ if (orgId) {
+ headers.set('X-Organization-ID', orgId);
+ }
  
  // Get current operating unit for the CURRENT organization
  // OU keys follow pattern: current_operating_unit_{userId}_{orgId}
- // We must match the key that ends with the current orgId
  let ouId: string | null = null;
  if (orgId) {
  const ouKeys = Object.keys(localStorage).filter(k => 
@@ -82,15 +100,10 @@ const trpcClient = trpc.createClient({
  );
  if (ouKeys.length > 0) {
  ouId = localStorage.getItem(ouKeys[0]);
- }
- }
-
- const headers = new Headers(init?.headers);
- if (orgId) {
- headers.set('X-Organization-ID', orgId);
- }
  if (ouId) {
  headers.set('X-Operating-Unit-ID', ouId);
+ }
+ }
  }
 
  return globalThis.fetch(input, {

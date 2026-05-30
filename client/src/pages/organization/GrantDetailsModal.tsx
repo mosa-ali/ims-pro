@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { X, FileText, Calendar, FolderOpen, Building2, DollarSign, Clock, User, AlertCircle, Upload, Download, Trash2, Eye } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/_core/hooks/useAuth';
-import { DocumentService, DocumentRecord } from '@/services/DocumentService';
+import { documentService, DocumentRecord } from '@/services/documentService';
 import { useTranslation } from '@/i18n/useTranslation';
 
 interface Grant {
@@ -75,13 +75,13 @@ export function GrantDetailsModal({
  const [documents, setDocuments] = useState<DocumentRecord[]>([]);
  const [isUploading, setIsUploading] = useState(false);
 
- // Load documents from DocumentService on mount and when grant changes
+ // Load documents from documentService on mount and when grant changes
  useEffect(() => {
  loadDocuments();
  }, [grant.id]);
 
  const loadDocuments = () => {
- const grantDocuments = DocumentService.getDocuments({ grant_id: grant.id });
+ const grantDocuments = documentService.getDocuments({ grant_id: grant.id });
  setDocuments(grantDocuments);
  };
 
@@ -192,8 +192,8 @@ export function GrantDetailsModal({
  category = 'Programmatic';
  }
 
- // Upload document using DocumentService
- await DocumentService.uploadDocument({
+ // Upload document using documentService
+ await documentService.uploadDocument({
  file: selectedFile,
  document_type: selectedDocType,
  category: category,
@@ -231,7 +231,7 @@ export function GrantDetailsModal({
 
  const handleViewDocument = (documentId: string) => {
  try {
- DocumentService.viewDocument(documentId);
+ documentService.viewDocument(documentId);
  } catch (error) {
  console.error('View document error:', error);
  alert(t.organizationModule.failedToViewDocument);
@@ -240,7 +240,7 @@ export function GrantDetailsModal({
 
  const handleDownloadDocument = (documentId: string) => {
  try {
- DocumentService.downloadDocument(documentId);
+ documentService.downloadDocument(documentId);
  } catch (error) {
  console.error('Download document error:', error);
  alert(t.organizationModule.failedToDownloadDocument);
@@ -253,7 +253,7 @@ export function GrantDetailsModal({
  }
 
  try {
- const success = DocumentService.deleteDocument(documentId, user?.name || 'Current User');
+ const success = documentService.deleteDocument(documentId, user?.name || 'Current User');
  
  if (success) {
  // Reload documents
@@ -453,7 +453,7 @@ export function GrantDetailsModal({
  <div className={`flex items-center gap-2`}>
  <AlertCircle className="w-5 h-5 text-blue-600" />
  <p className="text-sm text-blue-800">
- {'Timeline is inherited from Project Reporting Schedule'}
+ {'Timeline is inherited from Projects Reporting Schedule'}
  </p>
  </div>
  </div>
@@ -547,20 +547,20 @@ export function GrantDetailsModal({
  {documents && documents.length > 0 ? (
  <div className="space-y-2">
  {documents.map((doc) => (
- <div key={doc.document_id} className="bg-white rounded-lg p-4 border border-gray-200 hover:border-gray-300 transition-colors">
+ <div key={doc.documentId} className="bg-white rounded-lg p-4 border border-gray-200 hover:border-gray-300 transition-colors">
  <div className={`flex items-center justify-between`}>
  <div className={`flex items-center gap-3 flex-1`}>
  <FolderOpen className="w-5 h-5 text-blue-600" />
  <div className={`flex-1 text-start`}>
- <p className="font-medium text-gray-900">{doc.file_name}</p>
+ <p className="font-medium text-gray-900">{doc.fileName}</p>
  <div className="flex items-center gap-3 mt-1 text-xs text-gray-600">
  <span>{translateCategory(doc.category)}</span>
  <span>•</span>
  <span>{t.organizationModule.version} {doc.version}</span>
  <span>•</span>
- <span>{doc.uploaded_by}</span>
+ <span>{doc.uploadedBy}</span>
  <span>•</span>
- <span>{new Date(doc.uploaded_at).toLocaleDateString()}</span>
+ <span>{new Date(doc.uploadedAt).toLocaleDateString()}</span>
  </div>
  </div>
  </div>
@@ -570,21 +570,21 @@ export function GrantDetailsModal({
  </div>
  <div className={`flex items-center gap-2 mt-3 justify-end`}>
  <button
- onClick={() => handleViewDocument(doc.document_id)}
+ onClick={() => handleViewDocument(doc.documentId)}
  className={`px-3 py-1.5 text-sm bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 transition-colors flex items-center gap-1.5`}
  >
  <Eye className="w-4 h-4" />
  <span>{t.organizationModule.view}</span>
  </button>
  <button
- onClick={() => handleDownloadDocument(doc.document_id)}
+ onClick={() => handleDownloadDocument(doc.documentId)}
  className={`px-3 py-1.5 text-sm bg-blue-100 text-blue-700 rounded-md hover:bg-blue-200 transition-colors flex items-center gap-1.5`}
  >
  <Download className="w-4 h-4" />
  <span>{t.organizationModule.download}</span>
  </button>
  <button
- onClick={() => handleDeleteDocument(doc.document_id)}
+ onClick={() => handleDeleteDocument(doc.documentId)}
  className={`px-3 py-1.5 text-sm bg-red-100 text-red-700 rounded-md hover:bg-red-200 transition-colors flex items-center gap-1.5`}
  >
  <Trash2 className="w-4 h-4" />

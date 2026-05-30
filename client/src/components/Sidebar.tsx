@@ -15,6 +15,7 @@ import { useOrganization } from "@/contexts/OrganizationContext";
 import { useOperatingUnit } from "@/contexts/OperatingUnitContext";
 import { usePermissions } from "@/hooks/usePermissions";
 import { Building2 as BuildingIcon, ChevronDown as ChevronDownIcon } from 'lucide-react';
+import { useOrganizationBranding } from "@/hooks/useOrganizationBranding";
 
 /**
  * Unified Sidebar Component - Switches between Platform and Organization modes
@@ -96,6 +97,7 @@ const { currentOrganization, availableOrganizations, switchOrganization, current
  const [showOrgSwitcher, setShowOrgSwitcher] = useState(false);
  const [showOUSwitcher, setShowOUSwitcher] = useState(false);
  const { canView, isAdmin } = usePermissions();
+ const { branding } = useOrganizationBranding();
 
  // Map sidebar item IDs to RBAC module IDs for permission filtering
  const sidebarToRbacMap: Record<string, string> = {
@@ -226,8 +228,17 @@ const { currentOrganization, availableOrganizations, switchOrganization, current
  >
  {!collapsed && (
  <div className="flex items-center gap-3 flex-1">
- <div className={`w-8 h-8 rounded-lg flex items-center justify-center shadow-sm ${isPlatformContext ? 'bg-slate-900' : 'bg-blue-600'}`}>
+ <div
+ className={`w-8 h-8 rounded-lg flex items-center justify-center shadow-sm overflow-hidden relative ${isPlatformContext ? 'bg-slate-900' : ''}`}
+ style={!isPlatformContext ? { backgroundColor: branding.headerColor || branding.primaryColor || '#2563EB' } : undefined}
+ >
+ <span className="text-white font-black text-xs absolute">IMS</span>
+ {!isPlatformContext && branding.logoUrl && (
+ <img src={branding.logoUrl} alt="" className="w-full h-full object-contain relative z-10" onError={(e) => { e.currentTarget.style.display = 'none'; }} />
+ )}
+ {isPlatformContext && (
  <span className="text-white font-black text-xs">IMS</span>
+ )}
  </div>
  {/* Organization Switcher Dropdown - Show only for Org Admins with multiple orgs */}
  {!isPlatformContext && availableOrganizations.length > 1 && (currentRole === 'organization_admin' || currentRole === 'admin' || currentRole === 'platform_admin') ? (
@@ -238,7 +249,7 @@ const { currentOrganization, availableOrganizations, switchOrganization, current
  >
  <div className="flex-1 min-w-0">
  <h1 className="text-sm font-black text-gray-900 tracking-tight truncate">
- {currentOrganization?.code?.toUpperCase() || currentOrganization?.name?.split(' - ')[0]?.toUpperCase() || 'LOADING...'}
+ {currentOrganization?.code?.toUpperCase() || currentOrganization?.name?.split(' - ')[0]?.toUpperCase() || 'ORG'}
  </h1>
  <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest leading-none mt-0.5">
  {t.sidebar.organization}
@@ -292,7 +303,7 @@ const { currentOrganization, availableOrganizations, switchOrganization, current
  <h1 className="text-sm font-black text-gray-900 tracking-tight">
  {isPlatformContext 
  ? t.sidebar.imsFoundation
- : (currentOrganization?.code?.toUpperCase() || currentOrganization?.name?.split(' - ')[0]?.toUpperCase() || 'LOADING...')
+ : (currentOrganization?.code?.toUpperCase() || currentOrganization?.name?.split(' - ')[0]?.toUpperCase() || 'Organization')
  }
  </h1>
  <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest leading-none mt-0.5">

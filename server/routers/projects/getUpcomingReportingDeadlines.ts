@@ -1,9 +1,32 @@
-import { eq, and, gte, lte, desc, asc } from 'drizzle-orm';
+import { eq, and, lte, desc } from 'drizzle-orm';
 import { TRPCError } from '@trpc/server';
 import { z } from 'zod';
 import { scopedProcedure } from '../../_core/trpc';
 import { getDb } from '../../db';
-import { reportingSchedules, projects, grants } from 'drizzle/schema';
+import { reportingSchedules, projects } from 'drizzle/schema';
+
+// ─── Compact deadline item for executive dashboard ────────────────────────
+
+interface CompactDeadlineItem {
+  id: number;
+  projectId: number | null;
+  projectCode: string;
+  projectName: string;
+  reportType: string;
+  reportStatus: string;
+  reportDeadline: string;
+  daysUntilDeadline: number;
+  isOverdue: boolean;
+  isUrgent: boolean;
+  isUpcoming: boolean;
+  actionRequired: boolean;
+  priority: number;
+}
+
+interface CompactUpcomingDeadlinesData {
+  total: number;
+  deadlines: CompactDeadlineItem[];
+}
 
 export const getUpcomingReportingDeadlinesProcedure = scopedProcedure
   .input(z.object({
@@ -11,7 +34,7 @@ export const getUpcomingReportingDeadlinesProcedure = scopedProcedure
     operatingUnitId: z.number().optional(),
     daysAhead: z.number().optional().default(90), // Look ahead 90 days
   }))
-  .query(async ({ ctx, input }) => {
+  .query(async ({ ctx, input }): Promise<CompactUpcomingDeadlinesData> => {
     const { organizationId, operatingUnitId } = ctx.scope;
     const { daysAhead } = input;
     const db = await getDb();
@@ -33,41 +56,39 @@ export const getUpcomingReportingDeadlinesProcedure = scopedProcedure
       futureDate.setDate(futureDate.getDate() + daysAhead);
       const futureDateString = futureDate.toISOString().split('T')[0];
 
-      // Build where clause - get deadlines from past 30 days to future 90 days
-        const pastDate = new Date(today);
-        pastDate.setDate(pastDate.getDate() - 30); // Look back 30 days for overdue
-        const pastDateString = pastDate.toISOString().split('T')[0];
+      // Build where clause - includes all deadlines up to daysAhead (including overdue)
+      // No lower bound filter to include overdue items automatically
+      const whereConditions = [
+        eq(reportingSchedules.organizationId, organizationId),
+        eq(reportingSchedules.isDeleted, 0),
+        lte(reportingSchedules.reportDeadline, futureDateString), // Deadline <= future date
+      ];
 
-        const whereConditions = [
-          eq(reportingSchedules.organizationId, organizationId),
-          eq(reportingSchedules.isDeleted, 0),
-          gte(reportingSchedules.reportDeadline, pastDateString), // Deadline >= 30 days ago
-          lte(reportingSchedules.reportDeadline, futureDateString), // Deadline <= 90 days from now
-        ];
+      if (operatingUnitId) {
+        whereConditions.push(eq(reportingSchedules.operatingUnitId, operatingUnitId));
+      }
 
-      // Get upcoming/overdue reporting deadlines
+      // Fetch deadlines with project code
       const deadlines = await db
         .select({
           id: reportingSchedules.id,
           projectId: reportingSchedules.projectId,
+          projectCode: projects.projectCode,
           projectName: projects.title,
           reportType: reportingSchedules.reportType,
           reportStatus: reportingSchedules.reportStatus,
           reportDeadline: reportingSchedules.reportDeadline,
-          periodFrom: reportingSchedules.periodFrom,
-          periodTo: reportingSchedules.periodTo,
-          notes: reportingSchedules.notes,
         })
         .from(reportingSchedules)
         .leftJoin(projects, eq(reportingSchedules.projectId, projects.id))
         .where(and(...whereConditions))
-        .orderBy(asc(reportingSchedules.reportDeadline));
+        .orderBy(desc(reportingSchedules.reportDeadline));
 
       // Transform and categorize
       const now = new Date();
       now.setHours(0, 0, 0, 0);
 
-      const transformed = deadlines.map((d) => {
+      const transformed = (deadlines || []).map((d): CompactDeadlineItem => {
         const deadline = new Date(d.reportDeadline);
         deadline.setHours(0, 0, 0, 0);
         
@@ -79,40 +100,48 @@ export const getUpcomingReportingDeadlinesProcedure = scopedProcedure
         const isUrgent = daysUntilDeadline >= 0 && daysUntilDeadline <= 7;
         const isUpcoming = daysUntilDeadline > 7 && daysUntilDeadline <= 30;
 
+        // Action Required: deadline <= 14 days AND status not submitted
+        const actionRequired =
+          daysUntilDeadline <= 14 &&
+          !['SUBMITTED_TO_DONOR', 'SUBMITTED_TO_HQ'].includes(d.reportStatus || '');
+
+        // Priority sorting: 0 (overdue) -> 1 (urgent) -> 2 (upcoming) -> 3 (future)
+        let priority = 3;
+        if (isOverdue) priority = 0;
+        else if (isUrgent) priority = 1;
+        else if (isUpcoming) priority = 2;
+
         return {
           id: d.id,
+          projectId: d.projectId,
+          projectCode: d.projectCode || 'N/A',
           projectName: d.projectName || 'Unknown Project',
-          reportType: d.reportType,
-          reportStatus: d.reportStatus,
-          reportDeadline: d.reportDeadline,
-          periodFrom: d.periodFrom,
-          periodTo: d.periodTo,
+          reportType: d.reportType || 'Report',
+          reportStatus: d.reportStatus || 'NOT_STARTED',
+          reportDeadline: d.reportDeadline
+            ? new Date(d.reportDeadline).toISOString().split('T')[0]
+            : '',
           daysUntilDeadline,
           isOverdue,
           isUrgent,
           isUpcoming,
-          statusLabel: isOverdue
-            ? `${Math.abs(daysUntilDeadline)}d overdue`
-            : isUrgent
-            ? `${daysUntilDeadline}d left`
-            : `${daysUntilDeadline}d left`,
+          actionRequired,
+          priority,
         };
       });
 
-      // Separate overdue and upcoming
-      const overdue = transformed.filter((d) => d.isOverdue);
-      const urgent = transformed.filter((d) => d.isUrgent && !d.isOverdue);
-      const upcoming = transformed.filter((d) => d.isUpcoming && !d.isUrgent);
+      // Sort by priority (ascending), then by daysUntilDeadline (ascending)
+      transformed.sort((a, b) => {
+        if (a.priority !== b.priority) {
+          return a.priority - b.priority;
+        }
+        return a.daysUntilDeadline - b.daysUntilDeadline;
+      });
 
+      // Return top 5 + total count
       return {
         total: transformed.length,
-        overdue: overdue.length,
-        urgent: urgent.length,
-        upcoming: upcoming.length,
-        all: transformed,
-        overdueSummary: overdue.slice(0, 5),
-        urgentSummary: urgent.slice(0, 5),
-        upcomingSummary: upcoming.slice(0, 5),
+        deadlines: transformed.slice(0, 5),
       };
     } catch (error) {
       console.error('Error fetching upcoming reporting deadlines:', error);

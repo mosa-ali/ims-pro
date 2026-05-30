@@ -41,7 +41,7 @@ export function ExpiringProjects({
   t = {},
 }: ExpiringProjectsProps) {
   const { isRTL: contextIsRTL } = useLanguage();
-  
+
   // Safe nested object access - prevents crashes when projects is undefined
   const safeProjects = projects?.projects ?? [];
   const total = projects?.total ?? 0;
@@ -49,6 +49,22 @@ export function ExpiringProjects({
   const expiring60 = projects?.expiring60 ?? 0;
   const expiring90 = projects?.expiring90 ?? 0;
   const isRTL = isRTLProp || contextIsRTL;
+
+  // Translated labels
+  const labels = {
+    title:           t.expiringProjects      || 'Expiring Projects',
+    noData:          t.noProjects            || 'No projects expiring in the next 90 days',
+    critical:        t.burnHealth_critical   || 'Critical',
+    warning:         t.burnHealth_warning    || 'Warning',
+    budgetUtil:      t.colBudgetUtil         || 'Budget Util.',
+    budget:          t.budget                || 'Budget',
+    expires:         t.expires               || 'Expires',
+    daysRemaining:   t.colDaysLeft           || 'Days Left',
+    dLeft:           t.dLeft                 || 'd',
+    closeoutNow:     t.closeoutNow           || 'Closeout Now',
+    closeoutSoon:    t.closeoutSoon          || 'Closeout Soon',
+    expiresIn:       t.expiresIn             || 'Expires in',
+  };
 
   const getStatusColor = (category: string) => {
     if (category === 'critical') return 'bg-red-50 border-red-200';
@@ -61,14 +77,14 @@ export function ExpiringProjects({
       return (
         <Badge className="bg-red-100 text-red-800 flex items-center gap-1">
           <AlertTriangle className="w-3 h-3" />
-          Closeout Now
+          {labels.closeoutNow}
         </Badge>
       );
     }
     if (category === 'warning') {
-      return <Badge className="bg-amber-100 text-amber-800">Closeout Soon</Badge>;
+      return <Badge className="bg-amber-100 text-amber-800">{labels.closeoutSoon}</Badge>;
     }
-    return <Badge className="bg-blue-100 text-blue-800">Expires in {daysRemaining}d</Badge>;
+    return <Badge className="bg-blue-100 text-blue-800">{labels.expiresIn} {daysRemaining}{labels.dLeft}</Badge>;
   };
 
   const formatDate = (dateStr: string) => {
@@ -89,7 +105,7 @@ export function ExpiringProjects({
     return (
       <Card className="border border-gray-200">
         <CardHeader className="pb-3">
-          <CardTitle className="text-lg font-semibold">Expiring Projects</CardTitle>
+          <CardTitle className="text-lg font-semibold">{labels.title}</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="space-y-3">
@@ -106,11 +122,11 @@ export function ExpiringProjects({
     return (
       <Card className="border border-gray-200">
         <CardHeader className="pb-3">
-          <CardTitle className="text-lg font-semibold">Expiring Projects</CardTitle>
+          <CardTitle className="text-lg font-semibold">{labels.title}</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="flex items-center justify-center py-8 text-gray-500">
-            <p>No projects expiring in the next 90 days</p>
+            <p>{labels.noData}</p>
           </div>
         </CardContent>
       </Card>
@@ -121,15 +137,15 @@ export function ExpiringProjects({
     <Card className="border border-gray-200">
       <CardHeader className="pb-3">
         <div className="flex items-center justify-between">
-          <CardTitle className="text-lg font-semibold">Expiring Projects</CardTitle>
+          <CardTitle className="text-lg font-semibold">{labels.title}</CardTitle>
           <div className="flex gap-2">
             {expiring30 > 0 && (
-              <Badge className="bg-red-100 text-red-800">{expiring30} Critical</Badge>
+              <Badge className="bg-red-100 text-red-800">{expiring30} {labels.critical}</Badge>
             )}
             {expiring60 > 0 && (
-              <Badge className="bg-amber-100 text-amber-800">{expiring60} Warning</Badge>
+              <Badge className="bg-amber-100 text-amber-800">{expiring60} {labels.warning}</Badge>
             )}
-            <Badge className="bg-blue-100 text-blue-800">{total} Total</Badge>
+            <Badge className="bg-blue-100 text-blue-800">{total} {t.total || 'Total'}</Badge>
           </div>
         </div>
       </CardHeader>
@@ -147,7 +163,7 @@ export function ExpiringProjects({
                     {project.name || `Project #${project.id}`}
                   </p>
                   <p className="text-xs text-gray-600">
-                    {project.code ? `Code: ${project.code}` : 'No Code'}
+                    {project.code ? project.code : ''}
                   </p>
                 </div>
                 {getStatusBadge(project.expiryCategory, project.daysRemaining)}
@@ -157,7 +173,7 @@ export function ExpiringProjects({
                 {/* Budget Utilization */}
                 <div>
                   <div className="flex items-center justify-between text-xs mb-1">
-                    <span className="text-gray-600">Budget Utilization</span>
+                    <span className="text-gray-600">{labels.budgetUtil}</span>
                     <span className="font-semibold text-gray-700">{project.budgetUtilization.toFixed(1)}%</span>
                   </div>
                   <Progress value={Math.min(project.budgetUtilization, 100)} className="h-1.5" />
@@ -166,7 +182,7 @@ export function ExpiringProjects({
                 {/* Budget and Timeline */}
                 <div className="grid grid-cols-2 gap-2 text-xs">
                   <div>
-                    <p className="text-gray-600">Budget</p>
+                    <p className="text-gray-600">{labels.budget}</p>
                     <p className="font-semibold text-gray-900">
                       {formatCurrency(project.totalBudgetUSD)}
                     </p>
@@ -174,23 +190,15 @@ export function ExpiringProjects({
                   <div>
                     <div className="flex items-center gap-1 text-gray-600 mb-1">
                       <Clock className="w-3 h-3" />
-                      <span>Expires</span>
+                      <span>{labels.expires}</span>
                     </div>
                     <p className="font-semibold text-gray-900">{formatDate(project.endDate)}</p>
                   </div>
                 </div>
 
-                {/* Spent Amount */}
-                <div className="text-xs">
-                  <span className="text-gray-600">Spent: </span>
-                  <span className="font-semibold text-gray-900">
-                    {formatCurrency(project.spentUSD)}
-                  </span>
-                </div>
-
                 {/* Days Remaining */}
                 <div className="flex items-center justify-between pt-1 border-t border-gray-200">
-                  <span className="text-xs text-gray-600">Days Remaining</span>
+                  <span className="text-xs text-gray-600">{labels.daysRemaining}</span>
                   <span
                     className={`text-sm font-bold ${
                       project.daysRemaining <= 30
@@ -200,7 +208,7 @@ export function ExpiringProjects({
                           : 'text-blue-700'
                     }`}
                   >
-                    {project.daysRemaining} days
+                    {project.daysRemaining}{labels.dLeft}
                   </span>
                 </div>
               </div>

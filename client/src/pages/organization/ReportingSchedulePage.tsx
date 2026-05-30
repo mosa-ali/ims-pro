@@ -78,11 +78,9 @@ export default function ReportingSchedulePage({ projectId, embedded = false }: R
  
  // Load projects for dropdown
  const { data: projects = [] } = trpc.projects.list.useQuery({
- organizationId: currentOrganizationId || 0,
- operatingUnitId: currentOperatingUnitId ? (typeof currentOperatingUnitId === 'string' ? parseInt(currentOperatingUnitId, 10) : currentOperatingUnitId) : 0
- }, {
- enabled: !!currentOrganizationId && !!currentOperatingUnitId,
- });
+  limit: 1000,
+  status: 'active',
+});
 
  // Mutations
  const createMutation = trpc.reportingSchedules.create.useMutation({
@@ -239,7 +237,7 @@ export default function ReportingSchedulePage({ projectId, embedded = false }: R
  <div className="flex items-center justify-between">
  <div>
  <h1 className="text-3xl font-bold text-gray-900">
- Project Reporting Schedule
+ Projects Reporting Schedule
  </h1>
  <p className="text-gray-600 mt-1">
  Manage reporting schedules, deadlines, and submission tracking

@@ -122,20 +122,19 @@ export const BeneficiaryProgress = memo(function BeneficiaryProgress({
   const verifiedPct = total > 0 ? Math.round((verified / total) * 100) : 0;
   const malesPct = total > 0 ? Math.round((males / total) * 100) : 0;
   const femalesPct = total > 0 ? Math.round((females / total) * 100) : 0;
-  const projectsCount = byProject?.length || 0;
 
   return (
     <Card>
       <CardHeader className="pb-3">
         <CardTitle className="text-base font-bold flex items-center gap-2">
           <Users className="w-4 h-4 text-teal-600" />
-          {t.beneficiaryTitle || 'Beneficiary Portfolio'}
+          {t?.beneficiaryProgress?.title || t?.beneficiaryPortfolio || 'Beneficiary Portfolio'}
         </CardTitle>
       </CardHeader>
       <CardContent>
         {total === 0 ? (
           <div className="h-24 flex items-center justify-center text-gray-400 text-sm">
-            {t.noBeneficiaryData || 'No beneficiary records found'}
+            {t?.beneficiaryProgress?.noData || 'No beneficiary records found'}
           </div>
         ) : (
           <>
@@ -143,12 +142,12 @@ export const BeneficiaryProgress = memo(function BeneficiaryProgress({
             <div className="flex items-center gap-4 mb-4 p-3 bg-teal-50 rounded-lg border border-teal-100">
               <div className="text-center flex-shrink-0 min-w-[56px]">
                 <div className="text-2xl font-bold text-teal-700">{total.toLocaleString()}</div>
-                <div className="text-xs text-teal-600 mt-0.5">{t.totalBeneficiaries || 'Total'}</div>
+                <div className="text-xs text-teal-600 mt-0.5">{t?.beneficiaryProgress?.target || t?.total || 'Total'}</div>
               </div>
               <div className="flex-1 space-y-1.5">
                 {/* Verification progress */}
                 <div className="flex justify-between text-xs text-teal-700">
-                  <span>{t.verified || 'Verified'}: {verified.toLocaleString()}</span>
+                  <span>{t?.beneficiaryProgress?.reached || 'Verified'}: {verified.toLocaleString()}</span>
                   <span>{verifiedPct}%</span>
                 </div>
                 <div className="h-2 bg-teal-100 rounded-full overflow-hidden">
@@ -173,11 +172,11 @@ export const BeneficiaryProgress = memo(function BeneficiaryProgress({
                 <div className="flex gap-3 text-xs text-gray-500">
                   <span className="flex items-center gap-1">
                     <span className="inline-block w-2 h-2 rounded-full bg-blue-400" />
-                    {t.male || 'Male'} {malesPct}%
+                    {t?.male || 'Male'} {malesPct}%
                   </span>
                   <span className="flex items-center gap-1">
                     <span className="inline-block w-2 h-2 rounded-full bg-pink-400" />
-                    {t.female || 'Female'} {femalesPct}%
+                    {t?.female || 'Female'} {femalesPct}%
                   </span>
                 </div>
               </div>
@@ -187,19 +186,19 @@ export const BeneficiaryProgress = memo(function BeneficiaryProgress({
             <div className="grid grid-cols-3 gap-2 mb-4">
               <StatPill
                 icon={UserCheck}
-                label={t.verified || 'Verified'}
+                label={t?.beneficiaryProgress?.reached || 'Verified'}
                 value={verified}
                 color="bg-emerald-50 text-emerald-700"
               />
               <StatPill
                 icon={Clock}
-                label={t.pending || 'Pending'}
+                label={t?.beneficiaryProgress?.pending || t?.pending || 'Pending'}
                 value={pending}
                 color="bg-amber-50 text-amber-700"
               />
               <StatPill
                 icon={UserX}
-                label={t.notEligible || 'Not Eligible'}
+                label={t?.notEligible || 'Not Eligible'}
                 value={notEligible}
                 color="bg-red-50 text-red-700"
               />
@@ -208,15 +207,15 @@ export const BeneficiaryProgress = memo(function BeneficiaryProgress({
             {withDisability > 0 && (
               <div className="text-xs text-gray-500 mb-3 flex items-center gap-1">
                 <span className="inline-block w-2 h-2 rounded-full bg-purple-400" />
-                {t.withDisability || 'With Disability'}: {withDisability.toLocaleString()} ({total > 0 ? Math.round((withDisability / total) * 100) : 0}%)
+                {t?.withDisability || 'With Disability'}: {withDisability.toLocaleString()} ({total > 0 ? Math.round((withDisability / total) * 100) : 0}%)
               </div>
             )}
 
             {/* ── Per-project breakdown ── */}
-            {projectsCount > 0 && (
+            {byProject.length > 0 && (
               <>
                 <div className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">
-                  {t.byProject || 'By Project'}
+                  {t?.byProject || 'By Project'}
                 </div>
                 <div className="space-y-3 max-h-48 overflow-y-auto pr-1">
                   {byProject.map((p) => (

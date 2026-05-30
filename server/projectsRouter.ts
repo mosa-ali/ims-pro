@@ -6,8 +6,8 @@
 import { z } from "zod";
 import { protectedProcedure, scopedProcedure, router } from "./_core/trpc";
 import { getDb } from "./db";
-import { projects, grants, reportingSchedules as reportingSchedulesTable, expenses, organizations } from "../drizzle/schema";
-import { eq, and, desc, or, like, sql } from "drizzle-orm";
+import { projects, grants, budgets, reportingSchedules as reportingSchedulesTable, expenses, organizations } from "../drizzle/schema";
+import { eq, and, desc, or, like, sql, inArray, isNull } from "drizzle-orm";
 import { TRPCError } from "@trpc/server";
 import { ensureISOString, formatDateForInput } from "@shared/dateUtils";
 import { getBudgetTrendProcedure } from './routers/projects/getBudgetTrend';
@@ -15,175 +15,39 @@ import { getReportingComplianceProcedure } from './routers/projects/getReporting
 import { getUpcomingReportingDeadlinesProcedure } from './routers/projects/getUpcomingReportingDeadlines';
 import { autoProgramsReportRouter } from './routers/autoProgramsReportRouter';
 
+// ─── Currency Engine ──────────────────────────────────────────────────────────
+// Import from the centralized currency engine — no more hardcoded rates.
+// convertCurrency() uses the in-memory InforEuro cache (EUR-based cross-rates).
+// CURRENCY_REGISTRY is the single source of truth for all currency metadata.
+import { convertCurrency } from '../shared/currency/currencyConversion';
+import {
+  CURRENCY_REGISTRY,
+  CURRENCY_CODE_TUPLE,
+  type CurrencyCode,
+} from '../shared/currency/currencies';
 
-
-// Currency conversion rates (European Commission InforEuro rates)
-const CURRENCY_RATES: Record<string, number> = {
-  USD: 1.0,
-  EUR: 1.09,
-  GBP: 1.27,
-  CHF: 1.13,
-  SAR: 0.267, // Saudi Riyal to USD
-  YER: 0.004, // Yemeni Rial to USD
-};
-
+/**
+ * Convert any amount to USD using the live InforEuro cache.
+ * Falls back to the original amount if rates are unavailable (fail-safe).
+ *
+ * Replaces the old hardcoded CURRENCY_RATES map.
+ */
 function convertToUSD(amount: number, currency: string): number {
-  return amount * (CURRENCY_RATES[currency] || 1);
+  if (!currency || currency.toUpperCase() === 'USD') return amount;
+  const result = convertCurrency(amount, currency, 'USD');
+  if ('error' in result) {
+    // Graceful degradation: if cache is empty (cold start), treat as 1:1
+    return amount;
+  }
+  return result.amount;
 }
-
-// Global currencies with symbols
-const GLOBAL_CURRENCIES = [
-  // Major Currencies
-  { code: 'USD', name: 'US Dollar', nameAr: 'دولار أمريكي', symbol: '$' },
-  { code: 'EUR', name: 'Euro', nameAr: 'يورو', symbol: '€' },
-  { code: 'GBP', name: 'British Pound', nameAr: 'جنيه إسترليني', symbol: '£' },
-  { code: 'JPY', name: 'Japanese Yen', nameAr: 'ين ياباني', symbol: '¥' },
-  { code: 'CHF', name: 'Swiss Franc', nameAr: 'فرنك سويسري', symbol: 'CHF' },
-  { code: 'CAD', name: 'Canadian Dollar', nameAr: 'دولار كندي', symbol: 'C$' },
-  { code: 'AUD', name: 'Australian Dollar', nameAr: 'دولار أسترالي', symbol: 'A$' },
-  { code: 'NZD', name: 'New Zealand Dollar', nameAr: 'دولار نيوزيلندي', symbol: 'NZ$' },
-  { code: 'CNY', name: 'Chinese Yuan', nameAr: 'يوان صيني', symbol: '¥' },
-  { code: 'INR', name: 'Indian Rupee', nameAr: 'روبية هندية', symbol: '₹' },
-  // Americas
-  { code: 'MXN', name: 'Mexican Peso', nameAr: 'بيزو مكسيكي', symbol: '$' },
-  { code: 'BRL', name: 'Brazilian Real', nameAr: 'ريال برازيلي', symbol: 'R$' },
-  { code: 'CLP', name: 'Chilean Peso', nameAr: 'بيزو تشيلي', symbol: '$' },
-  { code: 'COP', name: 'Colombian Peso', nameAr: 'بيزو كولومبي', symbol: '$' },
-  { code: 'PEN', name: 'Peruvian Sol', nameAr: 'سول بيروفي', symbol: 'S/' },
-  { code: 'ARS', name: 'Argentine Peso', nameAr: 'بيزو أرجنتيني', symbol: '$' },
-  { code: 'UYU', name: 'Uruguayan Peso', nameAr: 'بيزو أوروغواي', symbol: '$' },
-  { code: 'VEF', name: 'Venezuelan Bolívar', nameAr: 'بوليفار فنزويلي', symbol: 'Bs' },
-  { code: 'BOB', name: 'Bolivian Boliviano', nameAr: 'بوليفيانو بوليفي', symbol: 'Bs' },
-  { code: 'PYG', name: 'Paraguayan Guaraní', nameAr: 'جوارني باراغواي', symbol: '₲' },
-  { code: 'GTQ', name: 'Guatemalan Quetzal', nameAr: 'كيتسال غواتيمالي', symbol: 'Q' },
-  { code: 'HNL', name: 'Honduran Lempira', nameAr: 'ليمبيرا هندوراسي', symbol: 'L' },
-  { code: 'NIO', name: 'Nicaraguan Córdoba', nameAr: 'كوردوبا نيكاراغوي', symbol: 'C$' },
-  { code: 'CRC', name: 'Costa Rican Colón', nameAr: 'كولون كوستاريكي', symbol: '₡' },
-  { code: 'PAB', name: 'Panamanian Balboa', nameAr: 'بالبوا بنمي', symbol: 'B/.' },
-  { code: 'TTD', name: 'Trinidad and Tobago Dollar', nameAr: 'دولار ترينيداد وتوباغو', symbol: 'TT$' },
-  { code: 'JMD', name: 'Jamaican Dollar', nameAr: 'دولار جامايكي', symbol: 'J$' },
-  { code: 'BSD', name: 'Bahamian Dollar', nameAr: 'دولار باهامي', symbol: 'B$' },
-  { code: 'BZD', name: 'Belize Dollar', nameAr: 'دولار بليزي', symbol: 'BZ$' },
-  { code: 'XCD', name: 'East Caribbean Dollar', nameAr: 'دولار الكاريبي الشرقي', symbol: 'EC$' },
-  // Asia Pacific
-  { code: 'SGD', name: 'Singapore Dollar', nameAr: 'دولار سنغافوري', symbol: 'S$' },
-  { code: 'HKD', name: 'Hong Kong Dollar', nameAr: 'دولار هونغ كونغ', symbol: 'HK$' },
-  { code: 'KRW', name: 'South Korean Won', nameAr: 'وون كوري جنوبي', symbol: '₩' },
-  { code: 'IDR', name: 'Indonesian Rupiah', nameAr: 'روبية إندونيسية', symbol: 'Rp' },
-  { code: 'MYR', name: 'Malaysian Ringgit', nameAr: 'رينجيت ماليزي', symbol: 'RM' },
-  { code: 'THB', name: 'Thai Baht', nameAr: 'بات تايلندي', symbol: '฿' },
-  { code: 'PHP', name: 'Philippine Peso', nameAr: 'بيزو فلبيني', symbol: '₱' },
-  { code: 'VND', name: 'Vietnamese Dong', nameAr: 'دونج فيتنامي', symbol: '₫' },
-  { code: 'MMK', name: 'Myanmar Kyat', nameAr: 'كيات ميانماري', symbol: 'K' },
-  { code: 'LAK', name: 'Laotian Kip', nameAr: 'كيب لاوسي', symbol: '₭' },
-  { code: 'KHR', name: 'Cambodian Riel', nameAr: 'ريل كمبودي', symbol: '៛' },
-  { code: 'MOP', name: 'Macanese Pataca', nameAr: 'باتاكا ماكاوية', symbol: 'P' },
-  { code: 'TWD', name: 'Taiwan Dollar', nameAr: 'دولار تايواني', symbol: 'NT$' },
-  { code: 'FJD', name: 'Fiji Dollar', nameAr: 'دولار فيجي', symbol: 'FJ$' },
-  { code: 'PGK', name: 'Papua New Guinea Kina', nameAr: 'كينا بابوا غينيا الجديدة', symbol: 'K' },
-  { code: 'SBD', name: 'Solomon Islands Dollar', nameAr: 'دولار جزر سليمان', symbol: 'SI$' },
-  { code: 'TOP', name: 'Tongan Paanga', nameAr: 'بانغا تونغي', symbol: 'T$' },
-  { code: 'WST', name: 'Samoan Tala', nameAr: 'تالا ساموي', symbol: 'T' },
-  { code: 'VUV', name: 'Vanuatu Vatu', nameAr: 'فاتو فانواتي', symbol: 'Vt' },
-  { code: 'XPF', name: 'CFP Franc', nameAr: 'فرنك بولينيزي', symbol: '₣' },
-  { code: 'BND', name: 'Brunei Dollar', nameAr: 'دولار بروني', symbol: 'B$' },
-  // MENA Region
-  { code: 'SAR', name: 'Saudi Riyal', nameAr: 'ريال سعودي', symbol: '﷼' },
-  { code: 'AED', name: 'UAE Dirham', nameAr: 'درهم إماراتي', symbol: 'د.إ' },
-  { code: 'QAR', name: 'Qatari Riyal', nameAr: 'ريال قطري', symbol: 'ر.ق' },
-  { code: 'OMR', name: 'Omani Rial', nameAr: 'ريال عماني', symbol: 'ر.ع.' },
-  { code: 'KWD', name: 'Kuwaiti Dinar', nameAr: 'دينار كويتي', symbol: 'د.ك' },
-  { code: 'BHD', name: 'Bahraini Dinar', nameAr: 'دينار بحريني', symbol: 'د.ب' },
-  { code: 'JOD', name: 'Jordanian Dinar', nameAr: 'دينار أردني', symbol: 'د.ا' },
-  { code: 'LBP', name: 'Lebanese Pound', nameAr: 'ليرة لبنانية', symbol: 'ل.ل' },
-  { code: 'EGP', name: 'Egyptian Pound', nameAr: 'جنيه مصري', symbol: 'ج.م' },
-  { code: 'YER', name: 'Yemeni Rial', nameAr: 'ريال يمني', symbol: 'ر.ي' },
-  { code: 'IQD', name: 'Iraqi Dinar', nameAr: 'دينار عراقي', symbol: 'ع.د' },
-  { code: 'SYP', name: 'Syrian Pound', nameAr: 'ليرة سورية', symbol: 'ل.س' },
-  { code: 'IRR', name: 'Iranian Rial', nameAr: 'ريال إيراني', symbol: '﷼' },
-  { code: 'ILS', name: 'Israeli Shekel', nameAr: 'شيقل إسرائيلي', symbol: '₪' },
-  { code: 'TND', name: 'Tunisian Dinar', nameAr: 'دينار تونسي', symbol: 'د.ت' },
-  { code: 'MAD', name: 'Moroccan Dirham', nameAr: 'درهم مغربي', symbol: 'د.م.' },
-  { code: 'DZD', name: 'Algerian Dinar', nameAr: 'دينار جزائري', symbol: 'د.ج' },
-  { code: 'SDG', name: 'Sudanese Pound', nameAr: 'جنيه سوداني', symbol: 'ج.س' },
-  { code: 'AFN', name: 'Afghan Afghani', nameAr: 'أفغاني أفغاني', symbol: '؋' },
-  // Europe
-  { code: 'NOK', name: 'Norwegian Krone', nameAr: 'كرونة نرويجية', symbol: 'kr' },
-  { code: 'SEK', name: 'Swedish Krona', nameAr: 'كرونة سويدية', symbol: 'kr' },
-  { code: 'DKK', name: 'Danish Krone', nameAr: 'كرونة دنماركية', symbol: 'kr' },
-  { code: 'TRY', name: 'Turkish Lira', nameAr: 'ليرة تركية', symbol: '₺' },
-  { code: 'RUB', name: 'Russian Ruble', nameAr: 'روبل روسي', symbol: '₽' },
-  { code: 'BAM', name: 'Bosnia and Herzegovina Convertible Mark', nameAr: 'مارك بوسني', symbol: 'KM' },
-  { code: 'HRK', name: 'Croatian Kuna', nameAr: 'كونا كرواتية', symbol: 'kn' },
-  { code: 'RSD', name: 'Serbian Dinar', nameAr: 'دينار صربي', symbol: 'дин' },
-  { code: 'BGN', name: 'Bulgarian Lev', nameAr: 'ليف بلغاري', symbol: 'лв' },
-  { code: 'RON', name: 'Romanian Leu', nameAr: 'ليو روماني', symbol: 'lei' },
-  { code: 'HUF', name: 'Hungarian Forint', nameAr: 'فورينت مجري', symbol: 'Ft' },
-  { code: 'PLN', name: 'Polish Zloty', nameAr: 'زلوتي بولندي', symbol: 'zł' },
-  { code: 'CZK', name: 'Czech Koruna', nameAr: 'كرونة تشيكية', symbol: 'Kč' },
-  { code: 'SKK', name: 'Slovak Koruna', nameAr: 'كرونة سلوفاكية', symbol: 'Sk' },
-  { code: 'UAH', name: 'Ukrainian Hryvnia', nameAr: 'هريفنيا أوكرانية', symbol: '₴' },
-  { code: 'BYR', name: 'Belarusian Ruble', nameAr: 'روبل بيلاروسي', symbol: 'Br' },
-  { code: 'ALL', name: 'Albanian Lek', nameAr: 'ليك ألباني', symbol: 'L' },
-  { code: 'MKD', name: 'Macedonian Denar', nameAr: 'دينار مقدوني', symbol: 'ден' },
-  // Central Asia
-  { code: 'KZT', name: 'Kazakhstani Tenge', nameAr: 'تنغ كازاخستاني', symbol: '₸' },
-  { code: 'TJS', name: 'Tajikistani Somoni', nameAr: 'سوموني طاجيكي', symbol: 'ЅМ' },
-  { code: 'KGS', name: 'Kyrgyzstani Som', nameAr: 'سوم قيرغيزي', symbol: 'лв' },
-  { code: 'MNT', name: 'Mongolian Tugrik', nameAr: 'توغريك منغولي', symbol: '₮' },
-  { code: 'AZN', name: 'Azerbaijani Manat', nameAr: 'مانات أذربيجاني', symbol: '₼' },
-  { code: 'GEL', name: 'Georgian Lari', nameAr: 'لاري جورجي', symbol: '₾' },
-  { code: 'AMD', name: 'Armenian Dram', nameAr: 'درام أرميني', symbol: '֏' },
-  // South Asia
-  { code: 'PKR', name: 'Pakistani Rupee', nameAr: 'روبية باكستانية', symbol: '₨' },
-  { code: 'BDT', name: 'Bangladeshi Taka', nameAr: 'تاكا بنغلاديشية', symbol: '৳' },
-  { code: 'LKR', name: 'Sri Lankan Rupee', nameAr: 'روبية سريلانكية', symbol: 'Rs' },
-  { code: 'NPR', name: 'Nepalese Rupee', nameAr: 'روبية نيبالية', symbol: '₨' },
-  { code: 'BTN', name: 'Bhutanese Ngultrum', nameAr: 'نجولتروم بوتاني', symbol: 'Nu.' },
-  { code: 'MVR', name: 'Maldivian Rufiyaa', nameAr: 'روفية مالديفية', symbol: 'Rf' },
-  // Africa
-  { code: 'NGN', name: 'Nigerian Naira', nameAr: 'نيرة نيجيرية', symbol: '₦' },
-  { code: 'KES', name: 'Kenyan Shilling', nameAr: 'شلن كيني', symbol: 'KSh' },
-  { code: 'ZAR', name: 'South African Rand', nameAr: 'راند جنوب أفريقي', symbol: 'R' },
-  { code: 'GMD', name: 'Gambian Dalasi', nameAr: 'دالاسي جامبي', symbol: 'D' },
-  { code: 'MUR', name: 'Mauritian Rupee', nameAr: 'روبية موريشيوسية', symbol: '₨' },
-  { code: 'SCR', name: 'Seychellois Rupee', nameAr: 'روبية سيشيلية', symbol: '₨' },
-  { code: 'SZL', name: 'Eswatini Lilangeni', nameAr: 'إيمالانجيني إسواتيني', symbol: 'L' },
-  { code: 'LSL', name: 'Lesotho Loti', nameAr: 'لوتي ليسوتو', symbol: 'L' },
-  { code: 'BWP', name: 'Botswana Pula', nameAr: 'بولا بوتسواني', symbol: 'P' },
-  { code: 'NAD', name: 'Namibian Dollar', nameAr: 'دولار ناميبي', symbol: 'N$' },
-  { code: 'GHS', name: 'Ghanaian Cedi', nameAr: 'سيدي غاني', symbol: '₵' },
-  { code: 'LRD', name: 'Liberian Dollar', nameAr: 'دولار ليبيري', symbol: 'L$' },
-  { code: 'SLL', name: 'Sierra Leonean Leone', nameAr: 'ليون سيراليوني', symbol: 'Le' },
-  { code: 'GNF', name: 'Guinean Franc', nameAr: 'فرنك غيني', symbol: 'FG' },
-  { code: 'MWK', name: 'Malawian Kwacha', nameAr: 'كواشا ملاوي', symbol: 'MK' },
-  { code: 'MZN', name: 'Mozambican Metical', nameAr: 'متيكال موزمبيقي', symbol: 'MT' },
-  { code: 'RWF', name: 'Rwandan Franc', nameAr: 'فرنك رواندي', symbol: 'FRw' },
-  { code: 'TZS', name: 'Tanzanian Shilling', nameAr: 'شلن تنزاني', symbol: 'TSh' },
-  { code: 'UGX', name: 'Ugandan Shilling', nameAr: 'شلن أوغندي', symbol: 'USh' },
-  { code: 'ZMW', name: 'Zambian Kwacha', nameAr: 'كواشا زامبية', symbol: 'ZK' },
-  { code: 'ZWL', name: 'Zimbabwean Dollar', nameAr: 'دولار زمبابوي', symbol: 'Z$' },
-  { code: 'ETB', name: 'Ethiopian Birr', nameAr: 'بير إثيوبي', symbol: 'Br' },
-  { code: 'ERN', name: 'Eritrean Nakfa', nameAr: 'ناكفا إريتري', symbol: 'Nfk' },
-  { code: 'XOF', name: 'West African CFA Franc', nameAr: 'فرنك سيفا غرب أفريقي', symbol: 'CFA' },
-  { code: 'XAF', name: 'Central African CFA Franc', nameAr: 'فرنك سيفا وسط أفريقي', symbol: 'FCFA' },
-  { code: 'CFA', name: 'CFA Franc', nameAr: 'فرنك سيفا', symbol: 'CFA' },
-  // Caribbean & Other
-  { code: 'ANG', name: 'Netherlands Antillean Guilder', nameAr: 'غيلدر هولندي', symbol: 'ƒ' },
-  { code: 'SRD', name: 'Surinamese Dollar', nameAr: 'دولار سورينامي', symbol: '$' },
-  { code: 'GYD', name: 'Guyanese Dollar', nameAr: 'دولار غيانا', symbol: 'G$' },
-  { code: 'FKP', name: 'Falkland Islands Pound', nameAr: 'جنيه جزر فوكلاند', symbol: '£' },
-  { code: 'GIP', name: 'Gibraltar Pound', nameAr: 'جنيه جبل طارق', symbol: '£' },
-  { code: 'SHP', name: 'Saint Helena Pound', nameAr: 'جنيه سانت هيلينا', symbol: '£' },
-  { code: 'HTG', name: 'Haitian Gourde', nameAr: 'جورد هايتي', symbol: 'G' },
-  { code: 'DOP', name: 'Dominican Peso', nameAr: 'بيزو دومينيكاني', symbol: 'RD$' },
-  { code: 'CUP', name: 'Cuban Peso', nameAr: 'بيزو كوبي', symbol: '₱' },
-  { code: 'CUC', name: 'Cuban Convertible Peso', nameAr: 'بيزو كوبي قابل للتحويل', symbol: '$' },
-] as const;
 
 // Validation schemas - must match database enum: ["planning", "active", "on_hold", "completed", "cancelled"]
 const projectStatusEnum = z.enum(["planning", "active", "on_hold", "completed", "cancelled"]);
-const currencyEnum = z.enum(GLOBAL_CURRENCIES.map(c => c.code) as [string, ...string[]]);
+
+// Use the Currency Engine's CURRENCY_CODE_TUPLE as the source of truth for the zod enum.
+// This replaces the inline GLOBAL_CURRENCIES array that was previously defined here.
+const currencyEnum = z.enum(CURRENCY_CODE_TUPLE);
 
 const createProjectSchema = z.object({
   projectCode: z.string().min(1, "Project code is required"),
@@ -216,15 +80,22 @@ export const projectsRouter = router({
 
   /**
    * Get all supported currencies
+   * Returns the full CURRENCY_REGISTRY from the Currency Engine.
+   * Replaces the old inline GLOBAL_CURRENCIES array.
    */
   getCurrencies: protectedProcedure
     .query(async () => {
-      return GLOBAL_CURRENCIES.map(code => ({
-        code,
-        label: code,
+      return CURRENCY_REGISTRY.map((c) => ({
+        code: c.code,
+        name: c.name,
+        nameAr: c.nameAr,
+        symbol: c.symbol,
+        position: c.position,
+        decimals: c.decimals,
+        label: `${c.code} — ${c.name}`,
       }));
     }),
-    
+
   /**
    * List all projects with optional filters
    */
@@ -928,13 +799,10 @@ export const projectsRouter = router({
   // DASHBOARD PROCEDURES - Portfolio Health & Metrics
   // ============================================================================
 
-  // ============================================================================
-  // DASHBOARD PROCEDURES - Portfolio Health & Metrics
-  // ============================================================================
-
   /**
    * Dashboard KPIs - Portfolio Health Metrics
-   * Returns key performance indicators for the dashboard
+   * Returns key performance indicators for the dashboard.
+   * All monetary values are converted to USD via the Currency Engine.
    */
   getDashboardKPIs: scopedProcedure
     .input(z.object({
@@ -966,6 +834,7 @@ export const projectsRouter = router({
         .from(projects)
         .where(and(...conditions));
 
+      // Use Currency Engine for all conversions (replaces hardcoded CURRENCY_RATES)
       const totalBudgetUSD = allProjects.reduce((sum, p) => {
         return sum + convertToUSD(Number(p.totalBudget) || 0, p.currency || 'USD');
       }, 0);
@@ -1015,7 +884,8 @@ export const projectsRouter = router({
 
   /**
    * Dashboard Alerts - Executive Alerts
-   * Returns at-risk, over-budget, expiring projects and overdue reports
+   * Returns at-risk, over-budget, expiring projects and overdue reports.
+   * Budget comparisons use Currency Engine conversions.
    */
   getAlerts: scopedProcedure
     .input(z.object({
@@ -1177,7 +1047,8 @@ export const projectsRouter = router({
 
   /**
    * Dashboard Project Risk Table
-   * Returns per-project risk metrics for the executive risk table
+   * Returns per-project risk metrics for the executive risk table.
+   * Budget utilization uses Currency Engine for cross-currency comparison.
    */
   getProjectRiskTable: scopedProcedure
     .input(z.object({
@@ -1251,6 +1122,7 @@ export const projectsRouter = router({
       const now = new Date();
 
       return projectList.map(p => {
+        // Use Currency Engine for cross-currency budget comparison
         const budgetUSD = convertToUSD(Number(p.totalBudget) || 0, p.currency || 'USD');
         const spentUSD = convertToUSD(Number(p.spent) || 0, p.currency || 'USD');
         const budgetUtilization = budgetUSD > 0 ? Math.round((spentUSD / budgetUSD) * 100) : 0;
@@ -1308,6 +1180,7 @@ export const projectsRouter = router({
 
   /**
    * Dashboard Project Snapshot - Top projects by budget with enhanced fields
+   * Budget values converted to USD via Currency Engine.
    */
   getSnapshot: scopedProcedure
     .input(z.object({
@@ -1376,6 +1249,7 @@ export const projectsRouter = router({
       const now = new Date();
 
       return topProjects.map(p => {
+        // Use Currency Engine for cross-currency budget comparison
         const budgetUSD = convertToUSD(Number(p.totalBudget) || 0, p.currency || 'USD');
         const spentUSD = convertToUSD(Number(p.spent) || 0, p.currency || 'USD');
         const budgetUtilization = budgetUSD > 0 ? Math.round((spentUSD / budgetUSD) * 100) : 0;
@@ -1644,7 +1518,8 @@ export const projectsRouter = router({
 
   /**
    * Expiring Projects - ending in next N days
-   * Returns projects with upcoming end dates for closeout preparation
+   * Returns projects with upcoming end dates for closeout preparation.
+   * Budget utilization uses Currency Engine for cross-currency comparison.
    */
   getExpiringProjects: scopedProcedure
     .input(z.object({
@@ -1696,6 +1571,7 @@ export const projectsRouter = router({
 
       // Format response with budget utilization and expiry category
       const formattedProjects = expiringProjects.map(p => {
+        // Use Currency Engine for cross-currency budget comparison
         const budgetUSD = convertToUSD(Number(p.totalBudget) || 0, p.currency || 'USD');
         const spentUSD = convertToUSD(Number(p.spent) || 0, p.currency || 'USD');
         const budgetUtilization = budgetUSD > 0 ? Math.round((spentUSD / budgetUSD) * 100) : 0;
@@ -1723,5 +1599,111 @@ export const projectsRouter = router({
         expiring90,
         projects: formattedProjects,
       };
-    })
-  });
+    }),
+
+  // ── Portfolio Financial Snapshot ──────────────────────────────────────────
+  // Aggregates real budget, spend, and grant data for the executive KPI card.
+  // Uses ctx.scope for org/OU isolation — no input required from the frontend.
+  // Includes planning + active projects, approved + revised budgets, ongoing grants.
+  // grants.operatingUnitId is nullable: org-level grants (NULL) are always included.
+  // All monetary values converted to USD via the Currency Engine.
+  getPortfolioFinancialSnapshot: scopedProcedure
+    .input(z.object({}))
+    .query(async ({ ctx }) => {
+      const db = await getDb();
+      if (!db) throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'Database not available' });
+      const { organizationId, operatingUnitId } = ctx.scope;
+
+      // 1. Active + planning projects: sum totalBudget and spent
+      const activeProjects = await db
+        .select({
+          totalBudget: projects.totalBudget,
+          spent: projects.spent,
+          currency: projects.currency,
+        })
+        .from(projects)
+        .where(
+          and(
+            eq(projects.organizationId, organizationId),
+            eq(projects.operatingUnitId, operatingUnitId),
+            inArray(projects.status, ['active', 'planning']),
+            eq(projects.isDeleted, 0)
+          )
+        );
+
+      let totalBudget = 0;
+      let totalSpent = 0;
+      activeProjects.forEach((p) => {
+        // Use Currency Engine for cross-currency aggregation
+        totalBudget += convertToUSD(Number(p.totalBudget || 0), p.currency ?? 'USD');
+        totalSpent  += convertToUSD(Number(p.spent || 0),       p.currency ?? 'USD');
+      });
+
+      // 2. Ongoing grants: sum grantAmount
+      // operatingUnitId is nullable on grants — include org-level (NULL) and OU-scoped grants
+      const activeGrantRows = await db
+        .select({
+          grantAmount: grants.grantAmount,
+          currency: grants.currency,
+        })
+        .from(grants)
+        .where(
+          and(
+            eq(grants.organizationId, organizationId),
+            or(
+              isNull(grants.operatingUnitId),
+              eq(grants.operatingUnitId, operatingUnitId)
+            ),
+            eq(grants.isDeleted, 0),
+            eq(grants.status, 'ongoing')
+          )
+        );
+
+      let activeGrantsValue = 0;
+      activeGrantRows.forEach((g) => {
+        activeGrantsValue += convertToUSD(Number(g.grantAmount || 0), g.currency ?? 'USD');
+      });
+
+      // 3. Approved + revised budgets: authoritative financial source
+      const approvedBudgetRows = await db
+        .select({
+          totalApprovedAmount: budgets.totalApprovedAmount,
+          totalActualAmount: budgets.totalActualAmount,
+          currency: budgets.currency,
+        })
+        .from(budgets)
+        .where(
+          and(
+            eq(budgets.organizationId, organizationId),
+            eq(budgets.operatingUnitId, operatingUnitId),
+            inArray(budgets.status, ['approved', 'revised']),
+            eq(budgets.isDeleted, 0)
+          )
+        );
+
+      let approvedBudgetTotal = 0;
+      let approvedActualTotal = 0;
+      approvedBudgetRows.forEach((b) => {
+        approvedBudgetTotal += convertToUSD(Number(b.totalApprovedAmount || 0), b.currency ?? 'USD');
+        approvedActualTotal += convertToUSD(Number(b.totalActualAmount  || 0), b.currency ?? 'USD');
+      });
+
+      // 4. Prefer approved-budget data when available (more authoritative than project-level)
+      const finalBudget = approvedBudgetTotal > 0 ? approvedBudgetTotal : totalBudget;
+      const finalSpent  = approvedActualTotal  > 0 ? approvedActualTotal  : totalSpent;
+      const remainingBalance = finalBudget - finalSpent;
+      const utilizationRate  = finalBudget > 0
+        ? Math.round((finalSpent / finalBudget) * 1000) / 10  // one decimal, e.g. 60.4
+        : 0;
+
+      return {
+        totalBudget:       Math.round(finalBudget),
+        totalSpent:        Math.round(finalSpent),
+        remainingBalance:  Math.round(remainingBalance),
+        utilizationRate,
+        activeProjects:    activeProjects.length,
+        activeGrants:      activeGrantRows.length,
+        activeGrantsValue: Math.round(activeGrantsValue),
+      };
+    }),
+})

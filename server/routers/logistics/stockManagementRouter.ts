@@ -391,7 +391,7 @@ const issuesRouter = router({
           organizationId,
           operatingUnitId,
           issueNumber,
-          issueDate: new Date(),
+          issueDate: new Date().toISOString(),
           issuedTo: input.issuedTo,
           issuedToType: input.issuedToType,
           projectId: input.projectId,
@@ -464,7 +464,7 @@ const issuesRouter = router({
           totalValue: String(line.qtyIssued * parseFloat(String(batch?.unitCost || 0))),
           userId: ctx.user.id,
           notes: `Issue to ${input.issuedTo}: ${input.purpose || ""}`,
-          transactionDate: new Date(),
+          transactionDate: new Date().toISOString(),
         });
       }
 
@@ -594,7 +594,7 @@ const requestsRouter = router({
           requesterName: input.requesterName,
           requesterDepartment: input.requesterDepartment,
           purpose: input.purpose,
-          neededByDate: input.neededByDate ? new Date(input.neededByDate) : null,
+          neededByDate: input.neededByDate ? new Date(input.neededByDate).toISOString().slice(0, 19).replace('T', ' ') : null,
           status: "submitted",
           createdBy: ctx.user.id,
         })
@@ -638,7 +638,7 @@ const requestsRouter = router({
         .set({
           status: "approved",
           approvedBy: ctx.user.id,
-          approvedAt: new Date(),
+          approvedAt: new Date().toISOString(),
           updatedBy: ctx.user.id,
         })
         .where(and(
@@ -774,7 +774,7 @@ const returnsRouter = router({
         .set({
           status: "accepted",
           inspectedBy: ctx.user.name || String(ctx.user.id),
-          inspectedAt: new Date(),
+          inspectedAt: new Date().toISOString(),
           updatedBy: ctx.user.id,
         })
         .where(and(
@@ -832,7 +832,7 @@ const returnsRouter = router({
             totalValue: String(line.acceptedQty * parseFloat(String(batch?.unitCost || 0))),
             userId: ctx.user.id,
             notes: `Return accepted: ${returnRecord?.returnNumber}`,
-            transactionDate: new Date(),
+            transactionDate: new Date().toISOString(),
           });
         }
       }
@@ -1090,8 +1090,8 @@ const adjustmentsRouter = router({
       search: z.string().optional(),
     }).optional())
     .query(async ({ ctx, input }) => {
-      const db = getDb();
-      const { organizationId, operatingUnitId } = ctx;
+      const db = await getDb();
+      const { organizationId, operatingUnitId } = ctx.scope;
       const conditions: any[] = [
         eq(stockAdjustments.organizationId, organizationId),
       ];
@@ -1137,8 +1137,8 @@ const adjustmentsRouter = router({
       })).min(1),
     }))
     .mutation(async ({ ctx, input }) => {
-      const db = getDb();
-      const { organizationId, operatingUnitId } = ctx;
+      const db = await getDb();
+      const { organizationId, operatingUnitId } = ctx.scope;
       const adjustmentNumber = `ADJ-${organizationId}-${Date.now()}`;
 
       const [result] = await db.insert(stockAdjustments).values({
@@ -1177,7 +1177,7 @@ const adjustmentsRouter = router({
   submit: scopedProcedure
     .input(z.object({ adjustmentId: z.number() }))
     .mutation(async ({ ctx, input }) => {
-      const db = getDb();
+      const db = await getDb();
       const [adj] = await db.select().from(stockAdjustments).where(eq(stockAdjustments.id, input.adjustmentId)).limit(1);
       if (!adj) throw new TRPCError({ code: 'NOT_FOUND', message: 'Adjustment not found' });
       if ((adj as any).status !== 'draft') throw new TRPCError({ code: 'BAD_REQUEST', message: 'Only draft adjustments can be submitted' });
@@ -1192,7 +1192,7 @@ const adjustmentsRouter = router({
   approve: scopedProcedure
     .input(z.object({ adjustmentId: z.number(), notes: z.string().optional() }))
     .mutation(async ({ ctx, input }) => {
-      const db = getDb();
+      const db = await getDb();
       const [adj] = await db.select().from(stockAdjustments).where(eq(stockAdjustments.id, input.adjustmentId)).limit(1);
       if (!adj) throw new TRPCError({ code: 'NOT_FOUND', message: 'Adjustment not found' });
       if ((adj as any).status !== 'pending_approval') throw new TRPCError({ code: 'BAD_REQUEST', message: 'Only pending adjustments can be approved' });
@@ -1210,7 +1210,7 @@ const adjustmentsRouter = router({
 
       // Get lines and create ledger entries
       const lines = await db.select().from(stockAdjustmentLines).where(eq(stockAdjustmentLines.adjustmentId, input.adjustmentId));
-      const { organizationId, operatingUnitId } = ctx;
+      const { organizationId, operatingUnitId } = ctx.scope;
 
       for (const line of lines) {
         const qtyAdj = parseFloat(String((line as any).qtyAdjusted || 0));
@@ -1222,12 +1222,10 @@ const adjustmentsRouter = router({
           operatingUnitId: operatingUnitId || 0,
           batchId: (line as any).batchId || 0,
           itemId: (line as any).itemId || 0,
-          movementType: 'ADJUSTMENT',
-          referenceType: 'stock_adjustment',
+          movementType: 'ADJUSTMENT_IN' as any,
+          referenceType: 'ADJUSTMENT' as any,
           referenceId: input.adjustmentId,
           qtyChange: String(qtyAdj),
-          balanceAfter: String(parseFloat(String((line as any).qtyAfter || 0))),
-          performedBy: ctx.user?.name || 'System',
           notes: `Adjustment ${(adj as any).adjustmentNumber}: ${(adj as any).type} - ${(line as any).itemName || ''}`,
         });
 
@@ -1249,7 +1247,7 @@ const adjustmentsRouter = router({
   reject: scopedProcedure
     .input(z.object({ adjustmentId: z.number(), reason: z.string().min(1) }))
     .mutation(async ({ ctx, input }) => {
-      const db = getDb();
+      const db = await getDb();
       const [adj] = await db.select().from(stockAdjustments).where(eq(stockAdjustments.id, input.adjustmentId)).limit(1);
       if (!adj) throw new TRPCError({ code: 'NOT_FOUND', message: 'Adjustment not found' });
       if ((adj as any).status !== 'pending_approval') throw new TRPCError({ code: 'BAD_REQUEST', message: 'Only pending adjustments can be rejected' });
@@ -1272,8 +1270,8 @@ const warehouseTransfersRouter = router({
       search: z.string().optional(),
     }).optional())
     .query(async ({ ctx, input }) => {
-      const db = getDb();
-      const { organizationId } = ctx;
+      const db = await getDb();
+      const { organizationId } = ctx.scope;
       const conditions: any[] = [
         eq(warehouseTransfers.organizationId, organizationId),
       ];
@@ -1313,8 +1311,8 @@ const warehouseTransfersRouter = router({
       })).min(1),
     }))
     .mutation(async ({ ctx, input }) => {
-      const db = getDb();
-      const { organizationId, operatingUnitId } = ctx;
+      const db = await getDb();
+      const { organizationId, operatingUnitId } = ctx.scope;
 
       if (input.sourceWarehouse === input.destinationWarehouse) {
         throw new TRPCError({ code: 'BAD_REQUEST', message: 'Source and destination warehouses must be different' });
@@ -1326,10 +1324,10 @@ const warehouseTransfersRouter = router({
         organizationId,
         operatingUnitId: operatingUnitId || null,
         transferNumber,
-        sourceWarehouse: input.sourceWarehouse,
-        destinationWarehouse: input.destinationWarehouse,
+        fromWarehouseName: input.sourceWarehouse,
+        toWarehouseName: input.destinationWarehouse,
         status: 'draft',
-        requestedBy: ctx.user?.name || 'Unknown',
+        createdBy: ctx.user?.id ?? null,
         notes: input.notes || null,
       });
 
@@ -1339,9 +1337,7 @@ const warehouseTransfersRouter = router({
         await db.insert(warehouseTransferLines).values({
           transferId: Number(transferId),
           itemId: line.itemId,
-          batchId: line.batchId || null,
-          itemName: line.itemName,
-          batchNumber: line.batchNumber || null,
+          batchId: line.batchId || 0,
           qtyRequested: String(line.qtyRequested),
           unit: line.unit || 'Piece',
         });
@@ -1353,7 +1349,7 @@ const warehouseTransfersRouter = router({
   submit: scopedProcedure
     .input(z.object({ transferId: z.number() }))
     .mutation(async ({ ctx, input }) => {
-      const db = getDb();
+      const db = await getDb();
       const [t] = await db.select().from(warehouseTransfers).where(eq(warehouseTransfers.id, input.transferId)).limit(1);
       if (!t) throw new TRPCError({ code: 'NOT_FOUND', message: 'Transfer not found' });
       if ((t as any).status !== 'draft') throw new TRPCError({ code: 'BAD_REQUEST', message: 'Only draft transfers can be submitted' });
@@ -1368,12 +1364,12 @@ const warehouseTransfersRouter = router({
   dispatch: scopedProcedure
     .input(z.object({ transferId: z.number() }))
     .mutation(async ({ ctx, input }) => {
-      const db = getDb();
+      const db = await getDb();
       const [t] = await db.select().from(warehouseTransfers).where(eq(warehouseTransfers.id, input.transferId)).limit(1);
       if (!t) throw new TRPCError({ code: 'NOT_FOUND', message: 'Transfer not found' });
       if ((t as any).status !== 'submitted') throw new TRPCError({ code: 'BAD_REQUEST', message: 'Only submitted transfers can be dispatched' });
 
-      const { organizationId, operatingUnitId } = ctx;
+      const { organizationId, operatingUnitId } = ctx.scope;
 
       // Create TRANSFER_OUT ledger entries
       const lines = await db.select().from(warehouseTransferLines).where(eq(warehouseTransferLines.transferId, input.transferId));
@@ -1386,12 +1382,10 @@ const warehouseTransfersRouter = router({
           operatingUnitId: operatingUnitId || 0,
           batchId: (line as any).batchId || 0,
           itemId: (line as any).itemId || 0,
-          movementType: 'TRANSFER',
-          referenceType: 'warehouse_transfer',
+          movementType: 'TRANSFER_OUT' as any,
+          referenceType: 'TRANSFER' as any,
           referenceId: input.transferId,
           qtyChange: String(-qty),
-          balanceAfter: '0',
-          performedBy: ctx.user?.name || 'System',
           notes: `Transfer OUT: ${(t as any).transferNumber} from ${(t as any).sourceWarehouse} to ${(t as any).destinationWarehouse}`,
         });
 
@@ -1411,12 +1405,12 @@ const warehouseTransfersRouter = router({
   receive: scopedProcedure
     .input(z.object({ transferId: z.number(), notes: z.string().optional() }))
     .mutation(async ({ ctx, input }) => {
-      const db = getDb();
+      const db = await getDb();
       const [t] = await db.select().from(warehouseTransfers).where(eq(warehouseTransfers.id, input.transferId)).limit(1);
       if (!t) throw new TRPCError({ code: 'NOT_FOUND', message: 'Transfer not found' });
       if ((t as any).status !== 'dispatched') throw new TRPCError({ code: 'BAD_REQUEST', message: 'Only dispatched transfers can be received' });
 
-      const { organizationId, operatingUnitId } = ctx;
+      const { organizationId, operatingUnitId } = ctx.scope;
 
       // Create TRANSFER_IN ledger entries
       const lines = await db.select().from(warehouseTransferLines).where(eq(warehouseTransferLines.transferId, input.transferId));
@@ -1429,12 +1423,10 @@ const warehouseTransfersRouter = router({
           operatingUnitId: operatingUnitId || 0,
           batchId: (line as any).batchId || 0,
           itemId: (line as any).itemId || 0,
-          movementType: 'TRANSFER',
-          referenceType: 'warehouse_transfer',
+          movementType: 'TRANSFER_IN' as any,
+          referenceType: 'TRANSFER' as any,
           referenceId: input.transferId,
           qtyChange: String(qty),
-          balanceAfter: '0',
-          performedBy: ctx.user?.name || 'System',
           notes: `Transfer IN: ${(t as any).transferNumber} received at ${(t as any).destinationWarehouse}`,
         });
 
@@ -1445,7 +1437,7 @@ const warehouseTransfersRouter = router({
       }
 
       await db.update(warehouseTransfers)
-        .set({ status: 'received', receivedAt: sql`NOW()`, receivedBy: ctx.user?.name || null, updatedAt: sql`NOW()` })
+        .set({ status: 'received', receivedAt: sql`NOW()`, receivedBy: ctx.user?.id ?? null, updatedAt: sql`NOW()` })
         .where(eq(warehouseTransfers.id, input.transferId));
 
       return { success: true };
@@ -1459,8 +1451,8 @@ const expiryAlertsRouter = router({
   check: scopedProcedure
     .input(z.object({ thresholdDays: z.number().default(30) }).optional())
     .query(async ({ ctx, input }) => {
-      const db = getDb();
-      const { organizationId } = ctx;
+      const db = await getDb();
+      const { organizationId } = ctx.scope;
       const thresholdDays = input?.thresholdDays || 30;
       const now = new Date();
       const thresholdDate = new Date(now.getTime() + thresholdDays * 86400000);
@@ -1504,8 +1496,8 @@ const expiryAlertsRouter = router({
   sendAlert: scopedProcedure
     .input(z.object({ thresholdDays: z.number().default(30) }))
     .mutation(async ({ ctx, input }) => {
-      const db = getDb();
-      const { organizationId } = ctx;
+      const db = await getDb();
+      const { organizationId } = ctx.scope;
       const thresholdDays = input.thresholdDays;
       const now = new Date();
       const thresholdDate = new Date(now.getTime() + thresholdDays * 86400000);
@@ -1574,8 +1566,8 @@ const physicalCountRouter = router({
       search: z.string().optional(),
     }).optional())
     .query(async ({ ctx, input }) => {
-      const db = getDb();
-      const { organizationId } = ctx;
+      const db = await getDb();
+      const { organizationId } = ctx.scope;
       const conditions: any[] = [eq(physicalCountSessions.organizationId, organizationId)];
       if (input?.status) conditions.push(eq(physicalCountSessions.status, input.status as any));
       if (input?.search) conditions.push(like(physicalCountSessions.sessionNumber, `%${input.search}%`));
@@ -1593,7 +1585,7 @@ const physicalCountRouter = router({
   getDetail: scopedProcedure
     .input(z.object({ sessionId: z.number() }))
     .query(async ({ ctx, input }) => {
-      const db = getDb();
+      const db = await getDb();
       const [session] = await db.select().from(physicalCountSessions)
         .where(eq(physicalCountSessions.id, input.sessionId)).limit(1);
       if (!session) throw new TRPCError({ code: 'NOT_FOUND', message: 'Count session not found' });
@@ -1614,8 +1606,8 @@ const physicalCountRouter = router({
       notes: z.string().optional(),
     }))
     .mutation(async ({ ctx, input }) => {
-      const db = getDb();
-      const { organizationId, operatingUnitId } = ctx;
+      const db = await getDb();
+      const { organizationId, operatingUnitId } = ctx.scope;
       const sessionNumber = `PC-${organizationId}-${Date.now()}`;
 
       const [result] = await db.insert(physicalCountSessions).values({
@@ -1648,8 +1640,8 @@ const physicalCountRouter = router({
       })),
     }))
     .mutation(async ({ ctx, input }) => {
-      const db = getDb();
-      const { organizationId } = ctx;
+      const db = await getDb();
+      const { organizationId } = ctx.scope;
 
       // Verify session exists and is draft
       const [session] = await db.select().from(physicalCountSessions)
@@ -1760,7 +1752,7 @@ const physicalCountRouter = router({
   review: scopedProcedure
     .input(z.object({ sessionId: z.number() }))
     .mutation(async ({ ctx, input }) => {
-      const db = getDb();
+      const db = await getDb();
       const [session] = await db.select().from(physicalCountSessions)
         .where(eq(physicalCountSessions.id, input.sessionId)).limit(1);
       if (!session) throw new TRPCError({ code: 'NOT_FOUND' });
@@ -1782,8 +1774,8 @@ const physicalCountRouter = router({
   generateAdjustment: scopedProcedure
     .input(z.object({ sessionId: z.number() }))
     .mutation(async ({ ctx, input }) => {
-      const db = getDb();
-      const { organizationId, operatingUnitId } = ctx;
+      const db = await getDb();
+      const { organizationId, operatingUnitId } = ctx.scope;
 
       const [session] = await db.select().from(physicalCountSessions)
         .where(eq(physicalCountSessions.id, input.sessionId)).limit(1);
@@ -1857,15 +1849,15 @@ const physicalCountRouter = router({
   getTemplate: scopedProcedure
     .input(z.object({ warehouse: z.string().optional() }).optional())
     .query(async ({ ctx, input }) => {
-      const db = getDb();
-      const { organizationId } = ctx;
+      const db = await getDb();
+      const { organizationId } = ctx.scope;
 
       // Get all stock items with their batches
       const conditions: any[] = [eq(stockBatches.organizationId, organizationId)];
 
       const batches = await db.select().from(stockBatches)
         .where(and(...conditions))
-        .orderBy(asc(stockBatches.itemName));
+        .orderBy(asc(stockBatches.batchNumber));
 
       const templateRows = batches
         .filter((b: any) => computeAvailableQty(b) > 0)
@@ -1886,8 +1878,8 @@ const physicalCountRouter = router({
   scanLookup: scopedProcedure
     .input(z.object({ code: z.string() }))
     .query(async ({ ctx, input }) => {
-      const db = getDb();
-      const { organizationId } = ctx;
+      const db = await getDb();
+      const { organizationId } = ctx.scope;
       const code = input.code.trim();
 
       // 1. Try exact match on batchNumber
@@ -2017,7 +2009,7 @@ const transferTrackingRouter = router({
       trackingNotes: z.string().optional(),
     }))
     .mutation(async ({ ctx, input }) => {
-      const db = getDb();
+      const db = await getDb();
       const [t] = await db.select().from(warehouseTransfers)
         .where(eq(warehouseTransfers.id, input.transferId)).limit(1);
       if (!t) throw new TRPCError({ code: 'NOT_FOUND', message: 'Transfer not found' });
@@ -2044,8 +2036,8 @@ const transferTrackingRouter = router({
   // Get in-transit transfers (dispatched but not received)
   getInTransit: scopedProcedure
     .query(async ({ ctx }) => {
-      const db = getDb();
-      const { organizationId } = ctx;
+      const db = await getDb();
+      const { organizationId } = ctx.scope;
 
       const transfers = await db.select().from(warehouseTransfers)
         .where(and(
@@ -2077,7 +2069,7 @@ const transferTrackingRouter = router({
   getDetail: scopedProcedure
     .input(z.object({ transferId: z.number() }))
     .query(async ({ ctx, input }) => {
-      const db = getDb();
+      const db = await getDb();
       const [t] = await db.select().from(warehouseTransfers)
         .where(eq(warehouseTransfers.id, input.transferId)).limit(1);
       if (!t) throw new TRPCError({ code: 'NOT_FOUND', message: 'Transfer not found' });
@@ -2111,8 +2103,8 @@ const scheduledExpiryRouter = router({
   getHistory: scopedProcedure
     .input(z.object({ limit: z.number().default(50) }).optional())
     .query(async ({ ctx, input }) => {
-      const db = getDb();
-      const { organizationId } = ctx;
+      const db = await getDb();
+      const { organizationId } = ctx.scope;
 
       const rows = await db.select().from(expiryAlertHistory)
         .where(eq(expiryAlertHistory.organizationId, organizationId))
@@ -2126,8 +2118,8 @@ const scheduledExpiryRouter = router({
   runScheduledCheck: scopedProcedure
     .input(z.object({ thresholdDays: z.number().default(30) }).optional())
     .mutation(async ({ ctx, input }) => {
-      const db = getDb();
-      const { organizationId, operatingUnitId } = ctx;
+      const db = await getDb();
+      const { organizationId, operatingUnitId } = ctx.scope;
       const thresholdDays = input?.thresholdDays || 30;
       const now = new Date();
       const thresholdDate = new Date(now.getTime() + thresholdDays * 86400000);
@@ -2216,8 +2208,8 @@ const warehouseAlertConfigsRouter = router({
   // List all configs for the organization
   list: scopedProcedure
     .query(async ({ ctx }) => {
-      const db = getDb();
-      const { organizationId } = ctx;
+      const db = await getDb();
+      const { organizationId } = ctx.scope;
       const rows = await db.select().from(warehouseAlertConfigs)
         .where(eq(warehouseAlertConfigs.organizationId, organizationId))
         .orderBy(asc(warehouseAlertConfigs.warehouseName));
@@ -2238,8 +2230,8 @@ const warehouseAlertConfigsRouter = router({
       notifyInApp: z.boolean().optional(),
     }))
     .mutation(async ({ ctx, input }) => {
-      const db = getDb();
-      const { organizationId, operatingUnitId } = ctx;
+      const db = await getDb();
+      const { organizationId, operatingUnitId } = ctx.scope;
 
       if (input.id) {
         // Update existing
@@ -2282,7 +2274,7 @@ const warehouseAlertConfigsRouter = router({
   delete: scopedProcedure
     .input(z.object({ id: z.number() }))
     .mutation(async ({ ctx, input }) => {
-      const db = getDb();
+      const db = await getDb();
       await db.delete(warehouseAlertConfigs)
         .where(eq(warehouseAlertConfigs.id, input.id));
       return { success: true };
@@ -2291,8 +2283,8 @@ const warehouseAlertConfigsRouter = router({
   // Get unique warehouses from stock batches for dropdown
   getWarehouses: scopedProcedure
     .query(async ({ ctx }) => {
-      const db = getDb();
-      const { organizationId } = ctx;
+      const db = await getDb();
+      const { organizationId } = ctx.scope;
       const rows = await db.selectDistinct({
         warehouseId: stockBatches.warehouseId,
         warehouseName: stockBatches.warehouseName,
@@ -2305,8 +2297,8 @@ const warehouseAlertConfigsRouter = router({
   // Get unique categories from stock items for dropdown
   getCategories: scopedProcedure
     .query(async ({ ctx }) => {
-      const db = getDb();
-      const { organizationId } = ctx;
+      const db = await getDb();
+      const { organizationId } = ctx.scope;
       const rows = await db.selectDistinct({ category: stockItems.category })
         .from(stockItems)
         .where(and(
@@ -2327,8 +2319,8 @@ const stockAnalyticsRouter = router({
       months: z.number().min(1).max(24).default(6),
     }).optional())
     .query(async ({ ctx, input }) => {
-      const db = getDb();
-      const { organizationId } = ctx;
+      const db = await getDb();
+      const { organizationId } = ctx.scope;
       const months = input?.months || 6;
       const startDate = new Date();
       startDate.setMonth(startDate.getMonth() - months);
@@ -2360,8 +2352,8 @@ const stockAnalyticsRouter = router({
       months: z.number().min(1).max(24).default(6),
     }).optional())
     .query(async ({ ctx, input }) => {
-      const db = getDb();
-      const { organizationId } = ctx;
+      const db = await getDb();
+      const { organizationId } = ctx.scope;
       const months = input?.months || 6;
       const startDate = new Date();
       startDate.setMonth(startDate.getMonth() - months);
@@ -2391,8 +2383,8 @@ const stockAnalyticsRouter = router({
       months: z.number().min(1).max(24).default(6),
     }).optional())
     .query(async ({ ctx, input }) => {
-      const db = getDb();
-      const { organizationId } = ctx;
+      const db = await getDb();
+      const { organizationId } = ctx.scope;
       const months = input?.months || 6;
       const cutoff = Date.now() - months * 30 * 86400000;
 
@@ -2418,8 +2410,8 @@ const stockAnalyticsRouter = router({
       movementType: z.string().optional(),
     }).optional())
     .query(async ({ ctx, input }) => {
-      const db = getDb();
-      const { organizationId } = ctx;
+      const db = await getDb();
+      const { organizationId } = ctx.scope;
       const limit = input?.limit || 10;
 
       const conditions: any[] = [eq(stockLedger.organizationId, organizationId)];
@@ -2454,8 +2446,8 @@ const stockAnalyticsRouter = router({
   // Stock value by warehouse
   stockValueByWarehouse: scopedProcedure
     .query(async ({ ctx }) => {
-      const db = getDb();
-      const { organizationId } = ctx;
+      const db = await getDb();
+      const { organizationId } = ctx.scope;
 
       const rows = await db.select({
         warehouseName: stockBatches.warehouseName,
@@ -2479,8 +2471,8 @@ const stockAnalyticsRouter = router({
       months: z.number().min(1).max(24).default(6),
     }).optional())
     .query(async ({ ctx, input }) => {
-      const db = getDb();
-      const { organizationId } = ctx;
+      const db = await getDb();
+      const { organizationId } = ctx.scope;
       const months = input?.months || 6;
       const startDate = new Date();
       startDate.setMonth(startDate.getMonth() - months);
@@ -2522,8 +2514,8 @@ const pdfRouter = router({
       language: z.enum(["en", "ar"]).optional(),
     }))
     .query(async ({ ctx, input }) => {
-      const db = getDb();
-      const { organizationId } = ctx;
+      const db = await getDb();
+      const { organizationId } = ctx.scope;
       
       const [request] = await db.select().from(stockRequests)
         .where(and(eq(stockRequests.id, input.requestId), eq(stockRequests.organizationId, organizationId)))
@@ -2531,13 +2523,13 @@ const pdfRouter = router({
       
       if (!request) throw new TRPCError({ code: "NOT_FOUND", message: "Stock request not found" });
       
-      const lines = await db.select().from(stockRequestLines)
-        .where(eq(stockRequestLines.requestId, input.requestId));
+      const lines = await db.select().from(stockRequestLineItems)
+        .where(eq(stockRequestLineItems.stockRequestId, input.requestId));
       
       const docData: StockDocumentData = {
         documentNumber: (request as any).requestNumber,
         documentDate: new Date((request as any).createdAt).toLocaleDateString(),
-        organizationName: organizationId,
+        organizationName: String(organizationId),
         department: "Stock Management",
         status: (request as any).status,
         lines: lines.map((line: any) => ({
@@ -2564,8 +2556,8 @@ const pdfRouter = router({
       language: z.enum(["en", "ar"]).optional(),
     }))
     .query(async ({ ctx, input }) => {
-      const db = getDb();
-      const { organizationId } = ctx;
+      const db = await getDb();
+      const { organizationId } = ctx.scope;
       
       const [issue] = await db.select().from(stockIssues)
         .where(and(eq(stockIssues.id, input.issueId), eq(stockIssues.organizationId, organizationId)))
@@ -2579,7 +2571,7 @@ const pdfRouter = router({
       const docData: StockDocumentData = {
         documentNumber: (issue as any).issueNumber,
         documentDate: new Date((issue as any).createdAt).toLocaleDateString(),
-        organizationName: organizationId,
+        organizationName: String(organizationId),
         department: "Stock Management",
         status: (issue as any).status,
         lines: lines.map((line: any) => ({
@@ -2607,22 +2599,22 @@ const pdfRouter = router({
       language: z.enum(["en", "ar"]).optional(),
     }))
     .query(async ({ ctx, input }) => {
-      const db = getDb();
-      const { organizationId } = ctx;
+      const db = await getDb();
+      const { organizationId } = ctx.scope;
       
-      const [ret] = await db.select().from(stockReturns)
-        .where(and(eq(stockReturns.id, input.returnId), eq(stockReturns.organizationId, organizationId)))
+      const [ret] = await db.select().from(returnedItems)
+        .where(and(eq(returnedItems.id, input.returnId), eq(returnedItems.organizationId, organizationId)))
         .limit(1);
       
       if (!ret) throw new TRPCError({ code: "NOT_FOUND", message: "Stock return not found" });
       
-      const lines = await db.select().from(stockReturnLines)
-        .where(eq(stockReturnLines.returnId, input.returnId));
+      const lines = await db.select().from(returnedItemLineItems)
+        .where(eq(returnedItemLineItems.returnedItemId, input.returnId));
       
       const docData: StockDocumentData = {
         documentNumber: (ret as any).returnNumber,
         documentDate: new Date((ret as any).createdAt).toLocaleDateString(),
-        organizationName: organizationId,
+        organizationName: String(organizationId),
         department: "Stock Management",
         status: (ret as any).status,
         lines: lines.map((line: any) => ({
@@ -2651,8 +2643,8 @@ const pdfRouter = router({
       language: z.enum(["en", "ar"]).optional(),
     }))
     .query(async ({ ctx, input }) => {
-      const db = getDb();
-      const { organizationId } = ctx;
+      const db = await getDb();
+      const { organizationId } = ctx.scope;
       
       const [adj] = await db.select().from(stockAdjustments)
         .where(and(eq(stockAdjustments.id, input.adjustmentId), eq(stockAdjustments.organizationId, organizationId)))
@@ -2666,7 +2658,7 @@ const pdfRouter = router({
       const docData: StockDocumentData = {
         documentNumber: (adj as any).adjustmentNumber,
         documentDate: new Date((adj as any).createdAt).toLocaleDateString(),
-        organizationName: organizationId,
+        organizationName: String(organizationId),
         department: "Stock Management",
         status: (adj as any).status,
         lines: lines.map((line: any) => ({
@@ -2695,8 +2687,8 @@ const pdfRouter = router({
       language: z.enum(["en", "ar"]).optional(),
     }))
     .query(async ({ ctx, input }) => {
-      const db = getDb();
-      const { organizationId } = ctx;
+      const db = await getDb();
+      const { organizationId } = ctx.scope;
       
       const [transfer] = await db.select().from(warehouseTransfers)
         .where(and(eq(warehouseTransfers.id, input.transferId), eq(warehouseTransfers.organizationId, organizationId)))
@@ -2710,7 +2702,7 @@ const pdfRouter = router({
       const docData: StockDocumentData = {
         documentNumber: (transfer as any).transferNumber,
         documentDate: new Date((transfer as any).createdAt).toLocaleDateString(),
-        organizationName: organizationId,
+        organizationName: String(organizationId),
         department: "Stock Management",
         status: (transfer as any).status,
         lines: lines.map((line: any) => ({
@@ -2739,8 +2731,8 @@ const pdfRouter = router({
       language: z.enum(["en", "ar"]).optional(),
     }))
     .query(async ({ ctx, input }) => {
-      const db = getDb();
-      const { organizationId } = ctx;
+      const db = await getDb();
+      const { organizationId } = ctx.scope;
       
       const [session] = await db.select().from(physicalCountSessions)
         .where(and(eq(physicalCountSessions.id, input.sessionId), eq(physicalCountSessions.organizationId, organizationId)))
@@ -2754,7 +2746,7 @@ const pdfRouter = router({
       const docData: StockDocumentData = {
         documentNumber: (session as any).sessionNumber,
         documentDate: new Date((session as any).countDate).toLocaleDateString(),
-        organizationName: organizationId,
+        organizationName: String(organizationId),
         department: "Stock Management",
         status: (session as any).status,
         lines: lines.map((line: any) => ({
@@ -2791,18 +2783,16 @@ const exportsRouter = router({
       }).optional(),
     }))
     .query(async ({ ctx, input }) => {
-      const db = getDb();
-      const { organizationId } = ctx;
-      let query = db.select().from(stockIssues).where(eq(stockIssues.organizationId, organizationId));
-      
+      const db = await getDb();
+      const { organizationId } = ctx.scope;
+      const conditions: any[] = [eq(stockIssues.organizationId, organizationId)];
       if (input.filters?.search) {
-        query = query.where(like(stockIssues.issueNumber, `%${input.filters.search}%`));
+        conditions.push(like(stockIssues.issueNumber, `%${input.filters.search}%`));
       }
       if (input.filters?.status) {
-        query = query.where(eq(stockIssues.status, input.filters.status));
+        conditions.push(eq(stockIssues.status, input.filters.status as any));
       }
-      
-      const issues = await query;
+      const issues = await db.select().from(stockIssues).where(and(...conditions));
       return { data: issues, filename: `issued-items-${Date.now()}.xlsx` };
     }),
 
@@ -2815,18 +2805,16 @@ const exportsRouter = router({
       }).optional(),
     }))
     .query(async ({ ctx, input }) => {
-      const db = getDb();
-      const { organizationId } = ctx;
-      let query = db.select().from(stockReturns).where(eq(stockReturns.organizationId, organizationId));
-      
+      const db = await getDb();
+      const { organizationId } = ctx.scope;
+      const conditions: any[] = [eq(returnedItems.organizationId, organizationId)];
       if (input.filters?.search) {
-        query = query.where(like(stockReturns.returnNumber, `%${input.filters.search}%`));
+        conditions.push(like(returnedItems.returnNumber, `%${input.filters.search}%`));
       }
       if (input.filters?.status) {
-        query = query.where(eq(stockReturns.status, input.filters.status));
+        conditions.push(eq(returnedItems.status, input.filters.status as any));
       }
-      
-      const returns = await query;
+      const returns = await db.select().from(returnedItems).where(and(...conditions));
       return { data: returns, filename: `returns-${Date.now()}.xlsx` };
     }),
 
@@ -2839,18 +2827,16 @@ const exportsRouter = router({
       }).optional(),
     }))
     .query(async ({ ctx, input }) => {
-      const db = getDb();
-      const { organizationId } = ctx;
-      let query = db.select().from(stockAdjustments).where(eq(stockAdjustments.organizationId, organizationId));
-      
+      const db = await getDb();
+      const { organizationId } = ctx.scope;
+      const conditions: any[] = [eq(stockAdjustments.organizationId, organizationId)];
       if (input.filters?.search) {
-        query = query.where(like(stockAdjustments.adjustmentNumber, `%${input.filters.search}%`));
+        conditions.push(like(stockAdjustments.adjustmentNumber, `%${input.filters.search}%`));
       }
       if (input.filters?.status) {
-        query = query.where(eq(stockAdjustments.status, input.filters.status));
+        conditions.push(eq(stockAdjustments.status, input.filters.status as any));
       }
-      
-      const adjustments = await query;
+      const adjustments = await db.select().from(stockAdjustments).where(and(...conditions));
       return { data: adjustments, filename: `adjustments-${Date.now()}.xlsx` };
     }),
 
@@ -2863,18 +2849,16 @@ const exportsRouter = router({
       }).optional(),
     }))
     .query(async ({ ctx, input }) => {
-      const db = getDb();
-      const { organizationId } = ctx;
-      let query = db.select().from(warehouseTransfers).where(eq(warehouseTransfers.organizationId, organizationId));
-      
+      const db = await getDb();
+      const { organizationId } = ctx.scope;
+      const conditions: any[] = [eq(warehouseTransfers.organizationId, organizationId)];
       if (input.filters?.search) {
-        query = query.where(like(warehouseTransfers.transferNumber, `%${input.filters.search}%`));
+        conditions.push(like(warehouseTransfers.transferNumber, `%${input.filters.search}%`));
       }
       if (input.filters?.status) {
-        query = query.where(eq(warehouseTransfers.status, input.filters.status));
+        conditions.push(eq(warehouseTransfers.status, input.filters.status as any));
       }
-      
-      const transfers = await query;
+      const transfers = await db.select().from(warehouseTransfers).where(and(...conditions));
       return { data: transfers, filename: `transfers-${Date.now()}.xlsx` };
     }),
 
@@ -2887,18 +2871,16 @@ const exportsRouter = router({
       }).optional(),
     }))
     .query(async ({ ctx, input }) => {
-      const db = getDb();
-      const { organizationId } = ctx;
-      let query = db.select().from(physicalCountSessions).where(eq(physicalCountSessions.organizationId, organizationId));
-      
+      const db = await getDb();
+      const { organizationId } = ctx.scope;
+      const conditions: any[] = [eq(physicalCountSessions.organizationId, organizationId)];
       if (input.filters?.search) {
-        query = query.where(like(physicalCountSessions.sessionNumber, `%${input.filters.search}%`));
+        conditions.push(like(physicalCountSessions.sessionNumber, `%${input.filters.search}%`));
       }
       if (input.filters?.status) {
-        query = query.where(eq(physicalCountSessions.status, input.filters.status));
+        conditions.push(eq(physicalCountSessions.status, input.filters.status as any));
       }
-      
-      const sessions = await query;
+      const sessions = await db.select().from(physicalCountSessions).where(and(...conditions));
       return { data: sessions, filename: `physical-count-${Date.now()}.xlsx` };
     }),
 });

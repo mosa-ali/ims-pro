@@ -76,7 +76,7 @@ const fleetDashboardRouter = router({
 
       // Get total distance today
       const todayDistance = await db
-        .select({ total: sum(tripLogs.distance) })
+        .select({ total: sum(tripLogs.distanceTraveled) })
         .from(tripLogs)
         .where(
           and(
@@ -89,13 +89,13 @@ const fleetDashboardRouter = router({
 
       // Get fuel consumption today
       const todayFuel = await db
-        .select({ total: sum(fuelLogs.fuelConsumed) })
+        .select({ total: sum(fuelLogs.quantity) })
         .from(fuelLogs)
         .where(
           and(
             eq(fuelLogs.organizationId, organizationId),
-            gte(fuelLogs.date, today),
-            lte(fuelLogs.date, tomorrow),
+            gte(fuelLogs.fuelDate, today),
+            lte(fuelLogs.fuelDate, tomorrow),
             isNull(fuelLogs.deletedAt)
           )
         );
@@ -107,7 +107,7 @@ const fleetDashboardRouter = router({
         .where(
           and(
             eq(vehicleMaintenance.organizationId, organizationId),
-            lte(vehicleMaintenance.nextMaintenanceDate, new Date()),
+            lte(vehicleMaintenance.scheduledDate, new Date()),
             isNull(vehicleMaintenance.deletedAt)
           )
         );
@@ -182,8 +182,8 @@ const fleetDashboardRouter = router({
       const tripMetrics = await db
         .select({
           totalTrips: count(),
-          totalDistance: sum(tripLogs.distance),
-          avgDistance: avg(tripLogs.distance),
+          totalDistance: sum(tripLogs.distanceTraveled),
+          avgDistance: avg(tripLogs.distanceTraveled),
         })
         .from(tripLogs)
         .where(
@@ -198,25 +198,25 @@ const fleetDashboardRouter = router({
       // Get fuel metrics
       const fuelMetrics = await db
         .select({
-          totalFuel: sum(fuelLogs.fuelConsumed),
-          totalCost: sum(fuelLogs.cost),
-          avgPrice: avg(fuelLogs.pricePerUnit),
+          totalFuel: sum(fuelLogs.quantity),
+          totalCost: sum(fuelLogs.totalCost),
+          avgPrice: avg(fuelLogs.unitPrice),
         })
         .from(fuelLogs)
         .where(
           and(
             eq(fuelLogs.organizationId, organizationId),
-            gte(fuelLogs.date, startDate),
-            lte(fuelLogs.date, now),
+            gte(fuelLogs.fuelDate, startDate),
+            lte(fuelLogs.fuelDate, now),
             isNull(fuelLogs.deletedAt)
           )
         );
 
-      const trip = tripMetrics[0] || { totalTrips: 0, totalDistance: 0, avgDistance: 0 };
-      const fuel = fuelMetrics[0] || { totalFuel: 0, totalCost: 0, avgPrice: 0 };
+      const trip = tripMetrics[0] || { totalTrips: 0, distanceTraveled: 0, avgDistance: 0 };
+      const fuel = fuelMetrics[0] || { quantity: 0, totalCost: 0, avgPrice: 0 };
 
       const efficiency = trip.totalDistance && fuel.totalFuel
-        ? parseFloat((trip.totalDistance / fuel.totalFuel).toFixed(2))
+        ? parseFloat((trip.distanceTraveled / fuel.quantity).toFixed(2))
         : 0;
 
       return {
@@ -231,7 +231,7 @@ const fleetDashboardRouter = router({
           avgPrice: fuel.avgPrice || 0,
         },
         efficiency,
-        costPerKm: trip.totalDistance ? parseFloat((fuel.totalCost / trip.totalDistance).toFixed(2)) : 0,
+        costPerKm: trip.totalDistance ? parseFloat((fuel.totalCost / trip.distanceTraveled).toFixed(2)) : 0,
       };
     }),
 });

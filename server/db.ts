@@ -1,4 +1,5 @@
 import { eq, and, or, desc, sql, isNull, isNotNull, like, ne } from "drizzle-orm";
+import { STATUS } from './db/_status';
 import mysql from "mysql2/promise";
 import { drizzle, type MySql2Database } from "drizzle-orm/mysql2";
 import * as schema from "../drizzle/schema";
@@ -29,9 +30,6 @@ import {
   activities,
   proposals,
   budgetItems,
-  budgetAnalysisExpenses,
-  InsertBudgetAnalysisExpense,
-  SelectBudgetAnalysisExpense,
   opportunities,
 } from "../drizzle/schema";
 import { ENV } from './_core/env';
@@ -77,6 +75,16 @@ export async function getDb() {
   return _db;
 }
 
+/**
+ * Typed database instance — use instead of `db: any` in engine and helper files.
+ * Re-exported from server/db/_scope.ts for convenience.
+ *
+ * @example
+ * import type { DB } from '../db';
+ * export async function myHelper(db: DB) { ... }
+ */
+export type { DB } from './db/_scope';
+
 export async function getDbPool() {
   if (!_pool && process.env.DATABASE_URL) {
     await getDb();
@@ -94,6 +102,11 @@ export async function upsertUser(user: InsertUser): Promise<void> {
     throw new Error("User openId is required for upsert");
   }
 
+  // Require email for upsert - do not fabricate fallback emails
+  if (!user.email || user.email.trim() === '') {
+    throw new Error("User email is required for upsert");
+  }
+
   const db = await getDb();
   if (!db) {
     console.warn("[Database] Cannot upsert user: database not available");
@@ -101,53 +114,61 @@ export async function upsertUser(user: InsertUser): Promise<void> {
   }
 
   try {
+    const nowSql = new Date().toISOString().slice(0, 19).replace('T', ' ');
+
+    // Check if a pre-seeded user exists with this email but no openId yet
+    // This handles the case where an admin pre-created the user before their first OAuth login
+    const existingByEmail = await db
+      .select({ id: users.id, openId: users.openId })
+      .from(users)
+      .where(eq(users.email, user.email.trim()))
+      .limit(1);
+
+    if (existingByEmail.length > 0 && !existingByEmail[0].openId) {
+      // Pre-seeded user found with no openId — link the OAuth openId to this existing record
+      // Preserve existing role/organizationId (do NOT overwrite with defaults)
+      const linkUpdate: Record<string, unknown> = {
+        openId: user.openId,
+        lastSignedIn: nowSql,
+      };
+      if (user.name && user.name.trim() !== '') {
+        linkUpdate.name = user.name.trim();
+      }
+      if (user.loginMethod) {
+        linkUpdate.loginMethod = user.loginMethod;
+      }
+      await db.update(users).set(linkUpdate).where(eq(users.id, existingByEmail[0].id));
+      console.log(`[upsertUser] Linked OAuth openId to pre-seeded user: ${user.email}`);
+
+      // Link any pending organization assignments
+      if (user.email) {
+        await linkOrganizationAssignmentsByEmail(user.openId, user.email);
+      }
+      return;
+    }
+
     const values: InsertUser = {
       openId: user.openId,
+      email: user.email.trim(),
     };
-    const updateSet: Record<string, unknown> = {};
-
-    const textFields = ["name", "email", "loginMethod"] as const;
-    type TextField = (typeof textFields)[number];
-
-    const assignNullable = (field: TextField) => {
-      const value = user[field];
-      if (value === undefined) return;
-      
-      // Prevent NULL values for critical fields - use defaults instead
-      let normalized: string | null = value ?? null;
-      
-      // Ensure critical fields never become NULL
-      if (normalized === null || normalized === undefined) {
-        if (field === 'name') {
-          normalized = 'Unknown User';
-          console.warn(`[Database] NULL name detected for user, using default: ${normalized}`);
-        } else if (field === 'email') {
-          normalized = `user-${Date.now()}@unknown.local`;
-          console.warn(`[Database] NULL email detected for user, using default: ${normalized}`);
-        } else if (field === 'loginMethod') {
-          normalized = 'unknown';
-        }
-      }
-      
-      // Also handle empty strings
-      if (typeof normalized === 'string' && normalized.trim() === '') {
-        if (field === 'name') {
-          normalized = 'Unknown User';
-          console.warn(`[Database] Empty name detected for user, using default: ${normalized}`);
-        } else if (field === 'email') {
-          normalized = `user-${Date.now()}@unknown.local`;
-          console.warn(`[Database] Empty email detected for user, using default: ${normalized}`);
-        } else if (field === 'loginMethod') {
-          normalized = 'unknown';
-        }
-      }
-      
-      values[field] = normalized;
-      updateSet[field] = normalized;
+    const updateSet: Record<string, unknown> = {
+      email: user.email.trim(),
     };
 
-    textFields.forEach(assignNullable);
-    const nowSql = new Date().toISOString().slice(0, 19).replace('T', ' ');
+    // Handle name field - default to 'Unknown User' only if truly missing
+    if (user.name && user.name.trim() !== '') {
+      values.name = user.name.trim();
+      updateSet.name = user.name.trim();
+    } else if (user.name !== undefined) {
+      values.name = 'Unknown User';
+      updateSet.name = 'Unknown User';
+    }
+
+    // Handle loginMethod field
+    if (user.loginMethod !== undefined) {
+      values.loginMethod = user.loginMethod || 'unknown';
+      updateSet.loginMethod = user.loginMethod || 'unknown';
+    }
 
     if (user.lastSignedIn !== undefined) {
       values.lastSignedIn = nowSql;
@@ -189,10 +210,17 @@ export async function getUserByOpenId(openId: string) {
     return undefined;
   }
 
-  const result = await db.select().from(users).where(eq(users.openId, openId)).limit(1);
+  // ✅ Normalize input
+    const normalizedOpenId = openId?.trim().toLowerCase();
 
-  return result.length > 0 ? result[0] : undefined;
-}
+    const result = await db
+      .select()
+      .from(users)
+      .where(eq(users.openId, normalizedOpenId))
+      .limit(1);
+
+    return result.length > 0 ? result[0] : undefined;
+  }
 
 // ============================================================================
 // ORGANIZATIONS
@@ -424,6 +452,20 @@ export async function assignUserToOrganization(userId: number, organizationId: n
   const db = await getDb();
   if (!db) throw new Error("Database not available");
   
+  // Validate user exists
+  const user = await db.select().from(users).where(eq(users.id, userId)).limit(1);
+  if (user.length === 0) {
+    throw new Error(`User ${userId} not found`);
+  }
+  
+  // Validate organization exists and is not deleted
+  const org = await db.select().from(organizations).where(
+    and(eq(organizations.id, organizationId), isNull(organizations.deletedAt))
+  ).limit(1);
+  if (org.length === 0) {
+    throw new Error(`Organization ${organizationId} not found or is deleted`);
+  }
+  
   // Check if assignment already exists
   const existing = await db.select().from(userOrganizations).where(
     and(
@@ -451,14 +493,39 @@ export async function assignUserToOrganization(userId: number, organizationId: n
 export async function assignUserToOperatingUnit(userId: number, operatingUnitId: number, role: "organization_admin" | "user" = "user") {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
-  await db.insert(userOperatingUnits).values({ userId, operatingUnitId, role });
+  
+  // Check if assignment already exists to prevent duplicates
+  const existing = await db.select().from(userOperatingUnits).where(
+    and(
+      eq(userOperatingUnits.userId, userId),
+      eq(userOperatingUnits.operatingUnitId, operatingUnitId)
+    )
+  ).limit(1);
+  
+  if (existing.length > 0) {
+    // Update existing assignment if role changed
+    await db.update(userOperatingUnits)
+      .set({ role })
+      .where(
+        and(
+          eq(userOperatingUnits.userId, userId),
+          eq(userOperatingUnits.operatingUnitId, operatingUnitId)
+        )
+      );
+  } else {
+    // Insert new assignment
+    await db.insert(userOperatingUnits).values({ userId, operatingUnitId, role });
+  }
 }
 
 export async function removeUserFromOrganization(userId: number, organizationId: number) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
   await db.delete(userOrganizations).where(
-    eq(userOrganizations.userId, userId) && eq(userOrganizations.organizationId, organizationId)
+    and(
+      eq(userOrganizations.userId, userId),
+      eq(userOrganizations.organizationId, organizationId)
+    )
   );
 }
 
@@ -466,7 +533,10 @@ export async function removeUserFromOperatingUnit(userId: number, operatingUnitI
   const db = await getDb();
   if (!db) throw new Error("Database not available");
   await db.delete(userOperatingUnits).where(
-    eq(userOperatingUnits.userId, userId) && eq(userOperatingUnits.operatingUnitId, operatingUnitId)
+    and(
+      eq(userOperatingUnits.userId, userId),
+      eq(userOperatingUnits.operatingUnitId, operatingUnitId)
+    )
   );
 }
 
@@ -968,17 +1038,36 @@ export async function getUserByOpenIdOrEmail(openId: string, email: string) {
   const db = await getDb();
   if (!db) return null;
 
+  // ✅ Normalize both values
+  const normalizedOpenId = openId?.trim().toLowerCase();
+  const normalizedEmail = email?.trim().toLowerCase();
+
   const result = await db
     .select()
     .from(users)
-    .where(or(eq(users.openId, openId), eq(users.email, email)))
+    .where(
+      or(
+        eq(users.openId, normalizedOpenId),
+        eq(users.email, normalizedEmail)
+      )
+    )
     .limit(1);
 
   return result[0] || null;
 }
 
 /**
- * Get user by Email
+ * Get a user by email address
+ * 
+ * Note: This query does NOT filter by deletedAt status.
+ * It will return both active and soft-deleted users.
+ * 
+ * If you only want active users, check that deletedAt is null:
+ *   const user = await getUserByEmail(email);
+ *   if (user && user.deletedAt === null) { ... }
+ * 
+ * @param email - The user's email address
+ * @returns The user record, or null if not found
  */
 export async function getUserByEmail(email: string) {
   const db = await getDb();
@@ -992,6 +1081,18 @@ export async function getUserByEmail(email: string) {
 
   return result[0] || null;
 }
+  export async function getUserByMicrosoftObjectId(objectId: string) {
+  const db_instance = await getDb();
+  if (!db_instance) return null;
+
+  const result = await db_instance
+    .select()
+    .from(users)
+    .where(eq(users.microsoftObjectId, objectId))
+    .limit(1);
+
+  return result[0] || null;
+}
 
 /**
  * Create new user
@@ -999,7 +1100,7 @@ export async function getUserByEmail(email: string) {
 export async function createUser(data: {
   name: string;
   email: string;
-  role: "platform_admin" | "user";
+  role: "platform_super_admin" | "platform_admin" | "platform_auditor" | "organization_admin" | "user" | "admin" | "manager";
   openId?: string;
 }) {
   const db = await getDb();
@@ -1074,7 +1175,7 @@ export async function createPlatformAdminWithAuth(data: {
   email: string;
   authenticationProvider: string;
   externalIdentityId?: string;
-  role: "platform_super_admin" | "platform_admin" | "platform_auditor";
+  role: "platform_super_admin" | "platform_admin" | "platform_auditor" | "organization_admin" | "user" | "admin" | "manager";
 }) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
@@ -1144,6 +1245,51 @@ export async function updateUserRole(
     });
     throw error;
   }
+}
+
+/**
+ * Set the current organization for a user
+ * Validates that the user has access to the organization before setting it
+ */
+export async function setUserCurrentOrganization(userId: number, organizationId: number | null) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  // Verify user has access to this organization (if organizationId is provided)
+  if (organizationId) {
+    const hasAccess = await db
+      .select()
+      .from(userOrganizations)
+      .where(
+        and(
+          eq(userOrganizations.userId, userId),
+          eq(userOrganizations.organizationId, organizationId)
+        )
+      )
+      .limit(1);
+    
+    if (hasAccess.length === 0) {
+      throw new Error(`User ${userId} does not have access to organization ${organizationId}`);
+    }
+  }
+  
+  await db.update(users).set({ currentOrganizationId: organizationId }).where(eq(users.id, userId));
+}
+
+/**
+ * Get the user's current organization ID
+ */
+export async function getUserCurrentOrganization(userId: number): Promise<number | null> {
+  const db = await getDb();
+  if (!db) return null;
+  
+  const result = await db
+    .select({ currentOrganizationId: users.currentOrganizationId })
+    .from(users)
+    .where(eq(users.id, userId))
+    .limit(1);
+  
+  return result[0]?.currentOrganizationId ?? null;
 }
 
 
@@ -1476,7 +1622,7 @@ export async function getOperatingUnitStatistics(operatingUnitId: number) {
       .where(
         and(
           eq(projects.operatingUnitId, operatingUnitId),
-          eq(projects.status, "active"),
+          eq(projects.status, STATUS.PROJECT.ACTIVE),
           isNull(projects.deletedAt)
         )
       );
@@ -1534,7 +1680,7 @@ export async function getOperatingUnitComplianceAlerts(operatingUnitId: number) 
       .where(
         and(
           eq(projects.operatingUnitId, operatingUnitId),
-          eq(projects.status, "active"),
+          eq(projects.status, STATUS.PROJECT.ACTIVE),
           isNull(projects.deletedAt)
         )
       );
@@ -1667,11 +1813,25 @@ export async function linkOrganizationAssignmentsByEmail(
         .set({ secondaryAdminId: oauthUserId })
         .where(eq(organizations.secondaryAdminId, duplicateUserId));
 
-      // Inherit the role from duplicate user if OAuth user has a lower role
-      if (duplicateUser.role === 'platform_admin' && oauthUser[0].role !== 'platform_admin') {
+      // Inherit the highest role based on role hierarchy
+      // Define role hierarchy (higher number = higher privilege)
+      const roleHierarchy: Record<string, number> = {
+        'user': 1,
+        'organization_admin': 2,
+        'platform_auditor': 3,
+        'admin': 3,
+        'manager': 3,
+        'platform_admin': 4,
+        'platform_super_admin': 5,
+      };
+
+      const duplicateRolePriority = roleHierarchy[duplicateUser.role as string] ?? 0;
+      const oauthRolePriority = roleHierarchy[oauthUser[0].role as string] ?? 0;
+
+      if (duplicateRolePriority > oauthRolePriority) {
         await db
           .update(users)
-          .set({ role: 'platform_admin' })
+          .set({ role: duplicateUser.role })
           .where(eq(users.id, oauthUserId));
       }
 
@@ -1727,7 +1887,7 @@ const result = await db.insert(invitations).values({
   organizationId: data.organizationId,
   role: data.role,
   token,
-  status: "pending",
+  status: STATUS.INVITATION.PENDING,
   expiresAt,
   invitedBy: data.invitedBy,
 });
@@ -1914,7 +2074,7 @@ export async function getAlreadyOrderedQuantity(
   const conditions = [
     eq(quotationAnalysisLineItems.id, qaLineItemId),
     eq(purchaseOrders.organizationId, organizationId),
-    eq(purchaseOrders.status, "acknowledged"),
+    eq(purchaseOrders.status, STATUS.PO.ACKNOWLEDGED),
     isNull(purchaseOrders.deletedAt),
   ];
 
@@ -1969,8 +2129,8 @@ export async function getAlreadyOrderedQuantity(
         eq(quotationAnalysisLineItems.id, qaLineItemId),
         eq(purchaseOrders.organizationId, organizationId),
         or(
-          eq(goodsReceiptNotes.status, "accepted"),
-          eq(goodsReceiptNotes.status, "partially_accepted")
+          eq(goodsReceiptNotes.status, STATUS.GRN.ACCEPTED),
+          eq(goodsReceiptNotes.status, STATUS.GRN.PARTIALLY_ACCEPTED)
         ),
         isNull(goodsReceiptNotes.deletedAt)
       )
@@ -2081,6 +2241,7 @@ export async function getQACeilingSummary(qaLineItemId: number, organizationId: 
             .from(stockItems)
             .where(
               and(
+                eq(stockItems.id, grnItem.id),
                 eq(stockItems.organizationId, organizationId),
                 isNull(stockItems.deletedAt)
               )
@@ -3128,230 +3289,5 @@ export async function restoreOrgRecord(entityType: string, entityId: number): Pr
   } catch (error) {
     console.error("[restoreOrgRecord] Error:", { entityType, entityId, error });
     return { success: false, message: error instanceof Error ? error.message : 'Unknown error' };
-  }
-}
-  export async function updateUserLastLogin(userId: number, lastLogin: string) {
-  const database = await getDb();
-
-  await database
-    .update(users)
-    .set({
-      lastSignedIn: lastLogin,
-      updatedAt: lastLogin,
-    })
-    .where(eq(users.id, userId));
-}
-// ============================================================================
-// BUDGET ANALYSIS EXPENSES HELPERS
-// ============================================================================
-
-/**
- * Get total expenses for a budget line
- */
-export async function getBudgetLineExpensesTotal(budgetLineId: number): Promise<number> {
-  const db = await getDb();
-  if (!db) return 0;
-
-  try {
-    const [result] = await db
-      .select({
-        total: sql<string>`COALESCE(SUM(expenseAmount), 0)`,
-      })
-      .from(budgetAnalysisExpenses)
-      .where(
-        and(
-          eq(budgetAnalysisExpenses.budgetLineId, budgetLineId),
-          isNull(budgetAnalysisExpenses.deletedAt)
-        )
-      );
-
-    return parseFloat(result?.total || "0");
-  } catch (error) {
-    console.error("[Database] Error getting budget line expenses total:", error);
-    return 0;
-  }
-}
-
-/**
- * Get total expenses for a budget
- */
-export async function getBudgetExpensesTotal(budgetId: number): Promise<number> {
-  const db = await getDb();
-  if (!db) return 0;
-
-  try {
-    const [result] = await db
-      .select({
-        total: sql<string>`COALESCE(SUM(expenseAmount), 0)`,
-      })
-      .from(budgetAnalysisExpenses)
-      .where(
-        and(
-          eq(budgetAnalysisExpenses.budgetId, budgetId),
-          isNull(budgetAnalysisExpenses.deletedAt)
-        )
-      );
-
-    return parseFloat(result?.total || "0");
-  } catch (error) {
-    console.error("[Database] Error getting budget expenses total:", error);
-    return 0;
-  }
-}
-
-/**
- * Get expenses breakdown by status for a budget
- */
-export async function getBudgetExpensesByStatus(budgetId: number) {
-  const db = await getDb();
-  if (!db) return { pending: 0, approved: 0, rejected: 0, total: 0 };
-
-  try {
-    const results = await db
-      .select({
-        status: budgetAnalysisExpenses.status,
-        total: sql<string>`COALESCE(SUM(expenseAmount), 0)`,
-      })
-      .from(budgetAnalysisExpenses)
-      .where(
-        and(
-          eq(budgetAnalysisExpenses.budgetId, budgetId),
-          isNull(budgetAnalysisExpenses.deletedAt)
-        )
-      )
-      .groupBy(budgetAnalysisExpenses.status);
-
-    const breakdown = {
-      pending: 0,
-      approved: 0,
-      rejected: 0,
-      total: 0,
-    };
-
-    for (const row of results) {
-      const amount = parseFloat(row.total || "0");
-      breakdown[row.status as keyof typeof breakdown] = amount;
-      breakdown.total += amount;
-    }
-
-    return breakdown;
-  } catch (error) {
-    console.error("[Database] Error getting budget expenses by status:", error);
-    return { pending: 0, approved: 0, rejected: 0, total: 0 };
-  }
-}
-
-/**
- * Create a new budget analysis expense
- */
-export async function createBudgetAnalysisExpense(data: InsertBudgetAnalysisExpense) {
-  const db = await getDb();
-  if (!db) throw new Error("Database not available");
-
-  try {
-    const result = await db.insert(budgetAnalysisExpenses).values(data);
-    return result;
-  } catch (error) {
-    console.error("[Database] Error creating budget analysis expense:", error);
-    throw error;
-  }
-}
-
-/**
- * Get all expenses for a budget line with details
- */
-export async function getBudgetLineExpenses(budgetLineId: number) {
-  const db = await getDb();
-  if (!db) return [];
-
-  try {
-    const results = await db
-      .select()
-      .from(budgetAnalysisExpenses)
-      .where(
-        and(
-          eq(budgetAnalysisExpenses.budgetLineId, budgetLineId),
-          isNull(budgetAnalysisExpenses.deletedAt)
-        )
-      )
-      .orderBy(desc(budgetAnalysisExpenses.expenseDate));
-
-    return results;
-  } catch (error) {
-    console.error("[Database] Error getting budget line expenses:", error);
-    return [];
-  }
-}
-
-/**
- * Get all expenses for a budget with details
- */
-export async function getBudgetExpenses(budgetId: number) {
-  const db = await getDb();
-  if (!db) return [];
-
-  try {
-    const results = await db
-      .select()
-      .from(budgetAnalysisExpenses)
-      .where(
-        and(
-          eq(budgetAnalysisExpenses.budgetId, budgetId),
-          isNull(budgetAnalysisExpenses.deletedAt)
-        )
-      )
-      .orderBy(desc(budgetAnalysisExpenses.createdAt));
-
-    return results;
-  } catch (error) {
-    console.error("[Database] Error getting budget expenses:", error);
-    return [];
-  }
-}
-
-/**
- * Soft delete a budget analysis expense
- */
-export async function deleteBudgetAnalysisExpense(expenseId: number, deletedBy: number) {
-  const db = await getDb();
-  if (!db) throw new Error("Database not available");
-
-  try {
-    const result = await db
-      .update(budgetAnalysisExpenses)
-      .set({
-        deletedAt: new Date().toISOString(),
-        deletedBy,
-        isDeleted: 1,
-      })
-      .where(eq(budgetAnalysisExpenses.id, expenseId));
-
-    return result;
-  } catch (error) {
-    console.error("[Database] Error deleting budget analysis expense:", error);
-    throw error;
-  }
-}
-
-/**
- * Update a budget analysis expense
- */
-export async function updateBudgetAnalysisExpense(expenseId: number, data: Partial<SelectBudgetAnalysisExpense>) {
-  const db = await getDb();
-  if (!db) throw new Error("Database not available");
-
-  try {
-    const result = await db
-      .update(budgetAnalysisExpenses)
-      .set({
-        ...data,
-        updatedAt: new Date().toISOString(),
-      })
-      .where(eq(budgetAnalysisExpenses.id, expenseId));
-
-    return result;
-  } catch (error) {
-    console.error("[Database] Error updating budget analysis expense:", error);
-    throw error;
   }
 }

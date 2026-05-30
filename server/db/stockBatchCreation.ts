@@ -60,10 +60,10 @@ export async function createStockBatchesFromGRN(
       const [item] = await db
         .select()
         .from(stockItems)
-        .where(eq(stockItems.id, grnItem.id));
+        .where(eq(stockItems.id, grnItem.itemId));
 
       if (!item) {
-        console.warn(`Stock item not found: ${grnItem.id}`);
+        console.warn(`Stock item not found: ${grnItem.itemId}`);
         continue;
       }
 
@@ -88,7 +88,7 @@ export async function createStockBatchesFromGRN(
           operatingUnitId,
           batchNumber,
           grnLineItemId: grnItem.id,
-          itemId: grnItem.id,
+          itemId: grnItem.itemId,
           warehouseId: grn.warehouseId,
           warehouseName: grn.warehouseName,
           receivedQty: grnItem.receivedQty,

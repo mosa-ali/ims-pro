@@ -6,10 +6,29 @@ import type { Request } from "express";
 import { SignJWT, jwtVerify } from "jose";
 import type { User } from "../../drizzle/schema";
 import * as db from "../db";
+import { getDb } from '../db';
 import { ENV } from "./env";
+import {
+  users,
+} from '../../drizzle/schema';
+import { eq, and } from 'drizzle-orm';
 
 const nowSql = new Date().toISOString().slice(0, 19).replace('T', ' ');
 
+export async function updateUserLastLogin(
+  userId: number,
+  lastLogin: string
+) {
+  const db = await getDb();
+
+  return db
+    .update(users)
+    .set({
+      lastSignedIn: lastLogin,
+      updatedAt: lastLogin,
+    })
+    .where(eq(users.id, userId));
+}
 const isNonEmptyString = (value: unknown): value is string =>
   typeof value === "string" && value.length > 0;
 
@@ -129,7 +148,7 @@ class SDKServer {
 
     // 🔹 3. SAFE UPDATE (NO UPSERT)
     try {
-      await db.updateUserLastLogin(user.id, nowSql);
+      await updateUserLastLogin(user.id, nowSql);
     } catch (err) {
       console.warn("[Auth] Failed to update last login:", err);
     }

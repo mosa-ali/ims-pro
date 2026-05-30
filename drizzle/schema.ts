@@ -4289,6 +4289,8 @@ export const organizationBranding = mysqlTable("organization_branding", {
 	updatedBy: int(),
 	organizationName: varchar({ length: 255 }),
 	organizationNameAr: varchar({ length: 255 }),
+	headerColor: varchar('header_color', { length: 20 }),
+	headerTextColor: varchar('header_text_color', { length: 20 }),
 },
 (table) => [
 	index("organizationId").on(table.organizationId),
@@ -8165,3 +8167,41 @@ export const generatedDocuments = mysqlTable(
     ),
   ]
 );
+
+// ─────────────────────────────────────────────────────────────────────────────
+// ADD THIS BLOCK TO drizzle/schema.ts
+// Required imports already present in schema.ts: int, tinyint, text, timestamp,
+// mysqlEnum, mysqlTable, index
+// ─────────────────────────────────────────────────────────────────────────────
+
+export const scheduledReports = mysqlTable("scheduled_reports", {
+  id: int().autoincrement().primaryKey().notNull(),
+  organizationId: int().notNull(),
+  operatingUnitId: int(),
+  reportType: mysqlEnum([
+    "procurement_cycle_time",
+    "supplier_performance",
+    "po_aging",
+    "spending_analysis",
+    "inventory_summary",
+  ]).notNull(),
+  frequency: mysqlEnum(["weekly", "monthly"]).notNull(),
+  recipients: text().notNull(), // JSON-encoded array of email strings
+  dayOfWeek: tinyint(),         // 0 = Sunday … 6 = Saturday (weekly only)
+  dayOfMonth: tinyint(),        // 1–31 (monthly only)
+  enabled: tinyint().default(1).notNull(),
+  lastRunAt: timestamp({ mode: "string" }),
+  nextRunAt: timestamp({ mode: "string" }),
+  isDeleted: tinyint().default(0).notNull(),
+  deletedAt: timestamp({ mode: "string" }),
+  createdAt: timestamp({ mode: "string" }).defaultNow().notNull(),
+  updatedAt: timestamp({ mode: "string" }).defaultNow().onUpdateNow().notNull(),
+  createdBy: int(),
+  updatedBy: int(),
+},
+(table) => [
+  index("idx_sr_org").on(table.organizationId),
+  index("idx_sr_ou").on(table.operatingUnitId),
+  index("idx_sr_next_run").on(table.nextRunAt),
+  index("idx_sr_enabled").on(table.enabled),
+]);

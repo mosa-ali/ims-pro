@@ -1,4 +1,3 @@
-// ProgramDashboard.tsx
 // Executive Program Management Dashboard for humanitarian NGO/INGO portfolio oversight.
 // Replaces ProjectManagementDashboard.tsx
 
@@ -10,8 +9,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { dashboardTranslations } from '@/i18n/projectMgmtDashboard.i18n';
 import { useProgramDashboard } from './useProgramDashboard';
 import { KPISection } from './KPISection';
-import { BurnRateAnalytics } from './BurnRateAnalytics';
-import { ProjectStatusChart } from './ProjectStatusChart';
+import { PortfolioFinancialSnapshot } from './PortfolioFinancialSnapshot';
 import { ExecutiveAlerts } from './ExecutiveAlerts';
 import { ComplianceOverview } from './ComplianceOverview';
 import { BeneficiaryProgress } from './BeneficiaryProgress';
@@ -77,6 +75,7 @@ export default function ProgramDashboard() {
     kpis, alerts, budgetTrend, statusDistribution, snapshot,
     compliance, activeCount, reportingCount, riskTable, beneficiarySummary,
     topGrants, upcomingReportingDeadlines, expiringProjects,
+    financialSnapshot, financialSnapshotLoading,
     kpisLoading, alertsLoading, budgetTrendLoading, statusDistributionLoading,
     snapshotLoading, complianceLoading, activeCountLoading, reportingCountLoading,
     riskTableLoading, beneficiarySummaryLoading, topGrantsLoading, upcomingReportingDeadlinesLoading, expiringProjectsLoading,
@@ -106,7 +105,7 @@ export default function ProgramDashboard() {
         <NavCard
           icon={<Calendar className="w-5 h-5 text-purple-600" />}
           count={reportingCount || 0}
-          title={t.reportingSchedule?.title || 'Reporting Schedule'}
+          title={t.reportingSchedule?.title || 'Projects Reporting Schedule'}
           description={t.reportingSchedule?.description || 'Track reporting cycles and compliance'}
           linkText={t.reportingSchedule?.linkText || 'View Schedule'}
           href="/organization/reporting-schedule"
@@ -116,9 +115,9 @@ export default function ProgramDashboard() {
         <NavCard
           icon={<BarChart3 className="w-5 h-5 text-emerald-600" />}
           count={activeCount || 0}
-          title={t.autoProgramsReport?.title || 'Auto Programs Report'}
-          description={t.autoProgramsReport?.description || 'Executive dashboard with project health, budget analytics, and compliance metrics'}
-          linkText={t.autoProgramsReport?.linkText || 'View Report'}
+          title={t.programsOverviewReport?.title || 'Programs Overview Report'}
+          description={t.programsOverviewReport?.description || 'Executive dashboard with project health, budget analytics, and compliance metrics'}
+          linkText={t.programsOverviewReport?.linkText || 'View Report'}
           href="/organization/auto-programs-report"
           accent="bg-emerald-50"
           isLoading={activeCountLoading}
@@ -149,32 +148,19 @@ export default function ProgramDashboard() {
         />
       )}
 
-      {/* ── Charts row: Burn Analytics + Status Distribution ── */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        <div className="lg:col-span-2">
-          <BurnRateAnalytics
-            data={(budgetTrend || []) as any}
-            isLoading={budgetTrendLoading}
-            organizationId={0}
-            t={t}
-            isRTL={isRTL}
-          />
-        </div>
-        <div>
-          <ProjectStatusChart
-            distribution={statusDistribution}
-            isLoading={statusDistributionLoading}
-            t={t}
-          />
-        </div>
-      </div>
+      {/* ── Portfolio Financial Snapshot ── */}
+      <PortfolioFinancialSnapshot
+        snapshot={financialSnapshot}
+        isLoading={financialSnapshotLoading}
+        t={t}
+        isRTL={isRTL}
+      />
 
       {/* ── Compliance + Beneficiary row ── */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         <ComplianceOverview
           compliance={compliance ?? null}
           isLoading={complianceLoading}
-          isRTL={isRTL}
           t={t}
         />
         <BeneficiaryProgress
@@ -184,7 +170,7 @@ export default function ProgramDashboard() {
         />
       </div>
 
-      {/* ── Top Grants + Upcoming Deadlines row ── */}
+      {/* ── Top Grants + Upcoming Deadlines row (COMPACT WIDGET) ── */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         <TopGrantsWidget
           grants={topGrants}
@@ -192,6 +178,7 @@ export default function ProgramDashboard() {
           isRTL={isRTL}
           t={t}
         />
+        {/* UPDATED: Now uses compact widget format with top 5 deadlines */}
         <UpcomingReportingDeadlines
           deadlines={(upcomingReportingDeadlines ?? null) as any}
           isLoading={upcomingReportingDeadlinesLoading}

@@ -1066,37 +1066,4 @@ export const grnRouter = router({
             : "Document soft deleted successfully",
       };
     }),
-  /**
-   * Export GRN as PDF
-   */
-  exportPDF: scopedProcedure
-    .input(
-      z.object({
-        grnId: z.number(),
-        language: z.enum(["en", "ar"]).optional().default("en"),
-      })
-    )
-    .mutation(async ({ input, ctx }) => {
-      try {
-        const pdfBuffer = await generateGRNPDF({
-          grnId: input.grnId,
-          organizationId: ctx.scope.organizationId,
-          language: input.language,
-          includeQR: true,
-        });
-
-        return {
-          success: true,
-          pdf: pdfBuffer.toString("base64"),
-          filename: `GRN-${input.grnId}-${new Date().toISOString().split("T")[0]}.pdf`,
-        };
-      } catch (error) {
-        throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
-          message: `Failed to generate PDF: ${error instanceof Error ? error.message : "Unknown error"}`,
-        });
-      }
-    }),
-
-  ...grnApprovalProcedures,
 });

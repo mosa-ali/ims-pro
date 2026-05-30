@@ -30,12 +30,18 @@ interface TopGrantsWidgetProps {
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
-const STATUS_CONFIG = {
-  active:    { label: "Active",    color: "bg-emerald-100 text-emerald-700 border-emerald-200" },
-  completed: { label: "Completed", color: "bg-blue-100 text-blue-700 border-blue-200" },
-  pending:   { label: "Pending",   color: "bg-amber-100 text-amber-700 border-amber-200" },
-  on_hold:   { label: "On Hold",   color: "bg-gray-100 text-gray-600 border-gray-200" },
-};
+/**
+ * STATUS_CONFIG now accepts a `t` prop so labels are translated.
+ * Fallbacks to English strings are kept for safety.
+ */
+function getStatusConfig(t: Record<string, any>) {
+  return {
+    active:    { label: t.statusActive    || "Active",    color: "bg-emerald-100 text-emerald-700 border-emerald-200" },
+    completed: { label: t.statusCompleted || "Completed", color: "bg-blue-100 text-blue-700 border-blue-200" },
+    pending:   { label: t.statusPending   || "Pending",   color: "bg-amber-100 text-amber-700 border-amber-200" },
+    on_hold:   { label: t.statusOnHold    || "On Hold",   color: "bg-gray-100 text-gray-600 border-gray-200" },
+  };
+}
 
 const REPORTING_CONFIG: Record<string, { icon: React.ReactNode; color: string }> = {
   on_track: { icon: <CheckCircle className="w-3.5 h-3.5" />, color: "text-emerald-600" },
@@ -55,12 +61,18 @@ function getBurnColor(pct: number): string {
   return "bg-emerald-500";
 }
 
-function getDaysLabel(days: number | null): { text: string; color: string } {
+/**
+ * getDaysLabel now accepts a `t` prop to translate "Expired" and "d left".
+ */
+function getDaysLabel(days: number | null, t: Record<string, any>): { text: string; color: string } {
+  const expired = t.expired || "Expired";
+  const dLeft   = t.dLeft   || "d left";
+
   if (days === null) return { text: "—", color: "text-gray-400" };
-  if (days < 0)  return { text: "Expired", color: "text-red-600 font-semibold" };
-  if (days <= 30) return { text: `${days}d left`, color: "text-red-600 font-semibold" };
-  if (days <= 90) return { text: `${days}d left`, color: "text-amber-600 font-semibold" };
-  return { text: `${days}d left`, color: "text-gray-500" };
+  if (days < 0)  return { text: expired,             color: "text-red-600 font-semibold" };
+  if (days <= 30) return { text: `${days}${dLeft}`,  color: "text-red-600 font-semibold" };
+  if (days <= 90) return { text: `${days}${dLeft}`,  color: "text-amber-600 font-semibold" };
+  return { text: `${days}${dLeft}`, color: "text-gray-500" };
 }
 
 // ─── Skeleton ─────────────────────────────────────────────────────────────────
@@ -101,6 +113,9 @@ const TopGrantsWidget = memo(function TopGrantsWidget({
     reporting:     t.reporting             || "Reporting",
   };
 
+  // Build translated status config inside the component so it reacts to t changes
+  const statusConfig = getStatusConfig(t);
+
   const handleViewAll = () => setLocation("/organization/grants");
 
   return (
@@ -129,7 +144,7 @@ const TopGrantsWidget = memo(function TopGrantsWidget({
         <div className="divide-y divide-gray-50">
           {Array.from({ length: 5 }).map((_, i) => <GrantRowSkeleton key={i} />)}
         </div>
-      ) : !grants || (Array.isArray(grants) && grants.length === 0) ? (
+      ) : !grants || grants.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-12 px-4 text-center">
           <FileText className="w-10 h-10 text-gray-200 mb-3" />
           <p className="text-sm font-medium text-gray-500">{labels.noData}</p>
@@ -138,9 +153,9 @@ const TopGrantsWidget = memo(function TopGrantsWidget({
       ) : (
         <div className="divide-y divide-gray-50">
           {grants.map((grant, idx) => {
-            const statusCfg  = STATUS_CONFIG[grant.status] || STATUS_CONFIG.pending;
+            const statusCfg  = statusConfig[grant.status] || statusConfig.pending;
             const reportCfg  = REPORTING_CONFIG[grant.reportingStatus] || REPORTING_CONFIG.on_track;
-            const daysInfo   = getDaysLabel(grant.daysRemaining);
+            const daysInfo   = getDaysLabel(grant.daysRemaining, t);
             const burnColor  = getBurnColor(grant.budgetUtilization);
 
             return (

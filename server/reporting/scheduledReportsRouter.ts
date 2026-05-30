@@ -22,7 +22,7 @@ export const CreateScheduledReportSchema = z.object({
   frequency: ScheduleFrequency,
   format: ReportFormat,
   recipients: z.array(z.string().email()),
-  filters: z.record(z.any()).optional(),
+  filters: z.record(z.string(), z.any()).optional(),
   includeCharts: z.boolean().default(true),
   includeSummary: z.boolean().default(true),
   nextRunDate: z.date(),

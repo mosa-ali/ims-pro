@@ -5,6 +5,7 @@ export const ENV = {
   oAuthServerUrl: process.env.OAUTH_SERVER_URL ?? "",
   ownerOpenId: process.env.OWNER_OPEN_ID ?? "",
   isProduction: process.env.NODE_ENV === "production",
+  isDevelopment: process.env.NODE_ENV !== "production",
   forgeApiUrl: process.env.BUILT_IN_FORGE_API_URL ?? "",
   forgeApiKey: process.env.BUILT_IN_FORGE_API_KEY ?? "",
 
@@ -13,11 +14,8 @@ export const ENV = {
   MS_CLIENT_SECRET: process.env.MS_CLIENT_SECRET ?? "",
   MS_TENANT_ID: process.env.MS_TENANT_ID ?? "",
   MS_REDIRECT_URI: process.env.MS_REDIRECT_URI ?? "",
-  
-  // ✅ FIX: Add missing MS_GRAPH_SCOPE property
-  // This is the scope for Microsoft Graph API access
-  // Default: "https://graph.microsoft.com/.default" (includes all permissions)
-  // Can be customized to specific scopes like "https://graph.microsoft.com/User.Read"
+
+  // Microsoft Graph API scope
   MS_GRAPH_SCOPE: process.env.MS_GRAPH_SCOPE ?? "https://graph.microsoft.com/.default",
 
   // App base URL - used for generating onboarding links and other absolute URLs
@@ -26,13 +24,26 @@ export const ENV = {
   get APP_BASE_URL(): string {
     if (process.env.APP_BASE_URL) return process.env.APP_BASE_URL.replace(/\/$/, '');
     if (process.env.MS_REDIRECT_URI) {
-      // Strip any known OAuth callback path suffixes to get the base URL
       return process.env.MS_REDIRECT_URI
         .replace('/api/oauth/microsoft/callback', '')
         .replace('/api/auth/microsoft/callback', '')
         .replace(/\/$/, '');
     }
     if (process.env.VITE_FRONTEND_URL) return process.env.VITE_FRONTEND_URL.replace(/\/$/, '');
+    return 'https://platform.imserp.org';
+  },
+
+  // Public base URL for uploaded file URLs (used by storage.ts)
+  // Falls back to APP_BASE_URL or the production domain
+  get PUBLIC_BASE_URL(): string {
+    if (process.env.PUBLIC_BASE_URL) return process.env.PUBLIC_BASE_URL.replace(/\/$/, '');
+    if (process.env.APP_BASE_URL) return process.env.APP_BASE_URL.replace(/\/$/, '');
+    if (process.env.MS_REDIRECT_URI) {
+      return process.env.MS_REDIRECT_URI
+        .replace('/api/oauth/microsoft/callback', '')
+        .replace('/api/auth/microsoft/callback', '')
+        .replace(/\/$/, '');
+    }
     return 'https://platform.imserp.org';
   },
 
