@@ -1,6 +1,6 @@
 /**
  * ============================================================================
- * LEAVE MANAGEMENT - MAIN VIEW
+ * LEAVE MANAGEMENT - MAIN VIEW (tRPC VERSION)
  * ============================================================================
  * 
  * Purpose: Centralized leave management for all employees
@@ -14,6 +14,7 @@
  * - Balance overview
  * 
  * Integration:
+ * - Full tRPC integration (NO localStorage)
  * - Reads from Staff Dictionary
  * - Blocks archived/exited staff
  * - Uses contract dates for calculations
@@ -39,25 +40,45 @@ import {
  Edit2,
  Trash2,
  Eye,
- Printer
-, ArrowLeft, ArrowRight} from 'lucide-react';
+ Printer,
+ ArrowLeft,
+ ArrowRight
+} from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { staffService, StaffMember } from '@/app/services/hrService';
-import { leaveRequestService, leaveBalanceService } from './leave/leaveService';
+import { useTranslation } from '@/i18n/useTranslation';
+import { BackButton } from "@/components/BackButton";
+
+// tRPC hooks
+import { 
+  useLeaveRequests, 
+  useLeaveBalances, 
+  useLeaveRequestCounts,
+  useApproveLeaveRequest,
+  useRejectLeaveRequest,
+  useDeleteLeaveRequest,
+  useCreateLeaveRequest,
+  useUpdateLeaveRequest
+} from '@/hooks/useLeave';
+
+// Types
 import { LeaveRequest, LeaveBalance } from './leave/types';
+import type { StaffMember } from '@/app/services/hrService';
+
+// Components
 import { LeaveRequestForm } from './leave/LeaveRequestForm';
 import { LeaveBalancesView } from './leave/LeaveBalancesView';
 import { LeaveRequestPrint } from './leave/LeaveRequestPrint';
 import { emailNotificationService } from './leave/emailNotificationService';
-import { useTranslation } from '@/i18n/useTranslation';
-import { BackButton } from "@/components/BackButton";
+
+// Services
+import { staffService } from '@/app/services/hrService';
+
 export function LeaveManagement() {
  const { t } = useTranslation();
  const { language, isRTL } = useLanguage();
  const navigate = useNavigate();
 
  const [activeTab, setActiveTab] = useState<'all' | 'pending' | 'approved'>('all');
- const [requests, setRequests] = useState<LeaveRequest[]>([]);
  const [filteredRequests, setFilteredRequests] = useState<LeaveRequest[]>([]);
  const [showRequestForm, setShowRequestForm] = useState(false);
  const [selectedEmployee, setSelectedEmployee] = useState<StaffMember | null>(null);
@@ -72,7 +93,6 @@ export function LeaveManagement() {
 
  // New state for balances tab
  const [activeMainTab, setActiveMainTab] = useState<'requests' | 'balances'>('balances');
- const [balances, setBalances] = useState<LeaveBalance[]>([]);
  const [filteredBalances, setFilteredBalances] = useState<LeaveBalance[]>([]);
  const [balanceSearchTerm, setBalanceSearchTerm] = useState('');
  
@@ -80,28 +100,21 @@ export function LeaveManagement() {
  const [showPrintModal, setShowPrintModal] = useState(false);
  const [printRequest, setPrintRequest] = useState<LeaveRequest | null>(null);
 
- useEffect(() => {
- loadData();
- }, []);
+ // tRPC hooks
+ const { data: requests = [], isLoading: requestsLoading, refetch: refetchRequests } = useLeaveRequests();
+ const { data: balances = [], isLoading: balancesLoading, refetch: refetchBalances } = useLeaveBalances();
+ const { data: counts = { pending: 0, approved: 0, rejected: 0, total: 0 } } = useLeaveRequestCounts();
+
+ // Mutations
+ const { mutate: approveRequest, isPending: approvePending } = useApproveLeaveRequest();
+ const { mutate: rejectRequest, isPending: rejectPending } = useRejectLeaveRequest();
+ const { mutate: deleteRequest, isPending: deletePending } = useDeleteLeaveRequest();
+ const { mutate: createRequest, isPending: createPending } = useCreateLeaveRequest();
+ const { mutate: updateRequest, isPending: updatePending } = useUpdateLeaveRequest();
 
  useEffect(() => {
  applyFilters();
  }, [requests, activeTab, searchTerm, filterType, filterStatus]);
-
- const loadData = () => {
- const allRequests = leaveRequestService.getAll();
- 
- // Sort by created date (most recent first)
- allRequests.sort((a, b) => 
- new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
- );
- 
- setRequests(allRequests);
- 
- // Recalculate all balances
- leaveBalanceService.recalculateAllBalances();
- setBalances(leaveBalanceService.getAll());
- };
 
  const applyFilters = () => {
  let filtered = [...requests];
@@ -145,7 +158,7 @@ export function LeaveManagement() {
  const handleEmployeeSelected = (employee: StaffMember) => {
  // Check if employee is active
  if (employee.status !== 'active') {
- alert(t.archivedBlocked);
+ alert(t.hrLeave.archivedOrExitedStaffCannotRequest);
  return;
  }
 
@@ -155,27 +168,39 @@ export function LeaveManagement() {
  };
 
  const handleApprove = (requestId: string) => {
- if (confirm(t.confirmApprove)) {
- leaveRequestService.approve(requestId, 'HR Manager'); // TODO: Get from auth
- // ⚠️ MOCK EMAIL - Log approval notification
- const updatedRequest = leaveRequestService.getById(requestId);
- if (updatedRequest) {
- emailNotificationService.notifyLeaveRequestApproved(updatedRequest);
- }
- loadData();
+ if (confirm(t.hrLeave.areYouSureYouWantTo)) {
+ approveRequest(
+   { id: parseInt(requestId) },
+   {
+     onSuccess: () => {
+       refetchRequests();
+       // Send notification
+       const updatedRequest = requests.find(r => r.id === parseInt(requestId));
+       if (updatedRequest) {
+         emailNotificationService.notifyLeaveRequestApproved(updatedRequest);
+       }
+     },
+   }
+ );
  }
  };
 
  const handleReject = (requestId: string) => {
- const reason = prompt(t.rejectionReason);
+ const reason = prompt(t.hrLeave.pleaseProvideAReasonForRejection);
  if (reason) {
- leaveRequestService.reject(requestId, 'HR Manager', reason); // TODO: Get from auth
- // ⚠️ MOCK EMAIL - Log rejection notification
- const updatedRequest = leaveRequestService.getById(requestId);
- if (updatedRequest) {
- emailNotificationService.notifyLeaveRequestRejected(updatedRequest);
- }
- loadData();
+ rejectRequest(
+   { id: parseInt(requestId), rejectionReason: reason },
+   {
+     onSuccess: () => {
+       refetchRequests();
+       // Send notification
+       const updatedRequest = requests.find(r => r.id === parseInt(requestId));
+       if (updatedRequest) {
+         emailNotificationService.notifyLeaveRequestRejected(updatedRequest);
+       }
+     },
+   }
+ );
  }
  };
 
@@ -183,7 +208,7 @@ export function LeaveManagement() {
  // Find the employee for this request
  const employee = staffService.getByStaffId(request.staffId);
  if (!employee) {
- alert(t.noEmployee);
+ alert(t.hrLeave.noActiveEmployeeFound);
  return;
  }
  
@@ -196,8 +221,14 @@ export function LeaveManagement() {
  const confirmMsg = 'Are you sure you want to delete this leave request?';
  
  if (confirm(confirmMsg)) {
- leaveRequestService.delete(requestId);
- loadData();
+ deleteRequest(
+   { id: parseInt(requestId) },
+   {
+     onSuccess: () => {
+       refetchRequests();
+     },
+   }
+ );
  }
  };
 
@@ -223,7 +254,7 @@ export function LeaveManagement() {
 
  const formatDate = (dateString?: string) => {
  if (!dateString) return '-';
- return new Date(dateString).toLocaleDateString(t.hrLeave.en, {
+ return new Date(dateString).toLocaleDateString(language === 'ar' ? 'ar-SA' : 'en-US', {
  year: 'numeric',
  month: 'short',
  day: 'numeric'
@@ -232,10 +263,10 @@ export function LeaveManagement() {
 
  // Statistics
  const stats = {
- total: requests.length,
- pending: requests.filter(r => r.status === 'Submitted').length,
- approved: requests.filter(r => r.status === 'Approved').length,
- rejected: requests.filter(r => r.status === 'Rejected').length
+ total: counts.total,
+ pending: counts.pending,
+ approved: counts.approved,
+ rejected: counts.rejected
  };
 
  const labels = {
@@ -439,75 +470,59 @@ export function LeaveManagement() {
  <div className="text-center py-12">
  <Calendar className="w-16 h-16 text-gray-300 mx-auto mb-4" />
  <p className="text-gray-600 font-medium">{labels.noRequests}</p>
- <p className="text-sm text-gray-500 mt-1">{labels.noRequestsDesc}</p>
+ <p className="text-gray-500 text-sm">{labels.noRequestsDesc}</p>
  </div>
  ) : (
- <table className="w-full">
+ <table className="w-full text-sm">
  <thead className="bg-gray-50 border-b border-gray-200">
  <tr>
- <th className={`px-4 py-3 text-xs font-medium text-gray-600 uppercase text-start`}>{labels.staffId}</th>
- <th className={`px-4 py-3 text-xs font-medium text-gray-600 uppercase text-start`}>{labels.name}</th>
- <th className={`px-4 py-3 text-xs font-medium text-gray-600 uppercase text-start`}>{labels.leaveType}</th>
- <th className={`px-4 py-3 text-xs font-medium text-gray-600 uppercase text-start`}>{labels.dates}</th>
- <th className={`px-4 py-3 text-xs font-medium text-gray-600 uppercase text-start`}>{labels.days}</th>
- <th className={`px-4 py-3 text-xs font-medium text-gray-600 uppercase text-start`}>{labels.status}</th>
- <th className={`px-4 py-3 text-xs font-medium text-gray-600 uppercase text-start`}>{labels.actions}</th>
+ <th className="px-6 py-3 text-left font-semibold text-gray-900">{labels.staffId}</th>
+ <th className="px-6 py-3 text-left font-semibold text-gray-900">{labels.name}</th>
+ <th className="px-6 py-3 text-left font-semibold text-gray-900">{labels.position}</th>
+ <th className="px-6 py-3 text-left font-semibold text-gray-900">{labels.leaveType}</th>
+ <th className="px-6 py-3 text-left font-semibold text-gray-900">{labels.dates}</th>
+ <th className="px-6 py-3 text-left font-semibold text-gray-900">{labels.days}</th>
+ <th className="px-6 py-3 text-left font-semibold text-gray-900">{labels.status}</th>
+ <th className="px-6 py-3 text-left font-semibold text-gray-900">{labels.actions}</th>
  </tr>
  </thead>
  <tbody className="divide-y divide-gray-200">
  {filteredRequests.map((request) => (
  <tr key={request.id} className="hover:bg-gray-50">
- <td className="px-4 py-3 text-sm font-mono text-gray-900">{request.staffId}</td>
- <td className="px-4 py-3 text-sm text-gray-900">
- <div>
- <p className="font-medium">{request.staffName}</p>
- <p className="text-xs text-gray-500">{request.position}</p>
- </div>
- </td>
- <td className="px-4 py-3">
- <span className={`inline-block px-2 py-1 rounded text-xs font-medium border ${getLeaveTypeColor(request.leaveType)}`}>
+ <td className="px-6 py-4 text-gray-900 font-mono">{request.staffId}</td>
+ <td className="px-6 py-4 text-gray-900">{request.staffName}</td>
+ <td className="px-6 py-4 text-gray-600">{request.position}</td>
+ <td className="px-6 py-4">
+ <span className={`inline-block px-3 py-1 rounded-full text-xs font-semibold border ${getLeaveTypeColor(request.leaveType)}`}>
  {request.leaveType}
  </span>
  </td>
- <td className="px-4 py-3 text-sm text-gray-900">
- <div>
- <p>{formatDate(request.startDate)}</p>
- <p className="text-xs text-gray-500">to {formatDate(request.endDate)}</p>
- </div>
+ <td className="px-6 py-4 text-gray-600">
+ {formatDate(request.startDate)} - {formatDate(request.endDate)}
  </td>
- <td className="px-4 py-3 text-sm font-semibold text-gray-900">{request.totalDays}</td>
- <td className="px-4 py-3">
- <span className={`inline-block px-2 py-1 rounded text-xs font-medium border ${getStatusColor(request.status)}`}>
+ <td className="px-6 py-4 text-gray-900 font-semibold">{request.totalDays}</td>
+ <td className="px-6 py-4">
+ <span className={`inline-block px-3 py-1 rounded-full text-xs font-semibold border ${getStatusColor(request.status)}`}>
  {request.status}
  </span>
  </td>
- <td className="px-4 py-3">
+ <td className="px-6 py-4">
  <div className="flex items-center gap-2">
- {/* View/Print button - available for all statuses */}
- <button
- onClick={() => {
- setPrintRequest(request);
- setShowPrintModal(true);
- }}
- className="p-1 text-gray-600 hover:bg-gray-100 rounded"
- title={labels.view}
- >
- <Eye className="w-5 h-5" />
- </button>
- 
  {request.status === 'Submitted' && (
  <>
  <button
- onClick={() => handleApprove(request.id)}
+ onClick={() => handleApprove(request.id.toString())}
  className="p-1 text-green-600 hover:bg-green-50 rounded"
  title={labels.approve}
+ disabled={approvePending}
  >
  <CheckCircle className="w-5 h-5" />
  </button>
  <button
- onClick={() => handleReject(request.id)}
+ onClick={() => handleReject(request.id.toString())}
  className="p-1 text-red-600 hover:bg-red-50 rounded"
  title={labels.reject}
+ disabled={rejectPending}
  >
  <XCircle className="w-5 h-5" />
  </button>
@@ -523,9 +538,10 @@ export function LeaveManagement() {
  <Edit2 className="w-5 h-5" />
  </button>
  <button
- onClick={() => handleDelete(request.id)}
+ onClick={() => handleDelete(request.id.toString())}
  className="p-1 text-red-600 hover:bg-red-50 rounded"
  title={labels.delete}
+ disabled={deletePending}
  >
  <Trash2 className="w-5 h-5" />
  </button>
@@ -559,7 +575,7 @@ export function LeaveManagement() {
  setShowRequestForm(false);
  setSelectedEmployee(null);
  setEditingRequest(null);
- loadData();
+ refetchRequests();
  }}
  editingRequest={editingRequest}
  />
@@ -572,6 +588,7 @@ export function LeaveManagement() {
  isRTL={isRTL}
  onSelect={handleEmployeeSelected}
  onClose={() => setShowEmployeeSelector(false)}
+ t={t}
  />
  )}
 
@@ -600,9 +617,10 @@ interface EmployeeSelectorModalProps {
  isRTL: boolean;
  onSelect: (employee: StaffMember) => void;
  onClose: () => void;
+ t: any;
 }
 
-function EmployeeSelectorModal({ language, isRTL, onSelect, onClose }: EmployeeSelectorModalProps) {
+function EmployeeSelectorModal({ language, isRTL, onSelect, onClose, t }: EmployeeSelectorModalProps) {
  const [searchTerm, setSearchTerm] = useState('');
  const [employees, setEmployees] = useState<StaffMember[]>([]);
 
@@ -639,7 +657,7 @@ function EmployeeSelectorModal({ language, isRTL, onSelect, onClose }: EmployeeS
  };
 
  return (
- <div className="fixed inset-0 bg-gray-900/30 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+ <div className="fixed inset-0 bg-gray-900/30 backdrop-blur-sm flex items-center justify-center z-50 p-4" dir={isRTL ? 'rtl' : 'ltr'}>
  <div className="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[80vh] overflow-hidden flex flex-col">
  {/* Header */}
  <div className="px-6 py-4 border-b border-gray-200">

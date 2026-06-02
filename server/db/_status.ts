@@ -237,6 +237,22 @@ export const EMPLOYEE_STATUS = {
 export type EmployeeStatus = (typeof EMPLOYEE_STATUS)[keyof typeof EMPLOYEE_STATUS];
 
 // ============================================================
+// HR LEAVE TYPES — schema: hrLeaveRequests.leaveType, hrLeaveBalances.leaveType
+// mysqlEnum(['annual','sick','maternity','paternity','unpaid','compassionate','study','other'])
+// ============================================================
+export const LEAVE_TYPES = {
+  ANNUAL: 'annual',
+  SICK: 'sick',
+  MATERNITY: 'maternity',
+  PATERNITY: 'paternity',
+  UNPAID: 'unpaid',
+  COMPASSIONATE: 'compassionate',
+  STUDY: 'study',
+  OTHER: 'other',
+} as const;
+export type LeaveType = (typeof LEAVE_TYPES)[keyof typeof LEAVE_TYPES];
+
+// ============================================================
 // HR LEAVE REQUESTS — schema: hrLeaveRequests.status
 // mysqlEnum(['pending','approved','rejected','cancelled'])
 // ============================================================
@@ -484,3 +500,90 @@ export const STATUS = {
   INVITATION: INVITATION_STATUS,
   PO: PO_STATUS,
 } as const;
+
+
+// ============================================================================
+// HR ANNUAL PLANS — schema: hrAnnualPlans.status
+// mysqlEnum(['draft','pending_review','pending_approval','approved','rejected'])
+// ============================================================================
+export const ANNUAL_PLAN_STATUS = {
+  DRAFT: 'draft',
+  PENDING_REVIEW: 'pending_review',
+  PENDING_APPROVAL: 'pending_approval',
+  APPROVED: 'approved',
+  REJECTED: 'rejected',
+} as const;
+export type AnnualPlanStatus = (typeof ANNUAL_PLAN_STATUS)[keyof typeof ANNUAL_PLAN_STATUS];
+
+// ============================================================================
+// HR OBJECTIVES — schema: hrObjectives.status
+// mysqlEnum(['draft','active','completed','archived'])
+// ============================================================================
+export const OBJECTIVE_STATUS = {
+  DRAFT: 'draft',
+  ACTIVE: 'active',
+  COMPLETED: 'completed',
+  ARCHIVED: 'archived',
+} as const;
+export type ObjectiveStatus = (typeof OBJECTIVE_STATUS)[keyof typeof OBJECTIVE_STATUS];
+
+// ============================================================================
+// HR OBJECTIVE PRIORITY — schema: hrObjectives.priority
+// mysqlEnum(['critical','high','medium','low'])
+// ============================================================================
+export const OBJECTIVE_PRIORITY = {
+  CRITICAL: 'critical',
+  HIGH: 'high',
+  MEDIUM: 'medium',
+  LOW: 'low',
+} as const;
+export type ObjectivePriority = (typeof OBJECTIVE_PRIORITY)[keyof typeof OBJECTIVE_PRIORITY];
+
+// ============================================================================
+// HR KPIs — schema: hrKPIs.status
+// mysqlEnum(['draft','active','completed','archived'])
+// ============================================================================
+export const KPI_STATUS = {
+  DRAFT: 'draft',
+  ACTIVE: 'active',
+  COMPLETED: 'completed',
+  ARCHIVED: 'archived',
+} as const;
+export type KpiStatus = (typeof KPI_STATUS)[keyof typeof KPI_STATUS];
+
+// ============================================================================
+// HR KPI REVIEW FREQUENCY — schema: hrKPIs.reviewFrequency
+// mysqlEnum(['monthly','quarterly','semi_annual','annual'])
+// ============================================================================
+export const KPI_REVIEW_FREQUENCY = {
+  MONTHLY: 'monthly',
+  QUARTERLY: 'quarterly',
+  SEMI_ANNUAL: 'semi_annual',
+  ANNUAL: 'annual',
+} as const;
+export type KpiReviewFrequency = (typeof KPI_REVIEW_FREQUENCY)[keyof typeof KPI_REVIEW_FREQUENCY];
+
+// ============================================================================
+// HR PLAN REVIEWS — schema: hrPlanReviews.reviewStatus
+// mysqlEnum(['pending','approved','rejected','commented'])
+// ============================================================================
+export const PLAN_REVIEW_STATUS = {
+  PENDING: 'pending',
+  APPROVED: 'approved',
+  REJECTED: 'rejected',
+  COMMENTED: 'commented',
+} as const;
+export type PlanReviewStatus = (typeof PLAN_REVIEW_STATUS)[keyof typeof PLAN_REVIEW_STATUS];
+
+// ============================================================================
+// HR PLAN REVIEWER ROLE — schema: hrPlanReviews.reviewerRole
+// mysqlEnum(['hr_manager','department_head','executive','finance','other'])
+// ============================================================================
+export const PLAN_REVIEWER_ROLE = {
+  HR_MANAGER: 'hr_manager',
+  DEPARTMENT_HEAD: 'department_head',
+  EXECUTIVE: 'executive',
+  FINANCE: 'finance',
+  OTHER: 'other',
+} as const;
+export type PlanReviewerRole = (typeof PLAN_REVIEWER_ROLE)[keyof typeof PLAN_REVIEWER_ROLE];

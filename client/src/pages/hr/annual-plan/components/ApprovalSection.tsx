@@ -5,8 +5,8 @@
  */
 
 import { CheckCircle, User, Calendar, MessageSquare } from 'lucide-react';
-import { useLanguage } from '@/app/contexts/LanguageContext';
-import { HRAnnualPlan } from '@/app/services/hrAnnualPlanService';
+import { useLanguage } from '@/contexts/LanguageContext';
+import type { HRAnnualPlan } from '@shared/types/hrAnnualPlanning';
 import { useTranslation } from '@/i18n/useTranslation';
 
 interface ApprovalSectionProps {
@@ -63,15 +63,15 @@ export function ApprovalSection({
  const getStatusInfo = () => {
  switch (plan.status) {
  case 'draft':
- return { step: 1, label: t.draft, color: 'text-gray-700', bgColor: 'bg-gray-100', borderColor: 'border-gray-300' };
+ return { step: 1, label: localT.draft, color: 'text-gray-700', bgColor: 'bg-gray-100', borderColor: 'border-gray-300' };
  case 'under-review':
- return { step: 2, label: t.underReview, color: 'text-yellow-700', bgColor: 'bg-yellow-100', borderColor: 'border-yellow-300' };
+ return { step: 2, label: localT.underReview, color: 'text-yellow-700', bgColor: 'bg-yellow-100', borderColor: 'border-yellow-300' };
  case 'approved':
- return { step: 3, label: t.approved, color: 'text-green-700', bgColor: 'bg-green-100', borderColor: 'border-green-300' };
+ return { step: 3, label: localT.approved, color: 'text-green-700', bgColor: 'bg-green-100', borderColor: 'border-green-300' };
  case 'locked':
- return { step: 4, label: t.locked, color: 'text-blue-700', bgColor: 'bg-blue-100', borderColor: 'border-blue-300' };
+ return { step: 4, label: localT.locked, color: 'text-blue-700', bgColor: 'bg-blue-100', borderColor: 'border-blue-300' };
  default:
- return { step: 1, label: t.draft, color: 'text-gray-700', bgColor: 'bg-gray-100', borderColor: 'border-gray-300' };
+ return { step: 1, label: localT.draft, color: 'text-gray-700', bgColor: 'bg-gray-100', borderColor: 'border-gray-300' };
  }
  };
 
@@ -81,14 +81,14 @@ export function ApprovalSection({
  <div className="space-y-6" dir={isRTL ? 'rtl' : 'ltr'}>
  {/* Section Header */}
  <div className={'text-start'}>
- <h2 className="text-xl font-bold text-gray-900 mb-2">{t.title}</h2>
- <p className="text-sm text-gray-600">{t.description}</p>
+ <h2 className="text-xl font-bold text-gray-900 mb-2">{localT.title}</h2>
+ <p className="text-sm text-gray-600">{localT.description}</p>
  </div>
 
  {/* Current Status */}
  <div className="bg-white rounded-lg border border-gray-200 p-6">
  <h3 className={`text-lg font-semibold text-gray-900 mb-4 text-start`}>
- {t.status}
+ {localT.status}
  </h3>
  <div className="flex items-center justify-center">
  <span className={`inline-flex items-center gap-2 px-6 py-3 rounded-lg text-base font-semibold border-2 ${statusInfo.bgColor} ${statusInfo.color} ${statusInfo.borderColor}`}>
@@ -101,7 +101,7 @@ export function ApprovalSection({
  {/* Approval Workflow Progress */}
  <div className="bg-white rounded-lg border border-gray-200 p-6">
  <h3 className={`text-lg font-semibold text-gray-900 mb-6 text-start`}>
- {t.approvalWorkflow}
+ {localT.approvalWorkflow}
  </h3>
 
  <div className="relative">
@@ -118,10 +118,10 @@ export function ApprovalSection({
  {/* Steps */}
  <div className="relative flex justify-between">
  {[
- { step: 1, label: t.step1, completed: statusInfo.step >= 1 },
- { step: 2, label: t.step2, completed: statusInfo.step >= 2 },
- { step: 3, label: t.step3, completed: statusInfo.step >= 3 },
- { step: 4, label: t.step4, completed: statusInfo.step >= 4 }
+ { step: 1, label: localT.step1, completed: statusInfo.step >= 1 },
+ { step: 2, label: localT.step2, completed: statusInfo.step >= 2 },
+ { step: 3, label: localT.step3, completed: statusInfo.step >= 3 },
+ { step: 4, label: localT.step4, completed: statusInfo.step >= 4 }
  ].map((item) => (
  <div key={item.step} className="flex flex-col items-center">
  <div className={`w-10 h-10 rounded-full flex items-center justify-center border-2 ${ item.completed ? 'bg-green-500 border-green-500 text-white' : 'bg-white border-gray-300 text-gray-400' }`}>
@@ -148,57 +148,57 @@ export function ApprovalSection({
  <div className={`flex items-start gap-3`}>
  <User className="w-5 h-5 text-gray-400 mt-0.5 flex-shrink-0" />
  <div className={`flex-1 text-start`}>
- <p className="text-sm font-medium text-gray-700">{t.preparedBy}</p>
- <p className="text-base text-gray-900">{plan.approval.preparedBy || '-'}</p>
+ <p className="text-sm font-medium text-gray-700">{localT.preparedBy}</p>
+ <p className="text-base text-gray-900">{plan.preparedBy || '-'}</p>
  </div>
  </div>
 
  <div className={`flex items-start gap-3`}>
  <Calendar className="w-5 h-5 text-gray-400 mt-0.5 flex-shrink-0" />
  <div className={`flex-1 text-start`}>
- <p className="text-sm font-medium text-gray-700">{t.preparationDate}</p>
- <p className="text-base text-gray-900">{formatDate(plan.approval.preparationDate)}</p>
+ <p className="text-sm font-medium text-gray-700">{localT.preparationDate}</p>
+ <p className="text-base text-gray-900">{formatDate(plan.preparationDate)}</p>
  </div>
  </div>
  </div>
 
  {/* Review */}
- {plan.approval.reviewedBy && (
+ {plan.reviewedBy && (
  <div className="space-y-4">
  <div className={`flex items-start gap-3`}>
  <User className="w-5 h-5 text-blue-500 mt-0.5 flex-shrink-0" />
  <div className={`flex-1 text-start`}>
- <p className="text-sm font-medium text-gray-700">{t.reviewedBy}</p>
- <p className="text-base text-gray-900">{plan.approval.reviewedBy}</p>
+ <p className="text-sm font-medium text-gray-700">{localT.reviewedBy}</p>
+ <p className="text-base text-gray-900">{plan.reviewedBy}</p>
  </div>
  </div>
 
  <div className={`flex items-start gap-3`}>
  <Calendar className="w-5 h-5 text-gray-400 mt-0.5 flex-shrink-0" />
  <div className={`flex-1 text-start`}>
- <p className="text-sm font-medium text-gray-700">{t.reviewDate}</p>
- <p className="text-base text-gray-900">{formatDate(plan.approval.reviewDate)}</p>
+ <p className="text-sm font-medium text-gray-700">{localT.reviewDate}</p>
+ <p className="text-base text-gray-900">{formatDate(plan.reviewDate)}</p>
  </div>
  </div>
  </div>
  )}
 
  {/* Approval */}
- {plan.approval.approvedBy && (
+ {plan.approvedBy && (
  <div className="space-y-4">
  <div className={`flex items-start gap-3`}>
  <CheckCircle className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" />
  <div className={`flex-1 text-start`}>
- <p className="text-sm font-medium text-gray-700">{t.approvedBy}</p>
- <p className="text-base text-gray-900">{plan.approval.approvedBy}</p>
+ <p className="text-sm font-medium text-gray-700">{localT.approvedBy}</p>
+ <p className="text-base text-gray-900">{plan.approvedBy}</p>
  </div>
  </div>
 
  <div className={`flex items-start gap-3`}>
  <Calendar className="w-5 h-5 text-gray-400 mt-0.5 flex-shrink-0" />
  <div className={`flex-1 text-start`}>
- <p className="text-sm font-medium text-gray-700">{t.approvalDate}</p>
- <p className="text-base text-gray-900">{formatDate(plan.approval.approvalDate)}</p>
+ <p className="text-sm font-medium text-gray-700">{localT.approvalDate}</p>
+ <p className="text-base text-gray-900">{formatDate(plan.approvalDate)}</p>
  </div>
  </div>
  </div>
@@ -206,14 +206,14 @@ export function ApprovalSection({
  </div>
 
  {/* Comments */}
- {plan.approval.comments && (
+ {plan.comments && (
  <div className="mt-6 pt-6 border-t border-gray-200">
  <div className={`flex items-start gap-3`}>
  <MessageSquare className="w-5 h-5 text-gray-400 mt-0.5 flex-shrink-0" />
  <div className={`flex-1 text-start`}>
- <p className="text-sm font-medium text-gray-700 mb-2">{t.comments}</p>
+ <p className="text-sm font-medium text-gray-700 mb-2">{localT.comments}</p>
  <p className="text-base text-gray-900 bg-gray-50 rounded-lg p-4 border border-gray-200">
- {plan.approval.comments}
+ {plan.comments}
  </p>
  </div>
  </div>
@@ -224,10 +224,10 @@ export function ApprovalSection({
  {/* Governance Notes */}
  <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
  <h4 className={`text-sm font-semibold text-blue-900 mb-2 text-start`}>
- {t.governanceNotes}
+ {localT.governanceNotes}
  </h4>
  <p className={`text-sm text-blue-800 text-start`}>
- {t.governanceText}
+ {localT.governanceText}
  </p>
  </div>
  </div>

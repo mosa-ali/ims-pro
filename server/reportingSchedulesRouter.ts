@@ -424,15 +424,17 @@ export const reportingSchedulesRouter = router({
     }),
 
   // ─── NEW: Get upcoming reporting deadlines (compact widget) ────────────────────
-  // Returns top 5 deadlines sorted by priority for executive dashboard
-  // Includes overdue, urgent (0-7d), upcoming (8-30d), and future deadlines
+  // Returns ALL deadlines within 90 days with ALL report statuses
+  // Includes: NOT_STARTED, PLANNED, UNDER_PREPARATION, UNDER_REVIEW, SUBMITTED_TO_HQ, SUBMITTED_TO_DONOR
+  // Widget displays top 5, but all are available for full reporting schedule page
   getUpcomingDeadlines: scopedProcedure
     .input(z.object({
       daysAhead: z.number().optional().default(90),
+      limit: z.number().optional().default(5), // Widget limit, can be overridden for full list
     }))
     .query(async ({ ctx, input }) => {
       const { organizationId, operatingUnitId } = ctx.scope;
-      const { daysAhead } = input;
+      const { daysAhead, limit } = input;
       const db = await getDb();
 
       if (!db) {
@@ -452,7 +454,8 @@ export const reportingSchedulesRouter = router({
         futureDate.setDate(futureDate.getDate() + daysAhead);
         const futureDateString = futureDate.toISOString().split('T')[0];
 
-        // Build where clause - includes all deadlines up to daysAhead (including overdue)
+        // Build where clause - includes ALL deadlines up to daysAhead (including overdue)
+        // NO status filter - includes all statuses
         const whereConditions = [
           eq(reportingSchedules.organizationId, organizationId),
           eq(reportingSchedules.operatingUnitId, operatingUnitId),
@@ -460,7 +463,7 @@ export const reportingSchedulesRouter = router({
           lte(reportingSchedules.reportDeadline, futureDateString), // Deadline <= future date
         ];
 
-        // Fetch deadlines with project code
+        // Fetch ALL deadlines with project code (no status filter, no limit in query)
         const deadlines = await db
           .select({
             id: reportingSchedules.id,
@@ -488,15 +491,15 @@ export const reportingSchedulesRouter = router({
           );
 
           const isOverdue = daysUntilDeadline < 0;
-          const isUrgent = daysUntilDeadline >= 0 && daysUntilDeadline <= 7;
-          const isUpcoming = daysUntilDeadline > 7 && daysUntilDeadline <= 30;
+          const isUrgent = daysUntilDeadline >= 0 && daysUntilDeadline <= 15;
+          const isUpcoming = daysUntilDeadline > 7 && daysUntilDeadline <= 60;
 
           // Action Required: deadline <= 14 days AND status not submitted
           const actionRequired =
             daysUntilDeadline <= 14 &&
             !['SUBMITTED_TO_DONOR', 'SUBMITTED_TO_HQ'].includes(d.reportStatus || '');
 
-          // Priority sorting: 0 (overdue/urgent) -> 1 (urgent) -> 2 (upcoming) -> 3 (future)
+          // Priority sorting: 0 (overdue) -> 1 (urgent) -> 2 (upcoming) -> 3 (future)
           let priority = 3;
           if (isOverdue) priority = 0;
           else if (isUrgent) priority = 1;
@@ -508,7 +511,7 @@ export const reportingSchedulesRouter = router({
             projectCode: d.projectCode || 'N/A',
             projectName: d.projectName || 'Unknown Project',
             reportType: d.reportType || 'Report',
-            reportStatus: d.reportStatus,
+            reportStatus: d.reportStatus || 'NOT_STARTED', // Include ALL statuses
             reportDeadline: d.reportDeadline
               ? new Date(d.reportDeadline).toISOString().split('T')[0]
               : '',
@@ -529,10 +532,11 @@ export const reportingSchedulesRouter = router({
           return a.daysUntilDeadline - b.daysUntilDeadline;
         });
 
-        // Return top 5 + total count
+        // Return ALL deadlines + limited set for widget display
         return {
           total: transformed.length,
-          deadlines: transformed.slice(0, 5),
+          deadlines: transformed, // ALL deadlines within 90 days (all statuses)
+          deadlinesWidget: transformed.slice(0, limit), // Top N for widget display
         };
       } catch (error) {
         console.error('Error fetching upcoming reporting deadlines:', error);

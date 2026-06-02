@@ -5,8 +5,8 @@
  */
 
 import { FileText, Calendar, User, CheckCircle } from 'lucide-react';
-import { useLanguage } from '@/app/contexts/LanguageContext';
-import { HRAnnualPlan } from '@/app/services/hrAnnualPlanService';
+import { useLanguage } from '@/contexts/LanguageContext';
+import type { HRAnnualPlan } from '@shared/types/hrAnnualPlanning';
 import { useTranslation } from '@/i18n/useTranslation';
 
 interface PlanHeaderProps {
@@ -53,7 +53,7 @@ export function PlanHeader({
  {/* Plan Information */}
  <div>
  <h2 className={`text-xl font-bold text-gray-900 mb-4 text-start`}>
- {t.planOverview}
+ {localT.planOverview}
  </h2>
  
  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -62,7 +62,7 @@ export function PlanHeader({
  <div className={`flex items-start gap-3`}>
  <FileText className="w-5 h-5 text-gray-400 mt-0.5" />
  <div className={'text-start'}>
- <p className="text-sm text-gray-600">{t.organization}</p>
+ <p className="text-sm text-gray-600">{localT.organization}</p>
  <p className="text-base font-medium text-gray-900">{plan.organization}</p>
  </div>
  </div>
@@ -70,7 +70,7 @@ export function PlanHeader({
  <div className={`flex items-start gap-3`}>
  <Calendar className="w-5 h-5 text-gray-400 mt-0.5" />
  <div className={'text-start'}>
- <p className="text-sm text-gray-600">{t.planYear}</p>
+ <p className="text-sm text-gray-600">{localT.planYear}</p>
  <p className="text-base font-medium text-gray-900">{plan.year}</p>
  </div>
  </div>
@@ -78,57 +78,57 @@ export function PlanHeader({
  <div className={`flex items-start gap-3`}>
  <User className="w-5 h-5 text-gray-400 mt-0.5" />
  <div className={'text-start'}>
- <p className="text-sm text-gray-600">{t.preparedBy}</p>
- <p className="text-base font-medium text-gray-900">{plan.approval.preparedBy || '-'}</p>
+ <p className="text-sm text-gray-600">{localT.preparedBy}</p>
+ <p className="text-base font-medium text-gray-900">{plan.preparedBy || '-'}</p>
  </div>
  </div>
 
  <div className={`flex items-start gap-3`}>
  <Calendar className="w-5 h-5 text-gray-400 mt-0.5" />
  <div className={'text-start'}>
- <p className="text-sm text-gray-600">{t.preparationDate}</p>
- <p className="text-base font-medium text-gray-900">{formatDate(plan.approval.preparationDate)}</p>
+ <p className="text-sm text-gray-600">{localT.preparationDate}</p>
+ <p className="text-base font-medium text-gray-900">{formatDate(plan.preparationDate)}</p>
  </div>
  </div>
  </div>
 
  {/* Approval Info */}
  <div className="space-y-4">
- {plan.approval.reviewedBy && (
+ {plan.reviewedBy && (
  <>
  <div className={`flex items-start gap-3`}>
  <CheckCircle className="w-5 h-5 text-blue-500 mt-0.5" />
  <div className={'text-start'}>
- <p className="text-sm text-gray-600">{t.reviewedBy}</p>
- <p className="text-base font-medium text-gray-900">{plan.approval.reviewedBy}</p>
+ <p className="text-sm text-gray-600">{localT.reviewedBy}</p>
+ <p className="text-base font-medium text-gray-900">{plan.reviewedBy}</p>
  </div>
  </div>
 
  <div className={`flex items-start gap-3`}>
  <Calendar className="w-5 h-5 text-gray-400 mt-0.5" />
  <div className={'text-start'}>
- <p className="text-sm text-gray-600">{t.reviewDate}</p>
- <p className="text-base font-medium text-gray-900">{formatDate(plan.approval.reviewDate)}</p>
+ <p className="text-sm text-gray-600">{localT.reviewDate}</p>
+ <p className="text-base font-medium text-gray-900">{formatDate(plan.reviewDate)}</p>
  </div>
  </div>
  </>
  )}
 
- {plan.approval.approvedBy && (
+ {plan.approvedBy && (
  <>
  <div className={`flex items-start gap-3`}>
  <CheckCircle className="w-5 h-5 text-green-500 mt-0.5" />
  <div className={'text-start'}>
- <p className="text-sm text-gray-600">{t.approvedBy}</p>
- <p className="text-base font-medium text-gray-900">{plan.approval.approvedBy}</p>
+ <p className="text-sm text-gray-600">{localT.approvedBy}</p>
+ <p className="text-base font-medium text-gray-900">{plan.approvedBy}</p>
  </div>
  </div>
 
  <div className={`flex items-start gap-3`}>
  <Calendar className="w-5 h-5 text-gray-400 mt-0.5" />
  <div className={'text-start'}>
- <p className="text-sm text-gray-600">{t.approvalDate}</p>
- <p className="text-base font-medium text-gray-900">{formatDate(plan.approval.approvalDate)}</p>
+ <p className="text-sm text-gray-600">{localT.approvalDate}</p>
+ <p className="text-base font-medium text-gray-900">{formatDate(plan.approvalDate)}</p>
  </div>
  </div>
  </>
@@ -137,7 +137,7 @@ export function PlanHeader({
  <div className={`flex items-start gap-3`}>
  <Calendar className="w-5 h-5 text-gray-400 mt-0.5" />
  <div className={'text-start'}>
- <p className="text-sm text-gray-600">{t.lastUpdated}</p>
+ <p className="text-sm text-gray-600">{localT.lastUpdated}</p>
  <p className="text-base font-medium text-gray-900">{formatDate(plan.updatedAt)}</p>
  </div>
  </div>
@@ -148,13 +148,13 @@ export function PlanHeader({
  {/* Plan Summary Stats */}
  <div>
  <h3 className={`text-lg font-semibold text-gray-900 mb-4 text-start`}>
- {t.planSummary}
+ {localT.planSummary}
  </h3>
  
  <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
  <div className="bg-indigo-50 rounded-lg p-4 border border-indigo-100">
  <p className={`text-sm text-indigo-700 mb-1 text-start`}>
- {t.plannedStaffing}
+ {localT.plannedStaffing}
  </p>
  <p className={`text-3xl font-bold text-indigo-900 text-start`}>
  {plan.plannedPositions.length}
@@ -163,7 +163,7 @@ export function PlanHeader({
 
  <div className="bg-blue-50 rounded-lg p-4 border border-blue-100">
  <p className={`text-sm text-blue-700 mb-1 text-start`}>
- {t.recruitmentActions}
+ {localT.recruitmentActions}
  </p>
  <p className={`text-3xl font-bold text-blue-900 text-start`}>
  {plan.recruitmentPlan.length}
@@ -172,7 +172,7 @@ export function PlanHeader({
 
  <div className="bg-green-50 rounded-lg p-4 border border-green-100">
  <p className={`text-sm text-green-700 mb-1 text-start`}>
- {t.trainingActivities}
+ {localT.trainingActivities}
  </p>
  <p className={`text-3xl font-bold text-green-900 text-start`}>
  {plan.trainingPlan.length}
@@ -181,7 +181,7 @@ export function PlanHeader({
 
  <div className="bg-yellow-50 rounded-lg p-4 border border-yellow-100">
  <p className={`text-sm text-yellow-700 mb-1 text-start`}>
- {t.identifiedRisks}
+ {localT.identifiedRisks}
  </p>
  <p className={`text-3xl font-bold text-yellow-900 text-start`}>
  {plan.hrRisks.length}
@@ -190,7 +190,7 @@ export function PlanHeader({
 
  <div className="bg-purple-50 rounded-lg p-4 border border-purple-100">
  <p className={`text-sm text-purple-700 mb-1 text-start`}>
- {t.nonSalaryCosts}
+ {localT.nonSalaryCosts}
  </p>
  <p className={`text-3xl font-bold text-purple-900 text-start`}>
  {plan.nonSalaryCosts.length}
@@ -200,13 +200,13 @@ export function PlanHeader({
  </div>
 
  {/* Approval Comments */}
- {plan.approval.comments && (
+ {plan.comments && (
  <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
  <h4 className={`text-sm font-semibold text-gray-900 mb-2 text-start`}>
  {t.hrAnnualPlan.approvalComments}
  </h4>
  <p className={`text-sm text-gray-700 text-start`}>
- {plan.approval.comments}
+ {plan.comments}
  </p>
  </div>
  )}

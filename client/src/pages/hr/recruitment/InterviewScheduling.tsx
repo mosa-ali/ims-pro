@@ -180,13 +180,13 @@ export function InterviewScheduling({
  <div className="space-y-6" dir={isRTL ? 'rtl' : 'ltr'}>
  {/* Header */}
  <div className="flex items-center justify-between">
- <h2 className="text-xl font-bold text-gray-900">{t.title}</h2>
+ <h2 className="text-xl font-bold text-gray-900">{localT.title}</h2>
  </div>
 
  {/* Vacancy Selector */}
  <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
  <label className="block text-sm font-medium text-gray-700 mb-2">
- {t.selectVacancy}
+ {localT.selectVacancy}
  </label>
  <select
  value={selectedVacancy}
@@ -205,13 +205,13 @@ export function InterviewScheduling({
  {selectedVacancy && (
  <div className="bg-white rounded-lg shadow-sm border border-gray-200">
  <div className="p-4 border-b border-gray-200">
- <h3 className="text-lg font-bold text-gray-900">{t.shortlistedCandidates}</h3>
+ <h3 className="text-lg font-bold text-gray-900">{localT.shortlistedCandidates}</h3>
  </div>
 
  {shortlistedCandidates.length === 0 ? (
  <div className="p-12 text-center text-gray-500">
  <Users className="w-16 h-16 text-gray-300 mx-auto mb-4" />
- <p>{t.noCandidates}</p>
+ <p>{localT.noCandidates}</p>
  </div>
  ) : (
  <div className="overflow-x-auto">
@@ -219,19 +219,19 @@ export function InterviewScheduling({
  <thead className="bg-gray-50 border-b border-gray-200">
  <tr>
  <th className={`px-4 py-3 text-xs font-medium text-gray-500 uppercase text-center`}>
- {t.candidateRef}
+ {localT.candidateRef}
  </th>
  <th className={`px-4 py-3 text-xs font-medium text-gray-500 uppercase text-center`}>
- {t.name}
+ {localT.name}
  </th>
  <th className={`px-4 py-3 text-xs font-medium text-gray-500 uppercase text-center`}>
- {t.email}
+ {localT.email}
  </th>
  <th className={`px-4 py-3 text-xs font-medium text-gray-500 uppercase text-center`}>
- {t.score}
+ {localT.score}
  </th>
  <th className={`px-4 py-3 text-xs font-medium text-gray-500 uppercase text-center`}>
- {t.status}
+ {localT.status}
  </th>
  <th className={`px-4 py-3 text-xs font-medium text-gray-500 uppercase text-center`}>
  Actions
@@ -266,7 +266,7 @@ export function InterviewScheduling({
  className="px-3 py-1.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center gap-2 text-xs"
  >
  <Calendar className="w-4 h-4" />
- {t.schedule}
+ {localT.schedule}
  </button>
  </td>
  </tr>
@@ -287,7 +287,7 @@ export function InterviewScheduling({
  <div className="flex items-center gap-3">
  <Calendar className="w-6 h-6" />
  <div>
- <h3 className="text-xl font-bold">{t.scheduleInterview}</h3>
+ <h3 className="text-xl font-bold">{localT.scheduleInterview}</h3>
  <p className="text-sm text-blue-100">{selectedCandidate.fullName}</p>
  </div>
  </div>
@@ -304,7 +304,7 @@ export function InterviewScheduling({
  <div className="grid grid-cols-2 gap-4">
  <div>
  <label className="block text-sm font-medium text-gray-700 mb-1">
- {t.interviewDate} <span className="text-red-500">*</span>
+ {localT.interviewDate} <span className="text-red-500">*</span>
  </label>
  <input
  type="date"
@@ -319,7 +319,7 @@ export function InterviewScheduling({
 
  <div>
  <label className="block text-sm font-medium text-gray-700 mb-1">
- {t.interviewTime} <span className="text-red-500">*</span>
+ {localT.interviewTime} <span className="text-red-500">*</span>
  </label>
  <input
  type="time"
@@ -335,23 +335,23 @@ export function InterviewScheduling({
 
  <div>
  <label className="block text-sm font-medium text-gray-700 mb-1">
- {t.interviewType} <span className="text-red-500">*</span>
+ {localT.interviewType} <span className="text-red-500">*</span>
  </label>
  <select
  value={formData.interviewType}
  onChange={(e) => setFormData(prev => ({ ...prev, interviewType: e.target.value as InterviewType }))}
  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
  >
- <option value="Phone Screening">{t.phoneScreening}</option>
- <option value="Technical Interview">{t.technicalInterview}</option>
- <option value="Panel Interview">{t.panelInterview}</option>
- <option value="Final Interview">{t.finalInterview}</option>
+ <option value="Phone Screening">{localT.phoneScreening}</option>
+ <option value="Technical Interview">{localT.technicalInterview}</option>
+ <option value="Panel Interview">{localT.panelInterview}</option>
+ <option value="Final Interview">{localT.finalInterview}</option>
  </select>
  </div>
 
  <div>
  <label className="block text-sm font-medium text-gray-700 mb-2">
- {t.panelMembers} <span className="text-red-500">*</span>
+ {localT.panelMembers} <span className="text-red-500">*</span>
  </label>
  <div className="space-y-2">
  {formData.panelMembers.map((member, index) => (
@@ -384,13 +384,13 @@ export function InterviewScheduling({
  className="mt-2 px-3 py-1.5 text-sm text-blue-600 hover:bg-blue-50 rounded-lg flex items-center gap-2"
  >
  <Plus className="w-4 h-4" />
- {t.addMember}
+ {localT.addMember}
  </button>
  </div>
 
  <div>
  <label className="block text-sm font-medium text-gray-700 mb-1">
- {t.notes}
+ {localT.notes}
  </label>
  <textarea
  value={formData.notes}
@@ -409,14 +409,14 @@ export function InterviewScheduling({
  onClick={() => setShowScheduleForm(false)}
  className="px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
  >
- {t.cancel}
+ {localT.cancel}
  </button>
  <button
  onClick={handleSubmit}
  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center gap-2"
  >
  <Calendar className="w-4 h-4" />
- {t.scheduleBtn}
+ {localT.scheduleBtn}
  </button>
  </div>
  </div>

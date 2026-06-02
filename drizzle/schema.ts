@@ -2969,6 +2969,7 @@ export const hrRecruitmentCandidates = mysqlTable("hr_recruitment_candidates", {
 	id: int().autoincrement().primaryKey().notNull(),
 	organizationId: int().notNull(),
 	jobId: int().notNull(),
+	appliedAt: timestamp({ mode: 'string' }),
 	firstName: varchar({ length: 100 }).notNull(),
 	lastName: varchar({ length: 100 }).notNull(),
 	email: varchar({ length: 320 }).notNull(),
@@ -2987,7 +2988,20 @@ export const hrRecruitmentCandidates = mysqlTable("hr_recruitment_candidates", {
 	interviewDate: timestamp({ mode: 'string' }),
 	interviewNotes: text(),
 	interviewers: text(),
-	status: mysqlEnum(['new','screening','shortlisted','interview_scheduled','interviewed','offer_pending','offer_sent','hired','rejected','withdrawn']).default('new').notNull(),
+	status: mysqlEnum([
+	'new',
+	'applied',
+	'screening',
+	'shortlisted',
+	'interview_scheduled',
+	'interviewed',
+	'offer_pending',
+	'offer_sent',
+	'offered',
+	'hired',
+	'rejected',
+	'withdrawn'
+	]).default('new').notNull(),
 	rejectionReason: text(),
 	// you can use { mode: 'date' }, if you want to have Date as type for this column
 	offerDate: date({ mode: 'string' }),
@@ -3012,6 +3026,7 @@ export const hrRecruitmentJobs = mysqlTable("hr_recruitment_jobs", {
 	jobTitleAr: varchar({ length: 255 }),
 	department: varchar({ length: 100 }),
 	employmentType: mysqlEnum(['full_time','part_time','contract','consultant','intern']).default('full_time'),
+	numberOfPositions: int().default(1).notNull(),
 	gradeLevel: varchar({ length: 50 }),
 	salaryRange: varchar({ length: 100 }),
 	description: text(),
@@ -8205,3 +8220,169 @@ export const scheduledReports = mysqlTable("scheduled_reports", {
   index("idx_sr_next_run").on(table.nextRunAt),
   index("idx_sr_enabled").on(table.enabled),
 ]);
+export const hrObjectives = mysqlTable(
+  "hr_objectives",
+  {
+    id: int().autoincrement().primaryKey().notNull(),
+    organizationId: int().notNull(),
+    operatingUnitId: int(),
+    planId: int().notNull(), // Foreign key to hrAnnualPlans
+    
+    // Objective details
+    objectiveCode: varchar({ length: 50 }).notNull(),
+    objectiveNameEn: varchar({ length: 255 }).notNull(),
+    objectiveNameAr: varchar({ length: 255 }).notNull(),
+    descriptionEn: text(),
+    descriptionAr: text(),
+    
+    // Objective classification
+    category: varchar({ length: 100 }), // e.g., "Talent Development", "Retention", "Recruitment"
+    priority: mysqlEnum(['critical', 'high', 'medium', 'low']).default('medium'),
+    
+    // Timeline
+    startDate: timestamp({ mode: 'string' }),
+    endDate: timestamp({ mode: 'string' }),
+    
+    // Status and progress
+    status: mysqlEnum(['draft', 'active', 'completed', 'archived']).default('draft').notNull(),
+    progressPercentage: decimal({ precision: 5, scale: 2 }).default('0.00'),
+    
+    // Ownership
+    ownerUserId: int(), // User responsible for this objective
+    ownerName: varchar({ length: 255 }),
+    
+    // Additional metadata
+    weight: decimal({ precision: 5, scale: 2 }).default('1.00'), // Relative importance
+    notes: text(),
+    
+    // Soft delete
+    isDeleted: tinyint().default(0).notNull(),
+    deletedAt: timestamp({ mode: 'string' }),
+    deletedBy: int(),
+    
+    // Audit
+    createdAt: timestamp({ mode: 'string' }).defaultNow().notNull(),
+    updatedAt: timestamp({ mode: 'string' }).defaultNow().onUpdateNow().notNull(),
+    createdBy: int(),
+    updatedBy: int(),
+  },
+  (table) => [
+    index("idx_hr_objectives_planId").on(table.planId),
+    index("idx_hr_objectives_organizationId").on(table.organizationId),
+    index("idx_hr_objectives_status").on(table.status),
+    index("idx_hr_objectives_ownerUserId").on(table.ownerUserId),
+  ]
+);
+
+/**
+ * HR_KPIS — Key Performance Indicators for objectives
+ * 
+ * Stores KPIs that measure progress toward objectives.
+ * Each KPI tracks baseline, target, and actual values.
+ */
+export const hrKPIs = mysqlTable(
+  "hr_kpis",
+  {
+    id: int().autoincrement().primaryKey().notNull(),
+    organizationId: int().notNull(),
+    operatingUnitId: int(),
+    objectiveId: int().notNull(), // Foreign key to hrObjectives
+    
+    // KPI details
+    kpiCode: varchar({ length: 50 }).notNull(),
+    kpiNameEn: varchar({ length: 255 }).notNull(),
+    kpiNameAr: varchar({ length: 255 }).notNull(),
+    descriptionEn: text(),
+    descriptionAr: text(),
+    
+    // Measurement
+    measurementUnit: varchar({ length: 100 }), // e.g., "Percentage", "Number", "Days"
+    baseline: decimal({ precision: 15, scale: 2 }), // Starting value
+    target: decimal({ precision: 15, scale: 2 }).notNull(), // Target value
+    actual: decimal({ precision: 15, scale: 2 }), // Actual achieved value
+    
+    // Status and progress
+    status: mysqlEnum(['draft', 'active', 'completed', 'archived']).default('draft').notNull(),
+    progressPercentage: decimal({ precision: 5, scale: 2 }).default('0.00'),
+    
+    // Weighting for composite scoring
+    weight: decimal({ precision: 5, scale: 2 }).default('1.00'),
+    
+    // Frequency of review
+    reviewFrequency: mysqlEnum(['monthly', 'quarterly', 'semi_annual', 'annual']).default('quarterly'),
+    lastReviewDate: timestamp({ mode: 'string' }),
+    nextReviewDate: timestamp({ mode: 'string' }),
+    
+    // Additional metadata
+    notes: text(),
+    
+    // Soft delete
+    isDeleted: tinyint().default(0).notNull(),
+    deletedAt: timestamp({ mode: 'string' }),
+    deletedBy: int(),
+    
+    // Audit
+    createdAt: timestamp({ mode: 'string' }).defaultNow().notNull(),
+    updatedAt: timestamp({ mode: 'string' }).defaultNow().onUpdateNow().notNull(),
+    createdBy: int(),
+    updatedBy: int(),
+  },
+  (table) => [
+    index("idx_hr_kpis_objectiveId").on(table.objectiveId),
+    index("idx_hr_kpis_organizationId").on(table.organizationId),
+    index("idx_hr_kpis_status").on(table.status),
+  ]
+);
+
+/**
+ * HR_PLAN_REVIEWS — Multi-level approval workflow for annual plans
+ * 
+ * Tracks reviews and approvals from different stakeholders.
+ * Supports multi-level approval (HR Manager → Department Head → Executive → Finance).
+ */
+export const hrPlanReviews = mysqlTable(
+  "hr_plan_reviews",
+  {
+    id: int().autoincrement().primaryKey().notNull(),
+    organizationId: int().notNull(),
+    operatingUnitId: int(),
+    planId: int().notNull(), // Foreign key to hrAnnualPlans
+    
+    // Reviewer information
+    reviewerUserId: int(), // User performing the review
+    reviewerName: varchar({ length: 255 }),
+    reviewerRole: mysqlEnum(['hr_manager', 'department_head', 'executive', 'finance', 'other']).notNull(),
+    
+    // Review status
+    reviewStatus: mysqlEnum(['pending', 'approved', 'rejected', 'commented']).default('pending').notNull(),
+    
+    // Review content
+    comments: text(),
+    recommendations: text(),
+    
+    // Review dates
+    reviewDate: timestamp({ mode: 'string' }),
+    
+    // Approval tracking
+    approvedAt: timestamp({ mode: 'string' }),
+    rejectedAt: timestamp({ mode: 'string' }),
+    rejectionReason: text(),
+    
+    // Soft delete
+    isDeleted: tinyint().default(0).notNull(),
+    deletedAt: timestamp({ mode: 'string' }),
+    deletedBy: int(),
+    
+    // Audit
+    createdAt: timestamp({ mode: 'string' }).defaultNow().notNull(),
+    updatedAt: timestamp({ mode: 'string' }).defaultNow().onUpdateNow().notNull(),
+    createdBy: int(),
+    updatedBy: int(),
+  },
+  (table) => [
+    index("idx_hr_plan_reviews_planId").on(table.planId),
+    index("idx_hr_plan_reviews_organizationId").on(table.organizationId),
+    index("idx_hr_plan_reviews_reviewStatus").on(table.reviewStatus),
+    index("idx_hr_plan_reviews_reviewerRole").on(table.reviewerRole),
+  ]
+);

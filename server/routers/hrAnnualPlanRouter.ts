@@ -1,11 +1,8 @@
 import { z } from "zod";
 import { publicProcedure, protectedProcedure, router, scopedProcedure } from "./_core/trpc";
 import { getDb } from "./db";
-import { hrAnnualPlans, hrPlanReviews } from "../drizzle/schema";
+import { hrAnnualPlans } from "../drizzle/schema";
 import { eq, and, desc, sql, count } from "drizzle-orm";
-
-const nowSql = new Date().toISOString().slice(0, 19).replace('T', ' ');
-
 
 /**
  * HR Annual Plan Router - Strategic Workforce Planning
@@ -28,7 +25,7 @@ export const hrAnnualPlanRouter = router({
       
       const conditions = [
         eq(hrAnnualPlans.organizationId, organizationId),
-        eq(hrAnnualPlans.isDeleted, 0),
+        eq(hrAnnualPlans.isDeleted, false),
       ];
       
       if (input.planYear) {
@@ -62,7 +59,7 @@ export const hrAnnualPlanRouter = router({
           and(
             eq(hrAnnualPlans.id, input.id),
             eq(hrAnnualPlans.organizationId, organizationId),
-            eq(hrAnnualPlans.isDeleted, 0)
+            eq(hrAnnualPlans.isDeleted, false)
           )
         )
         .limit(1);
@@ -87,7 +84,7 @@ export const hrAnnualPlanRouter = router({
           and(
             eq(hrAnnualPlans.organizationId, organizationId),
             eq(hrAnnualPlans.planYear, input.planYear),
-            eq(hrAnnualPlans.isDeleted, 0)
+            eq(hrAnnualPlans.isDeleted, false)
           )
         )
         .limit(1);
@@ -109,7 +106,7 @@ export const hrAnnualPlanRouter = router({
         .where(
           and(
             eq(hrAnnualPlans.organizationId, organizationId),
-            eq(hrAnnualPlans.isDeleted, 0)
+            eq(hrAnnualPlans.isDeleted, false)
           )
         );
       
@@ -195,7 +192,7 @@ export const hrAnnualPlanRouter = router({
       existingStaff: z.number().optional(),
       newPositionsRequired: z.number().optional(),
       estimatedHrCost: z.number().optional(),
-      comments: z.string().optional(),
+      notes: z.string().optional(),
     }))
     .mutation(async ({ ctx, input }) => {
       const { organizationId } = ctx.scope;
@@ -249,7 +246,7 @@ export const hrAnnualPlanRouter = router({
         .set({
           status: "pending_approval",
           reviewedBy: ctx.user?.id,
-          reviewedAt: nowSql,
+          reviewedAt: new Date(),
           notes: input.notes,
         })
         .where(and(eq(hrAnnualPlans.id, input.id), eq(hrAnnualPlans.organizationId, organizationId)));
@@ -273,7 +270,7 @@ export const hrAnnualPlanRouter = router({
         .set({
           status: "approved",
           approvedBy: ctx.user?.id,
-          approvedAt: nowSql,
+          approvedAt: new Date(),
           notes: input.notes,
         })
         .where(and(eq(hrAnnualPlans.id, input.id), eq(hrAnnualPlans.organizationId, organizationId)));
@@ -297,7 +294,7 @@ export const hrAnnualPlanRouter = router({
         .set({
           status: "rejected",
           approvedBy: ctx.user?.id,
-          approvedAt: nowSql,
+          approvedAt: new Date(),
           notes: input.notes,
         })
         .where(and(eq(hrAnnualPlans.id, input.id), eq(hrAnnualPlans.organizationId, organizationId)));
@@ -338,8 +335,8 @@ export const hrAnnualPlanRouter = router({
       await db
         .update(hrAnnualPlans)
         .set({
-          isDeleted: 1,
-          deletedAt: nowSql,
+          isDeleted: true,
+          deletedAt: new Date(),
           deletedBy: ctx.user?.id,
         })
         .where(and(eq(hrAnnualPlans.id, input.id), eq(hrAnnualPlans.organizationId, organizationId)));

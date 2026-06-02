@@ -216,7 +216,7 @@ export default function ProcurementTracker() {
  <TableRow
  key={pr.id}
  className="cursor-pointer hover:bg-muted/50"
- onClick={() => navigate(`/logistics/purchase-requests/${pr.id}`)}
+ onClick={() => navigate(`/organization/logistics/procurement-workspace/${pr.id}`)}
  >
  {columns.map((col) => (
  <React.Fragment key={col.key}>{renderCell(pr, col.key)}</React.Fragment>

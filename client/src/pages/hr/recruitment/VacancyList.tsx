@@ -183,7 +183,7 @@ export function VacancyList({
  <div className="space-y-6" dir={isRTL ? 'rtl' : 'ltr'}>
  {/* Header */}
  <div className="flex items-center justify-between">
- <h2 className="text-xl font-bold text-gray-900">{t.title}</h2>
+ <h2 className="text-xl font-bold text-gray-900">{localT.title}</h2>
  <button
  onClick={() => {
  setSelectedVacancy(undefined);
@@ -192,7 +192,7 @@ export function VacancyList({
  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center gap-2"
  >
  <Plus className="w-4 h-4" />
- {t.newVacancy}
+ {localT.newVacancy}
  </button>
  </div>
 
@@ -206,7 +206,7 @@ export function VacancyList({
  type="text"
  value={searchTerm}
  onChange={(e) => setSearchTerm(e.target.value)}
- placeholder={t.search}
+ placeholder={localT.search}
  className="w-full ps-10 pe-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
  />
  </div>
@@ -230,8 +230,8 @@ export function VacancyList({
  {filteredVacancies.length === 0 ? (
  <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-12">
  <div className="text-center text-gray-500">
- <p className="text-lg font-medium">{t.noVacancies}</p>
- <p className="text-sm mt-1">{t.createFirst}</p>
+ <p className="text-lg font-medium">{localT.noVacancies}</p>
+ <p className="text-sm mt-1">{localT.createFirst}</p>
  </div>
  </div>
  ) : (
@@ -241,28 +241,28 @@ export function VacancyList({
  <thead className="bg-gray-50 border-b border-gray-200">
  <tr>
  <th className={`px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider text-start`}>
- {t.ref}
+ {localT.ref}
  </th>
  <th className={`px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider text-start`}>
- {t.position}
+ {localT.position}
  </th>
  <th className={`px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider text-start`}>
- {t.department}
+ {localT.department}
  </th>
  <th className={`px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider text-start`}>
- {t.dutyStation}
+ {localT.dutyStation}
  </th>
  <th className={`px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider text-start`}>
- {t.closingDate}
+ {localT.closingDate}
  </th>
  <th className={`px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider text-start`}>
- {t.candidates}
+ {localT.candidates}
  </th>
  <th className={`px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider text-start`}>
- {t.status}
+ {localT.status}
  </th>
  <th className={`px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider text-start`}>
- {t.actions}
+ {localT.actions}
  </th>
  </tr>
  </thead>
@@ -297,7 +297,7 @@ export function VacancyList({
  <button
  onClick={() => handleView(vacancy)}
  className="p-1.5 text-blue-600 hover:bg-blue-50 rounded-lg"
- title={t.view}
+ title={localT.view}
  >
  <Eye className="w-4 h-4" />
  </button>
@@ -305,7 +305,7 @@ export function VacancyList({
  <button
  onClick={() => handleEdit(vacancy)}
  className="p-1.5 text-gray-600 hover:bg-gray-100 rounded-lg"
- title={t.edit}
+ title={localT.edit}
  >
  <Edit className="w-4 h-4" />
  </button>
@@ -315,7 +315,7 @@ export function VacancyList({
  <button
  onClick={() => copyApplicationLink(vacancy.vacancyRef)}
  className="p-1.5 text-green-600 hover:bg-green-50 rounded-lg"
- title={t.copyLink}
+ title={localT.copyLink}
  >
  {copiedRef === vacancy.vacancyRef ? (
  <Check className="w-4 h-4" />
@@ -326,7 +326,7 @@ export function VacancyList({
  <button
  onClick={() => handleCloseVacancy(vacancy.id)}
  className="p-1.5 text-orange-600 hover:bg-orange-50 rounded-lg"
- title={t.closeVacancy}
+ title={localT.closeVacancy}
  >
  <Lock className="w-4 h-4" />
  </button>
@@ -336,7 +336,7 @@ export function VacancyList({
  <button
  onClick={() => handleArchiveVacancy(vacancy.id)}
  className="p-1.5 text-gray-600 hover:bg-gray-100 rounded-lg"
- title={t.archive}
+ title={localT.archive}
  >
  <Archive className="w-4 h-4" />
  </button>

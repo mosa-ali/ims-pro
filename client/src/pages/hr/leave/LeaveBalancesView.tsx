@@ -123,27 +123,27 @@ export function LeaveBalancesView({
  <div dir={isRTL ? 'rtl' : 'ltr'}>
  {/* Header */}
  <div className="px-6 py-4 border-b border-gray-200">
- <h3 className="text-lg font-semibold text-gray-900">{t.title}</h3>
- <p className="text-sm text-gray-600 mt-1">{t.subtitle}</p>
+ <h3 className="text-lg font-semibold text-gray-900">{localT.title}</h3>
+ <p className="text-sm text-gray-600 mt-1">{localT.subtitle}</p>
  </div>
 
  {/* Statistics */}
  <div className="grid grid-cols-4 gap-4 px-6 py-4 bg-gray-50 border-b border-gray-200">
  <div>
- <p className="text-xs font-medium text-gray-600 uppercase">{t.totalStaff}</p>
+ <p className="text-xs font-medium text-gray-600 uppercase">{localT.totalStaff}</p>
  <p className="text-2xl font-bold text-gray-900 mt-1">{stats.totalStaff}</p>
  </div>
  <div>
- <p className="text-xs font-medium text-gray-600 uppercase">{t.avgBalance}</p>
- <p className="text-2xl font-bold text-green-600 mt-1">{stats.avgAvailable} {t.days}</p>
+ <p className="text-xs font-medium text-gray-600 uppercase">{localT.avgBalance}</p>
+ <p className="text-2xl font-bold text-green-600 mt-1">{stats.avgAvailable} {localT.days}</p>
  </div>
  <div>
- <p className="text-xs font-medium text-gray-600 uppercase">{t.totalUsed}</p>
- <p className="text-2xl font-bold text-blue-600 mt-1">{stats.totalUsed} {t.days}</p>
+ <p className="text-xs font-medium text-gray-600 uppercase">{localT.totalUsed}</p>
+ <p className="text-2xl font-bold text-blue-600 mt-1">{stats.totalUsed} {localT.days}</p>
  </div>
  <div>
- <p className="text-xs font-medium text-gray-600 uppercase">{t.totalPending}</p>
- <p className="text-2xl font-bold text-yellow-600 mt-1">{stats.totalPending} {t.days}</p>
+ <p className="text-xs font-medium text-gray-600 uppercase">{localT.totalPending}</p>
+ <p className="text-2xl font-bold text-yellow-600 mt-1">{stats.totalPending} {localT.days}</p>
  </div>
  </div>
 
@@ -153,7 +153,7 @@ export function LeaveBalancesView({
  type="text"
  value={searchTerm}
  onChange={(e) => setSearchTerm(e.target.value)}
- placeholder={t.search}
+ placeholder={localT.search}
  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
  />
  </div>
@@ -163,21 +163,21 @@ export function LeaveBalancesView({
  {filteredBalances.length === 0 ? (
  <div className="text-center py-12">
  <Users className="w-16 h-16 text-gray-300 mx-auto mb-4" />
- <p className="text-gray-600 font-medium">{t.noStaff}</p>
+ <p className="text-gray-600 font-medium">{localT.noStaff}</p>
  </div>
  ) : (
  <table className="w-full">
  <thead className="bg-gray-50 border-b border-gray-200">
  <tr>
- <th className={`px-4 py-3 text-xs font-medium text-gray-600 uppercase text-start`}>{t.staffId}</th>
- <th className={`px-4 py-3 text-xs font-medium text-gray-600 uppercase text-start`}>{t.name}</th>
- <th className={`px-4 py-3 text-xs font-medium text-gray-600 uppercase text-start`}>{t.contractPeriod}</th>
- <th className="px-4 py-3 text-center text-xs font-medium text-gray-600 uppercase">{t.opening}</th>
- <th className="px-4 py-3 text-center text-xs font-medium text-gray-600 uppercase">{t.used}</th>
- <th className="px-4 py-3 text-center text-xs font-medium text-gray-600 uppercase">{t.pending}</th>
- <th className="px-4 py-3 text-center text-xs font-medium text-gray-600 uppercase">{t.remaining}</th>
- <th className="px-4 py-3 text-center text-xs font-medium text-gray-600 uppercase">{t.available}</th>
- <th className={`px-4 py-3 text-xs font-medium text-gray-600 uppercase text-start`}>{t.actions}</th>
+ <th className={`px-4 py-3 text-xs font-medium text-gray-600 uppercase text-start`}>{localT.staffId}</th>
+ <th className={`px-4 py-3 text-xs font-medium text-gray-600 uppercase text-start`}>{localT.name}</th>
+ <th className={`px-4 py-3 text-xs font-medium text-gray-600 uppercase text-start`}>{localT.contractPeriod}</th>
+ <th className="px-4 py-3 text-center text-xs font-medium text-gray-600 uppercase">{localT.opening}</th>
+ <th className="px-4 py-3 text-center text-xs font-medium text-gray-600 uppercase">{localT.used}</th>
+ <th className="px-4 py-3 text-center text-xs font-medium text-gray-600 uppercase">{localT.pending}</th>
+ <th className="px-4 py-3 text-center text-xs font-medium text-gray-600 uppercase">{localT.remaining}</th>
+ <th className="px-4 py-3 text-center text-xs font-medium text-gray-600 uppercase">{localT.available}</th>
+ <th className={`px-4 py-3 text-xs font-medium text-gray-600 uppercase text-start`}>{localT.actions}</th>
  </tr>
  </thead>
  <tbody className="divide-y divide-gray-200">
@@ -228,7 +228,7 @@ export function LeaveBalancesView({
  className="flex items-center gap-1 px-3 py-1 text-sm bg-blue-50 text-blue-700 border border-blue-200 rounded hover:bg-blue-100"
  >
  <Plus className="w-4 h-4" />
- <span>{t.requestLeave}</span>
+ <span>{localT.requestLeave}</span>
  </button>
  </td>
  </tr>

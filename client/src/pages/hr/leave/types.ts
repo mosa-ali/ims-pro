@@ -27,8 +27,8 @@ export interface LeaveRequest {
  
  status: LeaveStatus;
  submittedDate?: string;
- approvedDate?: string;
- rejectedDate?: string;
+ approvedAt?: string;
+ rejectedAt?: string;
  approvedBy?: string;
  rejectedBy?: string;
  rejectionReason?: string;

@@ -58,9 +58,9 @@ export function InterviewEvaluationForm({
  const validate = (): boolean => {
  const newErrors: Record<string, string> = {};
 
- if (formData.overallRating === 0) newErrors.overallRating = t.requiredField;
- if (!formData.recommendation) newErrors.recommendation = t.requiredField;
- if (!formData.strengths.trim()) newErrors.strengths = t.requiredField;
+ if (formData.overallRating === 0) newErrors.overallRating = localT.requiredField;
+ if (!formData.recommendation) newErrors.recommendation = localT.requiredField;
+ if (!formData.strengths.trim()) newErrors.strengths = localT.requiredField;
 
  setErrors(newErrors);
  return Object.keys(newErrors).length === 0;
@@ -159,7 +159,7 @@ export function InterviewEvaluationForm({
  <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto p-6 space-y-6">
  {/* Candidate Info */}
  <div className="bg-gray-50 rounded-lg p-4">
- <h3 className="text-sm font-medium text-gray-700 mb-2">{t.candidateInfo}</h3>
+ <h3 className="text-sm font-medium text-gray-700 mb-2">{localT.candidateInfo}</h3>
  <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
  <div>
  <span className="text-gray-500">Name:</span>
@@ -183,52 +183,52 @@ export function InterviewEvaluationForm({
  {/* Interview Status */}
  <div>
  <label className="block text-sm font-medium text-gray-700 mb-2">
- {t.interviewStatus} <span className="text-red-500">*</span>
+ {localT.interviewStatus} <span className="text-red-500">*</span>
  </label>
  <select
  value={formData.status}
  onChange={(e) => handleInputChange('status', e.target.value)}
  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
  >
- <option value="Scheduled">{t.scheduled}</option>
- <option value="Completed">{t.completed}</option>
- <option value="Cancelled">{t.cancelled}</option>
- <option value="No Show">{t.noShow}</option>
+ <option value="Scheduled">{localT.scheduled}</option>
+ <option value="Completed">{localT.completed}</option>
+ <option value="Cancelled">{localT.cancelled}</option>
+ <option value="No Show">{localT.noShow}</option>
  </select>
  </div>
 
  {/* Ratings Section */}
  <div>
- <h3 className="text-lg font-bold text-gray-900 mb-4">{t.ratings}</h3>
+ <h3 className="text-lg font-bold text-gray-900 mb-4">{localT.ratings}</h3>
  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
  <StarRating
  value={formData.technicalSkills}
  onChange={(v) => handleInputChange('technicalSkills', v)}
- label={t.technicalSkills}
+ label={localT.technicalSkills}
  />
  <StarRating
  value={formData.communicationSkills}
  onChange={(v) => handleInputChange('communicationSkills', v)}
- label={t.communicationSkills}
+ label={localT.communicationSkills}
  />
  <StarRating
  value={formData.problemSolving}
  onChange={(v) => handleInputChange('problemSolving', v)}
- label={t.problemSolving}
+ label={localT.problemSolving}
  />
  <StarRating
  value={formData.culturalFit}
  onChange={(v) => handleInputChange('culturalFit', v)}
- label={t.culturalFit}
+ label={localT.culturalFit}
  />
  <StarRating
  value={formData.motivation}
  onChange={(v) => handleInputChange('motivation', v)}
- label={t.motivation}
+ label={localT.motivation}
  />
  <div>
  <label className="block text-sm font-medium text-gray-700 mb-2">
- {t.overallRating} <span className="text-red-500">*</span>
+ {localT.overallRating} <span className="text-red-500">*</span>
  </label>
  <div className="flex items-center gap-1">
  {[1, 2, 3, 4, 5].map((star) => (
@@ -253,7 +253,7 @@ export function InterviewEvaluationForm({
  {/* Recommendation */}
  <div>
  <label className="block text-sm font-medium text-gray-700 mb-2">
- {t.recommendationLabel} <span className="text-red-500">*</span>
+ {localT.recommendationLabel} <span className="text-red-500">*</span>
  </label>
  <select
  value={formData.recommendation}
@@ -261,10 +261,10 @@ export function InterviewEvaluationForm({
  className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${ errors.recommendation ? 'border-red-500' : 'border-gray-300' }`}
  >
  <option value="">Select recommendation...</option>
- <option value="Highly Recommended">{t.highlyRecommended}</option>
- <option value="Recommended">{t.recommended}</option>
- <option value="Not Recommended">{t.notRecommended}</option>
- <option value="On Hold">{t.onHold}</option>
+ <option value="Highly Recommended">{localT.highlyRecommended}</option>
+ <option value="Recommended">{localT.recommended}</option>
+ <option value="Not Recommended">{localT.notRecommended}</option>
+ <option value="On Hold">{localT.onHold}</option>
  </select>
  {errors.recommendation && <p className="text-xs text-red-500 mt-1">{errors.recommendation}</p>}
  </div>
@@ -272,7 +272,7 @@ export function InterviewEvaluationForm({
  {/* Strengths */}
  <div>
  <label className="block text-sm font-medium text-gray-700 mb-2">
- {t.strengths} <span className="text-red-500">*</span>
+ {localT.strengths} <span className="text-red-500">*</span>
  </label>
  <textarea
  value={formData.strengths}
@@ -287,7 +287,7 @@ export function InterviewEvaluationForm({
  {/* Weaknesses */}
  <div>
  <label className="block text-sm font-medium text-gray-700 mb-2">
- {t.weaknesses}
+ {localT.weaknesses}
  </label>
  <textarea
  value={formData.weaknesses}
@@ -301,7 +301,7 @@ export function InterviewEvaluationForm({
  {/* Additional Notes */}
  <div>
  <label className="block text-sm font-medium text-gray-700 mb-2">
- {t.evaluationNotes}
+ {localT.evaluationNotes}
  </label>
  <textarea
  value={formData.evaluationNotes}
@@ -320,14 +320,14 @@ export function InterviewEvaluationForm({
  onClick={onClose}
  className="px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
  >
- {t.cancel}
+ {localT.cancel}
  </button>
  <button
  onClick={handleSubmit}
  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center gap-2"
  >
  <Save className="w-4 h-4" />
- {t.save}
+ {localT.save}
  </button>
  </div>
  </div>

@@ -6,9 +6,13 @@
 
 import { useState } from 'react';
 import { GraduationCap, Plus, Edit, Trash2, Save } from 'lucide-react';
-import { useLanguage } from '@/app/contexts/LanguageContext';
-import { HRAnnualPlan, TrainingPlanEntry, hrAnnualPlanService, Priority, TrainingType } from '@/app/services/hrAnnualPlanService';
+import { useLanguage } from '@/contexts/LanguageContext';
+import type { HRAnnualPlan, TrainingPlanEntry } from '@shared/types/hrAnnualPlanning';
+
 import { useTranslation } from '@/i18n/useTranslation';
+
+type Priority = 'High' | 'Medium' | 'Low';
+type TrainingType = 'Internal' | 'External';
 
 interface TrainingPlanSectionProps {
  plan: HRAnnualPlan;
@@ -67,7 +71,8 @@ export function TrainingPlanSection({
  return;
  }
 
- const newEntry: Omit<TrainingPlanEntry, 'id'> = {
+ const newEntry: TrainingPlanEntry = {
+ id: `training_${Date.now()}`,
  targetGroup: formData.targetGroup!,
  trainingTopic: formData.trainingTopic!,
  objective: formData.objective || '',
@@ -77,11 +82,13 @@ export function TrainingPlanSection({
  priority: (formData.priority as Priority) || 'Medium'
  };
 
- const updated = hrAnnualPlanService.addTrainingEntry(plan.id, newEntry);
- if (updated) {
- onUpdate(updated);
+ const updatedPlan = {
+ ...plan,
+ trainingPlan: [...plan.trainingPlan, newEntry]
+ };
+ 
+ onUpdate(updatedPlan);
  resetForm();
- }
  };
 
  const handleEdit = (entry: TrainingPlanEntry) => {
@@ -92,17 +99,23 @@ export function TrainingPlanSection({
 
  const handleUpdate = () => {
  if (!editingId) return;
- const updated = hrAnnualPlanService.updateTrainingEntry(plan.id, editingId, formData);
- if (updated) {
- onUpdate(updated);
+ const updatedPlan = {
+ ...plan,
+ trainingPlan: plan.trainingPlan.map(t =>
+ t.id === editingId ? { ...t, ...formData } : t
+ )
+ };
+ onUpdate(updatedPlan);
  resetForm();
- }
  };
 
  const handleDelete = (id: string) => {
  if (confirm(t.hrAnnualPlan.deleteThisTrainingActivity)) {
- const updated = hrAnnualPlanService.deleteTrainingEntry(plan.id, id);
- if (updated) onUpdate(updated);
+ const updatedPlan = {
+ ...plan,
+ trainingPlan: plan.trainingPlan.filter(t => t.id !== id)
+ };
+ onUpdate(updatedPlan);
  }
  };
 
@@ -121,8 +134,8 @@ export function TrainingPlanSection({
  <div className="space-y-6" dir={isRTL ? 'rtl' : 'ltr'}>
  <div className={`flex items-start justify-between`}>
  <div className={'text-start'}>
- <h2 className="text-xl font-bold text-gray-900 mb-2">{t.title}</h2>
- <p className="text-sm text-gray-600">{t.description}</p>
+ <h2 className="text-xl font-bold text-gray-900 mb-2">{localT.title}</h2>
+ <p className="text-sm text-gray-600">{localT.description}</p>
  </div>
  {isEditing && !isAddingNew && !editingId && (
  <button
@@ -130,7 +143,7 @@ export function TrainingPlanSection({
  className={`flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white text-sm rounded-lg hover:bg-indigo-700`}
  >
  <Plus className="w-4 h-4" />
- <span>{t.addTraining}</span>
+ <span>{localT.addTraining}</span>
  </button>
  )}
  </div>
@@ -138,11 +151,11 @@ export function TrainingPlanSection({
  {plan.trainingPlan.length > 0 && (
  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
  <div className="bg-white rounded-lg border border-gray-200 p-4">
- <p className={`text-sm text-gray-600 mb-1 text-start`}>{t.totalActivities}</p>
+ <p className={`text-sm text-gray-600 mb-1 text-start`}>{localT.totalActivities}</p>
  <p className={`text-3xl font-bold text-gray-900 text-start`}>{plan.trainingPlan.length}</p>
  </div>
  <div className="bg-white rounded-lg border border-gray-200 p-4">
- <p className={`text-sm text-gray-600 mb-1 text-start`}>{t.totalBudget}</p>
+ <p className={`text-sm text-gray-600 mb-1 text-start`}>{localT.totalBudget}</p>
  <p className={`text-3xl font-bold text-gray-900 text-start`}>{formatCurrency(totalCost)}</p>
  </div>
  </div>
@@ -155,44 +168,44 @@ export function TrainingPlanSection({
  </h3>
  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
  <div>
- <label className={`block text-sm font-medium text-gray-700 mb-1 text-start`}>{t.targetGroup} *</label>
+ <label className={`block text-sm font-medium text-gray-700 mb-1 text-start`}>{localT.targetGroup} *</label>
  <input type="text" value={formData.targetGroup || ''} onChange={(e) => setFormData({ ...formData, targetGroup: e.target.value })}
  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500" placeholder={t.hrAnnualPlan.egProgramStaff} />
  </div>
  <div>
- <label className={`block text-sm font-medium text-gray-700 mb-1 text-start`}>{t.trainingTopic} *</label>
+ <label className={`block text-sm font-medium text-gray-700 mb-1 text-start`}>{localT.trainingTopic} *</label>
  <input type="text" value={formData.trainingTopic || ''} onChange={(e) => setFormData({ ...formData, trainingTopic: e.target.value })}
  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500" placeholder={t.hrAnnualPlan.protectionMainstreaming} />
  </div>
  <div>
- <label className={`block text-sm font-medium text-gray-700 mb-1 text-start`}>{t.type}</label>
+ <label className={`block text-sm font-medium text-gray-700 mb-1 text-start`}>{localT.type}</label>
  <select value={formData.type || 'Internal'} onChange={(e) => setFormData({ ...formData, type: e.target.value as TrainingType })}
  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500">
- <option value="Internal">{t.internal}</option>
- <option value="External">{t.external}</option>
+ <option value="Internal">{localT.internal}</option>
+ <option value="External">{localT.external}</option>
  </select>
  </div>
  <div>
- <label className={`block text-sm font-medium text-gray-700 mb-1 text-start`}>{t.priority}</label>
+ <label className={`block text-sm font-medium text-gray-700 mb-1 text-start`}>{localT.priority}</label>
  <select value={formData.priority || 'Medium'} onChange={(e) => setFormData({ ...formData, priority: e.target.value as Priority })}
  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500">
- <option value="High">{t.high}</option>
- <option value="Medium">{t.medium}</option>
- <option value="Low">{t.low}</option>
+ <option value="High">{localT.high}</option>
+ <option value="Medium">{localT.medium}</option>
+ <option value="Low">{localT.low}</option>
  </select>
  </div>
  <div>
- <label className={`block text-sm font-medium text-gray-700 mb-1 text-start`}>{t.plannedPeriod}</label>
+ <label className={`block text-sm font-medium text-gray-700 mb-1 text-start`}>{localT.plannedPeriod}</label>
  <input type="text" value={formData.plannedPeriod || ''} onChange={(e) => setFormData({ ...formData, plannedPeriod: e.target.value })}
  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500" placeholder={t.placeholders.q22026} />
  </div>
  <div>
- <label className={`block text-sm font-medium text-gray-700 mb-1 text-start`}>{t.estimatedCost} ($)</label>
+ <label className={`block text-sm font-medium text-gray-700 mb-1 text-start`}>{localT.estimatedCost} ($)</label>
  <input type="number" min="0" value={formData.estimatedCost || ''} onChange={(e) => setFormData({ ...formData, estimatedCost: parseFloat(e.target.value) || 0 })}
  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500" placeholder="15000" />
  </div>
  <div className="md:col-span-2">
- <label className={`block text-sm font-medium text-gray-700 mb-1 text-start`}>{t.objective}</label>
+ <label className={`block text-sm font-medium text-gray-700 mb-1 text-start`}>{localT.objective}</label>
  <textarea rows={2} value={formData.objective || ''} onChange={(e) => setFormData({ ...formData, objective: e.target.value })}
  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500" placeholder={t.hrAnnualPlan.trainingObjective} />
  </div>
@@ -200,9 +213,9 @@ export function TrainingPlanSection({
  <div className={`flex items-center gap-2 mt-4`}>
  <button onClick={editingId ? handleUpdate : handleAdd}
  className={`flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white text-sm rounded-lg hover:bg-indigo-700`}>
- <Save className="w-4 h-4" /><span>{t.save}</span>
+ <Save className="w-4 h-4" /><span>{localT.save}</span>
  </button>
- <button onClick={resetForm} className="px-4 py-2 border border-gray-300 text-gray-700 text-sm rounded-lg hover:bg-gray-50">{t.cancel}</button>
+ <button onClick={resetForm} className="px-4 py-2 border border-gray-300 text-gray-700 text-sm rounded-lg hover:bg-gray-50">{localT.cancel}</button>
  </div>
  </div>
  )}
@@ -211,11 +224,11 @@ export function TrainingPlanSection({
  {plan.trainingPlan.length === 0 ? (
  <div className="px-6 py-12 text-center">
  <GraduationCap className="w-12 h-12 text-gray-400 mx-auto mb-3" />
- <p className="text-gray-600 mb-4">{t.noTraining}</p>
+ <p className="text-gray-600 mb-4">{localT.noTraining}</p>
  {isEditing && (
  <button onClick={() => setIsAddingNew(true)}
  className={`inline-flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white text-sm rounded-lg hover:bg-indigo-700`}>
- <Plus className="w-4 h-4" /><span>{t.addTraining}</span>
+ <Plus className="w-4 h-4" /><span>{localT.addTraining}</span>
  </button>
  )}
  </div>
@@ -224,13 +237,13 @@ export function TrainingPlanSection({
  <table className="w-full">
  <thead className="bg-gray-50 border-b border-gray-200">
  <tr>
- <th className={`px-4 py-3 text-xs font-semibold text-gray-700 text-start`}>{t.targetGroup}</th>
- <th className={`px-4 py-3 text-xs font-semibold text-gray-700 text-start`}>{t.trainingTopic}</th>
- <th className={`px-4 py-3 text-xs font-semibold text-gray-700 text-start`}>{t.type}</th>
- <th className={`px-4 py-3 text-xs font-semibold text-gray-700 text-start`}>{t.plannedPeriod}</th>
- <th className="px-4 py-3 text-end text-xs font-semibold text-gray-700">{t.estimatedCost}</th>
- <th className="px-4 py-3 text-center text-xs font-semibold text-gray-700">{t.priority}</th>
- {isEditing && <th className="px-4 py-3 text-center text-xs font-semibold text-gray-700">{t.actions}</th>}
+ <th className={`px-4 py-3 text-xs font-semibold text-gray-700 text-start`}>{localT.targetGroup}</th>
+ <th className={`px-4 py-3 text-xs font-semibold text-gray-700 text-start`}>{localT.trainingTopic}</th>
+ <th className={`px-4 py-3 text-xs font-semibold text-gray-700 text-start`}>{localT.type}</th>
+ <th className={`px-4 py-3 text-xs font-semibold text-gray-700 text-start`}>{localT.plannedPeriod}</th>
+ <th className="px-4 py-3 text-end text-xs font-semibold text-gray-700">{localT.estimatedCost}</th>
+ <th className="px-4 py-3 text-center text-xs font-semibold text-gray-700">{localT.priority}</th>
+ {isEditing && <th className="px-4 py-3 text-center text-xs font-semibold text-gray-700">{localT.actions}</th>}
  </tr>
  </thead>
  <tbody className="divide-y divide-gray-200">
@@ -238,19 +251,19 @@ export function TrainingPlanSection({
  <tr key={training.id} className="hover:bg-gray-50">
  <td className="px-4 py-3 text-sm font-medium text-gray-900">{training.targetGroup}</td>
  <td className="px-4 py-3 text-sm text-gray-700">{training.trainingTopic}</td>
- <td className="px-4 py-3 text-sm text-gray-700">{training.type === 'Internal' ? t.internal : t.external}</td>
+ <td className="px-4 py-3 text-sm text-gray-700">{training.type === 'Internal' ? localT.internal : localT.external}</td>
  <td className="px-4 py-3 text-sm text-gray-700">{training.plannedPeriod}</td>
  <td className="px-4 py-3 text-sm text-end font-semibold text-gray-900">{formatCurrency(training.estimatedCost)}</td>
  <td className="px-4 py-3 text-center">
  <span className={`inline-block px-2 py-0.5 rounded text-xs font-medium border ${getPriorityColor(training.priority)}`}>
- {training.priority === 'High' ? t.high : training.priority === 'Medium' ? t.medium : t.low}
+ {training.priority === 'High' ? localT.high : training.priority === 'Medium' ? localT.medium : localT.low}
  </span>
  </td>
  {isEditing && (
  <td className="px-4 py-3 text-center">
  <div className={`flex items-center justify-center gap-1`}>
- <button onClick={() => handleEdit(training)} className="p-1 text-blue-600 hover:bg-blue-50 rounded" title={t.edit}><Edit className="w-4 h-4" /></button>
- <button onClick={() => handleDelete(training.id)} className="p-1 text-red-600 hover:bg-red-50 rounded" title={t.delete}><Trash2 className="w-4 h-4" /></button>
+ <button onClick={() => handleEdit(training)} className="p-1 text-blue-600 hover:bg-blue-50 rounded" title={localT.edit}><Edit className="w-4 h-4" /></button>
+ <button onClick={() => handleDelete(training.id)} className="p-1 text-red-600 hover:bg-red-50 rounded" title={localT.delete}><Trash2 className="w-4 h-4" /></button>
  </div>
  </td>
  )}

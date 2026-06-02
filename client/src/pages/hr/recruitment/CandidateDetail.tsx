@@ -139,7 +139,7 @@ export function CandidateDetail({
  <div className="flex items-center gap-3">
  <Award className="w-6 h-6" />
  <div>
- <h2 className="text-xl font-bold">{t.title}</h2>
+ <h2 className="text-xl font-bold">{localT.title}</h2>
  <p className="text-sm text-blue-100">{candidate.candidateRef}</p>
  </div>
  </div>
@@ -157,23 +157,23 @@ export function CandidateDetail({
  <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-lg p-6">
  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
  <div className="text-center">
- <p className="text-sm text-gray-600 mb-1">{t.totalScore}</p>
+ <p className="text-sm text-gray-600 mb-1">{localT.totalScore}</p>
  <p className={`text-4xl font-bold ${getScoreColor(candidate.totalScore)}`}>
  {candidate.totalScore.toFixed(1)}%
  </p>
  </div>
  <div className="text-center">
- <p className="text-sm text-gray-600 mb-1">{t.shortlisted}</p>
+ <p className="text-sm text-gray-600 mb-1">{localT.shortlisted}</p>
  <p className="text-2xl font-bold">
  {candidate.isShortlisted ? (
- <span className="text-green-600">{t.yes} ✓</span>
+ <span className="text-green-600">{localT.yes} ✓</span>
  ) : (
- <span className="text-gray-400">{t.no}</span>
+ <span className="text-gray-400">{localT.no}</span>
  )}
  </p>
  </div>
  <div className="text-center">
- <p className="text-sm text-gray-600 mb-1">{t.status}</p>
+ <p className="text-sm text-gray-600 mb-1">{localT.status}</p>
  <p className="text-lg font-medium text-gray-900">{candidate.status}</p>
  </div>
  </div>
@@ -181,75 +181,75 @@ export function CandidateDetail({
 
  {/* Personal Information */}
  <div>
- <h3 className="text-lg font-bold text-gray-900 mb-4">{t.personalInfo}</h3>
+ <h3 className="text-lg font-bold text-gray-900 mb-4">{localT.personalInfo}</h3>
  
  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
  <div>
- <label className="block text-sm font-medium text-gray-500">{t.fullName}</label>
+ <label className="block text-sm font-medium text-gray-500">{localT.fullName}</label>
  <p className="mt-1 text-sm text-gray-900">{candidate.fullName}</p>
  </div>
  
  <div>
- <label className="block text-sm font-medium text-gray-500">{t.gender}</label>
+ <label className="block text-sm font-medium text-gray-500">{localT.gender}</label>
  <p className="mt-1 text-sm text-gray-900">{candidate.gender}</p>
  </div>
  
  <div>
- <label className="block text-sm font-medium text-gray-500">{t.nationality}</label>
+ <label className="block text-sm font-medium text-gray-500">{localT.nationality}</label>
  <p className="mt-1 text-sm text-gray-900">{candidate.nationality}</p>
  </div>
  
  <div>
- <label className="block text-sm font-medium text-gray-500">{t.dateOfBirth}</label>
+ <label className="block text-sm font-medium text-gray-500">{localT.dateOfBirth}</label>
  <p className="mt-1 text-sm text-gray-900">{new Date(candidate.dateOfBirth).toLocaleDateString()}</p>
  </div>
  
  <div>
- <label className="block text-sm font-medium text-gray-500">{t.email}</label>
+ <label className="block text-sm font-medium text-gray-500">{localT.email}</label>
  <p className="mt-1 text-sm text-gray-900">{candidate.email}</p>
  </div>
  
  <div>
- <label className="block text-sm font-medium text-gray-500">{t.phone}</label>
+ <label className="block text-sm font-medium text-gray-500">{localT.phone}</label>
  <p className="mt-1 text-sm text-gray-900">{candidate.phone}</p>
  </div>
  
  <div>
- <label className="block text-sm font-medium text-gray-500">{t.currentLocation}</label>
+ <label className="block text-sm font-medium text-gray-500">{localT.currentLocation}</label>
  <p className="mt-1 text-sm text-gray-900">{candidate.currentLocation}</p>
  </div>
  
  <div>
- <label className="block text-sm font-medium text-gray-500">{t.education}</label>
+ <label className="block text-sm font-medium text-gray-500">{localT.education}</label>
  <p className="mt-1 text-sm text-gray-900">{candidate.educationLevel}</p>
  </div>
  
  <div>
- <label className="block text-sm font-medium text-gray-500">{t.fieldOfStudy}</label>
+ <label className="block text-sm font-medium text-gray-500">{localT.fieldOfStudy}</label>
  <p className="mt-1 text-sm text-gray-900">{candidate.fieldOfStudy}</p>
  </div>
  
  <div>
- <label className="block text-sm font-medium text-gray-500">{t.yearsOfExperience}</label>
+ <label className="block text-sm font-medium text-gray-500">{localT.yearsOfExperience}</label>
  <p className="mt-1 text-sm text-gray-900">{candidate.yearsOfExperience} years</p>
  </div>
  
  {candidate.currentEmployer && (
  <div>
- <label className="block text-sm font-medium text-gray-500">{t.currentEmployer}</label>
+ <label className="block text-sm font-medium text-gray-500">{localT.currentEmployer}</label>
  <p className="mt-1 text-sm text-gray-900">{candidate.currentEmployer}</p>
  </div>
  )}
  
  {candidate.currentPosition && (
  <div>
- <label className="block text-sm font-medium text-gray-500">{t.currentPosition}</label>
+ <label className="block text-sm font-medium text-gray-500">{localT.currentPosition}</label>
  <p className="mt-1 text-sm text-gray-900">{candidate.currentPosition}</p>
  </div>
  )}
  
  <div>
- <label className="block text-sm font-medium text-gray-500">{t.appliedAt}</label>
+ <label className="block text-sm font-medium text-gray-500">{localT.appliedAt}</label>
  <p className="mt-1 text-sm text-gray-900">{new Date(candidate.appliedAt).toLocaleString()}</p>
  </div>
  </div>
@@ -257,23 +257,23 @@ export function CandidateDetail({
 
  {/* Scoring Details */}
  <div>
- <h3 className="text-lg font-bold text-gray-900 mb-4">{t.scoringDetails}</h3>
+ <h3 className="text-lg font-bold text-gray-900 mb-4">{localT.scoringDetails}</h3>
  
  <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
  <table className="w-full">
  <thead className="bg-gray-50">
  <tr>
  <th className={`px-4 py-3 text-xs font-medium text-gray-500 uppercase text-start`}>
- {t.criterion}
+ {localT.criterion}
  </th>
  <th className={`px-4 py-3 text-xs font-medium text-gray-500 uppercase text-start`}>
- {t.weight}
+ {localT.weight}
  </th>
  <th className={`px-4 py-3 text-xs font-medium text-gray-500 uppercase text-start`}>
- {t.response}
+ {localT.response}
  </th>
  <th className={`px-4 py-3 text-xs font-medium text-gray-500 uppercase text-start`}>
- {t.score}
+ {localT.score}
  </th>
  </tr>
  </thead>
@@ -305,7 +305,7 @@ export function CandidateDetail({
  <tfoot className="bg-gray-50">
  <tr>
  <td colSpan={3} className="px-4 py-3 text-sm font-medium text-gray-900">
- {t.totalScore}
+ {localT.totalScore}
  </td>
  <td className="px-4 py-3 text-sm">
  <span className={`text-lg font-bold ${getScoreColor(candidate.totalScore)}`}>
@@ -320,12 +320,12 @@ export function CandidateDetail({
 
  {/* Documents */}
  <div>
- <h3 className="text-lg font-bold text-gray-900 mb-4">{t.documents}</h3>
+ <h3 className="text-lg font-bold text-gray-900 mb-4">{localT.documents}</h3>
  
  {documents.length === 0 ? (
  <div className="text-center py-8 bg-gray-50 rounded-lg border border-gray-200">
  <FileText className="w-12 h-12 text-gray-300 mx-auto mb-2" />
- <p className="text-gray-500">{t.noDocuments}</p>
+ <p className="text-gray-500">{localT.noDocuments}</p>
  </div>
  ) : (
  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -341,7 +341,7 @@ export function CandidateDetail({
  <button
  onClick={() => handleDownloadDocument(doc)}
  className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg"
- title={t.download}
+ title={localT.download}
  >
  <Download className="w-5 h-5" />
  </button>
@@ -358,7 +358,7 @@ export function CandidateDetail({
  onClick={onClose}
  className="px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
  >
- {t.close}
+ {localT.close}
  </button>
  
  {candidate.status === 'Applied' && (
@@ -368,14 +368,14 @@ export function CandidateDetail({
  className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 flex items-center gap-2"
  >
  <XCircle className="w-4 h-4" />
- {t.reject}
+ {localT.reject}
  </button>
  <button
  onClick={() => onStatusChange('Shortlisted')}
  className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 flex items-center gap-2"
  >
  <CheckCircle className="w-4 h-4" />
- {t.approve}
+ {localT.approve}
  </button>
  </div>
  )}

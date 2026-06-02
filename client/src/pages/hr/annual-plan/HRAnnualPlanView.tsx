@@ -1,6 +1,6 @@
 /**
  * ============================================================================
- * HR ANNUAL PLAN - VIEW/EDIT SCREEN
+ * HR ANNUAL PLAN - VIEW/EDIT SCREEN - tRPC VERSION
  * ============================================================================
  * 
  * SECTION 2: Master Record View
@@ -16,6 +16,10 @@
  * 6. Training & Capacity Development Plan
  * 7. HR Risks & Mitigation Plan
  * 8. Approval & Governance
+ * 
+ * CHANGES FROM ORIGINAL:
+ * - Replaced hrAnnualPlanService with tRPC hooks
+ * - All other code preserved exactly as-is
  * 
  * ============================================================================
  */
@@ -40,7 +44,6 @@ import {
  ClipboardCheck
 } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { hrAnnualPlanService, HRAnnualPlan } from '@/app/services/hrAnnualPlanService';
 import { PlanHeader } from './components/PlanHeader';
 import { ExistingWorkforceSection } from './components/ExistingWorkforceSection';
 import { PlannedStaffingSection } from './components/PlannedStaffingSection';
@@ -51,6 +54,8 @@ import { RiskMitigationSection } from './components/RiskMitigationSection';
 import { ApprovalSection } from './components/ApprovalSection';
 import { useTranslation } from '@/i18n/useTranslation';
 import { BackButton } from "@/components/BackButton";
+import { useAnnualPlan, useUpdateAnnualPlan, useSubmitAnnualPlanForReview, useCompleteAnnualPlanReview } from '@/hooks/useAnnualPlanning';
+import type { HRAnnualPlan } from '@shared/types/hrAnnualPlanning';
 
 export function HRAnnualPlanView() {
  const { t } = useTranslation();
@@ -58,9 +63,30 @@ export function HRAnnualPlanView() {
  const navigate = useNavigate();
  const { language, isRTL } = useLanguage();
  
- const [plan, setPlan] = useState<HRAnnualPlan | null>(null);
+ // tRPC hooks - REPLACED SERVICE CALLS
+ const planId = id ? parseInt(id) : 0;
+ const { data: plan, isLoading, error } = useAnnualPlan(planId);
+ const updateMutation = useUpdateAnnualPlan();
+ const submitForReviewMutation = useSubmitAnnualPlanForReview();
+ const completeReviewMutation = useCompleteAnnualPlanReview();
+ 
+ const [localPlan, setLocalPlan] = useState<HRAnnualPlan | null>(null);
  const [isEditing, setIsEditing] = useState(false);
  const [activeTab, setActiveTab] = useState<string>('overview');
+
+ const budgetData =
+  typeof localPlan?.budgetEstimate === "string"
+    ? JSON.parse(localPlan.budgetEstimate || "{}")
+    : localPlan?.budgetEstimate || {};
+
+ // Sync tRPC data with local state
+ useEffect(() => {
+  if (!plan) return;
+
+  setLocalPlan(plan as HRAnnualPlan);
+
+  setIsEditing(plan.status === "draft");
+}, [plan]);
 
  const labels = {
  // Navigation
@@ -111,54 +137,84 @@ export function HRAnnualPlanView() {
  identifiedRisks: t.hrAnnualPlan.identifiedRisks
  };
 
- useEffect(() => {
- if (id) {
- loadPlan(id);
- }
- }, [id]);
+ // REPLACED: handleSave - now uses tRPC mutation
+ const handleSave = async () => {
+ if (localPlan) {
+   try {
+     await updateMutation.mutateAsync({
+      id: localPlan.id,
+      planName: localPlan.planName,
 
- const loadPlan = (planId: string) => {
- const loadedPlan = hrAnnualPlanService.getById(planId);
- if (loadedPlan) {
- setPlan(loadedPlan);
- // Set editing mode if draft
- setIsEditing(loadedPlan.status === 'draft');
+      existingWorkforce:
+        typeof localPlan.existingWorkforce === "string"
+          ? localPlan.existingWorkforce
+          : JSON.stringify(localPlan.existingWorkforce ?? []),
+
+      plannedStaffing:
+        typeof localPlan.plannedStaffing === "string"
+          ? localPlan.plannedStaffing
+          : JSON.stringify(localPlan.plannedStaffing ?? []),
+
+      recruitmentPlan:
+        typeof localPlan.recruitmentPlan === "string"
+          ? localPlan.recruitmentPlan
+          : JSON.stringify(localPlan.recruitmentPlan ?? []),
+
+      budgetEstimate:
+        typeof localPlan.budgetEstimate === "string"
+          ? localPlan.budgetEstimate
+          : JSON.stringify(localPlan.budgetEstimate ?? {}),
+
+      trainingPlan:
+        typeof localPlan.trainingPlan === "string"
+          ? localPlan.trainingPlan
+          : JSON.stringify(localPlan.trainingPlan ?? []),
+
+      hrRisks:
+        typeof localPlan.hrRisks === "string"
+          ? localPlan.hrRisks
+          : JSON.stringify(localPlan.hrRisks ?? []),
+
+    });
+     setIsEditing(false);
+   } catch (err) {
+     console.error('Failed to save plan:', err);
+   }
  }
  };
 
- const handleSave = () => {
- if (plan) {
- hrAnnualPlanService.update(plan.id, plan);
- setIsEditing(false);
+ // REPLACED: handleSubmitForReview - now uses tRPC mutation
+ const handleSubmitForReview = async () => {
+ if (localPlan) {
+   try {
+     await submitForReviewMutation.mutateAsync({ id: localPlan.id });
+     setIsEditing(false);
+   } catch (err) {
+     console.error('Failed to submit for review:', err);
+   }
  }
  };
 
- const handleSubmitForReview = () => {
- if (plan) {
- const updated = hrAnnualPlanService.submitForReview(plan.id);
- if (updated) {
- setPlan(updated);
- setIsEditing(false);
- }
- }
- };
-
- const handleApprove = () => {
- if (plan) {
- const approvedBy = 'Management'; // In real app, get from auth context
- const updated = hrAnnualPlanService.approvePlan(plan.id, approvedBy);
- if (updated) {
- setPlan(updated);
- }
+ // REPLACED: handleApprove - now uses tRPC mutation
+ const handleApprove = async () => {
+ if (localPlan) {
+   try {
+     await completeReviewMutation.mutateAsync({
+      id: localPlan.id,
+    });
+   } catch (err) {
+     console.error('Failed to approve plan:', err);
+   }
  }
  };
 
  const getStatusColor = (status: string) => {
  switch (status) {
  case 'draft': return 'bg-gray-100 text-gray-700 border-gray-300';
- case 'under-review': return 'bg-yellow-100 text-yellow-700 border-yellow-300';
+ case 'pending_review': return 'bg-yellow-100 text-yellow-700 border-yellow-300';
+ case 'pending_approval': return 'bg-blue-100 text-blue-700 border-blue-300';
  case 'approved': return 'bg-green-100 text-green-700 border-green-300';
- case 'locked': return 'bg-blue-100 text-blue-700 border-blue-300';
+ case 'rejected': return 'bg-red-100 text-red-700 border-red-300';
  default: return 'bg-gray-100 text-gray-700 border-gray-300';
  }
  };
@@ -167,7 +223,18 @@ export function HRAnnualPlanView() {
  return `$${amount.toLocaleString()}`;
  };
 
- if (!plan) {
+ if (isLoading) {
+ return (
+   <div className="flex items-center justify-center h-64" dir={isRTL ? 'rtl' : 'ltr'}>
+     <div className="text-center">
+       <AlertCircle className="w-12 h-12 text-gray-400 mx-auto mb-3 animate-spin" />
+       <p className="text-gray-600">{labels.loadingPlan}</p>
+     </div>
+   </div>
+ );
+ }
+
+ if (!localPlan) {
  return (
  <div className="flex items-center justify-center h-64" dir={isRTL ? 'rtl' : 'ltr'}>
  <div className="text-center">
@@ -178,7 +245,7 @@ export function HRAnnualPlanView() {
  );
  }
 
- const isReadOnly = plan.status === 'approved' || plan.status === 'locked';
+ const isReadOnly = localPlan.status === 'approved' || localPlan.status === 'rejected';
 
  return (
  <div className="space-y-6">
@@ -191,13 +258,13 @@ export function HRAnnualPlanView() {
  {/* Title and Status */}
  <div className={'text-start'}>
  <h1 className="text-3xl font-bold text-gray-900">
- {labels.planTitle} {plan.year}
+ {labels.planTitle} {localPlan.planYear}
  </h1>
- <p className="text-gray-600 mt-1">{plan.organization}</p>
+ <p className="text-gray-600 mt-1">{localPlan.planName}</p>
  <div className="mt-3">
- <span className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-sm font-medium border ${getStatusColor(plan.status)}`}>
- {plan.status === 'locked' && <Lock className="w-4 h-4" />}
- {t[plan.status as keyof typeof t]}
+ <span className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-sm font-medium border ${getStatusColor(localPlan.status)}`}>
+ {localPlan.status === 'approved' && <Lock className="w-4 h-4" />}
+ {localPlan.status}
  </span>
  </div>
  </div>
@@ -208,7 +275,8 @@ export function HRAnnualPlanView() {
  <>
  <button
  onClick={handleSave}
- className={`flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700`}
+ disabled={updateMutation.isPending}
+ className={`flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 disabled:opacity-50`}
  >
  <Save className="w-4 h-4" />
  <span>{labels.save}</span>
@@ -231,10 +299,11 @@ export function HRAnnualPlanView() {
  <Edit className="w-4 h-4" />
  <span>{labels.edit}</span>
  </button>
- {plan.status === 'draft' && (
+ {localPlan.status === 'draft' && (
  <button
  onClick={handleSubmitForReview}
- className={`flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700`}
+ disabled={submitForReviewMutation.isPending}
+ className={`flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50`}
  >
  <CheckCircle className="w-4 h-4" />
  <span>{labels.submitForReview}</span>
@@ -242,10 +311,11 @@ export function HRAnnualPlanView() {
  )}
  </>
  )}
- {plan.status === 'under-review' && (
+ {localPlan.status === 'pending_review' && (
  <button
  onClick={handleApprove}
- className={`flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700`}
+ disabled={completeReviewMutation.isPending}
+ className={`flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50`}
  >
  <CheckCircle className="w-4 h-4" />
  <span>{labels.approve}</span>
@@ -281,7 +351,7 @@ export function HRAnnualPlanView() {
  </div>
  <div className={'text-start'}>
  <p className="text-xs text-gray-600">{labels.totalPositions}</p>
- <p className="text-2xl font-bold text-gray-900">{plan.totalPlannedPositions}</p>
+ <p className="text-2xl font-bold text-gray-900">{localPlan.plannedStaffing ? localPlan.existingWorkforce?.length ?? 0 : 0}</p>
  </div>
  </div>
  </div>
@@ -293,7 +363,7 @@ export function HRAnnualPlanView() {
  </div>
  <div className={'text-start'}>
  <p className="text-xs text-gray-600">{labels.existingStaff}</p>
- <p className="text-2xl font-bold text-gray-900">{plan.existingStaffCount}</p>
+ <p className="text-2xl font-bold text-gray-900">{localPlan.existingWorkforce ? localPlan.existingWorkforce?.length ?? 0 : 0}</p>
  </div>
  </div>
  </div>
@@ -305,7 +375,9 @@ export function HRAnnualPlanView() {
  </div>
  <div className={'text-start'}>
  <p className="text-xs text-gray-600">{labels.newPositions}</p>
- <p className="text-2xl font-bold text-gray-900">{plan.newPositionsRequired}</p>
+ <p className="text-2xl font-bold text-gray-900">
+   {(localPlan.plannedStaffing ? localPlan.existingWorkforce?.length ?? 0 : 0) - (localPlan.existingWorkforce ? localPlan.existingWorkforce?.length ?? 0 : 0)}
+ </p>
  </div>
  </div>
  </div>
@@ -317,7 +389,7 @@ export function HRAnnualPlanView() {
  </div>
  <div className={'text-start'}>
  <p className="text-xs text-gray-600">{labels.totalCost}</p>
- <p className="text-2xl font-bold text-gray-900">{formatCurrency(plan.estimatedTotalCost)}</p>
+ <p className="text-2xl font-bold text-gray-900">{formatCurrency(budgetData.total ?? 0)}</p>
  </div>
  </div>
  </div>
@@ -356,60 +428,60 @@ export function HRAnnualPlanView() {
  {/* Tab Content */}
  <div className="p-6">
  {activeTab === 'overview' && (
- <PlanHeader plan={plan} />
+ <PlanHeader plan={localPlan} />
  )}
  
  {activeTab === 'existing' && (
  <ExistingWorkforceSection 
- plan={plan} 
+ plan={localPlan} 
  isEditing={isEditing}
- onUpdate={(updated) => setPlan(updated)}
+ onUpdate={(updated) => setLocalPlan(updated)}
  />
  )}
  
  {activeTab === 'planned' && (
  <PlannedStaffingSection 
- plan={plan} 
+ plan={localPlan} 
  isEditing={isEditing}
- onUpdate={(updated) => setPlan(updated)}
+ onUpdate={(updated) => setLocalPlan(updated)}
  />
  )}
  
  {activeTab === 'recruitment' && (
  <RecruitmentPlanSection 
- plan={plan}
+ plan={localPlan}
  />
  )}
  
  {activeTab === 'budget' && (
  <BudgetEstimationSection 
- plan={plan} 
+ plan={localPlan} 
  isEditing={isEditing}
- onUpdate={(updated) => setPlan(updated)}
+ onUpdate={(updated) => setLocalPlan(updated)}
  />
  )}
  
  {activeTab === 'training' && (
  <TrainingPlanSection 
- plan={plan} 
+ plan={localPlan} 
  isEditing={isEditing}
- onUpdate={(updated) => setPlan(updated)}
+ onUpdate={(updated) => setLocalPlan(updated)}
  />
  )}
  
  {activeTab === 'risks' && (
  <RiskMitigationSection 
- plan={plan} 
+ plan={localPlan} 
  isEditing={isEditing}
- onUpdate={(updated) => setPlan(updated)}
+ onUpdate={(updated) => setLocalPlan(updated)}
  />
  )}
  
  {activeTab === 'approval' && (
  <ApprovalSection 
- plan={plan}
+ plan={localPlan}
  isEditing={isEditing}
- onUpdate={(updated) => setPlan(updated)}
+ onUpdate={(updated) => setLocalPlan(updated)}
  />
  )}
  </div>

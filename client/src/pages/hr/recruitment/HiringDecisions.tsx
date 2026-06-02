@@ -162,14 +162,14 @@ export function HiringDecisions({
  <div className="space-y-6" dir={isRTL ? 'rtl' : 'ltr'}>
  {/* Header */}
  <div className="flex items-center justify-between">
- <h2 className="text-xl font-bold text-gray-900">{t.title}</h2>
+ <h2 className="text-xl font-bold text-gray-900">{localT.title}</h2>
  <button
  onClick={handleExportExcel}
  disabled={decisions.length === 0}
  className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 flex items-center gap-2 disabled:opacity-50"
  >
  <Download className="w-4 h-4" />
- {t.exportExcel}
+ {localT.exportExcel}
  </button>
  </div>
 
@@ -178,7 +178,7 @@ export function HiringDecisions({
  <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
  <div className="flex items-center justify-between">
  <div>
- <p className="text-sm text-gray-600">{t.totalDecisions}</p>
+ <p className="text-sm text-gray-600">{localT.totalDecisions}</p>
  <p className="text-2xl font-bold text-gray-900">{decisions.length}</p>
  </div>
  <Users className="w-8 h-8 text-blue-600" />
@@ -188,7 +188,7 @@ export function HiringDecisions({
  <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
  <div className="flex items-center justify-between">
  <div>
- <p className="text-sm text-gray-600">{t.hired}</p>
+ <p className="text-sm text-gray-600">{localT.hired}</p>
  <p className="text-2xl font-bold text-green-600">{approvedCount}</p>
  </div>
  <Users className="w-8 h-8 text-green-600" />
@@ -198,7 +198,7 @@ export function HiringDecisions({
  <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
  <div className="flex items-center justify-between">
  <div>
- <p className="text-sm text-gray-600">{t.rejected}</p>
+ <p className="text-sm text-gray-600">{localT.rejected}</p>
  <p className="text-2xl font-bold text-red-600">{rejectedCount}</p>
  </div>
  <Users className="w-8 h-8 text-red-600" />
@@ -208,7 +208,7 @@ export function HiringDecisions({
  <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
  <div className="flex items-center justify-between">
  <div>
- <p className="text-sm text-gray-600">{t.pending}</p>
+ <p className="text-sm text-gray-600">{localT.pending}</p>
  <p className="text-2xl font-bold text-yellow-600">{candidates.length}</p>
  </div>
  <Users className="w-8 h-8 text-yellow-600" />
@@ -219,7 +219,7 @@ export function HiringDecisions({
  {/* Pending Candidates */}
  {candidates.length > 0 && (
  <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
- <h3 className="text-sm font-medium text-yellow-900 mb-3">{t.pendingCandidates}</h3>
+ <h3 className="text-sm font-medium text-yellow-900 mb-3">{localT.pendingCandidates}</h3>
  <div className="space-y-2">
  {candidates.map(candidate => {
  const vacancy = vacancyService.getById(candidate.vacancyId);
@@ -239,7 +239,7 @@ export function HiringDecisions({
  className="px-3 py-1.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm flex items-center gap-2"
  >
  <Plus className="w-4 h-4" />
- {t.makeDecision}
+ {localT.makeDecision}
  </button>
  </div>
  );
@@ -257,9 +257,9 @@ export function HiringDecisions({
  onClick={() => setDecisionFilter(filter)}
  className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${ decisionFilter === filter ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200' }`}
  >
- {filter === 'All' ? t.all :
- filter === 'Approve' ? t.approved :
- filter === 'Reject' ? t.rejected : t.onHold}
+ {filter === 'All' ? localT.all :
+ filter === 'Approve' ? localT.approved :
+ filter === 'Reject' ? localT.rejected : localT.onHold}
  </button>
  ))}
  </div>
@@ -270,7 +270,7 @@ export function HiringDecisions({
  <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-12">
  <div className="text-center text-gray-500">
  <Users className="w-16 h-16 text-gray-300 mx-auto mb-4" />
- <p className="text-lg font-medium">{t.noDecisions}</p>
+ <p className="text-lg font-medium">{localT.noDecisions}</p>
  </div>
  </div>
  ) : (
@@ -280,25 +280,25 @@ export function HiringDecisions({
  <thead className="bg-gray-50 border-b border-gray-200">
  <tr>
  <th className={`px-4 py-3 text-xs font-medium text-gray-500 uppercase text-start`}>
- {t.decisionRef}
+ {localT.decisionRef}
  </th>
  <th className={`px-4 py-3 text-xs font-medium text-gray-500 uppercase text-start`}>
- {t.candidate}
+ {localT.candidate}
  </th>
  <th className={`px-4 py-3 text-xs font-medium text-gray-500 uppercase text-start`}>
- {t.position}
+ {localT.position}
  </th>
  <th className={`px-4 py-3 text-xs font-medium text-gray-500 uppercase text-start`}>
- {t.decision}
+ {localT.decision}
  </th>
  <th className={`px-4 py-3 text-xs font-medium text-gray-500 uppercase text-start`}>
- {t.employeeId}
+ {localT.employeeId}
  </th>
  <th className={`px-4 py-3 text-xs font-medium text-gray-500 uppercase text-start`}>
- {t.date}
+ {localT.date}
  </th>
  <th className={`px-4 py-3 text-xs font-medium text-gray-500 uppercase text-start`}>
- {t.approvedBy}
+ {localT.approvedBy}
  </th>
  </tr>
  </thead>

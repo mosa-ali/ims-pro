@@ -284,13 +284,13 @@ export function HiringDecisionComponent({
  <div className="space-y-6" dir={isRTL ? 'rtl' : 'ltr'}>
  {/* Header */}
  <div className="flex items-center justify-between">
- <h2 className="text-xl font-bold text-gray-900">{t.title}</h2>
+ <h2 className="text-xl font-bold text-gray-900">{localT.title}</h2>
  </div>
 
  {/* Vacancy Selector */}
  <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
  <label className="block text-sm font-medium text-gray-700 mb-2">
- {t.selectVacancy}
+ {localT.selectVacancy}
  </label>
  <select
  value={selectedVacancy}
@@ -309,13 +309,13 @@ export function HiringDecisionComponent({
  {selectedVacancy && (
  <div className="bg-white rounded-lg shadow-sm border border-gray-200">
  <div className="p-4 border-b border-gray-200">
- <h3 className="text-lg font-bold text-gray-900">{t.interviewedCandidates}</h3>
+ <h3 className="text-lg font-bold text-gray-900">{localT.interviewedCandidates}</h3>
  </div>
 
  {interviewedCandidates.length === 0 ? (
  <div className="p-12 text-center text-gray-500">
  <UserCheck className="w-16 h-16 text-gray-300 mx-auto mb-4" />
- <p>{t.noCandidates}</p>
+ <p>{localT.noCandidates}</p>
  </div>
  ) : (
  <div className="overflow-x-auto">
@@ -323,25 +323,25 @@ export function HiringDecisionComponent({
  <thead className="bg-gray-50 border-b border-gray-200">
  <tr>
  <th className={`px-4 py-3 text-xs font-medium text-gray-500 uppercase text-start`}>
- {t.candidateRef}
+ {localT.candidateRef}
  </th>
  <th className={`px-4 py-3 text-xs font-medium text-gray-500 uppercase text-start`}>
- {t.name}
+ {localT.name}
  </th>
  <th className={`px-4 py-3 text-xs font-medium text-gray-500 uppercase text-start`}>
- {t.email}
+ {localT.email}
  </th>
  <th className={`px-4 py-3 text-xs font-medium text-gray-500 uppercase text-start`}>
- {t.appScore}
+ {localT.appScore}
  </th>
  <th className={`px-4 py-3 text-xs font-medium text-gray-500 uppercase text-start`}>
- {t.intScore}
+ {localT.intScore}
  </th>
  <th className={`px-4 py-3 text-xs font-medium text-gray-500 uppercase text-start`}>
- {t.status}
+ {localT.status}
  </th>
  <th className={`px-4 py-3 text-xs font-medium text-gray-500 uppercase text-start`}>
- {t.actions}
+ {localT.actions}
  </th>
  </tr>
  </thead>
@@ -380,7 +380,7 @@ export function HiringDecisionComponent({
  className="px-3 py-1.5 bg-green-600 text-white rounded-lg hover:bg-green-700 flex items-center gap-2 text-xs"
  >
  <UserCheck className="w-4 h-4" />
- {t.makeDecision}
+ {localT.makeDecision}
  </button>
  </td>
  </tr>
@@ -399,7 +399,7 @@ export function HiringDecisionComponent({
  <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-hidden flex flex-col">
  {/* Header */}
  <div className="bg-green-600 text-white px-6 py-4">
- <h3 className="text-xl font-bold">{t.hiringDecision}</h3>
+ <h3 className="text-xl font-bold">{localT.hiringDecision}</h3>
  <p className="text-sm text-green-100">{selectedCandidate.fullName} - {selectedVacancyData.positionTitle}</p>
  </div>
 
@@ -409,22 +409,22 @@ export function HiringDecisionComponent({
  <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 flex items-start gap-3">
  <AlertTriangle className="w-5 h-5 text-yellow-600 flex-shrink-0 mt-0.5" />
  <div className="text-sm text-yellow-800">
- <p className="font-medium mb-1">{t.autoCreate}</p>
+ <p className="font-medium mb-1">{localT.autoCreate}</p>
  <ul className="list-disc list-inside space-y-1">
- <li>{t.staffRecord}</li>
- <li>{t.employeeProfile}</li>
+ <li>{localT.staffRecord}</li>
+ <li>{localT.employeeProfile}</li>
  </ul>
  </div>
  </div>
 
  {/* Proposed Terms */}
  <div>
- <h4 className="text-lg font-bold text-gray-900 mb-4">{t.proposedTerms}</h4>
+ <h4 className="text-lg font-bold text-gray-900 mb-4">{localT.proposedTerms}</h4>
  
  <div className="grid grid-cols-2 gap-4">
  <div>
  <label className="block text-sm font-medium text-gray-700 mb-1">
- {t.grade} <span className="text-red-500">*</span>
+ {localT.grade} <span className="text-red-500">*</span>
  </label>
  <select
  value={formData.proposedGrade}
@@ -441,7 +441,7 @@ export function HiringDecisionComponent({
 
  <div>
  <label className="block text-sm font-medium text-gray-700 mb-1">
- {t.step}
+ {localT.step}
  </label>
  <select
  value={formData.proposedStep}
@@ -456,7 +456,7 @@ export function HiringDecisionComponent({
 
  <div>
  <label className="block text-sm font-medium text-gray-700 mb-1">
- {t.salary} <span className="text-red-500">*</span>
+ {localT.salary} <span className="text-red-500">*</span>
  </label>
  <input
  type="number"
@@ -472,23 +472,23 @@ export function HiringDecisionComponent({
 
  <div>
  <label className="block text-sm font-medium text-gray-700 mb-1">
- {t.contractType} <span className="text-red-500">*</span>
+ {localT.contractType} <span className="text-red-500">*</span>
  </label>
  <select
  value={formData.contractType}
  onChange={(e) => setFormData(prev => ({ ...prev, contractType: e.target.value }))}
  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
  >
- <option value="Fixed-Term">{t.fixedTerm}</option>
- <option value="Short-Term">{t.shortTerm}</option>
- <option value="Consultancy">{t.consultancy}</option>
- <option value="Volunteer">{t.volunteer}</option>
+ <option value="Fixed-Term">{localT.fixedTerm}</option>
+ <option value="Short-Term">{localT.shortTerm}</option>
+ <option value="Consultancy">{localT.consultancy}</option>
+ <option value="Volunteer">{localT.volunteer}</option>
  </select>
  </div>
 
  <div className="col-span-2">
  <label className="block text-sm font-medium text-gray-700 mb-1">
- {t.startDate} <span className="text-red-500">*</span>
+ {localT.startDate} <span className="text-red-500">*</span>
  </label>
  <input
  type="date"
@@ -511,7 +511,7 @@ export function HiringDecisionComponent({
  onClick={() => setShowDecisionForm(false)}
  className="px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
  >
- {t.cancel}
+ {localT.cancel}
  </button>
  
  <div className="flex items-center gap-3">
@@ -520,14 +520,14 @@ export function HiringDecisionComponent({
  className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 flex items-center gap-2"
  >
  <XCircle className="w-4 h-4" />
- {t.reject}
+ {localT.reject}
  </button>
  <button
  onClick={handleApprove}
  className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 flex items-center gap-2"
  >
  <CheckCircle className="w-4 h-4" />
- {t.approve}
+ {localT.approve}
  </button>
  </div>
  </div>

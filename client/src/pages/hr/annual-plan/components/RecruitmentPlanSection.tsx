@@ -10,8 +10,8 @@
  */
 
 import { Target, Info } from 'lucide-react';
-import { useLanguage } from '@/app/contexts/LanguageContext';
-import { HRAnnualPlan } from '@/app/services/hrAnnualPlanService';
+import { useLanguage } from '@/contexts/LanguageContext';
+import type { HRAnnualPlan } from '@shared/types/hrAnnualPlanning';
 import { useTranslation } from '@/i18n/useTranslation';
 
 interface RecruitmentPlanSectionProps {
@@ -68,14 +68,17 @@ export function RecruitmentPlanSection({
  }
  };
 
- const totalPositionsToRecruit = plan.recruitmentPlan.reduce((sum, r) => sum + r.quantity, 0);
+ const recruitmentPlanArray = typeof plan.recruitmentPlan === 'string' 
+   ? (plan.recruitmentPlan ? JSON.parse(plan.recruitmentPlan) : [])
+   : (plan.recruitmentPlan || []);
+ const totalPositionsToRecruit = recruitmentPlanArray.reduce((sum: number, r: any) => sum + (r.quantity || 0), 0);
 
  return (
  <div className="space-y-6" dir={isRTL ? 'rtl' : 'ltr'}>
  {/* Section Header */}
  <div className={'text-start'}>
- <h2 className="text-xl font-bold text-gray-900 mb-2">{t.title}</h2>
- <p className="text-sm text-gray-600">{t.description}</p>
+ <h2 className="text-xl font-bold text-gray-900 mb-2">{localT.title}</h2>
+ <p className="text-sm text-gray-600">{localT.description}</p>
  </div>
 
  {/* Info Banner */}
@@ -98,7 +101,7 @@ export function RecruitmentPlanSection({
  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
  <div className="bg-white rounded-lg border border-gray-200 p-4">
  <p className={`text-sm text-gray-600 mb-1 text-start`}>
- {t.totalActions}
+ {localT.totalActions}
  </p>
  <p className={`text-3xl font-bold text-gray-900 text-start`}>
  {plan.recruitmentPlan.length}
@@ -107,7 +110,7 @@ export function RecruitmentPlanSection({
 
  <div className="bg-white rounded-lg border border-gray-200 p-4">
  <p className={`text-sm text-gray-600 mb-1 text-start`}>
- {t.totalPositions}
+ {localT.totalPositions}
  </p>
  <p className={`text-3xl font-bold text-gray-900 text-start`}>
  {totalPositionsToRecruit}
@@ -121,23 +124,23 @@ export function RecruitmentPlanSection({
  {plan.recruitmentPlan.length === 0 ? (
  <div className="px-6 py-12 text-center">
  <Target className="w-12 h-12 text-gray-400 mx-auto mb-3" />
- <p className="text-gray-600">{t.noRecruitment}</p>
+ <p className="text-gray-600">{localT.noRecruitment}</p>
  </div>
  ) : (
  <div className="overflow-x-auto">
  <table className="w-full">
  <thead className="bg-gray-50 border-b border-gray-200">
  <tr>
- <th className={`px-4 py-3 text-xs font-semibold text-gray-700 text-start`}>{t.position}</th>
- <th className="px-4 py-3 text-center text-xs font-semibold text-gray-700">{t.quantity}</th>
- <th className={`px-4 py-3 text-xs font-semibold text-gray-700 text-start`}>{t.recruitmentType}</th>
- <th className={`px-4 py-3 text-xs font-semibold text-gray-700 text-start`}>{t.expectedMonth}</th>
- <th className="px-4 py-3 text-center text-xs font-semibold text-gray-700">{t.priority}</th>
- <th className={`px-4 py-3 text-xs font-semibold text-gray-700 text-start`}>{t.method}</th>
+ <th className={`px-4 py-3 text-xs font-semibold text-gray-700 text-start`}>{localT.position}</th>
+ <th className="px-4 py-3 text-center text-xs font-semibold text-gray-700">{localT.quantity}</th>
+ <th className={`px-4 py-3 text-xs font-semibold text-gray-700 text-start`}>{localT.recruitmentType}</th>
+ <th className={`px-4 py-3 text-xs font-semibold text-gray-700 text-start`}>{localT.expectedMonth}</th>
+ <th className="px-4 py-3 text-center text-xs font-semibold text-gray-700">{localT.priority}</th>
+ <th className={`px-4 py-3 text-xs font-semibold text-gray-700 text-start`}>{localT.method}</th>
  </tr>
  </thead>
  <tbody className="divide-y divide-gray-200">
- {plan.recruitmentPlan.map((recruitment) => (
+ {recruitmentPlanArray.map((recruitment: any) => (
  <tr key={recruitment.id} className="hover:bg-gray-50">
  <td className="px-4 py-3 text-sm font-medium text-gray-900">{recruitment.position}</td>
  <td className="px-4 py-3 text-sm text-center font-semibold text-gray-900">
@@ -145,7 +148,7 @@ export function RecruitmentPlanSection({
  </td>
  <td className="px-4 py-3 text-sm text-gray-700">
  <span className={`inline-block px-2 py-0.5 rounded text-xs font-medium ${ recruitment.recruitmentType === 'New' ? 'bg-green-100 text-green-700 border border-green-200' : 'bg-blue-100 text-blue-700 border border-blue-200' }`}>
- {recruitment.recruitmentType === 'New' ? t.new : t.replacement}
+ {recruitment.recruitmentType === 'New' ? localT.new : localT.replacement}
  </span>
  </td>
  <td className="px-4 py-3 text-sm text-gray-700">
@@ -153,13 +156,13 @@ export function RecruitmentPlanSection({
  </td>
  <td className="px-4 py-3 text-center">
  <span className={`inline-block px-2 py-0.5 rounded text-xs font-medium border ${getPriorityColor(recruitment.priority)}`}>
- {recruitment.priority === 'High' ? t.high : 
- recruitment.priority === 'Medium' ? t.medium : t.low}
+ {recruitment.priority === 'High' ? localT.high : 
+ recruitment.priority === 'Medium' ? localT.medium : localT.low}
  </span>
  </td>
  <td className="px-4 py-3 text-sm text-gray-700">
- {recruitment.recruitmentMethod === 'Open' ? t.open :
- recruitment.recruitmentMethod === 'Internal' ? t.internal : t.roster}
+ {recruitment.recruitmentMethod === 'Open' ? localT.open :
+ recruitment.recruitmentMethod === 'Internal' ? localT.internal : localT.roster}
  </td>
  </tr>
  ))}

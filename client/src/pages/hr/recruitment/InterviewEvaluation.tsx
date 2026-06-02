@@ -104,7 +104,7 @@ export function InterviewEvaluation({
  <div className="flex items-center gap-3">
  <Star className="w-6 h-6" />
  <div>
- <h2 className="text-xl font-bold">{t.title}</h2>
+ <h2 className="text-xl font-bold">{localT.title}</h2>
  <p className="text-sm text-blue-100">{candidate.fullName}</p>
  </div>
  </div>
@@ -120,18 +120,18 @@ export function InterviewEvaluation({
  <div className="flex-1 overflow-y-auto p-6 space-y-6">
  {/* Candidate Info */}
  <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
- <h3 className="text-sm font-bold text-gray-900 mb-3">{t.candidateInfo}</h3>
+ <h3 className="text-sm font-bold text-gray-900 mb-3">{localT.candidateInfo}</h3>
  <div className="grid grid-cols-3 gap-4 text-sm">
  <div>
- <span className="text-gray-600">{t.name}:</span>
+ <span className="text-gray-600">{localT.name}:</span>
  <p className="font-medium text-gray-900">{candidate.fullName}</p>
  </div>
  <div>
- <span className="text-gray-600">{t.email}:</span>
+ <span className="text-gray-600">{localT.email}:</span>
  <p className="font-medium text-gray-900">{candidate.email}</p>
  </div>
  <div>
- <span className="text-gray-600">{t.score}:</span>
+ <span className="text-gray-600">{localT.score}:</span>
  <p className="font-bold text-green-600">{candidate.totalScore.toFixed(1)}%</p>
  </div>
  </div>
@@ -139,20 +139,20 @@ export function InterviewEvaluation({
 
  {/* Interview Details */}
  <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
- <h3 className="text-sm font-bold text-gray-900 mb-3">{t.interviewDetails}</h3>
+ <h3 className="text-sm font-bold text-gray-900 mb-3">{localT.interviewDetails}</h3>
  <div className="grid grid-cols-3 gap-4 text-sm">
  <div>
- <span className="text-gray-600">{t.interviewDate}:</span>
+ <span className="text-gray-600">{localT.interviewDate}:</span>
  <p className="font-medium text-gray-900">
  {new Date(interview.interviewDate).toLocaleString()}
  </p>
  </div>
  <div>
- <span className="text-gray-600">{t.type}:</span>
+ <span className="text-gray-600">{localT.type}:</span>
  <p className="font-medium text-gray-900">{interview.interviewType}</p>
  </div>
  <div>
- <span className="text-gray-600">{t.panel}:</span>
+ <span className="text-gray-600">{localT.panel}:</span>
  <p className="font-medium text-gray-900">{interview.panelMembers.join(', ')}</p>
  </div>
  </div>
@@ -161,11 +161,11 @@ export function InterviewEvaluation({
  {/* Evaluation Form */}
  <form onSubmit={handleSubmit} className="space-y-4">
  <div>
- <h3 className="text-lg font-bold text-gray-900 mb-4">{t.evaluation}</h3>
+ <h3 className="text-lg font-bold text-gray-900 mb-4">{localT.evaluation}</h3>
  
  <div className="mb-4">
  <label className="block text-sm font-medium text-gray-700 mb-2">
- {t.overallScore} <span className="text-red-500">*</span>
+ {localT.overallScore} <span className="text-red-500">*</span>
  </label>
  <div className="flex items-center gap-4">
  <input
@@ -202,7 +202,7 @@ export function InterviewEvaluation({
 
  <div className="mb-4">
  <label className="block text-sm font-medium text-gray-700 mb-2">
- {t.recommendation} <span className="text-red-500">*</span>
+ {localT.recommendation} <span className="text-red-500">*</span>
  </label>
  <div className="space-y-2">
  <label className="flex items-center gap-2 p-3 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer">
@@ -213,7 +213,7 @@ export function InterviewEvaluation({
  onChange={(e) => setFormData(prev => ({ ...prev, recommendation: e.target.value }))}
  className="w-4 h-4 text-blue-600"
  />
- <span className="text-sm text-gray-900">{t.recommendProceed}</span>
+ <span className="text-sm text-gray-900">{localT.recommendProceed}</span>
  </label>
  
  <label className="flex items-center gap-2 p-3 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer">
@@ -224,7 +224,7 @@ export function InterviewEvaluation({
  onChange={(e) => setFormData(prev => ({ ...prev, recommendation: e.target.value }))}
  className="w-4 h-4 text-blue-600"
  />
- <span className="text-sm text-gray-900">{t.needsSecondInterview}</span>
+ <span className="text-sm text-gray-900">{localT.needsSecondInterview}</span>
  </label>
  
  <label className="flex items-center gap-2 p-3 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer">
@@ -235,7 +235,7 @@ export function InterviewEvaluation({
  onChange={(e) => setFormData(prev => ({ ...prev, recommendation: e.target.value }))}
  className="w-4 h-4 text-blue-600"
  />
- <span className="text-sm text-gray-900">{t.recommendReject}</span>
+ <span className="text-sm text-gray-900">{localT.recommendReject}</span>
  </label>
  </div>
  {errors.recommendation && (
@@ -245,7 +245,7 @@ export function InterviewEvaluation({
 
  <div>
  <label className="block text-sm font-medium text-gray-700 mb-1">
- {t.notes}
+ {localT.notes}
  </label>
  <textarea
  value={formData.notes}
@@ -266,14 +266,14 @@ export function InterviewEvaluation({
  onClick={onClose}
  className="px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
  >
- {t.cancel}
+ {localT.cancel}
  </button>
  <button
  onClick={handleSubmit}
  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center gap-2"
  >
  <CheckCircle className="w-4 h-4" />
- {t.submit}
+ {localT.submit}
  </button>
  </div>
  </div>

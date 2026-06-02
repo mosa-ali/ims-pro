@@ -187,21 +187,21 @@ export function InterviewManagement({
  <div className="space-y-6" dir={isRTL ? 'rtl' : 'ltr'}>
  {/* Header */}
  <div className="flex items-center justify-between">
- <h2 className="text-xl font-bold text-gray-900">{t.title}</h2>
+ <h2 className="text-xl font-bold text-gray-900">{localT.title}</h2>
  <div className="flex items-center gap-3">
  <button
  onClick={handleExportExcel}
  className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 flex items-center gap-2"
  >
  <Download className="w-4 h-4" />
- {t.exportExcel}
+ {localT.exportExcel}
  </button>
  <button
  onClick={() => setShowScheduleForm(true)}
  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center gap-2"
  >
  <Plus className="w-4 h-4" />
- {t.scheduleInterview}
+ {localT.scheduleInterview}
  </button>
  </div>
  </div>
@@ -211,7 +211,7 @@ export function InterviewManagement({
  <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
  <div className="flex items-center justify-between">
  <div>
- <p className="text-sm text-gray-600">{t.totalInterviews}</p>
+ <p className="text-sm text-gray-600">{localT.totalInterviews}</p>
  <p className="text-2xl font-bold text-gray-900">{interviews.length}</p>
  </div>
  <Calendar className="w-8 h-8 text-blue-600" />
@@ -221,7 +221,7 @@ export function InterviewManagement({
  <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
  <div className="flex items-center justify-between">
  <div>
- <p className="text-sm text-gray-600">{t.scheduled}</p>
+ <p className="text-sm text-gray-600">{localT.scheduled}</p>
  <p className="text-2xl font-bold text-blue-600">{scheduledCount}</p>
  </div>
  <Clock className="w-8 h-8 text-blue-600" />
@@ -231,7 +231,7 @@ export function InterviewManagement({
  <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
  <div className="flex items-center justify-between">
  <div>
- <p className="text-sm text-gray-600">{t.completed}</p>
+ <p className="text-sm text-gray-600">{localT.completed}</p>
  <p className="text-2xl font-bold text-green-600">{completedCount}</p>
  </div>
  <CheckCircle className="w-8 h-8 text-green-600" />
@@ -241,7 +241,7 @@ export function InterviewManagement({
  <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
  <div className="flex items-center justify-between">
  <div>
- <p className="text-sm text-gray-600">{t.pending}</p>
+ <p className="text-sm text-gray-600">{localT.pending}</p>
  <p className="text-2xl font-bold text-yellow-600">{pendingEvaluation}</p>
  </div>
  <Users className="w-8 h-8 text-yellow-600" />
@@ -258,10 +258,10 @@ export function InterviewManagement({
  onClick={() => setStatusFilter(status)}
  className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${ statusFilter === status ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200' }`}
  >
- {status === 'All' ? t.all : 
- status === 'Scheduled' ? t.scheduled :
- status === 'Completed' ? t.completed :
- status === 'Cancelled' ? t.cancelled : t.noShow}
+ {status === 'All' ? localT.all : 
+ status === 'Scheduled' ? localT.scheduled :
+ status === 'Completed' ? localT.completed :
+ status === 'Cancelled' ? localT.cancelled : localT.noShow}
  </button>
  ))}
  </div>
@@ -272,7 +272,7 @@ export function InterviewManagement({
  <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-12">
  <div className="text-center text-gray-500">
  <Calendar className="w-16 h-16 text-gray-300 mx-auto mb-4" />
- <p className="text-lg font-medium">{t.noInterviews}</p>
+ <p className="text-lg font-medium">{localT.noInterviews}</p>
  </div>
  </div>
  ) : (
@@ -282,34 +282,34 @@ export function InterviewManagement({
  <thead className="bg-gray-50 border-b border-gray-200">
  <tr>
  <th className={`px-4 py-3 text-xs font-medium text-gray-500 uppercase text-start`}>
- {t.interviewRef}
+ {localT.interviewRef}
  </th>
  <th className={`px-4 py-3 text-xs font-medium text-gray-500 uppercase text-start`}>
- {t.candidate}
+ {localT.candidate}
  </th>
  <th className={`px-4 py-3 text-xs font-medium text-gray-500 uppercase text-start`}>
- {t.position}
+ {localT.position}
  </th>
  <th className={`px-4 py-3 text-xs font-medium text-gray-500 uppercase text-start`}>
- {t.date}
+ {localT.date}
  </th>
  <th className={`px-4 py-3 text-xs font-medium text-gray-500 uppercase text-start`}>
- {t.time}
+ {localT.time}
  </th>
  <th className={`px-4 py-3 text-xs font-medium text-gray-500 uppercase text-start`}>
- {t.type}
+ {localT.type}
  </th>
  <th className={`px-4 py-3 text-xs font-medium text-gray-500 uppercase text-start`}>
- {t.status}
+ {localT.status}
  </th>
  <th className={`px-4 py-3 text-xs font-medium text-gray-500 uppercase text-start`}>
- {t.rating}
+ {localT.rating}
  </th>
  <th className={`px-4 py-3 text-xs font-medium text-gray-500 uppercase text-start`}>
- {t.recommendation}
+ {localT.recommendation}
  </th>
  <th className={`px-4 py-3 text-xs font-medium text-gray-500 uppercase text-start`}>
- {t.actions}
+ {localT.actions}
  </th>
  </tr>
  </thead>
@@ -365,7 +365,7 @@ export function InterviewManagement({
  setShowEvaluationForm(true);
  }}
  className="p-1.5 text-blue-600 hover:bg-blue-50 rounded-lg"
- title={t.evaluate}
+ title={localT.evaluate}
  >
  <Edit className="w-4 h-4" />
  </button>

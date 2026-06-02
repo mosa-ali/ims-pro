@@ -71,13 +71,13 @@ export function LeaveRequestForm({
 
  // Validate file type (PDF only)
  if (file.type !== 'application/pdf') {
- alert(t.pdfOnly);
+ alert(localT.pdfOnly);
  return;
  }
 
  // Validate file size (max 5MB)
  if (file.size > 5 * 1024 * 1024) {
- alert(t.fileTooLarge);
+ alert(localT.fileTooLarge);
  return;
  }
 
@@ -219,7 +219,7 @@ export function LeaveRequestForm({
  <div className="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto" dir={isRTL ? 'rtl' : 'ltr'}>
  {/* Header */}
  <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between">
- <h2 className="text-lg font-semibold text-gray-900">{t.title}</h2>
+ <h2 className="text-lg font-semibold text-gray-900">{localT.title}</h2>
  <button
  onClick={onClose}
  className="text-gray-400 hover:text-gray-600"
@@ -248,26 +248,26 @@ export function LeaveRequestForm({
 
  {/* Employee Information (Read-Only) */}
  <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
- <h3 className="text-sm font-semibold text-gray-900 mb-3">{t.employeeInfo}</h3>
+ <h3 className="text-sm font-semibold text-gray-900 mb-3">{localT.employeeInfo}</h3>
  <div className="grid grid-cols-2 gap-4 text-sm">
  <div>
- <p className="text-gray-600">{t.staffId}:</p>
+ <p className="text-gray-600">{localT.staffId}:</p>
  <p className="font-medium text-gray-900">{employee.staffId}</p>
  </div>
  <div>
- <p className="text-gray-600">{t.fullName}:</p>
+ <p className="text-gray-600">{localT.fullName}:</p>
  <p className="font-medium text-gray-900">{employee.fullName}</p>
  </div>
  <div>
- <p className="text-gray-600">{t.position}:</p>
+ <p className="text-gray-600">{localT.position}:</p>
  <p className="font-medium text-gray-900">{employee.position}</p>
  </div>
  <div>
- <p className="text-gray-600">{t.department}:</p>
+ <p className="text-gray-600">{localT.department}:</p>
  <p className="font-medium text-gray-900">{employee.department}</p>
  </div>
  <div className="col-span-2">
- <p className="text-gray-600">{t.contractPeriod}:</p>
+ <p className="text-gray-600">{localT.contractPeriod}:</p>
  <p className="font-medium text-gray-900">
  {formatDate(employee.contractStartDate)} → {formatDate(employee.contractEndDate || new Date().toISOString())}
  </p>
@@ -277,49 +277,49 @@ export function LeaveRequestForm({
 
  {/* Leave Balance */}
  <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
- <h3 className="text-sm font-semibold text-blue-900 mb-3">{t.leaveBalance}</h3>
+ <h3 className="text-sm font-semibold text-blue-900 mb-3">{localT.leaveBalance}</h3>
  <div className="grid grid-cols-5 gap-3 text-sm">
  <div>
- <p className="text-blue-700">{t.openingBalance}:</p>
- <p className="font-bold text-blue-900">{balance.openingBalance} {t.days}</p>
+ <p className="text-blue-700">{localT.openingBalance}:</p>
+ <p className="font-bold text-blue-900">{balance.openingBalance} {localT.days}</p>
  </div>
  <div>
- <p className="text-blue-700">{t.usedLeave}:</p>
- <p className="font-bold text-blue-900">{balance.usedLeave} {t.days}</p>
+ <p className="text-blue-700">{localT.usedLeave}:</p>
+ <p className="font-bold text-blue-900">{balance.usedLeave} {localT.days}</p>
  </div>
  <div>
- <p className="text-blue-700">{t.pendingLeave}:</p>
- <p className="font-bold text-blue-900">{balance.pendingLeave} {t.days}</p>
+ <p className="text-blue-700">{localT.pendingLeave}:</p>
+ <p className="font-bold text-blue-900">{balance.pendingLeave} {localT.days}</p>
  </div>
  <div>
- <p className="text-blue-700">{t.remainingBalance}:</p>
- <p className="font-bold text-blue-900">{balance.remainingBalance} {t.days}</p>
+ <p className="text-blue-700">{localT.remainingBalance}:</p>
+ <p className="font-bold text-blue-900">{balance.remainingBalance} {localT.days}</p>
  </div>
  <div className="bg-blue-100 rounded p-2">
- <p className="text-blue-700">{t.availableBalance}:</p>
- <p className="font-bold text-blue-900 text-lg">{balance.availableBalance} {t.days}</p>
+ <p className="text-blue-700">{localT.availableBalance}:</p>
+ <p className="font-bold text-blue-900 text-lg">{balance.availableBalance} {localT.days}</p>
  </div>
  </div>
  </div>
 
  {/* Leave Details Form */}
  <div className="space-y-4">
- <h3 className="text-sm font-semibold text-gray-900">{t.leaveDetails}</h3>
+ <h3 className="text-sm font-semibold text-gray-900">{localT.leaveDetails}</h3>
 
  {/* Leave Type */}
  <div>
  <label className="block text-sm font-medium text-gray-700 mb-1">
- {t.leaveType} <span className="text-red-600">*</span>
+ {localT.leaveType} <span className="text-red-600">*</span>
  </label>
  <select
  value={formData.leaveType}
  onChange={(e) => setFormData({ ...formData, leaveType: e.target.value as LeaveType })}
  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
  >
- <option value="Annual Leave">{t.annualLeave}</option>
- <option value="Emergency Leave">{t.emergencyLeave}</option>
- <option value="Sick Leave">{t.sickLeave}</option>
- <option value="Other Leave">{t.otherLeave}</option>
+ <option value="Annual Leave">{localT.annualLeave}</option>
+ <option value="Emergency Leave">{localT.emergencyLeave}</option>
+ <option value="Sick Leave">{localT.sickLeave}</option>
+ <option value="Other Leave">{localT.otherLeave}</option>
  </select>
  </div>
 
@@ -327,7 +327,7 @@ export function LeaveRequestForm({
  <div className="grid grid-cols-2 gap-4">
  <div>
  <label className="block text-sm font-medium text-gray-700 mb-1">
- {t.startDate} <span className="text-red-600">*</span>
+ {localT.startDate} <span className="text-red-600">*</span>
  </label>
  <input
  type="date"
@@ -338,7 +338,7 @@ export function LeaveRequestForm({
  </div>
  <div>
  <label className="block text-sm font-medium text-gray-700 mb-1">
- {t.endDate} <span className="text-red-600">*</span>
+ {localT.endDate} <span className="text-red-600">*</span>
  </label>
  <input
  type="date"
@@ -352,14 +352,14 @@ export function LeaveRequestForm({
  {/* Total Days (Auto-calculated) */}
  <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
  <p className="text-sm font-semibold text-yellow-900">
- {t.totalDays}: <span className="text-xl">{formData.totalDays}</span> {t.days}
+ {localT.totalDays}: <span className="text-xl">{formData.totalDays}</span> {localT.days}
  </p>
  </div>
 
  {/* Reason */}
  <div>
  <label className="block text-sm font-medium text-gray-700 mb-1">
- {t.reason} <span className="text-red-600">*</span>
+ {localT.reason} <span className="text-red-600">*</span>
  </label>
  <textarea
  value={formData.reason}
@@ -374,7 +374,7 @@ export function LeaveRequestForm({
  {formData.leaveType === 'Emergency Leave' && formData.totalDays > 3 && (
  <div>
  <label className="block text-sm font-medium text-gray-700 mb-1">
- {t.justification} <span className="text-red-600">*</span>
+ {localT.justification} <span className="text-red-600">*</span>
  </label>
  <textarea
  value={formData.justification}
@@ -390,12 +390,12 @@ export function LeaveRequestForm({
  {formData.leaveType === 'Sick Leave' && formData.totalDays > 3 && (
  <div>
  <label className="block text-sm font-medium text-gray-700 mb-1">
- {t.medicalReport} <span className="text-red-600">*</span>
+ {localT.medicalReport} <span className="text-red-600">*</span>
  </label>
  <div className="flex items-center gap-3">
  <label className="flex items-center gap-2 px-4 py-2 bg-blue-50 border border-blue-300 rounded-lg cursor-pointer hover:bg-blue-100">
  <Upload className="w-4 h-4 text-blue-700" />
- <span className="text-sm font-medium text-blue-700">{t.uploadFile}</span>
+ <span className="text-sm font-medium text-blue-700">{localT.uploadFile}</span>
  <input
  type="file"
  accept="application/pdf"
@@ -422,14 +422,14 @@ export function LeaveRequestForm({
  disabled={isSubmitting}
  className="px-4 py-2 text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-100 disabled:opacity-50"
  >
- {t.cancel}
+ {localT.cancel}
  </button>
  <button
  onClick={() => handleSubmit(true)}
  disabled={isSubmitting}
  className="px-4 py-2 text-blue-700 bg-blue-50 border border-blue-300 rounded-lg hover:bg-blue-100 disabled:opacity-50"
  >
- {t.saveAsDraft}
+ {localT.saveAsDraft}
  </button>
  <button
  onClick={() => handleSubmit(false)}
@@ -437,7 +437,7 @@ export function LeaveRequestForm({
  className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
  >
  <Save className="w-4 h-4" />
- <span>{t.submit}</span>
+ <span>{localT.submit}</span>
  </button>
  </div>
  </div>

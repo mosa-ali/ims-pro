@@ -6,9 +6,13 @@
 
 import { useState } from 'react';
 import { AlertTriangle, Plus, Edit, Trash2, Save } from 'lucide-react';
-import { useLanguage } from '@/app/contexts/LanguageContext';
-import { HRAnnualPlan, HRRisk, hrAnnualPlanService, RiskImpact, RiskLikelihood } from '@/app/services/hrAnnualPlanService';
+import { useLanguage } from '@/contexts/LanguageContext';
+import type { HRAnnualPlan, HRRisk } from '@shared/types/hrAnnualPlanning';
+
 import { useTranslation } from '@/i18n/useTranslation';
+
+type RiskImpact = 'High' | 'Medium' | 'Low';
+type RiskLikelihood = 'High' | 'Medium' | 'Low';
 
 interface RiskMitigationSectionProps {
  plan: HRAnnualPlan;
@@ -64,7 +68,8 @@ export function RiskMitigationSection({
  return;
  }
 
- const newRisk: Omit<HRRisk, 'id'> = {
+ const newRisk: HRRisk = {
+ id: `risk_${Date.now()}`,
  riskDescription: formData.riskDescription!,
  impact: (formData.impact as RiskImpact) || 'Medium',
  likelihood: (formData.likelihood as RiskLikelihood) || 'Medium',
@@ -73,11 +78,13 @@ export function RiskMitigationSection({
  timeline: formData.timeline || ''
  };
 
- const updated = hrAnnualPlanService.addHRRisk(plan.id, newRisk);
- if (updated) {
- onUpdate(updated);
+ const updatedPlan = {
+ ...plan,
+ hrRisks: [...plan.hrRisks, newRisk]
+ };
+ 
+ onUpdate(updatedPlan);
  resetForm();
- }
  };
 
  const handleEdit = (risk: HRRisk) => {
@@ -88,17 +95,23 @@ export function RiskMitigationSection({
 
  const handleUpdate = () => {
  if (!editingId) return;
- const updated = hrAnnualPlanService.updateHRRisk(plan.id, editingId, formData);
- if (updated) {
- onUpdate(updated);
+ const updatedPlan = {
+ ...plan,
+ hrRisks: plan.hrRisks.map(r =>
+ r.id === editingId ? { ...r, ...formData } : r
+ )
+ };
+ onUpdate(updatedPlan);
  resetForm();
- }
  };
 
  const handleDelete = (id: string) => {
  if (confirm(t.hrAnnualPlan.deleteThisRisk)) {
- const updated = hrAnnualPlanService.deleteHRRisk(plan.id, id);
- if (updated) onUpdate(updated);
+ const updatedPlan = {
+ ...plan,
+ hrRisks: plan.hrRisks.filter(r => r.id !== id)
+ };
+ onUpdate(updatedPlan);
  }
  };
 
@@ -117,13 +130,13 @@ export function RiskMitigationSection({
  <div className="space-y-6" dir={isRTL ? 'rtl' : 'ltr'}>
  <div className={`flex items-start justify-between`}>
  <div className={'text-start'}>
- <h2 className="text-xl font-bold text-gray-900 mb-2">{t.title}</h2>
- <p className="text-sm text-gray-600">{t.description}</p>
+ <h2 className="text-xl font-bold text-gray-900 mb-2">{localT.title}</h2>
+ <p className="text-sm text-gray-600">{localT.description}</p>
  </div>
  {isEditing && !isAddingNew && !editingId && (
  <button onClick={() => setIsAddingNew(true)}
  className={`flex items-center gap-2 px-4 py-2 bg-red-600 text-white text-sm rounded-lg hover:bg-red-700`}>
- <Plus className="w-4 h-4" /><span>{t.addRisk}</span>
+ <Plus className="w-4 h-4" /><span>{localT.addRisk}</span>
  </button>
  )}
  </div>
@@ -131,11 +144,11 @@ export function RiskMitigationSection({
  {plan.hrRisks.length > 0 && (
  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
  <div className="bg-white rounded-lg border border-gray-200 p-4">
- <p className={`text-sm text-gray-600 mb-1 text-start`}>{t.totalRisks}</p>
+ <p className={`text-sm text-gray-600 mb-1 text-start`}>{localT.totalRisks}</p>
  <p className={`text-3xl font-bold text-gray-900 text-start`}>{plan.hrRisks.length}</p>
  </div>
  <div className="bg-red-50 rounded-lg border border-red-200 p-4">
- <p className={`text-sm text-red-700 mb-1 text-start`}>{t.highRisks}</p>
+ <p className={`text-sm text-red-700 mb-1 text-start`}>{localT.highRisks}</p>
  <p className={`text-3xl font-bold text-red-900 text-start`}>{highRisks}</p>
  </div>
  </div>
@@ -148,42 +161,42 @@ export function RiskMitigationSection({
  </h3>
  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
  <div className="md:col-span-2">
- <label className={`block text-sm font-medium text-gray-700 mb-1 text-start`}>{t.riskDescription} *</label>
+ <label className={`block text-sm font-medium text-gray-700 mb-1 text-start`}>{localT.riskDescription} *</label>
  <textarea rows={2} value={formData.riskDescription || ''} onChange={(e) => setFormData({ ...formData, riskDescription: e.target.value })}
  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500"
  placeholder={t.hrAnnualPlan.highStaffTurnoverDueToSecurity} />
  </div>
  <div>
- <label className={`block text-sm font-medium text-gray-700 mb-1 text-start`}>{t.impact}</label>
+ <label className={`block text-sm font-medium text-gray-700 mb-1 text-start`}>{localT.impact}</label>
  <select value={formData.impact || 'Medium'} onChange={(e) => setFormData({ ...formData, impact: e.target.value as RiskImpact })}
  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500">
- <option value="High">{t.high}</option>
- <option value="Medium">{t.medium}</option>
- <option value="Low">{t.low}</option>
+ <option value="High">{localT.high}</option>
+ <option value="Medium">{localT.medium}</option>
+ <option value="Low">{localT.low}</option>
  </select>
  </div>
  <div>
- <label className={`block text-sm font-medium text-gray-700 mb-1 text-start`}>{t.likelihood}</label>
+ <label className={`block text-sm font-medium text-gray-700 mb-1 text-start`}>{localT.likelihood}</label>
  <select value={formData.likelihood || 'Medium'} onChange={(e) => setFormData({ ...formData, likelihood: e.target.value as RiskLikelihood })}
  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500">
- <option value="High">{t.high}</option>
- <option value="Medium">{t.medium}</option>
- <option value="Low">{t.low}</option>
+ <option value="High">{localT.high}</option>
+ <option value="Medium">{localT.medium}</option>
+ <option value="Low">{localT.low}</option>
  </select>
  </div>
  <div className="md:col-span-2">
- <label className={`block text-sm font-medium text-gray-700 mb-1 text-start`}>{t.mitigationAction} *</label>
+ <label className={`block text-sm font-medium text-gray-700 mb-1 text-start`}>{localT.mitigationAction} *</label>
  <textarea rows={2} value={formData.mitigationAction || ''} onChange={(e) => setFormData({ ...formData, mitigationAction: e.target.value })}
  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500"
  placeholder={t.hrAnnualPlan.enhancedSecurityMeasuresAndRiskAllowances} />
  </div>
  <div>
- <label className={`block text-sm font-medium text-gray-700 mb-1 text-start`}>{t.responsiblePerson}</label>
+ <label className={`block text-sm font-medium text-gray-700 mb-1 text-start`}>{localT.responsiblePerson}</label>
  <input type="text" value={formData.responsiblePerson || ''} onChange={(e) => setFormData({ ...formData, responsiblePerson: e.target.value })}
  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500" placeholder={t.placeholders.hrManager} />
  </div>
  <div>
- <label className={`block text-sm font-medium text-gray-700 mb-1 text-start`}>{t.timeline}</label>
+ <label className={`block text-sm font-medium text-gray-700 mb-1 text-start`}>{localT.timeline}</label>
  <input type="text" value={formData.timeline || ''} onChange={(e) => setFormData({ ...formData, timeline: e.target.value })}
  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500" placeholder={t.placeholders.ongoing} />
  </div>
@@ -191,9 +204,9 @@ export function RiskMitigationSection({
  <div className={`flex items-center gap-2 mt-4`}>
  <button onClick={editingId ? handleUpdate : handleAdd}
  className={`flex items-center gap-2 px-4 py-2 bg-red-600 text-white text-sm rounded-lg hover:bg-red-700`}>
- <Save className="w-4 h-4" /><span>{t.save}</span>
+ <Save className="w-4 h-4" /><span>{localT.save}</span>
  </button>
- <button onClick={resetForm} className="px-4 py-2 border border-gray-300 text-gray-700 text-sm rounded-lg hover:bg-gray-50">{t.cancel}</button>
+ <button onClick={resetForm} className="px-4 py-2 border border-gray-300 text-gray-700 text-sm rounded-lg hover:bg-gray-50">{localT.cancel}</button>
  </div>
  </div>
  )}
@@ -202,11 +215,11 @@ export function RiskMitigationSection({
  {plan.hrRisks.length === 0 ? (
  <div className="px-6 py-12 text-center">
  <AlertTriangle className="w-12 h-12 text-gray-400 mx-auto mb-3" />
- <p className="text-gray-600 mb-4">{t.noRisks}</p>
+ <p className="text-gray-600 mb-4">{localT.noRisks}</p>
  {isEditing && (
  <button onClick={() => setIsAddingNew(true)}
  className={`inline-flex items-center gap-2 px-4 py-2 bg-red-600 text-white text-sm rounded-lg hover:bg-red-700`}>
- <Plus className="w-4 h-4" /><span>{t.addRisk}</span>
+ <Plus className="w-4 h-4" /><span>{localT.addRisk}</span>
  </button>
  )}
  </div>
@@ -215,13 +228,13 @@ export function RiskMitigationSection({
  <table className="w-full">
  <thead className="bg-gray-50 border-b border-gray-200">
  <tr>
- <th className={`px-4 py-3 text-xs font-semibold text-gray-700 text-start`}>{t.riskDescription}</th>
- <th className="px-4 py-3 text-center text-xs font-semibold text-gray-700">{t.impact}</th>
- <th className="px-4 py-3 text-center text-xs font-semibold text-gray-700">{t.likelihood}</th>
- <th className={`px-4 py-3 text-xs font-semibold text-gray-700 text-start`}>{t.mitigationAction}</th>
- <th className={`px-4 py-3 text-xs font-semibold text-gray-700 text-start`}>{t.responsiblePerson}</th>
- <th className={`px-4 py-3 text-xs font-semibold text-gray-700 text-start`}>{t.timeline}</th>
- {isEditing && <th className="px-4 py-3 text-center text-xs font-semibold text-gray-700">{t.actions}</th>}
+ <th className={`px-4 py-3 text-xs font-semibold text-gray-700 text-start`}>{localT.riskDescription}</th>
+ <th className="px-4 py-3 text-center text-xs font-semibold text-gray-700">{localT.impact}</th>
+ <th className="px-4 py-3 text-center text-xs font-semibold text-gray-700">{localT.likelihood}</th>
+ <th className={`px-4 py-3 text-xs font-semibold text-gray-700 text-start`}>{localT.mitigationAction}</th>
+ <th className={`px-4 py-3 text-xs font-semibold text-gray-700 text-start`}>{localT.responsiblePerson}</th>
+ <th className={`px-4 py-3 text-xs font-semibold text-gray-700 text-start`}>{localT.timeline}</th>
+ {isEditing && <th className="px-4 py-3 text-center text-xs font-semibold text-gray-700">{localT.actions}</th>}
  </tr>
  </thead>
  <tbody className="divide-y divide-gray-200">
@@ -230,12 +243,12 @@ export function RiskMitigationSection({
  <td className="px-4 py-3 text-sm text-gray-900">{risk.riskDescription}</td>
  <td className="px-4 py-3 text-center">
  <span className={`inline-block px-2 py-0.5 rounded text-xs font-medium border ${getRiskColor(risk.impact)}`}>
- {risk.impact === 'High' ? t.high : risk.impact === 'Medium' ? t.medium : t.low}
+ {risk.impact === 'High' ? localT.high : risk.impact === 'Medium' ? localT.medium : localT.low}
  </span>
  </td>
  <td className="px-4 py-3 text-center">
  <span className={`inline-block px-2 py-0.5 rounded text-xs font-medium border ${getRiskColor(risk.likelihood)}`}>
- {risk.likelihood === 'High' ? t.high : risk.likelihood === 'Medium' ? t.medium : t.low}
+ {risk.likelihood === 'High' ? localT.high : risk.likelihood === 'Medium' ? localT.medium : localT.low}
  </span>
  </td>
  <td className="px-4 py-3 text-sm text-gray-700">{risk.mitigationAction}</td>
@@ -244,8 +257,8 @@ export function RiskMitigationSection({
  {isEditing && (
  <td className="px-4 py-3 text-center">
  <div className={`flex items-center justify-center gap-1`}>
- <button onClick={() => handleEdit(risk)} className="p-1 text-blue-600 hover:bg-blue-50 rounded" title={t.edit}><Edit className="w-4 h-4" /></button>
- <button onClick={() => handleDelete(risk.id)} className="p-1 text-red-600 hover:bg-red-50 rounded" title={t.delete}><Trash2 className="w-4 h-4" /></button>
+ <button onClick={() => handleEdit(risk)} className="p-1 text-blue-600 hover:bg-blue-50 rounded" title={localT.edit}><Edit className="w-4 h-4" /></button>
+ <button onClick={() => handleDelete(risk.id)} className="p-1 text-red-600 hover:bg-red-50 rounded" title={localT.delete}><Trash2 className="w-4 h-4" /></button>
  </div>
  </td>
  )}

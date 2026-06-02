@@ -1,6 +1,6 @@
 /**
  * ============================================================================
- * CREATE ANNUAL PLAN MODAL
+ * CREATE ANNUAL PLAN MODAL - tRPC VERSION
  * ============================================================================
  * 
  * Professional initialization modal for creating a new HR Annual Plan
@@ -11,21 +11,24 @@
  * - Organization Branch/Office selection
  * - Base Plan selection (optional - for deep-cloning)
  * - Full bilingual support (EN/AR) with RTL mirroring
+ * - tRPC integration for backend operations
  * 
  * ============================================================================
  */
 
 import { useState, useMemo } from 'react';
 import { X, Calendar, Building2, Copy, FileText, AlertCircle } from 'lucide-react';
-import { hrAnnualPlanService, HRAnnualPlan } from '@/app/services/hrAnnualPlanService';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useTranslation } from '@/i18n/useTranslation';
+import { useCreateAnnualPlan, useAnnualPlans } from '@/hooks/useAnnualPlanning';
+import { useOrganization } from '@/contexts/OrganizationContext';
+import { useOperatingUnit } from '@/contexts/OperatingUnitContext';
+import type { HRAnnualPlan } from '@shared/types/hrAnnualPlanning';
 
 interface CreateAnnualPlanModalProps {
  isOpen: boolean;
  onClose: () => void;
  onPlanCreated: (plan: HRAnnualPlan) => void;
- existingPlans: HRAnnualPlan[];
  language: string;
  isRTL: boolean;
 }
@@ -34,11 +37,20 @@ export function CreateAnnualPlanModal({
  isOpen,
  onClose,
  onPlanCreated,
- existingPlans,
  language,
  isRTL
 }: CreateAnnualPlanModalProps) {
  const { t } = useTranslation();
+ const { currentOrganization } = useOrganization();
+ const { currentOperatingUnit } = useOperatingUnit();
+ 
+ // tRPC hooks
+ const { data: existingPlans = [] } = useAnnualPlans({
+   organizationId: currentOrganization?.id,
+   operatingUnitId: currentOperatingUnit?.id,
+ });
+ const createMutation = useCreateAnnualPlan();
+ 
  const currentYear = new Date().getFullYear();
  
  // Form state
@@ -64,7 +76,7 @@ export function CreateAnnualPlanModal({
  const availableYears = Array.from({ length: 6 }, (_, i) => currentYear + i);
 
  // Filter out years that already have plans
- const existingYears = existingPlans.map(p => p.year);
+ const existingYears = existingPlans.map(p => p.planYear);
  const availableYearsFiltered = availableYears.filter(y => !existingYears.includes(y));
 
  // Organization branches - memoized to prevent re-creation on every render
@@ -147,13 +159,13 @@ export function CreateAnnualPlanModal({
  ? (language === 'en' ? selectedBranch.nameEn : selectedBranch.nameAr)
  : organization;
 
- // Create the plan using the service
- const newPlan = hrAnnualPlanService.createFromBasePlan(
- targetYear,
- orgDisplayName,
- basePlanId || undefined,
- preparedBy || undefined
- );
+ // Create the plan using tRPC mutation
+ const newPlan = await createMutation.mutateAsync({
+   planYear: targetYear,
+   planName: `${orgDisplayName} - ${targetYear}`,
+   preparedBy: preparedBy || undefined,
+   basePlanId: basePlanId ? parseInt(basePlanId) : undefined,
+ });
 
  onPlanCreated(newPlan);
  onClose();
@@ -177,7 +189,6 @@ export function CreateAnnualPlanModal({
  {/* Modal */}
  <div 
  className="relative bg-white rounded-xl shadow-2xl w-full max-w-2xl mx-4 max-h-[90vh] overflow-y-auto"
- 
  >
  {/* Header */}
  <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 rounded-t-xl">
@@ -200,90 +211,105 @@ export function CreateAnnualPlanModal({
  </div>
  </div>
 
- {/* Body */}
+ {/* Content */}
  <div className="p-6 space-y-6">
- {/* Error message */}
+ {/* Error Alert */}
  {error && (
- <div className="flex items-center gap-2 p-4 bg-red-50 border border-red-200 rounded-lg text-red-700">
- <AlertCircle className="w-5 h-5 flex-shrink-0" />
- <span>{error}</span>
+ <div className="flex items-start gap-3 p-4 bg-red-50 border border-red-200 rounded-lg">
+ <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
+ <p className="text-sm text-red-700">{error}</p>
  </div>
  )}
 
  {/* Target Year */}
- <div className="space-y-2">
- <label className="flex items-center gap-2 text-sm font-medium text-gray-700">
- <Calendar className="w-4 h-4 text-primary" />
+ <div>
+ <label className="block text-sm font-medium text-gray-900 mb-2">
+ <Calendar className="w-4 h-4 inline mr-2" />
  {localT.targetYear}
- <span className="text-red-500">*</span>
  </label>
- <p className="text-xs text-gray-500">{localT.targetYearDesc}</p>
- {availableYearsFiltered.length === 0 ? (
- <div className="p-3 bg-amber-50 border border-amber-200 rounded-lg text-amber-700 text-sm">
- {localT.noAvailableYears}
- </div>
- ) : (
+ <p className="text-xs text-gray-500 mb-3">{localT.targetYearDesc}</p>
  <select
  value={targetYear}
- onChange={(e) => handleYearChange(Number(e.target.value))}
- className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
+ onChange={(e) => handleYearChange(parseInt(e.target.value))}
+ disabled={availableYearsFiltered.length === 0}
+ className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent disabled:bg-gray-100 disabled:cursor-not-allowed"
  >
- {availableYearsFiltered.map(year => (
+ {availableYearsFiltered.length === 0 ? (
+ <option>{localT.noAvailableYears}</option>
+ ) : (
+ availableYearsFiltered.map(year => (
  <option key={year} value={year}>{year}</option>
- ))}
- </select>
+ ))
  )}
+ </select>
  </div>
 
- {/* Organization Branch */}
- <div className="space-y-2">
- <label className="flex items-center gap-2 text-sm font-medium text-gray-700">
- <Building2 className="w-4 h-4 text-primary" />
+ {/* Organization Selection */}
+ <div>
+ <label className="block text-sm font-medium text-gray-900 mb-2">
+ <Building2 className="w-4 h-4 inline mr-2" />
  {localT.organization}
- <span className="text-red-500">*</span>
  </label>
- <p className="text-xs text-gray-500">{localT.organizationDesc}</p>
+ <p className="text-xs text-gray-500 mb-3">{localT.organizationDesc}</p>
  <select
  value={organization}
  onChange={(e) => handleOrganizationChange(e.target.value)}
- className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
+ className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
  >
  <option value="">{localT.selectOrganization}</option>
  {organizationBranches.map(branch => (
- <option key={branch.id} value={branch.id}>{getOrgDisplayName(branch)}</option>
+ <option key={branch.id} value={branch.id}>
+ {getOrgDisplayName(branch)}
+ </option>
  ))}
  </select>
  </div>
 
- {/* Base Plan (Optional) */}
- <div className="space-y-2">
- <label className="flex items-center gap-2 text-sm font-medium text-gray-700">
- <Copy className="w-4 h-4 text-primary" />
+ {/* Base Plan Selection */}
+ <div>
+ <label className="block text-sm font-medium text-gray-900 mb-2">
+ <Copy className="w-4 h-4 inline mr-2" />
  {localT.basePlan}
  </label>
- <p className="text-xs text-gray-500">{localT.basePlanDesc}</p>
+ <p className="text-xs text-gray-500 mb-3">{localT.basePlanDesc}</p>
  <select
  value={basePlanId}
  onChange={(e) => setBasePlanId(e.target.value)}
- className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
+ className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
  >
  <option value="">{localT.selectBasePlan}</option>
  {existingPlans.map(plan => (
  <option key={plan.id} value={plan.id}>
- {plan.year} - {plan.organization} ({plan.status})
+ {plan.planName} ({plan.planYear})
  </option>
  ))}
  </select>
+ </div>
 
- {/* Info box when base plan is selected */}
+ {/* Prepared By */}
+ <div>
+ <label className="block text-sm font-medium text-gray-900 mb-2">
+ {localT.preparedBy}
+ </label>
+ <p className="text-xs text-gray-500 mb-3">{localT.preparedByDesc}</p>
+ <input
+ type="text"
+ value={preparedBy}
+ onChange={(e) => setPreparedBy(e.target.value)}
+ placeholder={localT.preparedByPlaceholder}
+ className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+ />
+ </div>
+
+ {/* Copy Info Box */}
  {basePlanId && (
- <div className="mt-3 p-4 bg-blue-50 border border-blue-200 rounded-lg">
- <p className="text-sm font-medium text-blue-800 mb-2">{localT.copyInfo}</p>
- <ul className={`text-sm text-blue-700 space-y-1 ps-4`}>
+ <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
+ <p className="text-sm font-medium text-blue-900 mb-2">{localT.copyInfo}</p>
+ <ul className="text-sm text-blue-800 space-y-1">
  {localT.copyItems.map((item, idx) => (
- <li key={idx} className="flex items-center gap-2">
- <span className="w-1.5 h-1.5 bg-blue-500 rounded-full" />
- {item}
+ <li key={idx} className="flex items-start gap-2">
+ <span className="text-blue-600 font-bold">•</span>
+ <span>{item}</span>
  </li>
  ))}
  </ul>
@@ -291,40 +317,22 @@ export function CreateAnnualPlanModal({
  )}
  </div>
 
- {/* Prepared By */}
- <div className="space-y-2">
- <label className="flex items-center gap-2 text-sm font-medium text-gray-700">
- {localT.preparedBy}
- </label>
- <p className="text-xs text-gray-500">{localT.preparedByDesc}</p>
- <input
- type="text"
- value={preparedBy}
- onChange={(e) => setPreparedBy(e.target.value)}
- placeholder={localT.preparedByPlaceholder}
- className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
- />
- </div>
- </div>
-
  {/* Footer */}
- <div className="sticky bottom-0 bg-gray-50 border-t border-gray-200 px-6 py-4 rounded-b-xl">
- <div className={`flex gap-3`}>
+ <div className="sticky bottom-0 bg-gray-50 border-t border-gray-200 px-6 py-4 rounded-b-xl flex justify-end gap-3">
  <button
  onClick={onClose}
  disabled={isSubmitting}
- className="flex-1 px-4 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-100 transition-colors disabled:opacity-50"
+ className="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
  >
  {localT.cancel}
  </button>
  <button
  onClick={handleSubmit}
  disabled={isSubmitting || availableYearsFiltered.length === 0}
- className="flex-1 px-4 py-3 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+ className="px-6 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium"
  >
  {isSubmitting ? localT.creating : localT.create}
  </button>
- </div>
  </div>
  </div>
  </div>

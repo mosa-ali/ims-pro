@@ -107,14 +107,14 @@ export function InterviewScheduleForm({
  const validate = (): boolean => {
  const newErrors: Record<string, string> = {};
 
- if (!formData.candidateId) newErrors.candidateId = t.requiredField;
- if (!formData.scheduledDate) newErrors.scheduledDate = t.requiredField;
- if (!formData.scheduledTime) newErrors.scheduledTime = t.requiredField;
- if (!formData.location.trim()) newErrors.location = t.requiredField;
+ if (!formData.candidateId) newErrors.candidateId = localT.requiredField;
+ if (!formData.scheduledDate) newErrors.scheduledDate = localT.requiredField;
+ if (!formData.scheduledTime) newErrors.scheduledTime = localT.requiredField;
+ if (!formData.location.trim()) newErrors.location = localT.requiredField;
  
  const validPanelMembers = formData.panelMembers.filter(m => m.trim());
  if (validPanelMembers.length === 0) {
- newErrors.panelMembers = t.atLeastOnePanelMember;
+ newErrors.panelMembers = localT.atLeastOnePanelMember;
  }
 
  setErrors(newErrors);
@@ -184,7 +184,7 @@ export function InterviewScheduleForm({
  <div className="bg-blue-600 text-white px-6 py-4 flex items-center justify-between">
  <div className="flex items-center gap-3">
  <Calendar className="w-6 h-6" />
- <h2 className="text-xl font-bold">{t.title}</h2>
+ <h2 className="text-xl font-bold">{localT.title}</h2>
  </div>
  <button
  onClick={onClose}
@@ -199,7 +199,7 @@ export function InterviewScheduleForm({
  {/* Vacancy Selector */}
  <div>
  <label className="block text-sm font-medium text-gray-700 mb-2">
- {t.selectVacancy} <span className="text-red-500">*</span>
+ {localT.selectVacancy} <span className="text-red-500">*</span>
  </label>
  <select
  value={selectedVacancy}
@@ -217,11 +217,11 @@ export function InterviewScheduleForm({
  {/* Candidate */}
  <div>
  <label className="block text-sm font-medium text-gray-700 mb-2">
- {t.candidate} <span className="text-red-500">*</span>
+ {localT.candidate} <span className="text-red-500">*</span>
  </label>
  {candidates.length === 0 ? (
  <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-lg text-sm text-yellow-700">
- {t.noCandidates}
+ {localT.noCandidates}
  </div>
  ) : (
  <select
@@ -244,7 +244,7 @@ export function InterviewScheduleForm({
  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
  <div>
  <label className="block text-sm font-medium text-gray-700 mb-2">
- {t.scheduledDate} <span className="text-red-500">*</span>
+ {localT.scheduledDate} <span className="text-red-500">*</span>
  </label>
  <input
  type="date"
@@ -258,7 +258,7 @@ export function InterviewScheduleForm({
 
  <div>
  <label className="block text-sm font-medium text-gray-700 mb-2">
- {t.scheduledTime} <span className="text-red-500">*</span>
+ {localT.scheduledTime} <span className="text-red-500">*</span>
  </label>
  <input
  type="time"
@@ -273,23 +273,23 @@ export function InterviewScheduleForm({
  {/* Interview Type */}
  <div>
  <label className="block text-sm font-medium text-gray-700 mb-2">
- {t.interviewType} <span className="text-red-500">*</span>
+ {localT.interviewType} <span className="text-red-500">*</span>
  </label>
  <select
  value={formData.interviewType}
  onChange={(e) => handleInputChange('interviewType', e.target.value)}
  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
  >
- <option value="In-Person">{t.inPerson}</option>
- <option value="Video Call">{t.videoCall}</option>
- <option value="Phone">{t.phone}</option>
+ <option value="In-Person">{localT.inPerson}</option>
+ <option value="Video Call">{localT.videoCall}</option>
+ <option value="Phone">{localT.phone}</option>
  </select>
  </div>
 
  {/* Location */}
  <div>
  <label className="block text-sm font-medium text-gray-700 mb-2">
- {t.location} <span className="text-red-500">*</span>
+ {localT.location} <span className="text-red-500">*</span>
  </label>
  <input
  type="text"
@@ -305,14 +305,14 @@ export function InterviewScheduleForm({
  <div>
  <div className="flex items-center justify-between mb-2">
  <label className="block text-sm font-medium text-gray-700">
- {t.panelMembers} <span className="text-red-500">*</span>
+ {localT.panelMembers} <span className="text-red-500">*</span>
  </label>
  <button
  type="button"
  onClick={addPanelMember}
  className="text-sm text-blue-600 hover:text-blue-700"
  >
- {t.addPanelMember}
+ {localT.addPanelMember}
  </button>
  </div>
  <div className="space-y-2">
@@ -331,7 +331,7 @@ export function InterviewScheduleForm({
  onClick={() => removePanelMember(index)}
  className="px-3 py-2 text-red-600 hover:bg-red-50 rounded-lg"
  >
- {t.remove}
+ {localT.remove}
  </button>
  )}
  </div>
@@ -343,7 +343,7 @@ export function InterviewScheduleForm({
  {/* Notes */}
  <div>
  <label className="block text-sm font-medium text-gray-700 mb-2">
- {t.notes}
+ {localT.notes}
  </label>
  <textarea
  value={formData.notes}
@@ -362,7 +362,7 @@ export function InterviewScheduleForm({
  onClick={onClose}
  className="px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
  >
- {t.cancel}
+ {localT.cancel}
  </button>
  <button
  onClick={handleSubmit}
@@ -370,7 +370,7 @@ export function InterviewScheduleForm({
  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
  >
  <Save className="w-4 h-4" />
- {t.save}
+ {localT.save}
  </button>
  </div>
  </div>

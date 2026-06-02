@@ -1,6 +1,9 @@
 
 import { officialPdfStyles } from "../styles/officialPdfStyles";
 import type { OfficialPdfContext } from "../../buildOfficialPdfContext";
+import {
+  organizationBranding,
+} from 'drizzle/schema';
 
 export interface OfficialWrapperOptions {
   context: OfficialPdfContext;
@@ -55,7 +58,7 @@ export function generateOfficialPdfHtml(options: OfficialWrapperOptions): string
       </div>
 
       <div class="header-right">
-        ${organizationLogo ? `<img src="${organizationLogo}" alt="Organization Logo" class="org-logo" />` : ""}
+        ${organizationLogo ? `<img src="${organizationBranding.logoUrl}" alt="Organization Logo" class="org-logo" />` : ""}
       </div>
     </div>
     <hr class="hr-strong" />

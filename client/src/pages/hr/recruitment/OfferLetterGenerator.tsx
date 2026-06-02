@@ -274,7 +274,7 @@ export function OfferLetterGenerator({
  <div className="flex items-center gap-3">
  <FileText className="w-6 h-6" />
  <div>
- <h2 className="text-xl font-bold">{t.title}</h2>
+ <h2 className="text-xl font-bold">{localT.title}</h2>
  <p className="text-sm text-blue-100">
  {candidate?.fullName} - {vacancy?.positionTitle}
  </p>
@@ -289,7 +289,7 @@ export function OfferLetterGenerator({
  <div className="flex-1 overflow-hidden flex">
  {/* Left: Editable Form */}
  <div className="w-1/2 border-r border-gray-200 overflow-y-auto p-6 space-y-6 print:hidden">
- <h3 className="text-lg font-bold text-gray-900">{t.editForm}</h3>
+ <h3 className="text-lg font-bold text-gray-900">{localT.editForm}</h3>
 
  {/* Template Selection */}
  <div className="space-y-3">
@@ -315,11 +315,11 @@ export function OfferLetterGenerator({
 
  {/* Organization Details */}
  <div className="space-y-3">
- <h4 className="text-sm font-bold text-gray-700">{t.organizationDetails}</h4>
+ <h4 className="text-sm font-bold text-gray-700">{localT.organizationDetails}</h4>
  
  <div>
  <label className="block text-xs font-medium text-gray-600 mb-1">
- {t.organizationName}
+ {localT.organizationName}
  </label>
  <input
  type="text"
@@ -331,7 +331,7 @@ export function OfferLetterGenerator({
 
  <div>
  <label className="block text-xs font-medium text-gray-600 mb-1">
- {t.organizationAddress}
+ {localT.organizationAddress}
  </label>
  <textarea
  value={formData.organizationAddress}
@@ -344,7 +344,7 @@ export function OfferLetterGenerator({
  <div className="grid grid-cols-2 gap-3">
  <div>
  <label className="block text-xs font-medium text-gray-600 mb-1">
- {t.organizationPhone}
+ {localT.organizationPhone}
  </label>
  <input
  type="text"
@@ -356,7 +356,7 @@ export function OfferLetterGenerator({
 
  <div>
  <label className="block text-xs font-medium text-gray-600 mb-1">
- {t.organizationEmail}
+ {localT.organizationEmail}
  </label>
  <input
  type="email"
@@ -370,7 +370,7 @@ export function OfferLetterGenerator({
  <div className="grid grid-cols-2 gap-3">
  <div>
  <label className="block text-xs font-medium text-gray-600 mb-1">
- {t.letterDate}
+ {localT.letterDate}
  </label>
  <input
  type="date"
@@ -382,7 +382,7 @@ export function OfferLetterGenerator({
 
  <div>
  <label className="block text-xs font-medium text-gray-600 mb-1">
- {t.referenceNumber}
+ {localT.referenceNumber}
  </label>
  <input
  type="text"
@@ -396,11 +396,11 @@ export function OfferLetterGenerator({
 
  {/* Candidate Details */}
  <div className="space-y-3">
- <h4 className="text-sm font-bold text-gray-700">{t.candidateDetails}</h4>
+ <h4 className="text-sm font-bold text-gray-700">{localT.candidateDetails}</h4>
  
  <div>
  <label className="block text-xs font-medium text-gray-600 mb-1">
- {t.candidateName}
+ {localT.candidateName}
  </label>
  <input
  type="text"
@@ -412,7 +412,7 @@ export function OfferLetterGenerator({
 
  <div>
  <label className="block text-xs font-medium text-gray-600 mb-1">
- {t.candidateAddress}
+ {localT.candidateAddress}
  </label>
  <textarea
  value={formData.candidateAddress}
@@ -425,12 +425,12 @@ export function OfferLetterGenerator({
 
  {/* Position Details */}
  <div className="space-y-3">
- <h4 className="text-sm font-bold text-gray-700">{t.positionDetails}</h4>
+ <h4 className="text-sm font-bold text-gray-700">{localT.positionDetails}</h4>
  
  <div className="grid grid-cols-2 gap-3">
  <div>
  <label className="block text-xs font-medium text-gray-600 mb-1">
- {t.positionTitle}
+ {localT.positionTitle}
  </label>
  <input
  type="text"
@@ -442,7 +442,7 @@ export function OfferLetterGenerator({
 
  <div>
  <label className="block text-xs font-medium text-gray-600 mb-1">
- {t.department}
+ {localT.department}
  </label>
  <input
  type="text"
@@ -456,7 +456,7 @@ export function OfferLetterGenerator({
  <div className="grid grid-cols-2 gap-3">
  <div>
  <label className="block text-xs font-medium text-gray-600 mb-1">
- {t.reportingTo}
+ {localT.reportingTo}
  </label>
  <input
  type="text"
@@ -468,7 +468,7 @@ export function OfferLetterGenerator({
 
  <div>
  <label className="block text-xs font-medium text-gray-600 mb-1">
- {t.workLocation}
+ {localT.workLocation}
  </label>
  <input
  type="text"
@@ -482,12 +482,12 @@ export function OfferLetterGenerator({
 
  {/* Employment Terms */}
  <div className="space-y-3">
- <h4 className="text-sm font-bold text-gray-700">{t.employmentTerms}</h4>
+ <h4 className="text-sm font-bold text-gray-700">{localT.employmentTerms}</h4>
  
  <div className="grid grid-cols-2 gap-3">
  <div>
  <label className="block text-xs font-medium text-gray-600 mb-1">
- {t.employmentType}
+ {localT.employmentType}
  </label>
  <input
  type="text"
@@ -499,7 +499,7 @@ export function OfferLetterGenerator({
 
  <div>
  <label className="block text-xs font-medium text-gray-600 mb-1">
- {t.probationPeriod}
+ {localT.probationPeriod}
  </label>
  <input
  type="text"
@@ -513,7 +513,7 @@ export function OfferLetterGenerator({
  <div className="grid grid-cols-2 gap-3">
  <div>
  <label className="block text-xs font-medium text-gray-600 mb-1">
- {t.startDate}
+ {localT.startDate}
  </label>
  <input
  type="date"
@@ -526,7 +526,7 @@ export function OfferLetterGenerator({
  {formData.contractEndDate !== undefined && (
  <div>
  <label className="block text-xs font-medium text-gray-600 mb-1">
- {t.contractEndDate}
+ {localT.contractEndDate}
  </label>
  <input
  type="date"
@@ -541,12 +541,12 @@ export function OfferLetterGenerator({
 
  {/* Compensation */}
  <div className="space-y-3">
- <h4 className="text-sm font-bold text-gray-700">{t.compensation}</h4>
+ <h4 className="text-sm font-bold text-gray-700">{localT.compensation}</h4>
  
  <div className="grid grid-cols-3 gap-3">
  <div>
  <label className="block text-xs font-medium text-gray-600 mb-1">
- {t.salary}
+ {localT.salary}
  </label>
  <input
  type="text"
@@ -558,7 +558,7 @@ export function OfferLetterGenerator({
 
  <div>
  <label className="block text-xs font-medium text-gray-600 mb-1">
- {t.currency}
+ {localT.currency}
  </label>
  <select
  value={formData.currency}
@@ -573,7 +573,7 @@ export function OfferLetterGenerator({
 
  <div>
  <label className="block text-xs font-medium text-gray-600 mb-1">
- {t.salaryFrequency}
+ {localT.salaryFrequency}
  </label>
  <select
  value={formData.salaryFrequency}
@@ -588,7 +588,7 @@ export function OfferLetterGenerator({
 
  <div>
  <label className="block text-xs font-medium text-gray-600 mb-1">
- {t.annualLeave}
+ {localT.annualLeave}
  </label>
  <input
  type="text"
@@ -600,7 +600,7 @@ export function OfferLetterGenerator({
 
  <div>
  <label className="block text-xs font-medium text-gray-600 mb-1">
- {t.medicalInsurance}
+ {localT.medicalInsurance}
  </label>
  <input
  type="text"
@@ -612,7 +612,7 @@ export function OfferLetterGenerator({
 
  <div>
  <label className="block text-xs font-medium text-gray-600 mb-1">
- {t.otherBenefits}
+ {localT.otherBenefits}
  </label>
  <textarea
  value={formData.otherBenefits}
@@ -624,7 +624,7 @@ export function OfferLetterGenerator({
 
  <div>
  <label className="block text-xs font-medium text-gray-600 mb-1">
- {t.workingHours}
+ {localT.workingHours}
  </label>
  <input
  type="text"
@@ -637,11 +637,11 @@ export function OfferLetterGenerator({
 
  {/* Terms & Conditions */}
  <div className="space-y-3">
- <h4 className="text-sm font-bold text-gray-700">{t.termsConditions}</h4>
+ <h4 className="text-sm font-bold text-gray-700">{localT.termsConditions}</h4>
  
  <div>
  <label className="block text-xs font-medium text-gray-600 mb-1">
- {t.termsText}
+ {localT.termsText}
  </label>
  <textarea
  value={formData.termsAndConditions}
@@ -653,7 +653,7 @@ export function OfferLetterGenerator({
 
  <div>
  <label className="block text-xs font-medium text-gray-600 mb-1">
- {t.additionalNotes}
+ {localT.additionalNotes}
  </label>
  <textarea
  value={formData.additionalNotes}
@@ -671,7 +671,7 @@ export function OfferLetterGenerator({
  <div className="grid grid-cols-2 gap-3">
  <div>
  <label className="block text-xs font-medium text-gray-600 mb-1">
- {t.signatoryName}
+ {localT.signatoryName}
  </label>
  <input
  type="text"
@@ -683,7 +683,7 @@ export function OfferLetterGenerator({
 
  <div>
  <label className="block text-xs font-medium text-gray-600 mb-1">
- {t.signatoryTitle}
+ {localT.signatoryTitle}
  </label>
  <input
  type="text"
@@ -739,15 +739,15 @@ export function OfferLetterGenerator({
  </div>
 
  {/* Salutation */}
- <p className="mb-4">{t.dear} {formData.candidateName},</p>
+ <p className="mb-4">{localT.dear} {formData.candidateName},</p>
 
  {/* Subject */}
- <p className="font-bold mb-4 text-center">{t.offerSubject}</p>
+ <p className="font-bold mb-4 text-center">{localT.offerSubject}</p>
 
  {/* Body */}
  <div className="space-y-4 text-sm leading-relaxed">
  <p>
- {t.openingPara} <strong>{formData.positionTitle}</strong> in our <strong>{formData.department}</strong> department. 
+ {localT.openingPara} <strong>{formData.positionTitle}</strong> in our <strong>{formData.department}</strong> department. 
  We believe your skills and experience will be a valuable asset to our organization.
  </p>
 
@@ -793,12 +793,12 @@ export function OfferLetterGenerator({
  </div>
  )}
 
- <p className="mt-6">{t.closingPara}</p>
+ <p className="mt-6">{localT.closingPara}</p>
  </div>
 
  {/* Closing */}
  <div className="mt-8">
- <p className="mb-12">{t.sincerely},</p>
+ <p className="mb-12">{localT.sincerely},</p>
  <div>
  <p className="font-bold">{formData.signatoryName}</p>
  <p className="text-sm text-gray-600">{formData.signatoryTitle}</p>
@@ -807,7 +807,7 @@ export function OfferLetterGenerator({
 
  {/* Acceptance Section */}
  <div className="mt-12 pt-6 border-t-2 border-gray-300">
- <p className="font-bold mb-4">{t.candidateAcceptance}:</p>
+ <p className="font-bold mb-4">{localT.candidateAcceptance}:</p>
  <p className="text-sm mb-6">
  I, {formData.candidateName}, accept the terms and conditions stated in this offer letter.
  </p>
@@ -817,14 +817,14 @@ export function OfferLetterGenerator({
  <div className="border-b border-gray-400 pb-1 mb-1">
  <span className="invisible">Signature</span>
  </div>
- <p className="text-xs text-gray-600">{t.signature}</p>
+ <p className="text-xs text-gray-600">{localT.signature}</p>
  </div>
  
  <div>
  <div className="border-b border-gray-400 pb-1 mb-1">
  <span className="invisible">Date</span>
  </div>
- <p className="text-xs text-gray-600">{t.date}</p>
+ <p className="text-xs text-gray-600">{localT.date}</p>
  </div>
  </div>
  </div>
@@ -838,7 +838,7 @@ export function OfferLetterGenerator({
  onClick={onClose}
  className="px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
  >
- {t.cancel}
+ {localT.cancel}
  </button>
 
  <div className="flex items-center gap-3">
@@ -847,7 +847,7 @@ export function OfferLetterGenerator({
  className="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 flex items-center gap-2"
  >
  <Printer className="w-4 h-4" />
- {t.print}
+ {localT.print}
  </button>
  
  <button
@@ -855,7 +855,7 @@ export function OfferLetterGenerator({
  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center gap-2"
  >
  <Save className="w-4 h-4" />
- {t.save}
+ {localT.save}
  </button>
  </div>
  </div>

@@ -2,8 +2,11 @@ import { z } from "zod";
 import { publicProcedure, protectedProcedure, router, scopedProcedure } from "./_core/trpc";
 import { generateLeaveApprovalEvidence } from "./evidenceGeneration";
 import { getDb } from "./db";
-import { hrLeaveRequests, hrLeaveBalances, hrEmployees } from "../drizzle/schema";
+import { hrLeaveRequests, hrLeaveBalances, hrEmployees, auditLogs } from "../drizzle/schema";
 import { eq, and, desc, sql, count, gte, lte } from "drizzle-orm";
+
+const nowSql = new Date().toISOString().slice(0, 19).replace('T', ' ');
+
 
 /**
  * HR Leave Router - Leave Management
@@ -29,7 +32,7 @@ export const hrLeaveRouter = router({
       
       const conditions = [
         eq(hrLeaveRequests.organizationId, organizationId),
-        eq(hrLeaveRequests.isDeleted, false),
+        eq(hrLeaveRequests.isDeleted, 0),
       ];
       
       if (operatingUnitId) {
@@ -71,7 +74,7 @@ export const hrLeaveRouter = router({
           and(
             eq(hrLeaveRequests.id, input.id),
             eq(hrLeaveRequests.organizationId, organizationId),
-            eq(hrLeaveRequests.isDeleted, false)
+            eq(hrLeaveRequests.isDeleted, 0)
           )
         )
         .limit(1);
@@ -95,7 +98,7 @@ export const hrLeaveRouter = router({
       
       const conditions = [
         eq(hrLeaveRequests.organizationId, organizationId),
-        eq(hrLeaveRequests.isDeleted, false),
+        eq(hrLeaveRequests.isDeleted, 0),
       ];
       
       if (operatingUnitId) {
@@ -158,7 +161,7 @@ export const hrLeaveRouter = router({
       
       const conditions = [
         eq(hrLeaveRequests.organizationId, organizationId),
-        eq(hrLeaveRequests.isDeleted, false),
+        eq(hrLeaveRequests.isDeleted, 0),
       ];
       
       if (operatingUnitId) {
@@ -222,7 +225,7 @@ export const hrLeaveRouter = router({
             eq(hrLeaveBalances.employeeId, input.employeeId),
             eq(hrLeaveBalances.year, currentYear),
             eq(hrLeaveBalances.leaveType, input.leaveType),
-            eq(hrLeaveBalances.isDeleted, false)
+            eq(hrLeaveBalances.isDeleted, 0)
           )
         )
         .limit(1);
@@ -257,6 +260,108 @@ export const hrLeaveRouter = router({
       return { id: result[0].insertId, success: true };
     }),
 
+  // Update leave request (only pending requests can be updated)
+  update: scopedProcedure
+    .input(z.object({
+      id: z.number(),
+      employeeId: z.number().optional(),
+      leaveType: z.enum(["annual", "sick", "maternity", "paternity", "unpaid", "compassionate", "study", "other"]).optional(),
+      startDate: z.string().optional(),
+      endDate: z.string().optional(),
+      totalDays: z.number().optional(),
+      reason: z.string().optional(),
+      attachmentUrl: z.string().optional(),
+      notes: z.string().optional(),
+    }))
+    .mutation(async ({ ctx, input }) => {
+      const { organizationId, operatingUnitId } = ctx.scope;
+      const db = await getDb();
+      if (!db) throw new Error("Database not available");
+      
+      // Get the leave request
+      const requestResult = await db
+        .select()
+        .from(hrLeaveRequests)
+        .where(and(
+          eq(hrLeaveRequests.id, input.id),
+          eq(hrLeaveRequests.organizationId, organizationId),
+          eq(hrLeaveRequests.isDeleted, 0)
+        ))
+        .limit(1);
+      
+      const request = requestResult[0];
+      if (!request) throw new Error("Leave request not found");
+      
+      // Only pending requests can be updated
+      if (request.status !== "pending") {
+        throw new Error("Only pending leave requests can be updated");
+      }
+      
+      // Build update payload
+      const updatePayload: Record<string, unknown> = {};
+      
+      if (input.leaveType !== undefined) updatePayload.leaveType = input.leaveType;
+      if (input.startDate !== undefined) updatePayload.startDate = new Date(input.startDate);
+      if (input.endDate !== undefined) updatePayload.endDate = new Date(input.endDate);
+      if (input.totalDays !== undefined) updatePayload.totalDays = input.totalDays.toString();
+      if (input.reason !== undefined) updatePayload.reason = input.reason;
+      if (input.attachmentUrl !== undefined) updatePayload.attachmentUrl = input.attachmentUrl;
+      if (input.notes !== undefined) updatePayload.notes = input.notes;
+      
+      // If totalDays changed, update balance
+      if (input.totalDays !== undefined && input.totalDays !== parseFloat(request.totalDays?.toString() || "0")) {
+        const currentYear = new Date().getFullYear();
+        const leaveType = input.leaveType || request.leaveType;
+        const balanceResult = await db
+          .select()
+          .from(hrLeaveBalances)
+          .where(
+            and(
+              eq(hrLeaveBalances.employeeId, request.employeeId),
+              eq(hrLeaveBalances.year, currentYear),
+              eq(hrLeaveBalances.leaveType, leaveType),
+              eq(hrLeaveBalances.isDeleted, 0)
+            )
+          )
+          .limit(1);
+        
+        if (balanceResult[0]) {
+          const balance = balanceResult[0];
+          const oldDays = parseFloat(request.totalDays?.toString() || "0");
+          const daysDifference = input.totalDays - oldDays;
+          const newPending = Math.max(0, parseFloat(balance.pending?.toString() || "0") + daysDifference);
+          
+          await db
+            .update(hrLeaveBalances)
+            .set({ pending: newPending.toString() })
+            .where(eq(hrLeaveBalances.id, balance.id));
+        }
+      }
+      
+      // Update the request
+      await db
+        .update(hrLeaveRequests)
+        .set(updatePayload)
+        .where(eq(hrLeaveRequests.id, input.id));
+      
+      // Log audit
+      try {
+        await db.insert(auditLogs).values({
+          action: "UPDATE",
+          entityType: "LEAVE_REQUEST",
+          entityId: input.id,
+          organizationId,
+          operatingUnitId: operatingUnitId || null,
+          userId: ctx.user?.id || null,
+          details: JSON.stringify(input),
+        });
+      } catch (error) {
+        console.error("Audit logging failed:", error);
+      }
+      
+      return { success: true };
+    }),
+
   // Approve leave request
   approve: scopedProcedure
     .input(z.object({
@@ -287,7 +392,7 @@ export const hrLeaveRouter = router({
         .set({
           status: "approved",
           approvedBy: ctx.user?.id,
-          approvedAt: new Date(),
+          approvedAt: nowSql,
           notes: input.notes,
         })
         .where(eq(hrLeaveRequests.id, input.id));
@@ -302,7 +407,7 @@ export const hrLeaveRouter = router({
             eq(hrLeaveBalances.employeeId, request.employeeId),
             eq(hrLeaveBalances.year, currentYear),
             eq(hrLeaveBalances.leaveType, request.leaveType),
-            eq(hrLeaveBalances.isDeleted, false)
+            eq(hrLeaveBalances.isDeleted, 0)
           )
         )
         .limit(1);
@@ -370,7 +475,7 @@ export const hrLeaveRouter = router({
         .set({
           status: "rejected",
           approvedBy: ctx.user?.id,
-          approvedAt: new Date(),
+          approvedAt: nowSql,
           rejectionReason: input.rejectionReason,
         })
         .where(eq(hrLeaveRequests.id, input.id));
@@ -385,7 +490,7 @@ export const hrLeaveRouter = router({
             eq(hrLeaveBalances.employeeId, request.employeeId),
             eq(hrLeaveBalances.year, currentYear),
             eq(hrLeaveBalances.leaveType, request.leaveType),
-            eq(hrLeaveBalances.isDeleted, false)
+            eq(hrLeaveBalances.isDeleted, 0)
           )
         )
         .limit(1);
@@ -442,7 +547,7 @@ export const hrLeaveRouter = router({
               eq(hrLeaveBalances.employeeId, request.employeeId),
               eq(hrLeaveBalances.year, currentYear),
               eq(hrLeaveBalances.leaveType, request.leaveType),
-              eq(hrLeaveBalances.isDeleted, false)
+              eq(hrLeaveBalances.isDeleted, 0)
             )
           )
           .limit(1);
@@ -474,7 +579,7 @@ export const hrLeaveRouter = router({
               eq(hrLeaveBalances.employeeId, request.employeeId),
               eq(hrLeaveBalances.year, currentYear),
               eq(hrLeaveBalances.leaveType, request.leaveType),
-              eq(hrLeaveBalances.isDeleted, false)
+              eq(hrLeaveBalances.isDeleted, 0)
             )
           )
           .limit(1);
@@ -505,8 +610,8 @@ export const hrLeaveRouter = router({
       await db
         .update(hrLeaveRequests)
         .set({
-          isDeleted: true,
-          deletedAt: new Date(),
+          isDeleted: 1,
+          deletedAt: nowSql,
           deletedBy: ctx.user?.id,
         })
         .where(and(
@@ -540,7 +645,7 @@ export const hrLeaveRouter = router({
             eq(hrLeaveBalances.organizationId, organizationId),
             eq(hrLeaveBalances.employeeId, input.employeeId),
             eq(hrLeaveBalances.year, year),
-            eq(hrLeaveBalances.isDeleted, false)
+            eq(hrLeaveBalances.isDeleted, 0)
           )
         );
     }),
@@ -581,9 +686,9 @@ export const hrLeaveRouter = router({
             entitlement: input.entitlement.toString(),
             carriedOver: input.carriedOver.toString(),
             remaining: remaining.toString(),
-            isDeleted: false,
-            deletedAt: null,
-            deletedBy: null,
+            isDeleted: 0,
+            deletedAt: nowSql,
+            deletedBy: ctx.user?.id,
           })
           .where(eq(hrLeaveBalances.id, existing[0].id));
         

@@ -138,7 +138,7 @@ export const leaveRequestService = {
  approve(id: string, approvedBy: string): boolean {
  return this.update(id, {
  status: 'Approved',
- approvedDate: new Date().toISOString(),
+ approvedAt: new Date().toISOString(),
  approvedBy
  });
  },
@@ -149,7 +149,7 @@ export const leaveRequestService = {
  reject(id: string, rejectedBy: string, rejectionReason: string): boolean {
  return this.update(id, {
  status: 'Rejected',
- rejectedDate: new Date().toISOString(),
+ rejectedAt: new Date().toISOString(),
  rejectedBy,
  rejectionReason
  });

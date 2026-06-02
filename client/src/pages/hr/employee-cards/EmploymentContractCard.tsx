@@ -85,7 +85,9 @@ export function EmploymentContractCard({
  expired: t.hrEmployeeCards.expired,
  terminated: t.hrEmployeeCards.terminated,
  
- noContracts: t.hrEmployeeCards.noContractRecordsFound
+ noContracts: t.hrEmployeeCards.noContractRecordsFound,
+ ongoing: t.hrEmployeeCards.ongoing,
+ download: t.hrEmployeeCards.download
  };
 
  const formatDate = (dateString?: string) => {
@@ -202,7 +204,7 @@ export function EmploymentContractCard({
  <button
  onClick={() => fileStorageService.downloadFile(contract.signedDocumentId!)}
  className="p-2 text-blue-600 hover:bg-blue-50 rounded"
- title={t.download || 'Download'}
+ title={localT.download || 'Download'}
  >
  <Download className="w-4 h-4" />
  </button>

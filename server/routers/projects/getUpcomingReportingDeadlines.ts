@@ -6,6 +6,8 @@ import { getDb } from '../../db';
 import { reportingSchedules, projects } from 'drizzle/schema';
 
 // ─── Compact deadline item for executive dashboard ────────────────────────
+// Includes ALL report statuses: NOT_STARTED, PLANNED, UNDER_PREPARATION, 
+// UNDER_REVIEW, SUBMITTED_TO_HQ, SUBMITTED_TO_DONOR
 
 interface CompactDeadlineItem {
   id: number;
@@ -13,19 +15,20 @@ interface CompactDeadlineItem {
   projectCode: string;
   projectName: string;
   reportType: string;
-  reportStatus: string;
+  reportStatus: string; // ALL statuses included
   reportDeadline: string;
   daysUntilDeadline: number;
   isOverdue: boolean;
   isUrgent: boolean;
   isUpcoming: boolean;
-  actionRequired: boolean;
+  actionRequired: boolean; // True if deadline <= 14 days AND not submitted
   priority: number;
 }
 
 interface CompactUpcomingDeadlinesData {
-  total: number;
-  deadlines: CompactDeadlineItem[];
+  total: number; // Total deadlines within 90 days (ALL statuses)
+  deadlines: CompactDeadlineItem[]; // ALL deadlines (for full page)
+  deadlinesWidget?: CompactDeadlineItem[]; // Top 5 for widget (optional)
 }
 
 export const getUpcomingReportingDeadlinesProcedure = scopedProcedure
@@ -33,10 +36,11 @@ export const getUpcomingReportingDeadlinesProcedure = scopedProcedure
     organizationId: z.number().optional(),
     operatingUnitId: z.number().optional(),
     daysAhead: z.number().optional().default(90), // Look ahead 90 days
+    limit: z.number().optional().default(5), // Widget limit, can be overridden for full list
   }))
   .query(async ({ ctx, input }): Promise<CompactUpcomingDeadlinesData> => {
     const { organizationId, operatingUnitId } = ctx.scope;
-    const { daysAhead } = input;
+    const { daysAhead, limit } = input;
     const db = await getDb();
     
     if (!db) {
@@ -56,8 +60,14 @@ export const getUpcomingReportingDeadlinesProcedure = scopedProcedure
       futureDate.setDate(futureDate.getDate() + daysAhead);
       const futureDateString = futureDate.toISOString().split('T')[0];
 
-      // Build where clause - includes all deadlines up to daysAhead (including overdue)
-      // No lower bound filter to include overdue items automatically
+      // Build where clause - includes ALL deadlines up to daysAhead (including overdue)
+      // NO status filter - includes all statuses:
+      // - NOT_STARTED
+      // - PLANNED
+      // - UNDER_PREPARATION
+      // - UNDER_REVIEW
+      // - SUBMITTED_TO_HQ
+      // - SUBMITTED_TO_DONOR
       const whereConditions = [
         eq(reportingSchedules.organizationId, organizationId),
         eq(reportingSchedules.isDeleted, 0),
@@ -68,7 +78,7 @@ export const getUpcomingReportingDeadlinesProcedure = scopedProcedure
         whereConditions.push(eq(reportingSchedules.operatingUnitId, operatingUnitId));
       }
 
-      // Fetch deadlines with project code
+      // Fetch ALL deadlines with project code (no status filter, no limit in query)
       const deadlines = await db
         .select({
           id: reportingSchedules.id,
@@ -97,13 +107,15 @@ export const getUpcomingReportingDeadlinesProcedure = scopedProcedure
         );
 
         const isOverdue = daysUntilDeadline < 0;
-        const isUrgent = daysUntilDeadline >= 0 && daysUntilDeadline <= 7;
-        const isUpcoming = daysUntilDeadline > 7 && daysUntilDeadline <= 30;
+        const isUrgent = daysUntilDeadline >= 0 && daysUntilDeadline <= 15;
+        const isUpcoming = daysUntilDeadline > 7 && daysUntilDeadline <= 60;
 
         // Action Required: deadline <= 14 days AND status not submitted
-        const actionRequired =
-          daysUntilDeadline <= 14 &&
-          !['SUBMITTED_TO_DONOR', 'SUBMITTED_TO_HQ'].includes(d.reportStatus || '');
+        // Checks if report is NOT in a submitted state
+        const isSubmitted = ['SUBMITTED_TO_DONOR', 'SUBMITTED_TO_HQ'].includes(
+          d.reportStatus || ''
+        );
+        const actionRequired = daysUntilDeadline <= 14 && !isSubmitted;
 
         // Priority sorting: 0 (overdue) -> 1 (urgent) -> 2 (upcoming) -> 3 (future)
         let priority = 3;
@@ -117,7 +129,7 @@ export const getUpcomingReportingDeadlinesProcedure = scopedProcedure
           projectCode: d.projectCode || 'N/A',
           projectName: d.projectName || 'Unknown Project',
           reportType: d.reportType || 'Report',
-          reportStatus: d.reportStatus || 'NOT_STARTED',
+          reportStatus: d.reportStatus || 'NOT_STARTED', // Include ALL statuses
           reportDeadline: d.reportDeadline
             ? new Date(d.reportDeadline).toISOString().split('T')[0]
             : '',
@@ -138,10 +150,11 @@ export const getUpcomingReportingDeadlinesProcedure = scopedProcedure
         return a.daysUntilDeadline - b.daysUntilDeadline;
       });
 
-      // Return top 5 + total count
+      // Return ALL deadlines + limited set for widget display
       return {
-        total: transformed.length,
-        deadlines: transformed.slice(0, 5),
+        total: transformed.length, // Total includes ALL statuses
+        deadlines: transformed, // ALL deadlines within 90 days (all statuses)
+        deadlinesWidget: transformed.slice(0, limit), // Top N for widget display
       };
     } catch (error) {
       console.error('Error fetching upcoming reporting deadlines:', error);

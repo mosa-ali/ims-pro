@@ -193,38 +193,38 @@ export function VacancyForm({
  const newErrors: Record<string, string> = {};
 
  if (!formData.positionTitle.trim()) {
- newErrors.positionTitle = t.requiredField;
+ newErrors.positionTitle = localT.requiredField;
  }
  if (!formData.department.trim()) {
- newErrors.department = t.requiredField;
+ newErrors.department = localT.requiredField;
  }
  if (!formData.dutyStation.trim()) {
- newErrors.dutyStation = t.requiredField;
+ newErrors.dutyStation = localT.requiredField;
  }
  if (!formData.contractType.trim()) {
- newErrors.contractType = t.requiredField;
+ newErrors.contractType = localT.requiredField;
  }
  if (!formData.justification.trim()) {
- newErrors.justification = t.requiredField;
+ newErrors.justification = localT.requiredField;
  }
  if (!formData.openingDate) {
- newErrors.openingDate = t.requiredField;
+ newErrors.openingDate = localT.requiredField;
  }
  if (!formData.closingDate) {
- newErrors.closingDate = t.requiredField;
+ newErrors.closingDate = localT.requiredField;
  }
  if (formData.openingDate && formData.closingDate && 
  new Date(formData.closingDate) <= new Date(formData.openingDate)) {
- newErrors.closingDate = t.invalidDate;
+ newErrors.closingDate = localT.invalidDate;
  }
  if (!formData.hiringManager.trim()) {
- newErrors.hiringManager = t.requiredField;
+ newErrors.hiringManager = localT.requiredField;
  }
 
  // Validate criteria weights
  const totalWeight = getTotalWeight();
  if (criteria.length > 0 && Math.abs(totalWeight - 100) > 0.01) {
- newErrors.criteria = t.mustEqual100;
+ newErrors.criteria = localT.mustEqual100;
  }
 
  setErrors(newErrors);
@@ -301,7 +301,7 @@ export function VacancyForm({
  >
  {/* Header */}
  <div className="bg-blue-600 text-white px-6 py-4 flex items-center justify-between">
- <h2 className="text-xl font-bold">{t.title}</h2>
+ <h2 className="text-xl font-bold">{localT.title}</h2>
  <button
  onClick={onClose}
  className="p-1 hover:bg-blue-700 rounded-lg transition-colors"
@@ -315,14 +315,14 @@ export function VacancyForm({
  {/* Vacancy Details Section */}
  <div className="mb-8">
  <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
- {t.vacancyDetails}
+ {localT.vacancyDetails}
  </h3>
 
  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
  {/* Position Title */}
  <div>
  <label className="block text-sm font-medium text-gray-700 mb-1">
- {t.positionTitle} <span className="text-red-500">*</span>
+ {localT.positionTitle} <span className="text-red-500">*</span>
  </label>
  <input
  type="text"
@@ -339,7 +339,7 @@ export function VacancyForm({
  {/* Department */}
  <div>
  <label className="block text-sm font-medium text-gray-700 mb-1">
- {t.department} <span className="text-red-500">*</span>
+ {localT.department} <span className="text-red-500">*</span>
  </label>
  <input
  type="text"
@@ -356,7 +356,7 @@ export function VacancyForm({
  {/* Project */}
  <div>
  <label className="block text-sm font-medium text-gray-700 mb-1">
- {t.project}
+ {localT.project}
  </label>
  <input
  type="text"
@@ -370,7 +370,7 @@ export function VacancyForm({
  {/* Duty Station */}
  <div>
  <label className="block text-sm font-medium text-gray-700 mb-1">
- {t.dutyStation} <span className="text-red-500">*</span>
+ {localT.dutyStation} <span className="text-red-500">*</span>
  </label>
  <input
  type="text"
@@ -387,7 +387,7 @@ export function VacancyForm({
  {/* Contract Type */}
  <div>
  <label className="block text-sm font-medium text-gray-700 mb-1">
- {t.contractType} <span className="text-red-500">*</span>
+ {localT.contractType} <span className="text-red-500">*</span>
  </label>
  <select
  value={formData.contractType}
@@ -395,10 +395,10 @@ export function VacancyForm({
  className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${ errors.contractType ? 'border-red-500' : 'border-gray-300' }`}
  >
  <option value="">Select...</option>
- <option value="Full-time">{t.fullTime}</option>
- <option value="Part-time">{t.partTime}</option>
- <option value="Contract">{t.contract}</option>
- <option value="Consultant">{t.consultant}</option>
+ <option value="Full-time">{localT.fullTime}</option>
+ <option value="Part-time">{localT.partTime}</option>
+ <option value="Contract">{localT.contract}</option>
+ <option value="Consultant">{localT.consultant}</option>
  </select>
  {errors.contractType && (
  <p className="text-xs text-red-500 mt-1">{errors.contractType}</p>
@@ -408,7 +408,7 @@ export function VacancyForm({
  {/* Grade */}
  <div>
  <label className="block text-sm font-medium text-gray-700 mb-1">
- {t.grade}
+ {localT.grade}
  </label>
  <input
  type="text"
@@ -422,22 +422,22 @@ export function VacancyForm({
  {/* Vacancy Type */}
  <div>
  <label className="block text-sm font-medium text-gray-700 mb-1">
- {t.vacancyType} <span className="text-red-500">*</span>
+ {localT.vacancyType} <span className="text-red-500">*</span>
  </label>
  <select
  value={formData.vacancyType}
  onChange={(e) => handleInputChange('vacancyType', e.target.value)}
  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
  >
- <option value="New">{t.new}</option>
- <option value="Replacement">{t.replacement}</option>
+ <option value="New">{localT.new}</option>
+ <option value="Replacement">{localT.replacement}</option>
  </select>
  </div>
 
  {/* Hiring Manager */}
  <div>
  <label className="block text-sm font-medium text-gray-700 mb-1">
- {t.hiringManager} <span className="text-red-500">*</span>
+ {localT.hiringManager} <span className="text-red-500">*</span>
  </label>
  <input
  type="text"
@@ -454,7 +454,7 @@ export function VacancyForm({
  {/* Opening Date */}
  <div>
  <label className="block text-sm font-medium text-gray-700 mb-1">
- {t.openingDate} <span className="text-red-500">*</span>
+ {localT.openingDate} <span className="text-red-500">*</span>
  </label>
  <input
  type="date"
@@ -470,7 +470,7 @@ export function VacancyForm({
  {/* Closing Date */}
  <div>
  <label className="block text-sm font-medium text-gray-700 mb-1">
- {t.closingDate} <span className="text-red-500">*</span>
+ {localT.closingDate} <span className="text-red-500">*</span>
  </label>
  <input
  type="date"
@@ -486,7 +486,7 @@ export function VacancyForm({
  {/* Shortlist Threshold */}
  <div>
  <label className="block text-sm font-medium text-gray-700 mb-1">
- {t.shortlistThreshold}
+ {localT.shortlistThreshold}
  </label>
  <input
  type="number"
@@ -501,7 +501,7 @@ export function VacancyForm({
  {/* Justification - Full Width */}
  <div className="md:col-span-2">
  <label className="block text-sm font-medium text-gray-700 mb-1">
- {t.justification} <span className="text-red-500">*</span>
+ {localT.justification} <span className="text-red-500">*</span>
  </label>
  <textarea
  value={formData.justification}
@@ -521,14 +521,14 @@ export function VacancyForm({
  <div>
  <div className="flex items-center justify-between mb-4">
  <h3 className="text-lg font-bold text-gray-900 flex items-center gap-2">
- {t.selectionCriteria}
+ {localT.selectionCriteria}
  </h3>
  <button
  onClick={addCriterion}
  className="px-3 py-1.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center gap-2 text-sm"
  >
  <Plus className="w-4 h-4" />
- {t.addCriteria}
+ {localT.addCriteria}
  </button>
  </div>
 
@@ -543,7 +543,7 @@ export function VacancyForm({
  <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
  <div className="md:col-span-2">
  <label className="block text-xs font-medium text-gray-600 mb-1">
- {t.criteriaName}
+ {localT.criteriaName}
  </label>
  <input
  type="text"
@@ -556,24 +556,24 @@ export function VacancyForm({
  
  <div>
  <label className="block text-xs font-medium text-gray-600 mb-1">
- {t.criteriaType}
+ {localT.criteriaType}
  </label>
  <select
  value={criterion.criteriaType}
  onChange={(e) => updateCriterion(index, 'criteriaType', e.target.value)}
  className="w-full px-2 py-1.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
  >
- <option value="YesNo">{t.yesNo}</option>
- <option value="Numeric">{t.numeric}</option>
- <option value="Scale">{t.scale}</option>
- <option value="Checklist">{t.checklist}</option>
+ <option value="YesNo">{localT.yesNo}</option>
+ <option value="Numeric">{localT.numeric}</option>
+ <option value="Scale">{localT.scale}</option>
+ <option value="Checklist">{localT.checklist}</option>
  </select>
  </div>
  
  <div className="flex items-end gap-2">
  <div className="flex-1">
  <label className="block text-xs font-medium text-gray-600 mb-1">
- {t.weight}
+ {localT.weight}
  </label>
  <input
  type="number"
@@ -587,7 +587,7 @@ export function VacancyForm({
  <button
  onClick={() => removeCriterion(index)}
  className="p-1.5 text-red-600 hover:bg-red-50 rounded-lg"
- title={t.remove}
+ title={localT.remove}
  >
  <Trash2 className="w-4 h-4" />
  </button>
@@ -604,7 +604,7 @@ export function VacancyForm({
  ) : (
  <AlertCircle className="w-5 h-5 text-yellow-600" />
  )}
- <span className="font-medium text-gray-900">{t.totalWeight}:</span>
+ <span className="font-medium text-gray-900">{localT.totalWeight}:</span>
  </div>
  <span className={`text-xl font-bold ${ isWeightValid ? 'text-green-600' : 'text-yellow-600' }`}>
  {totalWeight.toFixed(1)}%
@@ -614,7 +614,7 @@ export function VacancyForm({
  {!isWeightValid && (
  <p className="text-sm text-yellow-700 flex items-center gap-2">
  <AlertCircle className="w-4 h-4" />
- {t.mustEqual100}
+ {localT.mustEqual100}
  </p>
  )}
  {errors.criteria && (
@@ -634,7 +634,7 @@ export function VacancyForm({
  onClick={onClose}
  className="px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
  >
- {t.cancel}
+ {localT.cancel}
  </button>
  
  <div className="flex items-center gap-3">
@@ -643,14 +643,14 @@ export function VacancyForm({
  className="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 flex items-center gap-2"
  >
  <Save className="w-4 h-4" />
- {t.saveDraft}
+ {localT.saveDraft}
  </button>
  <button
  onClick={() => handleSave(true)}
  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center gap-2"
  >
  <CheckCircle className="w-4 h-4" />
- {t.publish}
+ {localT.publish}
  </button>
  </div>
  </div>

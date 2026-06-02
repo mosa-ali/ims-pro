@@ -11,9 +11,11 @@
 
 import { useState } from 'react';
 import { Plus, Edit, Trash2, X, Save } from 'lucide-react';
-import { useLanguage } from '@/app/contexts/LanguageContext';
-import { HRAnnualPlan, PlannedPosition, hrAnnualPlanService, ContractType } from '@/app/services/hrAnnualPlanService';
+import { useLanguage } from '@/contexts/LanguageContext';
+import type { HRAnnualPlan, PlannedPosition } from '@shared/types/hrAnnualPlanning';
 import { useTranslation } from '@/i18n/useTranslation';
+
+type ContractType = 'Fixed-Term' | 'Short-Term' | 'Consultancy' | 'Permanent';
 
 interface PlannedStaffingSectionProps {
  plan: HRAnnualPlan;
@@ -95,7 +97,8 @@ export function PlannedStaffingSection({
  return;
  }
 
- const newPosition: Omit<PlannedPosition, 'id'> = {
+ const newPosition: PlannedPosition = {
+ id: `pos_${Date.now()}`,
  positionTitle: formData.positionTitle!,
  department: formData.department!,
  projectProgram: formData.projectProgram || '',
@@ -111,11 +114,13 @@ export function PlannedStaffingSection({
  totalCost: (formData.annualSalaryCost || 0) + (formData.allowances || 0)
  };
 
- const updated = hrAnnualPlanService.addPlannedPosition(plan.id, newPosition);
- if (updated) {
- onUpdate(updated);
+ const updatedPlan = {
+ ...plan,
+ plannedPositions: [...plan.plannedPositions, newPosition]
+ };
+ 
+ onUpdate(updatedPlan);
  resetForm();
- }
  };
 
  const handleEdit = (position: PlannedPosition) => {
@@ -127,23 +132,30 @@ export function PlannedStaffingSection({
  const handleUpdate = () => {
  if (!editingId) return;
 
- const updated = hrAnnualPlanService.updatePlannedPosition(plan.id, editingId, {
+ const updatedPlan = {
+ ...plan,
+ plannedPositions: plan.plannedPositions.map(p =>
+ p.id === editingId
+ ? {
+ ...p,
  ...formData,
  totalCost: (formData.annualSalaryCost || 0) + (formData.allowances || 0)
- });
- 
- if (updated) {
- onUpdate(updated);
- resetForm();
  }
+ : p
+ )
+ };
+ 
+ onUpdate(updatedPlan);
+ resetForm();
  };
 
  const handleDelete = (positionId: string) => {
  if (confirm(t.hrAnnualPlan.deleteThisPosition)) {
- const updated = hrAnnualPlanService.deletePlannedPosition(plan.id, positionId);
- if (updated) {
- onUpdate(updated);
- }
+ const updatedPlan = {
+ ...plan,
+ plannedPositions: plan.plannedPositions.filter(p => p.id !== positionId)
+ };
+ onUpdate(updatedPlan);
  }
  };
 
@@ -170,8 +182,8 @@ export function PlannedStaffingSection({
  {/* Section Header */}
  <div className={`flex items-start justify-between`}>
  <div className={'text-start'}>
- <h2 className="text-xl font-bold text-gray-900 mb-2">{t.title}</h2>
- <p className="text-sm text-gray-600">{t.description}</p>
+ <h2 className="text-xl font-bold text-gray-900 mb-2">{localT.title}</h2>
+ <p className="text-sm text-gray-600">{localT.description}</p>
  </div>
 
  {isEditing && !isAddingNew && !editingId && (
@@ -180,7 +192,7 @@ export function PlannedStaffingSection({
  className={`flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white text-sm rounded-lg hover:bg-indigo-700`}
  >
  <Plus className="w-4 h-4" />
- <span>{t.addPosition}</span>
+ <span>{localT.addPosition}</span>
  </button>
  )}
  </div>
@@ -190,7 +202,7 @@ export function PlannedStaffingSection({
  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
  <div className="bg-white rounded-lg border border-gray-200 p-4">
  <p className={`text-sm text-gray-600 mb-1 text-start`}>
- {t.totalPositions}
+ {localT.totalPositions}
  </p>
  <p className={`text-3xl font-bold text-gray-900 text-start`}>
  {totalPositions}
@@ -199,7 +211,7 @@ export function PlannedStaffingSection({
 
  <div className="bg-white rounded-lg border border-gray-200 p-4">
  <p className={`text-sm text-gray-600 mb-1 text-start`}>
- {t.totalEstimatedCost}
+ {localT.totalEstimatedCost}
  </p>
  <p className={`text-3xl font-bold text-gray-900 text-start`}>
  {formatCurrency(totalCost)}
@@ -219,7 +231,7 @@ export function PlannedStaffingSection({
  {/* Position Title */}
  <div>
  <label className={`block text-sm font-medium text-gray-700 mb-1 text-start`}>
- {t.positionTitle} *
+ {localT.positionTitle} *
  </label>
  <input
  type="text"
@@ -233,7 +245,7 @@ export function PlannedStaffingSection({
  {/* Department */}
  <div>
  <label className={`block text-sm font-medium text-gray-700 mb-1 text-start`}>
- {t.department} *
+ {localT.department} *
  </label>
  <select
  value={formData.department || ''}
@@ -252,7 +264,7 @@ export function PlannedStaffingSection({
  {/* Project/Program */}
  <div>
  <label className={`block text-sm font-medium text-gray-700 mb-1 text-start`}>
- {t.projectProgram}
+ {localT.projectProgram}
  </label>
  <input
  type="text"
@@ -266,7 +278,7 @@ export function PlannedStaffingSection({
  {/* Grade */}
  <div>
  <label className={`block text-sm font-medium text-gray-700 mb-1 text-start`}>
- {t.grade}
+ {localT.grade}
  </label>
  <select
  value={formData.grade || ''}
@@ -287,24 +299,24 @@ export function PlannedStaffingSection({
  {/* Contract Type */}
  <div>
  <label className={`block text-sm font-medium text-gray-700 mb-1 text-start`}>
- {t.contractType}
+ {localT.contractType}
  </label>
  <select
  value={formData.contractType || 'Fixed-Term'}
  onChange={(e) => setFormData({ ...formData, contractType: e.target.value as ContractType })}
  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500"
  >
- <option value="Fixed-Term">{t.fixedTerm}</option>
- <option value="Short-Term">{t.shortTerm}</option>
- <option value="Consultancy">{t.consultancy}</option>
- <option value="Permanent">{t.permanent}</option>
+ <option value="Fixed-Term">{localT.fixedTerm}</option>
+ <option value="Short-Term">{localT.shortTerm}</option>
+ <option value="Consultancy">{localT.consultancy}</option>
+ <option value="Permanent">{localT.permanent}</option>
  </select>
  </div>
 
  {/* Number of Positions */}
  <div>
  <label className={`block text-sm font-medium text-gray-700 mb-1 text-start`}>
- {t.numberOfPositions} *
+ {localT.numberOfPositions} *
  </label>
  <input
  type="number"
@@ -318,7 +330,7 @@ export function PlannedStaffingSection({
  {/* Planned Start Date */}
  <div>
  <label className={`block text-sm font-medium text-gray-700 mb-1 text-start`}>
- {t.plannedStartDate}
+ {localT.plannedStartDate}
  </label>
  <input
  type="date"
@@ -331,7 +343,7 @@ export function PlannedStaffingSection({
  {/* Planned End Date */}
  <div>
  <label className={`block text-sm font-medium text-gray-700 mb-1 text-start`}>
- {t.plannedEndDate}
+ {localT.plannedEndDate}
  </label>
  <input
  type="date"
@@ -344,23 +356,23 @@ export function PlannedStaffingSection({
  {/* Funding Source */}
  <div>
  <label className={`block text-sm font-medium text-gray-700 mb-1 text-start`}>
- {t.fundingSource}
+ {localT.fundingSource}
  </label>
  <select
  value={formData.fundingSource || 'TBD'}
  onChange={(e) => setFormData({ ...formData, fundingSource: e.target.value })}
  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500"
  >
- <option value="Grant">{t.grant}</option>
- <option value="Core">{t.core}</option>
- <option value="TBD">{t.tbd}</option>
+ <option value="Grant">{localT.grant}</option>
+ <option value="Core">{localT.core}</option>
+ <option value="TBD">{localT.tbd}</option>
  </select>
  </div>
 
  {/* Annual Salary Cost */}
  <div>
  <label className={`block text-sm font-medium text-gray-700 mb-1 text-start`}>
- {t.annualSalaryCost}
+ {localT.annualSalaryCost}
  </label>
  <input
  type="number"
@@ -375,7 +387,7 @@ export function PlannedStaffingSection({
  {/* Allowances */}
  <div>
  <label className={`block text-sm font-medium text-gray-700 mb-1 text-start`}>
- {t.allowances}
+ {localT.allowances}
  </label>
  <input
  type="number"
@@ -390,7 +402,7 @@ export function PlannedStaffingSection({
  {/* Justification */}
  <div className="md:col-span-2">
  <label className={`block text-sm font-medium text-gray-700 mb-1 text-start`}>
- {t.justification}
+ {localT.justification}
  </label>
  <textarea
  rows={3}
@@ -409,13 +421,13 @@ export function PlannedStaffingSection({
  className={`flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white text-sm rounded-lg hover:bg-indigo-700`}
  >
  <Save className="w-4 h-4" />
- <span>{t.save}</span>
+ <span>{localT.save}</span>
  </button>
  <button
  onClick={resetForm}
  className="px-4 py-2 border border-gray-300 text-gray-700 text-sm rounded-lg hover:bg-gray-50"
  >
- {t.cancel}
+ {localT.cancel}
  </button>
  </div>
  </div>
@@ -425,14 +437,14 @@ export function PlannedStaffingSection({
  <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
  {plan.plannedPositions.length === 0 ? (
  <div className="px-6 py-12 text-center">
- <p className="text-gray-600 mb-4">{t.noPositions}</p>
+ <p className="text-gray-600 mb-4">{localT.noPositions}</p>
  {isEditing && (
  <button
  onClick={() => setIsAddingNew(true)}
  className={`inline-flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white text-sm rounded-lg hover:bg-indigo-700`}
  >
  <Plus className="w-4 h-4" />
- <span>{t.addPosition}</span>
+ <span>{localT.addPosition}</span>
  </button>
  )}
  </div>
@@ -441,15 +453,15 @@ export function PlannedStaffingSection({
  <table className="w-full">
  <thead className="bg-gray-50 border-b border-gray-200">
  <tr>
- <th className={`px-4 py-3 text-xs font-semibold text-gray-700 text-start`}>{t.position}</th>
- <th className={`px-4 py-3 text-xs font-semibold text-gray-700 text-start`}>{t.dept}</th>
- <th className={`px-4 py-3 text-xs font-semibold text-gray-700 text-start`}>{t.project}</th>
- <th className={`px-4 py-3 text-xs font-semibold text-gray-700 text-start`}>{t.grade}</th>
- <th className="px-4 py-3 text-center text-xs font-semibold text-gray-700">{t.quantity}</th>
- <th className={`px-4 py-3 text-xs font-semibold text-gray-700 text-start`}>{t.dates}</th>
- <th className={`px-4 py-3 text-xs font-semibold text-gray-700 text-start`}>{t.funding}</th>
- <th className="px-4 py-3 text-end text-xs font-semibold text-gray-700">{t.cost}</th>
- {isEditing && <th className="px-4 py-3 text-center text-xs font-semibold text-gray-700">{t.actions}</th>}
+ <th className={`px-4 py-3 text-xs font-semibold text-gray-700 text-start`}>{localT.position}</th>
+ <th className={`px-4 py-3 text-xs font-semibold text-gray-700 text-start`}>{localT.dept}</th>
+ <th className={`px-4 py-3 text-xs font-semibold text-gray-700 text-start`}>{localT.project}</th>
+ <th className={`px-4 py-3 text-xs font-semibold text-gray-700 text-start`}>{localT.grade}</th>
+ <th className="px-4 py-3 text-center text-xs font-semibold text-gray-700">{localT.quantity}</th>
+ <th className={`px-4 py-3 text-xs font-semibold text-gray-700 text-start`}>{localT.dates}</th>
+ <th className={`px-4 py-3 text-xs font-semibold text-gray-700 text-start`}>{localT.funding}</th>
+ <th className="px-4 py-3 text-end text-xs font-semibold text-gray-700">{localT.cost}</th>
+ {isEditing && <th className="px-4 py-3 text-center text-xs font-semibold text-gray-700">{localT.actions}</th>}
  </tr>
  </thead>
  <tbody className="divide-y divide-gray-200">
@@ -477,14 +489,14 @@ export function PlannedStaffingSection({
  <button
  onClick={() => handleEdit(position)}
  className="p-1 text-blue-600 hover:bg-blue-50 rounded"
- title={t.edit}
+ title={localT.edit}
  >
  <Edit className="w-4 h-4" />
  </button>
  <button
  onClick={() => handleDelete(position.id)}
  className="p-1 text-red-600 hover:bg-red-50 rounded"
- title={t.delete}
+ title={localT.delete}
  >
  <Trash2 className="w-4 h-4" />
  </button>

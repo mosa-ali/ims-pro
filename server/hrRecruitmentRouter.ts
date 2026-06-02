@@ -27,7 +27,7 @@ export const hrRecruitmentRouter = router({
       
       const conditions = [
         eq(hrRecruitmentJobs.organizationId, organizationId),
-        eq(hrRecruitmentJobs.isDeleted, false),
+        eq(hrRecruitmentJobs.isDeleted, 0),
       ];
       
       if (input.status) {
@@ -61,7 +61,7 @@ export const hrRecruitmentRouter = router({
           and(
             eq(hrRecruitmentJobs.id, input.id),
             eq(hrRecruitmentJobs.organizationId, organizationId),
-            eq(hrRecruitmentJobs.isDeleted, false)
+            eq(hrRecruitmentJobs.isDeleted, 0)
           )
         )
         .limit(1);
@@ -83,7 +83,7 @@ export const hrRecruitmentRouter = router({
         .where(
           and(
             eq(hrRecruitmentJobs.organizationId, organizationId),
-            eq(hrRecruitmentJobs.isDeleted, false)
+            eq(hrRecruitmentJobs.isDeleted, 0)
           )
         );
       
@@ -116,8 +116,8 @@ export const hrRecruitmentRouter = router({
       location: z.string().optional(),
       employmentType: z.enum(["full_time", "part_time", "contract", "consultant", "intern"]).optional(),
       numberOfPositions: z.number().optional().default(1),
-      salaryMin: z.number().optional(),
-      salaryMax: z.number().optional(),
+      gradeLevel: z.string().optional(),
+      salaryRange: z.string().optional(),
       currency: z.string().optional().default("USD"),
       description: z.string().optional(),
       requirements: z.string().optional(),
@@ -139,9 +139,9 @@ export const hrRecruitmentRouter = router({
         department: input.department,
         location: input.location,
         employmentType: input.employmentType,
-        numberOfPositions: input.numberOfPositions,
-        salaryMin: input.salaryMin?.toString(),
-        salaryMax: input.salaryMax?.toString(),
+        numberOfPositions: input.numberOfPositions ?? 1,
+        gradeLevel: input.gradeLevel,
+        salaryRange: input.salaryRange,
         currency: input.currency,
         description: input.description,
         requirements: input.requirements,
@@ -211,7 +211,7 @@ export const hrRecruitmentRouter = router({
         .update(hrRecruitmentJobs)
         .set({
           status: "open",
-          postedAt: new Date(),
+          postingDate: new Date().toISOString(),
         })
         .where(and(
           eq(hrRecruitmentJobs.id, input.id),
@@ -236,7 +236,7 @@ export const hrRecruitmentRouter = router({
         .update(hrRecruitmentJobs)
         .set({
           status: input.reason,
-          closedAt: new Date(),
+          closingDate: new Date().toISOString(),
         })
         .where(and(
           eq(hrRecruitmentJobs.id, input.id),
@@ -257,8 +257,8 @@ export const hrRecruitmentRouter = router({
       await db
         .update(hrRecruitmentJobs)
         .set({
-          isDeleted: true,
-          deletedAt: new Date(),
+          isDeleted: 1,
+          deletedAt: new Date().toISOString(),
           deletedBy: ctx.user?.id,
         })
         .where(and(
@@ -275,7 +275,7 @@ export const hrRecruitmentRouter = router({
   getAllCandidates: scopedProcedure
     .input(z.object({
       jobId: z.number().optional(),
-      status: z.enum(["applied", "screening", "shortlisted", "interview_scheduled", "interviewed", "offered", "hired", "rejected", "withdrawn"]).optional(),
+      status: z.enum(['new','applied','screening','shortlisted','interview_scheduled','interviewed','offer_pending','offer_sent', 'offered', 'hired', 'rejected','withdrawn']).default('new'),
       limit: z.number().optional().default(100),
       offset: z.number().optional().default(0),
     }))
@@ -286,7 +286,7 @@ export const hrRecruitmentRouter = router({
       
       const conditions = [
         eq(hrRecruitmentCandidates.organizationId, organizationId),
-        eq(hrRecruitmentCandidates.isDeleted, false),
+        eq(hrRecruitmentCandidates.isDeleted, 0),
       ];
       
       if (input.jobId) {
@@ -300,7 +300,7 @@ export const hrRecruitmentRouter = router({
         .select()
         .from(hrRecruitmentCandidates)
         .where(and(...conditions))
-        .orderBy(desc(hrRecruitmentCandidates.appliedAt))
+        .orderBy(desc(hrRecruitmentCandidates.createdAt))
         .limit(input.limit)
         .offset(input.offset);
     }),
@@ -320,7 +320,7 @@ export const hrRecruitmentRouter = router({
           and(
             eq(hrRecruitmentCandidates.id, input.id),
             eq(hrRecruitmentCandidates.organizationId, organizationId),
-            eq(hrRecruitmentCandidates.isDeleted, false)
+            eq(hrRecruitmentCandidates.isDeleted, 0)
           )
         )
         .limit(1);
@@ -340,7 +340,7 @@ export const hrRecruitmentRouter = router({
       
       const conditions = [
         eq(hrRecruitmentCandidates.organizationId, organizationId),
-        eq(hrRecruitmentCandidates.isDeleted, false),
+        eq(hrRecruitmentCandidates.isDeleted, 0),
       ];
       
       if (input.jobId) {
@@ -400,6 +400,7 @@ export const hrRecruitmentRouter = router({
       const result = await db.insert(hrRecruitmentCandidates).values({
         organizationId,
         jobId: input.jobId,
+        appliedAt: new Date().toISOString(),
         firstName: input.firstName,
         lastName: input.lastName,
         email: input.email,
@@ -418,7 +419,6 @@ export const hrRecruitmentRouter = router({
         referredBy: input.referredBy,
         notes: input.notes,
         status: "applied",
-        appliedAt: new Date(),
       });
       
       return { id: result[0].insertId, success: true };
@@ -475,6 +475,7 @@ export const hrRecruitmentRouter = router({
       id: z.number(),
       status: z.enum(["applied", "screening", "shortlisted", "interview_scheduled", "interviewed", "offered", "hired", "rejected", "withdrawn"]),
       notes: z.string().optional(),
+      appliedAt: z.string().optional(),
       interviewDate: z.string().optional(),
       interviewNotes: z.string().optional(),
       rating: z.number().min(1).max(5).optional(),
@@ -529,8 +530,8 @@ export const hrRecruitmentRouter = router({
       await db
         .update(hrRecruitmentCandidates)
         .set({
-          isDeleted: true,
-          deletedAt: new Date(),
+          isDeleted: 1,
+          deletedAt: new Date().toISOString(),
           deletedBy: ctx.user?.id,
         })
         .where(and(

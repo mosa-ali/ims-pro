@@ -5,8 +5,8 @@ import { publicProcedure, router } from "./_core/trpc";
 import { imsRouter } from "./routers/ims";
 import { getDb } from "./db";
 import { userOrganizations, userOperatingUnits } from "../drizzle/schema";
-import { budgetAnalysisExpensesRouter } from "./budgetAnalysisExpensesRouter";
 import { eq } from "drizzle-orm";
+// import { budgetAnalysisExpensesRouter } from "./budgetAnalysisExpensesRouter"; // File does not exist
 import { projectsRouter } from "./projectsRouter";
 import { grantsRouter } from "./grantsRouter";
 import { reportingSchedulesRouter } from "./reportingSchedulesRouter";
@@ -35,6 +35,7 @@ import { mealSettingsRouter } from "./mealSettingsRouter";
 import { hrEmployeesRouter } from "./hrEmployeesRouter";
 import { hrLeaveRouter } from "./hrLeaveRouter";
 import { hrAttendanceRouter } from "./hrAttendanceRouter";
+import { teamsIntegrationRouter } from "./teamsIntegrationRouter";
 import { hrPayrollRouter } from "./hrPayrollRouter";
 import { hrSanctionsRouter } from "./hrSanctionsRouter";
 import { hrAnnualPlanRouter } from "./hrAnnualPlanRouter";
@@ -42,6 +43,9 @@ import { hrDocumentsRouter } from "./hrDocumentsRouter";
 import { hrRecruitmentRouter } from "./hrRecruitmentRouter";
 import { hrSalaryScaleRouter } from "./hrSalaryScaleRouter";
 import { hrSalaryGradesRouter } from "./hrSalaryGradesRouter";
+import { hrObjectivesRouter } from "./routers/hrObjectivesRouter";
+import { hrKPIsRouter } from "./routers/hrKPIsRouter";
+import { hrPlanReviewsRouter } from "./routers/hrPlanReviewsRouter";
 import { chartOfAccountsRouter } from "./chartOfAccountsRouter";
 import { fiscalPeriodLockingRouter } from "./fiscalPeriodLockingEngine";
 import { immutableJournalsRouter } from "./immutableJournalsEngine";
@@ -77,6 +81,7 @@ import { donorReportsRouter } from "./donorReportsRouter";
 import { donorProjectsRouter } from "./donorProjectsRouter";
 import { settingsRouter } from "./routers/settingsRouter";
 import { riskComplianceRouter } from "./routers/riskComplianceRouter";
+import { reportsAnalyticsRouter } from "./routers/reportsAnalyticsRouter";
 import { mitigationActionsRouter } from "./routers/mitigationActionsRouter";
 import { vendorRouter } from "./vendorRouter";
 import { prFinanceRouter } from "./prFinanceRouter";
@@ -93,7 +98,7 @@ import { glPostingEngineRouter } from "./glPostingEngine";
 import { procurementPhaseARouter } from "./routers/procurement";
 import { unitTypesRouter } from "./routers/masterData/unitTypesRouter";
 import { authRouter } from "./routers/authRouter";
-import { requestAccessRouter } from "./routers/auth/requestAccessRouter";
+import { requestAccessRouter } from "./routers/requestAccessRouter";
 import { microsoftOnboardingRouter } from "./routers/microsoftOnboardingRouter";
 import { onboardingRouter } from "./routers/onboardingRouter";
 import { procurementDocumentRouter } from "./routers/procurementDocumentRouter";
@@ -111,11 +116,11 @@ import { performanceDashboardRouter } from "./routers/performanceDashboardRouter
 import { emailProviderConfigRouter } from "./routers/emailProviderConfigRouter";
 import { emailDeliveryStatusRouter } from "./routers/emailDeliveryStatusRouter";
 import { emailTemplateVersionRouter } from "./routers/emailTemplateVersionRouter";
+import { rbacRolesRouter } from "./routers/auth/rbacRolesRouter";
 import { z } from "zod";
 import { bidderAcknowledgementSignatures, serviceAcceptanceCertificates, contracts, vendors, users } from "../drizzle/schema";
-import { rbacRolesRouter } from "./routers/auth/rbacRolesRouter";
 import { mealExportRouter } from "./mealExportRouter";
-import { autoProgramsReportRouter } from './routers/autoProgramsReportRouter';
+// import { autoProgramsReportRouter } from './routers/autoProgramsReportRouter'; // File does not exist
 
 
 export const appRouter = router({
@@ -336,6 +341,9 @@ export const appRouter = router({
   hrPayroll: hrPayrollRouter,
   hrSanctions: hrSanctionsRouter,
   hrAnnualPlan: hrAnnualPlanRouter,
+  hrObjectives: hrObjectivesRouter,
+  hrKPIs: hrKPIsRouter,
+  hrPlanReviews: hrPlanReviewsRouter,
   hrDocuments: hrDocumentsRouter,
   hrRecruitment: hrRecruitmentRouter,
   hrSalaryScale: hrSalaryScaleRouter,
@@ -363,7 +371,7 @@ export const appRouter = router({
   budgets: budgetsRouter,
   budgetLines: budgetLinesRouter,
   budgetMonthlyAllocations: budgetMonthlyAllocationsRouter,
-  budgetAnalysisExpenses: budgetAnalysisExpensesRouter,
+  // budgetAnalysisExpenses: budgetAnalysisExpensesRouter, // File does not exist
   donorBudgetExport: donorBudgetExportRouter,
   budgetExpenditure: budgetExpenditureRouter,
 
@@ -473,7 +481,7 @@ export const appRouter = router({
 
   // Email Verification
   emailVerification: emailVerificationRouter,
-  generateAutoReport: autoProgramsReportRouter,
+  // generateAutoReport: autoProgramsReportRouter, // File does not exist
 });
 
 export type AppRouter = typeof appRouter;

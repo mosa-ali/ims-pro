@@ -133,7 +133,7 @@ export function InterviewList({
  <div className="space-y-6" dir={isRTL ? 'rtl' : 'ltr'}>
  {/* Header */}
  <div className="flex items-center justify-between">
- <h2 className="text-xl font-bold text-gray-900">{t.title}</h2>
+ <h2 className="text-xl font-bold text-gray-900">{localT.title}</h2>
  </div>
 
  {/* Stats */}
@@ -141,7 +141,7 @@ export function InterviewList({
  <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
  <div className="flex items-center justify-between">
  <div>
- <p className="text-sm text-gray-600">{t.total}</p>
+ <p className="text-sm text-gray-600">{localT.total}</p>
  <p className="text-2xl font-bold text-gray-900">{interviews.length}</p>
  </div>
  <Calendar className="w-8 h-8 text-blue-600" />
@@ -151,7 +151,7 @@ export function InterviewList({
  <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
  <div className="flex items-center justify-between">
  <div>
- <p className="text-sm text-gray-600">{t.upcoming}</p>
+ <p className="text-sm text-gray-600">{localT.upcoming}</p>
  <p className="text-2xl font-bold text-blue-600">{upcomingInterviews.length}</p>
  </div>
  <Clock className="w-8 h-8 text-blue-600" />
@@ -161,7 +161,7 @@ export function InterviewList({
  <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
  <div className="flex items-center justify-between">
  <div>
- <p className="text-sm text-gray-600">{t.completed}</p>
+ <p className="text-sm text-gray-600">{localT.completed}</p>
  <p className="text-2xl font-bold text-green-600">{completedCount}</p>
  </div>
  <CheckCircle className="w-8 h-8 text-green-600" />
@@ -172,13 +172,13 @@ export function InterviewList({
  {/* Upcoming Interviews */}
  <div className="bg-white rounded-lg shadow-sm border border-gray-200">
  <div className="p-4 border-b border-gray-200">
- <h3 className="text-lg font-bold text-gray-900">{t.upcomingInterviews}</h3>
+ <h3 className="text-lg font-bold text-gray-900">{localT.upcomingInterviews}</h3>
  </div>
 
  {upcomingInterviews.length === 0 ? (
  <div className="p-12 text-center text-gray-500">
  <Calendar className="w-16 h-16 text-gray-300 mx-auto mb-4" />
- <p>{t.noUpcoming}</p>
+ <p>{localT.noUpcoming}</p>
  </div>
  ) : (
  <div className="overflow-x-auto">
@@ -186,19 +186,19 @@ export function InterviewList({
  <thead className="bg-gray-50 border-b border-gray-200">
  <tr>
  <th className={`px-4 py-3 text-xs font-medium text-gray-500 uppercase text-start`}>
- {t.candidateName}
+ {localT.candidateName}
  </th>
  <th className={`px-4 py-3 text-xs font-medium text-gray-500 uppercase text-start`}>
- {t.interviewDate}
+ {localT.interviewDate}
  </th>
  <th className={`px-4 py-3 text-xs font-medium text-gray-500 uppercase text-start`}>
- {t.type}
+ {localT.type}
  </th>
  <th className={`px-4 py-3 text-xs font-medium text-gray-500 uppercase text-start`}>
- {t.panelMembers}
+ {localT.panelMembers}
  </th>
  <th className={`px-4 py-3 text-xs font-medium text-gray-500 uppercase text-start`}>
- {t.status}
+ {localT.status}
  </th>
  </tr>
  </thead>
@@ -234,13 +234,13 @@ export function InterviewList({
  {/* Past Interviews */}
  <div className="bg-white rounded-lg shadow-sm border border-gray-200">
  <div className="p-4 border-b border-gray-200">
- <h3 className="text-lg font-bold text-gray-900">{t.pastInterviews}</h3>
+ <h3 className="text-lg font-bold text-gray-900">{localT.pastInterviews}</h3>
  </div>
 
  {pastInterviews.length === 0 ? (
  <div className="p-12 text-center text-gray-500">
  <FileText className="w-16 h-16 text-gray-300 mx-auto mb-4" />
- <p>{t.noPast}</p>
+ <p>{localT.noPast}</p>
  </div>
  ) : (
  <div className="overflow-x-auto">
@@ -248,25 +248,25 @@ export function InterviewList({
  <thead className="bg-gray-50 border-b border-gray-200">
  <tr>
  <th className={`px-4 py-3 text-xs font-medium text-gray-500 uppercase text-start`}>
- {t.candidateName}
+ {localT.candidateName}
  </th>
  <th className={`px-4 py-3 text-xs font-medium text-gray-500 uppercase text-start`}>
- {t.interviewDate}
+ {localT.interviewDate}
  </th>
  <th className={`px-4 py-3 text-xs font-medium text-gray-500 uppercase text-start`}>
- {t.type}
+ {localT.type}
  </th>
  <th className={`px-4 py-3 text-xs font-medium text-gray-500 uppercase text-start`}>
- {t.panelMembers}
+ {localT.panelMembers}
  </th>
  <th className={`px-4 py-3 text-xs font-medium text-gray-500 uppercase text-start`}>
- {t.score}
+ {localT.score}
  </th>
  <th className={`px-4 py-3 text-xs font-medium text-gray-500 uppercase text-start`}>
- {t.status}
+ {localT.status}
  </th>
  <th className={`px-4 py-3 text-xs font-medium text-gray-500 uppercase text-start`}>
- {t.actions}
+ {localT.actions}
  </th>
  </tr>
  </thead>
@@ -307,7 +307,7 @@ export function InterviewList({
  className="px-3 py-1.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center gap-2 text-xs"
  >
  <FileText className="w-4 h-4" />
- {t.evaluate}
+ {localT.evaluate}
  </button>
  )}
  </td>

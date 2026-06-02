@@ -110,22 +110,22 @@ export function HiringDecisionForm({
  const newErrors: Record<string, string> = {};
 
  if (!formData.justification.trim()) {
- newErrors.justification = t.requiredField;
+ newErrors.justification = localT.requiredField;
  }
 
  if (formData.decision === 'Approve') {
- if (!formData.employeeId.trim()) newErrors.employeeId = t.requiredField;
- if (!formData.contractStartDate) newErrors.contractStartDate = t.requiredField;
- if (!formData.salary.trim()) newErrors.salary = t.requiredField;
- if (!formData.department.trim()) newErrors.department = t.requiredField;
- if (!formData.position.trim()) newErrors.position = t.requiredField;
- if (!formData.directSupervisor.trim()) newErrors.directSupervisor = t.requiredField;
- if (!formData.workLocation.trim()) newErrors.workLocation = t.requiredField;
+ if (!formData.employeeId.trim()) newErrors.employeeId = localT.requiredField;
+ if (!formData.contractStartDate) newErrors.contractStartDate = localT.requiredField;
+ if (!formData.salary.trim()) newErrors.salary = localT.requiredField;
+ if (!formData.department.trim()) newErrors.department = localT.requiredField;
+ if (!formData.position.trim()) newErrors.position = localT.requiredField;
+ if (!formData.directSupervisor.trim()) newErrors.directSupervisor = localT.requiredField;
+ if (!formData.workLocation.trim()) newErrors.workLocation = localT.requiredField;
 
  // Check for duplicate employee ID
  const existingStaff = staffService.getAll();
  if (existingStaff.some(s => s.employeeId === formData.employeeId)) {
- newErrors.employeeId = t.duplicateEmployeeId;
+ newErrors.employeeId = localT.duplicateEmployeeId;
  }
  }
 
@@ -228,7 +228,7 @@ export function HiringDecisionForm({
 
  } catch (error) {
  console.error('Error creating hiring decision:', error);
- setErrors({ submit: t.errorOccurred });
+ setErrors({ submit: localT.errorOccurred });
  } finally {
  setIsSubmitting(false);
  }
@@ -360,16 +360,16 @@ export function HiringDecisionForm({
  {/* Decision */}
  <div>
  <label className="block text-sm font-medium text-gray-700 mb-2">
- {t.decision} <span className="text-red-500">*</span>
+ {localT.decision} <span className="text-red-500">*</span>
  </label>
  <select
  value={formData.decision}
  onChange={(e) => handleInputChange('decision', e.target.value)}
  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
  >
- <option value="Approve">{t.approve}</option>
- <option value="Reject">{t.reject}</option>
- <option value="Hold">{t.hold}</option>
+ <option value="Approve">{localT.approve}</option>
+ <option value="Reject">{localT.reject}</option>
+ <option value="Hold">{localT.hold}</option>
  </select>
  </div>
 
@@ -378,16 +378,16 @@ export function HiringDecisionForm({
  <>
  <div className="bg-green-50 border border-green-200 rounded-lg p-3 flex items-start gap-2">
  <CheckCircle className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
- <p className="text-sm text-green-700">{t.autoCreationNote}</p>
+ <p className="text-sm text-green-700">{localT.autoCreationNote}</p>
  </div>
 
  <div>
- <h3 className="text-lg font-bold text-gray-900 mb-4">{t.employmentDetails}</h3>
+ <h3 className="text-lg font-bold text-gray-900 mb-4">{localT.employmentDetails}</h3>
  
  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
  <div>
  <label className="block text-sm font-medium text-gray-700 mb-1">
- {t.employeeId} <span className="text-red-500">*</span>
+ {localT.employeeId} <span className="text-red-500">*</span>
  </label>
  <input
  type="text"
@@ -400,7 +400,7 @@ export function HiringDecisionForm({
 
  <div>
  <label className="block text-sm font-medium text-gray-700 mb-1">
- {t.employmentType} <span className="text-red-500">*</span>
+ {localT.employmentType} <span className="text-red-500">*</span>
  </label>
  <select
  value={formData.employmentType}
@@ -416,7 +416,7 @@ export function HiringDecisionForm({
 
  <div>
  <label className="block text-sm font-medium text-gray-700 mb-1">
- {t.contractStartDate} <span className="text-red-500">*</span>
+ {localT.contractStartDate} <span className="text-red-500">*</span>
  </label>
  <input
  type="date"
@@ -430,7 +430,7 @@ export function HiringDecisionForm({
 
  <div>
  <label className="block text-sm font-medium text-gray-700 mb-1">
- {t.contractEndDate}
+ {localT.contractEndDate}
  </label>
  <input
  type="date"
@@ -443,7 +443,7 @@ export function HiringDecisionForm({
 
  <div>
  <label className="block text-sm font-medium text-gray-700 mb-1">
- {t.probationPeriod}
+ {localT.probationPeriod}
  </label>
  <input
  type="number"
@@ -457,7 +457,7 @@ export function HiringDecisionForm({
 
  <div>
  <label className="block text-sm font-medium text-gray-700 mb-1">
- {t.salary} <span className="text-red-500">*</span>
+ {localT.salary} <span className="text-red-500">*</span>
  </label>
  <div className="flex gap-2">
  <input
@@ -482,7 +482,7 @@ export function HiringDecisionForm({
 
  <div>
  <label className="block text-sm font-medium text-gray-700 mb-1">
- {t.department} <span className="text-red-500">*</span>
+ {localT.department} <span className="text-red-500">*</span>
  </label>
  <input
  type="text"
@@ -495,7 +495,7 @@ export function HiringDecisionForm({
 
  <div>
  <label className="block text-sm font-medium text-gray-700 mb-1">
- {t.position} <span className="text-red-500">*</span>
+ {localT.position} <span className="text-red-500">*</span>
  </label>
  <input
  type="text"
@@ -508,7 +508,7 @@ export function HiringDecisionForm({
 
  <div>
  <label className="block text-sm font-medium text-gray-700 mb-1">
- {t.grade}
+ {localT.grade}
  </label>
  <input
  type="text"
@@ -520,7 +520,7 @@ export function HiringDecisionForm({
 
  <div>
  <label className="block text-sm font-medium text-gray-700 mb-1">
- {t.directSupervisor} <span className="text-red-500">*</span>
+ {localT.directSupervisor} <span className="text-red-500">*</span>
  </label>
  <input
  type="text"
@@ -533,7 +533,7 @@ export function HiringDecisionForm({
 
  <div>
  <label className="block text-sm font-medium text-gray-700 mb-1">
- {t.workLocation} <span className="text-red-500">*</span>
+ {localT.workLocation} <span className="text-red-500">*</span>
  </label>
  <input
  type="text"
@@ -551,7 +551,7 @@ export function HiringDecisionForm({
  {/* Justification */}
  <div>
  <label className="block text-sm font-medium text-gray-700 mb-2">
- {t.justification} <span className="text-red-500">*</span>
+ {localT.justification} <span className="text-red-500">*</span>
  </label>
  <textarea
  value={formData.justification}
@@ -566,7 +566,7 @@ export function HiringDecisionForm({
  {/* Special Conditions */}
  <div>
  <label className="block text-sm font-medium text-gray-700 mb-2">
- {t.specialConditions}
+ {localT.specialConditions}
  </label>
  <textarea
  value={formData.specialConditions}
@@ -593,7 +593,7 @@ export function HiringDecisionForm({
  disabled={isSubmitting}
  className="px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors disabled:opacity-50"
  >
- {t.cancel}
+ {localT.cancel}
  </button>
  <button
  onClick={handleSubmit}
@@ -608,7 +608,7 @@ export function HiringDecisionForm({
  ) : (
  <>
  <Save className="w-4 h-4" />
- {t.save}
+ {localT.save}
  </>
  )}
  </button>

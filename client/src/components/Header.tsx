@@ -149,7 +149,7 @@ const welcomeLabel =
       {branding.logoUrl ? (
         <img
           src={branding.logoUrl}
-          alt="Organization Logo"
+          alt=""
           className="h-10 w-auto max-w-[140px] object-contain"
           onError={(e) => {
             e.currentTarget.style.display = "none";

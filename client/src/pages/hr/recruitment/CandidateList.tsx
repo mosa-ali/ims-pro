@@ -259,13 +259,13 @@ export function CandidateList({
  <div className="space-y-6" dir={isRTL ? 'rtl' : 'ltr'}>
  {/* Header */}
  <div className="flex items-center justify-between">
- <h2 className="text-xl font-bold text-gray-900">{t.title}</h2>
+ <h2 className="text-xl font-bold text-gray-900">{localT.title}</h2>
  </div>
 
  {/* Vacancy Selector */}
  <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
  <label className="block text-sm font-medium text-gray-700 mb-2">
- {t.selectVacancy}
+ {localT.selectVacancy}
  </label>
  <select
  value={selectedVacancy}
@@ -287,7 +287,7 @@ export function CandidateList({
  <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
  <div className="flex items-center justify-between">
  <div>
- <p className="text-sm text-gray-600">{t.totalCandidates}</p>
+ <p className="text-sm text-gray-600">{localT.totalCandidates}</p>
  <p className="text-2xl font-bold text-gray-900">{candidates.length}</p>
  </div>
  <Users className="w-8 h-8 text-blue-600" />
@@ -297,7 +297,7 @@ export function CandidateList({
  <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
  <div className="flex items-center justify-between">
  <div>
- <p className="text-sm text-gray-600">{t.shortlistedCount}</p>
+ <p className="text-sm text-gray-600">{localT.shortlistedCount}</p>
  <p className="text-2xl font-bold text-green-600">{shortlistedCount}</p>
  </div>
  <Award className="w-8 h-8 text-green-600" />
@@ -307,7 +307,7 @@ export function CandidateList({
  <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
  <div className="flex items-center justify-between">
  <div>
- <p className="text-sm text-gray-600">{t.threshold}</p>
+ <p className="text-sm text-gray-600">{localT.threshold}</p>
  <p className="text-2xl font-bold text-gray-900">{selectedVacancyData.shortlistThreshold}%</p>
  </div>
  <CheckCircle className="w-8 h-8 text-gray-600" />
@@ -324,19 +324,19 @@ export function CandidateList({
  onClick={() => setView('all')}
  className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${ view === 'all' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200' }`}
  >
- {t.all} ({candidates.length})
+ {localT.all} ({candidates.length})
  </button>
  <button
  onClick={() => setView('longlist')}
  className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${ view === 'longlist' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200' }`}
  >
- {t.longlist} ({candidates.length - shortlistedCount})
+ {localT.longlist} ({candidates.length - shortlistedCount})
  </button>
  <button
  onClick={() => setView('shortlist')}
  className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${ view === 'shortlist' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200' }`}
  >
- {t.shortlist} ({shortlistedCount})
+ {localT.shortlist} ({shortlistedCount})
  </button>
  </div>
 
@@ -347,14 +347,14 @@ export function CandidateList({
  className="px-3 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 flex items-center gap-2 text-sm"
  >
  <Download className="w-4 h-4" />
- {t.exportAll}
+ {localT.exportAll}
  </button>
  <button
  onClick={() => handleExportExcel('longlist')}
  className="px-3 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 flex items-center gap-2 text-sm"
  >
  <Download className="w-4 h-4" />
- {t.exportLonglist}
+ {localT.exportLonglist}
  </button>
  <button
  onClick={() => handleExportExcel('shortlist')}
@@ -362,7 +362,7 @@ export function CandidateList({
  disabled={shortlistedCount === 0}
  >
  <Download className="w-4 h-4" />
- {t.exportShortlist}
+ {localT.exportShortlist}
  </button>
  </div>
  </div>
@@ -373,7 +373,7 @@ export function CandidateList({
  <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-12">
  <div className="text-center text-gray-500">
  <Users className="w-16 h-16 text-gray-300 mx-auto mb-4" />
- <p className="text-lg font-medium">{t.noCandidates}</p>
+ <p className="text-lg font-medium">{localT.noCandidates}</p>
  </div>
  </div>
  ) : (
@@ -383,25 +383,25 @@ export function CandidateList({
  <thead className="bg-gray-50 border-b border-gray-200">
  <tr>
  <th className={`px-4 py-3 text-xs font-medium text-gray-500 uppercase text-start`}>
- {t.candidateRef}
+ {localT.candidateRef}
  </th>
  <th className={`px-4 py-3 text-xs font-medium text-gray-500 uppercase text-start`}>
- {t.name}
+ {localT.name}
  </th>
  <th className={`px-4 py-3 text-xs font-medium text-gray-500 uppercase text-start`}>
- {t.email}
+ {localT.email}
  </th>
  <th className={`px-4 py-3 text-xs font-medium text-gray-500 uppercase text-start`}>
- {t.phone}
+ {localT.phone}
  </th>
  <th className={`px-4 py-3 text-xs font-medium text-gray-500 uppercase text-start`}>
- {t.score}
+ {localT.score}
  </th>
  <th className={`px-4 py-3 text-xs font-medium text-gray-500 uppercase text-start`}>
- {t.status}
+ {localT.status}
  </th>
  <th className={`px-4 py-3 text-xs font-medium text-gray-500 uppercase text-start`}>
- {t.actions}
+ {localT.actions}
  </th>
  </tr>
  </thead>
@@ -445,7 +445,7 @@ export function CandidateList({
  setShowDetail(true);
  }}
  className="p-1.5 text-blue-600 hover:bg-blue-50 rounded-lg"
- title={t.view}
+ title={localT.view}
  >
  <Eye className="w-4 h-4" />
  </button>
@@ -454,14 +454,14 @@ export function CandidateList({
  <button
  onClick={() => handleStatusChange(candidate.id, 'Shortlisted')}
  className="p-1.5 text-green-600 hover:bg-green-50 rounded-lg"
- title={t.approve}
+ title={localT.approve}
  >
  <CheckCircle className="w-4 h-4" />
  </button>
  <button
  onClick={() => handleStatusChange(candidate.id, 'Rejected')}
  className="p-1.5 text-red-600 hover:bg-red-50 rounded-lg"
- title={t.reject}
+ title={localT.reject}
  >
  <XCircle className="w-4 h-4" />
  </button>
@@ -483,7 +483,7 @@ export function CandidateList({
  <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-12">
  <div className="text-center text-gray-500">
  <Filter className="w-16 h-16 text-gray-300 mx-auto mb-4" />
- <p className="text-lg font-medium">{t.selectVacancyFirst}</p>
+ <p className="text-lg font-medium">{localT.selectVacancyFirst}</p>
  </div>
  </div>
  )}
