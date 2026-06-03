@@ -2967,7 +2967,9 @@ export const hrLeaveRequests = mysqlTable("hr_leave_requests", {
 
 export const hrRecruitmentCandidates = mysqlTable("hr_recruitment_candidates", {
 	id: int().autoincrement().primaryKey().notNull(),
+	candidateRef: varchar({ length: 100 }).unique().notNull(),
 	organizationId: int().notNull(),
+	operatingUnitId: int(),
 	jobId: int().notNull(),
 	appliedAt: timestamp({ mode: 'string' }),
 	firstName: varchar({ length: 100 }).notNull(),
@@ -3019,6 +3021,7 @@ export const hrRecruitmentCandidates = mysqlTable("hr_recruitment_candidates", {
 
 export const hrRecruitmentJobs = mysqlTable("hr_recruitment_jobs", {
 	id: int().autoincrement().primaryKey().notNull(),
+	vacancyRef: varchar({ length: 100 }).unique().notNull(),
 	organizationId: int().notNull(),
 	operatingUnitId: int(),
 	jobCode: varchar({ length: 50 }),
@@ -3047,6 +3050,68 @@ export const hrRecruitmentJobs = mysqlTable("hr_recruitment_jobs", {
 	createdAt: timestamp({ mode: 'string' }).defaultNow().notNull(),
 	updatedAt: timestamp({ mode: 'string' }).defaultNow().onUpdateNow().notNull(),
 	createdBy: int(),
+});
+
+// Interview Tracking
+export const hrRecruitmentInterviews = mysqlTable("hr_recruitment_interviews", {
+    id: int().autoincrement().primaryKey().notNull(),
+    candidateId: int().notNull(),
+    jobId: int().notNull(),
+    interviewType: varchar({ length: 100 }),
+    interviewDate: timestamp({ mode: 'string' }).notNull(),
+    interviewTime: timestamp({ mode: 'string' }),
+    duration: int(),
+    location: varchar({ length: 255 }),
+    meetingLink: varchar({ length: 500 }),
+    panelMembers: json(),
+    feedbackScore: decimal({ precision: 5, scale: 2 }),
+    feedbackNotes: text(),
+    status: mysqlEnum(['Scheduled','Completed','Cancelled','No-Show']).default('Scheduled'),
+    organizationId: int().notNull(),
+    operatingUnitId: int(),
+    createdBy: int(),
+    createdAt: timestamp({ mode: 'string' }).defaultNow().notNull(),
+    updatedAt: timestamp({ mode: 'string' }).defaultNow().onUpdateNow().notNull(),
+    isDeleted: tinyint().default(0).notNull(),
+});
+
+// Hiring Decisions
+export const hrRecruitmentHiringDecisions = mysqlTable("hr_recruitment_hiring_decisions", {
+    id: int().autoincrement().primaryKey().notNull(),
+    candidateId: int().notNull(),
+    jobId: int().notNull(),
+    proposedSalary: decimal({ precision: 15, scale: 2 }),
+    proposedGrade: varchar({ length: 50 }),
+    contractType: varchar({ length: 50 }),
+    startDate: date({ mode: 'string' }),
+    reportingTo: varchar({ length: 100 }),
+    probationPeriod: int(),
+    benefits: json(),
+    offerStatus: mysqlEnum(['Pending','Accepted','Rejected','Withdrawn']).default('Pending'),
+    approvalNotes: text(),
+    approvedBy: int(),
+    approvalDate: timestamp({ mode: 'string' }),
+    autoCreateEmployee: tinyint().default(0),
+    organizationId: int().notNull(),
+    operatingUnitId: int(),
+    createdBy: int(),
+    createdAt: timestamp({ mode: 'string' }).defaultNow().notNull(),
+    updatedAt: timestamp({ mode: 'string' }).defaultNow().onUpdateNow().notNull(),
+    isDeleted: tinyint().default(0).notNull(),
+});
+
+// Audit Log
+export const hrRecruitmentAuditLog = mysqlTable("hr_recruitment_audit_log", {
+    id: int().autoincrement().primaryKey().notNull(),
+    entityType: varchar({ length: 100 }),
+    entityId: int(),
+    action: varchar({ length: 50 }),
+    oldValues: json(),
+    newValues: json(),
+    changedBy: int(),
+    changedAt: timestamp({ mode: 'string' }).defaultNow(),
+    organizationId: int(),
+    operatingUnitId: int(),
 });
 
 export const hrSalaryGrades = mysqlTable("hr_salary_grades", {
