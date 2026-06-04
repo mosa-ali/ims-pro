@@ -40,7 +40,7 @@ import { VacancyList } from './recruitment/VacancyList';
 import { CandidateList } from './recruitment/CandidateList';
 import { InterviewScheduling } from './recruitment/InterviewScheduling';
 import { InterviewList } from './recruitment/InterviewList';
-import { HiringDecisionComponent } from './recruitment/HiringDecision';
+import { HiringDecision } from './recruitment/HiringDecision';
 import { VacancyForm } from './recruitment/VacancyForm';
 import { useTranslation } from '@/i18n/useTranslation';
 import { BackButton } from "@/components/BackButton";
@@ -254,7 +254,11 @@ export function Recruitment() {
 
  {/* Hiring Decisions Tab */}
  {activeTab === 'hiring' && (
- <HiringDecisionComponent language={language} isRTL={isRTL} />
+ <HiringDecision
+    language={language}
+    isRTL={isRTL}
+    decisionId={1}
+    />
  )}
 
  {/* Vacancy Form Modal */}

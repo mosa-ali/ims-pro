@@ -37,8 +37,19 @@ export default function WarehouseTransferForm() {
     { itemId: null, batchId: null, quantity: "", unitCost: "", notes: "" },
   ]);
 
-  const { data: stockItems } = trpc.logistics.stock.getItems.useQuery({});
-  const { data: allBatches } = trpc.logistics.stockMgmt.batches.list.useQuery({});
+  const { data: stockItemsResponse } =
+      trpc.logistics.stock.listItems.useQuery({
+        limit: 500,
+        offset: 0,
+      });
+
+  const { data: allBatches } =
+      trpc.logistics.stockMgmt.batches.listAll.useQuery({
+        limit: 500,
+        offset: 0,
+      });
+
+    const stockItems = stockItemsResponse?.items ?? [];
 
   const createMutation = trpc.logistics.stockMgmt.transfers.create.useMutation({
     onSuccess: () => { toast.success(isRTL ? "تم إنشاء التحويل كمسودة" : "Transfer created as draft"); setLocation("/organization/logistics/stock/transfers"); },
@@ -55,7 +66,7 @@ export default function WarehouseTransferForm() {
   };
   const getBatchesForItem = (itemId: number | null) => {
     if (!itemId || !allBatches) return [];
-    return allBatches.filter((b: any) => b.itemId === itemId);
+    return allBatches?.items?.filter((b: any) => b.itemId === itemId);
   };
 
   const handleSubmit = () => {
@@ -68,10 +79,13 @@ export default function WarehouseTransferForm() {
       sourceWarehouse: sourceWarehouse.trim(), destinationWarehouse: destinationWarehouse.trim(),
       notes: notes || undefined,
       lines: validLines.map((l) => ({
-        itemId: l.itemId!, batchId: l.batchId || undefined,
-        quantity: parseFloat(l.quantity), unitCost: l.unitCost ? parseFloat(l.unitCost) : undefined,
-        notes: l.notes || undefined,
-      })),
+        itemId: l.itemId!,
+        batchId: l.batchId || undefined,
+        itemName: l.itemName || "",
+        batchNumber: l.batchNumber || undefined,
+        qtyRequested: parseFloat(l.quantity),
+        unit: l.unit || undefined,
+        })),
     });
   };
 
@@ -121,9 +135,9 @@ export default function WarehouseTransferForm() {
                     <Select value={line.itemId?.toString() || ""} onValueChange={(v) => updateLine(idx, "itemId", parseInt(v))}>
                       <SelectTrigger><SelectValue placeholder={isRTL ? "اختر الصنف..." : "Select item..."} /></SelectTrigger>
                       <SelectContent>
-                        {(stockItems || []).map((item: any) => (
+                        {(stockItems.map((item: any) => (
                           <SelectItem key={item.id} value={item.id.toString()}>{item.itemName || item.description || `Item #${item.id}`}</SelectItem>
-                        ))}
+                        )))}
                       </SelectContent>
                     </Select>
                   </div>

@@ -1,282 +1,174 @@
 /**
  * ============================================================================
- * INTERVIEW EVALUATION MODAL
+ * INTERVIEW EVALUATION - REFACTORED FOR tRPC
  * ============================================================================
  * 
- * Features:
- * - Score candidate performance
- * - Add recommendation
- * - Save evaluation
+ * Rate and evaluate interviews with:
+ * - Candidate selection
+ * - Interview rating
+ * - Evaluation notes
+ * - Bilingual support (EN/AR)
+ * - RTL/LTR support
  * 
  * ============================================================================
  */
 
 import { useState } from 'react';
-import { X, Star, FileText, CheckCircle } from 'lucide-react';
-import { interviewService, candidateService } from './recruitmentService';
-import { Interview, Candidate } from './types';
+import { Loader2, AlertCircle, Star } from 'lucide-react';
+import { trpc } from '@/lib/trpc';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useTranslation } from '@/i18n/useTranslation';
+import { toast } from 'sonner';
+import { InterviewEvaluationForm } from './InterviewEvaluationForm';
 
 interface Props {
- language: string;
- isRTL: boolean;
- interview: Interview;
- candidate: Candidate;
- onClose: () => void;
- onComplete: () => void;
+  language: string;
+  isRTL: boolean;
 }
 
-export function InterviewEvaluation({
- language, isRTL, interview, candidate, onClose, onComplete }: Props) {
- const { t } = useTranslation();
- const [formData, setFormData] = useState({
- overallScore: 0,
- recommendation: '',
- notes: interview.notes || ''
- });
+export function InterviewEvaluation({ language, isRTL }: Props) {
+  const { t } = useTranslation();
+  const { isRTL: contextIsRTL } = useLanguage();
+  const dir = isRTL || contextIsRTL ? 'rtl' : 'ltr';
 
- const [errors, setErrors] = useState<Record<string, string>>({});
+  const [selectedCandidateId, setSelectedCandidateId] = useState<number | undefined>();
+  const [selectedInterviewId, setSelectedInterviewId] = useState<number | undefined>();
+  const [showForm, setShowForm] = useState(false);
 
- const validate = (): boolean => {
- const newErrors: Record<string, string> = {};
+  // tRPC queries
+  const { data: candidatesData, isLoading: candidatesLoading } = trpc.hrRecruitment.getAllCandidates.useQuery({
+    limit: 100,
+    offset: 0,
+  });
 
- if (formData.overallScore < 0 || formData.overallScore > 100) {
- newErrors.overallScore = 'Score must be between 0 and 100';
- }
- if (!formData.recommendation.trim()) {
- newErrors.recommendation = 'Recommendation is required';
- }
+  const { data: interviewsData, isLoading: interviewsLoading, error } = trpc.hrRecruitment.getInterviewsByCandidate.useQuery(
+    selectedCandidateId || 0,
+    { enabled: !!selectedCandidateId }
+  );
 
- setErrors(newErrors);
- return Object.keys(newErrors).length === 0;
- };
+  const { data: selectedInterview, isLoading: interviewDetailLoading } = trpc.hrRecruitment.getInterviewsByCandidate.useQuery(
+    selectedInterviewId || 0,
+    { enabled: !!selectedInterviewId }
+  );
 
- const handleSubmit = (e: React.FormEvent) => {
- e.preventDefault();
+  // Translations
+  const localT = {
+    title: t.hrRecruitment?.interviewEvaluation || 'Interview Evaluation',
+    selectCandidate: t.hrRecruitment?.selectCandidate || 'Select Candidate',
+    selectInterview: t.hrRecruitment?.selectInterview || 'Select Interview',
+    interviewDate: t.hrRecruitment?.interviewDate || 'Interview Date',
+    interviewTime: t.hrRecruitment?.interviewTime || 'Interview Time',
+    interviewType: t.hrRecruitment?.interviewType || 'Interview Type',
+    feedbackScore: t.hrRecruitment?.feedbackScore || 'Feedback Score',
+    notes: t.hrRecruitment?.notes || 'Notes',
+    evaluate: t.hrRecruitment?.evaluate || 'Evaluate',
+    noInterviews: t.hrRecruitment?.noInterviews || 'No interviews found',
+    loading: t.common?.loading || 'Loading...',
+  };
 
- if (!validate()) return;
+  return (
+    <div className="space-y-6" dir={dir}>
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <h2 className="text-xl font-bold text-gray-900">{localT.title}</h2>
+      </div>
 
- // Update interview with evaluation
- interviewService.update(interview.id, {
- overallScore: formData.overallScore,
- recommendation: formData.recommendation,
- notes: formData.notes
- });
+      {/* Candidate Selection */}
+      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+        <label className="block text-sm font-medium text-gray-700 mb-2">
+          {localT.selectCandidate}
+        </label>
+        <select
+          value={selectedCandidateId || ''}
+          onChange={(e) => {
+            setSelectedCandidateId(e.target.value ? parseInt(e.target.value) : undefined);
+            setSelectedInterviewId(undefined);
+          }}
+          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+        >
+          <option value="">-- {localT.selectCandidate} --</option>
+          {candidatesLoading ? (
+            <option disabled>{localT.loading}</option>
+          ) : (
+            candidatesData?.map((candidate) => (
+              <option key={candidate.id} value={candidate.id}>
+                {candidate.firstName} {candidate.lastName}
+              </option>
+            ))
+          )}
+        </select>
+      </div>
 
- onComplete();
- };
+      {/* Interviews List */}
+      {selectedCandidateId && (
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">{localT.selectInterview}</h3>
 
- const localT = {
- title: t.hrRecruitment.interviewEvaluation,
- candidateInfo: t.hrRecruitment.candidateInformation,
- interviewDetails: t.hrRecruitment.interviewDetails,
- 
- name: t.hrRecruitment.name,
- email: t.hrRecruitment.email1,
- score: t.hrRecruitment.applicationScore,
- 
- interviewDate: t.hrRecruitment.interviewDate,
- type: t.hrRecruitment.type,
- panel: t.hrRecruitment.panelMembers,
- 
- evaluation: t.hrRecruitment.evaluation,
- overallScore: t.hrRecruitment.overallInterviewScore,
- recommendation: t.hrRecruitment.recommendation,
- notes: t.hrRecruitment.additionalNotes,
- 
- recommendProceed: t.hrRecruitment.recommendForHiring,
- recommendReject: t.hrRecruitment.doNotRecommend,
- needsSecondInterview: t.hrRecruitment.needsSecondInterview,
- 
- cancel: t.hrRecruitment.cancel,
- submit: t.hrRecruitment.submitEvaluation
- };
+          {interviewsLoading ? (
+            <div className="flex items-center justify-center py-8">
+              <Loader2 className="w-6 h-6 animate-spin text-blue-600" />
+            </div>
+          ) : error ? (
+            <div className="flex items-start gap-3 p-4 bg-red-50 rounded-lg border border-red-200">
+              <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
+              <div>
+                <p className="font-medium text-red-900">{t.common?.error || 'Error'}</p>
+                <p className="text-sm text-red-700">{error.message}</p>
+              </div>
+            </div>
+          ) : !interviewsData || interviewsData.length === 0 ? (
+            <div className="text-center py-8">
+              <p className="text-gray-600">{localT.noInterviews}</p>
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {interviewsData.map((interview) => (
+                <div
+                  key={interview.id}
+                  className={`p-4 border rounded-lg cursor-pointer transition-colors ${
+                    selectedInterviewId === interview.id
+                      ? 'border-blue-500 bg-blue-50'
+                      : 'border-gray-200 hover:border-blue-500 hover:bg-blue-50'
+                  }`}
+                  onClick={() => setSelectedInterviewId(interview.id)}
+                >
+                  <div className="flex items-start justify-between">
+                    <div>
+                      <p className="font-medium text-gray-900">{interview.interviewType || 'Interview'}</p>
+                      <p className="text-sm text-gray-600">
+                        {interview.interviewDate ? new Date(interview.interviewDate).toLocaleDateString() : 'N/A'} at{' '}
+                      </p>
+                    </div>
+                    {interview.feedbackScore && (
+                      <div className="flex items-center gap-1">
+                        {[...Array(5)].map((_, i) => (
+                          <Star
+                            key={i}
+                            className={`w-4 h-4 ${i < interview.feedbackScore ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'}`}
+                          />
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
 
- return (
- <div className="fixed inset-0 bg-gray-900/30 backdrop-blur-sm flex items-center justify-center z-50 p-4" dir={isRTL ? 'rtl' : 'ltr'}>
- <div 
- className="bg-white rounded-lg shadow-xl max-w-3xl w-full max-h-[90vh] overflow-hidden flex flex-col"
- 
- >
- {/* Header */}
- <div className="bg-blue-600 text-white px-6 py-4 flex items-center justify-between">
- <div className="flex items-center gap-3">
- <Star className="w-6 h-6" />
- <div>
- <h2 className="text-xl font-bold">{localT.title}</h2>
- <p className="text-sm text-blue-100">{candidate.fullName}</p>
- </div>
- </div>
- <button
- onClick={onClose}
- className="p-1 hover:bg-blue-700 rounded-lg transition-colors"
- >
- <X className="w-5 h-5" />
- </button>
- </div>
-
- {/* Body */}
- <div className="flex-1 overflow-y-auto p-6 space-y-6">
- {/* Candidate Info */}
- <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
- <h3 className="text-sm font-bold text-gray-900 mb-3">{localT.candidateInfo}</h3>
- <div className="grid grid-cols-3 gap-4 text-sm">
- <div>
- <span className="text-gray-600">{localT.name}:</span>
- <p className="font-medium text-gray-900">{candidate.fullName}</p>
- </div>
- <div>
- <span className="text-gray-600">{localT.email}:</span>
- <p className="font-medium text-gray-900">{candidate.email}</p>
- </div>
- <div>
- <span className="text-gray-600">{localT.score}:</span>
- <p className="font-bold text-green-600">{candidate.totalScore.toFixed(1)}%</p>
- </div>
- </div>
- </div>
-
- {/* Interview Details */}
- <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
- <h3 className="text-sm font-bold text-gray-900 mb-3">{localT.interviewDetails}</h3>
- <div className="grid grid-cols-3 gap-4 text-sm">
- <div>
- <span className="text-gray-600">{localT.interviewDate}:</span>
- <p className="font-medium text-gray-900">
- {new Date(interview.interviewDate).toLocaleString()}
- </p>
- </div>
- <div>
- <span className="text-gray-600">{localT.type}:</span>
- <p className="font-medium text-gray-900">{interview.interviewType}</p>
- </div>
- <div>
- <span className="text-gray-600">{localT.panel}:</span>
- <p className="font-medium text-gray-900">{interview.panelMembers.join(', ')}</p>
- </div>
- </div>
- </div>
-
- {/* Evaluation Form */}
- <form onSubmit={handleSubmit} className="space-y-4">
- <div>
- <h3 className="text-lg font-bold text-gray-900 mb-4">{localT.evaluation}</h3>
- 
- <div className="mb-4">
- <label className="block text-sm font-medium text-gray-700 mb-2">
- {localT.overallScore} <span className="text-red-500">*</span>
- </label>
- <div className="flex items-center gap-4">
- <input
- type="range"
- min="0"
- max="100"
- step="5"
- value={formData.overallScore}
- onChange={(e) => setFormData(prev => ({ ...prev, overallScore: parseInt(e.target.value) }))}
- className="flex-1 h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-blue-600"
- />
- <input
- type="number"
- min="0"
- max="100"
- value={formData.overallScore}
- onChange={(e) => setFormData(prev => ({ ...prev, overallScore: parseInt(e.target.value) || 0 }))}
- className={`w-20 px-3 py-2 text-center border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${ errors.overallScore ? 'border-red-500' : 'border-gray-300' }`}
- />
- <span className="text-lg font-bold text-gray-900">%</span>
- </div>
- {errors.overallScore && (
- <p className="text-xs text-red-500 mt-1">{errors.overallScore}</p>
- )}
- 
- {/* Score Color Indicator */}
- <div className="mt-2 flex items-center gap-2">
- <div className={`px-3 py-1 rounded-full text-sm font-medium ${ formData.overallScore >= 80 ? 'bg-green-100 text-green-700' : formData.overallScore >= 60 ? 'bg-yellow-100 text-yellow-700' : 'bg-red-100 text-red-700' }`}>
- {formData.overallScore >= 80 ? 'Excellent' :
- formData.overallScore >= 60 ? 'Good' : 'Needs Improvement'}
- </div>
- </div>
- </div>
-
- <div className="mb-4">
- <label className="block text-sm font-medium text-gray-700 mb-2">
- {localT.recommendation} <span className="text-red-500">*</span>
- </label>
- <div className="space-y-2">
- <label className="flex items-center gap-2 p-3 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer">
- <input
- type="radio"
- value="Recommend for Hiring"
- checked={formData.recommendation === 'Recommend for Hiring'}
- onChange={(e) => setFormData(prev => ({ ...prev, recommendation: e.target.value }))}
- className="w-4 h-4 text-blue-600"
- />
- <span className="text-sm text-gray-900">{localT.recommendProceed}</span>
- </label>
- 
- <label className="flex items-center gap-2 p-3 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer">
- <input
- type="radio"
- value="Needs Second Interview"
- checked={formData.recommendation === 'Needs Second Interview'}
- onChange={(e) => setFormData(prev => ({ ...prev, recommendation: e.target.value }))}
- className="w-4 h-4 text-blue-600"
- />
- <span className="text-sm text-gray-900">{localT.needsSecondInterview}</span>
- </label>
- 
- <label className="flex items-center gap-2 p-3 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer">
- <input
- type="radio"
- value="Do Not Recommend"
- checked={formData.recommendation === 'Do Not Recommend'}
- onChange={(e) => setFormData(prev => ({ ...prev, recommendation: e.target.value }))}
- className="w-4 h-4 text-blue-600"
- />
- <span className="text-sm text-gray-900">{localT.recommendReject}</span>
- </label>
- </div>
- {errors.recommendation && (
- <p className="text-xs text-red-500 mt-1">{errors.recommendation}</p>
- )}
- </div>
-
- <div>
- <label className="block text-sm font-medium text-gray-700 mb-1">
- {localT.notes}
- </label>
- <textarea
- value={formData.notes}
- onChange={(e) => setFormData(prev => ({ ...prev, notes: e.target.value }))}
- rows={4}
- className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
- placeholder={t.placeholders.detailedEvaluationNotes}
- />
- </div>
- </div>
- </form>
- </div>
-
- {/* Footer */}
- <div className="border-t border-gray-200 px-6 py-4 bg-gray-50 flex items-center justify-end gap-3">
- <button
- type="button"
- onClick={onClose}
- className="px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
- >
- {localT.cancel}
- </button>
- <button
- onClick={handleSubmit}
- className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center gap-2"
- >
- <CheckCircle className="w-4 h-4" />
- {localT.submit}
- </button>
- </div>
- </div>
- </div>
- );
+      {/* Evaluation Form */}
+      {selectedInterviewId && selectedInterview && (
+        <InterviewEvaluationForm
+          language={language}
+          isRTL={isRTL}
+          interview={selectedInterview}
+          onSuccess={() => {
+            toast.success(t.hrRecruitment?.evaluationSaved || 'Evaluation saved successfully');
+            setSelectedInterviewId(undefined);
+          }}
+        />
+      )}
+    </div>
+  );
 }

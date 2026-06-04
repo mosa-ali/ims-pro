@@ -49,7 +49,7 @@ export default function DriversForm() {
  useEffect(() => {
  if (driver) {
  setFormData({
- driverName: driver.driverName || "",
+ driverName: driver.fullName || "",
  licenseNumber: driver.licenseNumber || "",
  licenseExpiry: driver.licenseExpiry || "",
  phoneNumber: driver.phoneNumber || "",

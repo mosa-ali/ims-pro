@@ -2991,6 +2991,7 @@ export const hrRecruitmentCandidates = mysqlTable("hr_recruitment_candidates", {
 	interviewNotes: text(),
 	interviewers: text(),
 	status: mysqlEnum([
+	'All',
 	'new',
 	'applied',
 	'screening',

@@ -249,7 +249,14 @@ const issuesRouter = router({
   list: scopedProcedure
     .input(z.object({
       search: z.string().optional(),
-      status: z.enum(["draft", "submitted", "issued", "acknowledged", "cancelled"]).optional(),
+      status: z.enum([
+        "draft",
+        "submitted",
+        "inspected",
+        "accepted",
+        "rejected",
+        "cancelled"
+      ]).optional(),
       limit: z.number().default(50),
       offset: z.number().default(0),
     }))

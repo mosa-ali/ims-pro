@@ -1,427 +1,236 @@
 /**
  * ============================================================================
- * INTERVIEW SCHEDULING
+ * INTERVIEW SCHEDULING - REFACTORED FOR tRPC
  * ============================================================================
  * 
- * Features:
- * - Schedule interviews for shortlisted candidates
- * - Select interview type and panel members
- * - Set date/time
- * - Upload evaluation forms
+ * Schedule interviews with:
+ * - Job selection
+ * - Candidate selection
+ * - Interview details
+ * - Bilingual support (EN/AR)
+ * - RTL/LTR support
  * 
  * ============================================================================
  */
 
-import { useState, useEffect } from 'react';
-import { Calendar, Users, Clock, FileText, Plus, X } from 'lucide-react';
-import {
- candidateService,
- vacancyService,
- interviewService
-} from './recruitmentService';
-import { Candidate, Vacancy, InterviewType } from './types';
+import { useState } from 'react';
+import { AlertCircle, Loader2, Plus } from 'lucide-react';
+import { trpc } from '@/lib/trpc';
+import { useAuth } from '@/_core/hooks/useAuth';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useTranslation } from '@/i18n/useTranslation';
+import { toast } from 'sonner';
+import { InterviewScheduleForm } from './InterviewScheduleForm';
 
 interface Props {
- language: string;
- isRTL: boolean;
+  language: string;
+  isRTL: boolean;
 }
 
-export function InterviewScheduling({
- language, isRTL }: Props) {
- const { t } = useTranslation();
- const [vacancies, setVacancies] = useState<Vacancy[]>([]);
- const [selectedVacancy, setSelectedVacancy] = useState<string>('');
- const [shortlistedCandidates, setShortlistedCandidates] = useState<Candidate[]>([]);
- const [showScheduleForm, setShowScheduleForm] = useState(false);
- const [selectedCandidate, setSelectedCandidate] = useState<Candidate | null>(null);
+export function InterviewScheduling({ language, isRTL }: Props) {
+  const { t } = useTranslation();
+  const { user } = useAuth();
+  const { isRTL: contextIsRTL } = useLanguage();
+  const dir = isRTL || contextIsRTL ? 'rtl' : 'ltr';
 
- const [formData, setFormData] = useState({
- interviewDate: '',
- interviewTime: '',
- interviewType: 'Phone Screening' as InterviewType,
- panelMembers: [''],
- notes: ''
- });
+  // State
+  const [selectedJobId, setSelectedJobId] = useState<number | undefined>();
+  const [showForm, setShowForm] = useState(false);
 
- const [errors, setErrors] = useState<Record<string, string>>({});
+  // tRPC queries
+  const { data: jobsData, isLoading: jobsLoading } = trpc.hrRecruitment.getAllVacancies.useQuery({
+    status: 'open',
+    limit: 100,
+    offset: 0,
+  });
 
- useEffect(() => {
- loadVacancies();
- }, []);
+  const { data: candidatesData, isLoading: candidatesLoading } = trpc.hrRecruitment.getAllCandidates.useQuery(
+    { jobId: selectedJobId, limit: 100, offset: 0 },
+    { enabled: !!selectedJobId }
+  );
 
- useEffect(() => {
- if (selectedVacancy) {
- loadShortlistedCandidates();
- }
- }, [selectedVacancy]);
+  const {
+  data: interviewsData,
+  isLoading: interviewsLoading,
+  refetch: refetchInterviews,
+} = trpc.hrRecruitment.getInterviewsByJob.useQuery(
+  {
+    jobId: selectedJobId ?? 0,
+  },
+  {
+    enabled: !!selectedJobId,
+  }
+);
 
- const loadVacancies = () => {
- const data = vacancyService.getAll().filter(v => v.status === 'Open' || v.status === 'Closed');
- setVacancies(data);
- if (data.length > 0 && !selectedVacancy) {
- setSelectedVacancy(data[0].id);
- }
- };
+  // Translations
+  const localT = {
+    title: t.hrRecruitment?.interviewScheduling || 'Interview Scheduling',
+    selectJob: t.hrRecruitment?.selectJob || 'Select Job',
+    selectCandidate: t.hrRecruitment?.selectCandidate || 'Select Candidate',
+    scheduleInterview: t.hrRecruitment?.scheduleInterview || 'Schedule Interview',
+    noJobsSelected: t.hrRecruitment?.noJobsSelected || 'Please select a job first',
+    noCandidates: t.hrRecruitment?.noCandidates || 'No candidates available',
+    upcomingInterviews: t.hrRecruitment?.upcomingInterviews || 'Upcoming Interviews',
+    noInterviews: t.hrRecruitment?.noInterviews || 'No interviews scheduled',
+    candidate: t.hrRecruitment?.candidate || 'Candidate',
+    interviewType: t.hrRecruitment?.interviewType || 'Interview Type',
+    interviewDate: t.hrRecruitment?.interviewDate || 'Interview Date',
+    interviewTime: t.hrRecruitment?.interviewTime || 'Interview Time',
+    panelMembers: t.hrRecruitment?.panelMembers || 'Panel Members',
+    loading: t.common?.loading || 'Loading...',
+  };
 
- const loadShortlistedCandidates = () => {
- const allCandidates = candidateService.getByVacancy(selectedVacancy);
- const shortlisted = allCandidates.filter(c => 
- c.isShortlisted && c.status === 'Shortlisted'
- );
- setShortlistedCandidates(shortlisted);
- };
+  return (
+    <div className="space-y-6" dir={dir}>
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <h2 className="text-xl font-bold text-gray-900">{localT.title}</h2>
+        <button
+          onClick={() => setShowForm(true)}
+          disabled={!selectedJobId}
+          className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center gap-2"
+        >
+          <Plus className="w-5 h-5" />
+          {localT.scheduleInterview}
+        </button>
+      </div>
 
- const handleScheduleClick = (candidate: Candidate) => {
- setSelectedCandidate(candidate);
- setShowScheduleForm(true);
- setFormData({
- interviewDate: '',
- interviewTime: '',
- interviewType: 'Phone Screening',
- panelMembers: [''],
- notes: ''
- });
- setErrors({});
- };
+      {/* Job Selection */}
+      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+        <label className="block text-sm font-medium text-gray-700 mb-2">
+          {localT.selectJob}
+        </label>
+        <select
+          value={selectedJobId || ''}
+          onChange={(e) => setSelectedJobId(e.target.value ? parseInt(e.target.value) : undefined)}
+          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+        >
+          <option value="">-- {localT.selectJob} --</option>
+          {jobsLoading ? (
+            <option disabled>{localT.loading}</option>
+          ) : (
+            jobsData?.map((job) => (
+              <option key={job.id} value={job.id}>
+                {job.jobTitle} ({job.jobCode || 'N/A'})
+              </option>
+            ))
+          )}
+        </select>
+      </div>
 
- const handleAddPanelMember = () => {
- setFormData(prev => ({
- ...prev,
- panelMembers: [...prev.panelMembers, '']
- }));
- };
+      {/* Candidates List */}
+      {selectedJobId && (
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">{localT.selectCandidate}</h3>
+          
+          {candidatesLoading ? (
+            <div className="flex items-center justify-center py-8">
+              <Loader2 className="w-6 h-6 animate-spin text-blue-600" />
+            </div>
+          ) : !candidatesData || candidatesData.length === 0 ? (
+            <div className="text-center py-8">
+              <p className="text-gray-600">{localT.noCandidates}</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              {candidatesData.map((candidate) => (
+                <div
+                  key={candidate.id}
+                  className="p-3 border border-gray-200 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition-colors cursor-pointer"
+                  onClick={() => {
+                    // TODO: Pre-fill form with candidate
+                    setShowForm(true);
+                  }}
+                >
+                  <p className="font-medium text-gray-900">
+                    {candidate.firstName} {candidate.lastName}
+                  </p>
+                  <p className="text-sm text-gray-600">{candidate.email}</p>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
 
- const handleRemovePanelMember = (index: number) => {
- setFormData(prev => ({
- ...prev,
- panelMembers: prev.panelMembers.filter((_, i) => i !== index)
- }));
- };
+      {/* Upcoming Interviews */}
+      {selectedJobId && (
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">{localT.upcomingInterviews}</h3>
+          
+          {interviewsLoading ? (
+            <div className="flex items-center justify-center py-8">
+              <Loader2 className="w-6 h-6 animate-spin text-blue-600" />
+            </div>
+          ) : !interviewsData || interviewsData.length === 0 ? (
+            <div className="text-center py-8">
+              <p className="text-gray-600">{localT.noInterviews}</p>
+            </div>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead className="bg-gray-50 border-b border-gray-200">
+                  <tr>
+                    <th className="px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider text-start">
+                      {localT.candidate}
+                    </th>
+                    <th className="px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider text-start">
+                      {localT.interviewType}
+                    </th>
+                    <th className="px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider text-start">
+                      {localT.interviewDate}
+                    </th>
+                    <th className="px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider text-start">
+                      {localT.interviewTime}
+                    </th>
+                    <th className="px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider text-start">
+                      {localT.panelMembers}
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  {interviewsData.map((interview) => (
+                    <tr key={interview.candidateId} className="hover:bg-gray-50">
+                      <td className="px-4 py-3 text-sm text-gray-900">
+                        {/* TODO: Display candidate name */}
+                        Candidate
+                      </td>
+                      <td className="px-4 py-3 text-sm text-gray-600">
+                        {interview.interviewType || '-'}
+                      </td>
+                      <td className="px-4 py-3 text-sm text-gray-600">
+                        {interview.interviewDate ? new Date(interview.interviewDate).toLocaleDateString() : '-'}
+                      </td>
+                      <td className="px-4 py-3 text-sm text-gray-600">
+                        {interview.interviewTime || '-'}
+                      </td>
+                      <td className="px-4 py-3 text-sm text-gray-600">
+                        {typeof interview.panelMembers === 'string'
+                        ? interview.panelMembers
+                        : JSON.stringify(interview.panelMembers)}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
+      )}
 
- const handlePanelMemberChange = (index: number, value: string) => {
- setFormData(prev => ({
- ...prev,
- panelMembers: prev.panelMembers.map((m, i) => i === index ? value : m)
- }));
- };
-
- const validate = (): boolean => {
- const newErrors: Record<string, string> = {};
-
- if (!formData.interviewDate) newErrors.interviewDate = 'Date is required';
- if (!formData.interviewTime) newErrors.interviewTime = 'Time is required';
- if (formData.panelMembers.every(m => !m.trim())) {
- newErrors.panelMembers = 'At least one panel member is required';
- }
-
- setErrors(newErrors);
- return Object.keys(newErrors).length === 0;
- };
-
- const handleSubmit = (e: React.FormEvent) => {
- e.preventDefault();
-
- if (!validate() || !selectedCandidate) return;
-
- const interviewDateTime = new Date(`${formData.interviewDate}T${formData.interviewTime}`);
-
- interviewService.create({
- candidateId: selectedCandidate.id,
- vacancyId: selectedVacancy,
- interviewDate: interviewDateTime.toISOString(),
- interviewType: formData.interviewType,
- panelMembers: formData.panelMembers.filter(m => m.trim()),
- notes: formData.notes,
- conductedBy: 'Current User' // In real app, get from auth context
- });
-
- // Update candidate status
- candidateService.updateStatus(selectedCandidate.id, 'Interviewed');
-
- setShowScheduleForm(false);
- setSelectedCandidate(null);
- loadShortlistedCandidates();
- };
-
- const localT = {
- title: t.hrRecruitment.interviewScheduling,
- selectVacancy: t.hrRecruitment.selectVacancy,
- shortlistedCandidates: t.hrRecruitment.shortlistedCandidates,
- 
- candidateRef: t.hrRecruitment.ref,
- name: t.hrRecruitment.name,
- email: t.hrRecruitment.email1,
- score: t.hrRecruitment.score,
- status: t.hrRecruitment.status,
- schedule: t.hrRecruitment.scheduleInterview,
- 
- scheduleInterview: t.hrRecruitment.scheduleInterview,
- interviewDate: t.hrRecruitment.interviewDate,
- interviewTime: t.hrRecruitment.interviewTime,
- interviewType: t.hrRecruitment.interviewType,
- panelMembers: t.hrRecruitment.panelMembers,
- addMember: t.hrRecruitment.addMember,
- notes: t.hrRecruitment.notes,
- 
- phoneScreening: t.hrRecruitment.phoneScreening,
- technicalInterview: t.hrRecruitment.technicalInterview,
- panelInterview: t.hrRecruitment.panelInterview,
- finalInterview: t.hrRecruitment.finalInterview,
- 
- cancel: t.hrRecruitment.cancel,
- scheduleBtn: t.hrRecruitment.schedule,
- 
- noCandidates: t.hrRecruitment.noShortlistedCandidatesFound
- };
-
- return (
- <div className="space-y-6" dir={isRTL ? 'rtl' : 'ltr'}>
- {/* Header */}
- <div className="flex items-center justify-between">
- <h2 className="text-xl font-bold text-gray-900">{localT.title}</h2>
- </div>
-
- {/* Vacancy Selector */}
- <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
- <label className="block text-sm font-medium text-gray-700 mb-2">
- {localT.selectVacancy}
- </label>
- <select
- value={selectedVacancy}
- onChange={(e) => setSelectedVacancy(e.target.value)}
- className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
- >
- {vacancies.map(vacancy => (
- <option key={vacancy.id} value={vacancy.id}>
- {vacancy.vacancyRef} - {vacancy.positionTitle}
- </option>
- ))}
- </select>
- </div>
-
- {/* Shortlisted Candidates */}
- {selectedVacancy && (
- <div className="bg-white rounded-lg shadow-sm border border-gray-200">
- <div className="p-4 border-b border-gray-200">
- <h3 className="text-lg font-bold text-gray-900">{localT.shortlistedCandidates}</h3>
- </div>
-
- {shortlistedCandidates.length === 0 ? (
- <div className="p-12 text-center text-gray-500">
- <Users className="w-16 h-16 text-gray-300 mx-auto mb-4" />
- <p>{localT.noCandidates}</p>
- </div>
- ) : (
- <div className="overflow-x-auto">
- <table className="w-full">
- <thead className="bg-gray-50 border-b border-gray-200">
- <tr>
- <th className={`px-4 py-3 text-xs font-medium text-gray-500 uppercase text-center`}>
- {localT.candidateRef}
- </th>
- <th className={`px-4 py-3 text-xs font-medium text-gray-500 uppercase text-center`}>
- {localT.name}
- </th>
- <th className={`px-4 py-3 text-xs font-medium text-gray-500 uppercase text-center`}>
- {localT.email}
- </th>
- <th className={`px-4 py-3 text-xs font-medium text-gray-500 uppercase text-center`}>
- {localT.score}
- </th>
- <th className={`px-4 py-3 text-xs font-medium text-gray-500 uppercase text-center`}>
- {localT.status}
- </th>
- <th className={`px-4 py-3 text-xs font-medium text-gray-500 uppercase text-center`}>
- Actions
- </th>
- </tr>
- </thead>
- <tbody className="divide-y divide-gray-200">
- {shortlistedCandidates.map((candidate) => (
- <tr key={candidate.id} className="hover:bg-gray-50">
- <td className="px-4 py-3 text-sm font-mono text-gray-900">
- {candidate.candidateRef}
- </td>
- <td className="px-4 py-3 text-sm text-gray-900 font-medium">
- {candidate.fullName}
- </td>
- <td className="px-4 py-3 text-sm text-gray-600">
- {candidate.email}
- </td>
- <td className="px-4 py-3 text-sm">
- <span className="text-green-600 font-bold">
- {candidate.totalScore.toFixed(1)}%
- </span>
- </td>
- <td className="px-4 py-3 text-sm">
- <span className="px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-700">
- {candidate.status}
- </span>
- </td>
- <td className="px-4 py-3 text-sm">
- <button
- onClick={() => handleScheduleClick(candidate)}
- className="px-3 py-1.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center gap-2 text-xs"
- >
- <Calendar className="w-4 h-4" />
- {localT.schedule}
- </button>
- </td>
- </tr>
- ))}
- </tbody>
- </table>
- </div>
- )}
- </div>
- )}
-
- {/* Schedule Interview Modal */}
- {showScheduleForm && selectedCandidate && (
- <div className="fixed inset-0 bg-gray-900/30 backdrop-blur-sm flex items-center justify-center z-50 p-4">
- <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-hidden flex flex-col">
- {/* Header */}
- <div className="bg-blue-600 text-white px-6 py-4 flex items-center justify-between">
- <div className="flex items-center gap-3">
- <Calendar className="w-6 h-6" />
- <div>
- <h3 className="text-xl font-bold">{localT.scheduleInterview}</h3>
- <p className="text-sm text-blue-100">{selectedCandidate.fullName}</p>
- </div>
- </div>
- <button
- onClick={() => setShowScheduleForm(false)}
- className="p-1 hover:bg-blue-700 rounded-lg transition-colors"
- >
- <X className="w-5 h-5" />
- </button>
- </div>
-
- {/* Body */}
- <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto p-6 space-y-4">
- <div className="grid grid-cols-2 gap-4">
- <div>
- <label className="block text-sm font-medium text-gray-700 mb-1">
- {localT.interviewDate} <span className="text-red-500">*</span>
- </label>
- <input
- type="date"
- value={formData.interviewDate}
- onChange={(e) => setFormData(prev => ({ ...prev, interviewDate: e.target.value }))}
- className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${ errors.interviewDate ? 'border-red-500' : 'border-gray-300' }`}
- />
- {errors.interviewDate && (
- <p className="text-xs text-red-500 mt-1">{errors.interviewDate}</p>
- )}
- </div>
-
- <div>
- <label className="block text-sm font-medium text-gray-700 mb-1">
- {localT.interviewTime} <span className="text-red-500">*</span>
- </label>
- <input
- type="time"
- value={formData.interviewTime}
- onChange={(e) => setFormData(prev => ({ ...prev, interviewTime: e.target.value }))}
- className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${ errors.interviewTime ? 'border-red-500' : 'border-gray-300' }`}
- />
- {errors.interviewTime && (
- <p className="text-xs text-red-500 mt-1">{errors.interviewTime}</p>
- )}
- </div>
- </div>
-
- <div>
- <label className="block text-sm font-medium text-gray-700 mb-1">
- {localT.interviewType} <span className="text-red-500">*</span>
- </label>
- <select
- value={formData.interviewType}
- onChange={(e) => setFormData(prev => ({ ...prev, interviewType: e.target.value as InterviewType }))}
- className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
- >
- <option value="Phone Screening">{localT.phoneScreening}</option>
- <option value="Technical Interview">{localT.technicalInterview}</option>
- <option value="Panel Interview">{localT.panelInterview}</option>
- <option value="Final Interview">{localT.finalInterview}</option>
- </select>
- </div>
-
- <div>
- <label className="block text-sm font-medium text-gray-700 mb-2">
- {localT.panelMembers} <span className="text-red-500">*</span>
- </label>
- <div className="space-y-2">
- {formData.panelMembers.map((member, index) => (
- <div key={index} className="flex items-center gap-2">
- <input
- type="text"
- value={member}
- onChange={(e) => handlePanelMemberChange(index, e.target.value)}
- placeholder={t.placeholders.enterName}
- className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
- />
- {formData.panelMembers.length > 1 && (
- <button
- type="button"
- onClick={() => handleRemovePanelMember(index)}
- className="p-2 text-red-600 hover:bg-red-50 rounded-lg"
- >
- <X className="w-4 h-4" />
- </button>
- )}
- </div>
- ))}
- </div>
- {errors.panelMembers && (
- <p className="text-xs text-red-500 mt-1">{errors.panelMembers}</p>
- )}
- <button
- type="button"
- onClick={handleAddPanelMember}
- className="mt-2 px-3 py-1.5 text-sm text-blue-600 hover:bg-blue-50 rounded-lg flex items-center gap-2"
- >
- <Plus className="w-4 h-4" />
- {localT.addMember}
- </button>
- </div>
-
- <div>
- <label className="block text-sm font-medium text-gray-700 mb-1">
- {localT.notes}
- </label>
- <textarea
- value={formData.notes}
- onChange={(e) => setFormData(prev => ({ ...prev, notes: e.target.value }))}
- rows={3}
- className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
- placeholder={t.placeholders.additionalNotes}
- />
- </div>
- </form>
-
- {/* Footer */}
- <div className="border-t border-gray-200 px-6 py-4 bg-gray-50 flex items-center justify-end gap-3">
- <button
- type="button"
- onClick={() => setShowScheduleForm(false)}
- className="px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
- >
- {localT.cancel}
- </button>
- <button
- onClick={handleSubmit}
- className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center gap-2"
- >
- <Calendar className="w-4 h-4" />
- {localT.scheduleBtn}
- </button>
- </div>
- </div>
- </div>
- )}
- </div>
- );
+      {/* Interview Form Modal */}
+      {showForm && selectedJobId && (
+        <InterviewScheduleForm
+          language={language}
+          isRTL={isRTL}
+          jobId={selectedJobId}
+          onClose={() => setShowForm(false)}
+          onSuccess={() => {
+            setShowForm(false);
+            refetchInterviews();
+          }}
+        />
+      )}
+    </div>
+  );
 }

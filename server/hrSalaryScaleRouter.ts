@@ -512,6 +512,106 @@ export const hrSalaryScaleRouter = router({
   /**
    * Soft delete salary record
    */
+  syncWithStaff: scopedProcedure
+  .mutation(async ({ ctx }) => {
+    const { organizationId, operatingUnitId } = ctx.scope;
+
+    const db = await getDb();
+
+    if (!db) {
+      throw new TRPCError({
+        code: "INTERNAL_SERVER_ERROR",
+        message: "Database not available",
+      });
+    }
+
+    const employeeConditions = [
+      eq(hrEmployees.organizationId, organizationId),
+      eq(hrEmployees.isDeleted, 0),
+    ];
+
+    if (operatingUnitId) {
+      employeeConditions.push(
+        eq(hrEmployees.operatingUnitId, operatingUnitId)
+      );
+    }
+
+    const employees = await db
+      .select()
+      .from(hrEmployees)
+      .where(and(...employeeConditions));
+
+    let created = 0;
+
+    for (const employee of employees) {
+      const existing = await db
+        .select()
+        .from(hrSalaryScale)
+        .where(
+          and(
+            eq(hrSalaryScale.employeeId, employee.id),
+            eq(hrSalaryScale.organizationId, organizationId),
+            eq(hrSalaryScale.isDeleted, 0)
+          )
+        )
+        .limit(1);
+
+      if (existing.length > 0) {
+        continue;
+      }
+
+      await db.insert(hrSalaryScale).values({
+        organizationId,
+        operatingUnitId: operatingUnitId || 0,
+
+        employeeId: employee.id,
+        staffId: employee.employeeCode,
+        staffFullName:
+          `${employee.firstName} ${employee.lastName}`.trim(),
+
+        position: employee.position || "",
+        department: employee.department || "",
+
+        gradeCode: "UNASSIGNED",
+        step: "1",
+
+        basicSalary: "0",
+        approvedGrossSalary: "0",
+
+        housingAllowance: "0",
+        transportAllowance: "0",
+        representationAllowance: "0",
+        otherAllowances: "0",
+
+        taxPercent: "0",
+
+        employerContribution: "0",
+        employeeContribution: "0",
+        socialSecurityDeduction: "0",
+
+        currency: "USD",
+
+        effectiveStartDate:
+          new Date().toISOString().split("T")[0],
+
+        status: "draft",
+
+        version: 1,
+
+        createdBy: ctx.user?.id,
+        updatedBy: ctx.user?.id,
+      });
+
+      created++;
+    }
+
+    return {
+      success: true,
+      created,
+      totalEmployees: employees.length,
+    };
+  }),
+  
   delete: scopedProcedure
     .input(z.object({ id: z.number() }))
     .mutation(async ({ ctx, input }) => {

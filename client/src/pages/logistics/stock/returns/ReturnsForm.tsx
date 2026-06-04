@@ -149,7 +149,7 @@ export default function ReturnsForm() {
  setLineItems(updated);
  };
 
- const handleSubmit = async (e: React.FormEvent, saveStatus: "draft" | "submitted" | "inspected" | "accepted" | "rejected") => {
+ const handleSubmit = async (e: React.FormEvent, saveStatus: "draft" | "submitted" | "inspected" | "accepted" | "rejected" | "cancelled") => {
  e.preventDefault();
 
  // Validation

@@ -96,6 +96,7 @@ export interface Candidate {
  
  // Scoring & Status
  autoScorePercentage: number;
+ totalScore: number;
  scoreBreakdown?: CandidateScoreBreakdown[];
  shortlistStatus: ShortlistStatus;
  finalStatus: CandidateStatus;
@@ -274,3 +275,4 @@ export interface ShortListExportData extends LongListExportData {
  interviewScore?: number;
  recommendation?: string;
 }
+

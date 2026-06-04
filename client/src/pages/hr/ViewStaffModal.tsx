@@ -6,7 +6,7 @@
 
 import { useState } from 'react';
 import { X, User, Briefcase, FolderKanban, CreditCard, FileText } from 'lucide-react';
-import { StaffMember } from '../types/hrTypes';
+import { StaffMember } from './types/hrTypes';
 import { ModalOverlay } from '@/app/components/ui/ModalOverlay';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useTranslation } from '@/i18n/useTranslation';
@@ -82,16 +82,16 @@ export function ViewStaffModal({
  };
 
  const tabs = [
- { id: 0, label: t.personalInfo, icon: User },
- { id: 1, label: t.employmentInfo, icon: Briefcase },
- { id: 2, label: t.projectAssignment, icon: FolderKanban },
- { id: 3, label: t.bankPayment, icon: CreditCard },
+ { id: 0, label: localT.personalInfo, icon: User },
+ { id: 1, label: localT.employmentInfo, icon: Briefcase },
+ { id: 2, label: localT.projectAssignment, icon: FolderKanban },
+ { id: 3, label: localT.bankPayment, icon: CreditCard },
  { id: 4, label: t.documents, icon: FileText }
  ];
 
  // Format date
  const formatDate = (dateString?: string) => {
- if (!dateString) return t.notAvailable;
+ if (!dateString) return localT.notAvailable;
  return new Date(dateString).toLocaleDateString(t.hrStaff.en, {
  year: 'numeric',
  month: 'long',
@@ -109,7 +109,7 @@ export function ViewStaffModal({
  <div className="bg-gray-50 rounded-lg w-full max-w-4xl max-h-[90vh] flex flex-col" dir={isRTL ? 'rtl' : 'ltr'}>
  {/* Header */}
  <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 bg-white rounded-t-lg">
- <h2 className="text-xl font-bold text-gray-900">{t.viewStaff}</h2>
+ <h2 className="text-xl font-bold text-gray-900">{localT.viewStaff}</h2>
  <button onClick={onClose} className="text-gray-400 hover:text-gray-600">
  <X className="w-6 h-6" />
  </button>
@@ -139,14 +139,14 @@ export function ViewStaffModal({
  <div className="space-y-4">
  <div className="grid grid-cols-2 gap-4">
  <div>
- <label className="block text-sm font-medium text-gray-700 mb-1">{t.staffId}</label>
+ <label className="block text-sm font-medium text-gray-700 mb-1">{localT.staffId}</label>
  <div className="px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-gray-900 font-mono">
  {staffMember.staffId}
  </div>
  </div>
 
  <div>
- <label className="block text-sm font-medium text-gray-700 mb-1">{t.fullName}</label>
+ <label className="block text-sm font-medium text-gray-700 mb-1">{localT.fullName}</label>
  <div className="px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-gray-900">
  {staffMember.fullName}
  </div>
@@ -155,14 +155,14 @@ export function ViewStaffModal({
 
  <div className="grid grid-cols-2 gap-4">
  <div>
- <label className="block text-sm font-medium text-gray-700 mb-1">{t.gender}</label>
+ <label className="block text-sm font-medium text-gray-700 mb-1">{localT.gender}</label>
  <div className="px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-gray-900">
  {staffMember.gender}
  </div>
  </div>
 
  <div>
- <label className="block text-sm font-medium text-gray-700 mb-1">{t.nationality}</label>
+ <label className="block text-sm font-medium text-gray-700 mb-1">{localT.nationality}</label>
  <div className="px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-gray-900">
  {staffMember.nationality}
  </div>
@@ -171,24 +171,24 @@ export function ViewStaffModal({
 
  <div className="grid grid-cols-2 gap-4">
  <div>
- <label className="block text-sm font-medium text-gray-700 mb-1">{t.dateOfBirth}</label>
+ <label className="block text-sm font-medium text-gray-700 mb-1">{localT.dateOfBirth}</label>
  <div className="px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-gray-900">
  {formatDate(staffMember.dateOfBirth)}
  </div>
  </div>
 
  <div>
- <label className="block text-sm font-medium text-gray-700 mb-1">{t.phone}</label>
+ <label className="block text-sm font-medium text-gray-700 mb-1">{localT.phone}</label>
  <div className="px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-gray-900">
- {staffMember.phone || t.notAvailable}
+ {staffMember.phone || localT.notAvailable}
  </div>
  </div>
  </div>
 
  <div>
- <label className="block text-sm font-medium text-gray-700 mb-1">{t.email}</label>
+ <label className="block text-sm font-medium text-gray-700 mb-1">{localT.email}</label>
  <div className="px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-gray-900">
- {staffMember.email || t.notAvailable}
+ {staffMember.email || localT.notAvailable}
  </div>
  </div>
  </div>
@@ -199,14 +199,14 @@ export function ViewStaffModal({
  <div className="space-y-4">
  <div className="grid grid-cols-2 gap-4">
  <div>
- <label className="block text-sm font-medium text-gray-700 mb-1">{t.position}</label>
+ <label className="block text-sm font-medium text-gray-700 mb-1">{localT.position}</label>
  <div className="px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-gray-900">
  {staffMember.position}
  </div>
  </div>
 
  <div>
- <label className="block text-sm font-medium text-gray-700 mb-1">{t.department}</label>
+ <label className="block text-sm font-medium text-gray-700 mb-1">{localT.department}</label>
  <div className="px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-gray-900">
  {staffMember.department}
  </div>
@@ -215,14 +215,14 @@ export function ViewStaffModal({
 
  <div className="grid grid-cols-2 gap-4">
  <div>
- <label className="block text-sm font-medium text-gray-700 mb-1">{t.contractType}</label>
+ <label className="block text-sm font-medium text-gray-700 mb-1">{localT.contractType}</label>
  <div className="px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-gray-900">
  {staffMember.contractType}
  </div>
  </div>
 
  <div>
- <label className="block text-sm font-medium text-gray-700 mb-1">{t.status}</label>
+ <label className="block text-sm font-medium text-gray-700 mb-1">{localT.status}</label>
  <div className="px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg">
  <span className={`inline-block px-2 py-1 rounded text-xs font-medium ${ staffMember.status === 'active' ? 'bg-green-100 text-green-700' : staffMember.status === 'leave' ? 'bg-yellow-100 text-yellow-700' : 'bg-gray-100 text-gray-700' }`}>
  {staffMember.status.charAt(0).toUpperCase() + staffMember.status.slice(1)}
@@ -233,21 +233,21 @@ export function ViewStaffModal({
 
  <div className="grid grid-cols-3 gap-4">
  <div>
- <label className="block text-sm font-medium text-gray-700 mb-1">{t.hireDate}</label>
+ <label className="block text-sm font-medium text-gray-700 mb-1">{localT.hireDate}</label>
  <div className="px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-gray-900">
  {formatDate(staffMember.hireDate)}
  </div>
  </div>
 
  <div>
- <label className="block text-sm font-medium text-gray-700 mb-1">{t.contractStartDate}</label>
+ <label className="block text-sm font-medium text-gray-700 mb-1">{localT.contractStartDate}</label>
  <div className="px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-gray-900">
  {formatDate(staffMember.contractStartDate)}
  </div>
  </div>
 
  <div>
- <label className="block text-sm font-medium text-gray-700 mb-1">{t.contractEndDate}</label>
+ <label className="block text-sm font-medium text-gray-700 mb-1">{localT.contractEndDate}</label>
  <div className="px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-gray-900">
  {formatDate(staffMember.contractEndDate)}
  </div>
@@ -256,18 +256,18 @@ export function ViewStaffModal({
 
  {/* Salary Section */}
  <div className="mt-6 pt-6 border-t border-gray-200">
- <h3 className="text-base font-semibold text-gray-900 mb-4">{t.salaryInfo}</h3>
+ <h3 className="text-base font-semibold text-gray-900 mb-4">{localT.salaryInfo}</h3>
  
  <div className="grid grid-cols-2 gap-4">
  <div>
- <label className="block text-sm font-medium text-gray-700 mb-1">{t.basicSalary}</label>
+ <label className="block text-sm font-medium text-gray-700 mb-1">{localT.basicSalary}</label>
  <div className="px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-gray-900">
  {formatCurrency(staffMember.basicSalary)} {staffMember.currency}
  </div>
  </div>
 
  <div>
- <label className="block text-sm font-medium text-gray-700 mb-1">{t.currency}</label>
+ <label className="block text-sm font-medium text-gray-700 mb-1">{localT.currency}</label>
  <div className="px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-gray-900">
  {staffMember.currency}
  </div>
@@ -276,14 +276,14 @@ export function ViewStaffModal({
 
  <div className="grid grid-cols-2 gap-4 mt-4">
  <div>
- <label className="block text-sm font-medium text-gray-700 mb-1">{t.housingAllowance}</label>
+ <label className="block text-sm font-medium text-gray-700 mb-1">{localT.housingAllowance}</label>
  <div className="px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-gray-900">
  {formatCurrency(staffMember.housingAllowance)} {staffMember.currency}
  </div>
  </div>
 
  <div>
- <label className="block text-sm font-medium text-gray-700 mb-1">{t.transportAllowance}</label>
+ <label className="block text-sm font-medium text-gray-700 mb-1">{localT.transportAllowance}</label>
  <div className="px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-gray-900">
  {formatCurrency(staffMember.transportAllowance)} {staffMember.currency}
  </div>
@@ -292,14 +292,14 @@ export function ViewStaffModal({
 
  <div className="grid grid-cols-2 gap-4 mt-4">
  <div>
- <label className="block text-sm font-medium text-gray-700 mb-1">{t.representationAllowance}</label>
+ <label className="block text-sm font-medium text-gray-700 mb-1">{localT.representationAllowance}</label>
  <div className="px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-gray-900">
  {formatCurrency(staffMember.representationAllowance)} {staffMember.currency}
  </div>
  </div>
 
  <div>
- <label className="block text-sm font-medium text-gray-700 mb-1">{t.otherAllowances}</label>
+ <label className="block text-sm font-medium text-gray-700 mb-1">{localT.otherAllowances}</label>
  <div className="px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-gray-900">
  {formatCurrency(staffMember.otherAllowances)} {staffMember.currency}
  </div>
@@ -308,21 +308,21 @@ export function ViewStaffModal({
 
  <div className="grid grid-cols-3 gap-4 mt-4">
  <div>
- <label className="block text-sm font-medium text-gray-700 mb-1">{t.socialSecurityRate}</label>
+ <label className="block text-sm font-medium text-gray-700 mb-1">{localT.socialSecurityRate}</label>
  <div className="px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-gray-900">
  {staffMember.socialSecurityRate}%
  </div>
  </div>
 
  <div>
- <label className="block text-sm font-medium text-gray-700 mb-1">{t.healthInsuranceRate}</label>
+ <label className="block text-sm font-medium text-gray-700 mb-1">{localT.healthInsuranceRate}</label>
  <div className="px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-gray-900">
  {staffMember.healthInsuranceRate}%
  </div>
  </div>
 
  <div>
- <label className="block text-sm font-medium text-gray-700 mb-1">{t.taxRate}</label>
+ <label className="block text-sm font-medium text-gray-700 mb-1">{localT.taxRate}</label>
  <div className="px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-gray-900">
  {staffMember.taxRate}%
  </div>
@@ -336,10 +336,10 @@ export function ViewStaffModal({
  {activeTab === 2 && (
  <div className="space-y-4">
  <div>
- <label className="block text-sm font-medium text-gray-700 mb-2">{t.projects}</label>
+ <label className="block text-sm font-medium text-gray-700 mb-2">{localT.projects}</label>
  {staffMember.projects.length === 0 ? (
  <div className="px-3 py-8 bg-gray-50 border border-gray-200 rounded-lg text-center text-gray-500">
- {t.noProjects}
+ {localT.noProjects}
  </div>
  ) : (
  <div className="space-y-2">
@@ -358,24 +358,24 @@ export function ViewStaffModal({
  {activeTab === 3 && (
  <div className="space-y-4">
  <div>
- <label className="block text-sm font-medium text-gray-700 mb-1">{t.bankName}</label>
+ <label className="block text-sm font-medium text-gray-700 mb-1">{localT.bankName}</label>
  <div className="px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-gray-900">
- {staffMember.bankName || t.notAvailable}
+ {staffMember.bankName || localT.notAvailable}
  </div>
  </div>
 
  <div className="grid grid-cols-2 gap-4">
  <div>
- <label className="block text-sm font-medium text-gray-700 mb-1">{t.accountNumber}</label>
+ <label className="block text-sm font-medium text-gray-700 mb-1">{localT.accountNumber}</label>
  <div className="px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-gray-900 font-mono">
- {staffMember.accountNumber || t.notAvailable}
+ {staffMember.accountNumber || localT.notAvailable}
  </div>
  </div>
 
  <div>
- <label className="block text-sm font-medium text-gray-700 mb-1">{t.iban}</label>
+ <label className="block text-sm font-medium text-gray-700 mb-1">{localT.iban}</label>
  <div className="px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-gray-900 font-mono">
- {staffMember.iban || t.notAvailable}
+ {staffMember.iban || localT.notAvailable}
  </div>
  </div>
  </div>
@@ -386,7 +386,7 @@ export function ViewStaffModal({
  {activeTab === 4 && (
  <div className="py-12 text-center text-gray-500">
  <FileText className="w-12 h-12 mx-auto mb-3 text-gray-400" />
- <p>{t.documentsNote}</p>
+ <p>{localT.documentsNote}</p>
  </div>
  )}
  </div>
@@ -397,7 +397,7 @@ export function ViewStaffModal({
  onClick={onClose}
  className="px-6 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700"
  >
- {t.close}
+ {localT.close}
  </button>
  </div>
  </div>

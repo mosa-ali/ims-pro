@@ -34,7 +34,9 @@ export default function StockRequestsForm() {
  { stockItemId: "", quantityRequested: "", unit: "", notes: "" },
  ]);
 
- const { data: stockItems = [] } = trpc.logistics.stock.listItems.useQuery({});
+ const { data: stockItemsData } =
+    trpc.logistics.stock.listItems.useQuery({});
+    const stockItems = stockItemsData?.items ?? [];
  const utils = trpc.useUtils();
 
  const handleAddLineItem = () => {

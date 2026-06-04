@@ -1,361 +1,226 @@
 /**
  * ============================================================================
- * HIRING DECISIONS MANAGEMENT
+ * HIRING DECISIONS - REFACTORED FOR tRPC
  * ============================================================================
  * 
- * View and manage hiring decisions
- * Track hired candidates
+ * List and manage hiring decisions with:
+ * - Job filtering
+ * - Decision status display
+ * - Delete functionality
+ * - Bilingual support (EN/AR)
+ * - RTL/LTR support
  * 
  * ============================================================================
  */
 
-import { useState, useEffect } from 'react';
-import { Users, Plus, Eye, Download, Filter } from 'lucide-react';
-import * as XLSX from 'xlsx';
-import {
- hiringDecisionService,
- candidateService,
- vacancyService,
- interviewService
-} from './recruitmentService';
-import { HiringDecision, Candidate } from './types';
-import { HiringDecisionForm } from './HiringDecisionForm';
+import { useState } from 'react';
+import { Loader2, AlertCircle, Trash2, Eye } from 'lucide-react';
+import { trpc } from '@/lib/trpc';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useTranslation } from '@/i18n/useTranslation';
+import { toast } from 'sonner';
 
 interface Props {
- language: string;
- isRTL: boolean;
+  language: string;
+  isRTL: boolean;
 }
 
-export function HiringDecisions({
- language, isRTL }: Props) {
- const { t } = useTranslation();
- const [decisions, setDecisions] = useState<HiringDecision[]>([]);
- const [filteredDecisions, setFilteredDecisions] = useState<HiringDecision[]>([]);
- const [decisionFilter, setDecisionFilter] = useState<'All' | 'Approve' | 'Reject' | 'Hold'>('All');
- const [candidates, setCandidates] = useState<Candidate[]>([]);
- const [showForm, setShowForm] = useState(false);
- const [selectedCandidate, setSelectedCandidate] = useState<Candidate | null>(null);
+export function HiringDecisions({ language, isRTL }: Props) {
+  const { t } = useTranslation();
+  const { isRTL: contextIsRTL } = useLanguage();
+  const dir = isRTL || contextIsRTL ? 'rtl' : 'ltr';
 
- useEffect(() => {
- loadData();
- }, []);
+  const [selectedJobId, setSelectedJobId] = useState<number | undefined>();
 
- useEffect(() => {
- filterDecisions();
- }, [decisions, decisionFilter]);
+  // tRPC queries
+  const { data: jobsData = [], isLoading: jobsLoading } =
+    trpc.hrRecruitment.getAllVacancies.useQuery({
+        limit: 100,
+        offset: 0,
+    });
 
- const loadData = () => {
- const decisionsData = hiringDecisionService.getAll();
- setDecisions(decisionsData);
+  const { data: decisionsData, isLoading: decisionsLoading, error, refetch } = trpc.hrRecruitment.getHiringDecisionsByJob.useQuery(
+    selectedJobId || 0,
+    { enabled: !!selectedJobId }
+  );
 
- // Load interviewed candidates without hiring decisions
- const allCandidates = candidateService.getAll();
- const candidatesWithInterviews = allCandidates.filter(c => {
- const interviews = interviewService.getByCandidate(c.id);
- const hasDecision = decisionsData.some(d => d.candidateId === c.id);
- return interviews.length > 0 && !hasDecision && c.status === 'Interviewed';
- });
- setCandidates(candidatesWithInterviews);
- };
+  // tRPC mutations
+  const deleteDecisionMutation = trpc.hrRecruitment.deleteHiringDecision.useMutation({
+    onSuccess: () => {
+      toast.success(t.hrRecruitment?.decisionDeleted || 'Decision deleted successfully');
+      refetch();
+    },
+    onError: (error) => {
+      toast.error(error.message || 'Failed to delete decision');
+    },
+  });
 
- const filterDecisions = () => {
- let filtered = decisions;
+  // Handlers
+  const handleDelete = (id: number) => {
+    if (confirm(t.hrRecruitment?.confirmDelete || 'Are you sure?')) {
+      deleteDecisionMutation.mutate({ id });
+    }
+  };
 
- if (decisionFilter !== 'All') {
- filtered = filtered.filter(d => d.decision === decisionFilter);
- }
+  // Translations
+  const localT = {
+    title: t.hrRecruitment?.hiringDecisions || 'Hiring Decisions',
+    selectJob: t.hrRecruitment?.selectJob || 'Select Job',
+    candidate: t.hrRecruitment?.candidate || 'Candidate',
+    status: t.hrRecruitment?.status || 'Status',
+    salary: t.hrRecruitment?.salary || 'Salary',
+    startDate: t.hrRecruitment?.startDate || 'Start Date',
+    actions: t.hrRecruitment?.actions || 'Actions',
+    view: t.hrRecruitment?.view || 'View',
+    delete: t.hrRecruitment?.delete || 'Delete',
+    noDecisions: t.hrRecruitment?.noDecisions || 'No hiring decisions found',
+    makeDecision: t.hrRecruitment.makeHiringDecision,
+    exportExcel: t.hrRecruitment.exportToExcel,
+    
+    all: t.hrRecruitment.all,
+    approved: t.hrRecruitment.approved,
+    rejected: t.hrRecruitment.rejected,
+    onHold: t.hrRecruitment.onHold,
+    
+    decisionRef: t.hrRecruitment.decisionRef,
+    position: t.hrRecruitment.position,
+    decision: t.hrRecruitment.decision,
+    date: t.hrRecruitment.date,
+    approvedBy: t.hrRecruitment.approvedBy,
+    employeeId: t.hrRecruitment.employeeId,
+    
+    pendingCandidates: t.hrRecruitment.candidatesPendingDecision,
+    selectCandidate: t.hrRecruitment.selectCandidate,
+    
+    noPendingCandidates: t.hrRecruitment.noCandidatesAwaitingDecision,
+    
+    totalDecisions: t.hrRecruitment.totalDecisions,
+    hired: t.hrRecruitment.hired,
+    pending: t.hrRecruitment.awaitingDecision,
+    loading: t.common?.loading || 'Loading...',
+    error: t.common?.error || 'Error',
+  };
 
- // Sort by date (newest first)
- filtered.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+  return (
+    <div className="space-y-6" dir={dir}>
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <h2 className="text-xl font-bold text-gray-900">{localT.title}</h2>
+      </div>
 
- setFilteredDecisions(filtered);
- };
+      {/* Job Selection */}
+      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+        <label className="block text-sm font-medium text-gray-700 mb-2">
+          {localT.selectJob}
+        </label>
+        <select
+          value={selectedJobId || ''}
+          onChange={(e) => setSelectedJobId(e.target.value ? parseInt(e.target.value) : undefined)}
+          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+        >
+          <option value="">-- {localT.selectJob} --</option>
+          {jobsLoading ? (
+            <option disabled>{localT.loading}</option>
+          ) : (
+            jobsData?.map((job) => (
+              <option key={job.id} value={job.id}>
+                {job.jobTitle} ({job.jobCode || 'N/A'})
+              </option>
+            ))
+          )}
+        </select>
+      </div>
 
- const handleExportExcel = () => {
- const excelData = filteredDecisions.map(decision => {
- const candidate = candidateService.getById(decision.candidateId);
- const vacancy = vacancyService.getById(decision.vacancyId);
-
- return {
- 'Decision Ref': decision.decisionRef,
- 'Candidate': candidate?.fullName || '',
- 'Candidate Ref': candidate?.candidateRef || '',
- 'Position': vacancy?.positionTitle || '',
- 'Vacancy Ref': vacancy?.vacancyRef || '',
- 'Decision': decision.decision,
- 'Decision Date': new Date(decision.createdAt).toLocaleDateString(),
- 'Approved By': decision.approvedBy,
- 'Employee ID': decision.employeeId || 'N/A',
- 'Start Date': decision.contractStartDate ? new Date(decision.contractStartDate).toLocaleDateString() : 'N/A',
- 'Department': decision.department || 'N/A',
- 'Position Title': decision.position || 'N/A',
- 'Salary': decision.salary ? `${decision.currency} ${decision.salary}` : 'N/A',
- 'Justification': decision.justification
- };
- });
-
- const ws = XLSX.utils.json_to_sheet(excelData);
- const wb = XLSX.utils.book_new();
- 
- ws['!cols'] = [
- { wch: 15 }, { wch: 25 }, { wch: 15 }, { wch: 25 }, 
- { wch: 15 }, { wch: 12 }, { wch: 15 }, { wch: 20 },
- { wch: 12 }, { wch: 15 }, { wch: 20 }, { wch: 25 },
- { wch: 15 }, { wch: 40 }
- ];
-
- XLSX.utils.book_append_sheet(wb, ws, 'Hiring Decisions');
-
- const timestamp = new Date().toISOString().split('T')[0];
- XLSX.writeFile(wb, `Hiring_Decisions_${timestamp}.xlsx`);
- };
-
- const getDecisionBadge = (decision: string) => {
- const styles: Record<string, string> = {
- Approve: 'bg-green-100 text-green-700',
- Reject: 'bg-red-100 text-red-700',
- Hold: 'bg-yellow-100 text-yellow-700'
- };
-
- return (
- <span className={`px-2 py-1 rounded-full text-xs font-medium ${styles[decision]}`}>
- {decision}
- </span>
- );
- };
-
- const localT = {
- title: t.hrRecruitment.hiringDecisions,
- makeDecision: t.hrRecruitment.makeHiringDecision,
- exportExcel: t.hrRecruitment.exportToExcel,
- 
- all: t.hrRecruitment.all,
- approved: t.hrRecruitment.approved,
- rejected: t.hrRecruitment.rejected,
- onHold: t.hrRecruitment.onHold,
- 
- decisionRef: t.hrRecruitment.decisionRef,
- candidate: t.hrRecruitment.candidate,
- position: t.hrRecruitment.position,
- decision: t.hrRecruitment.decision,
- date: t.hrRecruitment.date,
- approvedBy: t.hrRecruitment.approvedBy,
- employeeId: t.hrRecruitment.employeeId,
- 
- pendingCandidates: t.hrRecruitment.candidatesPendingDecision,
- selectCandidate: t.hrRecruitment.selectCandidate,
- 
- noDecisions: t.hrRecruitment.noHiringDecisionsFound,
- noPendingCandidates: t.hrRecruitment.noCandidatesAwaitingDecision,
- 
- totalDecisions: t.hrRecruitment.totalDecisions,
- hired: t.hrRecruitment.hired,
- pending: t.hrRecruitment.awaitingDecision
- };
-
- const approvedCount = decisions.filter(d => d.decision === 'Approve').length;
- const rejectedCount = decisions.filter(d => d.decision === 'Reject').length;
-
- return (
- <div className="space-y-6" dir={isRTL ? 'rtl' : 'ltr'}>
- {/* Header */}
- <div className="flex items-center justify-between">
- <h2 className="text-xl font-bold text-gray-900">{localT.title}</h2>
- <button
- onClick={handleExportExcel}
- disabled={decisions.length === 0}
- className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 flex items-center gap-2 disabled:opacity-50"
- >
- <Download className="w-4 h-4" />
- {localT.exportExcel}
- </button>
- </div>
-
- {/* Stats Cards */}
- <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
- <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
- <div className="flex items-center justify-between">
- <div>
- <p className="text-sm text-gray-600">{localT.totalDecisions}</p>
- <p className="text-2xl font-bold text-gray-900">{decisions.length}</p>
- </div>
- <Users className="w-8 h-8 text-blue-600" />
- </div>
- </div>
-
- <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
- <div className="flex items-center justify-between">
- <div>
- <p className="text-sm text-gray-600">{localT.hired}</p>
- <p className="text-2xl font-bold text-green-600">{approvedCount}</p>
- </div>
- <Users className="w-8 h-8 text-green-600" />
- </div>
- </div>
-
- <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
- <div className="flex items-center justify-between">
- <div>
- <p className="text-sm text-gray-600">{localT.rejected}</p>
- <p className="text-2xl font-bold text-red-600">{rejectedCount}</p>
- </div>
- <Users className="w-8 h-8 text-red-600" />
- </div>
- </div>
-
- <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
- <div className="flex items-center justify-between">
- <div>
- <p className="text-sm text-gray-600">{localT.pending}</p>
- <p className="text-2xl font-bold text-yellow-600">{candidates.length}</p>
- </div>
- <Users className="w-8 h-8 text-yellow-600" />
- </div>
- </div>
- </div>
-
- {/* Pending Candidates */}
- {candidates.length > 0 && (
- <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
- <h3 className="text-sm font-medium text-yellow-900 mb-3">{localT.pendingCandidates}</h3>
- <div className="space-y-2">
- {candidates.map(candidate => {
- const vacancy = vacancyService.getById(candidate.vacancyId);
- return (
- <div key={candidate.id} className="bg-white rounded-lg p-3 flex items-center justify-between">
- <div>
- <p className="font-medium text-gray-900">{candidate.fullName}</p>
- <p className="text-sm text-gray-600">
- {vacancy?.positionTitle} - Score: {candidate.totalScore.toFixed(1)}%
- </p>
- </div>
- <button
- onClick={() => {
- setSelectedCandidate(candidate);
- setShowForm(true);
- }}
- className="px-3 py-1.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm flex items-center gap-2"
- >
- <Plus className="w-4 h-4" />
- {localT.makeDecision}
- </button>
- </div>
- );
- })}
- </div>
- </div>
- )}
-
- {/* Filters */}
- <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
- <div className="flex items-center gap-2">
- {(['All', 'Approve', 'Reject', 'Hold'] as const).map((filter) => (
- <button
- key={filter}
- onClick={() => setDecisionFilter(filter)}
- className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${ decisionFilter === filter ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200' }`}
- >
- {filter === 'All' ? localT.all :
- filter === 'Approve' ? localT.approved :
- filter === 'Reject' ? localT.rejected : localT.onHold}
- </button>
- ))}
- </div>
- </div>
-
- {/* Decisions Table */}
- {filteredDecisions.length === 0 ? (
- <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-12">
- <div className="text-center text-gray-500">
- <Users className="w-16 h-16 text-gray-300 mx-auto mb-4" />
- <p className="text-lg font-medium">{localT.noDecisions}</p>
- </div>
- </div>
- ) : (
- <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
- <div className="overflow-x-auto">
- <table className="w-full">
- <thead className="bg-gray-50 border-b border-gray-200">
- <tr>
- <th className={`px-4 py-3 text-xs font-medium text-gray-500 uppercase text-start`}>
- {localT.decisionRef}
- </th>
- <th className={`px-4 py-3 text-xs font-medium text-gray-500 uppercase text-start`}>
- {localT.candidate}
- </th>
- <th className={`px-4 py-3 text-xs font-medium text-gray-500 uppercase text-start`}>
- {localT.position}
- </th>
- <th className={`px-4 py-3 text-xs font-medium text-gray-500 uppercase text-start`}>
- {localT.decision}
- </th>
- <th className={`px-4 py-3 text-xs font-medium text-gray-500 uppercase text-start`}>
- {localT.employeeId}
- </th>
- <th className={`px-4 py-3 text-xs font-medium text-gray-500 uppercase text-start`}>
- {localT.date}
- </th>
- <th className={`px-4 py-3 text-xs font-medium text-gray-500 uppercase text-start`}>
- {localT.approvedBy}
- </th>
- </tr>
- </thead>
- <tbody className="bg-white divide-y divide-gray-200">
- {filteredDecisions.map((decision) => {
- const candidate = candidateService.getById(decision.candidateId);
- const vacancy = vacancyService.getById(decision.vacancyId);
-
- return (
- <tr key={decision.id} className="hover:bg-gray-50">
- <td className="px-4 py-3 text-sm font-mono text-gray-900">
- {decision.decisionRef}
- </td>
- <td className="px-4 py-3 text-sm text-gray-900 font-medium">
- {candidate?.fullName}
- </td>
- <td className="px-4 py-3 text-sm text-gray-600">
- {vacancy?.positionTitle}
- </td>
- <td className="px-4 py-3 text-sm">
- {getDecisionBadge(decision.decision)}
- </td>
- <td className="px-4 py-3 text-sm font-mono text-gray-900">
- {decision.employeeId || '-'}
- </td>
- <td className="px-4 py-3 text-sm text-gray-600">
- {new Date(decision.createdAt).toLocaleDateString()}
- </td>
- <td className="px-4 py-3 text-sm text-gray-600">
- {decision.approvedBy}
- </td>
- </tr>
- );
- })}
- </tbody>
- </table>
- </div>
- </div>
- )}
-
- {/* Hiring Decision Modal */}
- {showForm && selectedCandidate && (
- <HiringDecisionForm
- language={language}
- isRTL={isRTL}
- candidate={selectedCandidate}
- onClose={() => {
- setShowForm(false);
- setSelectedCandidate(null);
- }}
- onSave={() => {
- setShowForm(false);
- setSelectedCandidate(null);
- loadData();
- }}
- />
- )}
- </div>
- );
+      {/* Decisions Table */}
+      {selectedJobId && (
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+          {decisionsLoading ? (
+            <div className="p-12 text-center">
+              <Loader2 className="w-8 h-8 animate-spin mx-auto mb-4 text-blue-600" />
+              <p className="text-gray-600">{localT.loading}</p>
+            </div>
+          ) : error ? (
+            <div className="p-4 flex items-start gap-3">
+              <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
+              <div>
+                <p className="font-medium text-red-900">{localT.error}</p>
+                <p className="text-sm text-red-700">{error.message}</p>
+              </div>
+            </div>
+          ) : !decisionsData || decisionsData.length === 0 ? (
+            <div className="p-12 text-center text-gray-500">
+              <p className="text-lg font-medium">{localT.noDecisions}</p>
+            </div>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead className="bg-gray-50 border-b border-gray-200">
+                  <tr>
+                    <th className="px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider text-start">
+                      {localT.candidate}
+                    </th>
+                    <th className="px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider text-start">
+                      {localT.status}
+                    </th>
+                    <th className="px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider text-start">
+                      {localT.salary}
+                    </th>
+                    <th className="px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider text-start">
+                      {localT.startDate}
+                    </th>
+                    <th className="px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider text-start">
+                      {localT.actions}
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  {decisionsData.map((decision) => (
+                    <tr key={decision.id} className="hover:bg-gray-50 transition-colors">
+                      <td className="px-4 py-3 text-sm text-gray-900">Candidate</td>
+                      <td className="px-4 py-3 text-sm">
+                        <span
+                          className={`px-2 py-1 rounded-full text-xs font-medium ${
+                            decision.offerStatus === 'Accepted'
+                              ? 'bg-green-100 text-green-700'
+                              : decision.offerStatus === 'Rejected'
+                              ? 'bg-red-100 text-red-700'
+                              : 'bg-yellow-100 text-yellow-700'
+                          }`}
+                        >
+                          {decision.offerStatus || 'pending'}
+                        </span>
+                      </td>
+                      <td className="px-4 py-3 text-sm text-gray-600">
+                        {decision.proposedSalary ? `$${parseFloat(decision.proposedSalary).toLocaleString()}` : '-'}
+                      </td>
+                      <td className="px-4 py-3 text-sm text-gray-600">
+                        {decision.startDate ? new Date(decision.startDate).toLocaleDateString() : '-'}
+                      </td>
+                      <td className="px-4 py-3 text-sm">
+                        <div className="flex items-center gap-2">
+                          <button
+                            className="p-1.5 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                            title={localT.view}
+                          >
+                            <Eye className="w-4 h-4" />
+                          </button>
+                          <button
+                            onClick={() => handleDelete(decision.id)}
+                            className="p-1.5 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                            title={localT.delete}
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
 }

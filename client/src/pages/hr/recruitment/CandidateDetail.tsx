@@ -1,386 +1,211 @@
 /**
  * ============================================================================
- * CANDIDATE DETAIL VIEW
+ * CANDIDATE DETAIL VIEW - REFACTORED FOR tRPC
  * ============================================================================
  * 
- * Complete candidate profile with:
+ * Display candidate details with:
  * - Personal information
- * - Criterion-by-criterion scores
- * - Document downloads
- * - Status management
+ * - Education & experience
+ * - Interviews
+ * - Hiring decision
+ * - Bilingual support (EN/AR)
+ * - RTL/LTR support
  * 
  * ============================================================================
  */
 
-import { useState, useEffect } from 'react';
-import { X, Download, FileText, CheckCircle, XCircle, Award } from 'lucide-react';
-import {
- candidateResponseService,
- candidateDocumentService,
- vacancyCriteriaService,
- vacancyService
-} from './recruitmentService';
-import { Candidate, CandidateStatus, CandidateResponse, CandidateDocument, VacancyCriteria } from './types';
+import { X, Loader2, AlertCircle, Mail, Phone, MapPin } from 'lucide-react';
+import { trpc } from '@/lib/trpc';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useTranslation } from '@/i18n/useTranslation';
+import { RecruitmentCandidate, CandidateStatus, CANDIDATE_STATUS_LABELS } from '@shared/types/recruitment-canonical';
+import { CANDIDATE_STATUS_COLORS } from '@shared/constants/recruitment-canonical';
 
 interface Props {
- language: string;
- isRTL: boolean;
- candidate: Candidate;
- onClose: () => void;
- onStatusChange: (newStatus: CandidateStatus) => void;
+  language: string;
+  isRTL: boolean;
+  candidate: RecruitmentCandidate;
+  onClose: () => void;
 }
 
-export function CandidateDetail({
- language, isRTL, candidate, onClose, onStatusChange }: Props) {
- const { t } = useTranslation();
- const [responses, setResponses] = useState<CandidateResponse[]>([]);
- const [documents, setDocuments] = useState<CandidateDocument[]>([]);
- const [criteria, setCriteria] = useState<VacancyCriteria[]>([]);
- const [vacancy, setVacancy] = useState<any>(null);
+export function CandidateDetail({ language, isRTL, candidate, onClose }: Props) {
+  const { t } = useTranslation();
+  const { isRTL: contextIsRTL } = useLanguage();
+  const dir = isRTL || contextIsRTL ? 'rtl' : 'ltr';
 
- useEffect(() => {
- loadData();
- }, [candidate.id]);
+  // tRPC queries
+  const { data: interviewsData, isLoading: interviewsLoading } = trpc.hrRecruitment.getInterviewsByCandidate.useQuery(
+    candidate.id
+  );
 
- const loadData = () => {
- const responseData = candidateResponseService.getByCandidate(candidate.id);
- setResponses(responseData);
+  const { data: hiringDecisionData, isLoading: hiringDecisionLoading } = trpc.hrRecruitment.getHiringDecisionByCandidate.useQuery(
+    candidate.id
+  );
 
- const documentData = candidateDocumentService.getByCandidate(candidate.id);
- setDocuments(documentData);
+  // Translations
+  const localT = {
+    title: t.hrRecruitment?.candidateDetails || 'Candidate Details',
+    close: t.common?.close || 'Close',
+    personalInfo: t.hrRecruitment?.personalInformation || 'Personal Information',
+    firstName: t.hrRecruitment?.firstName || 'First Name',
+    lastName: t.hrRecruitment?.lastName || 'Last Name',
+    email: t.hrRecruitment?.email || 'Email',
+    phone: t.hrRecruitment?.phone || 'Phone',
+    education: t.hrRecruitment?.education || 'Education',
+    experience: t.hrRecruitment?.experience || 'Experience',
+    skills: t.hrRecruitment?.skills || 'Skills',
+    status: t.hrRecruitment?.status || 'Status',
+    appliedAt: t.hrRecruitment?.appliedAt || 'Applied At',
+    interviews: t.hrRecruitment?.interviews || 'Interviews',
+    hiringDecision: t.hrRecruitment?.hiringDecision || 'Hiring Decision',
+    noInterviews: t.hrRecruitment?.noInterviews || 'No interviews scheduled',
+    noDecision: t.hrRecruitment?.noDecision || 'No hiring decision yet',
+    loading: t.common?.loading || 'Loading...',
+  };
 
- const vacancyData = vacancyService.getById(candidate.vacancyId);
- setVacancy(vacancyData);
+  const getStatusBadge = (status: string) => {
+    const color = CANDIDATE_STATUS_COLORS[status as keyof typeof CANDIDATE_STATUS_COLORS] || 'bg-gray-100 text-gray-700';
+    const label = CANDIDATE_STATUS_LABELS[status as keyof typeof CANDIDATE_STATUS_LABELS] || status;
+    return (
+      <span className={`px-3 py-1 rounded-full text-sm font-medium ${color}`}>
+        {label}
+      </span>
+    );
+  };
 
- if (vacancyData) {
- const criteriaData = vacancyCriteriaService.getByVacancy(vacancyData.id);
- setCriteria(criteriaData);
- }
- };
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" dir={dir}>
+      <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+        {/* Header */}
+        <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between">
+          <h2 className="text-xl font-bold text-gray-900">{localT.title}</h2>
+          <button
+            onClick={onClose}
+            className="p-1 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100 transition-colors"
+          >
+            <X className="w-5 h-5" />
+          </button>
+        </div>
 
- const handleDownloadDocument = (doc: CandidateDocument) => {
- // Convert base64 to blob and download
- const link = document.createElement('a');
- link.href = doc.fileData;
- link.download = doc.fileName;
- link.click();
- };
+        {/* Content */}
+        <div className="p-6 space-y-6">
+          {/* Name & Status */}
+          <div>
+            <h3 className="text-2xl font-bold text-gray-900 mb-2">
+              {candidate.firstName} {candidate.lastName}
+            </h3>
+            <div className="flex items-center gap-4">
+              {getStatusBadge(candidate.status)}
+              <p className="text-sm text-gray-600">
+                {localT.appliedAt}: {candidate.appliedAt ? new Date(candidate.appliedAt).toLocaleDateString() : '-'}
+              </p>
+            </div>
+          </div>
 
- const formatResponse = (response: any, type: string): string => {
- if (type === 'YesNo') {
- return response ? 'Yes' : 'No';
- } else if (type === 'Checklist' && Array.isArray(response)) {
- return response.join(', ');
- } else {
- return String(response);
- }
- };
+          {/* Contact Information */}
+          <div className="bg-gray-50 rounded-lg p-4 space-y-3">
+            <p className="text-sm font-medium text-gray-700 mb-3">{localT.personalInfo}</p>
+            <div className="flex items-center gap-3">
+              <Mail className="w-5 h-5 text-gray-400" />
+              <a href={`mailto:${candidate.email}`} className="text-blue-600 hover:underline">
+                {candidate.email}
+              </a>
+            </div>
+            {candidate.phone && (
+              <div className="flex items-center gap-3">
+                <Phone className="w-5 h-5 text-gray-400" />
+                <a href={`tel:${candidate.phone}`} className="text-blue-600 hover:underline">
+                  {candidate.phone}
+                </a>
+              </div>
+            )}
+          </div>
 
- const getScoreColor = (score: number) => {
- if (score >= 80) return 'text-green-600';
- if (score >= 60) return 'text-yellow-600';
- return 'text-red-600';
- };
+          {/* Education */}
+          {candidate.education && (
+            <div>
+              <p className="text-sm font-medium text-gray-700 mb-2">{localT.education}</p>
+              <p className="text-sm text-gray-600 whitespace-pre-wrap">{candidate.education}</p>
+            </div>
+          )}
 
- const localT = {
- title: t.hrRecruitment.candidateDetails,
- personalInfo: t.hrRecruitment.personalInformation,
- scoringDetails: t.hrRecruitment.scoringDetails,
- documents: t.hrRecruitment.documents,
- 
- candidateRef: t.hrRecruitment.reference,
- fullName: t.hrRecruitment.fullName,
- gender: t.hrRecruitment.gender,
- nationality: t.hrRecruitment.nationality,
- dateOfBirth: t.hrRecruitment.dateOfBirth,
- email: t.hrRecruitment.email,
- phone: t.hrRecruitment.phone,
- currentLocation: t.hrRecruitment.currentLocation,
- 
- education: t.hrRecruitment.educationLevel,
- fieldOfStudy: t.hrRecruitment.fieldOfStudy,
- yearsOfExperience: t.hrRecruitment.yearsOfExperience,
- currentEmployer: t.hrRecruitment.currentEmployer,
- currentPosition: t.hrRecruitment.currentPosition,
- 
- totalScore: t.hrRecruitment.totalScore,
- shortlisted: t.hrRecruitment.shortlisted,
- yes: t.hrRecruitment.yes,
- no: t.hrRecruitment.no,
- status: t.hrRecruitment.status,
- appliedAt: t.hrRecruitment.appliedAt,
- 
- criterion: t.hrRecruitment.criterion,
- weight: t.hrRecruitment.weight,
- response: t.hrRecruitment.response,
- score: t.hrRecruitment.score,
- 
- documentType: t.hrRecruitment.type,
- fileName: t.hrRecruitment.fileName,
- download: t.hrRecruitment.download,
- 
- approve: t.hrRecruitment.approveShortlist,
- reject: t.hrRecruitment.reject,
- close: t.hrRecruitment.close,
- 
- noDocuments: t.hrRecruitment.noDocumentsUploaded
- };
+          {/* Experience */}
+          {candidate.experience && (
+            <div>
+              <p className="text-sm font-medium text-gray-700 mb-2">{localT.experience}</p>
+              <p className="text-sm text-gray-600 whitespace-pre-wrap">{candidate.experience}</p>
+            </div>
+          )}
 
- return (
- <div className="fixed inset-0 bg-gray-900/30 backdrop-blur-sm flex items-center justify-center z-50 p-4" dir={isRTL ? 'rtl' : 'ltr'}>
- <div 
- className="bg-white rounded-lg shadow-xl max-w-5xl w-full max-h-[90vh] overflow-hidden flex flex-col"
- 
- >
- {/* Header */}
- <div className="bg-blue-600 text-white px-6 py-4 flex items-center justify-between">
- <div className="flex items-center gap-3">
- <Award className="w-6 h-6" />
- <div>
- <h2 className="text-xl font-bold">{localT.title}</h2>
- <p className="text-sm text-blue-100">{candidate.candidateRef}</p>
- </div>
- </div>
- <button
- onClick={onClose}
- className="p-1 hover:bg-blue-700 rounded-lg transition-colors"
- >
- <X className="w-5 h-5" />
- </button>
- </div>
+          {/* Skills */}
+          {candidate.skills && (
+            <div>
+              <p className="text-sm font-medium text-gray-700 mb-2">{localT.skills}</p>
+              <p className="text-sm text-gray-600 whitespace-pre-wrap">{candidate.skills}</p>
+            </div>
+          )}
 
- {/* Body */}
- <div className="flex-1 overflow-y-auto p-6 space-y-6">
- {/* Score Card */}
- <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-lg p-6">
- <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
- <div className="text-center">
- <p className="text-sm text-gray-600 mb-1">{localT.totalScore}</p>
- <p className={`text-4xl font-bold ${getScoreColor(candidate.totalScore)}`}>
- {candidate.totalScore.toFixed(1)}%
- </p>
- </div>
- <div className="text-center">
- <p className="text-sm text-gray-600 mb-1">{localT.shortlisted}</p>
- <p className="text-2xl font-bold">
- {candidate.isShortlisted ? (
- <span className="text-green-600">{localT.yes} ✓</span>
- ) : (
- <span className="text-gray-400">{localT.no}</span>
- )}
- </p>
- </div>
- <div className="text-center">
- <p className="text-sm text-gray-600 mb-1">{localT.status}</p>
- <p className="text-lg font-medium text-gray-900">{candidate.status}</p>
- </div>
- </div>
- </div>
+          {/* Interviews */}
+          <div>
+            <p className="text-sm font-medium text-gray-700 mb-3">{localT.interviews}</p>
+            {interviewsLoading ? (
+              <div className="flex items-center gap-2">
+                <Loader2 className="w-4 h-4 animate-spin" />
+                <p className="text-sm text-gray-600">{localT.loading}</p>
+              </div>
+            ) : interviewsData && interviewsData.length > 0 ? (
+              <div className="space-y-2">
+                {interviewsData.map((interview) => (
+                  <div key={interview.id} className="bg-gray-50 rounded-lg p-3">
+                    <p className="text-sm font-medium text-gray-900">
+                      {interview.interviewType || 'Interview'}
+                    </p>
+                    <p className="text-xs text-gray-600">
+                      {interview.scheduledDate ? new Date(interview.scheduledDate).toLocaleDateString() : '-'}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="text-sm text-gray-600">{localT.noInterviews}</p>
+            )}
+          </div>
 
- {/* Personal Information */}
- <div>
- <h3 className="text-lg font-bold text-gray-900 mb-4">{localT.personalInfo}</h3>
- 
- <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
- <div>
- <label className="block text-sm font-medium text-gray-500">{localT.fullName}</label>
- <p className="mt-1 text-sm text-gray-900">{candidate.fullName}</p>
- </div>
- 
- <div>
- <label className="block text-sm font-medium text-gray-500">{localT.gender}</label>
- <p className="mt-1 text-sm text-gray-900">{candidate.gender}</p>
- </div>
- 
- <div>
- <label className="block text-sm font-medium text-gray-500">{localT.nationality}</label>
- <p className="mt-1 text-sm text-gray-900">{candidate.nationality}</p>
- </div>
- 
- <div>
- <label className="block text-sm font-medium text-gray-500">{localT.dateOfBirth}</label>
- <p className="mt-1 text-sm text-gray-900">{new Date(candidate.dateOfBirth).toLocaleDateString()}</p>
- </div>
- 
- <div>
- <label className="block text-sm font-medium text-gray-500">{localT.email}</label>
- <p className="mt-1 text-sm text-gray-900">{candidate.email}</p>
- </div>
- 
- <div>
- <label className="block text-sm font-medium text-gray-500">{localT.phone}</label>
- <p className="mt-1 text-sm text-gray-900">{candidate.phone}</p>
- </div>
- 
- <div>
- <label className="block text-sm font-medium text-gray-500">{localT.currentLocation}</label>
- <p className="mt-1 text-sm text-gray-900">{candidate.currentLocation}</p>
- </div>
- 
- <div>
- <label className="block text-sm font-medium text-gray-500">{localT.education}</label>
- <p className="mt-1 text-sm text-gray-900">{candidate.educationLevel}</p>
- </div>
- 
- <div>
- <label className="block text-sm font-medium text-gray-500">{localT.fieldOfStudy}</label>
- <p className="mt-1 text-sm text-gray-900">{candidate.fieldOfStudy}</p>
- </div>
- 
- <div>
- <label className="block text-sm font-medium text-gray-500">{localT.yearsOfExperience}</label>
- <p className="mt-1 text-sm text-gray-900">{candidate.yearsOfExperience} years</p>
- </div>
- 
- {candidate.currentEmployer && (
- <div>
- <label className="block text-sm font-medium text-gray-500">{localT.currentEmployer}</label>
- <p className="mt-1 text-sm text-gray-900">{candidate.currentEmployer}</p>
- </div>
- )}
- 
- {candidate.currentPosition && (
- <div>
- <label className="block text-sm font-medium text-gray-500">{localT.currentPosition}</label>
- <p className="mt-1 text-sm text-gray-900">{candidate.currentPosition}</p>
- </div>
- )}
- 
- <div>
- <label className="block text-sm font-medium text-gray-500">{localT.appliedAt}</label>
- <p className="mt-1 text-sm text-gray-900">{new Date(candidate.appliedAt).toLocaleString()}</p>
- </div>
- </div>
- </div>
+          {/* Hiring Decision */}
+          <div>
+            <p className="text-sm font-medium text-gray-700 mb-3">{localT.hiringDecision}</p>
+            {hiringDecisionLoading ? (
+              <div className="flex items-center gap-2">
+                <Loader2 className="w-4 h-4 animate-spin" />
+                <p className="text-sm text-gray-600">{localT.loading}</p>
+              </div>
+            ) : hiringDecisionData ? (
+              <div className="bg-gray-50 rounded-lg p-3">
+                <p className="text-sm font-medium text-gray-900">
+                  {hiringDecisionData.status || 'Pending'}
+                </p>
+                {hiringDecisionData.offerSalary && (
+                  <p className="text-sm text-gray-600">
+                    Salary: ${hiringDecisionData.offerSalary}
+                  </p>
+                )}
+              </div>
+            ) : (
+              <p className="text-sm text-gray-600">{localT.noDecision}</p>
+            )}
+          </div>
+        </div>
 
- {/* Scoring Details */}
- <div>
- <h3 className="text-lg font-bold text-gray-900 mb-4">{localT.scoringDetails}</h3>
- 
- <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
- <table className="w-full">
- <thead className="bg-gray-50">
- <tr>
- <th className={`px-4 py-3 text-xs font-medium text-gray-500 uppercase text-start`}>
- {localT.criterion}
- </th>
- <th className={`px-4 py-3 text-xs font-medium text-gray-500 uppercase text-start`}>
- {localT.weight}
- </th>
- <th className={`px-4 py-3 text-xs font-medium text-gray-500 uppercase text-start`}>
- {localT.response}
- </th>
- <th className={`px-4 py-3 text-xs font-medium text-gray-500 uppercase text-start`}>
- {localT.score}
- </th>
- </tr>
- </thead>
- <tbody className="divide-y divide-gray-200">
- {criteria.map((criterion) => {
- const response = responses.find(r => r.criteriaId === criterion.id);
- return (
- <tr key={criterion.id}>
- <td className="px-4 py-3 text-sm text-gray-900">
- {criterion.criteriaName}
- </td>
- <td className="px-4 py-3 text-sm text-gray-600">
- {criterion.weightPercentage}%
- </td>
- <td className="px-4 py-3 text-sm text-gray-900">
- {response ? formatResponse(response.response, criterion.criteriaType) : '-'}
- </td>
- <td className="px-4 py-3 text-sm">
- {response && (
- <span className={`font-bold ${getScoreColor(response.score)}`}>
- {response.score.toFixed(1)}%
- </span>
- )}
- </td>
- </tr>
- );
- })}
- </tbody>
- <tfoot className="bg-gray-50">
- <tr>
- <td colSpan={3} className="px-4 py-3 text-sm font-medium text-gray-900">
- {localT.totalScore}
- </td>
- <td className="px-4 py-3 text-sm">
- <span className={`text-lg font-bold ${getScoreColor(candidate.totalScore)}`}>
- {candidate.totalScore.toFixed(1)}%
- </span>
- </td>
- </tr>
- </tfoot>
- </table>
- </div>
- </div>
-
- {/* Documents */}
- <div>
- <h3 className="text-lg font-bold text-gray-900 mb-4">{localT.documents}</h3>
- 
- {documents.length === 0 ? (
- <div className="text-center py-8 bg-gray-50 rounded-lg border border-gray-200">
- <FileText className="w-12 h-12 text-gray-300 mx-auto mb-2" />
- <p className="text-gray-500">{localT.noDocuments}</p>
- </div>
- ) : (
- <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
- {documents.map((doc) => (
- <div key={doc.id} className="p-4 bg-gray-50 border border-gray-200 rounded-lg flex items-center justify-between">
- <div className="flex items-center gap-3">
- <FileText className="w-8 h-8 text-blue-600" />
- <div>
- <p className="text-sm font-medium text-gray-900">{doc.documentType}</p>
- <p className="text-xs text-gray-500">{doc.fileName}</p>
- </div>
- </div>
- <button
- onClick={() => handleDownloadDocument(doc)}
- className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg"
- title={localT.download}
- >
- <Download className="w-5 h-5" />
- </button>
- </div>
- ))}
- </div>
- )}
- </div>
- </div>
-
- {/* Footer */}
- <div className="border-t border-gray-200 px-6 py-4 bg-gray-50 flex items-center justify-between">
- <button
- onClick={onClose}
- className="px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
- >
- {localT.close}
- </button>
- 
- {candidate.status === 'Applied' && (
- <div className="flex items-center gap-3">
- <button
- onClick={() => onStatusChange('Rejected')}
- className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 flex items-center gap-2"
- >
- <XCircle className="w-4 h-4" />
- {localT.reject}
- </button>
- <button
- onClick={() => onStatusChange('Shortlisted')}
- className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 flex items-center gap-2"
- >
- <CheckCircle className="w-4 h-4" />
- {localT.approve}
- </button>
- </div>
- )}
- </div>
- </div>
- </div>
- );
+        {/* Footer */}
+        <div className="sticky bottom-0 bg-gray-50 border-t border-gray-200 px-6 py-4 flex items-center justify-end">
+          <button
+            onClick={onClose}
+            className="px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+          >
+            {localT.close}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
 }

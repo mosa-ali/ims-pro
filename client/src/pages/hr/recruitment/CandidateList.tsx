@@ -1,510 +1,297 @@
 /**
  * ============================================================================
- * CANDIDATE LIST & MANAGEMENT
+ * CANDIDATE LIST VIEW - REFACTORED FOR tRPC
  * ============================================================================
  * 
- * Features:
- * - View all candidates by vacancy
- * - Longlist vs Shortlist views
- * - Auto-scoring display
- * - Excel export (both lists)
- * - Candidate detail modal
- * - Status management
+ * Display all candidates with:
+ * - Status filters
+ * - Search functionality
+ * - Action buttons
+ * - Pagination
+ * - Bilingual support (EN/AR)
+ * - RTL/LTR support
  * 
  * ============================================================================
  */
 
-import { useState, useEffect } from 'react';
-import { 
- Users, 
- Download, 
- Eye, 
- CheckCircle,
- XCircle,
- Filter,
- FileText,
- Award
+import { useState } from 'react';
+import {
+  Search,
+  Eye,
+  Edit,
+  Trash2,
+  Loader2,
+  AlertCircle,
 } from 'lucide-react';
-import * as XLSX from 'xlsx';
-import { 
- candidateService, 
- vacancyService,
- candidateResponseService,
- vacancyCriteriaService,
- scoringEngine
-} from './recruitmentService';
-import { Candidate, Vacancy, CandidateStatus } from './types';
-import { CandidateDetail } from './CandidateDetail';
+import { trpc } from '@/lib/trpc';
+import { useAuth } from '@/_core/hooks/useAuth';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useTranslation } from '@/i18n/useTranslation';
+import { RecruitmentCandidate, CandidateStatus, CANDIDATE_STATUS_LABELS } from '@shared/types/recruitment-canonical';
+import { CANDIDATE_STATUS_COLORS } from '@shared/constants/recruitment-canonical';
+
+import { toast } from 'sonner';
+import { CandidateDetail } from './CandidateDetail';
+
 
 interface Props {
- language: string;
- isRTL: boolean;
+  language: string;
+  isRTL: boolean;
 }
 
-type ListView = 'all' | 'longlist' | 'shortlist';
+export function CandidateList({ language, isRTL }: Props) {
+  const { t } = useTranslation();
+  const { user } = useAuth();
+  const { isRTL: contextIsRTL } = useLanguage();
+  const dir = isRTL || contextIsRTL ? 'rtl' : 'ltr';
 
-export function CandidateList({
- language, isRTL }: Props) {
- const { t } = useTranslation();
- const [vacancies, setVacancies] = useState<Vacancy[]>([]);
- const [selectedVacancy, setSelectedVacancy] = useState<string>('');
- const [candidates, setCandidates] = useState<Candidate[]>([]);
- const [filteredCandidates, setFilteredCandidates] = useState<Candidate[]>([]);
- const [view, setView] = useState<ListView>('all');
- const [statusFilter, setStatusFilter] = useState<CandidateStatus | 'All'>('All');
- const [selectedCandidate, setSelectedCandidate] = useState<Candidate | null>(null);
- const [showDetail, setShowDetail] = useState(false);
+  // State
+  const [searchTerm, setSearchTerm] = useState('');
+  const [statusFilter, setStatusFilter] = useState<CandidateStatus | 'All'>('All');
+  const [selectedCandidate, setSelectedCandidate] = useState<RecruitmentCandidate | undefined>();
+  const [showDetail, setShowDetail] = useState(false);
+  const [limit] = useState(20);
+  const [offset, setOffset] = useState(0);
 
- useEffect(() => {
- loadVacancies();
- }, []);
+  // tRPC queries
+  const { data: candidatesData, isLoading, error, refetch } = trpc.hrRecruitment.getAllCandidates.useQuery({
+    status,
+    search: searchTerm || undefined,
+    limit,
+    offset
+  });
 
- useEffect(() => {
- if (selectedVacancy) {
- loadCandidates();
- }
- }, [selectedVacancy]);
+  // tRPC mutations
+  const deleteCandidateMutation = trpc.hrRecruitment.deleteCandidate.useMutation({
+    onSuccess: () => {
+      toast.success(t.hrRecruitment?.candidateDeleted || 'Candidate deleted successfully');
+      refetch();
+    },
+    onError: (error) => {
+      toast.error(error.message || 'Failed to delete candidate');
+    },
+  });
 
- useEffect(() => {
- filterCandidates();
- }, [candidates, view, statusFilter]);
+  // Handlers
+  const handleView = (candidate: RecruitmentCandidate) => {
+    setSelectedCandidate(candidate);
+    setShowDetail(true);
+  };
 
- const loadVacancies = () => {
- const data = vacancyService.getAll().filter(v => v.status === 'Open' || v.status === 'Closed');
- setVacancies(data);
- if (data.length > 0 && !selectedVacancy) {
- setSelectedVacancy(data[0].id);
- }
- };
+  const handleDelete = (id: number) => {
+    if (confirm(t.hrRecruitment?.confirmDelete || 'Are you sure you want to delete this candidate?')) {
+      deleteCandidateMutation.mutate({ id });
+    }
+  };
 
- const loadCandidates = () => {
- const data = candidateService.getByVacancy(selectedVacancy);
- setCandidates(data);
- };
+  // Translations
+  const localT = {
+    title: t.hrRecruitment?.candidates || 'Candidates',
+    search: t.hrRecruitment?.searchCandidates || 'Search candidates...',
+    all: t.hrRecruitment?.all || 'All',
+    firstName: t.hrRecruitment?.firstName || 'First Name',
+    lastName: t.hrRecruitment?.lastName || 'Last Name',
+    email: t.hrRecruitment?.email || 'Email',
+    phone: t.hrRecruitment?.phone || 'Phone',
+    status: t.hrRecruitment?.status || 'Status',
+    appliedAt: t.hrRecruitment?.appliedAt || 'Applied At',
+    actions: t.hrRecruitment?.actions || 'Actions',
+    view: t.hrRecruitment?.view || 'View',
+    edit: t.hrRecruitment?.edit || 'Edit',
+    delete: t.hrRecruitment?.delete || 'Delete',
+    noCandidates: t.hrRecruitment?.noCandidatesFound || 'No candidates found',
+    loading: t.common?.loading || 'Loading...',
+    error: t.common?.error || 'Error',
+  };
 
- const filterCandidates = () => {
- let filtered = candidates;
+  // Get status badge
+  const getStatusBadge = (status: CandidateStatus) => {
+    const color = CANDIDATE_STATUS_COLORS[status] || 'bg-gray-100 text-gray-700';
+    const label = CANDIDATE_STATUS_LABELS[status] || status;
+    return (
+      <span className={`px-2 py-1 rounded-full text-xs font-medium ${color}`}>
+        {label}
+      </span>
+    );
+  };
 
- // View filter (longlist/shortlist)
- if (view === 'shortlist') {
- filtered = filtered.filter(c => c.isShortlisted);
- } else if (view === 'longlist') {
- filtered = filtered.filter(c => !c.isShortlisted);
- }
+  // Render
+  return (
+    <div className="space-y-6" dir={dir}>
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <h2 className="text-xl font-bold text-gray-900">{localT.title}</h2>
+      </div>
 
- // Status filter
- if (statusFilter !== 'All') {
- filtered = filtered.filter(c => c.status === statusFilter);
- }
+      {/* Filters */}
+      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {/* Search */}
+          <div className="relative">
+            <Search className={`absolute ${dir === 'rtl' ? 'end-3' : 'start-3'} top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400`} />
+            <input
+              type="text"
+              value={searchTerm}
+              onChange={(e) => {
+                setSearchTerm(e.target.value);
+                setOffset(0);
+              }}
+              placeholder={localT.search}
+              className={`w-full ${dir === 'rtl' ? 'pe-10 ps-4' : 'ps-10 pe-4'} py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500`}
+            />
+          </div>
 
- setFilteredCandidates(filtered);
- };
+          {/* Status Filter */}
+          <div className="flex items-center gap-2 flex-wrap">
+            {(['All', 'new',
+              'applied',
+              'screening',
+              'shortlisted',
+              'interview_scheduled',
+              'interviewed',
+              'offer_pending',
+              'offer_sent',
+              'offered',
+              'hired',
+              'rejected',
+              'withdrawn'] as const).map((status) => (
+              <button
+                key={status}
+                onClick={() => {
+                  setStatusFilter(status as 'All' | CandidateStatus);
+                  setOffset(0);
+                }}
+                className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                  statusFilter === status
+                    ? 'bg-blue-600 text-white'
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                }`}
+              >
+                {status === 'All' ? localT.all : CANDIDATE_STATUS_LABELS[status] || status}
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
 
- const handleExportExcel = (listType: 'longlist' | 'shortlist' | 'all') => {
- if (!selectedVacancy) return;
+      {/* Loading State */}
+      {isLoading && (
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-12 text-center">
+          <Loader2 className="w-8 h-8 animate-spin mx-auto mb-4 text-blue-600" />
+          <p className="text-gray-600">{localT.loading}</p>
+        </div>
+      )}
 
- const vacancy = vacancyService.getById(selectedVacancy);
- if (!vacancy) return;
+      {/* Error State */}
+      {error && (
+        <div className="bg-red-50 rounded-lg shadow-sm border border-red-200 p-4 flex items-start gap-3">
+          <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
+          <div>
+            <p className="font-medium text-red-900">{localT.error}</p>
+            <p className="text-sm text-red-700">{error.message}</p>
+          </div>
+        </div>
+      )}
 
- let exportCandidates = candidates;
- if (listType === 'shortlist') {
- exportCandidates = candidates.filter(c => c.isShortlisted);
- } else if (listType === 'longlist') {
- exportCandidates = candidates.filter(c => !c.isShortlisted);
- }
+      {/* Candidates Table */}
+      {!isLoading && !error && (
+        <>
+          {!candidatesData || candidatesData.length === 0 ? (
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-12">
+              <div className="text-center text-gray-500">
+                <p className="text-lg font-medium">{localT.noCandidates}</p>
+              </div>
+            </div>
+          ) : (
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead className="bg-gray-50 border-b border-gray-200">
+                    <tr>
+                      <th className={`px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider text-${dir === 'rtl' ? 'end' : 'start'}`}>
+                        {localT.firstName}
+                      </th>
+                      <th className={`px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider text-${dir === 'rtl' ? 'end' : 'start'}`}>
+                        {localT.lastName}
+                      </th>
+                      <th className={`px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider text-${dir === 'rtl' ? 'end' : 'start'}`}>
+                        {localT.email}
+                      </th>
+                      <th className={`px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider text-${dir === 'rtl' ? 'end' : 'start'}`}>
+                        {localT.phone}
+                      </th>
+                      <th className={`px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider text-${dir === 'rtl' ? 'end' : 'start'}`}>
+                        {localT.status}
+                      </th>
+                      <th className={`px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider text-${dir === 'rtl' ? 'end' : 'start'}`}>
+                        {localT.appliedAt}
+                      </th>
+                      <th className={`px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider text-${dir === 'rtl' ? 'end' : 'start'}`}>
+                        {localT.actions}
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="bg-white divide-y divide-gray-200">
+                    {candidatesData.map((candidate) => (
+                      <tr key={candidate.id} className="hover:bg-gray-50 transition-colors">
+                        <td className="px-4 py-3 text-sm text-gray-900">
+                          {candidate.firstName}
+                        </td>
+                        <td className="px-4 py-3 text-sm text-gray-900">
+                          {candidate.lastName}
+                        </td>
+                        <td className="px-4 py-3 text-sm text-gray-600">
+                          {candidate.email}
+                        </td>
+                        <td className="px-4 py-3 text-sm text-gray-600">
+                          {candidate.phone || '-'}
+                        </td>
+                        <td className="px-4 py-3 text-sm">
+                          {getStatusBadge(candidate.status as CandidateStatus)}
+                        </td>
+                        <td className="px-4 py-3 text-sm text-gray-600">
+                          {candidate.appliedAt ? new Date(candidate.appliedAt).toLocaleDateString() : '-'}
+                        </td>
+                        <td className="px-4 py-3 text-sm">
+                          <div className="flex items-center gap-2">
+                            <button
+                              onClick={() => handleView(candidate.fistName)}
+                              className="p-1.5 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                              title={localT.view}
+                            >
+                              <Eye className="w-4 h-4" />
+                            </button>
+                            <button
+                              onClick={() => handleDelete(candidate.id)}
+                              className="p-1.5 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                              title={localT.delete}
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )}
+        </>
+      )}
 
- // Get criteria for the vacancy
- const criteria = vacancyCriteriaService.getByVacancy(selectedVacancy);
-
- // Prepare data for Excel
- const excelData = exportCandidates.map(candidate => {
- const responses = candidateResponseService.getByCandidate(candidate.id);
- 
- const row: any = {
- 'Candidate ID': candidate.candidateRef,
- 'Full Name': candidate.fullName,
- 'Email': candidate.email,
- 'Phone': candidate.phone,
- 'Nationality': candidate.nationality,
- 'Education': candidate.educationLevel,
- 'Field of Study': candidate.fieldOfStudy,
- 'Years of Experience': candidate.yearsOfExperience,
- 'Current Location': candidate.currentLocation,
- 'Application Date': new Date(candidate.appliedAt).toLocaleDateString(),
- 'Total Score': `${candidate.totalScore.toFixed(1)}%`,
- 'Status': candidate.status,
- 'Shortlisted': candidate.isShortlisted ? 'Yes' : 'No'
- };
-
- // Add criterion scores
- criteria.forEach(criterion => {
- const response = responses.find(r => r.criteriaId === criterion.id);
- if (response) {
- row[`${criterion.criteriaName} (Score)`] = `${response.score.toFixed(1)}%`;
- row[`${criterion.criteriaName} (Response)`] = formatResponse(response.response, criterion.criteriaType);
- }
- });
-
- return row;
- });
-
- // Create workbook
- const ws = XLSX.utils.json_to_sheet(excelData);
- const wb = XLSX.utils.book_new();
- 
- // Set column widths
- const colWidths = [
- { wch: 15 }, // Candidate ID
- { wch: 25 }, // Full Name
- { wch: 30 }, // Email
- { wch: 15 }, // Phone
- { wch: 15 }, // Nationality
- { wch: 20 }, // Education
- { wch: 20 }, // Field of Study
- { wch: 10 }, // Years of Experience
- { wch: 20 }, // Current Location
- { wch: 15 }, // Application Date
- { wch: 12 }, // Total Score
- { wch: 15 }, // Status
- { wch: 12 } // Shortlisted
- ];
- ws['!cols'] = colWidths;
-
- XLSX.utils.book_append_sheet(wb, ws, listType === 'shortlist' ? 'Shortlist' : 'Longlist');
-
- // Generate filename
- const timestamp = new Date().toISOString().split('T')[0];
- const filename = `${vacancy.positionTitle}_${listType}_${timestamp}.xlsx`;
-
- // Download
- XLSX.writeFile(wb, filename);
- };
-
- const formatResponse = (response: any, type: string): string => {
- if (type === 'YesNo') {
- return response ? 'Yes' : 'No';
- } else if (type === 'Checklist' && Array.isArray(response)) {
- return response.join(', ');
- } else {
- return String(response);
- }
- };
-
- const handleStatusChange = (candidateId: string, newStatus: CandidateStatus) => {
- candidateService.updateStatus(candidateId, newStatus);
- loadCandidates();
- };
-
- const getStatusBadge = (status: CandidateStatus) => {
- const styles = {
- Applied: 'bg-blue-100 text-blue-700',
- 'Under Review': 'bg-yellow-100 text-yellow-700',
- Shortlisted: 'bg-green-100 text-green-700',
- Rejected: 'bg-red-100 text-red-700',
- Interviewed: 'bg-purple-100 text-purple-700',
- Offered: 'bg-indigo-100 text-indigo-700',
- Hired: 'bg-green-100 text-green-700'
- };
-
- return (
- <span className={`px-2 py-1 rounded-full text-xs font-medium ${styles[status]}`}>
- {status}
- </span>
- );
- };
-
- const getScoreColor = (score: number, threshold: number) => {
- if (score >= threshold) return 'text-green-600';
- if (score >= threshold * 0.8) return 'text-yellow-600';
- return 'text-red-600';
- };
-
- const localT = {
- title: t.hrRecruitment.candidateManagement,
- selectVacancy: t.hrRecruitment.selectVacancy,
- all: t.hrRecruitment.allCandidates,
- longlist: t.hrRecruitment.longlist,
- shortlist: t.hrRecruitment.shortlist,
- 
- exportLonglist: t.hrRecruitment.exportLonglist,
- exportShortlist: t.hrRecruitment.exportShortlist,
- exportAll: t.hrRecruitment.exportAll,
- 
- candidateRef: t.hrRecruitment.ref,
- name: t.hrRecruitment.name,
- email: t.hrRecruitment.email1,
- phone: 'الهاتف',
- score: t.hrRecruitment.score,
- status: t.hrRecruitment.status,
- actions: t.hrRecruitment.actions,
- 
- view: t.hrRecruitment.view,
- approve: t.hrRecruitment.approve,
- reject: t.hrRecruitment.reject,
- 
- noCandidates: t.hrRecruitment.noCandidatesFound,
- selectVacancyFirst: t.hrRecruitment.pleaseSelectAVacancyToView,
- 
- totalCandidates: t.hrRecruitment.total,
- shortlistedCount: t.hrRecruitment.shortlisted2,
- threshold: t.hrRecruitment.threshold
- };
-
- const selectedVacancyData = vacancies.find(v => v.id === selectedVacancy);
- const shortlistedCount = candidates.filter(c => c.isShortlisted).length;
-
- return (
- <div className="space-y-6" dir={isRTL ? 'rtl' : 'ltr'}>
- {/* Header */}
- <div className="flex items-center justify-between">
- <h2 className="text-xl font-bold text-gray-900">{localT.title}</h2>
- </div>
-
- {/* Vacancy Selector */}
- <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
- <label className="block text-sm font-medium text-gray-700 mb-2">
- {localT.selectVacancy}
- </label>
- <select
- value={selectedVacancy}
- onChange={(e) => setSelectedVacancy(e.target.value)}
- className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
- >
- {vacancies.map(vacancy => (
- <option key={vacancy.id} value={vacancy.id}>
- {vacancy.vacancyRef} - {vacancy.positionTitle} ({candidateService.getByVacancy(vacancy.id).length} candidates)
- </option>
- ))}
- </select>
- </div>
-
- {selectedVacancy && selectedVacancyData && (
- <>
- {/* Stats Cards */}
- <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
- <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
- <div className="flex items-center justify-between">
- <div>
- <p className="text-sm text-gray-600">{localT.totalCandidates}</p>
- <p className="text-2xl font-bold text-gray-900">{candidates.length}</p>
- </div>
- <Users className="w-8 h-8 text-blue-600" />
- </div>
- </div>
-
- <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
- <div className="flex items-center justify-between">
- <div>
- <p className="text-sm text-gray-600">{localT.shortlistedCount}</p>
- <p className="text-2xl font-bold text-green-600">{shortlistedCount}</p>
- </div>
- <Award className="w-8 h-8 text-green-600" />
- </div>
- </div>
-
- <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
- <div className="flex items-center justify-between">
- <div>
- <p className="text-sm text-gray-600">{localT.threshold}</p>
- <p className="text-2xl font-bold text-gray-900">{selectedVacancyData.shortlistThreshold}%</p>
- </div>
- <CheckCircle className="w-8 h-8 text-gray-600" />
- </div>
- </div>
- </div>
-
- {/* Filters & Actions */}
- <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
- <div className="flex flex-wrap items-center justify-between gap-4">
- {/* View Toggle */}
- <div className="flex items-center gap-2">
- <button
- onClick={() => setView('all')}
- className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${ view === 'all' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200' }`}
- >
- {localT.all} ({candidates.length})
- </button>
- <button
- onClick={() => setView('longlist')}
- className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${ view === 'longlist' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200' }`}
- >
- {localT.longlist} ({candidates.length - shortlistedCount})
- </button>
- <button
- onClick={() => setView('shortlist')}
- className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${ view === 'shortlist' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200' }`}
- >
- {localT.shortlist} ({shortlistedCount})
- </button>
- </div>
-
- {/* Export Buttons */}
- <div className="flex items-center gap-2">
- <button
- onClick={() => handleExportExcel('all')}
- className="px-3 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 flex items-center gap-2 text-sm"
- >
- <Download className="w-4 h-4" />
- {localT.exportAll}
- </button>
- <button
- onClick={() => handleExportExcel('longlist')}
- className="px-3 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 flex items-center gap-2 text-sm"
- >
- <Download className="w-4 h-4" />
- {localT.exportLonglist}
- </button>
- <button
- onClick={() => handleExportExcel('shortlist')}
- className="px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center gap-2 text-sm"
- disabled={shortlistedCount === 0}
- >
- <Download className="w-4 h-4" />
- {localT.exportShortlist}
- </button>
- </div>
- </div>
- </div>
-
- {/* Candidates Table */}
- {filteredCandidates.length === 0 ? (
- <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-12">
- <div className="text-center text-gray-500">
- <Users className="w-16 h-16 text-gray-300 mx-auto mb-4" />
- <p className="text-lg font-medium">{localT.noCandidates}</p>
- </div>
- </div>
- ) : (
- <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
- <div className="overflow-x-auto">
- <table className="w-full">
- <thead className="bg-gray-50 border-b border-gray-200">
- <tr>
- <th className={`px-4 py-3 text-xs font-medium text-gray-500 uppercase text-start`}>
- {localT.candidateRef}
- </th>
- <th className={`px-4 py-3 text-xs font-medium text-gray-500 uppercase text-start`}>
- {localT.name}
- </th>
- <th className={`px-4 py-3 text-xs font-medium text-gray-500 uppercase text-start`}>
- {localT.email}
- </th>
- <th className={`px-4 py-3 text-xs font-medium text-gray-500 uppercase text-start`}>
- {localT.phone}
- </th>
- <th className={`px-4 py-3 text-xs font-medium text-gray-500 uppercase text-start`}>
- {localT.score}
- </th>
- <th className={`px-4 py-3 text-xs font-medium text-gray-500 uppercase text-start`}>
- {localT.status}
- </th>
- <th className={`px-4 py-3 text-xs font-medium text-gray-500 uppercase text-start`}>
- {localT.actions}
- </th>
- </tr>
- </thead>
- <tbody className="bg-white divide-y divide-gray-200">
- {filteredCandidates.map((candidate) => (
- <tr key={candidate.id} className="hover:bg-gray-50">
- <td className="px-4 py-3 text-sm font-mono text-gray-900">
- {candidate.candidateRef}
- </td>
- <td className="px-4 py-3 text-sm text-gray-900 font-medium">
- <div>
- {candidate.fullName}
- {candidate.isShortlisted && (
- <span className="ms-2 text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full">
- ⭐ {t.hrRecruitment.shortlisted3}
- </span>
- )}
- </div>
- </td>
- <td className="px-4 py-3 text-sm text-gray-600">
- {candidate.email}
- </td>
- <td className="px-4 py-3 text-sm text-gray-600">
- {candidate.phone}
- </td>
- <td className="px-4 py-3 text-sm">
- <div className="flex items-center gap-2">
- <span className={`text-lg font-bold ${getScoreColor(candidate.totalScore, selectedVacancyData.shortlistThreshold)}`}>
- {candidate.totalScore.toFixed(1)}%
- </span>
- </div>
- </td>
- <td className="px-4 py-3 text-sm">
- {getStatusBadge(candidate.status)}
- </td>
- <td className="px-4 py-3 text-sm">
- <div className="flex items-center gap-2">
- <button
- onClick={() => {
- setSelectedCandidate(candidate);
- setShowDetail(true);
- }}
- className="p-1.5 text-blue-600 hover:bg-blue-50 rounded-lg"
- title={localT.view}
- >
- <Eye className="w-4 h-4" />
- </button>
- {candidate.status === 'Applied' && (
- <>
- <button
- onClick={() => handleStatusChange(candidate.id, 'Shortlisted')}
- className="p-1.5 text-green-600 hover:bg-green-50 rounded-lg"
- title={localT.approve}
- >
- <CheckCircle className="w-4 h-4" />
- </button>
- <button
- onClick={() => handleStatusChange(candidate.id, 'Rejected')}
- className="p-1.5 text-red-600 hover:bg-red-50 rounded-lg"
- title={localT.reject}
- >
- <XCircle className="w-4 h-4" />
- </button>
- </>
- )}
- </div>
- </td>
- </tr>
- ))}
- </tbody>
- </table>
- </div>
- </div>
- )}
- </>
- )}
-
- {!selectedVacancy && (
- <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-12">
- <div className="text-center text-gray-500">
- <Filter className="w-16 h-16 text-gray-300 mx-auto mb-4" />
- <p className="text-lg font-medium">{localT.selectVacancyFirst}</p>
- </div>
- </div>
- )}
-
- {/* Candidate Detail Modal */}
- {showDetail && selectedCandidate && (
- <CandidateDetail
- language={language}
- isRTL={isRTL}
- candidate={selectedCandidate}
- onClose={() => {
- setShowDetail(false);
- setSelectedCandidate(null);
- }}
- onStatusChange={(newStatus) => {
- handleStatusChange(selectedCandidate.id, newStatus);
- setShowDetail(false);
- setSelectedCandidate(null);
- }}
- />
- )}
- </div>
- );
+      {/* Detail Modal */}
+      {showDetail && selectedCandidate && (
+        <CandidateDetail
+          language={language}
+          isRTL={isRTL}
+          candidate={selectedCandidate}
+          onClose={() => {
+            setShowDetail(false);
+            setSelectedCandidate(undefined);
+          }}
+        />
+      )}
+    </div>
+  );
 }

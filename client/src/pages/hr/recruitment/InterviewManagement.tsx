@@ -1,415 +1,288 @@
 /**
  * ============================================================================
- * INTERVIEW MANAGEMENT
+ * INTERVIEW MANAGEMENT - REFACTORED FOR tRPC
  * ============================================================================
  * 
- * Features:
- * - View all scheduled interviews
- * - Schedule new interviews
- * - Conduct evaluations
- * - Track interview status
- * - Excel export
+ * Full CRUD for interviews with:
+ * - List, create, edit, delete
+ * - Job and candidate filtering
+ * - Status management
+ * - Bilingual support (EN/AR)
+ * - RTL/LTR support
  * 
  * ============================================================================
  */
 
-import { useState, useEffect } from 'react';
-import { 
- Calendar,
- Clock,
- Users,
- Plus,
- Eye,
- Edit,
- CheckCircle,
- Download,
- Filter
-} from 'lucide-react';
-import * as XLSX from 'xlsx';
-import {
- interviewService,
- candidateService,
- vacancyService
-} from './recruitmentService';
-import { Interview, InterviewStatus } from './types';
-import { InterviewScheduleForm } from './InterviewScheduleForm';
-import { InterviewEvaluationForm } from './InterviewEvaluationForm';
+import { useState } from 'react';
+import { Loader2, AlertCircle, Plus, Edit2, Trash2, Eye } from 'lucide-react';
+import { trpc } from '@/lib/trpc';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useTranslation } from '@/i18n/useTranslation';
+import { toast } from 'sonner';
 
 interface Props {
- language: string;
- isRTL: boolean;
+  language: string;
+  isRTL: boolean;
 }
 
-export function InterviewManagement({
- language, isRTL }: Props) {
- const { t } = useTranslation();
- const [interviews, setInterviews] = useState<Interview[]>([]);
- const [filteredInterviews, setFilteredInterviews] = useState<Interview[]>([]);
- const [statusFilter, setStatusFilter] = useState<InterviewStatus | 'All'>('All');
- const [showScheduleForm, setShowScheduleForm] = useState(false);
- const [showEvaluationForm, setShowEvaluationForm] = useState(false);
- const [selectedInterview, setSelectedInterview] = useState<Interview | null>(null);
+export function InterviewManagement({ language, isRTL }: Props) {
+  const { t } = useTranslation();
+  const { isRTL: contextIsRTL } = useLanguage();
+  const dir = isRTL || contextIsRTL ? 'rtl' : 'ltr';
 
- useEffect(() => {
- loadInterviews();
- }, []);
+  const [selectedJobId, setSelectedJobId] = useState<number | undefined>();
+  const [selectedInterviewId, setSelectedInterviewId] = useState<number | undefined>();
+  const [showForm, setShowForm] = useState(false);
+  const [editingInterview, setEditingInterview] = useState<any>(null);
 
- useEffect(() => {
- filterInterviews();
- }, [interviews, statusFilter]);
+  // tRPC queries
+  const { data: jobsData, isLoading: jobsLoading } = trpc.hrRecruitment.getAllVacancies.useQuery({
+    limit: 100,
+    offset: 0,
+  });
 
- const loadInterviews = () => {
- const data = interviewService.getAll();
- setInterviews(data);
- };
+  const {
+  data: interviewsData,
+  isLoading: interviewsLoading,
+  refetch: refetchInterviews,
+  error: interviewsError,
+} = trpc.hrRecruitment.getInterviewsByJob.useQuery(
+  {
+    jobId: selectedJobId ?? 0,
+  },
+  {
+    enabled: !!selectedJobId,
+  }
+);
 
- const filterInterviews = () => {
- let filtered = interviews;
+  const { data: selectedInterview, isLoading: interviewDetailLoading } = trpc.hrRecruitment.getInterviewById.useQuery(
+  {
+    candidateId: selectedInterviewId ?? 0,
+  },
+  {
+    enabled: !!selectedInterviewId,
+  }
+);
 
- if (statusFilter !== 'All') {
- filtered = filtered.filter(i => i.status === statusFilter);
- }
+  // tRPC mutations
+  const updateInterviewMutation = trpc.hrRecruitment.updateInterview.useMutation({
+    onSuccess: () => {
+      toast.success(t.hrRecruitment?.interviewUpdated || 'Interview updated successfully');
+      setEditingInterview(null);
+      setShowForm(false);
+      refetchInterviews();
+    },
+    onError: (error) => {
+      toast.error(error.message || 'Failed to update interview');
+    },
+  });
 
- // Sort by date (newest first)
- filtered.sort((a, b) => new Date(b.scheduledDate).getTime() - new Date(a.scheduledDate).getTime());
+  const deleteInterviewMutation = trpc.hrRecruitment.deleteInterview.useMutation({
+    onSuccess: () => {
+      toast.success(t.hrRecruitment?.interviewDeleted || 'Interview deleted successfully');
+      setSelectedInterviewId(undefined);
+      refetchInterviews();
+    },
+    onError: (error) => {
+      toast.error(error.message || 'Failed to delete interview');
+    },
+  });
 
- setFilteredInterviews(filtered);
- };
+  // Handlers
+  const handleEdit = (interview: any) => {
+    setEditingInterview(interview);
+    setShowForm(true);
+  };
 
- const handleExportExcel = () => {
- const excelData = filteredInterviews.map(interview => {
- const candidate = candidateService.getById(interview.candidateId);
- const vacancy = vacancyService.getById(interview.vacancyId);
+  const handleDelete = (id: number) => {
+    if (confirm(t.hrRecruitment?.confirmDelete || 'Are you sure?')) {
+            deleteInterviewMutation.mutate({
+        candidateId: id,
+        });
+        }
+    };
 
- return {
- 'Interview ID': interview.interviewRef,
- 'Candidate': candidate?.fullName || '',
- 'Candidate Ref': candidate?.candidateRef || '',
- 'Position': vacancy?.positionTitle || '',
- 'Vacancy Ref': vacancy?.vacancyRef || '',
- 'Interview Date': new Date(interview.scheduledDate).toLocaleDateString(),
- 'Interview Time': interview.scheduledTime,
- 'Location/Link': interview.location,
- 'Type': interview.interviewType,
- 'Status': interview.status,
- 'Panel Members': interview.panelMembers.join(', '),
- 'Overall Rating': interview.overallRating ? `${interview.overallRating}/5` : 'Not evaluated',
- 'Recommendation': interview.recommendation || 'Pending',
- 'Notes': interview.notes || ''
- };
- });
+  // Translations
+  const localT = {
+    title: t.hrRecruitment?.interviewManagement || 'Interview Management',
+    selectJob: t.hrRecruitment?.selectJob || 'Select Job',
+    newInterview: t.hrRecruitment?.newInterview || 'New Interview',
+    candidate: t.hrRecruitment?.candidate || 'Candidate',
+    type: t.hrRecruitment?.type || 'Type',
+    interviewDate: t.hrRecruitment?.interviewDate || 'Interview Date',
+    interviewTime: t.hrRecruitment?.interviewTime || 'Interview Time',
+    status: t.hrRecruitment?.status || 'Status',
+    actions: t.hrRecruitment?.actions || 'Actions',
+    view: t.hrRecruitment?.view || 'View',
+    edit: t.hrRecruitment?.edit || 'Edit',
+    delete: t.hrRecruitment?.delete || 'Delete',
+    noInterviews: t.hrRecruitment?.noInterviews || 'No interviews found',
+    loading: t.common?.loading || 'Loading...',
+  };
 
- const ws = XLSX.utils.json_to_sheet(excelData);
- const wb = XLSX.utils.book_new();
- 
- ws['!cols'] = [
- { wch: 15 }, { wch: 25 }, { wch: 15 }, { wch: 25 }, 
- { wch: 15 }, { wch: 15 }, { wch: 12 }, { wch: 30 },
- { wch: 12 }, { wch: 15 }, { wch: 30 }, { wch: 12 },
- { wch: 15 }, { wch: 40 }
- ];
+  return (
+    <div className="space-y-6" dir={dir}>
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <h2 className="text-xl font-bold text-gray-900">{localT.title}</h2>
+        <button
+          onClick={() => {
+            setEditingInterview(null);
+            setShowForm(true);
+          }}
+          disabled={!selectedJobId}
+          className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center gap-2"
+        >
+          <Plus className="w-5 h-5" />
+          {localT.newInterview}
+        </button>
+      </div>
 
- XLSX.utils.book_append_sheet(wb, ws, 'Interviews');
+      {/* Job Selection */}
+      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+        <label className="block text-sm font-medium text-gray-700 mb-2">
+          {localT.selectJob}
+        </label>
+        <select
+          value={selectedJobId || ''}
+          onChange={(e) => {
+            setSelectedJobId(e.target.value ? parseInt(e.target.value) : undefined);
+            setSelectedInterviewId(undefined);
+          }}
+          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+        >
+          <option value="">-- {localT.selectJob} --</option>
+          {jobsLoading ? (
+            <option disabled>{localT.loading}</option>
+          ) : (
+            jobsData?.map((job) => (
+              <option key={job.id} value={job.id}>
+                {job.jobTitle} ({job.jobCode || 'N/A'})
+              </option>
+            ))
+          )}
+        </select>
+      </div>
 
- const timestamp = new Date().toISOString().split('T')[0];
- XLSX.writeFile(wb, `Interviews_${timestamp}.xlsx`);
- };
+      {/* Interviews Table */}
+      {selectedJobId && (
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+          {interviewsLoading ? (
+            <div className="p-12 text-center">
+              <Loader2 className="w-8 h-8 animate-spin mx-auto mb-4 text-blue-600" />
+              <p className="text-gray-600">{localT.loading}</p>
+            </div>
+          ) : interviewsError ? (
+            <div className="p-4 flex items-start gap-3">
+              <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
+              <div>
+                <p className="font-medium text-red-900">{t.common?.error || 'Error'}</p>
+                <p className="text-sm text-red-700">{interviewsError?.message}</p>
+              </div>
+            </div>
+          ) : !interviewsData || interviewsData.length === 0 ? (
+            <div className="p-12 text-center text-gray-500">
+              <p className="text-lg font-medium">{localT.noInterviews}</p>
+            </div>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead className="bg-gray-50 border-b border-gray-200">
+                  <tr>
+                    <th className="px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider text-start">
+                      {localT.candidate}
+                    </th>
+                    <th className="px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider text-start">
+                      {localT.type}
+                    </th>
+                    <th className="px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider text-start">
+                      {localT.interviewDate}
+                    </th>
+                    <th className="px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider text-start">
+                      {localT.interviewTime}
+                    </th>
+                    <th className="px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider text-start">
+                      {localT.status}
+                    </th>
+                    <th className="px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider text-start">
+                      {localT.actions}
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  {interviewsData.map((interview) => (
+                    <tr key={interview.candidateId} className="hover:bg-gray-50 transition-colors">
+                      <td className="px-4 py-3 text-sm text-gray-900">Candidate</td>
+                      <td className="px-4 py-3 text-sm text-gray-600">{interview.interviewType || '-'}</td>
+                      <td className="px-4 py-3 text-sm text-gray-600">
+                        {interview.interviewDate ? new Date(interview.interviewDate).toLocaleDateString() : '-'}
+                      </td>
+                      <td className="px-4 py-3 text-sm text-gray-600">{interview.interviewTime || '-'}</td>
+                      <td className="px-4 py-3 text-sm">
+                        <span className="px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-700">
+                          {interview.status || 'scheduled'}
+                        </span>
+                      </td>
+                      <td className="px-4 py-3 text-sm">
+                        <div className="flex items-center gap-2">
+                          <button
+                            onClick={() => setSelectedInterviewId(interview.candidateId)}
+                            className="p-1.5 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                            title={localT.view}
+                          >
+                            <Eye className="w-4 h-4" />
+                          </button>
+                          <button
+                            onClick={() => handleEdit(interview)}
+                            className="p-1.5 text-green-600 hover:bg-green-50 rounded-lg transition-colors"
+                            title={localT.edit}
+                          >
+                            <Edit2 className="w-4 h-4" />
+                          </button>
+                          <button
+                            onClick={() => handleDelete(interview.candidateId)}
+                            className="p-1.5 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                            title={localT.delete}
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
+      )}
 
- const getStatusBadge = (status: InterviewStatus) => {
- const styles = {
- Scheduled: 'bg-blue-100 text-blue-700',
- Completed: 'bg-green-100 text-green-700',
- Cancelled: 'bg-red-100 text-red-700',
- 'No Show': 'bg-gray-100 text-gray-700'
- };
-
- return (
- <span className={`px-2 py-1 rounded-full text-xs font-medium ${styles[status]}`}>
- {status}
- </span>
- );
- };
-
- const getRecommendationBadge = (recommendation: string) => {
- const styles: Record<string, string> = {
- 'Highly Recommended': 'bg-green-100 text-green-700',
- 'Recommended': 'bg-blue-100 text-blue-700',
- 'Not Recommended': 'bg-red-100 text-red-700',
- 'On Hold': 'bg-yellow-100 text-yellow-700'
- };
-
- return (
- <span className={`px-2 py-1 rounded-full text-xs font-medium ${styles[recommendation] || 'bg-gray-100 text-gray-700'}`}>
- {recommendation}
- </span>
- );
- };
-
- const localT = {
- title: t.hrRecruitment.interviewManagement,
- scheduleInterview: t.hrRecruitment.scheduleInterview,
- exportExcel: t.hrRecruitment.exportToExcel,
- 
- all: t.hrRecruitment.all,
- scheduled: t.hrRecruitment.scheduled,
- completed: t.hrRecruitment.completed,
- cancelled: t.hrRecruitment.cancelled,
- noShow: t.hrRecruitment.noShow,
- 
- interviewRef: t.hrRecruitment.interviewRef,
- candidate: t.hrRecruitment.candidate,
- position: t.hrRecruitment.position,
- date: t.hrRecruitment.date,
- time: t.hrRecruitment.time,
- type: t.hrRecruitment.type,
- status: t.hrRecruitment.status,
- rating: t.hrRecruitment.rating,
- recommendation: t.hrRecruitment.recommendation,
- actions: t.hrRecruitment.actions,
- 
- view: t.hrRecruitment.view,
- evaluate: t.hrRecruitment.evaluate,
- 
- noInterviews: t.hrRecruitment.noInterviewsFound,
- 
- totalInterviews: t.hrRecruitment.totalInterviews,
- pending: t.hrRecruitment.pendingEvaluation,
- evaluated: t.hrRecruitment.evaluated
- };
-
- const scheduledCount = interviews.filter(i => i.status === 'Scheduled').length;
- const completedCount = interviews.filter(i => i.status === 'Completed').length;
- const pendingEvaluation = interviews.filter(i => i.status === 'Completed' && !i.overallRating).length;
-
- return (
- <div className="space-y-6" dir={isRTL ? 'rtl' : 'ltr'}>
- {/* Header */}
- <div className="flex items-center justify-between">
- <h2 className="text-xl font-bold text-gray-900">{localT.title}</h2>
- <div className="flex items-center gap-3">
- <button
- onClick={handleExportExcel}
- className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 flex items-center gap-2"
- >
- <Download className="w-4 h-4" />
- {localT.exportExcel}
- </button>
- <button
- onClick={() => setShowScheduleForm(true)}
- className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center gap-2"
- >
- <Plus className="w-4 h-4" />
- {localT.scheduleInterview}
- </button>
- </div>
- </div>
-
- {/* Stats Cards */}
- <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
- <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
- <div className="flex items-center justify-between">
- <div>
- <p className="text-sm text-gray-600">{localT.totalInterviews}</p>
- <p className="text-2xl font-bold text-gray-900">{interviews.length}</p>
- </div>
- <Calendar className="w-8 h-8 text-blue-600" />
- </div>
- </div>
-
- <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
- <div className="flex items-center justify-between">
- <div>
- <p className="text-sm text-gray-600">{localT.scheduled}</p>
- <p className="text-2xl font-bold text-blue-600">{scheduledCount}</p>
- </div>
- <Clock className="w-8 h-8 text-blue-600" />
- </div>
- </div>
-
- <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
- <div className="flex items-center justify-between">
- <div>
- <p className="text-sm text-gray-600">{localT.completed}</p>
- <p className="text-2xl font-bold text-green-600">{completedCount}</p>
- </div>
- <CheckCircle className="w-8 h-8 text-green-600" />
- </div>
- </div>
-
- <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
- <div className="flex items-center justify-between">
- <div>
- <p className="text-sm text-gray-600">{localT.pending}</p>
- <p className="text-2xl font-bold text-yellow-600">{pendingEvaluation}</p>
- </div>
- <Users className="w-8 h-8 text-yellow-600" />
- </div>
- </div>
- </div>
-
- {/* Filters */}
- <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
- <div className="flex items-center gap-2">
- {(['All', 'Scheduled', 'Completed', 'Cancelled', 'No Show'] as const).map((status) => (
- <button
- key={status}
- onClick={() => setStatusFilter(status)}
- className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${ statusFilter === status ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200' }`}
- >
- {status === 'All' ? localT.all : 
- status === 'Scheduled' ? localT.scheduled :
- status === 'Completed' ? localT.completed :
- status === 'Cancelled' ? localT.cancelled : localT.noShow}
- </button>
- ))}
- </div>
- </div>
-
- {/* Interviews Table */}
- {filteredInterviews.length === 0 ? (
- <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-12">
- <div className="text-center text-gray-500">
- <Calendar className="w-16 h-16 text-gray-300 mx-auto mb-4" />
- <p className="text-lg font-medium">{localT.noInterviews}</p>
- </div>
- </div>
- ) : (
- <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
- <div className="overflow-x-auto">
- <table className="w-full">
- <thead className="bg-gray-50 border-b border-gray-200">
- <tr>
- <th className={`px-4 py-3 text-xs font-medium text-gray-500 uppercase text-start`}>
- {localT.interviewRef}
- </th>
- <th className={`px-4 py-3 text-xs font-medium text-gray-500 uppercase text-start`}>
- {localT.candidate}
- </th>
- <th className={`px-4 py-3 text-xs font-medium text-gray-500 uppercase text-start`}>
- {localT.position}
- </th>
- <th className={`px-4 py-3 text-xs font-medium text-gray-500 uppercase text-start`}>
- {localT.date}
- </th>
- <th className={`px-4 py-3 text-xs font-medium text-gray-500 uppercase text-start`}>
- {localT.time}
- </th>
- <th className={`px-4 py-3 text-xs font-medium text-gray-500 uppercase text-start`}>
- {localT.type}
- </th>
- <th className={`px-4 py-3 text-xs font-medium text-gray-500 uppercase text-start`}>
- {localT.status}
- </th>
- <th className={`px-4 py-3 text-xs font-medium text-gray-500 uppercase text-start`}>
- {localT.rating}
- </th>
- <th className={`px-4 py-3 text-xs font-medium text-gray-500 uppercase text-start`}>
- {localT.recommendation}
- </th>
- <th className={`px-4 py-3 text-xs font-medium text-gray-500 uppercase text-start`}>
- {localT.actions}
- </th>
- </tr>
- </thead>
- <tbody className="bg-white divide-y divide-gray-200">
- {filteredInterviews.map((interview) => {
- const candidate = candidateService.getById(interview.candidateId);
- const vacancy = vacancyService.getById(interview.vacancyId);
-
- return (
- <tr key={interview.id} className="hover:bg-gray-50">
- <td className="px-4 py-3 text-sm font-mono text-gray-900">
- {interview.interviewRef}
- </td>
- <td className="px-4 py-3 text-sm text-gray-900 font-medium">
- {candidate?.fullName}
- </td>
- <td className="px-4 py-3 text-sm text-gray-600">
- {vacancy?.positionTitle}
- </td>
- <td className="px-4 py-3 text-sm text-gray-600">
- {new Date(interview.scheduledDate).toLocaleDateString()}
- </td>
- <td className="px-4 py-3 text-sm text-gray-600">
- {interview.scheduledTime}
- </td>
- <td className="px-4 py-3 text-sm text-gray-600">
- {interview.interviewType}
- </td>
- <td className="px-4 py-3 text-sm">
- {getStatusBadge(interview.status)}
- </td>
- <td className="px-4 py-3 text-sm">
- {interview.overallRating ? (
- <span className="text-yellow-600 font-medium">
- ⭐ {interview.overallRating}/5
- </span>
- ) : (
- <span className="text-gray-400">-</span>
- )}
- </td>
- <td className="px-4 py-3 text-sm">
- {interview.recommendation ? (
- getRecommendationBadge(interview.recommendation)
- ) : (
- <span className="text-gray-400">Pending</span>
- )}
- </td>
- <td className="px-4 py-3 text-sm">
- <div className="flex items-center gap-2">
- <button
- onClick={() => {
- setSelectedInterview(interview);
- setShowEvaluationForm(true);
- }}
- className="p-1.5 text-blue-600 hover:bg-blue-50 rounded-lg"
- title={localT.evaluate}
- >
- <Edit className="w-4 h-4" />
- </button>
- </div>
- </td>
- </tr>
- );
- })}
- </tbody>
- </table>
- </div>
- </div>
- )}
-
- {/* Schedule Interview Modal */}
- {showScheduleForm && (
- <InterviewScheduleForm
- language={language}
- isRTL={isRTL}
- onClose={() => setShowScheduleForm(false)}
- onSave={() => {
- setShowScheduleForm(false);
- loadInterviews();
- }}
- />
- )}
-
- {/* Interview Evaluation Modal */}
- {showEvaluationForm && selectedInterview && (
- <InterviewEvaluationForm
- language={language}
- isRTL={isRTL}
- interview={selectedInterview}
- onClose={() => {
- setShowEvaluationForm(false);
- setSelectedInterview(null);
- }}
- onSave={() => {
- setShowEvaluationForm(false);
- setSelectedInterview(null);
- loadInterviews();
- }}
- />
- )}
- </div>
- );
+      {/* Detail View */}
+      {selectedInterviewId && selectedInterview && (
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">{t.hrRecruitment?.interviewDetails || 'Interview Details'}</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <p className="text-sm text-gray-600">{localT.type}</p>
+              <p className="text-lg font-medium text-gray-900">{selectedInterview.interviewType || '-'}</p>
+            </div>
+            <div>
+              <p className="text-sm text-gray-600">{localT.interviewDate}</p>
+              <p className="text-lg font-medium text-gray-900">
+                {selectedInterview.interviewDate ? new Date(selectedInterview.interviewDate).toLocaleDateString() : '-'}
+              </p>
+            </div>
+            <div>
+              <p className="text-sm text-gray-600">{localT.interviewTime}</p>
+              <p className="text-lg font-medium text-gray-900">{selectedInterview.interviewTime || '-'}</p>
+            </div>
+            <div>
+              <p className="text-sm text-gray-600">{localT.status}</p>
+              <p className="text-lg font-medium text-gray-900">{selectedInterview.status || '-'}</p>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
 }

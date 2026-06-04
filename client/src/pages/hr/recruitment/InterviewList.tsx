@@ -1,336 +1,235 @@
 /**
  * ============================================================================
- * INTERVIEW LIST & EVALUATION
+ * INTERVIEW LIST - REFACTORED FOR tRPC
  * ============================================================================
  * 
- * Features:
- * - View all scheduled interviews
- * - Conduct interview evaluation
- * - Score candidates
- * - Recommendation notes
+ * Display interviews with:
+ * - Job filtering
+ * - Status display
+ * - Delete functionality
+ * - Bilingual support (EN/AR)
+ * - RTL/LTR support
  * 
  * ============================================================================
  */
 
-import { useState, useEffect } from 'react';
-import { Calendar, Users, FileText, CheckCircle, Star, Clock } from 'lucide-react';
-import {
- interviewService,
- candidateService,
- vacancyService
-} from './recruitmentService';
-import { Interview, Candidate } from './types';
-import { InterviewEvaluation } from './InterviewEvaluation';
+import { useState } from 'react';
+import { Loader2, AlertCircle, Trash2, Eye } from 'lucide-react';
+import { trpc } from '@/lib/trpc';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useTranslation } from '@/i18n/useTranslation';
+import { toast } from 'sonner';
 
 interface Props {
- language: string;
- isRTL: boolean;
+  language: string;
+  isRTL: boolean;
 }
 
-export function InterviewList({
- language, isRTL }: Props) {
- const { t } = useTranslation();
- const [interviews, setInterviews] = useState<Interview[]>([]);
- const [upcomingInterviews, setUpcomingInterviews] = useState<Interview[]>([]);
- const [pastInterviews, setPastInterviews] = useState<Interview[]>([]);
- const [selectedInterview, setSelectedInterview] = useState<Interview | null>(null);
- const [showEvaluation, setShowEvaluation] = useState(false);
- const [candidatesMap, setCandidatesMap] = useState<Record<string, Candidate>>({});
+export function InterviewList({ language, isRTL }: Props) {
+  const { t } = useTranslation();
+  const { isRTL: contextIsRTL } = useLanguage();
+  const dir = isRTL || contextIsRTL ? 'rtl' : 'ltr';
 
- useEffect(() => {
- loadInterviews();
- }, []);
+  // State
+  const [selectedJobId, setSelectedJobId] = useState<number | undefined>();
 
- const loadInterviews = () => {
- const allInterviews = interviewService.getAll();
- setInterviews(allInterviews);
+  // tRPC queries
+  const { data: jobsData = [], isLoading: jobsLoading } =
+    trpc.hrRecruitment.getAllVacancies.useQuery({
+      limit: 100,
+      offset: 0,
+    });
 
- const now = new Date();
- const upcoming = allInterviews.filter(i => new Date(i.interviewDate) > now);
- const past = allInterviews.filter(i => new Date(i.interviewDate) <= now);
+ const {
+  data: interviewsData,
+  isLoading: interviewsLoading,
+  error: interviewsError,
+  refetch: refetchInterviews,
+} =
+trpc.hrRecruitment.getInterviewsByJob.useQuery(
+  {
+    jobId: selectedJobId ?? 0,
+  },
+  {
+    enabled: !!selectedJobId,
+  }
+);
 
- setUpcomingInterviews(upcoming);
- setPastInterviews(past);
+  // tRPC mutations
+  const deleteInterviewMutation = trpc.hrRecruitment.deleteInterview.useMutation({
+    onSuccess: () => {
+      toast.success(t.hrRecruitment?.interviewDeleted || 'Interview deleted successfully');
+      refetchInterviews();
 
- // Load candidates
- const candidates = candidateService.getAll();
- const map: Record<string, Candidate> = {};
- candidates.forEach(c => {
- map[c.id] = c;
- });
- setCandidatesMap(map);
- };
+    },
+    onError: (error) => {
+      toast.error(error.message || 'Failed to delete interview');
+    },
+  });
 
- const handleEvaluateClick = (interview: Interview) => {
- setSelectedInterview(interview);
- setShowEvaluation(true);
- };
+  // Handlers
+  const handleDelete = (id: number) => {
+    if (confirm(t.hrRecruitment?.confirmDelete || 'Are you sure you want to delete this interview?')) {
+      deleteInterviewMutation.mutate({
+      candidateId: id,
+    });
+    }
+  };
 
- const handleEvaluationComplete = () => {
- setShowEvaluation(false);
- setSelectedInterview(null);
- loadInterviews();
- };
+  // Translations
+  const localT = {
+    title: t.hrRecruitment?.interviews || 'Interviews',
+    selectJob: t.hrRecruitment?.selectJob || 'Select Job',
+    jobTitle: t.hrRecruitment?.jobTitle || 'Job Title',
+    jobCode: t.hrRecruitment?.jobCode || 'Job Code',
+    candidate: t.hrRecruitment?.candidate || 'Candidate',
+    interviewType: t.hrRecruitment?.interviewType || 'interview Type',
+    scheduledDate: t.hrRecruitment?.date || 'scheduled Date',
+    scheduledTime: t.hrRecruitment?.scheduledTime || 'scheduled Time',
+    location: t.hrRecruitment?.location || 'Location',
+    status: t.hrRecruitment?.status || 'Status',
+    actions: t.hrRecruitment?.actions || 'Actions',
+    view: t.hrRecruitment?.view || 'View',
+    delete: t.hrRecruitment?.delete || 'Delete',
+    noInterviews: t.hrRecruitment?.noInterviews || 'No interviews found',
+    loading: t.common?.loading || 'Loading...',
+    error: t.common?.error || 'Error',
+  };
 
- const getStatusBadge = (interview: Interview) => {
- const now = new Date();
- const interviewDate = new Date(interview.interviewDate);
+  return (
+    <div className="space-y-6" dir={dir}>
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <h2 className="text-xl font-bold text-gray-900">{localT.title}</h2>
+      </div>
 
- if (interview.overallScore !== undefined) {
- return (
- <span className="px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-700 flex items-center gap-1">
- <CheckCircle className="w-3 h-3" />
- Completed
- </span>
- );
- } else if (interviewDate > now) {
- return (
- <span className="px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-700 flex items-center gap-1">
- <Clock className="w-3 h-3" />
- Scheduled
- </span>
- );
- } else {
- return (
- <span className="px-2 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-700 flex items-center gap-1">
- <FileText className="w-3 h-3" />
- Pending Evaluation
- </span>
- );
- }
- };
+      {/* Job Selection */}
+      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+        <label className="block text-sm font-medium text-gray-700 mb-2">
+          {localT.selectJob}
+        </label>
+        <select
+          value={selectedJobId || ''}
+          onChange={(e) => setSelectedJobId(e.target.value ? parseInt(e.target.value) : undefined)}
+          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+        >
+          <option value="">-- {localT.selectJob} --</option>
+          {jobsLoading ? (
+            <option disabled>{localT.loading}</option>
+          ) : (
+            jobsData?.map((job) => (
+              <option key={job.id} value={job.id}>
+                {job.jobTitle} ({job.jobCode || 'N/A'})
+              </option>
+            ))
+          )}
+        </select>
+      </div>
 
- const localT = {
- title: t.hrRecruitment.interviewManagement,
- upcomingInterviews: t.hrRecruitment.upcomingInterviews,
- pastInterviews: t.hrRecruitment.pastInterviews,
- 
- candidateName: t.hrRecruitment.candidate,
- position: t.hrRecruitment.position,
- interviewDate: t.hrRecruitment.date,
- type: t.hrRecruitment.type,
- panelMembers: t.hrRecruitment.panel,
- status: t.hrRecruitment.status,
- score: t.hrRecruitment.score,
- actions: t.hrRecruitment.actions,
- 
- evaluate: t.hrRecruitment.evaluate,
- view: t.hrRecruitment.view,
- 
- noUpcoming: t.hrRecruitment.noUpcomingInterviews,
- noPast: t.hrRecruitment.noPastInterviews,
- 
- total: t.hrRecruitment.totalInterviews,
- upcoming: t.hrRecruitment.upcoming,
- completed: t.hrRecruitment.completed5
- };
+      {/* Loading State */}
+      {selectedJobId && interviewsLoading && (
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-12 text-center">
+          <Loader2 className="w-8 h-8 animate-spin mx-auto mb-4 text-blue-600" />
+          <p className="text-gray-600">{localT.loading}</p>
+        </div>
+      )}
 
- const completedCount = interviews.filter(i => i.overallScore !== undefined).length;
+      {/* Error State */}
+      {selectedJobId && !!interviewsError && (
+        <div className="bg-red-50 rounded-lg shadow-sm border border-red-200 p-4 flex items-start gap-3">
+          <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
+          <div>
+            <p className="font-medium text-red-900">{localT.error}</p>
+            <p className="text-sm text-red-700">{interviewsError?.message}</p>
+          </div>
+        </div>
+      )}
 
- return (
- <div className="space-y-6" dir={isRTL ? 'rtl' : 'ltr'}>
- {/* Header */}
- <div className="flex items-center justify-between">
- <h2 className="text-xl font-bold text-gray-900">{localT.title}</h2>
- </div>
-
- {/* Stats */}
- <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
- <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
- <div className="flex items-center justify-between">
- <div>
- <p className="text-sm text-gray-600">{localT.total}</p>
- <p className="text-2xl font-bold text-gray-900">{interviews.length}</p>
- </div>
- <Calendar className="w-8 h-8 text-blue-600" />
- </div>
- </div>
-
- <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
- <div className="flex items-center justify-between">
- <div>
- <p className="text-sm text-gray-600">{localT.upcoming}</p>
- <p className="text-2xl font-bold text-blue-600">{upcomingInterviews.length}</p>
- </div>
- <Clock className="w-8 h-8 text-blue-600" />
- </div>
- </div>
-
- <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
- <div className="flex items-center justify-between">
- <div>
- <p className="text-sm text-gray-600">{localT.completed}</p>
- <p className="text-2xl font-bold text-green-600">{completedCount}</p>
- </div>
- <CheckCircle className="w-8 h-8 text-green-600" />
- </div>
- </div>
- </div>
-
- {/* Upcoming Interviews */}
- <div className="bg-white rounded-lg shadow-sm border border-gray-200">
- <div className="p-4 border-b border-gray-200">
- <h3 className="text-lg font-bold text-gray-900">{localT.upcomingInterviews}</h3>
- </div>
-
- {upcomingInterviews.length === 0 ? (
- <div className="p-12 text-center text-gray-500">
- <Calendar className="w-16 h-16 text-gray-300 mx-auto mb-4" />
- <p>{localT.noUpcoming}</p>
- </div>
- ) : (
- <div className="overflow-x-auto">
- <table className="w-full">
- <thead className="bg-gray-50 border-b border-gray-200">
- <tr>
- <th className={`px-4 py-3 text-xs font-medium text-gray-500 uppercase text-start`}>
- {localT.candidateName}
- </th>
- <th className={`px-4 py-3 text-xs font-medium text-gray-500 uppercase text-start`}>
- {localT.interviewDate}
- </th>
- <th className={`px-4 py-3 text-xs font-medium text-gray-500 uppercase text-start`}>
- {localT.type}
- </th>
- <th className={`px-4 py-3 text-xs font-medium text-gray-500 uppercase text-start`}>
- {localT.panelMembers}
- </th>
- <th className={`px-4 py-3 text-xs font-medium text-gray-500 uppercase text-start`}>
- {localT.status}
- </th>
- </tr>
- </thead>
- <tbody className="divide-y divide-gray-200">
- {upcomingInterviews.map((interview) => {
- const candidate = candidatesMap[interview.candidateId];
- return (
- <tr key={interview.id} className="hover:bg-gray-50">
- <td className="px-4 py-3 text-sm text-gray-900 font-medium">
- {candidate?.fullName || 'Unknown'}
- </td>
- <td className="px-4 py-3 text-sm text-gray-600">
- {new Date(interview.interviewDate).toLocaleString()}
- </td>
- <td className="px-4 py-3 text-sm text-gray-900">
- {interview.interviewType}
- </td>
- <td className="px-4 py-3 text-sm text-gray-600">
- {interview.panelMembers.join(', ')}
- </td>
- <td className="px-4 py-3 text-sm">
- {getStatusBadge(interview)}
- </td>
- </tr>
- );
- })}
- </tbody>
- </table>
- </div>
- )}
- </div>
-
- {/* Past Interviews */}
- <div className="bg-white rounded-lg shadow-sm border border-gray-200">
- <div className="p-4 border-b border-gray-200">
- <h3 className="text-lg font-bold text-gray-900">{localT.pastInterviews}</h3>
- </div>
-
- {pastInterviews.length === 0 ? (
- <div className="p-12 text-center text-gray-500">
- <FileText className="w-16 h-16 text-gray-300 mx-auto mb-4" />
- <p>{localT.noPast}</p>
- </div>
- ) : (
- <div className="overflow-x-auto">
- <table className="w-full">
- <thead className="bg-gray-50 border-b border-gray-200">
- <tr>
- <th className={`px-4 py-3 text-xs font-medium text-gray-500 uppercase text-start`}>
- {localT.candidateName}
- </th>
- <th className={`px-4 py-3 text-xs font-medium text-gray-500 uppercase text-start`}>
- {localT.interviewDate}
- </th>
- <th className={`px-4 py-3 text-xs font-medium text-gray-500 uppercase text-start`}>
- {localT.type}
- </th>
- <th className={`px-4 py-3 text-xs font-medium text-gray-500 uppercase text-start`}>
- {localT.panelMembers}
- </th>
- <th className={`px-4 py-3 text-xs font-medium text-gray-500 uppercase text-start`}>
- {localT.score}
- </th>
- <th className={`px-4 py-3 text-xs font-medium text-gray-500 uppercase text-start`}>
- {localT.status}
- </th>
- <th className={`px-4 py-3 text-xs font-medium text-gray-500 uppercase text-start`}>
- {localT.actions}
- </th>
- </tr>
- </thead>
- <tbody className="divide-y divide-gray-200">
- {pastInterviews.map((interview) => {
- const candidate = candidatesMap[interview.candidateId];
- return (
- <tr key={interview.id} className="hover:bg-gray-50">
- <td className="px-4 py-3 text-sm text-gray-900 font-medium">
- {candidate?.fullName || 'Unknown'}
- </td>
- <td className="px-4 py-3 text-sm text-gray-600">
- {new Date(interview.interviewDate).toLocaleString()}
- </td>
- <td className="px-4 py-3 text-sm text-gray-900">
- {interview.interviewType}
- </td>
- <td className="px-4 py-3 text-sm text-gray-600">
- {interview.panelMembers.join(', ')}
- </td>
- <td className="px-4 py-3 text-sm">
- {interview.overallScore !== undefined ? (
- <span className="flex items-center gap-1 text-green-600 font-bold">
- <Star className="w-4 h-4 fill-current" />
- {interview.overallScore}%
- </span>
- ) : (
- <span className="text-gray-400">-</span>
- )}
- </td>
- <td className="px-4 py-3 text-sm">
- {getStatusBadge(interview)}
- </td>
- <td className="px-4 py-3 text-sm">
- {interview.overallScore === undefined && (
- <button
- onClick={() => handleEvaluateClick(interview)}
- className="px-3 py-1.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center gap-2 text-xs"
- >
- <FileText className="w-4 h-4" />
- {localT.evaluate}
- </button>
- )}
- </td>
- </tr>
- );
- })}
- </tbody>
- </table>
- </div>
- )}
- </div>
-
- {/* Interview Evaluation Modal */}
- {showEvaluation && selectedInterview && (
- <InterviewEvaluation
- language={language}
- isRTL={isRTL}
- interview={selectedInterview}
- candidate={candidatesMap[selectedInterview.candidateId]}
- onClose={() => setShowEvaluation(false)}
- onComplete={handleEvaluationComplete}
- />
- )}
- </div>
- );
+      {/* Interviews Table */}
+      {selectedJobId && !interviewsLoading && !interviewsError && (
+        <>
+          {!interviewsData || interviewsData.length === 0 ? (
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-12">
+              <div className="text-center text-gray-500">
+                <p className="text-lg font-medium">{localT.noInterviews}</p>
+              </div>
+            </div>
+          ) : (
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead className="bg-gray-50 border-b border-gray-200">
+                    <tr>
+                      <th className={`px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider text-${dir === 'rtl' ? 'end' : 'start'}`}>
+                        {localT.candidate}
+                      </th>
+                      <th className={`px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider text-${dir === 'rtl' ? 'end' : 'start'}`}>
+                        {localT.interviewType}
+                      </th>
+                      <th className={`px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider text-${dir === 'rtl' ? 'end' : 'start'}`}>
+                        {localT.scheduledDate}
+                      </th>
+                      <th className={`px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider text-${dir === 'rtl' ? 'end' : 'start'}`}>
+                        {localT.scheduledTime}
+                      </th>
+                      <th className={`px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider text-${dir === 'rtl' ? 'end' : 'start'}`}>
+                        {localT.location}
+                      </th>
+                      <th className={`px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider text-${dir === 'rtl' ? 'end' : 'start'}`}>
+                        {localT.status}
+                      </th>
+                      <th className={`px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider text-${dir === 'rtl' ? 'end' : 'start'}`}>
+                        {localT.actions}
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="bg-white divide-y divide-gray-200">
+                    {interviewsData.map((interview) => (
+                      <tr key={interview.candidateId} className="hover:bg-gray-50 transition-colors">
+                        <td className="px-4 py-3 text-sm text-gray-900">
+                          {/* TODO: Display candidate name */}
+                          Candidate
+                        </td>
+                        <td className="px-4 py-3 text-sm text-gray-600">
+                          {interview.interviewType || '-'}
+                        </td>
+                        <td className="px-4 py-3 text-sm text-gray-600">
+                          {interview.interviewDate ? new Date(interview.interviewDate).toLocaleDateString() : '-'}
+                        </td>
+                        <td className="px-4 py-3 text-sm text-gray-600">
+                          {interview.interviewTime || '-'}
+                        </td>
+                        <td className="px-4 py-3 text-sm">
+                          <span className="px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-700">
+                            {interview.status || 'scheduled'}
+                          </span>
+                        </td>
+                        <td className="px-4 py-3 text-sm">
+                          <div className="flex items-center gap-2">
+                            <button
+                              className="p-1.5 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                              title={localT.view}
+                            >
+                              <Eye className="w-4 h-4" />
+                            </button>
+                            <button
+                              onClick={() => handleDelete(interview.candidateId)}
+                              className="p-1.5 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                              title={localT.delete}
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )}
+        </>
+      )}
+    </div>
+  );
 }

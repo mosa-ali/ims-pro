@@ -32,7 +32,16 @@ export default function StockAdjustmentForm() {
   const { t } = useTranslation();
   const [, setLocation] = useLocation();
 
-  const [type, setType] = useState<string>("");
+  type AdjustmentType =
+  | "write_off"
+  | "physical_count"
+  | "damage"
+  | "correction"
+  | "donation"
+  | "other";
+
+const [type, setType] =
+  useState<AdjustmentType | "">("");
   const [warehouse, setWarehouse] = useState("");
   const [reason, setReason] = useState("");
   const [lines, setLines] = useState<AdjustmentLine[]>([
@@ -48,8 +57,19 @@ export default function StockAdjustmentForm() {
     other: isRTL ? "أخرى" : "Other",
   };
 
-  const { data: stockItems } = trpc.logistics.stock.getItems.useQuery({});
-  const { data: allBatches } = trpc.logistics.stockMgmt.batches.list.useQuery({});
+  const { data: stockItemsResponse } =
+      trpc.logistics.stock.listItems.useQuery({
+        limit: 500,
+        offset: 0,
+      });
+
+  const { data: allBatches } =
+      trpc.logistics.stockMgmt.batches.listAll.useQuery({
+        limit: 500,
+        offset: 0,
+      });
+
+    const stockItems = stockItemsResponse?.items ?? [];
 
   const createMutation = trpc.logistics.stockMgmt.adjustments.create.useMutation({
     onSuccess: () => {
@@ -76,7 +96,7 @@ export default function StockAdjustmentForm() {
 
   const getBatchesForItem = (itemId: number | null) => {
     if (!itemId || !allBatches) return [];
-    return allBatches.filter((b: any) => b.itemId === itemId);
+    return allBatches?.items?.filter((b: any) => b.itemId === itemId);
   };
 
   const handleSubmit = () => {
@@ -84,17 +104,55 @@ export default function StockAdjustmentForm() {
     const validLines = lines.filter((l) => l.itemId && l.qtyAdjusted);
     if (validLines.length === 0) { toast.error(isRTL ? "يرجى إضافة سطر واحد على الأقل بالكمية" : "Please add at least one line item with quantity"); return; }
 
+    if (!reason.trim()) {
+      toast.error("Reason is required");
+      return;
+    }
     createMutation.mutate({
       type,
       warehouse: warehouse || undefined,
-      reason: reason || undefined,
-      lines: validLines.map((l) => ({
-        itemId: l.itemId!,
-        batchId: l.batchId || undefined,
-        qtyAdjusted: parseFloat(l.qtyAdjusted),
-        unitCost: l.unitCost ? parseFloat(l.unitCost) : undefined,
-        notes: l.notes || undefined,
-      })),
+      reason,
+      lines: validLines.map((l) => {
+        const item = stockItems.find(
+          (i: any) => i.id === l.itemId
+        );
+
+        const batch = allBatches?.items?.find(
+          (b:any) => b.id === l.batchId
+        );
+
+        const qtyBefore =
+          batch?.availableQty ?? 0;
+
+        const qtyAdjusted =
+          parseFloat(l.qtyAdjusted);
+
+        return {
+          itemId: l.itemId!,
+          batchId: l.batchId || undefined,
+
+          itemName:
+            item?.itemName || "",
+
+          batchNumber:
+            batch?.batchNumber || "",
+
+          qtyBefore,
+
+          qtyAdjusted,
+
+          qtyAfter:
+            qtyBefore + qtyAdjusted,
+
+          unitCost:
+            l.unitCost
+              ? parseFloat(l.unitCost)
+              : undefined,
+
+          notes:
+            l.notes || undefined,
+        };
+      })
     });
   };
 
@@ -114,7 +172,12 @@ export default function StockAdjustmentForm() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label>{isRTL ? "نوع التسوية *" : "Adjustment Type *"}</Label>
-              <Select value={type} onValueChange={setType}>
+              <Select
+                  value={type}
+                  onValueChange={(value) =>
+                    setType(value as AdjustmentType)
+                  }
+                >
                 <SelectTrigger><SelectValue placeholder={isRTL ? "اختر النوع..." : "Select type..."} /></SelectTrigger>
                 <SelectContent>
                   {Object.entries(adjTypeLabels).map(([key, label]) => (
@@ -154,9 +217,9 @@ export default function StockAdjustmentForm() {
                     <Select value={line.itemId?.toString() || ""} onValueChange={(v) => updateLine(idx, "itemId", parseInt(v))}>
                       <SelectTrigger><SelectValue placeholder={isRTL ? "اختر الصنف..." : "Select item..."} /></SelectTrigger>
                       <SelectContent>
-                        {(stockItems || []).map((item: any) => (
+                        {(stockItems.map((item: any) => (
                           <SelectItem key={item.id} value={item.id.toString()}>{item.itemName || item.description || `Item #${item.id}`}</SelectItem>
-                        ))}
+                        )))}
                       </SelectContent>
                     </Select>
                   </div>

@@ -1,660 +1,539 @@
 /**
  * ============================================================================
- * VACANCY CREATION/EDIT FORM
+ * VACANCY CREATION/EDIT FORM - REFACTORED FOR tRPC
  * ============================================================================
  * 
  * Complete vacancy form with:
  * - Position details
- * - Criteria configuration
- * - Weight validation (must total 100%)
- * - Bilingual support
+ * - Multi-tenancy support
+ * - Bilingual support (EN/AR)
+ * - RTL/LTR support
+ * - Real tRPC data
  * 
  * ============================================================================
  */
 
 import { useState, useEffect } from 'react';
-import { X, Plus, Trash2, AlertCircle, Save, CheckCircle } from 'lucide-react';
-import { 
- vacancyService, 
- vacancyCriteriaService 
-} from './recruitmentService';
+import { X, Save, AlertCircle, Loader2 } from 'lucide-react';
+import { trpc } from '@/lib/trpc';
+import { useAuth } from '@/_core/hooks/useAuth';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useTranslation } from '@/i18n/useTranslation';
-import { 
- Vacancy, 
- VacancyCriteria, 
- VacancyType, 
- CriteriaType 
-} from './types';
+import { RecruitmentJob, JobEmploymentType, JobStatus } from '@shared/types/recruitment-canonical';
+import { toast } from 'sonner';
 
 interface Props {
- language: string;
- isRTL: boolean;
- vacancy?: Vacancy;
- onClose: () => void;
- onSave: () => void;
+  language: string;
+  isRTL: boolean;
+  vacancy?: RecruitmentJob;
+  onClose: () => void;
+  onSave: () => void;
 }
 
-interface CriteriaFormData {
- id?: string;
- criteriaName: string;
- criteriaType: CriteriaType;
- weightPercentage: number;
- required: boolean;
- options?: string[];
- minValue?: number;
- maxValue?: number;
- description?: string;
-}
+export function VacancyForm({ language, isRTL, vacancy, onClose, onSave }: Props) {
+  const { t } = useTranslation();
+  const { user } = useAuth();
+  const { isRTL: contextIsRTL } = useLanguage();
+  const dir = isRTL || contextIsRTL ? 'rtl' : 'ltr';
+  const isEdit = !!vacancy;
 
-export function VacancyForm({
- language, isRTL, vacancy, onClose, onSave }: Props) {
- const { t } = useTranslation();
- const isEdit = !!vacancy;
+  // Form state
+  const [formData, setFormData] = useState({
+    jobTitle: vacancy?.jobTitle || '',
+    jobTitleAr: vacancy?.jobTitleAr || '',
+    jobCode: vacancy?.jobCode || '',
+    department: vacancy?.department || '',
+    employmentType: (vacancy?.employmentType || 'full_time') as JobEmploymentType,
+    numberOfPositions: vacancy?.numberOfPositions || 1,
+    gradeLevel: vacancy?.gradeLevel || '',
+    salaryRange: vacancy?.salaryRange || '',
+    description: vacancy?.description || '',
+    requirements: vacancy?.requirements || '',
+    responsibilities: vacancy?.responsibilities || '',
+    benefits: vacancy?.benefits || '',
+    location: vacancy?.location || '',
+    isRemote: vacancy?.isRemote || false,
+    postingDate: vacancy?.postingDate || new Date().toISOString().split('T')[0],
+    closingDate: vacancy?.closingDate || '',
+    status: (vacancy?.status || 'draft') as JobStatus,
+  });
 
- // Vacancy form state
- const [formData, setFormData] = useState({
- positionTitle: vacancy?.positionTitle || '',
- department: vacancy?.department || '',
- project: vacancy?.project || '',
- dutyStation: vacancy?.dutyStation || '',
- contractType: vacancy?.contractType || '',
- grade: vacancy?.grade || '',
- vacancyType: (vacancy?.vacancyType || 'New') as VacancyType,
- justification: vacancy?.justification || '',
- openingDate: vacancy?.openingDate || '',
- closingDate: vacancy?.closingDate || '',
- hiringManager: vacancy?.hiringManager || '',
- shortlistThreshold: vacancy?.shortlistThreshold || 60,
- status: vacancy?.status || 'Draft'
- });
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
- // Criteria state
- const [criteria, setCriteria] = useState<CriteriaFormData[]>([]);
- const [showCriteriaForm, setShowCriteriaForm] = useState(false);
- const [errors, setErrors] = useState<Record<string, string>>({});
+  // tRPC mutations
+  const createJobMutation = trpc.hrRecruitment.createVacancy.useMutation({
+    onSuccess: () => {
+      toast.success(t.hrRecruitment?.jobCreated || 'Job created successfully');
+      onSave();
+    },
+    onError: (error) => {
+      toast.error(error.message || 'Failed to create job');
+      setIsSubmitting(false);
+    },
+  });
 
- useEffect(() => {
- if (vacancy) {
- const existingCriteria = vacancyCriteriaService.getByVacancy(vacancy.id);
- setCriteria(existingCriteria.map(c => ({
- id: c.id,
- criteriaName: c.criteriaName,
- criteriaType: c.criteriaType,
- weightPercentage: c.weightPercentage,
- required: c.required,
- options: c.options,
- minValue: c.minValue,
- maxValue: c.maxValue,
- description: c.description
- })));
- }
- }, [vacancy]);
+  const updateJobMutation = trpc.hrRecruitment.updateVacancy.useMutation({
+    onSuccess: () => {
+      toast.success(t.hrRecruitment?.jobUpdated || 'Job updated successfully');
+      onSave();
+    },
+    onError: (error) => {
+      toast.error(error.message || 'Failed to update job');
+      setIsSubmitting(false);
+    },
+  });
 
- const localT = {
- title: isEdit ? t.hrRecruitment.editVacancy : t.hrRecruitment.createNewVacancy,
- 
- // Sections
- vacancyDetails: t.hrRecruitment.vacancyDetails,
- selectionCriteria: t.hrRecruitment.selectionCriteriaScoring,
- 
- // Fields
- positionTitle: t.hrRecruitment.positionTitle,
- department: t.hrRecruitment.department,
- project: t.hrRecruitment.projectOptional,
- dutyStation: t.hrRecruitment.dutyStation,
- contractType: t.hrRecruitment.contractType,
- grade: t.hrRecruitment.gradeOptional,
- vacancyType: t.hrRecruitment.vacancyType,
- justification: t.hrRecruitment.justification,
- openingDate: t.hrRecruitment.openingDate,
- closingDate: t.hrRecruitment.closingDate,
- hiringManager: t.hrRecruitment.hiringManager,
- shortlistThreshold: t.hrRecruitment.shortlistThreshold8,
- 
- // Vacancy types
- new: t.hrRecruitment.newPosition,
- replacement: t.hrRecruitment.replacement,
- 
- // Contract types
- fullTime: t.hrRecruitment.fulltime,
- partTime: t.hrRecruitment.parttime,
- contract: t.hrRecruitment.contract,
- consultant: t.hrRecruitment.consultant,
- 
- // Criteria
- addCriteria: t.hrRecruitment.addSelectionCriterion,
- criteriaName: t.hrRecruitment.criterionName,
- criteriaType: t.hrRecruitment.type,
- weight: t.hrRecruitment.weight9,
- required: t.hrRecruitment.required,
- totalWeight: t.hrRecruitment.totalWeight,
- mustEqual100: t.hrRecruitment.weightsMustTotal100,
- 
- // Criteria types
- yesNo: t.hrRecruitment.yesno,
- numeric: t.hrRecruitment.numericEgYears,
- scale: t.hrRecruitment.scale15,
- checklist: t.hrRecruitment.checklist,
- 
- // Actions
- save: t.hrRecruitment.saveVacancy,
- saveDraft: t.hrRecruitment.saveAsDraft,
- publish: t.hrRecruitment.publishVacancy,
- cancel: t.hrRecruitment.cancel,
- remove: t.hrRecruitment.remove,
- 
- // Validation
- requiredField: t.hrRecruitment.thisFieldIsRequired,
- invalidDate: t.hrRecruitment.closingDateMustBeAfterOpening,
- 
- // Success
- vacancyCreated: t.hrRecruitment.vacancyCreatedSuccessfully,
- vacancyUpdated: t.hrRecruitment.vacancyUpdatedSuccessfully
- };
+  // Validation
+  const validateForm = (): boolean => {
+    const newErrors: Record<string, string> = {};
 
- const handleInputChange = (field: string, value: any) => {
- setFormData(prev => ({ ...prev, [field]: value }));
- if (errors[field]) {
- setErrors(prev => {
- const newErrors = { ...prev };
- delete newErrors[field];
- return newErrors;
- });
- }
- };
+    if (!formData.jobTitle.trim()) {
+      newErrors.jobTitle = t.hrRecruitment?.jobTitleRequired || 'Job title is required';
+    }
+    if (!formData.department.trim()) {
+      newErrors.department = t.hrRecruitment?.departmentRequired || 'Department is required';
+    }
+    if (!formData.closingDate) {
+      newErrors.closingDate = t.hrRecruitment?.closingDateRequired || 'Closing date is required';
+    }
+    if (formData.numberOfPositions < 1) {
+      newErrors.numberOfPositions = t.hrRecruitment?.positionsRequired || 'At least 1 position required';
+    }
 
- const addCriterion = () => {
- setCriteria(prev => [...prev, {
- criteriaName: '',
- criteriaType: 'YesNo',
- weightPercentage: 0,
- required: false
- }]);
- };
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
- const updateCriterion = (index: number, field: string, value: any) => {
- setCriteria(prev => {
- const updated = [...prev];
- updated[index] = { ...updated[index], [field]: value };
- return updated;
- });
- };
+  // Handle submit
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
 
- const removeCriterion = (index: number) => {
- setCriteria(prev => prev.filter((_, i) => i !== index));
- };
+    if (!validateForm()) {
+      toast.error(t.hrRecruitment?.pleaseFixErrors || 'Please fix the errors');
+      return;
+    }
 
- const getTotalWeight = () => {
- return criteria.reduce((sum, c) => sum + (c.weightPercentage || 0), 0);
- };
+    setIsSubmitting(true);
 
- const validate = (): boolean => {
- const newErrors: Record<string, string> = {};
+    try {
+      if (isEdit && vacancy) {
+        updateJobMutation.mutate({
+          id: vacancy.id,
+          ...formData,
+        });
+      } else {
+        createJobMutation.mutate(formData);
+      }
+    } catch (error) {
+      toast.error(t.common?.error || 'An error occurred');
+      setIsSubmitting(false);
+    }
+  };
 
- if (!formData.positionTitle.trim()) {
- newErrors.positionTitle = localT.requiredField;
- }
- if (!formData.department.trim()) {
- newErrors.department = localT.requiredField;
- }
- if (!formData.dutyStation.trim()) {
- newErrors.dutyStation = localT.requiredField;
- }
- if (!formData.contractType.trim()) {
- newErrors.contractType = localT.requiredField;
- }
- if (!formData.justification.trim()) {
- newErrors.justification = localT.requiredField;
- }
- if (!formData.openingDate) {
- newErrors.openingDate = localT.requiredField;
- }
- if (!formData.closingDate) {
- newErrors.closingDate = localT.requiredField;
- }
- if (formData.openingDate && formData.closingDate && 
- new Date(formData.closingDate) <= new Date(formData.openingDate)) {
- newErrors.closingDate = localT.invalidDate;
- }
- if (!formData.hiringManager.trim()) {
- newErrors.hiringManager = localT.requiredField;
- }
+  // Handle input change
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+  ) => {
+    const { name, value, type } = e.target;
+    const checked = (e.target as HTMLInputElement).checked;
 
- // Validate criteria weights
- const totalWeight = getTotalWeight();
- if (criteria.length > 0 && Math.abs(totalWeight - 100) > 0.01) {
- newErrors.criteria = localT.mustEqual100;
- }
+    setFormData((prev) => ({
+      ...prev,
+      [name]: type === 'checkbox' ? checked : type === 'number' ? parseInt(value) : value,
+    }));
 
- setErrors(newErrors);
- return Object.keys(newErrors).length === 0;
- };
+    // Clear error for this field
+    if (errors[name]) {
+      setErrors((prev) => {
+        const newErrors = { ...prev };
+        delete newErrors[name];
+        return newErrors;
+      });
+    }
+  };
 
- const handleSave = (publish: boolean = false) => {
- if (!validate()) {
- return;
- }
+  // Translations
+  const localT = {
+    title: isEdit ? (t.hrRecruitment?.editVacancy || 'Edit Vacancy') : (t.hrRecruitment?.newVacancy || 'New Vacancy'),
+    close: t.common?.close || 'Close',
+    save: t.common?.save || 'Save',
+    jobTitle: t.hrRecruitment?.jobTitle || 'Job Title',
+    jobTitleAr: t.hrRecruitment?.jobTitleAr || 'Job Title (Arabic)',
+    jobCode: t.hrRecruitment?.jobCode || 'Job Code',
+    department: t.hrRecruitment?.department || 'Department',
+    employmentType: t.hrRecruitment?.employmentType || 'Employment Type',
+    numberOfPositions: t.hrRecruitment?.numberOfPositions || 'Number of Positions',
+    gradeLevel: t.hrRecruitment?.gradeLevel || 'Grade Level',
+    salaryRange: t.hrRecruitment?.salaryRange || 'Salary Range',
+    description: t.hrRecruitment?.description || 'Description',
+    requirements: t.hrRecruitment?.requirements || 'Requirements',
+    responsibilities: t.hrRecruitment?.responsibilities || 'Responsibilities',
+    benefits: t.hrRecruitment?.benefits || 'Benefits',
+    location: t.hrRecruitment?.location || 'Location',
+    isRemote: t.hrRecruitment?.isRemote || 'Remote Position',
+    postingDate: t.hrRecruitment?.postingDate || 'Posting Date',
+    closingDate: t.hrRecruitment?.closingDate || 'Closing Date',
+    status: t.hrRecruitment?.status || 'Status',
+    saving: t.hrRecruitment?.saving || 'Saving...',
+  };
 
- const vacancyData = {
- ...formData,
- status: publish ? 'Open' : 'Draft',
- createdBy: 'Current User', // TODO: Get from auth context
- };
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" dir={dir}>
+      <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+        {/* Header */}
+        <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between">
+          <h2 className="text-xl font-bold text-gray-900">{localT.title}</h2>
+          <button
+            onClick={onClose}
+            className="p-1 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100 transition-colors"
+          >
+            <X className="w-5 h-5" />
+          </button>
+        </div>
 
- let savedVacancy: Vacancy;
+        {/* Form */}
+        <form onSubmit={handleSubmit} className="p-6 space-y-6">
+          {/* Job Title */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                {localT.jobTitle} *
+              </label>
+              <input
+                type="text"
+                name="jobTitle"
+                value={formData.jobTitle}
+                onChange={handleChange}
+                placeholder={localT.jobTitle}
+                className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
+                  errors.jobTitle ? 'border-red-500' : 'border-gray-300'
+                }`}
+              />
+              {errors.jobTitle && (
+                <p className="mt-1 text-sm text-red-600 flex items-center gap-1">
+                  <AlertCircle className="w-4 h-4" />
+                  {errors.jobTitle}
+                </p>
+              )}
+            </div>
 
- if (isEdit && vacancy) {
- vacancyService.update(vacancy.id, vacancyData);
- savedVacancy = vacancyService.getById(vacancy.id)!;
- 
- // Update criteria
- const existingCriteria = vacancyCriteriaService.getByVacancy(vacancy.id);
- existingCriteria.forEach(c => {
- if (!criteria.find(nc => nc.id === c.id)) {
- vacancyCriteriaService.delete(c.id);
- }
- });
- } else {
- savedVacancy = vacancyService.create(vacancyData);
- }
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                {localT.jobTitleAr}
+              </label>
+              <input
+                type="text"
+                name="jobTitleAr"
+                value={formData.jobTitleAr}
+                onChange={handleChange}
+                placeholder={localT.jobTitleAr}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              />
+            </div>
+          </div>
 
- // Save criteria
- criteria.forEach(c => {
- if (c.id) {
- vacancyCriteriaService.update(c.id, {
- criteriaName: c.criteriaName,
- criteriaType: c.criteriaType,
- weightPercentage: c.weightPercentage,
- required: c.required,
- options: c.options,
- minValue: c.minValue,
- maxValue: c.maxValue,
- description: c.description
- });
- } else {
- vacancyCriteriaService.create({
- vacancyId: savedVacancy.id,
- criteriaName: c.criteriaName,
- criteriaType: c.criteriaType,
- weightPercentage: c.weightPercentage,
- required: c.required,
- options: c.options,
- minValue: c.minValue,
- maxValue: c.maxValue,
- description: c.description
- });
- }
- });
+          {/* Job Code & Department */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                {localT.jobCode}
+              </label>
+              <input
+                type="text"
+                name="jobCode"
+                value={formData.jobCode}
+                onChange={handleChange}
+                placeholder={localT.jobCode}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              />
+            </div>
 
- onSave();
- };
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                {localT.department} *
+              </label>
+              <input
+                type="text"
+                name="department"
+                value={formData.department}
+                onChange={handleChange}
+                placeholder={localT.department}
+                className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
+                  errors.department ? 'border-red-500' : 'border-gray-300'
+                }`}
+              />
+              {errors.department && (
+                <p className="mt-1 text-sm text-red-600 flex items-center gap-1">
+                  <AlertCircle className="w-4 h-4" />
+                  {errors.department}
+                </p>
+              )}
+            </div>
+          </div>
 
- const totalWeight = getTotalWeight();
- const isWeightValid = Math.abs(totalWeight - 100) < 0.01;
+          {/* Employment Type & Positions */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                {localT.employmentType}
+              </label>
+              <select
+                name="employmentType"
+                value={formData.employmentType}
+                onChange={handleChange}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              >
+                {[
+                'full_time',
+                'part_time',
+                'contract',
+                'consultant',
+                'intern',
+                ].map((type) => (
+                <option key={type} value={type}>
+                    {type}
+                </option>
+                ))}
+              </select>
+            </div>
 
- return (
- <div className="fixed inset-0 bg-gray-900/30 backdrop-blur-sm flex items-center justify-center z-50 p-4" dir={isRTL ? 'rtl' : 'ltr'}>
- <div 
- className="bg-white rounded-lg shadow-xl max-w-5xl w-full max-h-[90vh] overflow-hidden flex flex-col"
- 
- >
- {/* Header */}
- <div className="bg-blue-600 text-white px-6 py-4 flex items-center justify-between">
- <h2 className="text-xl font-bold">{localT.title}</h2>
- <button
- onClick={onClose}
- className="p-1 hover:bg-blue-700 rounded-lg transition-colors"
- >
- <X className="w-5 h-5" />
- </button>
- </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                {localT.numberOfPositions} *
+              </label>
+              <input
+                type="number"
+                name="numberOfPositions"
+                value={formData.numberOfPositions}
+                onChange={handleChange}
+                min="1"
+                className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
+                  errors.numberOfPositions ? 'border-red-500' : 'border-gray-300'
+                }`}
+              />
+              {errors.numberOfPositions && (
+                <p className="mt-1 text-sm text-red-600 flex items-center gap-1">
+                  <AlertCircle className="w-4 h-4" />
+                  {errors.numberOfPositions}
+                </p>
+              )}
+            </div>
+          </div>
 
- {/* Body */}
- <div className="flex-1 overflow-y-auto p-6">
- {/* Vacancy Details Section */}
- <div className="mb-8">
- <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
- {localT.vacancyDetails}
- </h3>
+          {/* Grade & Salary */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                {localT.gradeLevel}
+              </label>
+              <input
+                type="text"
+                name="gradeLevel"
+                value={formData.gradeLevel}
+                onChange={handleChange}
+                placeholder={localT.gradeLevel}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              />
+            </div>
 
- <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
- {/* Position Title */}
- <div>
- <label className="block text-sm font-medium text-gray-700 mb-1">
- {localT.positionTitle} <span className="text-red-500">*</span>
- </label>
- <input
- type="text"
- value={formData.positionTitle}
- onChange={(e) => handleInputChange('positionTitle', e.target.value)}
- className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${ errors.positionTitle ? 'border-red-500' : 'border-gray-300' }`}
- placeholder={t.placeholders.eGProjectManager}
- />
- {errors.positionTitle && (
- <p className="text-xs text-red-500 mt-1">{errors.positionTitle}</p>
- )}
- </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                {localT.salaryRange}
+              </label>
+              <input
+                type="text"
+                name="salaryRange"
+                value={formData.salaryRange}
+                onChange={handleChange}
+                placeholder={localT.salaryRange}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              />
+            </div>
+          </div>
 
- {/* Department */}
- <div>
- <label className="block text-sm font-medium text-gray-700 mb-1">
- {localT.department} <span className="text-red-500">*</span>
- </label>
- <input
- type="text"
- value={formData.department}
- onChange={(e) => handleInputChange('department', e.target.value)}
- className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${ errors.department ? 'border-red-500' : 'border-gray-300' }`}
- placeholder={t.placeholders.eGPrograms}
- />
- {errors.department && (
- <p className="text-xs text-red-500 mt-1">{errors.department}</p>
- )}
- </div>
+          {/* Location & Remote */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                {localT.location}
+              </label>
+              <input
+                type="text"
+                name="location"
+                value={formData.location}
+                onChange={handleChange}
+                placeholder={localT.location}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              />
+            </div>
 
- {/* Project */}
- <div>
- <label className="block text-sm font-medium text-gray-700 mb-1">
- {localT.project}
- </label>
- <input
- type="text"
- value={formData.project}
- onChange={(e) => handleInputChange('project', e.target.value)}
- className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
- placeholder={t.placeholders.optional}
- />
- </div>
+            <div className="flex items-end">
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  name="isRemote"
+                  checked={formData.isRemote}
+                  onChange={handleChange}
+                  className="w-4 h-4 text-blue-600 rounded focus:ring-2 focus:ring-blue-500"
+                />
+                <span className="text-sm font-medium text-gray-700">{localT.isRemote}</span>
+              </label>
+            </div>
+          </div>
 
- {/* Duty Station */}
- <div>
- <label className="block text-sm font-medium text-gray-700 mb-1">
- {localT.dutyStation} <span className="text-red-500">*</span>
- </label>
- <input
- type="text"
- value={formData.dutyStation}
- onChange={(e) => handleInputChange('dutyStation', e.target.value)}
- className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${ errors.dutyStation ? 'border-red-500' : 'border-gray-300' }`}
- placeholder={t.placeholders.eGAmmanJordan}
- />
- {errors.dutyStation && (
- <p className="text-xs text-red-500 mt-1">{errors.dutyStation}</p>
- )}
- </div>
+          {/* Dates */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                {localT.postingDate}
+              </label>
+              <input
+                type="date"
+                name="postingDate"
+                value={formData.postingDate}
+                onChange={handleChange}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              />
+            </div>
 
- {/* Contract Type */}
- <div>
- <label className="block text-sm font-medium text-gray-700 mb-1">
- {localT.contractType} <span className="text-red-500">*</span>
- </label>
- <select
- value={formData.contractType}
- onChange={(e) => handleInputChange('contractType', e.target.value)}
- className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${ errors.contractType ? 'border-red-500' : 'border-gray-300' }`}
- >
- <option value="">Select...</option>
- <option value="Full-time">{localT.fullTime}</option>
- <option value="Part-time">{localT.partTime}</option>
- <option value="Contract">{localT.contract}</option>
- <option value="Consultant">{localT.consultant}</option>
- </select>
- {errors.contractType && (
- <p className="text-xs text-red-500 mt-1">{errors.contractType}</p>
- )}
- </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                {localT.closingDate} *
+              </label>
+              <input
+                type="date"
+                name="closingDate"
+                value={formData.closingDate}
+                onChange={handleChange}
+                className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
+                  errors.closingDate ? 'border-red-500' : 'border-gray-300'
+                }`}
+              />
+              {errors.closingDate && (
+                <p className="mt-1 text-sm text-red-600 flex items-center gap-1">
+                  <AlertCircle className="w-4 h-4" />
+                  {errors.closingDate}
+                </p>
+              )}
+            </div>
+          </div>
 
- {/* Grade */}
- <div>
- <label className="block text-sm font-medium text-gray-700 mb-1">
- {localT.grade}
- </label>
- <input
- type="text"
- value={formData.grade}
- onChange={(e) => handleInputChange('grade', e.target.value)}
- className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
- placeholder={t.placeholders.eGGrade5}
- />
- </div>
+          {/* Description */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              {localT.description}
+            </label>
+            <textarea
+              name="description"
+              value={formData.description}
+              onChange={handleChange}
+              placeholder={localT.description}
+              rows={3}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            />
+          </div>
 
- {/* Vacancy Type */}
- <div>
- <label className="block text-sm font-medium text-gray-700 mb-1">
- {localT.vacancyType} <span className="text-red-500">*</span>
- </label>
- <select
- value={formData.vacancyType}
- onChange={(e) => handleInputChange('vacancyType', e.target.value)}
- className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
- >
- <option value="New">{localT.new}</option>
- <option value="Replacement">{localT.replacement}</option>
- </select>
- </div>
+          {/* Requirements */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              {localT.requirements}
+            </label>
+            <textarea
+              name="requirements"
+              value={formData.requirements}
+              onChange={handleChange}
+              placeholder={localT.requirements}
+              rows={3}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            />
+          </div>
 
- {/* Hiring Manager */}
- <div>
- <label className="block text-sm font-medium text-gray-700 mb-1">
- {localT.hiringManager} <span className="text-red-500">*</span>
- </label>
- <input
- type="text"
- value={formData.hiringManager}
- onChange={(e) => handleInputChange('hiringManager', e.target.value)}
- className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${ errors.hiringManager ? 'border-red-500' : 'border-gray-300' }`}
- placeholder={t.placeholders.managerName}
- />
- {errors.hiringManager && (
- <p className="text-xs text-red-500 mt-1">{errors.hiringManager}</p>
- )}
- </div>
+          {/* Responsibilities */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              {localT.responsibilities}
+            </label>
+            <textarea
+              name="responsibilities"
+              value={formData.responsibilities}
+              onChange={handleChange}
+              placeholder={localT.responsibilities}
+              rows={3}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            />
+          </div>
 
- {/* Opening Date */}
- <div>
- <label className="block text-sm font-medium text-gray-700 mb-1">
- {localT.openingDate} <span className="text-red-500">*</span>
- </label>
- <input
- type="date"
- value={formData.openingDate}
- onChange={(e) => handleInputChange('openingDate', e.target.value)}
- className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${ errors.openingDate ? 'border-red-500' : 'border-gray-300' }`}
- />
- {errors.openingDate && (
- <p className="text-xs text-red-500 mt-1">{errors.openingDate}</p>
- )}
- </div>
+          {/* Benefits */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              {localT.benefits}
+            </label>
+            <textarea
+              name="benefits"
+              value={formData.benefits}
+              onChange={handleChange}
+              placeholder={localT.benefits}
+              rows={3}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            />
+          </div>
 
- {/* Closing Date */}
- <div>
- <label className="block text-sm font-medium text-gray-700 mb-1">
- {localT.closingDate} <span className="text-red-500">*</span>
- </label>
- <input
- type="date"
- value={formData.closingDate}
- onChange={(e) => handleInputChange('closingDate', e.target.value)}
- className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${ errors.closingDate ? 'border-red-500' : 'border-gray-300' }`}
- />
- {errors.closingDate && (
- <p className="text-xs text-red-500 mt-1">{errors.closingDate}</p>
- )}
- </div>
+          {/* Status */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              {localT.status}
+            </label>
+            <select
+              name="status"
+              value={formData.status}
+              onChange={handleChange}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            >
+              {[
+                'draft',
+                'open',
+                'on_hold',
+                'closed',
+                'filled',
+                'cancelled',
+                ].map((status) => (
+                <option key={status} value={status}>
+                    {status}
+                </option>
+                ))}
+            </select>
+          </div>
 
- {/* Shortlist Threshold */}
- <div>
- <label className="block text-sm font-medium text-gray-700 mb-1">
- {localT.shortlistThreshold}
- </label>
- <input
- type="number"
- min="0"
- max="100"
- value={formData.shortlistThreshold}
- onChange={(e) => handleInputChange('shortlistThreshold', parseFloat(e.target.value))}
- className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
- />
- </div>
-
- {/* Justification - Full Width */}
- <div className="md:col-span-2">
- <label className="block text-sm font-medium text-gray-700 mb-1">
- {localT.justification} <span className="text-red-500">*</span>
- </label>
- <textarea
- value={formData.justification}
- onChange={(e) => handleInputChange('justification', e.target.value)}
- rows={3}
- className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${ errors.justification ? 'border-red-500' : 'border-gray-300' }`}
- placeholder={t.placeholders.explainWhyThisPositionIsNeeded}
- />
- {errors.justification && (
- <p className="text-xs text-red-500 mt-1">{errors.justification}</p>
- )}
- </div>
- </div>
- </div>
-
- {/* Selection Criteria Section */}
- <div>
- <div className="flex items-center justify-between mb-4">
- <h3 className="text-lg font-bold text-gray-900 flex items-center gap-2">
- {localT.selectionCriteria}
- </h3>
- <button
- onClick={addCriterion}
- className="px-3 py-1.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center gap-2 text-sm"
- >
- <Plus className="w-4 h-4" />
- {localT.addCriteria}
- </button>
- </div>
-
- {criteria.length === 0 ? (
- <div className="text-center py-8 bg-gray-50 rounded-lg border-2 border-dashed border-gray-300">
- <p className="text-gray-500">{t.hrRecruitment.noCriteriaAddedYet}</p>
- </div>
- ) : (
- <div className="space-y-3">
- {criteria.map((criterion, index) => (
- <div key={index} className="p-4 bg-gray-50 rounded-lg border border-gray-200">
- <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
- <div className="md:col-span-2">
- <label className="block text-xs font-medium text-gray-600 mb-1">
- {localT.criteriaName}
- </label>
- <input
- type="text"
- value={criterion.criteriaName}
- onChange={(e) => updateCriterion(index, 'criteriaName', e.target.value)}
- className="w-full px-2 py-1.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
- placeholder={t.placeholders.eGYearsOfExperience}
- />
- </div>
- 
- <div>
- <label className="block text-xs font-medium text-gray-600 mb-1">
- {localT.criteriaType}
- </label>
- <select
- value={criterion.criteriaType}
- onChange={(e) => updateCriterion(index, 'criteriaType', e.target.value)}
- className="w-full px-2 py-1.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
- >
- <option value="YesNo">{localT.yesNo}</option>
- <option value="Numeric">{localT.numeric}</option>
- <option value="Scale">{localT.scale}</option>
- <option value="Checklist">{localT.checklist}</option>
- </select>
- </div>
- 
- <div className="flex items-end gap-2">
- <div className="flex-1">
- <label className="block text-xs font-medium text-gray-600 mb-1">
- {localT.weight}
- </label>
- <input
- type="number"
- min="0"
- max="100"
- value={criterion.weightPercentage}
- onChange={(e) => updateCriterion(index, 'weightPercentage', parseFloat(e.target.value) || 0)}
- className="w-full px-2 py-1.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
- />
- </div>
- <button
- onClick={() => removeCriterion(index)}
- className="p-1.5 text-red-600 hover:bg-red-50 rounded-lg"
- title={localT.remove}
- >
- <Trash2 className="w-4 h-4" />
- </button>
- </div>
- </div>
- </div>
- ))}
-
- {/* Total Weight Display */}
- <div className={`p-3 rounded-lg border-2 flex items-center justify-between ${ isWeightValid ? 'bg-green-50 border-green-300' : 'bg-yellow-50 border-yellow-300' }`}>
- <div className="flex items-center gap-2">
- {isWeightValid ? (
- <CheckCircle className="w-5 h-5 text-green-600" />
- ) : (
- <AlertCircle className="w-5 h-5 text-yellow-600" />
- )}
- <span className="font-medium text-gray-900">{localT.totalWeight}:</span>
- </div>
- <span className={`text-xl font-bold ${ isWeightValid ? 'text-green-600' : 'text-yellow-600' }`}>
- {totalWeight.toFixed(1)}%
- </span>
- </div>
- 
- {!isWeightValid && (
- <p className="text-sm text-yellow-700 flex items-center gap-2">
- <AlertCircle className="w-4 h-4" />
- {localT.mustEqual100}
- </p>
- )}
- {errors.criteria && (
- <p className="text-sm text-red-600 flex items-center gap-2">
- <AlertCircle className="w-4 h-4" />
- {errors.criteria}
- </p>
- )}
- </div>
- )}
- </div>
- </div>
-
- {/* Footer */}
- <div className="border-t border-gray-200 px-6 py-4 bg-gray-50 flex items-center justify-between">
- <button
- onClick={onClose}
- className="px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
- >
- {localT.cancel}
- </button>
- 
- <div className="flex items-center gap-3">
- <button
- onClick={() => handleSave(false)}
- className="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 flex items-center gap-2"
- >
- <Save className="w-4 h-4" />
- {localT.saveDraft}
- </button>
- <button
- onClick={() => handleSave(true)}
- className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center gap-2"
- >
- <CheckCircle className="w-4 h-4" />
- {localT.publish}
- </button>
- </div>
- </div>
- </div>
- </div>
- );
+          {/* Footer */}
+          <div className="sticky bottom-0 bg-gray-50 border-t border-gray-200 px-6 py-4 flex items-center justify-end gap-3">
+            <button
+              type="button"
+              onClick={onClose}
+              className="px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+            >
+              {localT.close}
+            </button>
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center gap-2"
+            >
+              {isSubmitting ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  {localT.saving}
+                </>
+              ) : (
+                <>
+                  <Save className="w-4 h-4" />
+                  {localT.save}
+                </>
+              )}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
 }

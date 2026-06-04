@@ -1,297 +1,259 @@
 /**
  * ============================================================================
- * VACANCY DETAIL VIEW
+ * VACANCY DETAIL VIEW - REFACTORED FOR tRPC
  * ============================================================================
  * 
- * Display complete vacancy information including criteria
+ * Display vacancy details with:
+ * - Job information
+ * - Candidate count
+ * - Application link
+ * - Bilingual support (EN/AR)
+ * - RTL/LTR support
  * 
  * ============================================================================
  */
 
-import { useState, useEffect } from 'react';
-import { X, ExternalLink, Copy, Check } from 'lucide-react';
-import { vacancyCriteriaService } from './recruitmentService';
-import { Vacancy, VacancyCriteria } from './types';
+import { X, Copy, Check, Loader2, AlertCircle } from 'lucide-react';
+import { trpc } from '@/lib/trpc';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useTranslation } from '@/i18n/useTranslation';
+import { RecruitmentJob, JOB_STATUS_LABELS } from '@shared/types/recruitment-canonical';
+import { JOB_STATUS_COLORS } from '@shared/constants/recruitment-canonical';
+import { useState } from 'react';
+import { toast } from 'sonner';
 
 interface Props {
- language: string;
- isRTL: boolean;
- vacancy: Vacancy;
- onClose: () => void;
+  language: string;
+  isRTL: boolean;
+  vacancy: RecruitmentJob;
+  onClose: () => void;
 }
 
-export function VacancyDetail({
- language, isRTL, vacancy, onClose }: Props) {
- const { t } = useTranslation();
- const [criteria, setCriteria] = useState<VacancyCriteria[]>([]);
- const [copiedLink, setCopiedLink] = useState(false);
+export function VacancyDetail({ language, isRTL, vacancy, onClose }: Props) {
+  const { t } = useTranslation();
+  const { isRTL: contextIsRTL } = useLanguage();
+  const dir = isRTL || contextIsRTL ? 'rtl' : 'ltr';
+  const [copiedRef, setCopiedRef] = useState<string | null>(null);
 
- useEffect(() => {
- const data = vacancyCriteriaService.getByVacancy(vacancy.id);
- setCriteria(data);
- }, [vacancy.id]);
+  // tRPC queries
+  const { data: candidatesData, isLoading: candidatesLoading } = trpc.hrRecruitment.getAllCandidates.useQuery({
+    jobId: vacancy.id,
+    limit: 1000,
+    offset: 0,
+  });
 
- const getApplicationUrl = () => {
- return `${window.location.origin}/apply/${vacancy.vacancyRef}`;
- };
+  // Handlers
+  const getApplicationUrl = (jobCode?: string) => {
+    if (!jobCode) return '';
+    return `${window.location.origin}/apply/${jobCode}`;
+  };
 
- const copyApplicationLink = () => {
- navigator.clipboard.writeText(getApplicationUrl());
- setCopiedLink(true);
- setTimeout(() => setCopiedLink(false), 2000);
- };
+  const copyApplicationLink = (jobCode?: string) => {
+    if (!jobCode) return;
+    const url = getApplicationUrl(jobCode);
+    navigator.clipboard.writeText(url);
+    setCopiedRef(jobCode);
+    setTimeout(() => setCopiedRef(null), 2000);
+    toast.success(t.hrRecruitment?.linkCopied || 'Link copied to clipboard');
+  };
 
- const localT = {
- title: t.hrRecruitment.vacancyDetails,
- vacancyInfo: t.hrRecruitment.vacancyInformation,
- selectionCriteria: t.hrRecruitment.selectionCriteria,
- 
- ref: t.hrRecruitment.reference,
- position: t.hrRecruitment.position,
- department: t.hrRecruitment.department,
- project: t.hrRecruitment.project,
- dutyStation: t.hrRecruitment.dutyStation,
- contractType: t.hrRecruitment.contractType,
- grade: t.hrRecruitment.grade,
- vacancyType: t.hrRecruitment.vacancyType,
- justification: t.hrRecruitment.justification,
- openingDate: t.hrRecruitment.openingDate,
- closingDate: t.hrRecruitment.closingDate,
- hiringManager: t.hrRecruitment.hiringManager,
- shortlistThreshold: t.hrRecruitment.shortlistThreshold,
- status: t.hrRecruitment.status,
- 
- applicationLink: t.hrRecruitment.publicApplicationLink,
- copyLink: t.hrRecruitment.copyLink,
- linkCopied: t.hrRecruitment.linkCopied,
- 
- criteriaName: t.hrRecruitment.criterion,
- type: t.hrRecruitment.type,
- weight: t.hrRecruitment.weight,
- required: t.hrRecruitment.required,
- yes: t.hrRecruitment.yes,
- no: t.hrRecruitment.no,
- 
- noCriteria: t.hrRecruitment.noSelectionCriteriaDefined,
- 
- close: t.hrRecruitment.close
- };
+  // Translations
+  const localT = {
+    title: t.hrRecruitment?.vacancyDetails || 'Vacancy Details',
+    close: t.common?.close || 'Close',
+    jobTitle: t.hrRecruitment?.jobTitle || 'Job Title',
+    jobCode: t.hrRecruitment?.jobCode || 'Job Code',
+    department: t.hrRecruitment?.department || 'Department',
+    location: t.hrRecruitment?.location || 'Location',
+    employmentType: t.hrRecruitment?.employmentType || 'Employment Type',
+    numberOfPositions: t.hrRecruitment?.numberOfPositions || 'Number of Positions',
+    gradeLevel: t.hrRecruitment?.gradeLevel || 'Grade Level',
+    salaryRange: t.hrRecruitment?.salaryRange || 'Salary Range',
+    postingDate: t.hrRecruitment?.postingDate || 'Posting Date',
+    closingDate: t.hrRecruitment?.closingDate || 'Closing Date',
+    status: t.hrRecruitment?.status || 'Status',
+    description: t.hrRecruitment?.description || 'Description',
+    requirements: t.hrRecruitment?.requirements || 'Requirements',
+    responsibilities: t.hrRecruitment?.responsibilities || 'Responsibilities',
+    benefits: t.hrRecruitment?.benefits || 'Benefits',
+    candidates: t.hrRecruitment?.candidates || 'Candidates',
+    applicationLink: t.hrRecruitment?.applicationLink || 'Application Link',
+    copyLink: t.hrRecruitment?.copyApplicationLink || 'Copy Link',
+    linkCopied: t.hrRecruitment?.linkCopied || 'Link copied',
+    isRemote: t.hrRecruitment?.isRemote || 'Remote',
+    loading: t.common?.loading || 'Loading...',
+  };
 
- return (
- <div className="fixed inset-0 bg-gray-900/30 backdrop-blur-sm flex items-center justify-center z-50 p-4" dir={isRTL ? 'rtl' : 'ltr'}>
- <div 
- className="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-hidden flex flex-col"
- 
- >
- {/* Header */}
- <div className="bg-blue-600 text-white px-6 py-4 flex items-center justify-between">
- <h2 className="text-xl font-bold">{t.title}</h2>
- <button
- onClick={onClose}
- className="p-1 hover:bg-blue-700 rounded-lg transition-colors"
- >
- <X className="w-5 h-5" />
- </button>
- </div>
+  const getStatusBadge = (status: string) => {
+    const color = JOB_STATUS_COLORS[status as keyof typeof JOB_STATUS_COLORS] || 'bg-gray-100 text-gray-700';
+    const label = JOB_STATUS_LABELS[status as keyof typeof JOB_STATUS_LABELS] || status;
+    return (
+      <span className={`px-3 py-1 rounded-full text-sm font-medium ${color}`}>
+        {label}
+      </span>
+    );
+  };
 
- {/* Body */}
- <div className="flex-1 overflow-y-auto p-6 space-y-6">
- {/* Vacancy Information */}
- <div>
- <h3 className="text-lg font-bold text-gray-900 mb-4">{t.vacancyInfo}</h3>
- 
- <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
- <div>
- <label className="block text-sm font-medium text-gray-500">{t.ref}</label>
- <p className="mt-1 text-sm font-mono text-gray-900">{vacancy.vacancyRef}</p>
- </div>
- 
- <div>
- <label className="block text-sm font-medium text-gray-500">{t.status}</label>
- <p className="mt-1">
- <span className={`inline-block px-2 py-1 rounded-full text-xs font-medium ${ vacancy.status === 'Open' ? 'bg-green-100 text-green-700' : vacancy.status === 'Closed' ? 'bg-red-100 text-red-700' : vacancy.status === 'Draft' ? 'bg-gray-100 text-gray-700' : 'bg-gray-100 text-gray-500' }`}>
- {vacancy.status}
- </span>
- </p>
- </div>
- 
- <div>
- <label className="block text-sm font-medium text-gray-500">{t.position}</label>
- <p className="mt-1 text-sm font-medium text-gray-900">{vacancy.positionTitle}</p>
- </div>
- 
- <div>
- <label className="block text-sm font-medium text-gray-500">{t.department}</label>
- <p className="mt-1 text-sm text-gray-900">{vacancy.department}</p>
- </div>
- 
- {vacancy.project && (
- <div>
- <label className="block text-sm font-medium text-gray-500">{t.project}</label>
- <p className="mt-1 text-sm text-gray-900">{vacancy.project}</p>
- </div>
- )}
- 
- <div>
- <label className="block text-sm font-medium text-gray-500">{t.dutyStation}</label>
- <p className="mt-1 text-sm text-gray-900">{vacancy.dutyStation}</p>
- </div>
- 
- <div>
- <label className="block text-sm font-medium text-gray-500">{t.contractType}</label>
- <p className="mt-1 text-sm text-gray-900">{vacancy.contractType}</p>
- </div>
- 
- {vacancy.grade && (
- <div>
- <label className="block text-sm font-medium text-gray-500">{t.grade}</label>
- <p className="mt-1 text-sm text-gray-900">{vacancy.grade}</p>
- </div>
- )}
- 
- <div>
- <label className="block text-sm font-medium text-gray-500">{t.vacancyType}</label>
- <p className="mt-1 text-sm text-gray-900">{vacancy.vacancyType}</p>
- </div>
- 
- <div>
- <label className="block text-sm font-medium text-gray-500">{t.hiringManager}</label>
- <p className="mt-1 text-sm text-gray-900">{vacancy.hiringManager}</p>
- </div>
- 
- <div>
- <label className="block text-sm font-medium text-gray-500">{t.openingDate}</label>
- <p className="mt-1 text-sm text-gray-900">{new Date(vacancy.openingDate).toLocaleDateString()}</p>
- </div>
- 
- <div>
- <label className="block text-sm font-medium text-gray-500">{t.closingDate}</label>
- <p className="mt-1 text-sm text-gray-900">{new Date(vacancy.closingDate).toLocaleDateString()}</p>
- </div>
- 
- <div>
- <label className="block text-sm font-medium text-gray-500">{t.shortlistThreshold}</label>
- <p className="mt-1 text-sm text-gray-900">{vacancy.shortlistThreshold}%</p>
- </div>
- 
- <div className="md:col-span-2">
- <label className="block text-sm font-medium text-gray-500">{t.justification}</label>
- <p className="mt-1 text-sm text-gray-900 whitespace-pre-wrap">{vacancy.justification}</p>
- </div>
- </div>
- </div>
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" dir={dir}>
+      <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+        {/* Header */}
+        <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between">
+          <h2 className="text-xl font-bold text-gray-900">{localT.title}</h2>
+          <button
+            onClick={onClose}
+            className="p-1 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100 transition-colors"
+          >
+            <X className="w-5 h-5" />
+          </button>
+        </div>
 
- {/* Application Link (if Open) */}
- {vacancy.status === 'Open' && (
- <div className="bg-green-50 border border-green-200 rounded-lg p-4">
- <label className="block text-sm font-medium text-green-900 mb-2">
- {t.applicationLink}
- </label>
- <div className="flex items-center gap-2">
- <input
- type="text"
- value={getApplicationUrl()}
- readOnly
- className="flex-1 px-3 py-2 bg-white border border-green-300 rounded-lg text-sm font-mono"
- />
- <button
- onClick={copyApplicationLink}
- className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 flex items-center gap-2"
- >
- {copiedLink ? (
- <>
- <Check className="w-4 h-4" />
- {t.linkCopied}
- </>
- ) : (
- <>
- <Copy className="w-4 h-4" />
- {t.copyLink}
- </>
- )}
- </button>
- </div>
- </div>
- )}
+        {/* Content */}
+        <div className="p-6 space-y-6">
+          {/* Job Title & Code */}
+          <div>
+            <h3 className="text-2xl font-bold text-gray-900 mb-2">{vacancy.jobTitle}</h3>
+            {vacancy.jobCode && (
+              <p className="text-sm text-gray-600 font-mono">{vacancy.jobCode}</p>
+            )}
+          </div>
 
- {/* Selection Criteria */}
- <div>
- <h3 className="text-lg font-bold text-gray-900 mb-4">{t.selectionCriteria}</h3>
- 
- {criteria.length === 0 ? (
- <div className="text-center py-8 bg-gray-50 rounded-lg border border-gray-200">
- <p className="text-gray-500">{t.noCriteria}</p>
- </div>
- ) : (
- <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
- <table className="w-full">
- <thead className="bg-gray-50">
- <tr>
- <th className={`px-4 py-3 text-xs font-medium text-gray-500 uppercase text-start`}>
- {t.criteriaName}
- </th>
- <th className={`px-4 py-3 text-xs font-medium text-gray-500 uppercase text-start`}>
- {t.type}
- </th>
- <th className={`px-4 py-3 text-xs font-medium text-gray-500 uppercase text-start`}>
- {t.weight}
- </th>
- <th className={`px-4 py-3 text-xs font-medium text-gray-500 uppercase text-start`}>
- {t.required}
- </th>
- </tr>
- </thead>
- <tbody className="divide-y divide-gray-200">
- {criteria.map((criterion) => (
- <tr key={criterion.id}>
- <td className="px-4 py-3 text-sm text-gray-900">
- {criterion.criteriaName}
- </td>
- <td className="px-4 py-3 text-sm text-gray-600">
- {criterion.criteriaType}
- </td>
- <td className="px-4 py-3 text-sm text-gray-900 font-medium">
- {criterion.weightPercentage}%
- </td>
- <td className="px-4 py-3 text-sm">
- {criterion.required ? (
- <span className="text-green-600">{t.yes}</span>
- ) : (
- <span className="text-gray-400">{t.no}</span>
- )}
- </td>
- </tr>
- ))}
- </tbody>
- <tfoot className="bg-gray-50">
- <tr>
- <td colSpan={2} className="px-4 py-3 text-sm font-medium text-gray-900">
- {t.weight} {t.hrRecruitment.total}
- </td>
- <td className="px-4 py-3 text-sm font-bold text-gray-900">
- {criteria.reduce((sum, c) => sum + c.weightPercentage, 0)}%
- </td>
- <td></td>
- </tr>
- </tfoot>
- </table>
- </div>
- )}
- </div>
- </div>
+          {/* Status & Key Info */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div>
+              <p className="text-xs font-medium text-gray-500 uppercase mb-1">{localT.status}</p>
+              {getStatusBadge(vacancy.status)}
+            </div>
+            <div>
+              <p className="text-xs font-medium text-gray-500 uppercase mb-1">{localT.department}</p>
+              <p className="text-sm text-gray-900">{vacancy.department || '-'}</p>
+            </div>
+            <div>
+              <p className="text-xs font-medium text-gray-500 uppercase mb-1">{localT.numberOfPositions}</p>
+              <p className="text-sm text-gray-900">{vacancy.numberOfPositions || '-'}</p>
+            </div>
+            <div>
+              <p className="text-xs font-medium text-gray-500 uppercase mb-1">{localT.candidates}</p>
+              {candidatesLoading ? (
+                <Loader2 className="w-4 h-4 animate-spin" />
+              ) : (
+                <p className="text-sm text-gray-900">{candidatesData?.length || 0}</p>
+              )}
+            </div>
+          </div>
 
- {/* Footer */}
- <div className="border-t border-gray-200 px-6 py-4 bg-gray-50 flex items-center justify-end">
- <button
- onClick={onClose}
- className="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700"
- >
- {t.close}
- </button>
- </div>
- </div>
- </div>
- );
+          {/* Location & Employment Type */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <p className="text-xs font-medium text-gray-500 uppercase mb-1">{localT.location}</p>
+              <p className="text-sm text-gray-900">{vacancy.location || '-'}</p>
+              {vacancy.isRemote && (
+                <p className="text-xs text-green-600 font-medium mt-1">{localT.isRemote}</p>
+              )}
+            </div>
+            <div>
+              <p className="text-xs font-medium text-gray-500 uppercase mb-1">{localT.employmentType}</p>
+              <p className="text-sm text-gray-900">{vacancy.employmentType || '-'}</p>
+            </div>
+          </div>
+
+          {/* Grade & Salary */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <p className="text-xs font-medium text-gray-500 uppercase mb-1">{localT.gradeLevel}</p>
+              <p className="text-sm text-gray-900">{vacancy.gradeLevel || '-'}</p>
+            </div>
+            <div>
+              <p className="text-xs font-medium text-gray-500 uppercase mb-1">{localT.salaryRange}</p>
+              <p className="text-sm text-gray-900">{vacancy.salaryRange || '-'}</p>
+            </div>
+          </div>
+
+          {/* Dates */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <p className="text-xs font-medium text-gray-500 uppercase mb-1">{localT.postingDate}</p>
+              <p className="text-sm text-gray-900">
+                {vacancy.postingDate ? new Date(vacancy.postingDate).toLocaleDateString() : '-'}
+              </p>
+            </div>
+            <div>
+              <p className="text-xs font-medium text-gray-500 uppercase mb-1">{localT.closingDate}</p>
+              <p className="text-sm text-gray-900">
+                {vacancy.closingDate ? new Date(vacancy.closingDate).toLocaleDateString() : '-'}
+              </p>
+            </div>
+          </div>
+
+          {/* Application Link */}
+          {vacancy.status === 'open' && (
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+              <p className="text-sm font-medium text-gray-700 mb-2">{localT.applicationLink}</p>
+              <div className="flex items-center gap-2">
+                <input
+                  type="text"
+                  readOnly
+                  value={getApplicationUrl(vacancy.jobCode)}
+                  className="flex-1 px-3 py-2 text-sm bg-white border border-gray-300 rounded-lg text-gray-600"
+                />
+                <button
+                  onClick={() => copyApplicationLink(vacancy.jobCode)}
+                  className="p-2 text-blue-600 hover:bg-blue-100 rounded-lg transition-colors"
+                  title={localT.copyLink}
+                >
+                  {copiedRef === vacancy.jobCode ? (
+                    <Check className="w-5 h-5" />
+                  ) : (
+                    <Copy className="w-5 h-5" />
+                  )}
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* Description */}
+          {vacancy.description && (
+            <div>
+              <p className="text-sm font-medium text-gray-700 mb-2">{localT.description}</p>
+              <p className="text-sm text-gray-600 whitespace-pre-wrap">{vacancy.description}</p>
+            </div>
+          )}
+
+          {/* Requirements */}
+          {vacancy.requirements && (
+            <div>
+              <p className="text-sm font-medium text-gray-700 mb-2">{localT.requirements}</p>
+              <p className="text-sm text-gray-600 whitespace-pre-wrap">{vacancy.requirements}</p>
+            </div>
+          )}
+
+          {/* Responsibilities */}
+          {vacancy.responsibilities && (
+            <div>
+              <p className="text-sm font-medium text-gray-700 mb-2">{localT.responsibilities}</p>
+              <p className="text-sm text-gray-600 whitespace-pre-wrap">{vacancy.responsibilities}</p>
+            </div>
+          )}
+
+          {/* Benefits */}
+          {vacancy.benefits && (
+            <div>
+              <p className="text-sm font-medium text-gray-700 mb-2">{localT.benefits}</p>
+              <p className="text-sm text-gray-600 whitespace-pre-wrap">{vacancy.benefits}</p>
+            </div>
+          )}
+        </div>
+
+        {/* Footer */}
+        <div className="sticky bottom-0 bg-gray-50 border-t border-gray-200 px-6 py-4 flex items-center justify-end">
+          <button
+            onClick={onClose}
+            className="px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+          >
+            {localT.close}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
 }

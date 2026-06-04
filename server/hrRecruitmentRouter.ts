@@ -23,7 +23,9 @@ import { TRPCError } from "@trpc/server";
 import { getDb } from "./db";
 import { 
   hrRecruitmentCandidates, 
-  hrRecruitmentJobs 
+  hrRecruitmentJobs,
+  hrRecruitmentInterviews,
+  hrRecruitmentHiringDecisions,
 } from "drizzle/schema";
 import { eq, and, or, like, desc, asc, sql } from "drizzle-orm";
 
@@ -75,6 +77,7 @@ const createCandidateSchema = z.object({
 const updateCandidateStatusSchema = z.object({
   id: z.number(),
   status: z.enum([
+    'All',
     'new',
     'applied',
     'screening',
@@ -108,7 +111,30 @@ const createHiringDecisionSchema = z.object({
   jobId: z.number(),
   proposedSalary: z.number().optional(),
   startDate: z.string().optional(),
-  offerStatus: z.enum(['pending', 'accepted', 'rejected', 'withdrawn']).optional(),
+  offerStatus: z.enum([
+      'Pending',
+      'Accepted',
+      'Rejected',
+      'Withdrawn'
+    ]).optional(),
+    });
+
+const getHiringDecisionByIdSchema = z.number();
+
+const getHiringDecisionsByJobSchema = z.number();
+
+const approveHiringDecisionSchema = z.object({
+  id: z.number(),
+  approvalNotes: z.string().optional(),
+});
+
+const rejectHiringDecisionSchema = z.object({
+  id: z.number(),
+  approvalNotes: z.string().optional(),
+});
+
+const deleteHiringDecisionSchema = z.object({
+  id: z.number(),
 });
 
 /**
@@ -464,6 +490,40 @@ export const hrRecruitmentRouter = router({
   /**
    * INTERVIEW PROCEDURES
    */
+    // Get interviews by candidate
+getInterviewsByCandidate: scopedProcedure
+  .input(z.number())
+  .query(async ({ input, ctx }) => {
+    const db = await getDb();
+
+    const candidate = await db
+      .select()
+      .from(hrRecruitmentCandidates)
+      .where(
+        and(
+          eq(hrRecruitmentCandidates.id, input),
+          eq(
+            hrRecruitmentCandidates.organizationId,
+            ctx.scope?.organizationId || 0
+          )
+        )
+      )
+      .then(rows => rows[0]);
+
+    if (!candidate) {
+      return [];
+    }
+
+    return candidate.interviewDate
+      ? [{
+          id: candidate.id,
+          interviewType: candidate.interviewNotes,
+          interviewDate: candidate.interviewDate,
+          interviewers: candidate.interviewers,
+        }]
+      : [];
+  }),
+
 
   // Create interview
   createInterview: scopedProcedure
@@ -474,11 +534,11 @@ export const hrRecruitmentRouter = router({
         const db = await getDb();
         const candidate = await db
           .select()
-          .from(hrRecruitmentCandidates)
+          .from(hrRecruitmentInterviews)
           .where(
             and(
-              eq(hrRecruitmentCandidates.id, input.candidateId),
-              eq(hrRecruitmentCandidates.organizationId, ctx.scope?.organizationId || 0)
+              eq(hrRecruitmentInterviews.id, input.candidateId),
+              eq(hrRecruitmentInterviews.organizationId, ctx.scope?.organizationId || 0)
             )
           )
           .then(rows => rows[0]);
@@ -516,55 +576,419 @@ export const hrRecruitmentRouter = router({
   /**
    * HIRING DECISION PROCEDURES
    */
+  getHiringDecisionById: scopedProcedure
+  .input(getHiringDecisionByIdSchema)
+  .query(async ({ input, ctx }) => {
+    const db = await getDb();
 
+    const decision = await db
+      .select()
+      .from(hrRecruitmentHiringDecisions)
+      .where(
+        and(
+          eq(hrRecruitmentHiringDecisions.id, input),
+          eq(
+            hrRecruitmentHiringDecisions.organizationId,
+            ctx.scope.organizationId
+          ),
+          eq(hrRecruitmentHiringDecisions.isDeleted, 0)
+        )
+      )
+      .then(rows => rows[0]);
+
+    if (!decision) {
+      throw new TRPCError({
+        code: "NOT_FOUND",
+        message: "Hiring decision not found",
+      });
+    }
+
+    return decision;
+  }),
+
+    getHiringDecisionsByJob: scopedProcedure
+  .input(getHiringDecisionsByJobSchema)
+  .query(async ({ input, ctx }) => {
+    const db = await getDb();
+
+    return await db
+      .select()
+      .from(hrRecruitmentHiringDecisions)
+      .where(
+        and(
+          eq(hrRecruitmentHiringDecisions.jobId, input),
+          eq(
+            hrRecruitmentHiringDecisions.organizationId,
+            ctx.scope.organizationId
+          ),
+          eq(hrRecruitmentHiringDecisions.isDeleted, 0)
+        )
+      )
+      .orderBy(
+        desc(hrRecruitmentHiringDecisions.createdAt)
+      );
+  }),
+
+  approveHiringDecision: scopedProcedure
+  .input(approveHiringDecisionSchema)
+  .mutation(async ({ input, ctx }) => {
+    const db = await getDb();
+
+    const decision = await db
+      .select()
+      .from(hrRecruitmentHiringDecisions)
+      .where(
+        eq(hrRecruitmentHiringDecisions.id, input.id)
+      )
+      .then(rows => rows[0]);
+
+    if (!decision) {
+      throw new TRPCError({
+        code: "NOT_FOUND",
+        message: "Decision not found",
+      });
+    }
+
+    await db
+      .update(hrRecruitmentHiringDecisions)
+      .set({
+        offerStatus: "Accepted",
+        approvalNotes: input.approvalNotes,
+        approvedBy: ctx.user?.id,
+        approvalDate: new Date().toISOString(),
+      })
+      .where(
+        eq(hrRecruitmentHiringDecisions.id, input.id)
+      );
+
+    await db
+      .update(hrRecruitmentCandidates)
+      .set({
+        status: "hired",
+      })
+      .where(
+        eq(
+          hrRecruitmentCandidates.id,
+          decision.candidateId
+        )
+      );
+
+    return { success: true };
+  }),
+
+  rejectHiringDecision: scopedProcedure
+  .input(rejectHiringDecisionSchema)
+  .mutation(async ({ input, ctx }) => {
+    const db = await getDb();
+
+    const decision = await db
+      .select()
+      .from(hrRecruitmentHiringDecisions)
+      .where(
+        eq(hrRecruitmentHiringDecisions.id, input.id)
+      )
+      .then(rows => rows[0]);
+
+    if (!decision) {
+      throw new TRPCError({
+        code: "NOT_FOUND",
+        message: "Decision not found",
+      });
+    }
+
+    await db
+      .update(hrRecruitmentHiringDecisions)
+      .set({
+        offerStatus: "Rejected",
+        approvalNotes: input.approvalNotes,
+        approvedBy: ctx.user?.id,
+        approvalDate: new Date().toISOString(),
+      })
+      .where(
+        eq(hrRecruitmentHiringDecisions.id, input.id)
+      );
+
+    await db
+      .update(hrRecruitmentCandidates)
+      .set({
+        status: "rejected",
+      })
+      .where(
+        eq(
+          hrRecruitmentCandidates.id,
+          decision.candidateId
+        )
+      );
+
+    return { success: true };
+  }),
+
+  deleteHiringDecision: scopedProcedure
+  .input(deleteHiringDecisionSchema)
+  .mutation(async ({ input }) => {
+    const db = await getDb();
+
+    await db
+      .update(hrRecruitmentHiringDecisions)
+      .set({
+        isDeleted: 1,
+      })
+      .where(
+        eq(hrRecruitmentHiringDecisions.id, input.id)
+      );
+
+    return {
+      success: true,
+    };
+  }),
+
+  // Get hiring decision by candidate
+getHiringDecisionByCandidate: scopedProcedure
+  .input(z.number())
+  .query(async ({ input, ctx }) => {
+    const db = await getDb();
+
+    const candidate = await db
+      .select()
+      .from(hrRecruitmentCandidates)
+      .where(
+        and(
+          eq(hrRecruitmentCandidates.id, input),
+          eq(
+            hrRecruitmentCandidates.organizationId,
+            ctx.scope?.organizationId || 0
+          )
+        )
+      )
+      .then(rows => rows[0]);
+
+    if (!candidate) {
+      return null;
+    }
+
+    return {
+      status: candidate.status,
+      offerSalary: candidate.offerSalary,
+      offerDate: candidate.offerDate,
+      startDate: candidate.startDate,
+    };
+  }),
+  
   // Create hiring decision
   createHiringDecision: scopedProcedure
-    .input(createHiringDecisionSchema)
-    .mutation(async ({ input, ctx }) => {
+  .input(createHiringDecisionSchema)
+  .mutation(async ({ input, ctx }) => {
+    try {
+      const db = await getDb();
+
+      const candidate = await db
+        .select()
+        .from(hrRecruitmentCandidates)
+        .where(
+          and(
+            eq(hrRecruitmentCandidates.id, input.candidateId),
+            eq(
+              hrRecruitmentCandidates.organizationId,
+              ctx.scope.organizationId
+            ),
+            eq(hrRecruitmentCandidates.isDeleted, 0)
+          )
+        )
+        .then(rows => rows[0]);
+
+      if (!candidate) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Candidate not found",
+        });
+      }
+
+      const result = await db
+        .insert(hrRecruitmentHiringDecisions)
+        .values({
+          candidateId: input.candidateId,
+          jobId: input.jobId,
+          proposedSalary:
+            input.proposedSalary != null
+              ? String(input.proposedSalary)
+              : null,
+          startDate: input.startDate,
+          offerStatus: input.offerStatus ?? "Pending",
+          organizationId: ctx.scope.organizationId,
+          operatingUnitId: ctx.scope.operatingUnitId,
+          createdBy: ctx.user?.id,
+        });
+
+      await db
+        .update(hrRecruitmentCandidates)
+        .set({
+          status: "offer_sent",
+          updatedAt: new Date().toISOString(),
+        })
+        .where(eq(hrRecruitmentCandidates.id, input.candidateId));
+
+      return {
+        success: true,
+        id: Number((result as any)[0]?.insertId),
+      };
+    } catch (error) {
+      console.error(error);
+
+      throw new TRPCError({
+        code: "INTERNAL_SERVER_ERROR",
+        message: "Failed to create hiring decision",
+      });
+    }
+  }),
+
+  /**
+   * Get interviews by job
+   */
+  getInterviewsByJob: scopedProcedure
+    .input(z.object({ jobId: z.number() }))
+    .query(async ({ ctx, input }) => {
       try {
         const db = await getDb();
+        const candidates = await db
+          .select()
+          .from(hrRecruitmentInterviews)
+          .where(
+            and(
+              eq(hrRecruitmentInterviews.jobId, input.jobId),
+              eq(hrRecruitmentInterviews.organizationId, ctx.scope?.organizationId || 0),
+              eq(hrRecruitmentInterviews.isDeleted, 0)
+            )
+          );
+        return candidates
+          .filter(c => c.interviewDate)
+          .map(c => ({
+            candidateId: c.id,
+            interviewType: c.interviewType,
+            interviewDate: c.interviewDate,
+            interviewTime: c.interviewTime,
+            feedbackNotes: c.feedbackNotes,
+            panelMembers: c.panelMembers,
+            feedbackScore: c.feedbackScore,
+            status: c.status,
+          }));
+      } catch (error) {
+        console.error(error);
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to fetch interviews",
+        });
+      }
+    }),
 
-        // Validate candidate exists
+  /**
+   * Get interview by ID
+   */
+  getInterviewById: scopedProcedure
+    .input(z.object({ candidateId: z.number() }))
+    .query(async ({ ctx, input }) => {
+      try {
+        const db = await getDb();
         const candidate = await db
           .select()
-          .from(hrRecruitmentCandidates)
+          .from(hrRecruitmentInterviews)
+          .where(
+            and(
+              eq(hrRecruitmentInterviews.id, input.candidateId),
+              eq(hrRecruitmentInterviews.organizationId, ctx.scope?.organizationId || 0),
+              eq(hrRecruitmentInterviews.isDeleted, 0)
+            )
+          )
+          .then(r => r[0]);
+        if (!candidate) {
+          throw new TRPCError({ code: "NOT_FOUND", message: "Interview not found" });
+        }
+        return {
+          id: candidate.id,
+          interviewType: candidate.interviewType,
+          interviewDate: candidate.interviewDate,
+          interviewTime: candidate.interviewTime,
+          feedbackNotes: candidate.feedbackNotes,
+          panelMembers: candidate.panelMembers,
+          feedbackScore: candidate.feedbackScore,
+          status: candidate.status,
+        };
+      } catch (error) {
+        console.error(error);
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to fetch interview",
+        });
+      }
+    }),
+
+  /**
+   * Update interview
+   */
+  updateInterview: scopedProcedure
+    .input(z.object({
+      candidateId: z.number(),
+      interviewDate: z.string().optional(),
+      interviewNotes: z.string().optional(),
+      interviewers: z.string().optional(),
+      rating: z.number().optional(),
+      evaluationNotes: z.string().optional(),
+    }))
+    .mutation(async ({ ctx, input }) => {
+      try {
+        const db = await getDb();
+        const { candidateId, ...updateData } = input;
+        await db
+          .update(hrRecruitmentCandidates)
+          .set({
+            ...updateData,
+            status: 'interviewed',
+            updatedAt: new Date().toISOString(),
+          } as any)
+          .where(
+            and(
+              eq(hrRecruitmentCandidates.id, candidateId),
+              eq(hrRecruitmentCandidates.organizationId, ctx.scope?.organizationId || 0)
+            )
+          );
+        return { success: true };
+      } catch (error) {
+        console.error(error);
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to update interview",
+        });
+      }
+    }),
+
+  /**
+   * Delete interview
+   */
+  deleteInterview: scopedProcedure
+    .input(z.object({ candidateId: z.number() }))
+    .mutation(async ({ ctx, input }) => {
+      try {
+        const db = await getDb();
+        await db
+          .update(hrRecruitmentCandidates)
+          .set({
+            interviewDate: null,
+            interviewNotes: null,
+            interviewers: null,
+            status: 'shortlisted',
+            updatedAt: new Date().toISOString(),
+          } as any)
           .where(
             and(
               eq(hrRecruitmentCandidates.id, input.candidateId),
               eq(hrRecruitmentCandidates.organizationId, ctx.scope?.organizationId || 0)
             )
-          )
-          .then(rows => rows[0]);
-
-        if (!candidate) {
-          throw new TRPCError({
-            code: "NOT_FOUND",
-            message: "Candidate not found",
-          });
-        }
-
-        // Update candidate with offer information
-        await db
-          .update(hrRecruitmentCandidates)
-          .set({
-            status: 'offer_sent',
-            offerSalary:
-              input.proposedSalary != null
-                ? String(input.proposedSalary)
-                : null,
-            offerDate: new Date().toISOString(),
-            startDate: input.startDate,
-            updatedAt: new Date().toISOString(),
-          })
-          .where(eq(hrRecruitmentCandidates.id, input.candidateId));
-
+          );
         return { success: true };
       } catch (error) {
-        if (error instanceof TRPCError) throw error;
-        console.error("Error creating hiring decision:", error);
+        console.error(error);
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
-          message: "Failed to create hiring decision",
+          message: "Failed to delete interview",
         });
       }
     }),
