@@ -22,7 +22,7 @@ import { Save, Send, Printer, AlertTriangle } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { DisciplinaryCaseInitiation, DisciplinaryCase, RiskLevel } from './types';
 import { sanctionsService } from './sanctionsService';
-import { useTranslation } from '@/i18n/useTranslation';
+import { useTranslation } from '@/i18n/TranslationProvider';
 import { BackButton } from "@/components/BackButton";
 
 interface StaffMember {
@@ -34,7 +34,7 @@ interface StaffMember {
 }
 
 export function Form1_CaseInitiation() {
- const { t } = useTranslation();
+ const t = useTranslation();
  const { language, isRTL } = useLanguage();
  const navigate = useNavigate();
  const { staffId, caseRef } = useParams<{ staffId?: string; caseRef?: string }>();

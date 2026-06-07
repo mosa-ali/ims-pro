@@ -23,7 +23,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { useState, useEffect } from 'react';
 import { Search, Filter, Download, Eye, Edit, Trash2, CheckCircle, Clock, XCircle, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { useTranslation } from '@/i18n/useTranslation';
+import { useTranslation } from '@/i18n/TranslationProvider';
 import { BackButton } from "@/components/BackButton";
 
 type SubmissionStatus = 'all' | 'pending' | 'verified' | 'rejected';
@@ -41,7 +41,7 @@ interface Submission {
 }
 
 export function SurveySubmissions() {
- const { t } = useTranslation();
+ const t = useTranslation();
  const navigate = useNavigate();
  const searchString = useSearch();
  const searchParams = new URLSearchParams(searchString);

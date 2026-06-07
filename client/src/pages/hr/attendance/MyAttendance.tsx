@@ -29,7 +29,7 @@ import {
   ArrowLeft
 } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { useTranslation } from '@/i18n/useTranslation';
+import { useTranslation } from '@/i18n/TranslationProvider';
 import { trpc } from '@/lib/trpc';
 import { useAuth } from '@/_core/hooks/useAuth';
 import { Button } from '@/components/ui/button';
@@ -51,7 +51,7 @@ interface AttendanceRecord {
 }
 
 export function MyAttendance() {
-  const { t } = useTranslation();
+  const t = useTranslation();
   const { language, isRTL } = useLanguage();
   const { user } = useAuth();
 

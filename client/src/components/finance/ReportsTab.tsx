@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
 import { FileText, Download } from "lucide-react";
-import { useTranslation } from '@/i18n/useTranslation';
+import { useTranslation } from '@/i18n/TranslationProvider';
 
 /**
  * Finance Reports Tab Component
@@ -26,7 +26,7 @@ import { useTranslation } from '@/i18n/useTranslation';
  * <ReportsTab />
  */
 export default function ReportsTab() {
- const { t } = useTranslation();
+ const t = useTranslation();
  const { language, isRTL} = useLanguage();
  const { data: budgets } = trpc.budgets.list.useQuery({});
  const { data: expenditures } = trpc.expenditures.list.useQuery({});

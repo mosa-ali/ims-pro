@@ -9,11 +9,11 @@ import { Users, Archive, DoorOpen, UserPlus, FileText, TrendingUp, Building2, Gl
 import { useLanguage } from '@/contexts/LanguageContext';
 import { staffService } from '@/app/services/hrService';
 import { useEffect, useState } from 'react';
-import { useTranslation } from '@/i18n/useTranslation';
+import { useTranslation } from '@/i18n/TranslationProvider';
 import { BackButton } from "@/components/BackButton";
 
 export function ProfilesSummary() {
- const { t } = useTranslation();
+ const t = useTranslation();
  const { language, isRTL } = useLanguage();
  const navigate = useNavigate();
  const [stats, setStats] = useState({

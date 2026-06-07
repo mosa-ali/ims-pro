@@ -14,7 +14,7 @@ import { Eye, Share2, Edit as EditIcon, FileDown, Calendar, Users, MapPin, FileT
 // Removed submissionService import - using tRPC instead
 import { useEffect, useState } from 'react';
 import { QRCodeSVG } from 'qrcode.react';
-import { useTranslation } from '@/i18n/useTranslation';
+import { useTranslation } from '@/i18n/TranslationProvider';
 
 interface Props {
  survey: any;
@@ -24,7 +24,7 @@ interface Props {
 
 export function SurveySummaryTab({
  survey, projectId, projectName }: Props) {
- const { t } = useTranslation();
+ const t = useTranslation();
  const navigate = useNavigate();
  const { language, isRTL } = useLanguage();
  

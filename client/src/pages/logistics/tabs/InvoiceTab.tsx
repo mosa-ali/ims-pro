@@ -4,7 +4,7 @@
  * Features: Create invoice, approval workflow, GL posting trigger
  * Bilingual EN/AR support
  */
-import { useTranslation } from '@/i18n/useTranslation';
+import { useTranslation } from '@/i18n/TranslationProvider';
 import { useState, useMemo, useRef } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { trpc } from "@/lib/trpc";

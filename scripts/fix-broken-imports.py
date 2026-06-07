@@ -13,13 +13,13 @@ for filepath in files:
         lines = f.readlines()
     
     # Find and remove the misplaced import line
-    import_line = "import { useTranslation } from '@/i18n/useTranslation';\n"
+    import_line = "import { useTranslation } from '@/i18n/TranslationProvider';\n"
     
     # Remove ALL occurrences of the import line
     new_lines = []
     removed = False
     for line in lines:
-        if line.strip() == "import { useTranslation } from '@/i18n/useTranslation';":
+        if line.strip() == "import { useTranslation } from '@/i18n/TranslationProvider';":
             removed = True
             continue
         new_lines.append(line)

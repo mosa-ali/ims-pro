@@ -11,7 +11,7 @@ import { BackButton } from "@/components/BackButton";
  * - Full bilingual support (Arabic/English) with RTL/LTR
  */
 
-import { useTranslation } from '@/i18n/useTranslation';
+import { useTranslation } from '@/i18n/TranslationProvider';
 import { useState } from 'react';
 import { useParams } from 'wouter';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -179,7 +179,7 @@ export default function VendorDetailEnhanced() {
  const { id } = useParams<{ id: string }>();
  const navigate = useNavigate();
  const { language, isRTL} = useLanguage();
-  const { t } = useTranslation();
+  const t = useTranslation();
  const { selectedOrganization } = useOrganization();
 
  const [activeTab, setActiveTab] = useState('overview');

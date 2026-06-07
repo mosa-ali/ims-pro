@@ -32,10 +32,10 @@ import {
  GitPullRequestArrow,
 } from "lucide-react";
 import { Link, useLocation } from "wouter";
-import { useTranslation } from '@/i18n/useTranslation';
+import { useTranslation } from '@/i18n/TranslationProvider';
 
 export default function LogisticsWorkspace() {
- const { t } = useTranslation();
+ const t = useTranslation();
  const { user } = useAuth();
  const { currentOrganization } = useOrganization();
 const { language, isRTL} = useLanguage();

@@ -42,13 +42,13 @@ import { InterviewScheduling } from './recruitment/InterviewScheduling';
 import { InterviewList } from './recruitment/InterviewList';
 import { HiringDecision } from './recruitment/HiringDecision';
 import { VacancyForm } from './recruitment/VacancyForm';
-import { useTranslation } from '@/i18n/useTranslation';
+import { useTranslation } from '@/i18n/TranslationProvider';
 import { BackButton } from "@/components/BackButton";
 
 type TabView = 'dashboard' | 'vacancies' | 'candidates' | 'interviews' | 'hiring';
 
 export function Recruitment() {
- const { t } = useTranslation();
+ const t = useTranslation();
  const { language, isRTL } = useLanguage();
  const [activeTab, setActiveTab] = useState<TabView>('dashboard');
  const [showVacancyForm, setShowVacancyForm] = useState(false);

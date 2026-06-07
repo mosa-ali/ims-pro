@@ -24,11 +24,11 @@ import { Printer, FileCheck, AlertCircle } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { DisciplinaryCase } from './types';
 import { sanctionsService } from './sanctionsService';
-import { useTranslation } from '@/i18n/useTranslation';
+import { useTranslation } from '@/i18n/TranslationProvider';
 import { BackButton } from "@/components/BackButton";
 
 export function Form6_FinalRecord() {
- const { t } = useTranslation();
+ const t = useTranslation();
  const { language, isRTL } = useLanguage();
  const navigate = useNavigate();
  const { caseRef } = useParams<{ caseRef: string }>();

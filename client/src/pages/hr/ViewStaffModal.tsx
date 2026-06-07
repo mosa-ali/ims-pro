@@ -9,7 +9,7 @@ import { X, User, Briefcase, FolderKanban, CreditCard, FileText } from 'lucide-r
 import { StaffMember } from './types/hrTypes';
 import { ModalOverlay } from '@/app/components/ui/ModalOverlay';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { useTranslation } from '@/i18n/useTranslation';
+import { useTranslation } from '@/i18n/TranslationProvider';
 
 interface ViewStaffModalProps {
  staffMember: StaffMember;
@@ -20,7 +20,7 @@ interface ViewStaffModalProps {
 
 export function ViewStaffModal({
  staffMember, language, isRTL, onClose }: ViewStaffModalProps) {
- const { t } = useTranslation();
+ const t = useTranslation();
  const [activeTab, setActiveTab] = useState<number>(0);
 
  const localT = {

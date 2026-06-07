@@ -8,7 +8,7 @@ import { formatDate } from '@/utils/formatters';
 import React from 'react';
 import { getOrganizationSettings } from '@/services/organizationService';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { useTranslation } from '@/i18n/useTranslation';
+import { useTranslation } from '@/i18n/TranslationProvider';
 import type { ProcurementRequest, TenderBidder } from '@/types/logistics.types';
 
 interface Props {
@@ -21,7 +21,7 @@ interface Props {
 
 export function BidReceiptAcknowledgementPrint({
  pr, bidder, noticeId, language, isRTL }: Props) {
- const { t } = useTranslation();
+ const t = useTranslation();
  const orgSettings = getOrganizationSettings();
  const orgName = language === 'ar' && orgSettings.nameAr ? orgSettings.nameAr : orgSettings.name;
 

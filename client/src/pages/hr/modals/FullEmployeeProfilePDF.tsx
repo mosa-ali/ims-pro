@@ -21,7 +21,7 @@ import { useRef, useEffect } from 'react';
 import { X, Printer, Download, FileText, Loader2 } from 'lucide-react';
 import { StaffMember } from '../types/hrTypes';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { useTranslation } from '@/i18n/useTranslation';
+import { useTranslation } from '@/i18n/TranslationProvider';
 import { trpc } from '@/lib/trpc';
 
 interface Props {
@@ -35,7 +35,7 @@ interface Props {
 
 export function FullEmployeeProfilePDF({
  employee, language, isRTL, isOpen, onClose, autoPrint = false }: Props) {
- const { t } = useTranslation();
+ const t = useTranslation();
  const contentRef = useRef<HTMLDivElement>(null);
 
  // ✅ FIX ISSUE 1: Fetch ACTIVE salary record from tRPC

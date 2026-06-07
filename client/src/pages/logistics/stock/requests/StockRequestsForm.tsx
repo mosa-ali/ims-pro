@@ -8,11 +8,11 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Save, Plus, Trash2 } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { useTranslation } from '@/i18n/useTranslation';
+import { useTranslation } from '@/i18n/TranslationProvider';
 import { BackButton } from "@/components/BackButton";
 
 export default function StockRequestsForm() {
- const { t } = useTranslation();
+ const t = useTranslation();
  const [, setLocation] = useLocation();
  const [, params] = useRoute("/organization/logistics/stock/requests/:id");
  const [, editParams] = useRoute("/organization/logistics/stock/requests/:id/edit");

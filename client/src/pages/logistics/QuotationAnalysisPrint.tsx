@@ -19,7 +19,7 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { formatCurrency } from "@shared/currencyFormatter";
 import { useEffect } from "react";
-import { useTranslation } from '@/i18n/useTranslation';
+import { useTranslation } from '@/i18n/TranslationProvider';
 
 // ============================================================================
 // BILINGUAL TRANSLATIONS

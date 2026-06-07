@@ -28,7 +28,7 @@ interface TransferLine {
 
 export default function WarehouseTransferForm() {
   const { isRTL } = useLanguage();
-  const { t } = useTranslation();
+  const t = useTranslation();
   const [, setLocation] = useLocation();
   const [sourceWarehouse, setSourceWarehouse] = useState("");
   const [destinationWarehouse, setDestinationWarehouse] = useState("");

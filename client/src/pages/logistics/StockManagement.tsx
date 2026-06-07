@@ -36,7 +36,7 @@ import { useTranslation } from "@/i18n/useTranslation";
 import { BackButton } from "@/components/BackButton";
 
 export default function StockManagement() {
-  const { t } = useTranslation();
+  const t = useTranslation();
   const { isRTL } = useLanguage();
   const { currentOrganization } = useOrganization();
 

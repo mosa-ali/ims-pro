@@ -23,11 +23,11 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { useState } from 'react';
 import { FileSpreadsheet, FileText, Download, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { useTranslation } from '@/i18n/useTranslation';
+import { useTranslation } from '@/i18n/TranslationProvider';
 import { BackButton } from "@/components/BackButton";
 
 export function SurveyExport() {
- const { t } = useTranslation();
+ const t = useTranslation();
  const navigate = useNavigate();
  const { language, isRTL } = useLanguage();
  const [selectedFormat, setSelectedFormat] = useState<'excel' | 'csv' | 'pdf'>('excel');

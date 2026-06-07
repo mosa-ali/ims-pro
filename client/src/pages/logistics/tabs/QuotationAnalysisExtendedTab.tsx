@@ -3,7 +3,7 @@
  * Features: Supplier offer matrix, financial scoring + multi-criteria scoring
  * Bilingual EN/AR support with RTL
  */
-import { useTranslation } from '@/i18n/useTranslation';
+import { useTranslation } from '@/i18n/TranslationProvider';
 import { useState, useMemo, useEffect } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { trpc } from "@/lib/trpc";
@@ -43,7 +43,7 @@ export default function QuotationAnalysisExtendedTab({
  currency = "USD",
 }: QuotationAnalysisExtendedTabProps) {
  const { language, isRTL} = useLanguage();
-  const { t } = useTranslation();
+  const t = useTranslation();
  const currencyCode = (currency === "USD" ? "USD" : currency) as any;
 
  const [vendorScores, setVendorScores] = useState<VendorScore[]>([]);

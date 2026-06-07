@@ -10,11 +10,11 @@ import { Save } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useOrganization } from "@/contexts/OrganizationContext";
 import { useOperatingUnit } from "@/contexts/OperatingUnitContext";
-import { useTranslation } from '@/i18n/useTranslation';
+import { useTranslation } from '@/i18n/TranslationProvider';
 import { BackButton } from "@/components/BackButton";
 
 export default function DriversForm() {
- const { t } = useTranslation();
+ const t = useTranslation();
  const [, setLocation] = useLocation();
  const [, params] = useRoute("/organization/logistics/fleet/drivers/:id");
  const [, editParams] = useRoute("/organization/logistics/fleet/drivers/:id/edit");

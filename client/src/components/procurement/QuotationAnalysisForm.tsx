@@ -22,7 +22,7 @@ import { procurementRequestService } from '@/services/procurementRequestService'
 import { evaluationCriteriaService } from '@/services/evaluationCriteriaService';
 import { ImageWithFallback } from '@/components/figma/ImageWithFallback';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { useTranslation } from '@/i18n/useTranslation';
+import { useTranslation } from '@/i18n/TranslationProvider';
 import type { 
  QuotationAnalysis, 
  ProcurementRequest, 
@@ -37,7 +37,8 @@ interface Props {
 
 export function QuotationAnalysisForm({
  analysisId, onUpdate, language }: Props) {
- const { t } = useTranslation();
+ const t = useTranslation();
+ const { isRTL } = useLanguage();
  const [analysis, setAnalysis] = useState<QuotationAnalysis | null>(null);
  const [pr, setPR] = useState<ProcurementRequest | null>(null);
  const [criteriaSet, setCriteriaSet] = useState<any>(null);

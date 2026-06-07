@@ -13,7 +13,7 @@ import { StaffMember } from '../types/hrTypes';
 import { DisciplinaryRecord } from '@/app/services/disciplinaryService';
 import { useState, useEffect } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { useTranslation } from '@/i18n/useTranslation';
+import { useTranslation } from '@/i18n/TranslationProvider';
 
 interface Props {
  disciplinary: DisciplinaryRecord;
@@ -22,7 +22,7 @@ interface Props {
 
 export function DisciplinaryLetterPrintModal({
  disciplinary, onClose }: Props) {
- const { t } = useTranslation();
+ const t = useTranslation();
  const { language, isRTL } = useLanguage();
  const [employee, setEmployee] = useState<StaffMember | null>(null);
 

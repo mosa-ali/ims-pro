@@ -17,7 +17,7 @@ import { Link, useLocation } from "wouter";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { toast } from "sonner";
 import { format } from "date-fns";
-import { useTranslation } from '@/i18n/useTranslation';
+import { useTranslation } from '@/i18n/TranslationProvider';
 import { BackButton } from "@/components/BackButton";
 import { Loader2 } from "lucide-react";
 
@@ -27,7 +27,7 @@ const statusColors: Record<string, string> = {
 };
 
 export default function GoodsReceiptList() {
- const { t } = useTranslation();
+ const t = useTranslation();
  const { user } = useAuth();
  const { isRTL } = useLanguage();
  const [, navigate] = useLocation();

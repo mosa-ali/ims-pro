@@ -22,10 +22,10 @@ import * as Tabs from '@radix-ui/react-tabs';
 import { SalaryScaleGuideline } from './SalaryScaleGuideline';
 import { SalaryScaleTableTab } from './SalaryScaleTableTab';
 import { SalaryScalePolicy } from './SalaryScalePolicy';
-import { useTranslation } from '@/i18n/useTranslation';
+import { useTranslation } from '@/i18n/TranslationProvider';
 import { BackButton } from "@/components/BackButton";
 export function SalaryScale() {
- const { t } = useTranslation();
+ const t = useTranslation();
  const { language, isRTL } = useLanguage();
  const { currentOrganizationId } = useOrganization();
  const { currentOperatingUnitId } = useOperatingUnit();

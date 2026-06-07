@@ -7,7 +7,7 @@
  * No create/edit/delete actions — read-only view for Finance users.
  */
 
-import { useTranslation } from '@/i18n/useTranslation';
+import { useTranslation } from '@/i18n/TranslationProvider';
 import { useState, useMemo } from 'react';
 import { useNavigate } from '@/lib/router-compat';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -60,7 +60,7 @@ interface FinanceVendorListProps {
 export default function FinanceVendorList({ vendorType }: FinanceVendorListProps = {}) {
   const navigate = useNavigate();
   const { language, isRTL } = useLanguage();
-  const { t } = useTranslation();
+  const t = useTranslation();
   const { currentOrganization, selectedOrganization } = useOrganization();
 
   const organizationId = currentOrganization?.id || selectedOrganization?.id || 0;

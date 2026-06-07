@@ -19,7 +19,7 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
 import { useLanguage } from '@/contexts/LanguageContext';
-import { useTranslation } from '@/i18n/useTranslation';
+import { useTranslation } from '@/i18n/TranslationProvider';
 import {
  ArrowLeft, ArrowRight,
  Download,
@@ -57,7 +57,7 @@ interface ComparisonMetrics {
 
 export default function QuotationComparisonView() {
   const { language, isRTL} = useLanguage();
-  const { t } = useTranslation();
+  const t = useTranslation();
  const { qaId } = useParams<{ qaId: string }>();
  const navigate = useNavigate();
  const [activeTab, setActiveTab] = useState("overview");

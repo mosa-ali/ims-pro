@@ -7,7 +7,7 @@
 import { FileText, Calendar, User, CheckCircle } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import type { HRAnnualPlan } from '@shared/types/hrAnnualPlanning';
-import { useTranslation } from '@/i18n/useTranslation';
+import { useTranslation } from '@/i18n/TranslationProvider';
 
 interface PlanHeaderProps {
  plan: HRAnnualPlan;
@@ -15,7 +15,7 @@ interface PlanHeaderProps {
 
 export function PlanHeader({
  plan }: PlanHeaderProps) {
- const { t } = useTranslation();
+ const t = useTranslation();
  const { language, isRTL } = useLanguage();
 
  const localT = {

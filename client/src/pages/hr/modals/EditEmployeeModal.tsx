@@ -9,7 +9,7 @@ import { useState } from 'react';
 import { X } from 'lucide-react';
 import { StaffMember } from '../types/hrTypes';
 import { useLanguage } from '@/app/contexts/LanguageContext';
-import { useTranslation } from '@/i18n/useTranslation';
+import { useTranslation } from '@/i18n/TranslationProvider';
 
 interface EditEmployeeModalProps {
  employee: StaffMember;
@@ -20,7 +20,7 @@ interface EditEmployeeModalProps {
 
 export function EditEmployeeModal({
  employee, show, onClose, onEmployeeUpdated }: EditEmployeeModalProps) {
- const { t } = useTranslation();
+ const t = useTranslation();
  const { language, isRTL } = useLanguage();
  const [formData, setFormData] = useState({
  fullName: employee.fullName,

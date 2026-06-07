@@ -4,7 +4,7 @@ import { useLanguage, formatCurrency } from '@/contexts/LanguageContext';
 import { ProposalEditor } from '@/pages/organization/proposals/ProposalEditor';
 import { trpc } from '@/lib/trpc';
 import { useAuth } from '@/_core/hooks/useAuth';
-import { useTranslation } from '@/i18n/useTranslation';
+import { useTranslation } from '@/i18n/TranslationProvider';
 import { toast } from 'sonner';
 
 interface Proposal {
@@ -33,7 +33,7 @@ interface Proposal {
 // Mock data removed - using real database data via tRPC
 
 export function ProposalDevelopment() {
- const { t } = useTranslation();
+ const t = useTranslation();
  const { isRTL } = useLanguage();
  const { user } = useAuth();
  

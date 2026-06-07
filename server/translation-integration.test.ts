@@ -283,7 +283,7 @@ describe('Translation Integration Tests', () => {
 
     it('should avoid hardcoded strings in components', () => {
       const componentCode = `
-        const { t } = useTranslation();
+        const t = useTranslation();
         return <h1>{t('onboarding.dashboard.title')}</h1>;
       `;
 

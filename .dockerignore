@@ -1,16 +1,105 @@
+# Dependencies
 node_modules
+.pnpm-store
+.npm
+
+# Build outputs
 dist
+build
+.next
+out
+
+# Cache
+.cache
+.parcel-cache
+.vite
+.turbo
+.eslintcache
+coverage
+
+# Logs
+logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Git
 .git
 .gitignore
+.gitattributes
+
+# IDE
+.vscode
+.idea
+*.suo
+*.user
+*.swp
+
+# Environment
 .env
 .env.*
 !.env.frontend
-.vscode
-.idea
-coverage
-logs
-*.log
+
+# Uploads / temp files
 uploads
-.cache
 tmp
-.env.docker
+temp
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Testing
+playwright-report
+test-results
+
+# Docker
+Dockerfile*
+docker-compose*
+.dockerignore
+
+# Documentation
+README.md
+docs
+
+# Azure / deployment artifacts
+.azure
+.github
+
+# Local IMS exports/imports
+exports
+backups
+reports
+# Development scripts
+*.py
+*.mjs
+
+# Exception if needed
+!server/**/*.mjs
+
+# Tests
+test*
+tests
+__tests__
+
+# Investigation scripts
+check*
+analyze*
+query*
+seed*
+import*
+backup*
+
+# Temporary images
+*_test.png
+*_test.webp
+
+# Documentation
+README.md
+
+# Local tooling
+.husky
+.prettierignore
+.prettierrc

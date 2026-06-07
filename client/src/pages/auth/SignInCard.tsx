@@ -19,7 +19,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Loader2, Mail, CheckCircle, Globe } from 'lucide-react';
 import { trpc } from '@/lib/trpc';
-import { useTranslation } from '@/i18n/useTranslation';
+import { useTranslation } from '@/i18n/TranslationProvider';
 
 interface SignInCardProps {
   onMicrosoftSignIn: () => void;

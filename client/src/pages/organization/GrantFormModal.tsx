@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { X, Plus } from 'lucide-react';
 import { trpc } from '@/lib/trpc';
-import { useTranslation } from '@/i18n/useTranslation';
+import { useTranslation } from '@/i18n/TranslationProvider';
 import { useLanguage } from '@/contexts/LanguageContext';
 
 // Project interface (matching the one in ProjectsManagementDashboard)
@@ -46,7 +46,7 @@ interface GrantFormModalProps {
 
 export function GrantFormModal({
  grant, isRTL, onClose, onSave }: GrantFormModalProps) {
- const { t } = useTranslation();
+ const t = useTranslation();
  const [formData, setFormData] = useState({
  grantNumber: grant?.grantNumber || '',
  grantName: grant?.grantName || '',

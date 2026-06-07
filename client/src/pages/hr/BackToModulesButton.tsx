@@ -12,7 +12,7 @@
 
 import { useNavigate } from '@/lib/router-compat';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { useTranslation } from '@/i18n/useTranslation';
+import { useTranslation } from '@/i18n/TranslationProvider';
 import { BackButton } from "@/components/BackButton";
 
 interface BackToModulesButtonProps {
@@ -24,7 +24,7 @@ export function BackToModulesButton({
  targetPath = '/organization/hr',
  parentModuleName 
 }: BackToModulesButtonProps) {
- const { t } = useTranslation(); 
+ const t = useTranslation(); 
  const { language, isRTL } = useLanguage();
  const navigate = useNavigate();
 

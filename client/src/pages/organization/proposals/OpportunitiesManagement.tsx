@@ -3,7 +3,7 @@ import { useLanguage, formatCurrency } from '@/contexts/LanguageContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card } from '@/components/ui/card';
-import { useTranslation } from '@/i18n/useTranslation';
+import { useTranslation } from '@/i18n/TranslationProvider';
 import { trpc } from '@/lib/trpc';
 import { useAuth } from '@/_core/hooks/useAuth';
 import { useState, useMemo } from 'react';
@@ -26,7 +26,7 @@ interface Opportunity {
 }
 
 export function OpportunitiesManagement() {
-  const { t } = useTranslation();
+  const t = useTranslation();
   const { isRTL } = useLanguage();
   const { user } = useAuth();
 

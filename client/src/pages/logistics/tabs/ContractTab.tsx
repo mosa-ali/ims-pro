@@ -6,7 +6,7 @@
  *           Milestones, approval workflow
  * Bilingual EN/AR support
  */
-import { useTranslation } from '@/i18n/useTranslation';
+import { useTranslation } from '@/i18n/TranslationProvider';
 import { useState, useEffect } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { trpc } from "@/lib/trpc";
@@ -32,7 +32,7 @@ interface ContractTabProps {
 }
 
 export default function ContractTab({ purchaseRequestId }: ContractTabProps) {
-  const { t } = useTranslation();
+  const t = useTranslation();
   const { language } = useLanguage();
   const isRTL = language === 'ar';
 

@@ -5,14 +5,14 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Printer, FileText } from "lucide-react";
-import { useTranslation } from '@/i18n/useTranslation';
+import { useTranslation } from '@/i18n/TranslationProvider';
 import { BackButton } from "@/components/BackButton";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { useState } from "react";
 
 export default function GoodsReceiptDetail() {
- const { t } = useTranslation();
+ const t = useTranslation();
  const { id } = useParams();
  const { isRTL } = useLanguage();
  const [generatingPdfId, setGeneratingPdfId] = useState<number | null>(null);

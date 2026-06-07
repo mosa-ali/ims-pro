@@ -19,7 +19,7 @@ import { Link, useLocation } from "wouter";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { toast } from "sonner";
 import { format } from "date-fns";
-import { useTranslation } from '@/i18n/useTranslation';
+import { useTranslation } from '@/i18n/TranslationProvider';
 import { BackButton } from "@/components/BackButton";
 
 const formatSqlDate = (dateValue?: string | Date | null) => {
@@ -38,7 +38,7 @@ const statusColors: Record<string, string> = {
 const editableStatuses = ["draft"];
 
 export default function PurchaseOrderListV2() {
- const { t } = useTranslation();
+ const t = useTranslation();
  const { user } = useAuth();
  const { isRTL } = useLanguage();
  const [, navigate] = useLocation();

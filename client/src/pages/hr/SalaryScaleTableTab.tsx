@@ -35,7 +35,7 @@ import { EditCurrentSalaryModal } from './modals/EditCurrentSalaryModal';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { toast } from 'sonner';
-import { useTranslation } from '@/i18n/useTranslation';
+import { useTranslation } from '@/i18n/TranslationProvider';
 
 // Type for salary scale record from tRPC
 type SalaryScaleRecord = {
@@ -81,7 +81,7 @@ type SalaryScaleRecord = {
 };
 
 export function SalaryScaleTableTab() {
- const { t } = useTranslation();
+ const t = useTranslation();
  const { language, isRTL } = useLanguage();
  const { currentOrganizationId } = useOrganization();
  const { currentOperatingUnitId } = useOperatingUnit();

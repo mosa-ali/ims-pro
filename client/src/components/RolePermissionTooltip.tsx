@@ -1,6 +1,6 @@
 import { Shield, ShieldCheck, Eye } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { useTranslation } from '@/i18n/useTranslation';
+import { useTranslation } from '@/i18n/TranslationProvider';
 import {
  Tooltip,
  TooltipContent,
@@ -103,7 +103,7 @@ interface RolePermissionTooltipProps {
 
 export function RolePermissionTooltip({
  role, children, className = '' }: RolePermissionTooltipProps) {
- const { t } = useTranslation();
+ const t = useTranslation();
  const { language, isRTL } = useLanguage();
 
  const roleData = ROLE_PERMISSIONS[role];

@@ -4,7 +4,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { useOperatingUnit } from '@/contexts/OperatingUnitContext';
 import { procurementRequestService } from '@/services/procurementRequestService';
 import { determineProcurementProcess } from '@/types/logistics.types';
-import { useTranslation } from '@/i18n/useTranslation';
+import { useTranslation } from '@/i18n/TranslationProvider';
 import type { ProcurementRequest } from '@/types/logistics.types';
 interface PRSelectionModalProps {
  isOpen: boolean;
@@ -14,7 +14,7 @@ interface PRSelectionModalProps {
 
 export function PRSelectionModal({
  isOpen, onClose, onSelectPR }: PRSelectionModalProps) {
- const { t } = useTranslation();
+ const t = useTranslation();
  const { language, isRTL } = useLanguage();
  const { currentOperatingUnit } = useOperatingUnit();
 const [searchTerm, setSearchTerm] = useState('');

@@ -2,7 +2,7 @@ import { RotateCcw, X, AlertTriangle } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { ImportHistoryRecord } from '@/contexts/ImportHistoryContext';
 import { useState } from 'react';
-import { useTranslation } from '@/i18n/useTranslation';
+import { useTranslation } from '@/i18n/TranslationProvider';
 
 interface RetryConfirmationModalProps {
  isOpen: boolean;
@@ -17,7 +17,7 @@ export function RetryConfirmationModal({
  onConfirm,
  importRecord
 }: RetryConfirmationModalProps) {
- const { t } = useTranslation();
+ const t = useTranslation();
  const { language, isRTL } = useLanguage();
  const [retryMode, setRetryMode] = useState<'ALL' | 'FAILED_ONLY'>('FAILED_ONLY');
 

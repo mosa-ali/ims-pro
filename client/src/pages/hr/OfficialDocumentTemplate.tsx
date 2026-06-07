@@ -34,7 +34,7 @@
 import { useEffect, useState } from 'react';
 import { getOrganizationSettings, OrganizationSettings } from '@/services/organizationService';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { useTranslation } from '@/i18n/useTranslation';
+import { useTranslation } from '@/i18n/TranslationProvider';
 
 interface Props {
  title: string;
@@ -59,7 +59,7 @@ export function OfficialDocumentTemplate({
  staffId,
  children
 }: Props) {
- const { t } = useTranslation();
+ const t = useTranslation();
  const [orgSettings, setOrgSettings] = useState<OrganizationSettings | null>(null);
 
  useEffect(() => {

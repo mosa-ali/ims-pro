@@ -1,4 +1,4 @@
-import { useTranslation } from '@/i18n/useTranslation';
+import { useTranslation } from '@/i18n/TranslationProvider';
 import { Button } from "@/components/ui/button";
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -18,7 +18,7 @@ import { useAuth } from "@/_core/hooks/useAuth";
  */
 export default function OrganizationsPage() {
  const { language, isRTL} = useLanguage();
-  const { t } = useTranslation();
+  const t = useTranslation();
 const [, navigate] = useLocation();
  const { user } = useAuth();
  const { data: organizations = [], isLoading } = trpc.ims.organizations.list.useQuery();

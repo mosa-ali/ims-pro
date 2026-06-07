@@ -23,7 +23,7 @@ export default function PlatformLayout({ children }: PlatformLayoutProps) {
 
  // Redirect non-platform-admins to home
  useEffect(() => {
- if (!loading && user && !isPlatformAdmin(user.platformRole)) {
+ if (!loading && user && !isPlatformAdmin(user.role)) {
  setLocation("/");
  }
  }, [loading, user, setLocation]);
@@ -38,7 +38,7 @@ export default function PlatformLayout({ children }: PlatformLayoutProps) {
  }
 
  // Don't render if not authenticated or not platform admin
- if (!isAuthenticated || !user || !isPlatformAdmin(user.platformRole)) {
+ if (!isAuthenticated || !user || !isPlatformAdmin(user.role)) {
  return null;
  }
 

@@ -22,7 +22,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { Download, Search, Filter, Calendar } from 'lucide-react';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { useTranslation } from '@/i18n/useTranslation';
+import { useTranslation } from '@/i18n/TranslationProvider';
 import { BackButton } from "@/components/BackButton";
 
 interface AuditLogEntry {
@@ -38,7 +38,7 @@ interface AuditLogEntry {
 }
 
 export function AuditTrail() {
- const { t } = useTranslation();
+ const t = useTranslation();
  const navigate = useNavigate();
  const searchString = useSearch();
  const searchParams = new URLSearchParams(searchString);

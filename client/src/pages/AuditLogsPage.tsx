@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useTranslation } from '@/i18n/useTranslation';
+import { useTranslation } from '@/i18n/TranslationProvider';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useLanguage } from '@/contexts/LanguageContext';
 import { FileText, Filter, Download, Info, Search, Trash2, BarChart3 } from "lucide-react";
@@ -17,7 +17,7 @@ import * as XLSX from 'xlsx';
  */
 export default function AuditLogsPage() {
   const { language, isRTL } = useLanguage();
-  const { t } = useTranslation();
+  const t = useTranslation();
   const isArabic = language === 'ar';
 
   const [page, setPage] = useState(0);

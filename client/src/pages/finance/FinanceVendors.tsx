@@ -8,7 +8,7 @@
  * Finance users CANNOT create, edit, or delete vendor records.
  */
 
-import { useTranslation } from '@/i18n/useTranslation';
+import { useTranslation } from '@/i18n/TranslationProvider';
 import { useNavigate } from '@/lib/router-compat';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useOrganization } from '@/contexts/OrganizationContext';
@@ -44,7 +44,7 @@ import { BackButton } from "@/components/BackButton";
 export default function FinanceVendors() {
   const navigate = useNavigate();
   const { language, isRTL } = useLanguage();
-  const { t } = useTranslation();
+  const t = useTranslation();
   const { currentOrganization } = useOrganization();
 
   const organizationId = currentOrganization?.id || 0;

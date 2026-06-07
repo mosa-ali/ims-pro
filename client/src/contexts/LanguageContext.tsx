@@ -1,44 +1,51 @@
 // ============================================================================
-// LANGUAGE CONTEXT
+// LANGUAGE CONTEXT - UNIFIED ARCHITECTURE
+// Derives language selection from TranslationProvider (single source of truth)
 // Controls UI direction (LTR/RTL) and locale settings
-// NOT for translation - purely direction and formatting
 // ============================================================================
 
-import React, { createContext, useContext, useState, useEffect } from 'react';
+'use client';
 
-type Language = 'en' | 'ar';
+import React, { createContext, useContext, useEffect, useState } from 'react';
+import { useTranslationContext } from '@/i18n/TranslationProvider';
+
+type Language = 'en' | 'ar' | 'it';
 type Direction = 'ltr' | 'rtl';
 
 interface LanguageContextType {
  language: Language;
  direction: Direction;
  setLanguage: (lang: Language) => void;
- changeLanguage: (lang: Language) => void; // Alias for setLanguage
+ changeLanguage: (lang: Language) => void;
  isRTL: boolean;
 }
 
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
 
-const LANGUAGE_STORAGE_KEY = 'pms_language';
-
+/**
+ * Language Provider - Derives from TranslationProvider
+ * Single source of truth: TranslationProvider owns language state
+ * LanguageContext is a derived context for backward compatibility
+ */
 export function LanguageProvider({
  children }: { children: React.ReactNode }) {
- const [language, setLanguageState] = useState<Language>(() => {
- // Load from localStorage or default to Arabic (changed from English)
- const stored = localStorage.getItem(LANGUAGE_STORAGE_KEY);
- return (stored === 'ar' || stored === 'en') ? stored : 'ar'; // Default to 'ar' instead of 'en'
- });
+ const translationContext = useTranslationContext();
+ const [mounted, setMounted] = useState(false);
 
- const direction: Direction = language === 'ar' ? 'rtl' : 'ltr';
+ const direction: Direction = translationContext.language === 'ar' ? 'rtl' : 'ltr';
  const isRTL = direction === 'rtl';
+
+ useEffect(() => {
+ setMounted(true);
+ }, []);
 
  // Update HTML attributes when language changes
  useEffect(() => {
+ if (!mounted) return;
+
+ const language = translationContext.language;
  document.documentElement.dir = direction;
  document.documentElement.lang = language;
- 
- // Save to localStorage
- localStorage.setItem(LANGUAGE_STORAGE_KEY, language);
  
  // Add RTL class to body for any legacy CSS that needs it
  if (isRTL) {
@@ -48,17 +55,13 @@ export function LanguageProvider({
  document.body.classList.add('ltr');
  document.body.classList.remove('rtl');
  }
- }, [language, direction, isRTL]);
-
- const setLanguage = (lang: Language) => {
- setLanguageState(lang);
- };
+ }, [translationContext.language, direction, isRTL, mounted]);
 
  const value: LanguageContextType = {
- language,
+ language: translationContext.language,
  direction,
- setLanguage,
- changeLanguage: setLanguage, // Alias for backward compatibility
+ setLanguage: translationContext.setLanguage,
+ changeLanguage: translationContext.changeLanguage,
  isRTL
  };
 
@@ -89,8 +92,12 @@ export function formatNumber(value: number, locale?: string): string {
 
 // Format currency (locale-aware)
 export function formatCurrency(value: number, currency: string = 'USD', language: Language = 'en'): string {
- const locale = language === 'ar' ? 'ar-SA' : 'en-US';
- return new Intl.NumberFormat(locale, {
+ const localeMap: Record<Language, string> = {
+   'en': 'en-US',
+   'ar': 'ar-SA',
+   'it': 'it-IT'
+ };
+ return new Intl.NumberFormat(localeMap[language], {
  style: 'currency',
  currency
  }).format(value);
@@ -108,8 +115,12 @@ export function formatFileSize(bytes: number): string {
 // Format date (locale-aware)
 export function formatDate(date: Date | string, language: Language = 'en'): string {
  const dateObj = typeof date === 'string' ? new Date(date) : date;
- const locale = language === 'ar' ? 'ar-SA' : 'en-US';
- return new Intl.DateTimeFormat(locale, {
+ const localeMap: Record<Language, string> = {
+   'en': 'en-US',
+   'ar': 'ar-SA',
+   'it': 'it-IT'
+ };
+ return new Intl.DateTimeFormat(localeMap[language], {
  year: 'numeric',
  month: 'long',
  day: 'numeric'

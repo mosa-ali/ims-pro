@@ -31,7 +31,7 @@ import {
  Calendar, MapPin, User, FileText, Wrench, ArrowRightLeft, XCircle,
  Building, Tag, Clock, AlertTriangle, CheckCircle, Shield
 } from "lucide-react";
-import { useTranslation } from '@/i18n/useTranslation';
+import { useTranslation } from '@/i18n/TranslationProvider';
 import { BackButton } from "@/components/BackButton";
 
 // ============================================================================
@@ -91,7 +91,7 @@ function InfoField({ label, value, icon: Icon }: { label: string; value: string 
 // MAIN COMPONENT
 // ============================================================================
 export default function AssetDetail() {
- const { t } = useTranslation();
+ const t = useTranslation();
  const { id } = useParams<{ id: string }>();
  const assetId = parseInt(id || "0", 10);
  const navigate = useNavigate();

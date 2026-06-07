@@ -71,7 +71,7 @@ import {
  Area,
  AreaChart
 } from 'recharts';
-import { useTranslation } from '@/i18n/useTranslation';
+import { useTranslation } from '@/i18n/TranslationProvider';
 import { BackButton } from "@/components/BackButton";
 
 // Chart colors
@@ -91,7 +91,7 @@ const COLORS = {
 const PIE_COLORS = [COLORS.achieved, COLORS.onTrack, COLORS.atRisk, COLORS.offTrack];
 
 export function MEALReports() {
- const { t } = useTranslation();
+ const t = useTranslation();
  const { language, isRTL } = useLanguage();
  const { currentOrganization } = useOrganization();
  const { user } = useAuth();

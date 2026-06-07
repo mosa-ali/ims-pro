@@ -13,7 +13,7 @@
 
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useState } from 'react';
-import { useTranslation } from '@/i18n/useTranslation';
+import { useTranslation } from '@/i18n/TranslationProvider';
 import { useLocation, Link } from 'wouter';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';

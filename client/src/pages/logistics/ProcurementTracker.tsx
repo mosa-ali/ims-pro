@@ -17,11 +17,11 @@ import { Search, Download, FileText, ShoppingCart, Package, CheckCircle, Clock, 
 import { Link, useLocation } from "wouter";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { format } from "date-fns";
-import { useTranslation } from '@/i18n/useTranslation';
+import { useTranslation } from '@/i18n/TranslationProvider';
 import { BackButton } from "@/components/BackButton";
 
 export default function ProcurementTracker() {
- const { t } = useTranslation();
+ const t = useTranslation();
  const { user } = useAuth();
  const { isRTL } = useLanguage();
  const [, navigate] = useLocation();

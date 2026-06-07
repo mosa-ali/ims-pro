@@ -6,14 +6,16 @@
 import { useState, useEffect, useCallback } from "react";
 import { useLanguage } from '@/contexts/LanguageContext';
 
-type Language = "en" | "ar";
+
+export type Language = 'en' | 'ar' | 'it';
+
 
 interface TranslationContext {
- language: Language;
- isRTL: boolean;
- setLanguage: (lang: Language) => void;
- t: (key: string, fallback?: string) => string;
- dir: "ltr" | "rtl";
+  t: (key: string, fallback?: string) => string;
+  language: Language;
+  setLanguage: (lang: Language) => void;
+  isRTL: boolean;
+  dir: "ltr" | "rtl";
 }
 
 // Simple translations for common UI elements
@@ -276,50 +278,142 @@ const translations: Record<Language, Record<string, string>> = {
  "webhook.management.testSuccess": "تم إرسال اختبار Webhook بنجاح",
  "webhook.management.testError": "فشل إرسال اختبار Webhook",
  },
+
+  it: {
+    // Common
+    "common.loading": "Caricamento...",
+    "common.save": "Salva",
+    "common.cancel": "Annulla",
+    "common.delete": "Elimina",
+    "common.edit": "Modifica",
+    "common.view": "Visualizza",
+    "common.add": "Aggiungi",
+    "common.search": "Cerca...",
+    "common.export": "Esporta",
+    "common.import": "Importa",
+    "common.print": "Stampa",
+    "common.back": "Indietro",
+    "common.next": "Avanti",
+    "common.previous": "Precedente",
+    "common.submit": "Invia",
+    "common.confirm": "Conferma",
+    "common.actions": "Azioni",
+    "common.status": "Stato",
+    "common.date": "Data",
+    "common.amount": "Importo",
+    "common.total": "Totale",
+    "common.description": "Descrizione",
+    "common.notes": "Note",
+    "common.attachments": "Allegati",
+    "common.required": "Obbligatorio",
+    "common.optional": "Facoltativo",
+    "common.all": "Tutti",
+    "common.none": "Nessuno",
+    "common.yes": "Sì",
+    "common.no": "No",
+
+    // Project Form
+    "organization.projectForm.createNewProject": "Crea Nuovo Progetto",
+    "organization.projectForm.editProject": "Modifica Progetto",
+    "organization.projectForm.projectCode": "Codice Progetto",
+    "organization.projectForm.projectCodePlaceholder": "es. PRJ-001",
+    "organization.projectForm.projectTitle": "Titolo Progetto",
+    "organization.projectForm.projectTitlePlaceholder": "Inserisci il titolo del progetto",
+    "organization.projectForm.status": "Stato",
+    "organization.projectForm.startDate": "Data Inizio",
+    "organization.projectForm.endDate": "Data Fine",
+    "organization.projectForm.totalBudget": "Budget Totale",
+    "organization.projectForm.currency": "Valuta",
+    "organization.projectForm.sectors": "Settori",
+    "organization.projectForm.donor": "Donatore",
+    "organization.projectForm.donorPlaceholder": "Inserisci il nome del donatore",
+    "organization.projectForm.implementingPartner": "Partner Esecutore",
+    "organization.projectForm.partnerPlaceholder": "Inserisci il nome del partner",
+    "organization.projectForm.location": "Località",
+    "organization.projectForm.locationPlaceholder": "Inserisci la località del progetto",
+    "organization.projectForm.description": "Descrizione",
+    "organization.projectForm.descriptionPlaceholder": "Inserisci la descrizione del progetto",
+    "organization.projectForm.required": "*",
+    "organization.projectForm.planning": "Pianificazione",
+    "organization.projectForm.active": "Attivo",
+    "organization.projectForm.onHold": "Sospeso",
+    "organization.projectForm.completed": "Completato",
+    "organization.projectForm.cancelled": "Annullato",
+    "organization.projectForm.ongoing": "In Corso",
+    "organization.projectForm.planned": "Pianificato",
+    "organization.projectForm.notStarted": "Non Avviato",
+    "organization.projectForm.cancel": "Annulla",
+    "organization.projectForm.save": "Salva Progetto",
+    "organization.projectForm.saving": "Salvataggio...",
+    "organization.projectForm.updateProject": "Aggiorna Progetto",
+    "organization.projectForm.createProject": "Crea Progetto",
+
+    "organization.projectForm.validation.codeRequired":
+      "Il codice progetto è obbligatorio",
+    "organization.projectForm.validation.titleRequired":
+      "Il titolo del progetto è obbligatorio",
+    "organization.projectForm.validation.startDateRequired":
+      "La data di inizio è obbligatoria",
+    "organization.projectForm.validation.endDateRequired":
+      "La data di fine è obbligatoria",
+    "organization.projectForm.validation.budgetPositive":
+      "Il budget deve essere maggiore di 0",
+    "organization.projectForm.validation.sectorsRequired":
+      "È richiesto almeno un settore",
+    "organization.projectForm.validation.endDateAfterStart":
+      "La data di fine deve essere successiva alla data di inizio",
+
+    // Onboarding Dashboard
+    "onboarding.dashboard.title": "Dashboard Onboarding",
+    "onboarding.dashboard.subtitle":
+      "Monitora lo stato di onboarding Microsoft 365 delle organizzazioni",
+    "onboarding.dashboard.totalOrganizations":
+      "Totale Organizzazioni",
+    "onboarding.dashboard.notConnected": "Non Connesso",
+    "onboarding.dashboard.pendingConsent":
+      "Consenso in Attesa",
+    "onboarding.dashboard.connected": "Connesso",
+    "onboarding.dashboard.error": "Errore",
+
+    // Webhook Management
+    "webhook.management.title": "Gestione Webhook",
+    "webhook.management.subtitle":
+      "Registra e monitora endpoint webhook",
+    "webhook.management.createWebhook": "Crea Webhook",
+    "webhook.management.webhookUrl": "URL Webhook",
+    "webhook.management.eventTypes": "Tipi di Evento",
+    "webhook.management.testWebhook": "Test Webhook",
+    "webhook.management.deleteWebhook": "Elimina Webhook",
+  }
 };
 
 const STORAGE_KEY = "ims_language";
 
-export function useTranslation(): TranslationContext {
- const [language, setLanguageState] = useState<Language>(() => {
- if (typeof window !== "undefined") {
- const stored = localStorage.getItem(STORAGE_KEY);
- if (stored === "ar" || stored === "en") return stored;
- // Auto-detect from browser
- const browserLang = navigator.language.toLowerCase();
- if (browserLang.startsWith("ar")) return "ar";
- }
- return "en";
- });
+export function useTranslation() {
+  const { language } = useLanguage();
 
- const isRTL = language === "ar";
- const dir = isRTL ? "rtl" : "ltr";
-
- useEffect(() => {
- // Update document direction
- document.documentElement.dir = dir;
- document.documentElement.lang = language;
- localStorage.setItem(STORAGE_KEY, language);
- }, [language, dir]);
-
- const setLanguage = useCallback((lang: Language) => {
- setLanguageState(lang);
- }, []);
-
- const t = useCallback(
- (key: string, fallback?: string): string => {
- return translations[language]?.[key] || fallback || key;
- },
- [language]
- );
-
- return {
- language,
- isRTL,
- setLanguage,
- t,
- dir,
- };
+  return translations[language as Language] || translations.en;
 }
 
-export default useTranslation;
+/**
+ * Hook to access translation utilities
+ * Returns helpers for translations along with the translation object
+ */
+export function useTranslationTools() {
+  const {
+    language,
+    isRTL,
+    direction,
+    setLanguage,
+  } = useLanguage();
+
+  const t = useTranslation();
+
+  return {
+    language,
+    isRTL,
+    direction,
+    setLanguage,
+    t,
+  };
+}

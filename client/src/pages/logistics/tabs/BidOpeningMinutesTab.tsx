@@ -4,7 +4,7 @@
  * Features: Committee members, bid summary, irregularities, declaration
  * Bilingual EN/AR support with RTL
  */
-import { useTranslation } from '@/i18n/useTranslation';
+import { useTranslation } from '@/i18n/TranslationProvider';
 import { useState, useEffect } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { trpc } from "@/lib/trpc";
@@ -23,7 +23,7 @@ interface BidOpeningMinutesTabProps { purchaseRequestId: number; prNumber?: stri
 
 export default function BidOpeningMinutesTab({ purchaseRequestId, prNumber }: BidOpeningMinutesTabProps) {
  const { language, isRTL} = useLanguage();
-  const { t } = useTranslation();
+  const t = useTranslation();
 
  const [createDialogOpen, setCreateDialogOpen] = useState(false);
  const [sessionForm, setSessionForm] = useState({

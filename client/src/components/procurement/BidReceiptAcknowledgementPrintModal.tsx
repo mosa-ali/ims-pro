@@ -6,7 +6,7 @@
 import React, { useState } from 'react';
 import { X, Printer, Languages } from 'lucide-react';
 import { BidReceiptAcknowledgementPrint } from './BidReceiptAcknowledgementPrint';
-import { useTranslation } from '@/i18n/useTranslation';
+import { useTranslation } from '@/i18n/TranslationProvider';
 import type { ProcurementRequest, TenderBidder } from '@/types/logistics.types';
 import { useLanguage } from '@/contexts/LanguageContext';
 interface Props {
@@ -26,7 +26,7 @@ export function BidReceiptAcknowledgementPrintModal({
  onClose,
  onPrinted 
 }: Props) {
- const { t } = useTranslation();
+ const t = useTranslation();
   const { isRTL } = useLanguage(); 
  const [language, setLanguage] = useState<'en' | 'ar'>('en');
 

@@ -34,7 +34,7 @@ interface Props {
 }
 
 export function EditCurrentSalaryModal({ employee, onClose, onSave }: Props) {
-  const { t } = useTranslation();
+  const t = useTranslation();
   const { language, isRTL } = useLanguage();
   const { currentOrganizationId } = useOrganization();
   const { currentOperatingUnitId } = useOperatingUnit();

@@ -3,7 +3,7 @@
  * Bilingual EN/AR support
  * DN is immutable and cannot be edited
  */
-import { useTranslation } from '@/i18n/useTranslation';
+import { useTranslation } from '@/i18n/TranslationProvider';
 import { useLanguage } from "@/contexts/LanguageContext";
 import { trpc } from "@/lib/trpc";
 import { Button } from "@/components/ui/button";
@@ -26,7 +26,7 @@ interface DeliveryNoteViewerProps {
 
 export default function DeliveryNoteViewer({ dnId, onClose }: DeliveryNoteViewerProps) {
  const { language, isRTL} = useLanguage();
-  const { t } = useTranslation();
+  const t = useTranslation();
 
  const { data: dn, isLoading } = trpc.logistics.procurementDn.getById.useQuery(
  { id: dnId },

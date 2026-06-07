@@ -12,7 +12,7 @@ import { X, Save, Upload, Briefcase } from 'lucide-react';
 import { useLanguage } from '@/app/contexts/LanguageContext';
 import { StaffMember } from '../types/hrTypes';
 import { staffService } from '@/app/services/hrService';
-import { useTranslation } from '@/i18n/useTranslation';
+import { useTranslation } from '@/i18n/TranslationProvider';
 
 interface Props {
  employee: StaffMember;
@@ -22,7 +22,7 @@ interface Props {
 
 export function EditEmploymentContractModal({
  employee, onClose, onSave }: Props) {
- const { t } = useTranslation();
+ const t = useTranslation();
  const { language, isRTL } = useLanguage();
  
  // ONLY contract & employment fields (NO identity, salary, etc.)

@@ -18,7 +18,7 @@ import { AlertCircle, Loader2, Plus } from 'lucide-react';
 import { trpc } from '@/lib/trpc';
 import { useAuth } from '@/_core/hooks/useAuth';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { useTranslation } from '@/i18n/useTranslation';
+import { useTranslation } from '@/i18n/TranslationProvider';
 import { toast } from 'sonner';
 import { InterviewScheduleForm } from './InterviewScheduleForm';
 
@@ -28,7 +28,7 @@ interface Props {
 }
 
 export function InterviewScheduling({ language, isRTL }: Props) {
-  const { t } = useTranslation();
+  const t = useTranslation();
   const { user } = useAuth();
   const { isRTL: contextIsRTL } = useLanguage();
   const dir = isRTL || contextIsRTL ? 'rtl' : 'ltr';

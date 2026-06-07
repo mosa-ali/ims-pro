@@ -9,7 +9,7 @@ import { CheckCircle, Clock, XCircle, Lock, AlertCircle } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/_core/hooks/useAuth';
 import { approvalFlowService, type ApprovalFlow, type ApprovalStep } from '@/services/approvalFlowService';
-import { useTranslation } from '@/i18n/useTranslation';
+import { useTranslation } from '@/i18n/TranslationProvider';
 interface ApprovalPanelProps {
  flow: ApprovalFlow;
  onApprove?: () => void;
@@ -19,7 +19,7 @@ interface ApprovalPanelProps {
 
 export function ApprovalPanel({
  flow, onApprove, onReject, compact = false }: ApprovalPanelProps) {
- const { t } = useTranslation();
+ const t = useTranslation();
  const { language, isRTL } = useLanguage();
  const { user } = useAuth();
 const [showRejectModal, setShowRejectModal] = useState(false);

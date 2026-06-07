@@ -1,4 +1,4 @@
-import { useTranslation } from '@/i18n/useTranslation';
+import { useTranslation } from '@/i18n/TranslationProvider';
 import { useState } from "react";
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Button } from "@/components/ui/button";
@@ -15,7 +15,7 @@ import { toast } from "sonner";
  */
 export default function OperatingUnitsPage() {
  const { language, isRTL} = useLanguage();
-  const { t } = useTranslation();
+  const t = useTranslation();
 const { data: organizations = [], isLoading: orgsLoading } = trpc.ims.organizations.list.useQuery();
  
  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);

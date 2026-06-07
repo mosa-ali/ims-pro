@@ -1,4 +1,4 @@
-import { useTranslation } from '@/i18n/useTranslation';
+import { useTranslation } from '@/i18n/TranslationProvider';
 import { useState, useEffect } from "react";
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useCreateRisk, useUpdateRisk } from "@/hooks/useRisksData";
@@ -30,7 +30,7 @@ const ALLOWED_FILE_TYPES = [
 
 export function RiskFormDialog({ open, onOpenChange, risk, mode }: RiskFormDialogProps) {
  const { language, isRTL} = useLanguage();
-  const { t } = useTranslation();
+  const t = useTranslation();
  const createRisk = useCreateRisk();
  const updateRisk = useUpdateRisk();
 

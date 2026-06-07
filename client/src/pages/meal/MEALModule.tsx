@@ -34,7 +34,7 @@ import {
 import { useLanguage } from '@/contexts/LanguageContext';
 import { usePermissions } from '@/hooks/usePermissions';
 import { Lock } from 'lucide-react';
-import { useTranslation } from '@/i18n/useTranslation';
+import { useTranslation } from '@/i18n/TranslationProvider';
 
 interface MEALModuleCard {
  id: string;
@@ -47,7 +47,7 @@ interface MEALModuleCard {
 }
 
 export function MEALModule() {
- const { t } = useTranslation();
+ const t = useTranslation();
  const { language, isRTL } = useLanguage();
  const navigate = useNavigate();
  const { canScreen, canModule, isAdmin } = usePermissions();

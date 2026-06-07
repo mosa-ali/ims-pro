@@ -25,7 +25,7 @@ import { Badge } from '@/components/ui/badge';
 import { FileIcon, FolderIcon, UploadIcon, SearchIcon, ShareIcon, DownloadIcon, TrashIcon, MoreVerticalIcon } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { toast } from 'sonner';
-import { useTranslation } from '@/i18n/useTranslation';
+import { useTranslation } from '@/i18n/TranslationProvider';
 
 interface SharePointSite {
   id: string;
@@ -54,7 +54,7 @@ interface DriveItem {
 
 export default function DocumentManagement() {
 
-  const { t } = useTranslation();  const { user, loading } = useAuth();
+  const t = useTranslation();  const { user, loading } = useAuth();
   const { language, isRTL } = useLanguage();
   const [sites, setSites] = useState<SharePointSite[]>([]);
   const [selectedSite, setSelectedSite] = useState<string>('');

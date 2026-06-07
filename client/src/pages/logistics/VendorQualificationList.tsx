@@ -47,14 +47,14 @@ import {
 } from 'lucide-react';
 import { BackButton } from "@/components/BackButton";
 import { useNavigate, useLocation } from '@/lib/router-compat';
-import { useTranslation } from '@/i18n/useTranslation';
+import { useTranslation } from '@/i18n/TranslationProvider';
 
 type QualificationStatusFilter = 'all' | 'not_evaluated' | 'draft' | 'qualified' | 'conditional' | 'not_qualified' | 'rejected';
 type VendorTypeFilter = 'all' | 'supplier' | 'contractor' | 'service_provider' | 'consultant' | 'other';
 
 function getStatusBadge(status: string, isRTL: boolean) {
 
-  const { t } = useTranslation();  switch (status) {
+  const t = useTranslation();  switch (status) {
     case 'qualified':
       return (
         <Badge className="bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-400 gap-1">

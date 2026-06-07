@@ -18,7 +18,7 @@
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Image as ImageIcon, RefreshCw, Check, AlertCircle, Clock, Upload, X, Download, Eye } from 'lucide-react';
 import { useState, useEffect } from 'react';
-import { useTranslation } from '@/i18n/useTranslation';
+import { useTranslation } from '@/i18n/TranslationProvider';
 
 interface Props {
  survey: any;
@@ -46,7 +46,7 @@ interface ImageData {
 
 export function DataGallerySubTab({
  survey }: Props) {
- const { t } = useTranslation();
+ const t = useTranslation();
  const { language, isRTL } = useLanguage();
  const [submissions, setSubmissions] = useState<Submission[]>([]);
  const [imageData, setImageData] = useState<ImageData[]>([]);

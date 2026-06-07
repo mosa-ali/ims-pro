@@ -6,7 +6,7 @@ import { X, Printer } from 'lucide-react';
 import { RFQPrint } from './RFQPrint';
 import { ModalOverlay } from '@/components/ui/ModalOverlay';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { useTranslation } from '@/i18n/useTranslation';
+import { useTranslation } from '@/i18n/TranslationProvider';
 import type { RequestForQuotation } from '@/services/rfqService';
 
 interface Props {
@@ -20,7 +20,7 @@ export function RFQPrintModal({
  onClose,
  rfq
 }: Props) {
- const { t } = useTranslation();
+ const t = useTranslation();
  const { language, isRTL } = useLanguage();
  const labels = {
  en: {

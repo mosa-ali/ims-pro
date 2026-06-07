@@ -44,11 +44,11 @@ import {
   Download,
   Upload,
 } from 'lucide-react';
-import { useTranslation } from '@/i18n/useTranslation';
+import { useTranslation } from '@/i18n/TranslationProvider';
 import { AssetImportExportDialog, type ImportResult, type TemplateColumn } from '@/components/AssetImportExportDialog';
 
 export default function AssetTransfers() {
-  const { t } = useTranslation();
+  const t = useTranslation();
   const { language, isRTL } = useLanguage();
   const { currentOrganization, currentOperatingUnit } = useOrganization();
   const organizationId = currentOrganization?.id || 30001;

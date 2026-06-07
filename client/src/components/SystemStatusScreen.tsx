@@ -1,6 +1,6 @@
 import React from 'react';
 import { AlertTriangle, Loader2, RefreshCw, ShieldAlert, CheckCircle2 } from 'lucide-react';
-import { useTranslation } from '@/i18n/useTranslation';
+import { useTranslation } from '@/i18n/TranslationProvider';
 
 interface SystemStatusScreenProps {
  status: 'INITIALIZING' | 'UNAVAILABLE' | 'ERROR' | 'READY';

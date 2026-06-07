@@ -8,7 +8,7 @@ import { saveAs } from 'file-saver';
 import { toast } from 'sonner';
 import { PreImportPreviewDialog } from '@/components/PreImportPreviewDialog';
 import { pssSessionsImportConfig, validateImportRow, parseExcelToRows } from '@/config/caseManagementImportConfig';
-import { useTranslation } from '@/i18n/useTranslation';
+import { useTranslation } from '@/i18n/TranslationProvider';
 
 interface PSSSessionsProps {
  projectId: number;
@@ -16,7 +16,7 @@ interface PSSSessionsProps {
 
 export function PSSSessions({
  projectId }: PSSSessionsProps) {
- const { t } = useTranslation();
+ const t = useTranslation();
  const { isRTL } = useLanguage();
  const utils = trpc.useUtils();
  

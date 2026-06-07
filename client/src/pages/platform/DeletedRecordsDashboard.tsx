@@ -3,7 +3,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { trpc } from '@/lib/trpc';
 import { BarChart3, PieChart, TrendingUp, RefreshCw, Trash2, RotateCcw, Shield, AlertTriangle, Calendar, ArrowUpRight, ArrowDownRight } from 'lucide-react';
-import { useTranslation } from '@/i18n/useTranslation';
+import { useTranslation } from '@/i18n/TranslationProvider';
 
 const labels = {
  en: {
@@ -167,7 +167,7 @@ function SimpleTrendLine({ data }: { data: { date: string; count: number }[] }) 
 }
 
 export default function DeletedRecordsDashboard() {
- const { t } = useTranslation();
+ const t = useTranslation();
  const { language, isRTL } = useLanguage();
  const { user } = useAuth();
  const labels = language === 'ar' ? labels.ar : labels.en;

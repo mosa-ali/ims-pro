@@ -13,7 +13,7 @@
 import { X, Mail, AlertCircle, Clock, User } from 'lucide-react';
 import { EmailNotification } from './emailNotificationService';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { useTranslation } from '@/i18n/useTranslation';
+import { useTranslation } from '@/i18n/TranslationProvider';
 
 interface Props {
  notification: EmailNotification;
@@ -24,7 +24,7 @@ interface Props {
 
 export function EmailPreviewModal({
  notification, language, isRTL, onClose }: Props) {
- const { t } = useTranslation();
+ const t = useTranslation();
  const formatDateTime = (dateString: string) => {
  return new Date(dateString).toLocaleString(t.hrLeave.en, {
  year: 'numeric',

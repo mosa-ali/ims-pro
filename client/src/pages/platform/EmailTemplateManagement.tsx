@@ -52,7 +52,7 @@ interface TemplateFormData {
 }
 
 export default function EmailTemplateManagement() {
-  const { t } = useTranslation();
+  const t = useTranslation();
   const [, setLocation] = useLocation();
   const [organizationId, setOrganizationId] = useState<number | null>(null);
   const [selectedTemplate, setSelectedTemplate] = useState<EmailTemplate | null>(null);

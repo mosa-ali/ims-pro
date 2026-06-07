@@ -8,10 +8,10 @@ import { useAuth } from '@/_core/hooks/useAuth';
 import { useOrganization } from '@/contexts/OrganizationContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useRoleDisplayName, useModulePermissions } from '@/hooks/usePermissions';
-import { useTranslation } from '@/i18n/useTranslation';
+import { useTranslation } from '@/i18n/TranslationProvider';
 
 export function MainDashboard() {
- const { t } = useTranslation();
+ const t = useTranslation();
  const { user, logout } = useAuth();
  const { currentOrganization, currentRole, availableOrganizations, switchOrganization } = useOrganization();
  const { isRTL } = useLanguage();

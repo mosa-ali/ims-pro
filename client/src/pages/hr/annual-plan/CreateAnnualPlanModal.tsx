@@ -19,7 +19,7 @@
 import { useState, useMemo } from 'react';
 import { X, Calendar, Building2, Copy, FileText, AlertCircle } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { useTranslation } from '@/i18n/useTranslation';
+import { useTranslation } from '@/i18n/TranslationProvider';
 import { useCreateAnnualPlan, useAnnualPlans } from '@/hooks/useAnnualPlanning';
 import { useOrganization } from '@/contexts/OrganizationContext';
 import { useOperatingUnit } from '@/contexts/OperatingUnitContext';
@@ -40,7 +40,7 @@ export function CreateAnnualPlanModal({
  language,
  isRTL
 }: CreateAnnualPlanModalProps) {
- const { t } = useTranslation();
+ const t = useTranslation();
  const { currentOrganization } = useOrganization();
  const { currentOperatingUnit } = useOperatingUnit();
  

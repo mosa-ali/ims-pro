@@ -33,7 +33,7 @@ import {
  Wallet, TrendingUp, Layers, Ban, FolderOpen
 } from "lucide-react";
 import { EvidencePanel } from "@/components/EvidencePanel";
-import { useTranslation } from '@/i18n/useTranslation';
+import { useTranslation } from '@/i18n/TranslationProvider';
 import { BackButton } from "@/components/BackButton";
 
 // ============================================================================
@@ -43,7 +43,7 @@ import { BackButton } from "@/components/BackButton";
 // MAIN COMPONENT
 // ============================================================================
 export default function AdvanceDetail() {
- const { t } = useTranslation();
+ const t = useTranslation();
  const { id } = useParams<{ id: string }>();
  const advanceId = parseInt(id || "0", 10);
  const navigate = useNavigate();

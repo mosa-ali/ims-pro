@@ -15,7 +15,7 @@
 import { useLanguage } from '@/contexts/LanguageContext';
 import { MapPin } from 'lucide-react';
 import { useState, useEffect } from 'react';
-import { useTranslation } from '@/i18n/useTranslation';
+import { useTranslation } from '@/i18n/TranslationProvider';
 
 interface Props {
  survey: any;
@@ -36,7 +36,7 @@ interface Submission {
 
 export function DataMapSubTab({
  survey }: Props) {
- const { t } = useTranslation();
+ const t = useTranslation();
  const { language, isRTL } = useLanguage();
  const [submissions, setSubmissions] = useState<Submission[]>([]);
  const [gpsData, setGpsData] = useState<any[]>([]);

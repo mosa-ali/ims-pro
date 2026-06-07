@@ -14,7 +14,7 @@ import { X, Printer, DollarSign } from 'lucide-react';
 import { StaffMember } from '../types/hrTypes';
 import { useState, useEffect } from 'react';
 import { getOrganizationSettings } from '@/app/services/organizationService';
-import { useTranslation } from '@/i18n/useTranslation';
+import { useTranslation } from '@/i18n/TranslationProvider';
 import type { PayrollRecord } from '../types/hrTypes';
 import { useLanguage } from '@/contexts/LanguageContext';
 interface Props {
@@ -26,7 +26,7 @@ interface Props {
 
 export function PayrollSlipPrintModal({
  payrollRecord, employee, payPeriod, onClose }: Props) {
- const { t } = useTranslation();
+ const t = useTranslation();
  const [language] = useState<'en' | 'ar'>('en');
  const [isRTL] = useState(false);
  const orgSettings = getOrganizationSettings();

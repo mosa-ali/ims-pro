@@ -26,7 +26,7 @@ import { calculateLeaveDays, validateLeaveRequest } from './leaveCalculations';
 import { emailNotificationService, EmailNotification } from './emailNotificationService';
 import { EmailPreviewModal } from './EmailPreviewModal';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { useTranslation } from '@/i18n/useTranslation';
+import { useTranslation } from '@/i18n/TranslationProvider';
 
 interface Props {
  employee: StaffMember;
@@ -39,7 +39,7 @@ interface Props {
 
 export function LeaveRequestForm({
  employee, language, isRTL, onClose, onSave, editingRequest }: Props) {
- const { t } = useTranslation();
+ const t = useTranslation();
  const balance = leaveBalanceService.calculateBalance(employee);
  
  const [formData, setFormData] = useState({

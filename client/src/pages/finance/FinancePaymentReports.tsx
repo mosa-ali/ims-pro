@@ -18,12 +18,12 @@ import {
  FileText, Users, Banknote, ArrowUpRight, ArrowDownRight
 } from 'lucide-react';
 import { Link } from 'wouter';
-import { useTranslation } from '@/i18n/useTranslation';
+import { useTranslation } from '@/i18n/TranslationProvider';
 import { BackButton } from "@/components/BackButton";
 
 // Translations
 export default function FinancePaymentReports() {
- const { t } = useTranslation();
+ const t = useTranslation();
  const { currentOrganization, currentOperatingUnit} = useOperatingUnit();
  const { language, isRTL} = useLanguage();
 

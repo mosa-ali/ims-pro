@@ -7,14 +7,14 @@ import { ProposalDevelopment } from '@/pages/organization/proposals/ProposalDeve
 import { useLocation } from 'wouter';
 import { trpc } from '@/lib/trpc';
 import { useAuth } from '@/_core/hooks/useAuth';
-import { useTranslation } from '@/i18n/useTranslation';
+import { useTranslation } from '@/i18n/TranslationProvider';
 import { BackButton } from "@/components/BackButton";
 
 // All data is fetched from the database via tRPC queries
 // No mock data is used - see PipelineManagement and ProposalDevelopment components for data fetching
 
 export function ProposalPipeline() {
- const { t } = useTranslation();
+ const t = useTranslation();
  const { isRTL } = useLanguage();
  const [, setLocation] = useLocation();
  const [activeTab, setActiveTab] = useState<'pipeline' | 'proposals'>('pipeline');

@@ -22,7 +22,7 @@ import { trpc } from '@/lib/trpc';
 import { Upload, Download, FileSpreadsheet, CheckCircle, AlertTriangle, X, Loader2, Info, FileText, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useNavigate } from '@/lib/router-compat';
-import { useTranslation } from '@/i18n/useTranslation';
+import { useTranslation } from '@/i18n/TranslationProvider';
 import { BackButton } from "@/components/BackButton";
 
 interface ParsedRow {
@@ -45,7 +45,7 @@ interface ImportResult {
 }
 
 export function BulkIndicatorDataImport() {
- const { t } = useTranslation();
+ const t = useTranslation();
  const { language, isRTL} = useLanguage();
  
  const navigate = useNavigate();

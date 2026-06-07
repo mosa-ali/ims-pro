@@ -38,7 +38,7 @@ import {
 } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/_core/hooks/useAuth';
-import { useTranslation } from '@/i18n/useTranslation';
+import { useTranslation } from '@/i18n/TranslationProvider';
 
 export type ImportModule = 
  | 'activities'
@@ -95,7 +95,7 @@ export function UnifiedImportWizard({
  projectName,
  onImportComplete
 }: ImportWizardProps) {
- const { t } = useTranslation();
+ const t = useTranslation();
  const { language, isRTL } = useLanguage();
  const { user } = useAuth();
 

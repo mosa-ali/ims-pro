@@ -9,7 +9,7 @@ import { User, Mail, Phone, MapPin, Calendar, Building2, Briefcase, Edit } from 
 import { StaffMember } from '../types/hrTypes';
 import { EditIdentityProfileModal } from '../modals/EditIdentityProfileModal';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { useTranslation } from '@/i18n/useTranslation';
+import { useTranslation } from '@/i18n/TranslationProvider';
 
 interface Props {
  employee: StaffMember;
@@ -20,7 +20,7 @@ interface Props {
 
 export function IdentityPersonalCard({
  employee, language, isRTL, onEmployeeUpdate }: Props) {
- const { t } = useTranslation();
+ const t = useTranslation();
  const [showEditModal, setShowEditModal] = useState(false);
 
  const handleEmployeeUpdated = (updated: StaffMember) => {

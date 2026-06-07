@@ -1,7 +1,7 @@
 import { Users, TrendingUp, PieChart } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { translateEntityName } from '@/utils/translateEntityName';
-import { useTranslation } from '@/i18n/useTranslation';
+import { useTranslation } from '@/i18n/TranslationProvider';
 
 interface WorkforceStats {
  activeCount: number;
@@ -19,7 +19,7 @@ interface Props {
 
 export function WorkforceAnalytics({
  data }: Props) {
- const { t } = useTranslation();
+ const t = useTranslation();
  const { language, isRTL } = useLanguage();
  const localT = {
  workforceAnalytics: t.orgReports.workforceAnalytics,

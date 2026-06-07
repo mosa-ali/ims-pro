@@ -6,7 +6,7 @@
 import { X } from 'lucide-react';
 import { ModalOverlay } from '@/app/components/ui/ModalOverlay';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { useTranslation } from '@/i18n/useTranslation';
+import { useTranslation } from '@/i18n/TranslationProvider';
 
 interface Props {
  isOpen: boolean;
@@ -63,7 +63,7 @@ export function PayrollCalculatorModal({
  setCalcOtherDed,
  formatCurrency
 }: Props) {
- const { t } = useTranslation();
+ const t = useTranslation();
  if (!isOpen) return null;
 
  const labels = {

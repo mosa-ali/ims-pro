@@ -7,7 +7,7 @@
  * ✅ Quotation discrepancy alerts
  * Bilingual EN/AR support with RTL
  */
-import { useTranslation } from '@/i18n/useTranslation';
+import { useTranslation } from '@/i18n/TranslationProvider';
 import { useState, useMemo } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { trpc } from "@/lib/trpc";
@@ -32,7 +32,7 @@ interface BidAnalysisTabProps { purchaseRequestId: number; prNumber?: string; pr
 
 export default function BidAnalysisTab({ purchaseRequestId, prNumber, currency = "USD" }: BidAnalysisTabProps) {
  const { language, isRTL} = useLanguage();
-  const { t } = useTranslation();
+  const t = useTranslation();
 
  const [addBidderOpen, setAddBidderOpen] = useState(false);
  const [bidderForm, setBidderForm] = useState({ name: "", contactPerson: "", phone: "", email: "", totalBidAmount: "", submissionDate: "", bidReference: "" });

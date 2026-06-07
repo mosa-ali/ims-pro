@@ -9,7 +9,7 @@ import { GraduationCap, Plus, Edit, Trash2, Save } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import type { HRAnnualPlan, TrainingPlanEntry } from '@shared/types/hrAnnualPlanning';
 
-import { useTranslation } from '@/i18n/useTranslation';
+import { useTranslation } from '@/i18n/TranslationProvider';
 
 type Priority = 'High' | 'Medium' | 'Low';
 type TrainingType = 'Internal' | 'External';
@@ -22,7 +22,7 @@ interface TrainingPlanSectionProps {
 
 export function TrainingPlanSection({
  plan, isEditing, onUpdate }: TrainingPlanSectionProps) {
- const { t } = useTranslation();
+ const t = useTranslation();
  const { language, isRTL } = useLanguage();
  
  const [isAddingNew, setIsAddingNew] = useState(false);

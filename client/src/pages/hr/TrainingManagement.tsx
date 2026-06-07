@@ -50,7 +50,7 @@ import {
 , ArrowLeft, ArrowRight} from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import * as XLSX from 'xlsx';
-import { useTranslation } from '@/i18n/useTranslation';
+import { useTranslation } from '@/i18n/TranslationProvider';
 import { BackButton } from "@/components/BackButton";
 
 // ============================================================================
@@ -113,7 +113,7 @@ const trainingService = {
 // ============================================================================
 
 export function TrainingManagement() {
- const { t } = useTranslation();
+ const t = useTranslation();
  const { language, isRTL } = useLanguage();
  const navigate = useNavigate();
 

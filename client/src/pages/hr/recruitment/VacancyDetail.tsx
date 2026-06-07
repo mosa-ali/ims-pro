@@ -16,7 +16,7 @@
 import { X, Copy, Check, Loader2, AlertCircle } from 'lucide-react';
 import { trpc } from '@/lib/trpc';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { useTranslation } from '@/i18n/useTranslation';
+import { useTranslation } from '@/i18n/TranslationProvider';
 import { RecruitmentJob, JOB_STATUS_LABELS } from '@shared/types/recruitment-canonical';
 import { JOB_STATUS_COLORS } from '@shared/constants/recruitment-canonical';
 import { useState } from 'react';
@@ -30,7 +30,7 @@ interface Props {
 }
 
 export function VacancyDetail({ language, isRTL, vacancy, onClose }: Props) {
-  const { t } = useTranslation();
+  const t = useTranslation();
   const { isRTL: contextIsRTL } = useLanguage();
   const dir = isRTL || contextIsRTL ? 'rtl' : 'ltr';
   const [copiedRef, setCopiedRef] = useState<string | null>(null);

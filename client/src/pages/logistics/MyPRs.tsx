@@ -54,7 +54,7 @@ import {
  AlertTriangle,
 } from "lucide-react";
 import { Link, useLocation, useSearch } from "wouter";
-import { useTranslation } from '@/i18n/useTranslation';
+import { useTranslation } from '@/i18n/TranslationProvider';
 import { BackButton } from "@/components/BackButton";
 
 /* ── PR Status Badge ─────────────────────────────────────────────────── */
@@ -136,7 +136,7 @@ function ProcurementProgressBar({
 
 /* ── Main Component ──────────────────────────────────────────────────── */
 export default function MyPRs() {
- const { t } = useTranslation();
+ const t = useTranslation();
  const { user } = useAuth();
  const { currentOrganization } = useOrganization();
  const [, setLocation] = useLocation();

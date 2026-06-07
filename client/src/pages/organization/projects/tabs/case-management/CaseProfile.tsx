@@ -1,7 +1,7 @@
 import { useLanguage } from '@/contexts/LanguageContext';
 import { formatDate } from '@/utils/formatters';
 import { formatNumber, formatCurrency } from '@/utils/formatters';
-import { useTranslation } from '@/i18n/useTranslation';
+import { useTranslation } from '@/i18n/TranslationProvider';
 import { getCaseById, getPSSSessions, getCaseReferrals, getCaseActivities } from '@/services/caseManagementService';
 import { BackButton } from "@/components/BackButton";
 
@@ -12,7 +12,7 @@ interface CaseProfileProps {
 
 export function CaseProfile({
  caseId, onBack }: CaseProfileProps) {
- const { t } = useTranslation();
+ const t = useTranslation();
  const { language, isRTL } = useLanguage();
 const caseRecord = getCaseById(caseId);
  const pssSessions = getPSSSessions(caseId);

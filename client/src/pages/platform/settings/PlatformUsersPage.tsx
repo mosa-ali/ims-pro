@@ -44,7 +44,7 @@ import {
 import { trpc } from "@/lib/trpc";
 import { toast } from "sonner";
 import { format } from "date-fns";
-import { useTranslation } from '@/i18n/useTranslation';
+import { useTranslation } from '@/i18n/TranslationProvider';
 import { BackButton } from "@/components/BackButton";
 
 /**
@@ -71,7 +71,7 @@ interface PlatformUser {
 }
 
 export default function PlatformUsersPage() {
-  const { t } = useTranslation();
+  const t = useTranslation();
 const { direction, isRTL, language } = useLanguage();
 
  const [searchQuery, setSearchQuery] = useState("");

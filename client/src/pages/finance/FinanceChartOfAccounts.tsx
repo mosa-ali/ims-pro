@@ -10,7 +10,7 @@ import { BackButton } from "@/components/BackButton";
  * - GL accounts management within each category
  * - Full bilingual support (Arabic/English) with RTL/LTR
  */
-import { useTranslation } from '@/i18n/useTranslation';
+import { useTranslation } from '@/i18n/TranslationProvider';
 import { useState, useEffect, useCallback } from"react";
 import { useLanguage } from"@/contexts/LanguageContext";
 import { useOrganization } from"@/contexts/OrganizationContext";
@@ -76,7 +76,7 @@ const accountTypeIcons: Record<string, React.ReactNode> = {
 
 export default function FinanceChartOfAccounts() {
  const { language, isRTL} = useLanguage();
-  const { t } = useTranslation();
+  const t = useTranslation();
  const navigate = useNavigate();
  const { currentOrganization } = useOrganization();
  const { currentOperatingUnit } = useOperatingUnit();

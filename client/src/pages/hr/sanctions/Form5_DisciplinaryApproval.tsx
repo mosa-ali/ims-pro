@@ -23,11 +23,11 @@ import { CheckCircle, XCircle, Printer, Shield } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { DisciplinaryApproval, DisciplinaryCase, FinalDisciplinaryRecord, ApprovalDecision } from './types';
 import { sanctionsService } from './sanctionsService';
-import { useTranslation } from '@/i18n/useTranslation';
+import { useTranslation } from '@/i18n/TranslationProvider';
 import { BackButton } from "@/components/BackButton";
 
 export function Form5_DisciplinaryApproval() {
- const { t } = useTranslation();
+ const t = useTranslation();
  const { language, isRTL } = useLanguage();
  const navigate = useNavigate();
  const { caseRef } = useParams<{ caseRef: string }>();

@@ -3,7 +3,7 @@
  * Matrix UI for entering per-criterion scores for each bidder
  * Feeds data into both Bid Evaluation Checklist print and CBA print
  */
-import { useTranslation } from '@/i18n/useTranslation';
+import { useTranslation } from '@/i18n/TranslationProvider';
 import { useState, useEffect, useMemo, useCallback } from "react";
 import { trpc } from "@/lib/trpc";
 import { Button } from "@/components/ui/button";
@@ -47,7 +47,7 @@ interface ScoreEntry {
 }
 
 export default function BidEvaluationScoringTab({ purchaseRequestId, bidAnalysisId }: Props) {
-  const { t } = useTranslation();
+  const t = useTranslation();
   const { language, isRTL} = useLanguage();
  // Using sonner toast
  const utils = trpc.useUtils();

@@ -12,7 +12,7 @@
 import { Users } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import type { HRAnnualPlan, ExistingWorkforceEntry } from '@shared/types/hrAnnualPlanning';
-import { useTranslation } from '@/i18n/useTranslation';
+import { useTranslation } from '@/i18n/TranslationProvider';
 
 interface ExistingWorkforceSectionProps {
   plan: HRAnnualPlan;
@@ -22,7 +22,7 @@ interface ExistingWorkforceSectionProps {
 
 export function ExistingWorkforceSection({
   plan, isEditing, onUpdate }: ExistingWorkforceSectionProps) {
-  const { t } = useTranslation();
+  const t = useTranslation();
   const { language, isRTL } = useLanguage();
 
   const localT = {

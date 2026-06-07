@@ -1,4 +1,4 @@
-import { useTranslation } from '@/i18n/useTranslation';
+import { useTranslation } from '@/i18n/TranslationProvider';
 import { useState, useEffect } from "react";
 import { useLanguage } from '@/contexts/LanguageContext';
 import { trpc } from "@/lib/trpc";
@@ -83,7 +83,7 @@ export function OrganizationFormModal({
  mode,
 }: OrganizationFormModalProps) {
  const { language, isRTL} = useLanguage();
-  const { t } = useTranslation();
+  const t = useTranslation();
 const utils = trpc.useUtils();
 
  const [formData, setFormData] = useState<FormData>({

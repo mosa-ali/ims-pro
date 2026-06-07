@@ -3,7 +3,7 @@
 // Modal dialog for creating and editing projects
 // ============================================================================
 
-import { useTranslation } from '@/i18n/useTranslation';
+import { useTranslation } from '@/i18n/TranslationProvider';
 import { useState, useEffect } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { toInputDate } from '@/lib/safeDateUtils';
@@ -70,7 +70,7 @@ export function ProjectFormModal({
  isLoading = false,
 }: ProjectFormModalProps) {
  const { language, isRTL} = useLanguage();
-  const { t } = useTranslation();
+  const t = useTranslation();
 const [formData, setFormData] = useState<Omit<Project, 'id'>>({
  projectCode: '',
  title: '',

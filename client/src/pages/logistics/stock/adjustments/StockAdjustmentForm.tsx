@@ -29,7 +29,7 @@ interface AdjustmentLine {
 
 export default function StockAdjustmentForm() {
   const { isRTL } = useLanguage();
-  const { t } = useTranslation();
+  const t = useTranslation();
   const [, setLocation] = useLocation();
 
   type AdjustmentType =

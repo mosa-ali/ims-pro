@@ -7,7 +7,7 @@ import { saveAs } from 'file-saver';
 import { toast } from 'sonner';
 import { PreImportPreviewDialog } from '@/components/PreImportPreviewDialog';
 import { activitiesImportConfig, validateImportRow, parseExcelToRows } from '@/config/caseManagementImportConfig';
-import { useTranslation } from '@/i18n/useTranslation';
+import { useTranslation } from '@/i18n/TranslationProvider';
 
 interface ActivitiesServicesProps {
  projectId: number;
@@ -15,7 +15,7 @@ interface ActivitiesServicesProps {
 
 export function ActivitiesServices({
  projectId }: ActivitiesServicesProps) {
- const { t } = useTranslation();
+ const t = useTranslation();
  const { isRTL } = useLanguage();
  const utils = trpc.useUtils();
  

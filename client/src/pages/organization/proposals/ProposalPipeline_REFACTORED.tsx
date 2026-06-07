@@ -2,7 +2,7 @@ import { useState, useMemo } from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 import { trpc } from '@/lib/trpc';
 import { useAuth } from '@/_core/hooks/useAuth';
-import { useTranslation } from '@/i18n/useTranslation';
+import { useTranslation } from '@/i18n/TranslationProvider';
 import { useLanguage, formatCurrency } from '@/contexts/LanguageContext';
 import { Loader2 } from 'lucide-react';
 import { Card } from '@/components/ui/card';
@@ -21,7 +21,7 @@ interface PipelineOpportunity {
 }
 
 export function ProposalPipeline() {
-  const { t } = useTranslation();
+  const t = useTranslation();
   const { isRTL } = useLanguage();
   const { user } = useAuth();
 

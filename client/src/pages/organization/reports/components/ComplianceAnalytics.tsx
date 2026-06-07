@@ -1,6 +1,6 @@
 import { Shield, FileText, AlertTriangle, CheckCircle2 } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { useTranslation } from '@/i18n/useTranslation';
+import { useTranslation } from '@/i18n/TranslationProvider';
 
 interface ComplianceStats {
  expiringContracts: number;
@@ -15,7 +15,7 @@ interface Props {
 
 export function ComplianceAnalytics({
  data }: Props) {
- const { t } = useTranslation();
+ const t = useTranslation();
  const { language, isRTL} = useLanguage();
  const localT = {
  complianceAnalytics: t.orgReports.complianceRiskAnalytics,

@@ -3,7 +3,7 @@
  * Configure automated report generation and email delivery
  */
 
-import { useTranslation } from '@/i18n/useTranslation';
+import { useTranslation } from '@/i18n/TranslationProvider';
 import { useState } from "react";
 import { useOrganization } from "@/contexts/OrganizationContext";
 import { trpc } from "@/lib/trpc";
@@ -43,7 +43,7 @@ const DAYS_OF_WEEK = [
 ];
 
 export default function ScheduledReports() {
-  const { t } = useTranslation();
+  const t = useTranslation();
   const { language, isRTL} = useLanguage();
  const { currentOrganization } = useOrganization();
  const organizationId = currentOrganization?.id || 1;

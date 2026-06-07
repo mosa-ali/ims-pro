@@ -40,7 +40,7 @@ import {
 } from "lucide-react";
 
 import { PRFinancialStatusWidget } from "@/components/PRFinancialStatusWidget";
-import { useTranslation } from '@/i18n/useTranslation';
+import { useTranslation } from '@/i18n/TranslationProvider';
 import { BackButton } from "@/components/BackButton";
 import { DocumentControl } from "@/components/DocumentControl";
 
@@ -180,7 +180,7 @@ export default function ProcurementWorkspace() {
  const navigate = useNavigate();
  const { currentOrganizationId } = useOrganization();
  const { language, isRTL} = useLanguage();
- const { t } = useTranslation();
+ const t = useTranslation();
 
  const [activeTab, setActiveTab] = useState<WorkspaceTab | null>(null);
  const [financialRefreshTrigger, setFinancialRefreshTrigger] = useState(0);

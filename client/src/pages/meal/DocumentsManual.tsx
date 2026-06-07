@@ -37,14 +37,14 @@ import {
  AlertCircle
 } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { useTranslation } from '@/i18n/useTranslation';
+import { useTranslation } from '@/i18n/TranslationProvider';
 import { BackButton } from "@/components/BackButton";
 import { trpc } from '@/lib/trpc';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 
 export function DocumentsManual() {
- const { t } = useTranslation();
+ const t = useTranslation();
  const { isRTL } = useLanguage();
  const [selectedFiles, setSelectedFiles] = useState<FileList | null>(null);
  const [isUploading, setIsUploading] = useState(false);

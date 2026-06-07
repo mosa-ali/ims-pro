@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { useTranslation } from '@/i18n/useTranslation';
+import { useTranslation } from '@/i18n/TranslationProvider';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { parseCSVFile } from '@/utils/exportOpportunities';
 import { downloadTemplate } from '@/utils/generateImportTemplate';
@@ -20,7 +20,7 @@ export function ImportOpportunitiesModal({
   onOpenChange,
   onImport,
 }: ImportOpportunitiesModalProps) {
-  const { t } = useTranslation();
+  const t = useTranslation();
   const { isRTL } = useLanguage();
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<any[]>([]);

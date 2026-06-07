@@ -28,7 +28,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { useState, useEffect } from 'react';
 import { AlertTriangle, Trash2, X, Upload, Image, Users, Plus, Download, Filter } from 'lucide-react';
-import { useTranslation } from '@/i18n/useTranslation';
+import { useTranslation } from '@/i18n/TranslationProvider';
 
 interface Props {
  survey: any;
@@ -61,7 +61,7 @@ interface ActivityLog {
 
 export function SurveySettingsTab({
  survey }: Props) {
- const { t } = useTranslation();
+ const t = useTranslation();
  const { language, isRTL } = useLanguage();
  const { user } = useAuth();
  const [activeSection, setActiveSection] = useState<SidebarSection>('general');

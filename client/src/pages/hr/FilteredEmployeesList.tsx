@@ -10,7 +10,7 @@ import { useNavigate } from '@/lib/router-compat';
 import { Search, Download, Upload, Eye, Plus, Archive, RotateCcw } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { staffService, StaffMember } from '@/app/services/hrService';
-import { useTranslation } from '@/i18n/useTranslation';
+import { useTranslation } from '@/i18n/TranslationProvider';
 import { BackButton } from "@/components/BackButton";
 
 interface FilteredEmployeesListProps {
@@ -23,7 +23,7 @@ interface FilteredEmployeesListProps {
 
 export function FilteredEmployeesList({
  filter, title, subtitle, backPath, showAddButton = false }: FilteredEmployeesListProps) {
- const { t } = useTranslation();
+ const t = useTranslation();
  const { language, isRTL } = useLanguage();
  const navigate = useNavigate();
  const [employees, setEmployees] = useState<StaffMember[]>([]);

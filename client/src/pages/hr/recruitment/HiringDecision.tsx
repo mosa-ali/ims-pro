@@ -16,7 +16,7 @@ import { useState } from 'react';
 import { Loader2, AlertCircle, CheckCircle, XCircle } from 'lucide-react';
 import { trpc } from '@/lib/trpc';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { useTranslation } from '@/i18n/useTranslation';
+import { useTranslation } from '@/i18n/TranslationProvider';
 import { toast } from 'sonner';
 
 interface Props {
@@ -27,7 +27,7 @@ interface Props {
 }
 
 export function HiringDecision({ language, isRTL, decisionId, onClose }: Props) {
-  const { t } = useTranslation();
+  const t = useTranslation();
   const { isRTL: contextIsRTL } = useLanguage();
   const dir = isRTL || contextIsRTL ? 'rtl' : 'ltr';
 

@@ -30,7 +30,7 @@ import { Badge } from "@/components/ui/badge";
 import { Plus, Trash2, Save, Loader2, Sparkles, AlertTriangle, Clock } from "lucide-react";
 import { Link, useLocation, useParams } from "wouter";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { useTranslation } from "@/i18n/useTranslation";
+import { useTranslation } from '@/i18n/TranslationProvider';
 import { toast } from "sonner";
 import { BackButton } from "@/components/BackButton";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
@@ -59,7 +59,7 @@ function nextLineId() {
 }
 
 export default function IssuedItemsForm() {
-  const { t } = useTranslation();
+  const t = useTranslation();
   const { user } = useAuth();
   const { isRTL } = useLanguage();
   const [, navigate] = useLocation();
@@ -79,6 +79,8 @@ export default function IssuedItemsForm() {
   const [selectedItemId, setSelectedItemId] = useState<string>("");
   const [requestedQty, setRequestedQty] = useState<string>("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const utils = trpc.useUtils();
 
   // Fetch stock items for dropdown
   const { data: stockItemsData } = trpc.logistics.stock.listItems.useQuery({
@@ -150,7 +152,8 @@ export default function IssuedItemsForm() {
 
     // Get FEFO/FIFO suggestion from backend
     try {
-      const suggestion = await trpc.logistics.stockMgmt.batches.getSuggested.query({
+      const suggestion =
+      await utils.logistics.stockMgmt.batches.getSuggested.fetch({
         itemId,
         requestedQty: qty,
       });

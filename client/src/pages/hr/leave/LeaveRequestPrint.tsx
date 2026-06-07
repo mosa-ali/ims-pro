@@ -20,7 +20,7 @@ import { LeaveRequest } from './types';
 import { StaffMember, staffService } from '@/app/services/hrService';
 import { X, Printer } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { useTranslation } from '@/i18n/useTranslation';
+import { useTranslation } from '@/i18n/TranslationProvider';
 
 interface Props {
  request: LeaveRequest;
@@ -31,7 +31,7 @@ interface Props {
 
 export function LeaveRequestPrint({
  request, language, isRTL, onClose }: Props) {
- const { t } = useTranslation();
+ const t = useTranslation();
  // Get employee details from the request
  const employee = staffService.getByStaffId(request.staffId);
 

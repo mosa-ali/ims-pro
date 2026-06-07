@@ -5,7 +5,7 @@ import {
  AlertCircle, CheckCircle2, Clock, List, LayoutGrid, User, Mail
 } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { useTranslation } from '@/i18n/useTranslation';
+import { useTranslation } from '@/i18n/TranslationProvider';
 import { useAuth } from '@/_core/hooks/useAuth';
 import { Workbook } from 'exceljs';
 import { saveAs } from 'file-saver';
@@ -78,7 +78,7 @@ interface TasksTabProps {
 
 export function TasksTab({
  projectId }: TasksTabProps) {
- const { t } = useTranslation();
+ const t = useTranslation();
  const { isRTL } = useLanguage();
 const { user } = useAuth();
  
@@ -804,7 +804,7 @@ interface TaskFormProps {
 
 function TaskForm({
   formData, onChange, onSubmit, onCancel, isEdit, isLoading, currentUser, existingTask }: TaskFormProps) {
-  const { t } = useTranslation();
+  const t = useTranslation();
 const getStatusLabel = (status: string) => {
  switch (status) {
  case 'TODO': return t.projectDetail.taskStatusToDo;

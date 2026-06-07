@@ -1,4 +1,4 @@
-import { useTranslation } from '@/i18n/useTranslation';
+import { useTranslation } from '@/i18n/TranslationProvider';
 import { useAuth } from "@/_core/hooks/useAuth";
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Button } from "@/components/ui/button";
@@ -21,7 +21,7 @@ import { BackButton } from "@/components/BackButton";
  */
 export default function UserManagement() {
  const { language, isRTL} = useLanguage();
-  const { t } = useTranslation();
+  const t = useTranslation();
 const { user } = useAuth();
  const [selectedOrganizationId, setSelectedOrganizationId] = useState<number | null>(null);
  const [selectedUserId, setSelectedUserId] = useState<number | null>(null);

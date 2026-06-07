@@ -6,7 +6,7 @@ import { useAuth } from '@/_core/hooks/useAuth';
 import { isUserAdmin } from '@/lib/adminCheck';
 import { trpc } from '@/lib/trpc';
 import { toast } from 'sonner';
-import { useTranslation } from '@/i18n/useTranslation';
+import { useTranslation } from '@/i18n/TranslationProvider';
 import { BackButton } from "@/components/BackButton";
 
 type ActionType = 'view' | 'create' | 'edit' | 'delete' | 'export' | 'approve' | 'submit';
@@ -820,7 +820,7 @@ function AuditReportPanel({ language, isRTL }: { language: string; isRTL: boolea
 
 export function RolesPermissions() {
  const [, navigate] = useLocation();
- const { t } = useTranslation();
+ const t = useTranslation();
  const rp = t.rolesPermissions;
  const { user } = useAuth();
  const [selectedRoleId, setSelectedRoleId] = useState<number | null>(null);

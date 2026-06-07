@@ -5,7 +5,7 @@ import {
  Edit2, Trash2, Calendar, BarChart3, X, Search 
 } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { useTranslation } from '@/i18n/useTranslation';
+import { useTranslation } from '@/i18n/TranslationProvider';
 import { UnifiedExportButton } from '@/components/exports/UnifiedExportButton';
 import { ActivitiesTabSkeleton } from '@/components/ProjectTabSkeletons';
 import ExcelJS from 'exceljs';
@@ -258,7 +258,7 @@ interface ActivitiesTabProps {
 
 export function ActivitiesTab({
  projectId }: ActivitiesTabProps) {
- const { t } = useTranslation();
+ const t = useTranslation();
  const { isRTL } = useLanguage();
  // ✅ Load activities from database via tRPC
  const projectIdNum = parseInt(projectId, 10);

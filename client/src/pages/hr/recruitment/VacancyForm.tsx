@@ -18,7 +18,7 @@ import { X, Save, AlertCircle, Loader2 } from 'lucide-react';
 import { trpc } from '@/lib/trpc';
 import { useAuth } from '@/_core/hooks/useAuth';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { useTranslation } from '@/i18n/useTranslation';
+import { useTranslation } from '@/i18n/TranslationProvider';
 import { RecruitmentJob, JobEmploymentType, JobStatus } from '@shared/types/recruitment-canonical';
 import { toast } from 'sonner';
 
@@ -31,7 +31,7 @@ interface Props {
 }
 
 export function VacancyForm({ language, isRTL, vacancy, onClose, onSave }: Props) {
-  const { t } = useTranslation();
+  const t = useTranslation();
   const { user } = useAuth();
   const { isRTL: contextIsRTL } = useLanguage();
   const dir = isRTL || contextIsRTL ? 'rtl' : 'ltr';

@@ -51,7 +51,7 @@ import {
 } from 'lucide-react';
 import { Link } from 'wouter';
 import * as XLSX from 'xlsx';
-import { useTranslation } from '@/i18n/useTranslation';
+import { useTranslation } from '@/i18n/TranslationProvider';
 
 const accountTypeOptions = [
   { value: 'CHECKING', labelEn: 'Checking', labelAr: 'جاري' },
@@ -62,7 +62,7 @@ const accountTypeOptions = [
 ];
 
 export default function TreasuryBankAccounts() {
-  const { t } = useTranslation();
+  const t = useTranslation();
   const { language, isRTL } = useLanguage();
   const { currentOrganization, currentOperatingUnit } = useOrganization();
   const organizationId = currentOrganization?.id || 30001;

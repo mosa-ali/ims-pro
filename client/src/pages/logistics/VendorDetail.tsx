@@ -33,7 +33,7 @@ import {
  MapPin, CreditCard, DollarSign, Clock, Loader2, Pencil, Save, X,
  ClipboardCheck, CheckCircle2, AlertTriangle, XCircle, Star
 } from "lucide-react";
-import { useTranslation } from '@/i18n/useTranslation';
+import { useTranslation } from '@/i18n/TranslationProvider';
 import { BackButton } from "@/components/BackButton";
 
 // ============================================================================
@@ -94,7 +94,7 @@ function EditableField({ label, value, onChange, icon: Icon, type = "text", plac
 // MAIN COMPONENT
 // ============================================================================
 export default function VendorDetail() {
- const { t } = useTranslation();
+ const t = useTranslation();
  const { id } = useParams();
  const vendorId = parseInt(id || "0", 10);
  const navigate = useNavigate();

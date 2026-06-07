@@ -1989,7 +1989,7 @@ const stockRouter = router({
 
   create: scopedProcedure
     .input(z.object({
-      itemCode: z.string(),
+      itemCode: z.number(),
       itemName: z.string(),
       itemNameAr: z.string().optional(),
       description: z.string().optional(),
@@ -1997,21 +1997,24 @@ const stockRouter = router({
       unitType: z.string().optional(),
       warehouseLocation: z.string().optional(),
       binLocation: z.string().optional(),
-      currentQuantity: z.string().optional(),
+      currentQuantity: z.number().default(0),
       minimumQuantity: z.string().optional(),
       maximumQuantity: z.string().optional(),
-      reorderLevel: z.string().optional(),
-      unitCost: z.string().optional(),
+      reorderLevel: z.number().default(0),
+      unitCost: z.number().default(0),
       currency: z.string().optional(),
     }))
     .mutation(async ({ input, ctx }) => {
       const db = await getDb();
       const { organizationId } = ctx.scope;
-      const qty = parseFloat(input.currentQuantity || "0") || 0;
-      const price = parseFloat(input.unitCost || "0") || 0;
+      const qty = input.currentQuantity ?? 0;
+      const price = input.unitCost ?? 0;
       
       const result = await db.insert(stockItems).values({
-        ...input, organizationId, totalValue: (qty * price).toFixed(2),
+        ...input,
+        organizationId,
+        unitCost: String(input.unitCost),
+        totalValue: (qty * price).toFixed(2),
         createdBy: ctx.user.id,
       });
       return { id: result[0].insertId };
@@ -2027,11 +2030,11 @@ const stockRouter = router({
       unitType: z.string().optional(),
       warehouseLocation: z.string().optional(),
       binLocation: z.string().optional(),
-      currentQuantity: z.string().optional(),
+      currentQuantity: z.number().default(0),
       minimumQuantity: z.string().optional(),
       maximumQuantity: z.string().optional(),
-      reorderLevel: z.string().optional(),
-      unitCost: z.string().optional(),
+      reorderLevel: z.number().default(0),
+      unitCost: z.number().default(0),
       currency: z.string().optional(),
     }))
     .mutation(async ({ input, ctx }) => {
@@ -2046,8 +2049,8 @@ const stockRouter = router({
           .where(and(eq(stockItems.id, id), eq(stockItems.organizationId, organizationId)))
           .limit(1);
         if (current[0]) {
-          const qty = parseFloat(data.currentQuantity || String(current[0].currentQuantity)) || 0;
-          const price = parseFloat(data.unitCost || String(current[0].unitCost)) || 0;
+          const qty = input.currentQuantity ?? 0;
+          const price = input.unitCost ?? 0;
           updates.totalValue = (qty * price).toFixed(2);
         }
       }
@@ -2121,7 +2124,6 @@ const stockIssuedRouter = router({
         "inspected",
         "accepted",
         "rejected",
-        "cancelled"
       ]).optional(),
       limit: z.number().default(50),
       offset: z.number().default(0),

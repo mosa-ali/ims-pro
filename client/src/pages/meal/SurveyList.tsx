@@ -24,7 +24,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useState, useEffect } from 'react';
 import { Search, Filter, Eye, Edit, Trash2, Rocket, Archive } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { useTranslation } from '@/i18n/useTranslation';
+import { useTranslation } from '@/i18n/TranslationProvider';
 import { BackButton } from "@/components/BackButton";
 import { trpc } from '@/lib/trpc';
 
@@ -39,7 +39,7 @@ interface Survey {
 }
 
 export function SurveyList() {
- const { t } = useTranslation();
+ const t = useTranslation();
  const navigate = useNavigate();
  const searchString = useSearch();
  const searchParams = new URLSearchParams(searchString);

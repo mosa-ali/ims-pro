@@ -4,7 +4,7 @@ import { formatDate } from '@/utils/formatters';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { ImportHistoryRecord } from '@/contexts/ImportHistoryContext';
 import { useImportHistory } from '@/contexts/ImportHistoryContext';
-import { useTranslation } from '@/i18n/useTranslation';
+import { useTranslation } from '@/i18n/TranslationProvider';
 
 interface ImportDetailsModalProps {
  isOpen: boolean;
@@ -14,7 +14,7 @@ interface ImportDetailsModalProps {
 
 export function ImportDetailsModal({
  isOpen, onClose, importRecord }: ImportDetailsModalProps) {
- const { t } = useTranslation();
+ const t = useTranslation();
  const { language, isRTL } = useLanguage();
  const { downloadErrorReport } = useImportHistory();
 

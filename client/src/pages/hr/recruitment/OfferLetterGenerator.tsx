@@ -19,7 +19,7 @@ import { hiringDecisionService, candidateService, vacancyService } from './recru
 import { HiringDecision } from './types';
 import { offerLetterTemplateService, OfferLetterTemplate } from '@/app/services/offerLetterTemplateService';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { useTranslation } from '@/i18n/useTranslation';
+import { useTranslation } from '@/i18n/TranslationProvider';
 
 interface Props {
  language: string;
@@ -31,7 +31,7 @@ interface Props {
 
 export function OfferLetterGenerator({
  language, isRTL, hiringDecision, onClose, onSave }: Props) {
- const { t } = useTranslation();
+ const t = useTranslation();
  const candidate = candidateService.getById(hiringDecision.candidateId);
  const vacancy = vacancyService.getById(hiringDecision.vacancyId);
  const printRef = useRef<HTMLDivElement>(null);

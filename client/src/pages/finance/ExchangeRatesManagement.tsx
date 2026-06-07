@@ -15,11 +15,11 @@ import { Badge } from"@/components/ui/badge";
 import { toast } from"react-hot-toast";
 import { Plus, Download, RefreshCw, Calculator, Trash2, Edit, ArrowRight} from"lucide-react";
 import { useNavigate } from '@/lib/router-compat';
-import { useTranslation } from '@/i18n/useTranslation';
+import { useTranslation } from '@/i18n/TranslationProvider';
 import { BackButton } from "@/components/BackButton";
 
 export default function ExchangeRatesManagement() {
- const { t } = useTranslation();
+ const t = useTranslation();
  const navigate = useNavigate();
  const { user } = useAuth();
  const { currentOperatingUnit } = useOperatingUnit();

@@ -22,7 +22,7 @@ import {
  Shield, AlertTriangle, FileText, ChevronDown, ChevronUp, Wand2, BarChart3,
 } from "lucide-react";
 import { lazy, Suspense } from "react";
-import { useTranslation } from '@/i18n/useTranslation';
+import { useTranslation } from '@/i18n/TranslationProvider';
 
 const BidEvaluationScoringTab = lazy(() => import("./BidEvaluationScoringTab"));
 
@@ -49,7 +49,7 @@ const emptyForm = {
 
 export default function BidEvaluationCriteriaTab({
  purchaseRequestId, prNumber }: BidEvaluationCriteriaTabProps) {
- const { t } = useTranslation();
+ const t = useTranslation();
  const { language, isRTL} = useLanguage();
 
  const [addDialogOpen, setAddDialogOpen] = useState(false);

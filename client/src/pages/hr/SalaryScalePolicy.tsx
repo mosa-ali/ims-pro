@@ -9,7 +9,7 @@
 import { useState, useRef } from 'react';
 import { Upload, Download, Trash2, FileText, AlertCircle, CheckCircle } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { useTranslation } from '@/i18n/useTranslation';
+import { useTranslation } from '@/i18n/TranslationProvider';
 
 interface PolicyDocument {
  id: string;
@@ -32,7 +32,7 @@ interface PolicyProps {
 
 export function SalaryScalePolicy({
  language, isRTL, userName }: PolicyProps) {
- const { t } = useTranslation();
+ const t = useTranslation();
  const [documents, setDocuments] = useState<PolicyDocument[]>([]);
  const [showUploadModal, setShowUploadModal] = useState(false);
  const fileInputRef = useRef<HTMLInputElement>(null);

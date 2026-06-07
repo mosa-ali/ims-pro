@@ -27,7 +27,7 @@ import {
  AlertTriangle,
 } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { useTranslation } from '@/i18n/useTranslation';
+import { useTranslation } from '@/i18n/TranslationProvider';
 
 interface RiskComplianceModule {
  id: string;
@@ -39,7 +39,7 @@ interface RiskComplianceModule {
 }
 
 export function RiskComplianceLanding() {
- const { t } = useTranslation();
+ const t = useTranslation();
  const { language, isRTL } = useLanguage();
  const navigate = useNavigate();
 

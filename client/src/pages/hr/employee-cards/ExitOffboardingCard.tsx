@@ -26,7 +26,7 @@ import { ResignationPrintModal } from '../modals/ResignationPrintModal';
 import { ClearancePrintModal } from '../modals/ClearancePrintModal';
 import { ExitInterviewPrintModal } from '../modals/ExitInterviewPrintModal';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { useTranslation } from '@/i18n/useTranslation';
+import { useTranslation } from '@/i18n/TranslationProvider';
 
 // ============================================================================
 // TYPE DEFINITIONS
@@ -96,7 +96,7 @@ interface Props {
 
 export function ExitOffboardingCard({
  employee, language, isRTL, onEmployeeUpdate }: Props) {
- const { t } = useTranslation();
+ const t = useTranslation();
  const [exitData, setExitData] = useState<any>(null);
  const [showResignationForm, setShowResignationForm] = useState(false);
  const [showClearanceForm, setShowClearanceForm] = useState(false);

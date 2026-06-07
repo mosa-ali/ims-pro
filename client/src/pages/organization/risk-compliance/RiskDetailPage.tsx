@@ -13,7 +13,7 @@ import { BackButton } from "@/components/BackButton";
  */
 
 import { useParams, useLocation } from 'wouter';
-import { useTranslation } from '@/i18n/useTranslation';
+import { useTranslation } from '@/i18n/TranslationProvider';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -36,7 +36,7 @@ import {
 } from '@/components/ui/table';
 
 export default function RiskDetailPage() {
- const { t } = useTranslation();
+ const t = useTranslation();
   const { isRTL } = useLanguage();
  const { id } = useParams<{ id: string }>();
  const [, setLocation] = useLocation();

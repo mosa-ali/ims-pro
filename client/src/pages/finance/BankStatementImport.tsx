@@ -16,7 +16,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from"@/
 import { Alert, AlertDescription } from"@/components/ui/alert";
 import { Upload, FileSpreadsheet, CheckCircle, AlertCircle, Download } from"lucide-react";
 import { toast } from"react-hot-toast";
-import { useTranslation } from '@/i18n/useTranslation';
+import { useTranslation } from '@/i18n/TranslationProvider';
 import { BackButton } from "@/components/BackButton";
 
 interface PreviewData {
@@ -33,7 +33,7 @@ interface PreviewData {
 }
 
 export default function BankStatementImport() {
- const { t } = useTranslation();
+ const t = useTranslation();
  const navigate = useNavigate();
  const { language, direction: dir, isRTL } = useLanguage();
  // Using centralized translations via t.bankStatementImport

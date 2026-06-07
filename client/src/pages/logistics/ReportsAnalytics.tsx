@@ -24,10 +24,10 @@ import {
  ArrowRight,
  ArrowLeft,
 } from "lucide-react";
-import { useTranslation } from '@/i18n/useTranslation';
+import { useTranslation } from '@/i18n/TranslationProvider';
 import { BackButton } from "@/components/BackButton";
 export default function ReportsAnalytics() {
- const { t } = useTranslation();
+ const t = useTranslation();
  const { currentOrganization } = useOrganization();
  const { language, isRTL} = useLanguage();
  const direction = 'ltr';

@@ -26,10 +26,12 @@ import { useLanguage } from '@/contexts/LanguageContext';
  * @returns The translation object for the current language
  */
 export function useLocalTranslations<T extends Record<string, string>>(
- translations: { en: T; ar: T }
+  translations: { en: T; ar: T; it?: T }
 ): T {
- const { language } = useLanguage();
- return language === 'ar' ? translations.ar : translations.en;
+  const { language } = useLanguage();
+  if (language === 'ar') return translations.ar;
+  if (language === 'it' && translations.it) return translations.it;
+  return translations.en;
 }
 
 /**
@@ -41,8 +43,10 @@ export function useLocalTranslations<T extends Record<string, string>>(
  * @returns The translation object for the specified language
  */
 export function getLocalTranslations<T extends Record<string, string>>(
- translations: { en: T; ar: T },
- language: string
+  translations: { en: T; ar: T; it?: T },
+  language: string
 ): T {
- return language === 'ar' ? translations.ar : translations.en;
+  if (language === 'ar') return translations.ar;
+  if (language === 'it' && translations.it) return translations.it;
+  return translations.en;
 }

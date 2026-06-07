@@ -3,7 +3,7 @@
  * Bilingual EN/AR support
  * DN is read-only and immutable
  */
-import { useTranslation } from '@/i18n/useTranslation';
+import { useTranslation } from '@/i18n/TranslationProvider';
 import { useLanguage } from "@/contexts/LanguageContext";
 import { trpc } from "@/lib/trpc";
 import { Button } from "@/components/ui/button";
@@ -21,7 +21,7 @@ interface DeliveryNoteTabProps {
 
 export default function DeliveryNoteTab({ purchaseRequestId }: DeliveryNoteTabProps) {
  const { language, isRTL} = useLanguage();
-  const { t } = useTranslation();
+  const t = useTranslation();
  const [selectedDnId, setSelectedDnId] = useState<number | null>(null);
  const [deleteConfirmDnId, setDeleteConfirmDnId] = useState<number | null>(null);
 

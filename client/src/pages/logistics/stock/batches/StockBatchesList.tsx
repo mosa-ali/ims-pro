@@ -19,7 +19,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 const PAGE_SIZE = 50;
 
 export default function StockBatchesList() {
-  const { t } = useTranslation();
+  const t = useTranslation();
   const { isRTL } = useLanguage();
   const [page, setPage] = useState(0);
   const [statusFilter, setStatusFilter] = useState<string>("all");

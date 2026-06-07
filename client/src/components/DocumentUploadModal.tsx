@@ -3,7 +3,7 @@ import { X, Upload, FileText, AlertCircle } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useDocumentService } from '@/hooks/useDocumentService';
 import { DocumentModuleType, DocumentType, MODULE_FOLDER_ROUTING } from '@/types/document.types';
-import { useTranslation } from '@/i18n/useTranslation';
+import { useTranslation } from '@/i18n/TranslationProvider';
 
 interface DocumentUploadModalProps {
  isOpen: boolean;
@@ -24,7 +24,7 @@ export function DocumentUploadModal({
  moduleContext,
  onUploadComplete
 }: DocumentUploadModalProps) {
- const { t } = useTranslation();
+ const t = useTranslation();
  const { isRTL } = useLanguage();
  const { uploadDocument } = useDocumentService();
  

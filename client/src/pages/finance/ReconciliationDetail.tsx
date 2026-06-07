@@ -31,7 +31,7 @@ import {
  CheckCircle, XCircle, AlertTriangle, Landmark, Scale, ArrowUpDown,
  Clock, Play, Check, Ban
 } from "lucide-react";
-import { useTranslation } from '@/i18n/useTranslation';
+import { useTranslation } from '@/i18n/TranslationProvider';
 import { BackButton } from "@/components/BackButton";
 
 // ============================================================================
@@ -41,7 +41,7 @@ import { BackButton } from "@/components/BackButton";
 // MAIN COMPONENT
 // ============================================================================
 export default function ReconciliationDetail() {
- const { t } = useTranslation();
+ const t = useTranslation();
  const { id } = useParams<{ id: string }>();
  const reconId = parseInt(id || "0", 10);
  const navigate = useNavigate();

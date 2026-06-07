@@ -17,6 +17,8 @@ import { ProjectOverviewTable } from './ProjectOverviewTable';
 import TopGrantsWidget from './TopGrantsWidget';
 import { UpcomingReportingDeadlines } from './UpcomingReportingDeadlines';
 import { ExpiringProjects } from './ExpiringProjects';
+import { useTranslation } from '@/i18n/TranslationProvider';
+
 
 // ─── Navigation card ──────────────────────────────────────────────────────────
 

@@ -1,5 +1,5 @@
 import { Download, Upload } from 'lucide-react';
-import { useTranslation } from '@/i18n/useTranslation';
+import { useTranslation } from '@/i18n/TranslationProvider';
 import { useLanguage, formatCurrency } from '@/contexts/LanguageContext';
 
 
@@ -10,7 +10,7 @@ interface BudgetSectionProps {
 
 export function BudgetSection({
  budget, updateBudget }: BudgetSectionProps) {
- const { t } = useTranslation();
+ const t = useTranslation();
  const { isRTL } = useLanguage();
 
 const labels = {

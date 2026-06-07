@@ -1,4 +1,4 @@
-import { useTranslation } from '@/i18n/useTranslation';
+import { useTranslation } from '@/i18n/TranslationProvider';
 import { useState } from 'react';
 import { Plus, Edit2, Trash2, Calendar, AlertTriangle, X, Clock, FileText, CheckCircle } from 'lucide-react';
 import { useAuth } from '@/_core/hooks/useAuth';
@@ -43,7 +43,7 @@ interface ReportingScheduleProps {
 export default function ReportingSchedulePage({ projectId, embedded = false }: ReportingScheduleProps) {
  const { isRTL } = useLanguage();
  const { user } = useAuth();
- const { t } = useTranslation();
+ const t = useTranslation();
  const { currentOrganizationId } = useOrganization();
  const { currentOperatingUnitId } = useOperatingUnit();
  

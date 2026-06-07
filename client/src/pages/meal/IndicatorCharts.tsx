@@ -19,11 +19,11 @@ import {
  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer,
  LineChart, Line, Cell
 } from 'recharts';
-import { useTranslation } from '@/i18n/useTranslation';
+import { useTranslation } from '@/i18n/TranslationProvider';
 import { BackButton } from "@/components/BackButton";
 
 export function IndicatorChartsPage() {
- const { t } = useTranslation();
+ const t = useTranslation();
  const navigate = useNavigate();
  const params = useParams();
  const indicatorId = params?.id ? parseInt(params.id) : null;

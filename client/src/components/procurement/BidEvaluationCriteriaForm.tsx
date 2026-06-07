@@ -11,7 +11,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/_core/hooks/useAuth';
 import { bidEvaluationCriteriaService } from '@/services/bidEvaluationCriteriaService';
 import { BidEvaluationCriteriaPrintModal } from './BidEvaluationCriteriaPrintModal';
-import { useTranslation } from '@/i18n/useTranslation';
+import { useTranslation } from '@/i18n/TranslationProvider';
 import type { BidEvaluationCriteria, ProcurementRequest } from '@/types/logistics.types';
 
 interface Props {
@@ -20,7 +20,7 @@ interface Props {
 
 export function BidEvaluationCriteriaForm({
  pr }: Props) {
- const { t } = useTranslation();
+ const t = useTranslation();
  const { language, isRTL } = useLanguage();
  const { user } = useAuth();
 

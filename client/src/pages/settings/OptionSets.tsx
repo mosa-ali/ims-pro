@@ -22,7 +22,7 @@ import { useAuth } from '@/_core/hooks/useAuth';
 import { isUserAdmin } from '@/lib/adminCheck';
 import { trpc } from '@/lib/trpc';
 import { toast } from 'sonner';
-import { useTranslation } from '@/i18n/useTranslation';
+import { useTranslation } from '@/i18n/TranslationProvider';
 import { BackButton } from "@/components/BackButton";
 import { GLOBAL_OPTION_SETS } from '../../../../shared/constants/optionSets';
 import {
@@ -33,7 +33,7 @@ import {
 } from '../../lib/masterDataHelpers';
 
 export function OptionSets() {
-  const { t } = useTranslation();
+  const t = useTranslation();
   const [, navigate] = useLocation();
   const { language, isRTL } = useLanguage();
   const { user } = useAuth();

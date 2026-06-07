@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card } from '@/components/ui/card';
 import { useLanguage, formatCurrency } from '@/contexts/LanguageContext';
-import { useTranslation } from '@/i18n/useTranslation';
+import { useTranslation } from '@/i18n/TranslationProvider';
 import { trpc } from '@/lib/trpc';
 import { useAuth } from '@/_core/hooks/useAuth';
 import { useState, useMemo } from 'react';
@@ -37,7 +37,7 @@ const nowSql = new Date().toISOString().slice(0, 19).replace('T', ' ');
 type DeadlineStatus = 'open' | 'closing-soon' | 'closed';
 
 export function FundingOpportunities() {
-  const { t } = useTranslation();
+  const t = useTranslation();
   const { isRTL } = useLanguage();
   const { user } = useAuth();
 

@@ -15,11 +15,11 @@ import { trpc } from '@/lib/trpc';
 import { Save, Target } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
-import { useTranslation } from '@/i18n/useTranslation';
+import { useTranslation } from '@/i18n/TranslationProvider';
 import { BackButton } from "@/components/BackButton";
 
 export function AddIndicator() {
- const { t } = useTranslation();
+ const t = useTranslation();
  const navigate = useNavigate();
  const { language, isRTL} = useLanguage();
 

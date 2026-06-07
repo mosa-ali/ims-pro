@@ -9,13 +9,14 @@ import {
  Globe, User, LogOut, Clock, Mail
  } from 'lucide-react';
 import { useAuth } from "@/_core/hooks/useAuth";
+import { useTranslation } from "@/i18n/TranslationProvider";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { useTranslation } from "@/i18n/useTranslation";
 import { useOrganization } from "@/contexts/OrganizationContext";
 import { useOperatingUnit } from "@/contexts/OperatingUnitContext";
 import { usePermissions } from "@/hooks/usePermissions";
 import { Building2 as BuildingIcon, ChevronDown as ChevronDownIcon } from 'lucide-react';
 import { useOrganizationBranding } from "@/hooks/useOrganizationBranding";
+
 
 /**
  * Unified Sidebar Component - Switches between Platform and Organization modes
@@ -73,6 +74,7 @@ interface NavItem {
  id: string;
  label: string;
  labelAr: string;
+ labelIt: string;
  path: string;
  icon: string;
  subItems?: NavItem[]; // For collapsible menu items
@@ -81,6 +83,7 @@ interface NavItem {
 interface NavGroup {
  group: string;
  groupAr: string;
+ groupIt: string;
  items: NavItem[];
 }
 
@@ -90,9 +93,9 @@ export function Sidebar() {
  const [showUserMenu, setShowUserMenu] = useState(false);
  const [location] = useLocation();
  const { user, logout } = useAuth();
- const { direction, setLanguage, isRTL} = useLanguage();
- const { t, language } = useTranslation();
-const { currentOrganization, availableOrganizations, switchOrganization, currentRole } = useOrganization();
+ const t = useTranslation();
+ const { language, changeLanguage, isRTL } = useLanguage();
+ const { currentOrganization, availableOrganizations, switchOrganization, currentRole } = useOrganization();
  const { currentOperatingUnit, userOperatingUnits, switchOperatingUnit } = useOperatingUnit();
  const [showOrgSwitcher, setShowOrgSwitcher] = useState(false);
  const [showOUSwitcher, setShowOUSwitcher] = useState(false);
@@ -135,8 +138,8 @@ const { currentOrganization, availableOrganizations, switchOrganization, current
 
  // Handle language switch
  const handleLanguageSwitch = () => {
- const newLang = t.components.ar;
- setLanguage(newLang);
+ const newLang = language === 'en' ? 'ar' : 'en';
+ changeLanguage(newLang);
  };
 
  // Handle logout
@@ -150,13 +153,14 @@ const { currentOrganization, availableOrganizations, switchOrganization, current
  {
  group: 'PLATFORM',
  groupAr: 'المنصة',
+ groupIt: 'PIATTAFORMA',
  items: [
- { id: 'dashboard', label: t.platform.dashboard.title, labelAr: t.platform.dashboard.title, path: '/platform', icon: 'Dashboard' },
- { id: 'orgs', label: t.platform.organizationManagement, labelAr: t.platform.organizationManagement, path: '/platform/organizations', icon: 'Organizations' },
- { id: 'email-management', label: 'Email Management', labelAr: 'إدارة البريد الإلكتروني', path: '/platform/email-management', icon: 'Mail' },
- { id: 'performance-dashboard', label: 'Email Performance', labelAr: 'أداء البريد الإلكتروني', path: '/platform/performance-dashboard', icon: 'TrendingUp' },
- { id: 'system-health', label: 'System Health & Protection', labelAr: 'صحة النظام والحماية', path: '/platform/system-health', icon: 'SystemHealth' },
- { id: 'settings', label: t.platform.platformSettings, labelAr: t.platform.platformSettings, path: '/platform/settings', icon: 'Settings' },
+ { id: 'dashboard', label: t.platform.dashboard?.title || 'Dashboard', labelAr: t.platform.dashboard?.title || 'لوحة التحكم', labelIt: t.platform.dashboard?.title || 'Cruscotto Piattaforma', path: '/platform', icon: 'Dashboard' },
+ { id: 'orgs', label: t.platform.dashboard.organizationManagement || 'Organization Management', labelAr: t.platform.dashboard.organizationManagement || 'إدارة المنظمات', labelIt: t.platform.dashboard.organizationManagement || 'Gestione Organizzazioni', path: '/platform/organizations', icon: 'Organizations' },
+ { id: 'email-management', label: 'Email Management', labelAr: 'إدارة البريد الإلكتروني', labelIt: 'Gestione Email', path: '/platform/email-management', icon: 'Mail' },
+ { id: 'performance-dashboard', label: 'Email Performance', labelAr: 'أداء البريد الإلكتروني', labelIt: 'Prestazioni Email', path: '/platform/performance-dashboard', icon: 'TrendingUp' },
+ { id: 'system-health', label: 'System Health & Protection', labelAr: 'صحة النظام والحماية', labelIt: 'Salute del Sistema e Protezione', path: '/platform/system-health', icon: 'SystemHealth' },
+ { id: 'settings', label: t.platform.dashboard.platformSettings || 'Platform Settings', labelAr: t.platform.dashboard.platformSettings || 'إعدادات المنصة', labelIt: t.platform.dashboard.platformSettings || 'Impostazioni Piattaforma', path: '/platform/settings', icon: 'Settings' },
  ]
  }
  ];
@@ -167,29 +171,32 @@ const { currentOrganization, availableOrganizations, switchOrganization, current
  {
  group: 'STRATEGIC',
  groupAr: 'استراتيجي',
+ groupIt: 'STRATEGICO',
  items: [
- { id: 'dash', label: 'Dashboard', labelAr: 'لوحة المعلومات', path: '/organization', icon: 'Dashboard' },
- { id: 'projects', label: 'Programs Management', labelAr: 'إدارة البرامج', path: '/organization/projects', icon: 'Projects' },
+ { id: 'dash', label: 'Dashboard', labelAr: 'لوحة المعلومات', labelIt: 'Cruscotto', path: '/organization', icon: 'Dashboard' },
+ { id: 'projects', label: 'Programs Management', labelAr: 'إدارة البرامج', labelIt: 'Gestione Programmi', path: '/organization/projects', icon: 'Projects' },
  ]
  },
  {
  group: 'OPERATIONS',
  groupAr: 'العمليات',
+ groupIt: 'OPERAZIONI',
  items: [
- { id: 'hr', label: 'Human Resources', labelAr: 'الموارد البشرية', path: '/organization/hr', icon: 'HR' },
- { id: 'finance', label: 'Financial Management', labelAr: 'الإدارة المالية', path: '/organization/finance', icon: 'Finance' },
- { id: 'logistics', label: 'Logistics & Procurement', labelAr: 'الخدمات اللوجستية والمشتريات', path: '/organization/logistics', icon: 'Logistics' },
- { id: 'meal', label: 'MEAL', labelAr: 'المتابعة والتقييم والمساءلة (MEAL)', path: '/organization/meal', icon: 'MEAL' },
- { id: 'crm', label: 'Donor CRM', labelAr: 'علاقات المانحين', path: '/organization/donor-crm', icon: 'CRM' },
- { id: 'risk', label: 'Risk & Compliance', labelAr: 'المخاطر والامتثال', path: '/organization/risk-compliance', icon: 'Risk' },
- { id: 'reports', label: 'Reports & Analytics', labelAr: 'التقارير والتحليلات', path: '/organization/reports-analytics', icon: 'Reports' },
+ { id: 'hr', label: 'Human Resources', labelAr: 'الموارد البشرية', labelIt: 'Risorse Umane', path: '/organization/hr', icon: 'HR' },
+ { id: 'finance', label: 'Financial Management', labelAr: 'الإدارة المالية', labelIt: 'Gestione Finanziaria', path: '/organization/finance', icon: 'Finance' },
+ { id: 'logistics', label: 'Logistics & Procurement', labelAr: 'الخدمات اللوجستية والمشتريات', labelIt: 'Logistica e Approvvigionamento', path: '/organization/logistics', icon: 'Logistics' },
+ { id: 'meal', label: 'MEAL', labelAr: 'المتابعة والتقييم والمساءلة (MEAL)', labelIt: 'Monitoraggio, Valutazione e Responsabilità (MEAL)', path: '/organization/meal', icon: 'MEAL' },
+ { id: 'crm', label: 'Donor CRM', labelAr: 'علاقات المانحين', labelIt: 'CRM Donatori', path: '/organization/donor-crm', icon: 'CRM' },
+ { id: 'risk', label: 'Risk & Compliance', labelAr: 'المخاطر والامتثال', labelIt: 'Rischi e Conformità', path: '/organization/risk-compliance', icon: 'Risk' },
+ { id: 'reports', label: 'Reports & Analytics', labelAr: 'التقارير والتحليلات', labelIt: 'Report e Analitiche', path: '/organization/reports-analytics', icon: 'Reports' },
  ]
  },
  {
  group: 'SYSTEM',
  groupAr: 'النظام',
+ groupIt: 'SISTEMA',
  items: [
- { id: 'settings-org', label: 'Settings', labelAr: 'الإعدادات', path: '/organization/settings', icon: 'Settings' },
+ { id: 'settings-org', label: 'Settings', labelAr: 'الإعدادات', labelIt: 'Impostazioni', path: '/organization/settings', icon: 'Settings' },
  ]
  }
  ];
@@ -252,7 +259,7 @@ const { currentOrganization, availableOrganizations, switchOrganization, current
  {currentOrganization?.code?.toUpperCase() || currentOrganization?.name?.split(' - ')[0]?.toUpperCase() || 'ORG'}
  </h1>
  <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest leading-none mt-0.5">
- {t.sidebar.organization}
+ {t.sidebar?.organization || "Organization"}
  </p>
  </div>
  <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform ${showOrgSwitcher ? 'rotate-180' : ''}`} />
@@ -266,7 +273,7 @@ const { currentOrganization, availableOrganizations, switchOrganization, current
  >
  <div className="px-3 py-2 border-b border-gray-100">
  <p className="text-xs font-semibold text-gray-500">
- {t.sidebar.switchOrganization}
+ {t.sidebar?.switchOrganization || "Switch Organization"}
  </p>
  </div>
  {availableOrganizations.map((org) => (
@@ -302,14 +309,14 @@ const { currentOrganization, availableOrganizations, switchOrganization, current
  <div className={'text-start'} style={isRTL ? { direction: 'rtl', unicodeBidi: 'embed' } : undefined}>
  <h1 className="text-sm font-black text-gray-900 tracking-tight">
  {isPlatformContext 
- ? t.sidebar.imsFoundation
+ ? (t.sidebar?.imsFoundation || "IMS Foundation")
  : (currentOrganization?.code?.toUpperCase() || currentOrganization?.name?.split(' - ')[0]?.toUpperCase() || 'Organization')
  }
  </h1>
  <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest leading-none mt-0.5">
  {isPlatformContext 
- ? t.sidebar.platformAdmin
- : t.sidebar.organization
+ ? (t.sidebar?.platformAdmin || "Platform Admin")
+ : (t.sidebar?.organization || "Organization")
  }
  </p>
  </div>
@@ -336,7 +343,7 @@ const { currentOrganization, availableOrganizations, switchOrganization, current
  className="text-[10px] font-black text-gray-400 uppercase tracking-[2px] mb-2"
  style={{ paddingInlineStart: '12px', textAlign: 'start', unicodeBidi: 'embed' }}
  >
- {language === 'ar' ? group.groupAr : group.group}
+ {language === 'ar' ? group.groupAr : (language === 'it' ? group.groupIt : group.group)}
  </h2>
  )}
  <div className="space-y-0.5">
@@ -344,7 +351,7 @@ const { currentOrganization, availableOrganizations, switchOrganization, current
  const Icon = iconMap[item.icon];
  const isActive = location === item.path || (item.subItems && item.subItems.some(sub => location === sub.path));
  const isExpanded = expandedItems.has(item.id);
- const label = language === 'ar' ? item.labelAr : item.label;
+ const label = language === 'ar' ? item.labelAr : (language === 'it' ? item.labelIt : item.label);
  
  // Check if any sub-item is active
  const hasActiveSubItem = item.subItems && item.subItems.some(sub => location === sub.path);
@@ -456,7 +463,7 @@ const { currentOrganization, availableOrganizations, switchOrganization, current
  >
  <Globe className="w-4 h-4 text-gray-500" />
  <span className="text-sm font-medium text-gray-700 flex-1" style={{ textAlign: 'start' }}>
- {t.sidebar.languageToggle}
+ {t.sidebar?.languageToggle || "Language"}
  </span>
  </button>
 

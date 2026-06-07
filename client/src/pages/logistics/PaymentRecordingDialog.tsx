@@ -22,7 +22,7 @@ import { toast } from "sonner";
 import { Calendar, Upload, AlertCircle, CheckCircle } from "lucide-react";
 import { trpc } from "@/lib/trpc";
 import { useLanguage } from '@/contexts/LanguageContext';
-import { useTranslation } from '@/i18n/useTranslation';
+import { useTranslation } from '@/i18n/TranslationProvider';
 
 interface PaymentRecordingDialogProps {
  open: boolean;
@@ -49,7 +49,7 @@ export function PaymentRecordingDialog({
  language = "en",
  onSuccess,
 }: PaymentRecordingDialogProps) {
- const { t } = useTranslation();
+ const t = useTranslation();
  const isRTL = language === "ar";
  const [isLoading, setIsLoading] = useState(false);
  const [uploadedFile, setUploadedFile] = useState<File | null>(null);

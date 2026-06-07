@@ -14,7 +14,7 @@ import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { Plus, Edit, Trash2, Download, Upload, Loader2, AlertCircle } from "lucide-react";
 import * as XLSX from 'xlsx';
-import { useTranslation } from '@/i18n/useTranslation';
+import { useTranslation } from '@/i18n/TranslationProvider';
 
 /**
  * Chart of Accounts Tab Component
@@ -31,7 +31,7 @@ import { useTranslation } from '@/i18n/useTranslation';
  * File Path: /client/src/components/finance/ChartOfAccountsTab.tsx
  */
 export default function ChartOfAccountsTab() {
- const { t } = useTranslation();
+ const t = useTranslation();
  const { language, isRTL} = useLanguage();
  const { currentOrganization } = useOrganization();
  const organizationId = currentOrganization?.id || 1;
@@ -431,7 +431,7 @@ export default function ChartOfAccountsTab() {
 
 // Account Form Component
 function AccountForm({ organizationId, initialData, onSubmit, accounts, isLoading }: any) {
-  const { t } = useTranslation();
+  const t = useTranslation();
  const { language, isRTL} = useLanguage();
  // Helper function to get account name in current language
  const getAccountName = (account: any) => {

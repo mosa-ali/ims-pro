@@ -80,7 +80,7 @@ import {
 } from "@/components/ui/dialog";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useLanguage } from '@/contexts/LanguageContext';
-import { useTranslation } from '@/i18n/useTranslation';
+import { useTranslation } from '@/i18n/TranslationProvider';
 
 interface MatchingDiscrepancy {
   type: string;
@@ -145,7 +145,7 @@ export function MatchingDetailsModal({
   hasInvoice = false,
   cumulativeSacPayables = 0,
 }: MatchingDetailsModalProps) {
-  const { t } = useTranslation();
+  const t = useTranslation();
   const isRTL = language === "ar";
 
   const getDiscrepancyTypeLabel = (type: string): string => {

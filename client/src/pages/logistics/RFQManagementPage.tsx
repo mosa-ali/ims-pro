@@ -8,7 +8,7 @@
  * Same approach as BidOpeningMinutes.tsx
  */
 
-import { useTranslation } from '@/i18n/useTranslation';
+import { useTranslation } from '@/i18n/TranslationProvider';
 import { useState } from "react";
 import { useParams, useNavigate } from "@/lib/router-compat";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -42,7 +42,7 @@ export default function RFQManagementPage() {
  const { id: prId } = useParams();
  const navigate = useNavigate();
  const { language, isRTL} = useLanguage();
- const { t } = useTranslation();
+ const t = useTranslation();
 
  // ✅ NEW: Use translation object pattern (same as BidOpeningMinutes.tsx)
  const localT = {

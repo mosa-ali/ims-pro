@@ -4,7 +4,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { Button } from '@/components/ui/button';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { formatNumber, formatCurrency } from '@/utils/formatters';
-import { useTranslation } from '@/i18n/useTranslation';
+import { useTranslation } from '@/i18n/TranslationProvider';
 import { Workbook } from 'exceljs';
 import { saveAs } from 'file-saver';
 import { useCaseManagementReportData } from '@/hooks/useCaseManagementReportData.tsx';
@@ -18,7 +18,7 @@ interface ReportsAnalyticsProps {
 
 export function ReportsAnalytics({
  projectId, projectName, donorName }: ReportsAnalyticsProps) {
- const { t } = useTranslation();
+ const t = useTranslation();
  const { isRTL } = useLanguage();
 const currentYear = new Date().getFullYear();
  const [dateFrom, setDateFrom] = useState(`${currentYear}-01-01`);

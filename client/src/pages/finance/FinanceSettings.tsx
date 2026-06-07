@@ -12,7 +12,7 @@
  * Global INGO/Donor standards compliant
  */
 
-import { useTranslation } from '@/i18n/useTranslation';
+import { useTranslation } from '@/i18n/TranslationProvider';
 import { useState, useMemo } from"react";
 import { useLanguage } from"@/contexts/LanguageContext";
 import { useOrganization } from"@/contexts/OrganizationContext";
@@ -72,7 +72,7 @@ import { BackButton } from "@/components/BackButton";
 
 // Translations
 export default function FinanceSettings() {
-  const { t } = useTranslation();
+  const t = useTranslation();
   const { language, isRTL } = useLanguage();
  const { currentOrganization } = useOrganization();
  const organizationId = currentOrganization?.id || 1;

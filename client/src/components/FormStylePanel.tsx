@@ -18,7 +18,7 @@
 import { useLanguage } from '@/contexts/LanguageContext';
 import { X, Info } from 'lucide-react';
 import { useState } from 'react';
-import { useTranslation } from '@/i18n/useTranslation';
+import { useTranslation } from '@/i18n/TranslationProvider';
 
 type FormStyle = 'default' | 'grid' | 'grid_caps' | 'multiple_pages' | 'grid_multiple' | 'grid_multiple_caps';
 
@@ -30,7 +30,7 @@ interface FormStylePanelProps {
 
 export function FormStylePanel({
  currentStyle, onUpdate, onClose }: FormStylePanelProps) {
- const { t } = useTranslation();
+ const t = useTranslation();
  const { language, isRTL } = useLanguage();
  const [selectedStyle, setSelectedStyle] = useState<FormStyle>(currentStyle);
 

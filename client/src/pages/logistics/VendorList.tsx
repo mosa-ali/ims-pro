@@ -65,7 +65,7 @@ import {
  ShieldX,
 } from 'lucide-react';
 import { Link } from 'wouter';
-import { useTranslation } from '@/i18n/useTranslation';
+import { useTranslation } from '@/i18n/TranslationProvider';
 import {
  DropdownMenu,
  DropdownMenuContent,
@@ -130,7 +130,7 @@ interface VendorListProps {
 
 export default function VendorList({
  vendorType: initialVendorType }: VendorListProps = {}) {
- const { t } = useTranslation();
+ const t = useTranslation();
  const { language, isRTL} = useLanguage();
  const { selectedOrganization, selectedOperatingUnit } = useOrganization();
  const organizationId = selectedOrganization?.id || 0;

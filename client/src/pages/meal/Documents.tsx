@@ -54,11 +54,11 @@ import { Button } from '@/components/ui/button';
 import { useNavigate } from '@/lib/router-compat';
 import { documentService, type DocumentFile, type FolderNode } from '@/services/documentService';
 import { SharePointSyncService, type SyncConfiguration } from '@/services/SharePointSyncService';
-import { useTranslation } from '@/i18n/useTranslation';
+import { useTranslation } from '@/i18n/TranslationProvider';
 import { BackButton } from "@/components/BackButton";
 
 export function Documents() {
- const { t } = useTranslation();
+ const t = useTranslation();
  const { language, isRTL } = useLanguage();
  const { user } = useAuth();
  const navigate = useNavigate();

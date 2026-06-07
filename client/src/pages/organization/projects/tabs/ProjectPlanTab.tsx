@@ -12,7 +12,7 @@ import { UnifiedExportButton } from '@/components/exports/UnifiedExportButton';
 import { useProjectData } from '@/hooks/useProjectData';
 import { exportToStandardExcel, exportExcelTemplate, type ExcelColumn } from '@/lib/standardExcelExport';
 import { ProjectPlanTabSkeleton } from "@/components/ProjectTabSkeletons";
-import { useTranslation } from '@/i18n/useTranslation';
+import { useTranslation } from '@/i18n/TranslationProvider';
 
 interface ProjectPlanTabProps {
  projectId: string;
@@ -174,7 +174,7 @@ function isActiveInMonth(itemStartDate: string, itemEndDate: string, monthDate: 
 
 export function ProjectPlanTab({ projectId }: ProjectPlanTabProps) {
   const { user } = useAuth();
-  const { t } = useTranslation();
+  const t = useTranslation();
   const { currentOrganizationId } = useOrganization();
   const { currentOperatingUnitId } = useOperatingUnit();
   const { direction, isRTL } = useLanguage();

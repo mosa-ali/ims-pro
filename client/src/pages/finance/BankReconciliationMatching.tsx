@@ -17,11 +17,11 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { CheckCircle, AlertCircle, Link as LinkIcon, Sparkles } from "lucide-react";
 import { toast } from "react-hot-toast";
 import { Link } from "wouter";
-import { useTranslation } from '@/i18n/useTranslation';
+import { useTranslation } from '@/i18n/TranslationProvider';
 import { BackButton } from "@/components/BackButton";
 
 export default function BankReconciliationMatching() {
-  const { t } = useTranslation();
+  const t = useTranslation();
   const { isRTL } = useLanguage();
   const { currentOrganizationId, currentOperatingUnitId } = useOperatingUnit();
   const tc = (t as any).treasuryCashManagement ?? {};

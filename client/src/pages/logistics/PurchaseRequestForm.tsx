@@ -43,7 +43,7 @@ import {
  DialogHeader,
  DialogTitle,
 } from "@/components/ui/dialog";
-import { useTranslation } from '@/i18n/useTranslation';
+import { useTranslation } from '@/i18n/TranslationProvider';
 import { BackButton } from "@/components/BackButton";
 import SignaturePad from "@/components/SignaturePad";
 import {
@@ -324,7 +324,7 @@ const clipboardItems = await navigator.clipboard.read();
  * - t.logistics.other: 'Other'
  * 
  * Bilingual Support: All keys support EN/AR via useTranslation() hook
- * Access via: const { t } = useTranslation();
+ * Access via: const t = useTranslation();
  */
 
 interface LineItem {
@@ -339,7 +339,7 @@ interface LineItem {
 }
 
 export default function PurchaseRequestForm() {
- const { t } = useTranslation();
+ const t = useTranslation();
  const { user } = useAuth();
  const { isRTL } = useLanguage();
  const [, navigate] = useLocation();

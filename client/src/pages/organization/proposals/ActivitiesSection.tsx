@@ -1,6 +1,6 @@
 import { Download, Upload } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { useTranslation } from '@/i18n/useTranslation';
+import { useTranslation } from '@/i18n/TranslationProvider';
 
 interface ActivitiesSectionProps {
  activities: any;
@@ -10,7 +10,7 @@ interface ActivitiesSectionProps {
 
 export function ActivitiesSection({
  activities, expectedResults, updateActivities }: ActivitiesSectionProps) {
- const { t } = useTranslation();
+ const t = useTranslation();
  const { isRTL } = useLanguage();
 
  const handleExportExcel = () => {

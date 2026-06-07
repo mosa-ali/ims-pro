@@ -6,7 +6,7 @@
 import { formatDate } from '@/utils/formatters';
 import { getOrganizationSettings } from '@/services/organizationService';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { useTranslation } from '@/i18n/useTranslation';
+import { useTranslation } from '@/i18n/TranslationProvider';
 import type { RequestForQuotation } from '@/services/rfqService';
 
 interface Props {
@@ -17,7 +17,7 @@ interface Props {
 
 export function RFQPrint({
  rfq, language, isRTL }: Props) {
- const { t } = useTranslation();
+ const t = useTranslation();
  const orgSettings = getOrganizationSettings();
  const orgName = language === 'ar' && orgSettings.nameAr ? orgSettings.nameAr : orgSettings.name;
 

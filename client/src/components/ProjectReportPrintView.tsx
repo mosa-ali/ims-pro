@@ -13,7 +13,7 @@ import { forwardRef } from 'react';
 import { ProjectReportData } from '@/hooks/useProjectReportData';
 import { RiskCalculationResult } from '@/utils/riskCalculation';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { useTranslation } from '@/i18n/useTranslation';
+import { useTranslation } from '@/i18n/TranslationProvider';
 
 
 interface ProjectReportPrintViewProps {

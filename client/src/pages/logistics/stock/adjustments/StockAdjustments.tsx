@@ -36,7 +36,7 @@ const STATUS_COLORS: Record<string, string> = {
 };
 
 export default function StockAdjustments() {
-  const { t } = useTranslation();
+  const t = useTranslation();
   const { isRTL } = useLanguage();
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("");

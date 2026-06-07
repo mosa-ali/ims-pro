@@ -1,4 +1,4 @@
-import { useTranslation } from '@/i18n/useTranslation';
+import { useTranslation } from '@/i18n/TranslationProvider';
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -41,7 +41,7 @@ import { BackButton } from "@/components/BackButton";
  * - Auto-generates PO when approved
  */
 export default function QuotationAnalysisDetail() {
-  const { t } = useTranslation();
+  const t = useTranslation();
  const { id } = useParams();
  const [, setLocation] = useLocation();
  const qaId = parseInt(id!);

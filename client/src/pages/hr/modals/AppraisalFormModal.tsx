@@ -15,7 +15,7 @@ import { useLanguage } from '@/app/contexts/LanguageContext';
 import { StaffMember } from '../types/hrTypes';
 import { appraisalService, AppraisalRecord } from '@/app/services/appraisalService';
 import { ModalOverlay } from '@/app/components/ui/ModalOverlay';
-import { useTranslation } from '@/i18n/useTranslation';
+import { useTranslation } from '@/i18n/TranslationProvider';
 
 interface Props {
  employee: StaffMember;
@@ -25,7 +25,7 @@ interface Props {
 
 export function AppraisalFormModal({
  employee, onClose, onSave }: Props) {
- const { t } = useTranslation();
+ const t = useTranslation();
  const { language, isRTL } = useLanguage();
  
  const [formData, setFormData] = useState({

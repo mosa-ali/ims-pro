@@ -1,11 +1,11 @@
 import { Globe, Check } from 'lucide-react';
 import { useLocation } from 'wouter';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { useTranslation } from '@/i18n/useTranslation';
+import { useTranslation } from '@/i18n/TranslationProvider';
 import { BackButton } from "@/components/BackButton";
 
 export function LanguageSettings() {
- const { t } = useTranslation();
+ const t = useTranslation();
  const [, navigate] = useLocation();
  const { language, setLanguage, isRTL } = useLanguage();
  const labels = {

@@ -1,50 +1,56 @@
 import { LayoutDashboard, Building2, Settings, ClipboardList, Mail } from "lucide-react";
 import { Link, useLocation } from "wouter";
-import { useTranslation } from "@/i18n/useTranslation";
+import { useTranslation } from "@/i18n/TranslationProvider";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { cn } from "@/lib/utils";
-import { useLanguage } from '@/contexts/LanguageContext';
 
 interface NavItem {
   icon: React.ComponentType<{ className?: string }>;
   label: string;
   labelAr: string;
+  labelIt: string;
   path: string;
 }
 
 export default function PlatformSidebar() {
-  const { t } = useTranslation();
-  const { isRTL } = useLanguage();
+  const t = useTranslation();
+  const { isRTL, language } = useLanguage();
   const [location] = useLocation();
 
   const navItems: NavItem[] = [
     {
       icon: LayoutDashboard,
-      label: t.platform.dashboard.title,
-      labelAr: t.platform.dashboard.title,
+      label: t.platform?.dashboard?.title || "Dashboard",
+      labelAr: t.platform?.dashboard?.title || "لوحة التحكم",
+      labelIt: t.platform?.dashboard?.title || "Cruscotto Piattaforma",
       path: "/platform",
     },
     {
       icon: Building2,
-      label: t.platform.organizationManagement,
-      labelAr: t.platform.organizationManagement,
+      label: t.platform?.dashboard.organizationManagement || "Organization Management",
+      labelAr: t.platform?.dashboard.organizationManagement || "إدارة المنظمات",
+      labelIt: t.platform?.dashboard.organizationManagement || "Gestione Organizzazioni",
       path: "/platform/organizations",
     },
     {
       icon: ClipboardList,
       label: "Access Requests",
       labelAr: "طلبات الوصول",
+      labelIt: "Gestione Email",
       path: "/platform/access-requests",
     },
     {
       icon: Mail,
       label: "Email Management",
       labelAr: "إدارة البريد الإلكتروني",
+      labelIt: "Impostazioni Piattaforma",
       path: "/platform/email-management",
     },
     {
       icon: Settings,
-      label: t.platform.platformSettings,
-      labelAr: t.platform.platformSettings,
+      label: t.platform?.dashboard.platformSettings || "Platform Settings",
+      labelAr: t.platform?.dashboard.platformSettings || "إعدادات المنصة",
+      labelIt: t.platform?.dashboard.platformSettings || "Impostazioni Piattaforma",
       path: "/platform/settings",
     },
   ];
@@ -60,13 +66,13 @@ export default function PlatformSidebar() {
           "text-lg font-semibold text-foreground",
           isRTL && "text-right"
         )}>
-          {t.platform.sidebarTitle}
+          {t.platform.dashboard.sidebarTitle}
         </h2>
         <p className={cn(
           "text-sm text-muted-foreground mt-1",
           isRTL && "text-right"
         )}>
-          {t.platform.sidebarSubtitle}
+          {t.platform.dashboard.sidebarSubtitle}
         </p>
       </div>
 
@@ -88,7 +94,7 @@ export default function PlatformSidebar() {
               )}
             >
               <Icon className="w-5 h-5 flex-shrink-0" />
-              <span className="text-sm">{isRTL ? item.labelAr : item.label}</span>
+              <span className="text-sm">{language === 'ar' ? item.labelAr : (language === 'it' ? item.labelIt : item.label)}</span>
             </Link>
           );
         })}
@@ -100,7 +106,7 @@ export default function PlatformSidebar() {
           "text-xs text-muted-foreground",
           isRTL && "text-right"
         )}>
-          {t.common.settings}
+          {t.common?.settings || "Settings"}
         </p>
       </div>
     </aside>

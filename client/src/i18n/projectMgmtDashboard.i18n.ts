@@ -158,7 +158,7 @@ export const dashboardTranslations = {
     dLeft: 'd',
     burnHealth_critical: 'Critical',
     burnHealth_warning: 'Warning',
-     burnHealth_healthy: 'Healthy',
+    burnHealth_healthy: 'Healthy',
 
     // ── Burn Rate Analytics ───────────────────────────────────────────────────────────────────
     burnRateAnalytics: {
@@ -365,5 +365,189 @@ export const dashboardTranslations = {
     noFinancialData: 'لا توجد بيانات مالية متاحة',
     across: 'عبر',
     inPortfolio: 'في المحفظة',
+  },
+
+  it: {
+    title: 'Cruscotto Gestione Programmi',
+    subtitle: 'Panoramica di tutti i progetti, bilanci e metriche di performance',
+
+    activeProjects: {
+      title: 'Progetti Attivi',
+      description: 'Visualizza tutti i progetti attivi nel portafoglio',
+      linkText: 'Visualizza Progetti',
+    },
+
+    reportingSchedule: {
+      title: 'Calendario Reporting Progetti',
+      description: 'Traccia i cicli di reporting e la conformità',
+      linkText: 'Visualizza Calendario',
+    },
+
+    annualReport: {
+      title: 'Rapporto Annuale Programmi',
+      description: 'Genera e visualizza i rapporti annuali',
+      linkText: 'Visualizza Rapporto',
+    },
+
+    programsOverviewReport: {
+      title: 'Rapporto Panoramica Programmi',
+      description: 'Dashboard esecutivo con salute del progetto, analisi di bilancio e metriche di conformità',
+      linkText: 'Visualizza Rapporto',
+    },
+
+    // ── KPI strip ────────────────────────────────────────────────────────────
+    kpi: {
+      activeProjects: 'Progetti Attivi',
+      portfolioBudget: 'Bilancio Portafoglio',
+      burnRate: 'Tasso di Consumo',
+      projectsAtRisk: 'Progetti a Rischio',
+      overdueReports: 'Rapporti Scaduti',
+      expiringGrants: 'Scadenza in 30d',
+      complianceScore: 'Punteggio Conformità',
+      totalAlerts: 'Totale Avvisi',
+    },
+
+    // ── Legacy portfolio health cards ────────────────────────────────────────
+    portfolioHealth: {
+      title: 'Salute Portafoglio',
+      totalBudget: 'Bilancio Totale',
+      spent: 'Importo Speso',
+      balance: 'Saldo',
+    },
+
+    performance: {
+      title: 'Performance',
+      avgCompletionRate: 'Tasso Medio di Completamento',
+      onTrack: 'In Corso',
+    },
+
+    compliance: {
+      title: 'Conformità',
+      reportingComplianceRate: 'Conformità Reporting',
+      pendingApprovals: 'Approvazioni in Sospeso',
+    },
+
+    // ── Alerts ───────────────────────────────────────────────────────────────
+    alerts: {
+      title: 'Avvisi Esecutivi',
+      atRisk: 'Progetti a Rischio',
+      overBudget: 'Progetti Oltre Budget',
+      expiringSoon: 'Scadenza Imminente',
+      overdueReports: 'Rapporti Scaduti',
+      noAlerts: 'Nessun avviso attivo',
+    },
+
+    // ── Charts ───────────────────────────────────────────────────────────────
+    budgetBurnTrend: 'Tendenza Consumo Bilancio (12 Mesi)',
+    statusDistribution: 'Distribuzione Stato Progetti',
+    projectSnapshot: 'Istantanea Progetto',
+
+    // ── Compliance overview ──────────────────────────────────────────────────
+    complianceOverview: {
+      title: 'Conformità Reporting',
+      submitted: 'Sottomesso al Donante',
+      inReview: 'In Revisione',
+      pending: 'In Sospeso',
+      overdue: 'Scaduto',
+      total: 'Totale Calendari',
+      complianceRate: 'Tasso Conformità',
+    },
+
+    // ── Beneficiary progress ─────────────────────────────────────────────────
+    beneficiaryProgress: {
+      title: 'Copertura Beneficiari',
+      reached: 'Raggiunti',
+      target: 'Obiettivo',
+      noData: 'Dati beneficiari non disponibili',
+    },
+
+    // ── Risk table ───────────────────────────────────────────────────────────
+    riskTable: 'Panoramica Rischi Progetto',
+    noRiskData: 'Nessun progetto attivo trovato',
+
+    // ── Snapshot table ───────────────────────────────────────────────────────
+    projectName: 'Nome Progetto',
+    status: 'Stato',
+    donor: 'Donante',
+    budgetUtil: 'Utilizzo Bilancio',
+    risk: 'Rischio',
+    endDate: 'Data Fine',
+    riskLevel: 'Livello Rischio',
+    overdueReports: 'Rapporti Scaduti',
+    daysRemaining: 'Giorni Rimanenti',
+    burnHealth: 'Salute Consumo',
+
+    noDataAvailable: 'Nessun dato disponibile',
+
+    // ── Executive Alerts (hardcoded strings) ────────────────────────────────
+    complianceRiskAlerts: 'Avvisi Conformità e Rischi',
+    overBudget: 'OLTRE BUDGET',
+    projectsAtRisk: 'PROGETTI A RISCHIO',
+    expiringSoon30: 'SCADENZA IN 30 GIORNI',
+
+    // ── Beneficiary Portfolio ────────────────────────────────────────────────
+    beneficiaryPortfolio: 'Portafoglio Beneficiari',
+
+    // ── Reporting Compliance ─────────────────────────────────────────────────
+    reportingCompliance: 'Conformità Reporting',
+
+    // ── KPI subtexts ────────────────────────────────────────────────────────
+    atRisk: 'a-rischio',
+    submitted: 'sottomesso',
+    expiringSoon: 'scadenza imminente',
+    pending: 'in-sospeso',
+    remaining: 'rimanente',
+    spent: 'speso',
+    total: 'totale',
+
+    // ── Top Grants ──────────────────────────────────────────────────────────
+    topGrants: 'Principali Sovvenzioni',
+
+    // ── Upcoming Reporting Deadlines ─────────────────────────────────────────
+    upcomingReportingDeadlines: 'Prossime Scadenze Reporting',
+
+    // ── Expiring Projects ────────────────────────────────────────────────────
+    expiringProjects: 'Progetti in Scadenza',
+
+    // ── Project Overview Table ──────────────────────────────────────────────
+    projectOverview: 'Panoramica Progetti',
+    colProjectName: 'Nome Progetto',
+    colStatus: 'Stato',
+    colDonor: 'Donante',
+    colRisk: 'Rischio',
+    colBudgetUtil: 'Utilizzo Bilancio',
+    colOverdueReports: 'Rapporti Scaduti',
+    colDaysLeft: 'Giorni Rimanenti',
+    colBurnHealth: 'Salute Consumo',
+    colEndDate: 'Data Fine',
+    noProjects: 'Nessun progetto trovato',
+    none: 'Nessuno',
+    dOverdue: 'g scaduto',
+    dLeft: 'g',
+    burnHealth_critical: 'Critico',
+    burnHealth_warning: 'Avviso',
+    burnHealth_healthy: 'Salutare',
+
+    // ── Burn Rate Analytics ───────────────────────────────────────────────────────────────────
+    burnRateAnalytics: {
+      title: 'Analisi Consumo Bilancio (12 Mesi)',
+      noData: 'Nessun dato finanziario disponibile',
+      hint: 'Le allocazioni di bilancio e le spese appariranno qui una volta registrate',
+      totalBudget: 'Bilancio Totale',
+      totalSpent: 'Importo Totale Speso',
+      remaining: 'Rimanente',
+      forecast: 'Previsione',
+    },
+
+    // ── Portfolio Financial Snapshot ───────────────────────────────────────────────────────────────────
+    portfolioFinancialSnapshot: 'Istantanea Finanziaria Portafoglio',
+    highUtilization: 'Utilizzo elevato — rivedi i fondi rimanenti',
+    onTrack: 'In corso',
+    budgetAvailable: 'bilancio disponibile',
+    activeGrantsValue: 'Valore Sovvenzioni Attive',
+    avgRemainingPerProject: 'Media rimanente per progetto',
+    noFinancialData: 'Nessun dato finanziario disponibile',
+    across: 'Su',
+    inPortfolio: 'nel portafoglio',
   },
 };

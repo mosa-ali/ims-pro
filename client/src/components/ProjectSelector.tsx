@@ -42,7 +42,7 @@ export function ProjectSelector({
  showIcon = true,
  allowClear = true,
 }: ProjectSelectorProps) {
- const { t } = useTranslation();
+ const t = useTranslation();
 const [searchQuery, setSearchQuery] = useState("");
  
  // Fetch projects scoped by organization/operating unit

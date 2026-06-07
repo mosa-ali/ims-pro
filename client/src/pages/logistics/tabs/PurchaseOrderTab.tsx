@@ -4,7 +4,7 @@
  * Handles PO generation internally with QA/BA source detection
  * Bilingual EN/AR support
  */
-import { useTranslation } from '@/i18n/useTranslation';
+import { useTranslation } from '@/i18n/TranslationProvider';
 import { useLanguage } from "@/contexts/LanguageContext";
 import { trpc } from "@/lib/trpc";
 import { Button } from "@/components/ui/button";
@@ -35,7 +35,7 @@ const statusColors: Record<string, string> = {
 
 export default function PurchaseOrderTab({ purchaseRequestId }: PurchaseOrderTabProps) {
   const { isRTL } = useLanguage();
-  const { t } = useTranslation();
+  const t = useTranslation();
   const navigate = useNavigate();
   const [showDialog, setShowDialog] = useState(false);
   const [poForm, setPOForm] = useState({ deliveryDate: "", deliveryLocation: "", paymentTerms: "", notes: "" });

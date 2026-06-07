@@ -50,7 +50,7 @@ import {
 import { Link } from "wouter";
 import * as XLSX from "xlsx";
 import { useLanguage } from '@/contexts/LanguageContext';
-import { useTranslation } from '@/i18n/useTranslation';
+import { useTranslation } from '@/i18n/TranslationProvider';
 import { BackButton } from "@/components/BackButton";
 // DonorCombobox replaced with Select
 
@@ -770,7 +770,7 @@ function CommunicationForm({
  donors: any[];
  language: string;
 }) {
- const { t } = useTranslation();
+ const t = useTranslation();
  return (
  <div className="space-y-4">
  <div className="grid grid-cols-2 gap-4">

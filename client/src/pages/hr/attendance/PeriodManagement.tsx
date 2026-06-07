@@ -45,7 +45,7 @@ interface AttendancePeriod {
 }
 
 export function PeriodManagement() {
-  const { t } = useTranslation();
+  const t = useTranslation();
   const { isRTL } = useLanguage();
 
   const [selectedPeriod, setSelectedPeriod] =

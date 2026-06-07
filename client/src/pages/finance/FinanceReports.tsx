@@ -10,11 +10,11 @@ import { useNavigate } from"@/lib/router-compat";
 import { Button } from"@/components/ui/button";
 import { Download, Upload } from"lucide-react";
 import ReportsTab from"@/components/finance/ReportsTab";
-import { useTranslation } from '@/i18n/useTranslation';
+import { useTranslation } from '@/i18n/TranslationProvider';
 import { BackButton } from "@/components/BackButton";
 
 export default function FinanceReports() {
-  const { t } = useTranslation();
+  const t = useTranslation();
 const { language, isRTL} = useLanguage();
  const navigate = useNavigate();
  

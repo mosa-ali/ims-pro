@@ -9,7 +9,7 @@ import { X, Save, AlertCircle } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { StaffMember } from '@/services/hrService';
 import { ModalOverlay } from '@/components/ui/ModalOverlay';
-import { useTranslation } from '@/i18n/useTranslation';
+import { useTranslation } from '@/i18n/TranslationProvider';
 
 interface EditEmployeeModalProps {
  isOpen: boolean;
@@ -20,7 +20,7 @@ interface EditEmployeeModalProps {
 
 export function EditEmployeeModal({
  isOpen, onClose, employee, onSave }: EditEmployeeModalProps) {
- const { t } = useTranslation();
+ const t = useTranslation();
  const { language, isRTL } = useLanguage();
  const [formData, setFormData] = useState<Partial<StaffMember>>({});
  const [saving, setSaving] = useState(false);

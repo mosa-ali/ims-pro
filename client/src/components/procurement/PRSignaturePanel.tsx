@@ -48,7 +48,7 @@ export function PRSignaturePanel({
   onSignatureSubmit,
   currentUserRole,
 }: PRSignaturePanelProps) {
-  const { t } = useTranslation();
+  const t = useTranslation();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [isDrawing, setIsDrawing] = useState(false);
   const [signerName, setSignerName] = useState("");

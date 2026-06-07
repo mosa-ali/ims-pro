@@ -13,7 +13,7 @@ import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { Plus, Edit, Trash2, Download, Upload, Clock, CheckCircle, XCircle } from "lucide-react";
 import * as XLSX from 'xlsx';
-import { useTranslation } from '@/i18n/useTranslation';
+import { useTranslation } from '@/i18n/TranslationProvider';
 
 /**
  * Budgets Tab Component
@@ -35,7 +35,7 @@ import { useTranslation } from '@/i18n/useTranslation';
  * <BudgetsTab />
  */
 export default function BudgetsTab() {
- const { t } = useTranslation();
+ const t = useTranslation();
  const { language, isRTL} = useLanguage();
  // Helper function to get account name in current language
  const getAccountName = (account: any) => {
@@ -337,7 +337,7 @@ export default function BudgetsTab() {
 
 // Budget Form Component
 function BudgetForm({ projects, accounts, onSubmit }: any) {
-  const { t } = useTranslation();
+  const t = useTranslation();
  const { language, isRTL} = useLanguage();
  // Helper function to get account name in current language
  const getAccountName = (account: any) => {

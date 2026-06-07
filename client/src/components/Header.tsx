@@ -3,8 +3,8 @@ import { ChevronDown, Globe, LogOut, Settings as SettingsIcon, User, MapPin, Lay
 import { useAuth } from "@/_core/hooks/useAuth";
 import { useOrganization } from "@/contexts/OrganizationContext";
 import { useOperatingUnit } from "@/contexts/OperatingUnitContext";
+import { useTranslation } from "@/i18n/TranslationProvider";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { useTranslation } from "@/i18n/useTranslation";
 import { useLocation } from "wouter";
 import { useOrganizationBranding } from "@/hooks/useOrganizationBranding";
 import { ROUTES, ROUTE_LABELS } from "@/pages/organization/constants";
@@ -27,8 +27,9 @@ export function Header() {
   const { user, logout } = useAuth();
   const { currentOrganization, availableOrganizations } = useOrganization();
   const { currentOperatingUnit, userOperatingUnits, switchOperatingUnit } = useOperatingUnit();
-  const { direction, setLanguage, isRTL } = useLanguage();
-  const { t, language } = useTranslation();
+  const t = useTranslation();
+  const { isRTL, language, changeLanguage } = useLanguage();
+
   const [location] = useLocation();
   const { branding } = useOrganizationBranding();
 
@@ -80,8 +81,8 @@ export function Header() {
 
   // Breadcrumb text
   const contextLabel = isPlatformContext
-    ? t.header.platformAdmin
-    : (isRTL ? (currentOrganization?.nameAr || currentOrganization?.name) : currentOrganization?.name);
+    ? t.platform.dashboard.title
+    : (language === 'ar' ? (currentOrganization?.nameAr || currentOrganization?.name) : currentOrganization?.name);
 
   const getPageLabel = () => {
   const matchedRoute = Object.keys(ROUTE_LABELS)
@@ -89,10 +90,10 @@ export function Header() {
     .find((route) => location.startsWith(route));
 
   if (!matchedRoute) {
-    return isRTL ? "الصفحة الرئيسية" : "Dashboard";
+    return language === 'ar' ? "الصفحة الرئيسية" : "Dashboard";
   }
 
-  return isRTL
+  return language === 'ar'
     ? ROUTE_LABELS[matchedRoute as keyof typeof ROUTE_LABELS].ar
     : ROUTE_LABELS[matchedRoute as keyof typeof ROUTE_LABELS].en;
 };
@@ -115,8 +116,8 @@ const pageLabel = getPageLabel();
 
   // Handle language switch
   const handleLanguageSwitch = () => {
-    const newLang = t.components.ar;
-    setLanguage(newLang);
+    const newLang = language === 'en' ? 'ar' : 'en';
+    changeLanguage(newLang);
   };
 
   // Handle OU switch
@@ -131,7 +132,7 @@ const pageLabel = getPageLabel();
   location === "/organization/";
 const welcomeLabel =
   isDashboardPage && user?.name
-    ? `${t.header.welcome ?? "Welcome"}, ${user.name}`
+    ? `${t.common.welcome ?? "Welcome"}, ${user.name}`
     : undefined;
 
   return (
@@ -190,7 +191,7 @@ const welcomeLabel =
           }`}
           style={mainStyle}
           title={
-            isRTL
+            language === 'ar'
               ? (
                   branding.organizationNameAr ||
                   branding.organizationName ||
@@ -202,7 +203,7 @@ const welcomeLabel =
                 )
           }
         >
-          {isRTL
+          {language === 'ar'
             ? (
                 branding.organizationNameAr ||
                 branding.organizationName ||
@@ -305,13 +306,13 @@ const welcomeLabel =
                   className={`text-[10px] uppercase font-bold tracking-wider ${isPlatformContext ? subTextColorClass : ''}`}
                   style={subStyle}
                 >
-                  {t.header.activeOffice}
+                  {t.header?.activeOffice || "Active Office"}
                 </div>
                 <div
                   className={`font-semibold truncate ${isPlatformContext ? textColorClass : ''}`}
                   style={mainStyle}
                 >
-                  {isRTL ? (currentOperatingUnit?.nameAr || currentOperatingUnit?.name) : currentOperatingUnit?.name}
+                  {language === 'ar' ? (currentOperatingUnit?.nameAr || currentOperatingUnit?.name) : currentOperatingUnit?.name}
                 </div>
               </div>
               <ChevronDown
@@ -326,7 +327,7 @@ const welcomeLabel =
                 <div className={`absolute mt-2 w-80 bg-white rounded-xl shadow-2xl border border-gray-200 py-2 z-50 ${isRTL ? 'start-0' : 'end-0'}`}>
                   <div className="px-4 py-3 border-b border-gray-100 text-start">
                     <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">
-                      {t.header.switchOperatingUnit}
+                      {t.header?.switchOperatingUnit || "Switch Operating Unit"}
                     </p>
                   </div>
                   {userOperatingUnits.map((unit) => (
@@ -335,7 +336,7 @@ const welcomeLabel =
                       onClick={() => handleOperatingUnitSwitch(unit.id)}
                       className={`w-full px-4 py-3 text-sm hover:bg-gray-50 transition-colors text-start ${unit.id === currentOperatingUnit?.id ? 'bg-blue-50 border-e-4 border-blue-600' : ''}`}
                     >
-                      <div className="font-bold text-gray-900">{isRTL ? (unit.nameAr || unit.name) : unit.name}</div>
+                      <div className="font-bold text-gray-900">{language === 'ar' ? (unit.nameAr || unit.name) : unit.name}</div>
                       <div className="text-xs text-gray-500 mt-1">{unit.type.replace('_', ' ')}</div>
                     </button>
                   ))}

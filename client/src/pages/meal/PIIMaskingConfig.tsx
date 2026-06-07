@@ -22,7 +22,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { Save, Eye, EyeOff, Shield, AlertCircle } from 'lucide-react';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { useTranslation } from '@/i18n/useTranslation';
+import { useTranslation } from '@/i18n/TranslationProvider';
 import { BackButton } from "@/components/BackButton";
 
 interface MaskableField {
@@ -37,7 +37,7 @@ interface MaskableField {
 }
 
 export function PIIMaskingConfig() {
- const { t } = useTranslation();
+ const t = useTranslation();
  const navigate = useNavigate();
  const searchString = useSearch();
  const searchParams = new URLSearchParams(searchString);

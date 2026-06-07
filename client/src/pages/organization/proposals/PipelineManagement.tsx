@@ -5,7 +5,7 @@ import { saveAs } from 'file-saver';
 import { UnifiedExportButton } from '@/components/exports/UnifiedExportButton';
 import { trpc } from '@/lib/trpc';
 import { useAuth } from '@/_core/hooks/useAuth';
-import { useTranslation } from '@/i18n/useTranslation';
+import { useTranslation } from '@/i18n/TranslationProvider';
 import { BackButton } from "@/components/BackButton";
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -36,7 +36,7 @@ interface PipelineOpportunity {
 }
 
 export function PipelineManagement() {
-  const { t } = useTranslation();
+  const t = useTranslation();
   const { isRTL } = useLanguage();
   const { user } = useAuth();
   

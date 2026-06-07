@@ -1,4 +1,4 @@
-import { useTranslation } from '@/i18n/useTranslation';
+import { useTranslation } from '@/i18n/TranslationProvider';
 import { useLanguage } from '@/contexts/LanguageContext';
 /**
  * Mitigation Actions Panel
@@ -26,7 +26,7 @@ interface MitigationActionsPanelProps {
 }
 
 export function MitigationActionsPanel({ riskId, riskTitle }: MitigationActionsPanelProps) {
-  const { t } = useTranslation();
+  const t = useTranslation();
   const { language, isRTL} = useLanguage();
  const [isCreateOpen, setIsCreateOpen] = useState(false);
  const [selectedAction, setSelectedAction] = useState<number | null>(null);

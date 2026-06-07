@@ -17,7 +17,7 @@
  * - Payment voucher PDF generation
  */
 
-import { useTranslation } from '@/i18n/useTranslation';
+import { useTranslation } from '@/i18n/TranslationProvider';
 import { useState, useRef, useMemo, useCallback } from "react";
 import { useLocation } from "wouter";
 import { trpc } from "@/lib/trpc";
@@ -114,7 +114,7 @@ const MATCHING_STATUS_ORDER: Record<string, number> = {
 };
 
 export default function PayablesManagement() {
-  const { t } = useTranslation();
+  const t = useTranslation();
   const { language, isRTL } = useLanguage();
   const [, setLocation] = useLocation();
   const utils = trpc.useUtils();
@@ -1458,7 +1458,7 @@ function InvoiceDialog({ open, onOpenChange, payableId, onRefresh }: {
   payableId?: number;
   onRefresh?: () => void;
 }) {
-  const { t } = useTranslation();
+  const t = useTranslation();
   const [rejectReason, setRejectReason] = useState("");
   const [showRejectForm, setShowRejectForm] = useState(false);
 

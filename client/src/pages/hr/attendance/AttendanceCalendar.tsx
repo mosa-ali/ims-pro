@@ -88,7 +88,7 @@ function getMonthDays(date: Date) {
 }
 
 export function AttendanceCalendar() {
-  const { t } = useTranslation();
+  const t = useTranslation();
   const { language, isRTL } = useLanguage();
   const { user } = useAuth();
 

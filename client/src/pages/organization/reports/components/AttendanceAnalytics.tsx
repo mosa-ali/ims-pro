@@ -1,6 +1,6 @@
 import { Clock, Activity } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { useTranslation } from '@/i18n/useTranslation';
+import { useTranslation } from '@/i18n/TranslationProvider';
 
 interface AttendanceStats {
  overallRate: number;
@@ -15,7 +15,7 @@ interface Props {
 
 export function AttendanceAnalytics({
  data }: Props) {
- const { t } = useTranslation();
+ const t = useTranslation();
  const { language, isRTL} = useLanguage();
  const localT = {
  attendanceAnalytics: t.orgReports.attendanceAnalytics,

@@ -45,7 +45,7 @@ export function GrantSelector({
  showIcon = true,
  allowClear = true,
 }: GrantSelectorProps) {
- const { t } = useTranslation();
+ const t = useTranslation();
 const [searchQuery, setSearchQuery] = useState("");
  
  // Fetch grants scoped by organization/operating unit

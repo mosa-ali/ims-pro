@@ -29,7 +29,7 @@ const statusColors: Record<string, string> = {
 };
 
 export default function TransferTracking() {
-  const { t } = useTranslation();
+  const t = useTranslation();
   const { isRTL } = useLanguage();
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("");

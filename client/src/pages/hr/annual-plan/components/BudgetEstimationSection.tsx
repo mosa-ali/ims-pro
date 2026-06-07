@@ -12,7 +12,7 @@ import { useState } from 'react';
 import { DollarSign, Plus, Edit, Trash2, Save } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import type { HRAnnualPlan, NonSalaryCost } from '@shared/types/hrAnnualPlanning';
-import { useTranslation } from '@/i18n/useTranslation';
+import { useTranslation } from '@/i18n/TranslationProvider';
 
 interface BudgetEstimationSectionProps {
  plan: HRAnnualPlan;
@@ -22,7 +22,7 @@ interface BudgetEstimationSectionProps {
 
 export function BudgetEstimationSection({
  plan, isEditing, onUpdate }: BudgetEstimationSectionProps) {
- const { t } = useTranslation();
+ const t = useTranslation();
  const { language, isRTL } = useLanguage();
  
  const [isAddingCost, setIsAddingCost] = useState(false);

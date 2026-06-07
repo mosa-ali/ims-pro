@@ -52,13 +52,13 @@ import { BudgetEstimationSection } from './components/BudgetEstimationSection';
 import { TrainingPlanSection } from './components/TrainingPlanSection';
 import { RiskMitigationSection } from './components/RiskMitigationSection';
 import { ApprovalSection } from './components/ApprovalSection';
-import { useTranslation } from '@/i18n/useTranslation';
+import { useTranslation } from '@/i18n/TranslationProvider';
 import { BackButton } from "@/components/BackButton";
 import { useAnnualPlan, useUpdateAnnualPlan, useSubmitAnnualPlanForReview, useCompleteAnnualPlanReview } from '@/hooks/useAnnualPlanning';
 import type { HRAnnualPlan } from '@shared/types/hrAnnualPlanning';
 
 export function HRAnnualPlanView() {
- const { t } = useTranslation();
+ const t = useTranslation();
  const { id } = useParams<{ id: string }>();
  const navigate = useNavigate();
  const { language, isRTL } = useLanguage();

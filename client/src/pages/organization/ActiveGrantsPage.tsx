@@ -1,4 +1,4 @@
-import { useTranslation } from '@/i18n/useTranslation';
+import { useTranslation } from '@/i18n/TranslationProvider';
 import { useState } from 'react';
 import { Search, Download, Upload, Trash2, Eye, DollarSign, Calendar, Building2, RefreshCw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -22,7 +22,7 @@ import { BackButton } from "@/components/BackButton";
  * Displays list of grants with filtering, search, and CRUD operations
  */
 export default function ActiveGrantsPage() {
-  const { t } = useTranslation();
+  const t = useTranslation();
  const { isRTL } = useLanguage();
  const { currentOrganizationId } = useOrganization();
  const { currentOperatingUnitId } = useOperatingUnit();

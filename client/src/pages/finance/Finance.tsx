@@ -1,4 +1,4 @@
-import { useTranslation } from '@/i18n/useTranslation';
+import { useTranslation } from '@/i18n/TranslationProvider';
 import { useEffect } from"react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from"@/components/ui/tabs";
 import OverviewTab from"@/components/finance/OverviewTab";
@@ -35,7 +35,7 @@ import { useLanguage } from"@/contexts/LanguageContext";
  */
 export default function Finance() {
 const { language, isRTL} = useLanguage();
-  const { t } = useTranslation();
+  const t = useTranslation();
  
  
 

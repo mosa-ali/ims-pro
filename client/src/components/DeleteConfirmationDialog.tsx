@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useTranslation } from '@/i18n/useTranslation';
+import { useTranslation } from '@/i18n/TranslationProvider';
 import { useLanguage } from '@/contexts/LanguageContext';
 import {
   AlertDialog,
@@ -41,7 +41,7 @@ export function DeleteConfirmationDialog({
   reasonMinLength = 3,
 }: DeleteConfirmationDialogProps) {
   const { language, isRTL } = useLanguage();
-  const { t } = useTranslation();
+  const t = useTranslation();
   const [reason, setReason] = useState("");
 
   const isReasonValid = !requireReason || reason.trim().length >= reasonMinLength;

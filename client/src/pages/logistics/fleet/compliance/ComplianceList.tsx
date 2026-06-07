@@ -41,7 +41,7 @@ import { BackButton } from "@/components/BackButton";
 import { useTranslation } from "@/i18n/useTranslation";
 
 export default function ComplianceList() {
-  const { t } = useTranslation();
+  const t = useTranslation();
   const { isRTL } = useLanguage();
   const { currentOrganization } = useOrganization();
   const organizationId = currentOrganization?.id || 1;

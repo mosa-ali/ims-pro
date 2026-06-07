@@ -24,7 +24,7 @@ const statusColors: Record<string, string> = {
 };
 
 export default function PhysicalCountList() {
-  const { t } = useTranslation();
+  const t = useTranslation();
   const { isRTL } = useLanguage();
   const [, setLocation] = useLocation();
   const [search, setSearch] = useState("");

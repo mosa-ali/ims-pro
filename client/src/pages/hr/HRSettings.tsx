@@ -51,7 +51,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { hrSettingsService, Department, Position, ContractType, LeaveType, ExitReason } from '@/app/services/hrSettingsService';
 import { HRAuditLogTab } from './HRAuditLogTab';
 import { MasterDataSection } from '@/app/components/hr/MasterDataSection';
-import { useTranslation } from '@/i18n/useTranslation';
+import { useTranslation } from '@/i18n/TranslationProvider';
 import { BackButton } from "@/components/BackButton";
 
 type SettingsTab = 'permissions' | 'masterData' | 'workflow' | 'templates' | 'systemRules' | 'auditLog';
@@ -119,7 +119,7 @@ interface SystemRules {
 }
 
 export function HRSettings() {
- const { t } = useTranslation();
+ const t = useTranslation();
  const { language, isRTL } = useLanguage();
  const navigate = useNavigate();
  const [activeTab, setActiveTab] = useState<SettingsTab>('permissions');

@@ -13,7 +13,7 @@ import { useAuth } from "@/_core/hooks/useAuth";
 import { toast } from "sonner";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { useTranslation } from '@/i18n/useTranslation';
+import { useTranslation } from '@/i18n/TranslationProvider';
 import SignatureCanvas from "@/components/SignatureCanvas";
 import { BackButton } from "@/components/BackButton";
 
@@ -40,7 +40,7 @@ interface Attendee {
 }
 
 export default function BidOpeningMinutes() {
- const { t } = useTranslation();
+ const t = useTranslation();
  const { id } = useParams<{ id: string }>();
  const [, navigate] = useLocation();
  const prId = parseInt(id || "0");

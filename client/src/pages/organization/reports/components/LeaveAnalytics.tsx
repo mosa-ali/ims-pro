@@ -1,6 +1,6 @@
 import { Calendar } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { useTranslation } from '@/i18n/useTranslation';
+import { useTranslation } from '@/i18n/TranslationProvider';
 
 interface LeaveStats {
  takenByType: { type: string; count: number }[];
@@ -15,7 +15,7 @@ interface Props {
 
 export function LeaveAnalytics({
  data }: Props) {
- const { t } = useTranslation();
+ const t = useTranslation();
  const { language, isRTL} = useLanguage();
  const localT = {
  leaveAnalytics: t.orgReports.leaveAnalytics,

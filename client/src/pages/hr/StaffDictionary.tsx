@@ -40,7 +40,7 @@ import { useAuth } from '@/_core/hooks/useAuth';
 import { trpc } from '@/lib/trpc';
 import { exportStaffToExcel } from '@/app/utils/staffExcel';
 import { Link } from 'wouter';
-import { useTranslation } from '@/i18n/useTranslation';
+import { useTranslation } from '@/i18n/TranslationProvider';
 import { BackButton } from "@/components/BackButton";
 
 // Staff member interface for display
@@ -61,7 +61,7 @@ interface StaffMember {
 }
 
 export function StaffDictionary() {
- const { t } = useTranslation();
+ const t = useTranslation();
  const { language, isRTL } = useLanguage();
  const navigate = useNavigate();
  const { currentOrganizationId } = useOrganization();

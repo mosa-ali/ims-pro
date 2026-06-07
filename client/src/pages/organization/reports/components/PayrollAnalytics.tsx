@@ -1,7 +1,7 @@
 import { DollarSign, BarChart3, TrendingUp } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { translateEntityName } from '@/utils/translateEntityName';
-import { useTranslation } from '@/i18n/useTranslation';
+import { useTranslation } from '@/i18n/TranslationProvider';
 
 interface PayrollStats {
  monthlyCosts: { month: string; amount: number }[];
@@ -16,7 +16,7 @@ interface Props {
 
 export function PayrollAnalytics({
  data }: Props) {
- const { t } = useTranslation();
+ const t = useTranslation();
  const { language, isRTL} = useLanguage();
  const localT = {
  payrollAnalytics: t.orgReports.payrollCostAnalytics,

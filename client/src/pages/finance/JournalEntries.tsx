@@ -53,7 +53,7 @@ import {
  X,
 } from 'lucide-react';
 import { Link } from 'wouter';
-import { useTranslation } from '@/i18n/useTranslation';
+import { useTranslation } from '@/i18n/TranslationProvider';
 import { BackButton } from "@/components/BackButton";
 
 // Translations
@@ -72,7 +72,7 @@ const statusOptions = [
 ];
 
 export default function JournalEntriesPage() {
- const { t } = useTranslation();
+ const t = useTranslation();
  const { language, isRTL} = useLanguage();
  const { organizationId, operatingUnitId } = useOrganization();
 

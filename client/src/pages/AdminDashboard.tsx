@@ -1,6 +1,6 @@
 import { useAuth } from '@/_core/hooks/useAuth';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { useTranslation } from '@/i18n/useTranslation';
+import { useTranslation } from '@/i18n/TranslationProvider';
 import { Users, Building2, MapPin, Shield, Activity, Archive } from 'lucide-react';
 import { trpc } from '@/lib/trpc';
 
@@ -11,7 +11,7 @@ import { trpc } from '@/lib/trpc';
  */
 export default function AdminDashboard() {
  const { language, isRTL} = useLanguage();
-  const { t } = useTranslation();
+  const t = useTranslation();
 const { user } = useAuth();
 
  // Fetch organizations count

@@ -25,7 +25,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { trpc } from '@/lib/trpc';
 import { Target, TrendingUp, CheckCircle, Clock, BarChart3, ChevronRight, Activity, Filter, RefreshCw, X, Save, AlertCircle, Info } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { useTranslation } from '@/i18n/useTranslation';
+import { useTranslation } from '@/i18n/TranslationProvider';
 import { BackButton } from "@/components/BackButton";
 
 // Beneficiary-related unit types that require disaggregated data
@@ -62,7 +62,7 @@ function isBeneficiaryUnit(unit: string): boolean {
 }
 
 export function IndicatorsListPage() {
- const { t } = useTranslation();
+ const t = useTranslation();
  const navigate = useNavigate();
  const { language, isRTL} = useLanguage();
 

@@ -3,7 +3,7 @@ import { Users, TrendingUp, AlertCircle, Clock, Send, Calendar, Loader2 } from '
 import { useLanguage } from '@/contexts/LanguageContext';
 import { formatNumber } from '@/utils/formatters';
 import { useAuth } from '@/_core/hooks/useAuth';
-import { useTranslation } from '@/i18n/useTranslation';
+import { useTranslation } from '@/i18n/TranslationProvider';
 import { trpc } from '@/lib/trpc';
 
 interface CasesDashboardProps {
@@ -13,7 +13,7 @@ interface CasesDashboardProps {
 
 export function CasesDashboard({
  projectId, onViewCase }: CasesDashboardProps) {
- const { t } = useTranslation();
+ const t = useTranslation();
  const { isRTL } = useLanguage();
  const { user } = useAuth();
 const [filters, setFilters] = useState<{

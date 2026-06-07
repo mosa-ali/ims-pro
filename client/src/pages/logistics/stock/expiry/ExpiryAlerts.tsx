@@ -16,7 +16,7 @@ import { BackButton } from "@/components/BackButton";
 import { toast } from "sonner";
 
 export default function ExpiryAlerts() {
-  const { t } = useTranslation();
+  const t = useTranslation();
   const { isRTL } = useLanguage();
   const [thresholdDays, setThresholdDays] = useState(30);
 

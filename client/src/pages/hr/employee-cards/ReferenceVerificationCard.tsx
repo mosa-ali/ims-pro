@@ -20,7 +20,7 @@ import { ReferenceSummaryModal } from '../modals/ReferenceSummaryModal';
 import { ReferenceUploadModal } from '../modals/ReferenceUploadModal';
 import { referenceUploadService, ReferenceUpload } from '@/app/services/referenceUploadService';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { useTranslation } from '@/i18n/useTranslation';
+import { useTranslation } from '@/i18n/TranslationProvider';
 
 interface Props {
  employee: StaffMember;
@@ -30,7 +30,7 @@ interface Props {
 
 export function ReferenceVerificationCard({
  employee, language, isRTL }: Props) {
- const { t } = useTranslation();
+ const t = useTranslation();
  const [uploads, setUploads] = useState<ReferenceUpload[]>([]);
  const [showUploadModal, setShowUploadModal] = useState(false);
  const [isPrinting, setIsPrinting] = useState(false);

@@ -34,7 +34,7 @@ import {
  ChevronRight
 , ArrowLeft, ArrowRight} from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { useTranslation } from '@/i18n/useTranslation';
+import { useTranslation } from '@/i18n/TranslationProvider';
 import { BackButton } from "@/components/BackButton";
 // ============================================================================
 // TYPE DEFINITIONS
@@ -78,7 +78,7 @@ const staffService = {
 // ============================================================================
 
 export function SanctionsDisciplinaryMain() {
- const { t } = useTranslation();
+ const t = useTranslation();
  const { language, isRTL } = useLanguage();
  const navigate = useNavigate();
 

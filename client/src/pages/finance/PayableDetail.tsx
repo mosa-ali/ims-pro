@@ -9,7 +9,7 @@ import { BackButton } from "@/components/BackButton";
  * - Confirmation dialogs with optional reason fields
  */
 
-import { useTranslation } from '@/i18n/useTranslation';
+import { useTranslation } from '@/i18n/TranslationProvider';
 import { useState } from "react";
 import { useLocation, useRoute } from "wouter";
 import { trpc } from "@/lib/trpc";
@@ -31,7 +31,7 @@ import {
 } from "@/components/ui/alert-dialog";
 
 export default function PayableDetail() {
-  const { t } = useTranslation();
+  const t = useTranslation();
   const { language, isRTL} = useLanguage();
  const [, setLocation] = useLocation();
  const [match, params] = useRoute("/organization/finance/payables/:id");

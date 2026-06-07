@@ -3,7 +3,7 @@
  * Manages tender announcement details for formal procurement (>$25K)
  * Bilingual EN/AR support with RTL
  */
-import { useTranslation } from '@/i18n/useTranslation';
+import { useTranslation } from '@/i18n/TranslationProvider';
 import { useState, useEffect } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { trpc } from "@/lib/trpc";
@@ -27,7 +27,7 @@ interface TenderInformationTabProps {
 
 export default function TenderInformationTab({ purchaseRequestId, prNumber }: TenderInformationTabProps) {
  const { language, isRTL} = useLanguage();
-  const { t } = useTranslation();
+  const t = useTranslation();
 
  const [isEditing, setIsEditing] = useState(false);
  const [form, setForm] = useState({

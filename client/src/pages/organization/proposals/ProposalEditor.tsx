@@ -3,7 +3,7 @@ import { X, Save, Download, FileText, CheckCircle, AlertCircle, Upload } from 'l
 import { useLanguage } from '@/contexts/LanguageContext';
 import { BudgetSection, CoFundingSection } from '@/pages/organization/proposals/BudgetSection';
 import { ActivitiesSection, ImplementationPlanSection } from '@/pages/organization/proposals/ActivitiesSection';
-import { useTranslation } from '@/i18n/useTranslation';
+import { useTranslation } from '@/i18n/TranslationProvider';
 import { BackButton } from "@/components/BackButton";
 
 interface ProposalEditorProps {
@@ -41,7 +41,7 @@ const PROPOSAL_SECTIONS: ProposalSection[] = [
 
 export function ProposalEditor({
  proposal, onClose }: ProposalEditorProps) {
- const { t } = useTranslation();
+ const t = useTranslation();
  const { isRTL } = useLanguage();
  const [activeSection, setActiveSection] = useState('context');
  const [hasChanges, setHasChanges] = useState(false);

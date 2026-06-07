@@ -30,7 +30,7 @@ import { useOperatingUnit } from '@/contexts/OperatingUnitContext';
 import { useState, useEffect } from 'react';
 import { Search, Plus, Upload, Loader2, Edit, Eye, Play, Download, Trash2, AlertCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { useTranslation } from '@/i18n/useTranslation';
+import { useTranslation } from '@/i18n/TranslationProvider';
 import { BackButton } from "@/components/BackButton";
 import { trpc } from '@/lib/trpc';
 
@@ -51,7 +51,7 @@ interface Survey {
 }
 
 export function SurveyForms() {
- const { t } = useTranslation();
+ const t = useTranslation();
  const navigate = useNavigate();
  const searchString = useSearch();
  const searchParams = new URLSearchParams(searchString);

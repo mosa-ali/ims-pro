@@ -13,12 +13,12 @@ import { Loader2, Save } from 'lucide-react';
 import { toast } from 'sonner';
 import VendorFormWizard from '@/components/VendorFormWizard';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { useTranslation } from '@/i18n/useTranslation';
+import { useTranslation } from '@/i18n/TranslationProvider';
 import { BackButton } from "@/components/BackButton";
 
 export default function VendorEdit() {
   const { language, isRTL} = useLanguage();
-  const { t } = useTranslation();
+  const t = useTranslation();
  const { id } = useParams<{ id: string }>();
  const navigate = useNavigate();
  const vendorId = parseInt(id || '0');

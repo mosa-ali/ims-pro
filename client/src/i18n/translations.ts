@@ -121,10 +121,8 @@ export interface Translations {
     backToSuppliersList: string;
     backToDetails: string;
     backToDonorCrmDashboard: string;
+    systemHealthSubtitle: string,
  };
- systemHealthSubtitle: string,
-
- // ========== NAVIGATION ==========
  navigation: {
  dashboard: string;
  organizations: string;
@@ -149,6 +147,7 @@ export interface Translations {
  switchLanguage: string;
  languageEn: string;
  languageAr: string;
+ languageIt: string;
  userMenu: string;
  viewProfile: string;
  accountSettings: string;
@@ -180,160 +179,192 @@ export interface Translations {
 
  // ========== PLATFORM ADMIN ==========
  platform: {
- dashboard: {
- title: string;
- subtitle: string;
- activeGrants: string;
- accessRestrictionTitle: string;
- accessRestrictionDesc: string;
- totalOrganizations: string;
- totalUsers: string;
- platformUsers: string;
- orgUsers: string;
- microsoft365: string;
- ready: string;
- entraReady: string;
- systemHealth: string;
- healthy: string;
- allSystemsOperational: string;
- quickActions: string;
- viewAllOrganizations: string;
- viewAllOrganizationsDesc: string;
- manageIntegrations: string;
- manageIntegrationsDesc: string;
- viewAuditLogs: string;
- viewAuditLogsDesc: string;
- platformActivity: string;
- platformActivityDesc: string;
- activityChartComingSoon: string;
- phase1Analytics: string;
- organizations: string;
- organizationsDesc: string;
- orgName: string;
- orgCode: string;
- orgStatus: string;
- compliance: string;
- orgProjects: string;
- orgActions: string;
- viewOrg: string;
- noOrganizations: string;
- operatingUnitContext: string;
+  dashboard: {
+    title: string;
+    subtitle: string;
+    activeProjects: string;
+    acrossAllPrograms: string;
+    totalEmployees: string;
+    fullTimeStaff: string;
+    totalBudget: string;
+    allocatedFunds: string;
+    activeGrants: string;
+    accessRestrictionTitle: string;
+    accessRestrictionDesc: string;
+    totalOrganizations: string;
+    totalUsers: string;
+    platformUsers: string;
+    orgUsers: string;
+    microsoft365: string;
+    ready: string;
+    entraReady: string;
+    systemHealth: string;
+    healthy: string;
+    allSystemsOperational: string;
+    quickActions: string;
+    viewAllOrganizations: string;
+    viewAllOrganizationsDesc: string;
+    manageIntegrations: string;
+    manageIntegrationsDesc: string;
+    viewAuditLogs: string;
+    viewAuditLogsDesc: string;
+    platformActivity: string;
+    platformActivityDesc: string;
+    activityChartComingSoon: string;
+    phase1Analytics: string;
+    organizations: string;
+    organizationsDesc: string;
+    orgName: string;
+    orgCode: string;
+    orgStatus: string;
+    compliance: string;
+    orgProjects: string;
+    orgActions: string;
+    viewOrg: string;
+    noOrganizations: string;
+    operatingUnitContext: string;
+    grantExecution: string;
+    onTrack: string;
+    complianceAlerts: string;
+    complianceAlertsDesc: string;
+    highPriority: string;
+    mediumPriority: string;
+    daysAgo: string;
+    reportOverdue: string;
+    reportOverdueDesc: string;
+    budgetReview: string;
+    budgetReviewDesc: string;
+    projectPipeline: string;
+    projectPipelineDesc: string;
+    waterSanitation: string;
+    waterSanitationDesc: string;
+    progress: string;
+    budget: string;
+    endDate: string;
+    educationSupport: string;
+    educationSupportDesc: string;
+    inProgress: string;
+    welcome: string;
+    overview: string;
+    quickStats: string;
+    recentActivity: string;
+    upcomingTasks: string;
+    alerts: string;
+    totalProjects: string;
+    completedProjects: string;
+    onHoldProjects: string;
+    spentBudget: string;
+    remainingBudget: string;
+    budgetUtilization: string;
+    totalBeneficiaries: string;
+    directBeneficiaries: string;
+    indirectBeneficiaries: string;
+    reportsOverdue: string;
+    reportsDueThisWeek: string;
+    reportsSubmitted: string;
+    projectsByStatus: string;
+    projectsByDonor: string;
+    budgetByProject: string;
+    beneficiariesByProject: string;
+    viewAllProjects: string;
+    viewAllReports: string;
+    noActiveProjects: string;
+    noRecentActivity: string;
+    lastUpdated: string;
+    refreshDashboard: string;
+    organizationManagement: string;
+    platformSettings: string;
+    sidebarTitle: string;
+    sidebarSubtitle: string;
+  };
  };
- organizationManagement: string;
- platformSettings: string;
- sidebarTitle: string;
- sidebarSubtitle: string;
- };
+
+  organizationDetail: {
+    title: string;
+    statistics: string;
+    statisticsDescription: string;
+    totalUsers: string;
+    activeProjects: string;
+    budgetAllocation: string;
+    comingSoon: string;
+    organizationInfo: string;
+    country: string;
+    domain: string;
+    timezone: string;
+    currency: string;
+    createdAt: string;
+    lastUpdated: string;
+    operatingUnits: string;
+    operatingUnitsCount: string;
+    backToOrganizations: string;
+  };
 
  // ========== ORGANIZATION DASHBOARD ==========
- organization: {
- projectForm: {
- planning: string;
- active: string;
- onHold: string;
- completed: string;
- cancelled: string;
- createNewProject: string;
- acrossAllPrograms: string;
- editProject: string;
- projectCode: string;
- activeProjects: string;
- projectCodePlaceholder: string;
- projectTitle: string;
- projectTitlePlaceholder: string;
- status: string;
- startDate: string;
- endDate: string;
- totalBudget: string;
- currency: string;
- sectors: string;
- donor: string;
- donorPlaceholder: string;
- implementingPartner: string;
- implementingPartnerPlaceholder: string;
- location: string;
- locationPlaceholder: string;
- description: string;
- descriptionPlaceholder: string;
- required: string;
- cancel: string;
- createProject: string;
- updateProject: string;
- };
- dashboard: {
- operatingUnitContext: string;
- compliance: string;
- activeGrants: string;
- activeProjects: string;
- acrossAllPrograms: string;
- totalEmployees: string;
- fullTimeStaff: string;
- totalBudget: string;
- allocatedFunds: string;
- grantExecution: string;
- onTrack: string;
- complianceAlerts: string;
- complianceAlertsDesc: string;
- highPriority: string;
- mediumPriority: string;
- daysAgo: string;
- reportOverdue: string;
- reportOverdueDesc: string;
- budgetReview: string;
- budgetReviewDesc: string;
- projectPipeline: string;
- projectPipelineDesc: string;
- waterSanitation: string;
- waterSanitationDesc: string;
- progress: string;
- budget: string;
- endDate: string;
- educationSupport: string;
- educationSupportDesc: string;
- inProgress: string;
- };
- };
-
- // ========== DASHBOARD ==========
- dashboard: {
- title: string;
- subtitle: string;
- welcome: string;
- overview: string;
- quickStats: string;
- recentActivity: string;
- upcomingTasks: string;
- alerts: string;
- totalProjects: string;
- activeProjects: string;
- completedProjects: string;
- onHoldProjects: string;
- totalBudget: string;
- spentBudget: string;
- remainingBudget: string;
- budgetUtilization: string;
- totalBeneficiaries: string;
- directBeneficiaries: string;
- indirectBeneficiaries: string;
- reportsOverdue: string;
- reportsDueThisWeek: string;
- reportsSubmitted: string;
- projectsByStatus: string;
- projectsByDonor: string;
- budgetByProject: string;
- beneficiariesByProject: string;
- viewAllProjects: string;
- viewAllReports: string;
- noActiveProjects: string;
- noRecentActivity: string;
- lastUpdated: string;
- refreshDashboard: string;
- };
+organization: {
+  projectForm: {
+    planning: string;
+    active: string;
+    activeProjects: string;
+    acrossAllPrograms: string;
+    totalEmployees: string;
+    fullTimeStaff: string;
+    totalBudget: string;
+    allocatedFunds: string;
+    grantExecution: string;
+    onTrack: string;
+    complianceAlerts: string;
+    complianceAlertsDesc: string;
+    highPriority: string;
+    mediumPriority: string;
+    daysAgo: string;
+    reportOverdue: string;
+    reportOverdueDesc: string;
+    budgetReview: string;
+    budgetReviewDesc: string;
+    projectPipeline: string;
+    projectPipelineDesc: string;
+    waterSanitation: string;
+    waterSanitationDesc: string;
+    progress: string;
+    budget: string;
+    endDate: string;
+    educationSupport: string;
+    educationSupportDesc: string;
+    inProgress: string;
+    onHold: string;
+    completed: string;
+    cancelled: string;
+    createNewProject: string;
+    editProject: string;
+    projectCode: string;
+    projectCodePlaceholder: string;
+    projectTitle: string;
+    projectTitlePlaceholder: string;
+    status: string;
+    startDate: string;
+    currency: string;
+    sectors: string;
+    donor: string;
+    donorPlaceholder: string;
+    implementingPartner: string;
+    implementingPartnerPlaceholder: string;
+    location: string;
+    locationPlaceholder: string;
+    description: string;
+    descriptionPlaceholder: string;
+    required: string;
+    cancel: string;
+    createProject: string;
+    updateProject: string;
+    fillProjectDetails: string;
+  };
+};
 
  // ========== PROJECTS ==========
  projects: {
  title: string;
  subtitle: string;
+ createNewProject: string;
  createNew: string;
  editProject: string;
  backToProjectsDashboard: string;
@@ -449,6 +480,40 @@ export interface Translations {
  submitted: string;
  approved: string;
  upcoming: string;
+ // Create Project Form
+fillProjectDetails: string;
+basicInformation: string;
+coreProjectDetails: string;
+projectTitleEN: string;
+projectTitleAR: string;
+enterProjectTitle: string;
+enterProjectTitleAR: string;
+projectCodePlaceholder: string;
+associatedGrant: string;
+selectGrant: string;
+locationDetails: string;
+projectLocationDesc: string;
+locationEN: string;
+locationAR: string;
+locationPlaceholder: string;
+locationPlaceholderAR: string;
+descriptionEN: string;
+descriptionAR: string;
+descriptionPlaceholder: string;
+descriptionPlaceholderAR: string;
+objectivesEN: string;
+objectivesAR: string;
+objectivesPlaceholder: string;
+objectivesPlaceholderAR: string;
+projectManagement: string;
+managementBeneficiaryInfo: string;
+projectManager: string;
+projectManagerPlaceholder: string;
+targetBeneficiaryCount: string;
+beneficiaryCountPlaceholder: string;
+cancel: string;
+createProject: string;
+projectCreationPending: string;
  tabs: {
  overview: string;
  team: string;
@@ -486,6 +551,8 @@ export interface Translations {
  procurementPlanTitle: string;
  procurementPlanSubtitle: string;
  procurementPlanPeriod: string;
+ importTasksDesc: string;
+ confirmDeleteTask: string;
  itemDescription: string;
  procurementCategory: string;
  quantityLabel: string;
@@ -1266,6 +1333,9 @@ export interface Translations {
  reconciledStatusReconciled: string;
  reconciledStatusDisputed: string;
  noFinancialData: string;
+ financeManagement: string;
+ manageBudgetsExpenditures: string;
+ overview: string;
  };
 
  // ========== FORMS ==========
@@ -1577,6 +1647,76 @@ export interface Translations {
  servicesDeliveredOnTime: string;
  exportPDF: string;
  days: string;
+ // Activities & Services
+providedBy: string;
+followUp: string;
+followUpRequired: string;
+
+// Reports & Analytics - Auto Report
+caseManagementAutoReport: string;
+autoGeneratedFromData: string;
+printSaveAsPDF: string;
+exportExcel: string;
+caseManagementReport: string;
+reportingPeriod: string;
+generatedOn: string;
+to: string;
+executiveSummary: string;
+keyMetrics: string;
+keyAchievements: string;
+totalBeneficiaries: string;
+childrenReached: string;
+cssLocations: string;
+cases: string;
+safeSpaces: string;
+detailedTables: string;
+casesOverview: string;
+metric: string;
+value: string;
+totalCases: string;
+newCasesPeriod: string;
+activeCases: string;
+avgCaseDuration: string;
+indicator: string;
+totalPSSSessions: string;
+individualSessionsLabel: string;
+groupSessionsLabel: string;
+avgDuration: string;
+followUpsScheduled: string;
+internalReferrals: string;
+externalReferrals: string;
+completedReferralsLabel: string;
+completionRate: string;
+activeCSSLocations: string;
+totalCSSActivities: string;
+avgChildrenPerSession: string;
+activitiesServices: string;
+activityTypeLabel: string;
+count: string;
+
+// Detailed Tables
+casesLabel: string;
+pssSessionsLabel: string;
+referralsLabel: string;
+safeSpacesLabel: string;
+totalCasesLabel: string;
+newCasesLabel: string;
+activeCasesLabel: string;
+closedCasesLabel: string;
+highRiskCasesLabel: string;
+avgDurationLabel: string;
+totalSessionsLabel: string;
+individualSessionsCount: string;
+groupSessionsCount: string;
+followUpsScheduledLabel: string;
+totalReferralsLabel: string;
+internalReferralsLabel: string;
+externalReferralsLabel: string;
+completedLabel: string;
+completionRateLabel: string;
+activeLocationsLabel: string;
+totalActivitiesLabel: string;
+avgPerSessionLabel: string;
  };
 
  // ========== ORGANIZATIONS ==========
@@ -1667,8 +1807,8 @@ export interface Translations {
  };
 
  // ========== IMPORT / EXPORT ==========
- importData: string;
  importExport: {
+ importData: string;
  exportData: string;
  importHistory: string;
  importStatus: string;
@@ -1783,139 +1923,158 @@ export interface Translations {
  noNewNotifications: string;
  };
 
- // ========== ERRORS & MESSAGES ==========
- messages: {
- success: {
- created: string;
- updated: string;
- deleted: string;
- saved: string;
- imported: string;
- exported: string;
- sent: string;
- approved: string;
- rejected: string;
- published: string;
- archived: string;
- restored: string;
- };
- error: {
- generic: string;
- notFound: string;
- unauthorized: string;
- forbidden: string;
- serverError: string;
- networkError: string;
- validationFailed: string;
- duplicateEntry: string;
- missingFields: string;
- invalidData: string;
- operationFailed: string;
- uploadFailed: string;
- downloadFailed: string;
- };
- confirm: {
- delete: string;
- deleteMultiple: string;
- archive: string;
- restore: string;
- submit: string;
- approve: string;
- reject: string;
- logout: string;
- cancelChanges: string;
- overwriteData: string;
- };
- };
+messages: {
+  success: {
+    created: string;
+    updated: string;
+    deleted: string;
+    saved: string;
+    imported: string;
+    exported: string;
+    sent: string;
+    approved: string;
+    rejected: string;
+    published: string;
+    archived: string;
+    restored: string;
+  };
+  error: {
+    generic: string;
+    notFound: string;
+    unauthorized: string;
+    forbidden: string;
+    serverError: string;
+    networkError: string;
+    validationFailed: string;
+    duplicateEntry: string;
+    missingFields: string;
+    invalidData: string;
+    operationFailed: string;
+    uploadFailed: string;
+    downloadFailed: string;
+  };
+
+  confirm: {
+    delete: string;
+    deleteMultiple: string;
+    archive: string;
+    restore: string;
+    submit: string;
+    approve: string;
+    reject: string;
+    logout: string;
+    cancelChanges: string;
+    overwriteData: string;
+  };
+  };
 
  // ========== DELETED RECORDS ==========
- deletedRecords: {
- title: string;
- subtitle: string;
- deletedBy: string;
- deletedDate: string;
- deletionReason: string;
- restoreRecord: string;
- permanentlyDelete: string;
- restoreConfirm: string;
- permanentDeleteConfirm: string;
- noDeletedRecords: string;
- recordType: string;
- recordName: string;
- originalId: string;
-    actions: string;
-    allHistory: string;
-    allModules: string;
-    allTypes: string;
-    assignRoleOptional: string;
-    auditAndRestoreDeletedDataIncluding: string;
-    back: string;
-    backToSettings: string;
-    canDelete: string;
-    canRestore: string;
-    cancel: string;
-    confirmRestore: string;
-    dateRange: string;
-    deleteAllPermanently: string;
-    deleteForever: string;
-    deletePermanently: string;
-    deleteSelected: string;
-    deletedAt: string;
-    deletedAt3: string;
-    deletedBy2: string;
-    deletedRecordsArchive: string;
-    deletedUsers: string;
-    deletionReason4: string;
-    email: string;
-    enus: string;
-    historicalDataPreserved: string;
-    last30Days: string;
-    last7Days: string;
-    last90Days: string;
-    module: string;
-    moduleRecords: string;
-    noDeletedRecordsFound: string;
-    noDeletedRecordsFound1: string;
-    noDeletedUsersFound: string;
-    noReasonProvided: string;
-    noRoleAssigned: string;
-    operationalRecoveryOfProjectDataAnd: string;
-    organizationArchive: string;
-    organizationAuditVault: string;
-    permanentlyDeleteMultipleRecords: string;
-    permanentlyDeleteRecord: string;
-    previousOrganizations: string;
-    previousRoles: string;
-    ps10Pe4: string;
-    ps12Pe4Textstart: string;
-    purge: string;
-    purgedRecordsCannotBeRecovered: string;
-    record: string;
-    recordPermanentlyDeleted: string;
-    recordRestored: string;
-    recordRestoredSuccessfully: string;
-    restore: string;
-    restoreAll: string;
-    restoreMultipleRecords: string;
-    restoreSelected: string;
-    restoreUser: string;
-    search: string;
-    searchRecords: string;
-    selectAll: string;
-    selected: string;
-    softdeletedUsersCanBeRestoredExternal: string;
-    thisWillReactivateTheUserReassign: string;
-    totalDeleted: string;
-    userName: string;
-    userRestoredSuccessfully: string;
-    viewDetails: string;
- };
+deletedRecords: {
+  title: string;
+  subtitle: string;
+  deletedBy: string;
+  deletedDate: string;
+  deletionReason: string;
+  restoreRecord: string;
+  permanentlyDelete: string;
+  restoreConfirm: string;
+  permanentDeleteConfirm: string;
+  noDeletedRecords: string;
+  recordType: string;
+  recordName: string;
+  originalId: string;
+  actions: string;
+  allHistory: string;
+  allModules: string;
+  allTypes: string;
+  assignRoleOptional: string;
+  auditAndRestoreDeletedDataIncluding: string;
+  back: string;
+  deletedBy2: string;
+  deletionReason4: string;
+  backToSettings: string;
+  canDelete: string;
+  canRestore: string;
+  cancel: string;
+  confirmRestore: string;
+  dateRange: string;
+  deleteAllPermanently: string;
+  deleteForever: string;
+  deletePermanently: string;
+  deleteSelected: string;
+  deletedAt: string;
+  deletedAt3: string;
+  deletedRecordsArchive: string;
+  deletedUsers: string;
+  email: string;
+  enus: string;
+  historicalDataPreserved: string;
+  last30Days: string;
+  last7Days: string;
+  last90Days: string;
+  module: string;
+  moduleRecords: string;
+  noDeletedRecordsFound: string;
+  noDeletedRecordsFound1: string;
+  noDeletedUsersFound: string;
+  noReasonProvided: string;
+  noRoleAssigned: string;
+  operationalRecoveryOfProjectDataAnd: string;
+  organizationArchive: string;
+  organizationAuditVault: string;
+  permanentlyDeleteMultipleRecords: string;
+  permanentlyDeleteRecord: string;
+  previousOrganizations: string;
+  previousRoles: string;
+  ps10Pe4: string;
+  ps12Pe4Textstart: string;
+  purge: string;
+  purgedRecordsCannotBeRecovered: string;
+  record: string;
+  recordPermanentlyDeleted: string;
+  recordRestored: string;
+  recordRestoredSuccessfully: string;
+  restore: string;
+  restoreAll: string;
+  restoreMultipleRecords: string;
+  restoreSelected: string;
+  restoreUser: string;
+  search: string;
+  searchRecords: string;
+  selectAll: string;
+  selected: string;
+  softdeletedUsersCanBeRestoredExternal: string;
+  thisWillReactivateTheUserReassign: string;
+  totalDeleted: string;
+  userName: string;
+  userRestoredSuccessfully: string;
+  viewDetails: string;
+
+  // Missing from translation.ts interface
+  noOrganizationAccess: string;
+  mustBeAssignedToOrganization: string;
+  manageDeletedRecords: string;
+  archivedRecords: string;
+  allSoftDeletedRecords: string;
+  areYouSureRestore: string;
+  willReappearIn: string;
+  failedToRestoreRecord: string;
+  failedToDeleteRecord: string;
+
+  // Missing from interface AND translation object check
+  restoreRecordTitle: string; // only if used elsewhere
+};
 
  // ========== MEAL MODULE ==========
  meal: {
  // General
  moduleTitle: string;
  moduleSubtitle: string;
+ indicatorsTrackingDesc: string;
+ mealReportsAnalyticsDesc: string;
+ accountabilityCrmDesc: string;
+ surveyDataCollectionDesc: string;
+ documentsReportsDesc: string;
  // Surveys
  surveys: string;
  surveyName: string;
@@ -2464,11 +2623,11 @@ export interface Translations {
     whatWorked: string;
     yes: string;
     yesDelete: string;
- };
  piiMaskingSubtitle: string,
  auditTrailSubtitle: string,
  mealModuleSubtitle: string,
-
+ };
+ 
  // ========== LOGIN & AUTH ==========
  auth: {
  login: string;
@@ -2917,6 +3076,17 @@ export interface Translations {
  riskCompliance: {
  // Page Title & Description
  subtitle: string;
+ registry: string;
+incidents: string;
+reportIncident: string;
+
+mitigationPlan: string;
+owner: string;
+incidentTitle: string;
+actionsTaken: string;
+priorityUrgent: string;
+
+riskTitle: string;
  
  // Tabs
  dashboard: string;
@@ -3898,228 +4068,6 @@ export interface Translations {
     totalApprovedSac: string;
     totalMilestones: string;
     type2Label: string;
-  system: {
-    adminDashboard: {
-      adminDashboardTitle: 'لوحة تحكم المسؤول',
-      adminDashboardSubtitle: 'إدارة وإشراف المنصة',
-      developmentFeature: 'ميزة التطوير',
-      devNotice: 'هذه ميزة تطوير فقط لاختبار وظائف إدارة المرحلة 0',
-      organizations: 'المنظمات',
-      operatingUnits: 'وحدات التشغيل',
-      platformUsers: 'مستخدمو المنصة',
-      systemHealthTitle: 'صحة النظام',
-      operational: 'تشغيلي',
-      manageOrganizations: 'إدارة المنظمات',
-      manageOrganizationsDesc: 'إنشاء وإدارة المنظمات',
-      manageOperatingUnits: 'إدارة وحدات التشغيل',
-      manageOperatingUnitsDesc: 'إنشاء وإدارة وحدات التشغيل',
-      manageUsers: 'إدارة المستخدمين',
-      manageUsersDesc: 'إدارة مستخدمي المنصة والأذونات',
-      viewAuditLogs: 'عرض سجلات التدقيق',
-      viewAuditLogsDesc: 'مراجعة نشاط المنصة والتغييرات',
-      deletedRecords: 'السجلات المحذوفة',
-      deletedRecordsDesc: 'إدارة السجلات المحذوفة بشكل ناعم',
-      quickActions: 'إجراءات سريعة',
-      systemInformation: 'معلومات النظام',
-      currentUser: 'المستخدم الحالي',
-      userRole: 'دور المستخدم',
-      environment: 'البيئة',
-      systemStatus: 'حالة النظام',
-    },
-    auditLogsPage: {
-      auditLogs: 'سجلات التدقيق',
-      activityLog: 'سجل النشاط',
-      allPlatformAdminActions: 'تم تسجيل جميع إجراءات إدارة المنصة هنا',
-      auditLoggingComingSoon: 'سجل التدقيق قريباً',
-    },
-    deletedRecords: {
-      noOrganizationAccess: 'لا توجد إمكانية الوصول إلى المنظمة',
-      mustBeAssignedToOrganization: 'يجب أن تكون مسندة إلى منظمة لعرض السجلات المحذوفة.',
-      deletedRecordsArchive: 'السجلات المحذوفة / الأرشيف',
-      manageDeletedRecords: 'إدارة السجلات المحذوفة عبر جميع الوحدات. استعادة أو حذف العناصر بشكل دائم.',
-      archivedRecords: 'السجلات المؤرشفة',
-      allSoftDeletedRecords: 'جميع السجلات المحذوفة بشكل ناعم من منظمتك. يمكنك استعادتها أو حذفها بشكل دائم.',
-      noDeletedRecordsFound: 'لم يتم العثور على سجلات محذوفة',
-      recordType: 'نوع السجل',
-      recordName: 'الاسم',
-      module: 'الوحدة',
-      deletedBy: 'حذفها بواسطة',
-      deletedAt: 'حذفها في',
-      restoreRecord: 'استعادة السجل',
-      areYouSureRestore: 'هل أنت متأكد من استعادة "{recordName}"؟ سيظهر هذا السجل مرة أخرى في وحدة {recordType}.',
-      willReappearIn: 'سيظهر مرة أخرى في',
-      recordRestoredSuccessfully: 'تم استعادة السجل بنجاح',
-      failedToRestoreRecord: 'فشل في استعادة السجل:',
-      recordPermanentlyDeleted: 'تم حذف السجل بشكل دائم',
-      failedToDeleteRecord: 'فشل في حذف السجل:',
-      restore: 'استعادة',
-      permanentlyDelete: 'حذف دائم',
-    },
-    systemReports: {
-      errorReportSubmitted: 'تم تقديم تقرير الخطأ',
-      errorReportSubmittedDesc: 'تم تقديم تقرير الخطأ بنجاح إلى مسؤول المنصة',
-      onlyPlatformAdminsCanView: 'يمكن لمسؤولي المنصة فقط عرض تقارير أخطاء الاستيراد',
-      onlyPlatformAdminsCanUpdate: 'يمكن لمسؤولي المنصة فقط تحديث حالة التقرير',
-      databaseNotAvailable: 'قاعدة البيانات غير متاحة',
-      row: 'صف',
-      field: 'حقل',
-      errorType: 'نوع الخطأ',
-      errorMessage: 'رسالة الخطأ',
-      suggestedFix: 'الإصلاح المقترح',
-      checkDataFormatAndTryAgain: 'تحقق من صيغة البيانات وحاول مرة أخرى',
-      importErrors: 'أخطاء الاستيراد',
-      errorDetails: 'تفاصيل الخطأ',
-    },
-    salaryScale: {
-      salaryScaleTable: 'جدول الرواتب',
-      salaryScaleSubtitle: 'عرض وإدارة الدرجات والخطوات',
-      guideline: 'الإرشادات',
-      table: 'الجدول',
-      policy: 'السياسة',
-      salaryScaleTableGuideline: 'إرشادات جدول الرواتب',
-      salaryScaleGuidelineSubtitle: 'فهم الدرجات والخطوات وتطور الراتب',
-      aSalaryGradeDefinition: 'أ. تعريف درجة الراتب',
-      gradeDefinition: 'تمثل الدرجة مستوى الأقدمية ومستوى المسؤولية في الوظيفة. لا تغير عنوان الوظيفة أو وصف الوظيفة.',
-      gradeExamples: 'أمثلة على الدرجات:',
-      entryLevel: 'الدرجة G1: مستوى الدخول / أدوار الدعم (كاتب، مساعد، سائق)',
-      juniorLevel: 'الدرجة G2: أدوار مبتدئة / مساعدة (ضابط مبتدئ، مساعد منسق)',
-      midLevel: 'الدرجة G3: أدوار الضابط / التقنية (ضابط، فني، منسق)',
-      seniorLevel: 'الدرجة G4: أدوار منسق / ضابط أول (ضابط أول، منسق، متخصص)',
-      executiveLevel: 'الدرجة G5: أدوار مدير / رئيس الوحدة (مدير، رئيس القسم)',
-      bPositionVsGradeGuidance: 'ب. إرشادات الوظيفة مقابل الدرجة',
-      positionGuidance: 'الدرجات قرارات تنظيمية. قد تحتوي نفس عنوان الوظيفة على درجات مختلفة في منظمات مختلفة.',
-      positionNote: 'مثال: قد تكون "ضابط مالي" من الدرجة G2 في منظمة واحدة والدرجة G3 في منظمة أخرى.',
-      cStepDefinition: 'ج. تعريف الخطوة',
-      whatIsAStep: 'ما هي الخطوة؟',
-      stepDefinition: 'تمثل الخطوات تطور الراتب ضمن نفس الدرجة. لا تغير عنوان الوظيفة أو الدرجة.',
-      stepExplanation: 'تمثل الخطوة 1 راتب الدخول ضمن درجة معينة. تعكس الخطوات الأعلى (الخطوة 2، الخطوة 3) تطور الراتب مع البقاء في نفس الدرجة.',
-      stepProgression: 'تطور الخطوة',
-      stepRules: [
-        'عادة ما تكون الخطوات سنوية أو قائمة على الأداء',
-        'الانتقال من الخطوة 1 إلى الخطوة 2 يزيد الراتب دون تغيير الدرجة',
-        'عادة ما يتم الوصول إلى أقصى راتب في الدرجة في أعلى خطوة'
-      ],
-      dPayrollDependencyWarning: 'د. تحذير اعتماد الرواتب',
-      criticalWarning: 'تحذير حرج',
-      warningText: 'تعتمد حسابات الرواتب مباشرة على جدول الرواتب. قد يؤدي الإعداد غير الصحيح إلى رواتب غير صحيحة.',
-      warningRules: [
-        'فقط السجلات ذات الحالة = نشط سيتم قراءتها بواسطة الرواتب',
-        'يتم تجاهل السجلات المسودة بواسطة الرواتب',
-        'لا يتم استخدام الإصدارات التاريخية / المحلولة في الحسابات'
-      ],
-      importantNotes: 'ملاحظات مهمة',
-      notes: [
-        'تحقق دائماً من بيانات الراتب قبل تحديدها كنشطة',
-        'هذه إرشادات فقط - يمكن للمنظمات تخصيص الدرجات والخطوات',
-        'يجب توثيق جميع تغييرات الراتب بتواريخ فعالة'
-      ],
-      editSalaryRecord: 'تعديل سجل الراتب',
-      staffInformation: 'معلومات الموظفين',
-      gradeScale: 'مقياس الدرجة',
-      grade: 'الدرجة',
-      step: 'الخطوة',
-      salaryRange: 'نطاق الراتب',
-      min: 'الحد الأدنى',
-      max: 'الحد الأقصى',
-      approvedGrossSalary: 'الراتب الإجمالي المعتمد',
-      allowances: 'البدلات',
-      housingAllowance: 'بدل السكن',
-      transportAllowance: 'بدل المواصلات',
-      representationAllowance: 'بدل التمثيل',
-      annualAllowance: 'البدل السنوي',
-      bonus: 'المكافأة',
-      otherAllowances: 'بدلات أخرى',
-      // ✅ NEW: Tax & Social Security Fields
-      deductionsAndTaxes: 'الخصومات والضرائب',
-      taxPercent: 'نسبة الضريبة',
-      taxPercentLabel: 'نسبة الضريبة على الراتب الأساسي',
-      taxAmount: 'مبلغ الضريبة',
-      taxableBaseSalary: 'الراتب الأساسي الخاضع للضريبة',
-      socialSecurityContributions: 'مساهمات الضمان الاجتماعي',
-      socialSecurityEmployeePercent: 'نسبة مساهمة الموظف',
-      socialSecurityEmployeePercentLabel: 'نسبة مساهمة الموظف في الضمان الاجتماعي',
-      socialSecurityEmployerPercent: 'نسبة مساهمة صاحب العمل',
-      socialSecurityEmployerPercentLabel: 'نسبة مساهمة صاحب العمل في الضمان الاجتماعي',
-      socialSecurityDeduction: 'خصم الضمان الاجتماعي',
-      employeeContribution: 'مساهمة الموظف',
-      employerContribution: 'مساهمة صاحب العمل',
-      effectiveStartDate: 'تاريخ البدء الفعلي',
-      value: 'القيمة',
-      percentage: 'النسبة المئوية',
-      cancel: 'إلغاء',
-      saveAsNewVersion: 'سيؤدي الحفظ إلى إنشاء نسخة جديدة من سجل الراتب هذا',
-      versionNote: 'ملاحظة الإصدار',
-      salaryHistory: 'سجل الراتب',
-      for: 'ل',
-      version: 'الإصدار',
-      effectiveDate: 'التاريخ الفعلي',
-      endDate: 'تاريخ الانتهاء',
-      salary: 'الراتب',
-      approvedSalary: 'الراتب المعتمد',
-      status: 'الحالة',
-      approvedBy: 'معتمد من قبل',
-      close: 'إغلاق',
-      draft: 'مسودة',
-      active: 'نشط',
-      superseded: 'ملغى',
-      current: 'الحالي',
-      noHistoryFound: 'لم يتم العثور على سجل',
-      addNewGrade: 'إضافة درجة جديدة',
-      gradeCode: 'رمز الدرجة',
-      description: 'الوصف',
-      minimumSalary: 'الحد الأدنى للراتب',
-      maximumSalary: 'الحد الأقصى للراتب',
-      currency: 'العملة',
-      egG6: 'مثال G6',
-      egExecutiveLevel: 'مثال المستوى التنفيذي',
-      pleaseFillAllRequiredFields9: 'يرجى ملء جميع الحقول المطلوبة',
-      addGrade: 'إضافة درجة',
-      manageSalaryGrades: 'إدارة درجات الراتب',
-      viewAndDeleteGradeDefinitions: 'عرض وحذف تعريفات الدرجة',
-      steps: 'الخطوات',
-      noGradesFound: 'لم يتم العثور على درجات',
-      salaryScalePolicyDocuments: 'وثائق سياسة جدول الرواتب',
-      salaryScalePolicySubtitle: 'تحميل وإدارة وثائق سياسة جدول الرواتب',
-      uploadPolicy: 'تحميل السياسة',
-      download10: 'تحميل',
-      archive: 'أرشيف',
-      policyName: 'اسم السياسة',
-      fileName: 'اسم الملف',
-      size: 'الحجم',
-      archived: 'مؤرشف',
-      uploadNewPolicy: 'تحميل سياسة جديدة',
-      selectFile: 'تحديد ملف',
-      upload: 'تحميل',
-      confirmArchive: 'أرشفة هذه السياسة؟',
-      confirmDelete: 'حذف وثيقة السياسة هذه؟',
-      of: 'من',
-      type: 'النوع',
-      hrDashboard: 'لوحة الموارد البشرية',
-      name: 'الاسم',
-      position: 'الموضع',
-      department: 'القسم',
-    },
-    systemHealth: {
-      ready: 'جاهز',
-      notReady: 'غير جاهز',
-      initializing: 'جاري التهيئة',
-      info: 'معلومات',
-      warning: 'تحذير',
-      critical: 'حرج',
-      rtlLayoutInconsistency: 'عدم اتساق تخطيط RTL',
-      languageSetToArabic: 'تم تعيين اللغة إلى العربية لكن اتجاه المستند هو LTR',
-      applyDirRtl: 'تطبيق dir="rtl" على العنصر الجذر',
-      noActiveSession: 'لا توجد جلسة نشطة',
-      systemInitialized: 'تم تهيئة النظام لكن لا يوجد مستخدم مسجل دخول',
-      redirectToLogin: 'إعادة التوجيه إلى صفحة تسجيل الدخول',
-      planDurationMismatch: 'عدم تطابق مدة الخطة',
-      timelineNotBound: 'الجدول الزمني غير مرتبط بتواريخ المشروع',
-      bindTimeline: 'ربط مولد الجدول الزمني بتاريخ بداية / نهاية المشروع',
-      uiCore: 'نواة واجهة المستخدم',
-      security: 'الأمان',
-      projectPlan: 'خطة المشروع',
-    },
-  },
   };
   supplierQuotationTab: {
     title: string;
@@ -4403,8 +4351,8 @@ export interface Translations {
     useEnglishForTheEntireInterface: string;
     valueKey: string;
     values: string;
+    importHistorySubtitle: string;
   };
-  importHistorySubtitle: string,
   printTemplates: {
     achieved: string;
     achieved2: string;
@@ -4653,6 +4601,7 @@ export interface Translations {
     validationAccuracy: string;
     vaultIsEmpty: string;
     warning: string;
+    annualProgramsReportSubtitle: string;
   };
   organizationModule: {
     aExecutiveSummary: string;
@@ -5076,10 +5025,10 @@ export interface Translations {
     yes: string;
     youDontHavePermission: string;
     annualProgramsReportSubtitle: string,
+    activitiesSectionSubtitle: string,
+    proposalPipelineSubtitle: string,
+    annualProgramsSubtitle: string,
   };
-  activitiesSectionSubtitle: string,
-  proposalPipelineSubtitle: string,
-  annualProgramsSubtitle: string,
   orgReports: {
     active: string;
     amount: string;
@@ -5445,7 +5394,6 @@ export interface Translations {
     childProtection: string;
     chooseFormat: string;
     close: string;
-    closed: string;
     compact: string;
     completed: string;
     completionRate: string;
@@ -5811,7 +5759,7 @@ export interface Translations {
     xlsxWithAllQuestions: string;
     yes: string;
     youHaveUnpublishedChanges: string;
-    missingScopeContext: "Missing scope context. Organization and Operating Unit must be selected.",
+    missingScopeContext: string;
   };
   mealReports: {
     accountabilityCrmSummary: string;
@@ -5974,9 +5922,9 @@ export interface Translations {
     versionHistory: string;
     versioningEnabledAutomatically: string;
     viewDocumentFlow: string;
+    manualDocumentsSubtitle: string,
+    documentsSubtitle: string,
   };
-  manualDocumentsSubtitle: string,
-  documentsSubtitle: string,
   logisticsWorkspace: {
     active: string;
     activeVendors: string;
@@ -5995,7 +5943,6 @@ export interface Translations {
     inStock: string;
     logisticsSubtitle: string;
     logisticsTitle: string;
-    lowStock: string;
     lowStockItems: string;
     modules: string;
     myPrs: string;
@@ -6017,7 +5964,6 @@ export interface Translations {
     settings: string;
     stockManagement: string;
     stockManagementDesc: string;
-    totalItems: string;
     lowStock: string;
     submitted: string;
     total: string;
@@ -6534,7 +6480,6 @@ bidOpeningMinutes: {
   openingModeHybrid: string;
   openingModeOnline: string;
   openingModePhysical: string;
-  biddersSection: string;
   openingNotes: string;
   openingTime: string;
   optional: string;
@@ -6560,7 +6505,7 @@ bidOpeningMinutes: {
   revokeSignatureTitle: string;
   confirmRevoke: string;
   bidderName: string;
-  bidderSection: string;
+  biddersSection: string;
   submissionStatus: string;
   submissionDate: string;
   noBidders: string;
@@ -7036,6 +6981,7 @@ bidOpeningMinutes: {
   };
   hrRecruitment: {
     actions: string;
+    createNewVacancy: string;
     addMember: string;
     addPanelMember: string;
     addSelectionCriterion: string;
@@ -7399,6 +7345,25 @@ bidOpeningMinutes: {
     yes: string;
     yesno: string;
   };
+
+  projectDetailsPage: {
+  activities: string;
+  backToProjectsList: string;
+  beneficiaries: string;
+  caseManagement: string;
+  evidence: string;
+  financial: string;
+  forecastPlan: string;
+  indicators: string;
+  monthlyReport: string;
+  overview: string;
+  procurementPlan: string;
+  projectPlan: string;
+  report: string;
+  tasks: string;
+  varianceAlerts: string;
+};
+
   hrPayroll: {
     actions: string;
     allowances: string;
@@ -8389,6 +8354,9 @@ bidOpeningMinutes: {
   hrAnnualPlan: {
     actions: string;
     actions2: string;
+    recruitmentSubtitle: string;
+    trainingSubtitle: string;
+    periodManagementSubtitle: string;
     addCostItem: string;
     addHrRisk: string;
     addNewPosition: string;
@@ -9054,7 +9022,7 @@ bidOpeningMinutes: {
     priceMissingOrInvalid: string,
     printExportPdf: string,
     qualified: string,
-    remarks: 'Remarks',
+    remarks: string,
     remarksDescription: string,
     requirement: string,
     saveAllScores: string,
@@ -9069,6 +9037,7 @@ bidOpeningMinutes: {
     status: string,
     sumOfSections: string,
     technical: string,
+    technicalBelowThreshold: string;
     technicalBThreshold: string,
     technicalPlusFinancial: string,
     totalOfferPrice: string,
@@ -9546,14 +9515,13 @@ bidOpeningMinutes: {
     warrantyExpiry: string;
     weekly: string;
     years: string;
-  };
-  comingSoon: string,
   advancesSubtitle: string,
   reportsSubtitle: string,
   overviewSubtitle: string,
   expendituresSubtitle: string,
   budgetsSubtitle: string,
   financeLandingSubtitle: string,
+};
   emailNotifications: {
     accessDenied: string;
     actions: string;
@@ -9930,6 +9898,9 @@ bidOpeningMinutes: {
       deleteArchiveNote: string;
       deleteConfirmation: string;
       deleteWarning: string;
+      reasonLabel: string;
+      reasonPlaceholder: string;
+      reasonMinLength: string;
     };
     operatingUnitFormModal: {
       cancel: string;
@@ -10450,6 +10421,7 @@ bidOpeningMinutes: {
       environment: string;
       systemStatus: string;
     };
+    };
     
     // Audit Logs
     auditLogsPage: {
@@ -10458,32 +10430,7 @@ bidOpeningMinutes: {
       allPlatformAdminActions: string;
       auditLoggingComingSoon: string;
     };
-    
-    // Deleted Records
-    deletedRecords: {
-      noOrganizationAccess: string;
-      mustBeAssignedToOrganization: string;
-      deletedRecordsArchive: string;
-      manageDeletedRecords: string;
-      archivedRecords: string;
-      allSoftDeletedRecords: string;
-      noDeletedRecordsFound: string;
-      recordType: string;
-      recordName: string;
-      module: string;
-      deletedBy: string;
-      deletedAt: string;
-      restoreRecord: string;
-      areYouSureRestore: string;
-      willReappearIn: string;
-      recordRestoredSuccessfully: string;
-      failedToRestoreRecord: string;
-      recordPermanentlyDeleted: string;
-      failedToDeleteRecord: string;
-      restore: string;
-      permanentlyDelete: string;
-    };
-    
+       
     // System Reports / PDF Generator
     systemReports: {
       errorReportSubmitted: string;
@@ -10718,7 +10665,6 @@ rFQManagementPage: {
       security: string;
       projectPlan: string;
     };
-  };
   projectFormModal: {
     active: string;
     budgetPositive: string;
@@ -10758,7 +10704,3282 @@ rFQManagementPage: {
     totalBudget: string;
     updateProject: string;
   };
-}
+
+  budgetsTab: {
+  account: string;
+  actions: string;
+  approve: string;
+  approved: string;
+  budgetCreated: string;
+  budgetDeleted: string;
+  budgetManagement: string;
+  budgetManagementDesc: string;
+  budgetStatusUpdated: string;
+  budgeted: string;
+  budgetedAmount: string;
+  close: string;
+  closed: string;
+  confirmDeleteBudget: string;
+  createBudget: string;
+  createNewBudget: string;
+  currency: string;
+  draft: string;
+  exportToExcel: string;
+  exportedSuccessfully: string;
+  forecast: string;
+  forecastAmount: string;
+  importExcel: string;
+  importFailed: string;
+  importedSuccessfully: string;
+  linkBudgetToProjectAccount: string;
+  newBudget: string;
+  noBudgetsYet: string;
+  noDataInFile: string;
+  notes: string;
+  notesPlaceholder: string;
+  period: string;
+  pleaseEnterBudgetedAmount: string;
+  pleaseSelectProjectAccount: string;
+  project: string;
+  records: string;
+  revised: string;
+  selectAccount: string;
+  selectProject: string;
+  skippedInvalidRows: string;
+  status: string;
+  templateDownloaded: string;
+  };
+  chartOfAccountsTab: {
+  accountCode: string;
+  accountCreated: string;
+  accountDeleted: string;
+  accountDescriptionPlaceholder: string;
+  accountNameArabic: string;
+  accountNameEnglish: string;
+  accountType: string;
+  accountTypeAsset: string;
+  accountTypeEquity: string;
+  accountTypeExpense: string;
+  accountTypeIncome: string;
+  accountTypeLiability: string;
+  accountUpdated: string;
+  actions: string;
+  chartOfAccounts: string;
+  chartOfAccountsDesc: string;
+  code: string;
+  confirmDeleteAccount: string;
+  createAccount: string;
+  exportToExcel: string;
+  exportedSuccessfully: string;
+  financeDescription: string;
+  importExcel: string;
+  importFailed: string;
+  name: string;
+  newAccount: string;
+  noAccountsYet: string;
+  noDataInFile: string;
+  noneTopLevel: string;
+  parent: string;
+  parentAccount: string;
+  templateDownloaded: string;
+  type: string;
+  updateAccount: string;
+};
+
+expendituresTab: {
+  actions: string;
+  amount: string;
+  approve: string;
+  approved: string;
+  budget: string;
+  budgetLine: string;
+  confirmDeleteExpenditure: string;
+  createExpenditure: string;
+  currency: string;
+  date: string;
+  draft: string;
+  enterExpenditureDetails: string;
+  expenditureCreated: string;
+  expenditureDeleted: string;
+  expenditureDescription: string;
+  expenditureRecordingDesc: string;
+  expenditureStatusUpdated: string;
+  exportToExcel: string;
+  exportedSuccessfully: string;
+  financeDescription: string;
+  importExcel: string;
+  importFailed: string;
+  importedSuccessfully: string;
+  invoiceNumber: string;
+  invoiceNumberPlaceholder: string;
+  markPaid: string;
+  maxFileSize: string;
+  newExpenditure: string;
+  noDataInFile: string;
+  noExpendituresYet: string;
+  paid: string;
+  pleaseEnterAmount: string;
+  pleaseSelectProjectBudget: string;
+  project: string;
+  receiptFileTooLarge: string;
+  receiptUpload: string;
+  receiptUploadFailed: string;
+  receiptUploaded: string;
+  recordNewExpenditure: string;
+  records: string;
+  reject: string;
+  rejected: string;
+  selectBudgetLine: string;
+  selectProject: string;
+  status: string;
+  submit: string;
+  submitted: string;
+  supportedFormats: string;
+  templateDownloaded: string;
+  uploadingReceipt: string;
+  vendor: string;
+  vendorName: string;
+};
+
+overviewTab: {
+  acrossAllProjects: string;
+  budgetUtilization: string;
+  criticalUtilization: string;
+  expendituresAwaitingReview: string;
+  healthyUtilization: string;
+  highUtilization: string;
+  overBudget: string;
+  overallSpending: string;
+  pendingApprovals: string;
+  totalBudget: string;
+  totalSpent: string;
+  underBudget: string;
+  utilizationRate: string;
+  utilized: string;
+  variance: string;
+};
+
+reportsTab: {
+  accountId: string;
+  amount: string;
+  approved: string;
+  budgetId: string;
+  budgetUtilizationReport: string;
+  budgetUtilized: string;
+  budgetVsActualComparison: string;
+  budgetedAmount: string;
+  budgets: string;
+  currency: string;
+  date: string;
+  detailedExpenditureBreakdown: string;
+  donorComplianceReport: string;
+  donorComplianceReportDesc: string;
+  draft: string;
+  euUnEchoFormat: string;
+  excelDescription: string;
+  excelReportFailed: string;
+  excelReportGenerated: string;
+  expenditureId: string;
+  expenditureSummary: string;
+  expenditures: string;
+  exportNote: string;
+  exportToExcel: string;
+  exportToPDF: string;
+  financialReports: string;
+  financialReportsDesc: string;
+  financialSummaryReport: string;
+  forecastAmount: string;
+  generateReportComingSoon: string;
+  generated: string;
+  metric: string;
+  note: string;
+  paid: string;
+  pdfReportFailed: string;
+  pdfReportGenerated: string;
+  period: string;
+  projectId: string;
+  spendingAnalysisByProject: string;
+  status: string;
+  submitted: string;
+  totalBudget: string;
+  totalSpent: string;
+  utilizationRate: string;
+  variance: string;
+  varianceAnalysisReport: string;
+  vendor: string;
+};
+organizationDashboard: {
+  acrossAllPrograms: string;
+  activeGrants: string;
+  activeProjectProgress: string;
+  activeProjects: string;
+  allocatedFunds: string;
+  atRisk: string;
+  budgetRevisionNeeded: string;
+  budgetVarianceExceeds: string;
+  comingSoon: string;
+  compliance: string;
+  complianceAlerts: string;
+  complianceAlertsDesc: string;
+  contactAdmin: string;
+  coreModules: string;
+  daysAgo: string;
+  donorCRM: string;
+  donorCRMDesc: string;
+  financeManagement: string;
+  financeManagementDesc: string;
+  fullTimeStaff: string;
+  grantExecution: string;
+  highPriority: string;
+  humanResources: string;
+  humanResourcesDesc: string;
+  inProgress: string;
+  itemsRequiringAttention: string;
+  logisticsProcurement: string;
+  logisticsProcurementDesc: string;
+  meal: string;
+  mealDesc: string;
+  medium: string;
+  mediumPriority: string;
+  noActiveProjects: string;
+  noOperatingUnit: string;
+  noOrganization: string;
+  onTrack: string;
+  openModule: string;
+  operatingUnitContext: string;
+  phase0Complete: string;
+  phase0CompleteDesc: string;
+  programsGrants: string;
+  programsGrantsDesc: string;
+  projectPipelineStatus: string;
+  quarterlyReportOverdue: string;
+  quarterlyReportPending: string;
+  totalBudget: string;
+  totalEmployees: string;
+  viewAll: string;
+
+  budget: string;
+  budgetReview: string;
+  budgetReviewDesc: string;
+  educationSupport: string;
+  educationSupportDesc: string;
+  endDate: string;
+  progress: string;
+  projectPipeline: string;
+  projectPipelineDesc: string;
+  reportOverdue: string;
+  reportOverdueDesc: string;
+  waterSanitation: string;
+  waterSanitationDesc: string;
+
+  activeContracts: string;
+  activeDonors: string;
+  activeRFQs: string;
+  activeStaff: string;
+  activeSurveys: string;
+
+  addEmployee: string;
+  addEmployeeDesc: string;
+  addProject: string;
+  addProjectDesc: string;
+
+  allClear: string;
+  approved: string;
+
+  attendance: string;
+  attendanceDesc: string;
+
+  budgetExecution: string;
+
+  category: string;
+
+  complete: string;
+  completed: string;
+
+  contract: string;
+  created: string;
+
+  critical: string;
+  criticalAlerts: string;
+  criticalAlertsBottlenecks: string;
+  criticalAlertsDesc: string;
+  criticalRisk: string;
+  criticalRisks: string;
+
+  deleted: string;
+
+  donor: string;
+  dqaFindings: string;
+
+  employee: string;
+
+  executiveSnapshot: string;
+  executiveSnapshotDesc: string;
+
+  expenseRequest: string;
+  expenseRequestDesc: string;
+
+  expired: string;
+  expiredGrant: string;
+  expiringContracts: string;
+  expiringSoon: string;
+
+  finance: string;
+
+  governorates: string;
+
+  grant: string;
+
+  healthCritical: string;
+  healthHealthy: string;
+  healthUnknown: string;
+  healthWarning: string;
+
+  high: string;
+
+  humanitarianIdentity: string;
+  humanitarianIdentityDesc: string;
+
+  implementingPartners: string;
+
+  inventoryAlerts: string;
+  inventoryManagement: string;
+  inventoryManagementDesc: string;
+
+  issues: string;
+
+  leave: string;
+  leaveManagement: string;
+  leaveManagementDesc: string;
+  leaveRequest: string;
+  leaveRequests: string;
+
+  liveStatus: string;
+
+  myPRs: string;
+  myPRsDesc: string;
+  myPRsShortcutDesc: string;
+
+  myTasks: string;
+
+  myWorkQueue: string;
+  myWorkQueueDesc: string;
+
+  newPR: string;
+  newPRDesc: string;
+
+  newPayment: string;
+  newPaymentDesc: string;
+
+  newStockRequest: string;
+  newStockRequestDesc: string;
+
+  noBottlenecks: string;
+  noHealthData: string;
+  noIdentityData: string;
+  noRecentActivity: string;
+  noUpcomingDeadlines: string;
+
+  openIncidents: string;
+  openPositions: string;
+  openProjects: string;
+  openProjectsDesc: string;
+  openReports: string;
+  openReportsDesc: string;
+  openRisks: string;
+
+  operatingCountries: string;
+
+  operationalHealth: string;
+  operationalHealthDesc: string;
+
+  operationalModules: string;
+  operationalModulesDesc: string;
+
+  operationsRunning: string;
+
+  organization: string;
+  organizationDashboard: string;
+
+  overdue: string;
+  overduePayment: string;
+  overdueProject: string;
+
+  payee: string;
+  payment: string;
+
+  pending: string;
+  pendingApprovals: string;
+  pendingContracts: string;
+  pendingLeave: string;
+  pendingPRApprovals: string;
+  pendingPayments: string;
+
+  pr: string;
+
+  procurement: string;
+
+  programsDashboard: string;
+  programsDashboardDesc: string;
+
+  project: string;
+  projects: string;
+  projectsGrants: string;
+
+  purchaseRequest: string;
+
+  quickActions: string;
+  quickActionsDesc: string;
+
+  recentActivity: string;
+  recentActivityDesc: string;
+  recentPendingApprovals: string;
+
+  recruitment: string;
+  recruitmentDesc: string;
+
+  rejected: string;
+
+  reports: string;
+  reportsAnalytics: string;
+  reportsAnalyticsDesc: string;
+
+  requestLeave: string;
+  requestLeaveDesc: string;
+
+  riskCompliance: string;
+  riskRegister: string;
+  riskRegisterDesc: string;
+
+  score: string;
+
+  searchPlaceholder: string;
+
+  sectors: string;
+
+  smartShortcuts: string;
+  smartShortcutsDesc: string;
+
+  stalledPR: string;
+
+  stockRequests: string;
+
+  submitReport: string;
+  submitReportDesc: string;
+
+  submitted: string;
+
+  task: string;
+
+  totalBeneficiaries: string;
+  totalGrants: string;
+  totalPRs: string;
+  totalSpent: string;
+
+  upcomingDeadlines: string;
+  upcomingDeadlinesDesc: string;
+
+  updated: string;
+
+  vendor: string;
+  vendors: string;
+  vendorsDesc: string;
+
+  welcomeUser: string;
+};
+    operatingUnitDetailPage: {
+      loading: string;
+      status: string;
+    };
+  
+    operatingUnitsPage: {
+      delete: string;
+      deletedSuccessfully: string;
+      edit: string;
+      loading: string;
+      operatingUnit: string;
+      operatingUnits: string;
+      status: string;
+    };
+  organizationDetailPage: {
+  activateSelected: string;
+  activeProjects: string;
+  addFirstUnit: string;
+  admins: string;
+  backToOrganizations: string;
+  budgetAllocation: string;
+  bulkDeleteSuccess: string;
+  bulkUpdateError: string;
+  bulkUpdateSuccess: string;
+  comingSoon: string;
+  country: string;
+  createdAt: string;
+  currency: string;
+  deactivateSelected: string;
+  deleteSelected: string;
+  deletedSuccessfully: string;
+  domain: string;
+  loading: string;
+  noUnitsMessage: string;
+  operatingUnit: string;
+  operatingUnits: string;
+  operatingUnits2: string;
+  organizationDetailTitle: string;
+  organizationInfo: string;
+  selectAll: string;
+  selectUnitsFirst: string;
+  statistics: string;
+  statisticsDescription: string;
+  status: string;
+  statusLabel: string;
+  timezone: string;
+  totalUsers: string;
+  units: string;
+  updatedAt: string;
+  view: string;
+};
+
+organizationsPage: {
+  allOrganizations: string;
+  bulkDeleteSuccess: string;
+  createFirstOrganization: string;
+  createFirstOrganizationButton: string;
+  createOrganization: string;
+  delete: string;
+  deleteSelected: string;
+  deletedSuccessfully: string;
+  edit: string;
+  loading: string;
+  manageDescription: string;
+  noCountry: string;
+  noDomain: string;
+  noOrganizationsYet: string;
+  organization: string;
+  organizations: string;
+  organizations2: string;
+  selectAll: string;
+  selectedOrganizations: string;
+  status: string;
+  view: string;
+};
+
+userManagement: {
+  accessDenied: string;
+  assignUserToOrganization: string;
+  assignUserToOrganizationButton: string;
+  assigning: string;
+  backToPlatform: string;
+  currentOrganizations: string;
+  enterUserId: string;
+  failedToAssignUser: string;
+  noPermission: string;
+  organization: string;
+  organizationAdmin: string;
+  organizationAdminsCanManage: string;
+  organizationsOverview: string;
+  pleaseSelectBoth: string;
+  productionNote: string;
+  role: string;
+  selectOrganization: string;
+  user: string;
+  userAssignedSuccess: string;
+  userId: string;
+  userManagementSubtitle: string;
+  userManagementTitle: string;
+  usersMustLogin: string;
+};
+financeVendors: {
+  accountHolderName: string;
+  accountNumber: string;
+  active: string;
+  activeVendors: string;
+  address: string;
+  addressAr: string;
+  allVendors: string;
+  backToFinance: string;
+  bankBranch: string;
+  bankDetails: string;
+  bankName: string;
+  bankTransfer: string;
+  blocked: string;
+  cancel: string;
+  cash: string;
+  check: string;
+  city: string;
+  confirmDelete: string;
+  consultant: string;
+  contactPerson: string;
+  contractor: string;
+  contractors: string;
+  country: string;
+  create: string;
+  createSuccess: string;
+  creditCard: string;
+  creditLimit: string;
+  currency: string;
+  delete: string;
+  deleteSuccess: string;
+  editVendor: string;
+  email: string;
+  export: string;
+  iban: string;
+  import: string;
+  inactive: string;
+  loading: string;
+  newVendor: string;
+  noData: string;
+  notes: string;
+  other: string;
+  paymentDays: string;
+  paymentMethod: string;
+  paymentTerms: string;
+  pendingPayments: string;
+  phone: string;
+  postalCode: string;
+  registrationNumber: string;
+  save: string;
+  search: string;
+  serviceProvider: string;
+  serviceProviders: string;
+  status: string;
+  subtitle: string;
+  supplier: string;
+  suppliers: string;
+  swiftCode: string;
+  taxId: string;
+  title: string;
+  totalPayables: string;
+  totalVendors: string;
+  update: string;
+  updateSuccess: string;
+  vendorCode: string;
+  vendorName: string;
+  vendorNameAr: string;
+  vendorType: string;
+  viewDetails: string;
+  website: string;
+};
+journalEntries: {
+  accountCode: string;
+  accountLedger: string;
+  accountName: string;
+  accountType: string;
+  addLine: string;
+  adjusting: string;
+  advance: string;
+  asset: string;
+  backToFinance: string;
+  balance: string;
+  balanceError: string;
+  balanceType: string;
+  budget: string;
+  cancel: string;
+  cash_transaction: string;
+  closing: string;
+  confirmDelete: string;
+  confirmPost: string;
+  confirmReverse: string;
+  create: string;
+  createSuccess: string;
+  credit: string;
+  creditAmount: string;
+  debit: string;
+  debitAmount: string;
+  delete: string;
+  deleteSuccess: string;
+  description: string;
+  draft: string;
+  edit: string;
+  entryDate: string;
+  entryNumber: string;
+  entryType: string;
+  expense: string;
+  export: string;
+  filter: string;
+  glAccount: string;
+  invalidAmount: string;
+  journalEntries: string;
+  lineNumber: string;
+  lines: string;
+  loading: string;
+  manual: string;
+  newEntry: string;
+  noEntries: string;
+  noLines: string;
+  opening: string;
+  payroll: string;
+  post: string;
+  postSuccess: string;
+  posted: string;
+  postedAt: string;
+  postedBy: string;
+  procurement: string;
+  removeLine: string;
+  required: string;
+  reverse: string;
+  reverseSuccess: string;
+  reversed: string;
+  reversing: string;
+  runningBalance: string;
+  save: string;
+  search: string;
+  selectAccount: string;
+  selectGLAccount: string;
+  settlement: string;
+  sourceModule: string;
+  standard: string;
+  status: string;
+  subtitle: string;
+  title: string;
+  totalCredit: string;
+  totalDebit: string;
+  trialBalance: string;
+  trialBalanceReport: string;
+  update: string;
+  updateSuccess: string;
+  view: string;
+  void: string;
+};
+advanceDetail: {
+  APPROVED: string;
+  CANCELLED: string;
+  DRAFT: string;
+  FULLY_SETTLED: string;
+  OPERATIONAL: string;
+  OTHER: string;
+  PARTIALLY_SETTLED: string;
+  PENDING: string;
+  PROJECT: string;
+  REJECTED: string;
+  SALARY: string;
+  TRAVEL: string;
+  accountCode: string;
+  actualSettlement: string;
+  advanceApproved: string;
+  advanceInfo: string;
+  advanceNumber: string;
+  advanceRejected: string;
+  advanceSubmitted: string;
+  advanceType: string;
+  approve: string;
+  approvedAmount: string;
+  approvedAt: string;
+  approvedBy: string;
+  backToAdvances: string;
+  cancel: string;
+  date: string;
+  department: string;
+  description: string;
+  employeeName: string;
+  evidence: string;
+  expectedSettlement: string;
+  expenseCategory: string;
+  goBack: string;
+  loading: string;
+  noSettlements: string;
+  noVersionHistory: string;
+  notFound: string;
+  notFoundDesc: string;
+  notes: string;
+  outstandingBalance: string;
+  purpose: string;
+  reason: string;
+  receiptNumber: string;
+  refundAmount: string;
+  reject: string;
+  rejectionReason: string;
+  requestDate: string;
+  requestedAmount: string;
+  settledAmount: string;
+  settlementAmount: string;
+  settlementDate: string;
+  settlementNumber: string;
+  settlementStatus: string;
+  settlements: string;
+  status: string;
+  submit: string;
+  version: string;
+  versionHistory: string;
+};
+
+assetDetail: {
+  accumulatedDepreciation: string;
+  acquisitionCost: string;
+  acquisitionDate: string;
+  assetCode: string;
+  assetName: string;
+  assignedTo: string;
+  backToAssets: string;
+  bookValue: string;
+  category: string;
+  condition: string;
+  currentValue: string;
+  depreciation: string;
+  depreciationMethod: string;
+  depreciationRate: string;
+  description: string;
+  disposal: string;
+  disposalDate: string;
+  disposalMethod: string;
+  disposalReason: string;
+  disposalValue: string;
+  donorGrantInfo: string;
+  donorName: string;
+  edit: string;
+  fromAssignee: string;
+  fromLocation: string;
+  gainLoss: string;
+  generalInfo: string;
+  goBack: string;
+  grantCode: string;
+  insuranceExpiry: string;
+  insuranceInfo: string;
+  insurancePolicy: string;
+  lastMaintenance: string;
+  loading: string;
+  location: string;
+  maintenanceCost: string;
+  maintenanceDescription: string;
+  maintenanceHistory: string;
+  maintenanceType: string;
+  manufacturer: string;
+  model: string;
+  nextDueDate: string;
+  nextMaintenance: string;
+  noDisposal: string;
+  noMaintenance: string;
+  noTransfers: string;
+  notFound: string;
+  notFoundDesc: string;
+  performedBy: string;
+  performedDate: string;
+  proceeds: string;
+  reason: string;
+  salvageValue: string;
+  serialNumber: string;
+  status: string;
+  subcategory: string;
+  toAssignee: string;
+  toLocation: string;
+  transferCode: string;
+  transferDate: string;
+  transferStatus: string;
+  transfers: string;
+  usefulLife: string;
+  usefulLifeYears: string;
+  warrantyExpiry: string;
+  years: string;
+};
+
+prPayables: {
+  title: string;
+  subtitle: string;
+  backToPR: string;
+  noPayables: string;
+  payableID: string;
+  vendor: string;
+  amount: string;
+  dueDate: string;
+  status: string;
+  actions: string;
+  view: string;
+  edit: string;
+  delete: string;
+  uploadInvoice: string;
+  recordPayment: string;
+  pendingInvoice: string;
+  pendingApproval: string;
+  approved: string;
+  paid: string;
+  totalPayables: string;
+  totalAmount: string;
+};
+
+paymentRecording: {
+  title: string;
+  subtitle: string;
+  payableNumber: string;
+  vendor: string;
+  paymentDate: string;
+  paymentMethod: string;
+  bankTransfer: string;
+  check: string;
+  cash: string;
+  letterOfCredit: string;
+  referenceNumber: string;
+  amount: string;
+  remarks: string;
+  uploadProof: string;
+  dragDrop: string;
+  fileSelected: string;
+  recordPayment: string;
+  cancel: string;
+  validationError: string;
+  success: string;
+  error: string;
+  required: string;
+};
+
+bankStatementImport: {
+  balanceColumn: string;
+  bankAccount: string;
+  bankStatementImport: string;
+  cancel: string;
+  clickToUpload: string;
+  creditColumn: string;
+  dateColumn: string;
+  debitColumn: string;
+  descriptionColumn: string;
+  duplicates: string;
+  errors: string;
+  failedToImport: string;
+  failedToPreviewFile: string;
+  filePreviewLoaded: string;
+  importFailed: string;
+  importResults: string;
+  importTransactions: string;
+  imported: string;
+  importing: string;
+  invalidFileFormat: string;
+  mapFileColumnsDescription: string;
+  none: string;
+  optional: string;
+  pleaseMapRequiredColumns: string;
+  pleaseSelectFileAndAccount: string;
+  previewFirst10Rows: string;
+  referenceColumn: string;
+  selectBankAccount: string;
+  selectBankStatementFile: string;
+  selectColumn: string;
+  statementFile: string;
+  step1UploadFile: string;
+  step2MapColumns: string;
+  step3PreviewData: string;
+  supportedFormats: string;
+  transactionsImported: string;
+  uploadBankStatementDescription: string;
+};
+
+costAllocationManagement: {
+  actions: string;
+  activeRules: string;
+  addAllocationKey: string;
+  addCostPool: string;
+  addLine: string;
+  addPeriod: string;
+  addReallocation: string;
+  addRule: string;
+  addTemplate: string;
+  addTransaction: string;
+  allocatedAmount: string;
+  allocationExecuted: string;
+  allocationKey: string;
+  allocationKeysDesc: string;
+  allocationKeysTitle: string;
+  allocationPercentage: string;
+  allocationReport: string;
+  amount: string;
+  applyTemplate: string;
+  applyTemplateDesc: string;
+  approve: string;
+  approveSuccess: string;
+  backToFinance: string;
+  baseCurrencyAmount: string;
+  basesCalculated: string;
+  budgetItem: string;
+  calculateBases: string;
+  cancel: string;
+  completedPeriods: string;
+  complianceStatement: string;
+  confirm: string;
+  costPool: string;
+  costPoolsDesc: string;
+  costPoolsTitle: string;
+  createSuccess: string;
+  currency: string;
+  delete: string;
+  deleteAllocationKey: string;
+  deleteConfirm: string;
+  deleteCostPool: string;
+  deletePeriod: string;
+  deleteReallocation: string;
+  deleteRule: string;
+  deleteSuccess: string;
+  deleteTemplate: string;
+  description: string;
+  destination: string;
+  destinationProject: string;
+  editAllocationKey: string;
+  editCostPool: string;
+  editPeriod: string;
+  editReallocation: string;
+  editRule: string;
+  editTemplate: string;
+  effectiveFrom: string;
+  effectiveTo: string;
+  endDate: string;
+  exchangeRate: string;
+  execute: string;
+  executeAllocation: string;
+  executeSuccess: string;
+  executionWizard: string;
+  exportSuccess: string;
+  exportToExcel: string;
+  exportToPDF: string;
+  generatedOn: string;
+  glAccount: string;
+  isActive: string;
+  justification: string;
+  justificationAr: string;
+  keyCode: string;
+  keyName: string;
+  keyType: string;
+  keyTypeBudgetPercentage: string;
+  keyTypeCustom: string;
+  keyTypeDirectCosts: string;
+  keyTypeEqual: string;
+  keyTypeHeadcount: string;
+  keyTypeRevenue: string;
+  lineType: string;
+  lines: string;
+  loading: string;
+  noData: string;
+  period: string;
+  periodCode: string;
+  periodName: string;
+  periodType: string;
+  periodTypeAnnual: string;
+  periodTypeCustom: string;
+  periodTypeMonthly: string;
+  periodTypeQuarterly: string;
+  periodsDesc: string;
+  periodsTitle: string;
+  poolCode: string;
+  poolName: string;
+  poolType: string;
+  poolTypeAdministrative: string;
+  poolTypeFacility: string;
+  poolTypeOther: string;
+  poolTypeOverhead: string;
+  poolTypeSharedService: string;
+  priority: string;
+  project: string;
+  reallocationCode: string;
+  reallocationDate: string;
+  reallocationDesc: string;
+  reallocationTitle: string;
+  reject: string;
+  rejectSuccess: string;
+  rejectionReason: string;
+  rejectionReasonAr: string;
+  removeLine: string;
+  resultsDesc: string;
+  resultsTitle: string;
+  reversalDialog: string;
+  reversalReason: string;
+  reversalReasonAr: string;
+  reversalSuccess: string;
+  reverseAllocation: string;
+  reverseConfirm: string;
+  rulesDesc: string;
+  rulesTitle: string;
+  save: string;
+  selectPeriod: string;
+  source: string;
+  sourceExpense: string;
+  sourceImport: string;
+  sourceJournalEntry: string;
+  sourceManual: string;
+  sourceModule: string;
+  sourcePayment: string;
+  sourceProject: string;
+  startDate: string;
+  status: string;
+  statusApproved: string;
+  statusCancelled: string;
+  statusCompleted: string;
+  statusDraft: string;
+  statusExecuted: string;
+  statusInProgress: string;
+  statusPendingApproval: string;
+  statusRejected: string;
+  statusReversed: string;
+  step1: string;
+  step2: string;
+  step3: string;
+  submitForApproval: string;
+  submitSuccess: string;
+  subtitle: string;
+  summaryStatistics: string;
+  tabAllocationKeys: string;
+  tabCostPools: string;
+  tabDashboard: string;
+  tabPeriods: string;
+  tabReallocation: string;
+  tabResults: string;
+  tabRules: string;
+  tabTemplates: string;
+  tabTransactions: string;
+  templateApplied: string;
+  templateCode: string;
+  templateName: string;
+  templateNameAr: string;
+  templateRules: string;
+  templatesDesc: string;
+  templatesTitle: string;
+  title: string;
+  totalAllocated: string;
+  totalAllocationKeys: string;
+  totalAmount: string;
+  totalCostPools: string;
+  totalPoolAmount: string;
+  totalRecords: string;
+  transactionDate: string;
+  transactionsDesc: string;
+  transactionsTitle: string;
+  updateSuccess: string;
+};
+paymentDetail: {
+  advance: string;
+  approvalNotes: string;
+  approve: string;
+  approveMessage: string;
+  approved: string;
+  backToPayments: string;
+  bankAccount: string;
+  bank_transfer: string;
+  cancel: string;
+  cancelMessage: string;
+  cancellationReason: string;
+  cancelled: string;
+  cash: string;
+  check: string;
+  complete: string;
+  completeMessage: string;
+  completed: string;
+  confirmApprove: string;
+  confirmCancel: string;
+  confirmComplete: string;
+  confirmReject: string;
+  confirmSubmit: string;
+  date: string;
+  description: string;
+  draft: string;
+  dueDate: string;
+  evidence: string;
+  failed: string;
+  goBack: string;
+  lineAccountCode: string;
+  lineAmount: string;
+  lineBudgetCode: string;
+  lineDescription: string;
+  lineNumber: string;
+  loading: string;
+  mobile_money: string;
+  noLines: string;
+  noVersionHistory: string;
+  notFound: string;
+  notFoundDesc: string;
+  other: string;
+  payee: string;
+  payeeBankAccount: string;
+  payeeBankInfo: string;
+  payeeBankName: string;
+  payeeIban: string;
+  payeeSwiftCode: string;
+  paymentApproved: string;
+  paymentCancelled: string;
+  paymentCompleted: string;
+  paymentDate: string;
+  paymentInfo: string;
+  paymentLines: string;
+  paymentMethod: string;
+  paymentNumber: string;
+  paymentRejected: string;
+  paymentSubmitted: string;
+  paymentType: string;
+  pending_approval: string;
+  processing: string;
+  reason: string;
+  reference: string;
+  refund: string;
+  reject: string;
+  rejectMessage: string;
+  rejected: string;
+  rejectionReason: string;
+  staff: string;
+  status: string;
+  submit: string;
+  submitMessage: string;
+  totalAmount: string;
+  transactionReference: string;
+  vendor: string;
+  version: string;
+  versionHistory: string;
+  wire: string;
+};
+reconciliationDetail: {
+  adjustedBookBalance: string;
+  amount: string;
+  approveReconciliation: string;
+  approved: string;
+  approvedAt: string;
+  approvedBy: string;
+  backToTreasury: string;
+  bookBalance: string;
+  completeReconciliation: string;
+  completed: string;
+  completedAt: string;
+  completedBy: string;
+  credit: string;
+  debit: string;
+  description: string;
+  difference: string;
+  draft: string;
+  goBack: string;
+  in_progress: string;
+  loading: string;
+  matchedTransactions: string;
+  netMovement: string;
+  noTransactions: string;
+  noUnmatchedTransactions: string;
+  notFound: string;
+  notFoundDesc: string;
+  notes: string;
+  outstandingCheques: string;
+  outstandingDeposits: string;
+  periodEnd: string;
+  periodStart: string;
+  reconciliationApproved: string;
+  reconciliationCompleted: string;
+  reconciliationDate: string;
+  reconciliationNumber: string;
+  reconciliationStarted: string;
+  reference: string;
+  startReconciliation: string;
+  statementBalance: string;
+  statementDate: string;
+  status: string;
+  summary: string;
+  totalCredits: string;
+  totalDebits: string;
+  transactionCount: string;
+  transactionDate: string;
+  type: string;
+  unmatchedTransactions: string;
+};
+treasuryCashManagement: {
+  accountName: string;
+  accountNameAr: string;
+  accountNumber: string;
+  accountType: string;
+  active: string;
+  activeAccounts: string;
+  adjustment: string;
+  allowDuplicates: string;
+  amount: string;
+  approveReconciliation: string;
+  approved: string;
+  autoMatch: string;
+  backToFinance: string;
+  balanceAfter: string;
+  bankAccount: string;
+  bankAccounts: string;
+  bankCharge: string;
+  bankName: string;
+  bankNameAr: string;
+  bankReconciliation: string;
+  bankReconciliationMatching: string;
+  bookBalance: string;
+  branchCode: string;
+  branchName: string;
+  cancel: string;
+  cashTransactions: string;
+  checking: string;
+  completeReconciliation: string;
+  completed: string;
+  confirmDelete: string;
+  contactPerson: string;
+  contactPhone: string;
+  create: string;
+  createSuccess: string;
+  currency: string;
+  currentBalance: string;
+  delete: string;
+  deleteSuccess: string;
+  deposit: string;
+  description: string;
+  difference: string;
+  donorDesignated: string;
+  downloadTemplate: string;
+  draft: string;
+  editBankAccount: string;
+  editFund: string;
+  errors: string;
+  export: string;
+  failedToMatch: string;
+  failedToUnmatch: string;
+  fundBalances: string;
+  fundCode: string;
+  fundName: string;
+  fundNameAr: string;
+  fundType: string;
+  glEntriesNotAvailable: string;
+  import: string;
+  importBankAccounts: string;
+  importFunds: string;
+  importResults: string;
+  importStatement: string;
+  importSuccess: string;
+  imported: string;
+  importing: string;
+  inProgress: string;
+  inactive: string;
+  interest: string;
+  loading: string;
+  manualMatch: string;
+  match: string;
+  matchBankTransactionsDesc: string;
+  matchTransactions: string;
+  matchedSuccessfully: string;
+  matchedTransactions: string;
+  moneyMarket: string;
+  netMovement: string;
+  newBankAccount: string;
+  newFund: string;
+  newReconciliation: string;
+  newTransaction: string;
+  noAutoMatchSuggestions: string;
+  noData: string;
+  noReconciliations: string;
+  notes: string;
+  openingBalance: string;
+  payee: string;
+  periodEnd: string;
+  periodStart: string;
+  pettyCash: string;
+  pleaseSelectReconciliation: string;
+  reconciledBalance: string;
+  reconciliation: string;
+  reconciliationDate: string;
+  reconciliationHistory: string;
+  reconciliationStatus: string;
+  reconciliationSummary: string;
+  referenceNumber: string;
+  restricted: string;
+  restrictedFunds: string;
+  safe: string;
+  save: string;
+  savings: string;
+  search: string;
+  selectAccountAndReconciliation: string;
+  selectBankAccount: string;
+  selectFile: string;
+  selectReconciliation: string;
+  selectReconciliationDesc: string;
+  selectReconciliationPlaceholder: string;
+  skipped: string;
+  startReconciliation: string;
+  statementBalance: string;
+  status: string;
+  subtitle: string;
+  swiftCode: string;
+  temporarilyRestricted: string;
+  title: string;
+  totalAccounts: string;
+  totalBalance: string;
+  totalBudget: string;
+  totalCredits: string;
+  totalDebits: string;
+  transactionDate: string;
+  transactionMatching: string;
+  transactionNumber: string;
+  transactionsNeedMatching: string;
+  transactionType: string;
+  transferIn: string;
+  transferOut: string;
+  unmatchedBankTransactions: string;
+  unmatchedSuccessfully: string;
+  unmatchedTransactions: string;
+  unrestricted: string;
+  unrestrictedFunds: string;
+  update: string;
+  updateSuccess: string;
+  viewDetails: string;
+  withdrawal: string;
+
+  actions: string;
+  autoMatchSuggestions: string;
+  aiPoweredMatchingDesc: string;
+  allTransactionsMatched: string;
+  confidence: string;
+  acceptMatch: string;
+};
+vendorDetail: {
+  accountHolderName: string;
+  accountNumber: string;
+  active: string;
+  addressInfo: string;
+  addressLine1: string;
+  addressLine2: string;
+  backToVendors: string;
+  bankBranch: string;
+  bankDetails: string;
+  bankName: string;
+  bank_transfer: string;
+  blocked: string;
+  cancel: string;
+  cash: string;
+  check: string;
+  city: string;
+  consultant: string;
+  contactPerson: string;
+  contractor: string;
+  country: string;
+  creditLimit: string;
+  credit_card: string;
+  currency: string;
+  edit: string;
+  email: string;
+  fax: string;
+  generalInfo: string;
+  goBack: string;
+  iban: string;
+  inactive: string;
+  loading: string;
+  mobile: string;
+  noBankDetails: string;
+  noPaymentTerms: string;
+  notFound: string;
+  notFoundDesc: string;
+  notes: string;
+  other: string;
+  paymentDays: string;
+  paymentMethod: string;
+  paymentTerms: string;
+  phone: string;
+  postalCode: string;
+  registrationNumber: string;
+  save: string;
+  service_provider: string;
+  state: string;
+  status: string;
+  supplier: string;
+  swiftCode: string;
+  taxId: string;
+  vendorCode: string;
+  vendorName: string;
+  vendorType: string;
+  website: string;
+};
+vendorDetailEnhanced: {
+  accountNumber: string;
+  activateFinancially: string;
+  activateSuccess: string;
+  active: string;
+  activityDate: string;
+  activityDescription: string;
+  activityTimeline: string;
+  activityType: string;
+  addEvaluation: string;
+  address: string;
+  approvalStatus: string;
+  approved: string;
+  awarded: string;
+  backToVendors: string;
+  bankDetails: string;
+  bankName: string;
+  blacklisted: string;
+  blocked: string;
+  categories: string;
+  city: string;
+  complianceScore: string;
+  complianceStatus: string;
+  compliant: string;
+  contactPerson: string;
+  country: string;
+  creditLimit: string;
+  currency: string;
+  currentBalance: string;
+  deactivate: string;
+  deactivateSuccess: string;
+  deliveryScore: string;
+  documentNumber: string;
+  documentType: string;
+  documents: string;
+  downloadDocument: string;
+  edit: string;
+  email: string;
+  evaluatedBy: string;
+  evaluationDate: string;
+  evaluationPeriod: string;
+  evaluationSuccess: string;
+  expiryDate: string;
+  financialInfo: string;
+  financialScore: string;
+  financial_statement: string;
+  financiallyActive: string;
+  generalInfo: string;
+  goBack: string;
+  high: string;
+  iban: string;
+  inactive: string;
+  insurance_certificate: string;
+  issueDate: string;
+  lastScreeningDate: string;
+  legalName: string;
+  loading: string;
+  low: string;
+  medium: string;
+  noActivity: string;
+  noDocuments: string;
+  noEvaluations: string;
+  noParticipations: string;
+  non_compliant: string;
+  notAwarded: string;
+  notFound: string;
+  notFoundDesc: string;
+  other: string;
+  outcome: string;
+  overallRating: string;
+  overview: string;
+  participationHistory: string;
+  participationType: string;
+  paymentTerms: string;
+  pending: string;
+  pending_approval: string;
+  performanceEvaluations: string;
+  performanceRating: string;
+  performedBy: string;
+  phone: string;
+  primaryCategory: string;
+  procurementInfo: string;
+  qualityScore: string;
+  quality_certificate: string;
+  ranking: string;
+  referenceNumber: string;
+  registrationNumber: string;
+  registration_certificate: string;
+  rejected: string;
+  riskLevel: string;
+  sanctionsScreened: string;
+  status: string;
+  submissionDate: string;
+  swiftCode: string;
+  taxId: string;
+  tax_certificate: string;
+  technicalScore: string;
+  totalContracts: string;
+  totalParticipations: string;
+  tradeName: string;
+  under_review: string;
+  uploadDocument: string;
+  uploadSuccess: string;
+  uploadedAt: string;
+  uploadedBy: string;
+  vendorCode: string;
+  vendorProfile: string;
+  vendorType: string;
+  viewDocument: string;
+  website: string;
+  winRate: string;
+};
+vendorManagement: {
+  activeVendors: string;
+  addVendor: string;
+  addVendorDesc: string;
+  allVendors: string;
+  allVendorsDesc: string;
+  backToFinance: string;
+  blacklisted: string;
+  blacklistedDesc: string;
+  contractors: string;
+  contractorsDesc: string;
+  export: string;
+  exportVendors: string;
+  exportVendorsDesc: string;
+  import: string;
+  importVendors: string;
+  importVendorsDesc: string;
+  newVendor: string;
+  pendingEvaluations: string;
+  pendingEvaluationsDesc: string;
+  pendingPayments: string;
+  performanceTracking: string;
+  quickActions: string;
+  serviceProviders: string;
+  serviceProvidersDesc: string;
+  settings: string;
+  subtitle: string;
+  suppliers: string;
+  suppliersDesc: string;
+  title: string;
+  topPerformers: string;
+  topPerformersDesc: string;
+  totalPayables: string;
+  totalVendors: string;
+  viewDetails: string;
+};
+vendorPerformanceEvaluation: {
+  autoCalculated: string;
+  backToVendors: string;
+  cancel: string;
+  comments: string;
+  commentsPlaceholder: string;
+  communicationDesc: string;
+  communicationScore: string;
+  complianceDesc: string;
+  complianceScore: string;
+  deliveryDesc: string;
+  deliveryScore: string;
+  description: string;
+  evaluatedBy: string;
+  evaluationDate: string;
+  evaluationError: string;
+  evaluationHistory: string;
+  evaluationPeriod: string;
+  evaluationSaved: string;
+  excellent: string;
+  good: string;
+  invalidScores: string;
+  loading: string;
+  needsImprovement: string;
+  newEvaluation: string;
+  noHistory: string;
+  overallRating: string;
+  performanceTrends: string;
+  periodPlaceholder: string;
+  poor: string;
+  pricingDesc: string;
+  pricingScore: string;
+  qualityDesc: string;
+  qualityScore: string;
+  recommendations: string;
+  recommendationsPlaceholder: string;
+  satisfactory: string;
+  saveEvaluation: string;
+  saving: string;
+  scoreRange: string;
+  scoringCriteria: string;
+  selectVendor: string;
+  selectVendorFirst: string;
+  stable: string;
+  title: string;
+  trendingDown: string;
+  trendingUp: string;
+  viewDetails: string;
+};
+financeSettings: {
+  accountCode: string;
+  action: string;
+  active: string;
+  activeCurrencies: string;
+  activeThresholds: string;
+  advance: string;
+  all: string;
+  approvalThresholds: string;
+  approve: string;
+  approverRole: string;
+  archived: string;
+  assetDisposal: string;
+  backToFinance: string;
+  baseCurrency: string;
+  budget: string;
+  budgetCategories: string;
+  budgetType: string;
+  cancel: string;
+  capital: string;
+  category: string;
+  categoryCode: string;
+  categoryName: string;
+  closed: string;
+  confirmDelete: string;
+  create: string;
+  createAction: string;
+  createSuccess: string;
+  currencies: string;
+  currency: string;
+  currencyCode: string;
+  currencyName: string;
+  currencySymbol: string;
+  currentFiscalYear: string;
+  decimalPlaces: string;
+  delete: string;
+  deleteAction: string;
+  deleteSuccess: string;
+  description: string;
+  edit: string;
+  editAction: string;
+  endDate: string;
+  exchangeRate: string;
+  expense: string;
+  export: string;
+  exportAction: string;
+  exportSuccess: string;
+  fiscalYearCode: string;
+  fiscalYearName: string;
+  fiscalYears: string;
+  import: string;
+  importAction: string;
+  importSuccess: string;
+  indirect: string;
+  isBaseCurrency: string;
+  isCurrent: string;
+  maxAmount: string;
+  minAmount: string;
+  minimumApprovers: string;
+  module: string;
+  newCategory: string;
+  newCurrency: string;
+  newFiscalYear: string;
+  newPermission: string;
+  newRole: string;
+  newThreshold: string;
+  no: string;
+  noData: string;
+  none: string;
+  operational: string;
+  parentCategory: string;
+  permissionCode: string;
+  permissionName: string;
+  personnel: string;
+  planning: string;
+  procurement: string;
+  program: string;
+  requiresMultiple: string;
+  roleCode: string;
+  roleDescription: string;
+  roleLevel: string;
+  roleName: string;
+  rolesPermissions: string;
+  save: string;
+  search: string;
+  sortOrder: string;
+  startDate: string;
+  status: string;
+  subtitle: string;
+  thresholdName: string;
+  title: string;
+  totalCategories: string;
+  totalCurrencies: string;
+  totalFiscalYears: string;
+  totalPermissions: string;
+  totalRoles: string;
+  totalThresholds: string;
+  update: string;
+  updateSuccess: string;
+  view: string;
+  yes: string;
+};
+
+financeChartOfAccounts: {
+  accountCreated: string;
+  accountDeleted: string;
+  accountUpdated: string;
+  accounts: string;
+  actions: string;
+  active: string;
+  addAccount: string;
+  addCategory: string;
+  asset: string;
+  backToFinance: string;
+  balance: string;
+  bankAccount: string;
+  cancel: string;
+  cashAccount: string;
+  categories: string;
+  categoryCreated: string;
+  categoryDeleted: string;
+  categoryUpdated: string;
+  code: string;
+  collapseAll: string;
+  confirmDelete: string;
+  createAccount: string;
+  createCategory: string;
+  credit: string;
+  debit: string;
+  delete: string;
+  deleteAccount: string;
+  deleteCategory: string;
+  description: string;
+  descriptionAr: string;
+  dragToReorder: string;
+  editAccount: string;
+  editCategory: string;
+  equity: string;
+  error: string;
+  expandAll: string;
+  expense: string;
+  export: string;
+  import: string;
+  inactive: string;
+  level: string;
+  liability: string;
+  loading: string;
+  name: string;
+  no: string;
+  noAccounts: string;
+  noCategories: string;
+  noParent: string;
+  normalBalance: string;
+  parent: string;
+  postable: string;
+  retry: string;
+  revenue: string;
+  save: string;
+  search: string;
+  selectBalance: string;
+  selectCategory: string;
+  selectParent: string;
+  selectType: string;
+  status: string;
+  subtitle: string;
+  title: string;
+  type: string;
+  yes: string;
+};
+
+financePaymentReports: {
+  advance: string;
+  agingReport: string;
+  allBankAccounts: string;
+  allProjects: string;
+  allVendors: string;
+  amount: string;
+  approved: string;
+  asOfDate: string;
+  averageWeekly: string;
+  backToPayments: string;
+  bankAccount: string;
+  bank_transfer: string;
+  byMethod: string;
+  byStatus: string;
+  byType: string;
+  cancelled: string;
+  cash: string;
+  cashFlowForecast: string;
+  cheque: string;
+  count: string;
+  current: string;
+  days1to30: string;
+  days31to60: string;
+  days61to90: string;
+  draft: string;
+  endDate: string;
+  error: string;
+  exportReport: string;
+  generateReport: string;
+  grandTotal: string;
+  loading: string;
+  mobile_money: string;
+  month: string;
+  monthlyForecast: string;
+  noData: string;
+  noVendorPayments: string;
+  other: string;
+  outflows: string;
+  over90: string;
+  paid: string;
+  paidAmount: string;
+  paymentHistory: string;
+  paymentReports: string;
+  paymentReportsDescription: string;
+  payments: string;
+  pendingAmount: string;
+  pending_approval: string;
+  project: string;
+  refresh: string;
+  refund: string;
+  settlement: string;
+  staff: string;
+  startDate: string;
+  statusSummary: string;
+  totalAmount: string;
+  totalOutflows: string;
+  totalPayments: string;
+  vendor: string;
+  vendorHistory: string;
+  vendor_payment: string;
+  void: string;
+  week: string;
+  weeklyForecast: string;
+  wire: string;
+};
+
+financePayments: {
+  actions: string;
+  advance: string;
+  allMethods: string;
+  allStatuses: string;
+  allTypes: string;
+  amount: string;
+  approvalNotes: string;
+  approve: string;
+  approveMessage: string;
+  approved: string;
+  backToFinance: string;
+  bankAccount: string;
+  payeeNameAr: string;
+  versionHistory: string;
+  bankInfo: string;
+  bank_transfer: string;
+  batchActionMessage: string;
+  batchActionSuccess: string;
+  batchActions: string;
+  batchApprove: string;
+  batchComplete: string;
+  batchDelete: string;
+  batchProcessing: string;
+  batchReject: string;
+  batchSubmit: string;
+  cancel: string;
+  cancelMessage: string;
+  cancellationReason: string;
+  cancelled: string;
+  cash: string;
+  check: string;
+  clearSelection: string;
+  complete: string;
+  completeMessage: string;
+  completed: string;
+  completedThisMonth: string;
+  confirmApprove: string;
+  confirmBatchAction: string;
+  confirmCancel: string;
+  confirmComplete: string;
+  confirmReject: string;
+  confirmSubmit: string;
+  createNewPayment: string;
+  createPayment: string;
+  date: string;
+  delete: string;
+  description: string;
+  draft: string;
+  dueDate: string;
+  edit: string;
+  editPayment: string;
+  error: string;
+  export: string;
+  failed: string;
+  filterByMethod: string;
+  filterByStatus: string;
+  filterByType: string;
+  import: string;
+  loading: string;
+  method: string;
+  mobile_money: string;
+  newPayment: string;
+  noPayments: string;
+  noPaymentsDescription: string;
+  other: string;
+  payee: string;
+  payeeBankAccount: string;
+  payeeBankName: string;
+  payeeIban: string;
+  payeeInfo: string;
+  payeeName: string;
+  payeeSwiftCode: string;
+  paymentApproved: string;
+  paymentCancelled: string;
+  paymentCompleted: string;
+  paymentCreated: string;
+  paymentDate: string;
+  paymentDeleted: string;
+  paymentDetails: string;
+  paymentInfo: string;
+  paymentLines: string;
+  paymentMethod: string;
+  paymentNumber: string;
+  paymentProcessing: string;
+  paymentRejected: string;
+  paymentSubmitted: string;
+  paymentType: string;
+  paymentUpdated: string;
+  payments: string;
+  paymentsDescription: string;
+  pendingApproval: string;
+  pending_approval: string;
+  process: string;
+  processing: string;
+  reference: string;
+  refund: string;
+  reject: string;
+  rejectMessage: string;
+  rejected: string;
+  rejectionReason: string;
+  required: string;
+  save: string;
+  saving: string;
+  search: string;
+  selectAll: string;
+  selectBankAccount: string;
+  selectGrant: string;
+  selectProject: string;
+  selectVendor: string;
+  selectedCount: string;
+  staff: string;
+  status: string;
+  submit: string;
+  submitMessage: string;
+  totalAmount: string;
+  totalPayments: string;
+  transactionReference: string;
+  type: string;
+  vendor: string;
+  view: string;
+  viewReports: string;
+  wire: string;
+};
+invoiceUploadDialog: {
+  cancel: string;
+  clickBrowse: string;
+  currency: string;
+  description: string;
+  dragDrop: string;
+  fileInfo: string;
+  invoiceAmount: string;
+  invoiceDate: string;
+  or: string;
+  title: string;
+  upload: string;
+  uploadFile: string;
+  uploading: string;
+  vendorInvoiceNumber: string;
+};
+vendorDetail2: {
+  accountHolderName: string;
+  accountNumber: string;
+  active: string;
+  addressInfo: string;
+  addressLine1: string;
+  addressLine2: string;
+  backToVendors: string;
+  bankBranch: string;
+  bankDetails: string;
+  bankName: string;
+  bank_transfer: string;
+  blocked: string;
+  cancel: string;
+  cash: string;
+  check: string;
+  city: string;
+  consultant: string;
+  contactPerson: string;
+  contractor: string;
+  country: string;
+  creditLimit: string;
+  credit_card: string;
+  currency: string;
+  edit: string;
+  email: string;
+  fax: string;
+  generalInfo: string;
+  goBack: string;
+  iban: string;
+  inactive: string;
+  loading: string;
+  mobile: string;
+  noBankDetails: string;
+  noPaymentTerms: string;
+  notFound: string;
+  notFoundDesc: string;
+  notes: string;
+  other: string;
+  paymentDays: string;
+  paymentMethod: string;
+  paymentTerms: string;
+  phone: string;
+  postalCode: string;
+  registrationNumber: string;
+  save: string;
+  saving: string;
+  service_provider: string;
+  state: string;
+  status: string;
+  supplier: string;
+  swiftCode: string;
+  taxId: string;
+  updateError: string;
+  updateSuccess: string;
+  vendorCode: string;
+  vendorName: string;
+  vendorType: string;
+  website: string;
+};
+vendorDetailEnhanced2: {
+  accountNumber: string;
+  activateFinancially: string;
+  activateSuccess: string;
+  active: string;
+  activityDate: string;
+  activityDescription: string;
+  activityTimeline: string;
+  activityType: string;
+  addEvaluation: string;
+  address: string;
+  approvalStatus: string;
+  approved: string;
+  awarded: string;
+  backToVendors: string;
+  bankDetails: string;
+  bankName: string;
+  blacklisted: string;
+  blocked: string;
+  categories: string;
+  city: string;
+  complianceScore: string;
+  complianceStatus: string;
+  compliant: string;
+  contactPerson: string;
+  country: string;
+  creditLimit: string;
+  currency: string;
+  currentBalance: string;
+  deactivate: string;
+  deactivateSuccess: string;
+  deliveryScore: string;
+  documentNumber: string;
+  documentType: string;
+  documents: string;
+  downloadDocument: string;
+  edit: string;
+  email: string;
+  evaluatedBy: string;
+  evaluationDate: string;
+  evaluationPeriod: string;
+  evaluationSuccess: string;
+  expiryDate: string;
+  financialInfo: string;
+  financialScore: string;
+  financial_statement: string;
+  financiallyActive: string;
+  generalInfo: string;
+  goBack: string;
+  high: string;
+  iban: string;
+  inactive: string;
+  insurance_certificate: string;
+  issueDate: string;
+  lastScreeningDate: string;
+  legalName: string;
+  loading: string;
+  low: string;
+  medium: string;
+  noActivity: string;
+  noDocuments: string;
+  noEvaluations: string;
+  noParticipations: string;
+  non_compliant: string;
+  notAwarded: string;
+  notFound: string;
+  notFoundDesc: string;
+  other: string;
+  outcome: string;
+  overallRating: string;
+  overview: string;
+  participationHistory: string;
+  participationType: string;
+  paymentTerms: string;
+  pending: string;
+  pending_approval: string;
+  performanceEvaluations: string;
+  performanceRating: string;
+  performedBy: string;
+  phone: string;
+  primaryCategory: string;
+  procurementInfo: string;
+  qualityScore: string;
+  quality_certificate: string;
+  ranking: string;
+  referenceNumber: string;
+  registrationNumber: string;
+  registration_certificate: string;
+  rejected: string;
+  riskLevel: string;
+  sanctionsScreened: string;
+  status: string;
+  submissionDate: string;
+  swiftCode: string;
+  taxId: string;
+  tax_certificate: string;
+  technicalScore: string;
+  totalContracts: string;
+  totalParticipations: string;
+  tradeName: string;
+  under_review: string;
+  uploadDocument: string;
+  uploadSuccess: string;
+  uploadedAt: string;
+  uploadedBy: string;
+  vendorCode: string;
+  vendorProfile: string;
+  vendorType: string;
+  viewDocument: string;
+  website: string;
+  winRate: string;
+};
+vendorList: {
+  accountHolderName: string;
+  accountNumber: string;
+  active: string;
+  activeVendors: string;
+  address: string;
+  addressAr: string;
+  allVendors: string;
+  backToLogistics: string;
+  bankBranch: string;
+  bankDetails: string;
+  bankName: string;
+  bankTransfer: string;
+  blocked: string;
+  cancel: string;
+  cash: string;
+  check: string;
+  city: string;
+  confirmDelete: string;
+  consultant: string;
+  contactPerson: string;
+  contractor: string;
+  contractors: string;
+  contractorsList: string;
+  contractorsSubtitle: string;
+  country: string;
+  create: string;
+  createSuccess: string;
+  creditCard: string;
+  creditLimit: string;
+  currency: string;
+  delete: string;
+  deleteSuccess: string;
+  editVendor: string;
+  email: string;
+  export: string;
+  iban: string;
+  import: string;
+  inactive: string;
+  loading: string;
+  newContractor: string;
+  newServiceProvider: string;
+  newSupplier: string;
+  newVendor: string;
+  next: string;
+  noData: string;
+  notes: string;
+  other: string;
+  paymentDays: string;
+  paymentMethod: string;
+  paymentTerms: string;
+  pendingPayments: string;
+  phone: string;
+  postalCode: string;
+  previous: string;
+  registrationNumber: string;
+  save: string;
+  search: string;
+  serviceProvider: string;
+  serviceProviders: string;
+  serviceProvidersList: string;
+  serviceProvidersSubtitle: string;
+  status: string;
+  subtitle: string;
+  supplier: string;
+  suppliers: string;
+  suppliersList: string;
+  suppliersSubtitle: string;
+  swiftCode: string;
+  taxId: string;
+  title: string;
+  totalPayables: string;
+  totalVendors: string;
+  update: string;
+  updateSuccess: string;
+  vendorCode: string;
+  vendorName: string;
+  vendorNameAr: string;
+  vendorType: string;
+  viewDetails: string;
+  website: string;
+};
+vendorManagement2: {
+  activeVendors: string;
+  addVendor: string;
+  addVendorDesc: string;
+  allVendors: string;
+  allVendorsDesc: string;
+  backToLogistics: string;
+  blacklisted: string;
+  blacklistedDesc: string;
+  contractors: string;
+  contractorsDesc: string;
+  export: string;
+  exportVendors: string;
+  exportVendorsDesc: string;
+  import: string;
+  importVendors: string;
+  importVendorsDesc: string;
+  newVendor: string;
+  pendingEvaluations: string;
+  pendingEvaluationsDesc: string;
+  pendingPayments: string;
+  performanceTracking: string;
+  quickActions: string;
+  serviceProviders: string;
+  serviceProvidersDesc: string;
+  settings: string;
+  subtitle: string;
+  suppliers: string;
+  suppliersDesc: string;
+  title: string;
+  topPerformers: string;
+  topPerformersDesc: string;
+  totalPayables: string;
+  totalVendors: string;
+  viewDetails: string;
+
+  evaluationAndPerformance: string;
+  evaluationAndPerformanceDesc: string;
+  newEvaluation: string;
+  viewAllEvaluations: string;
+  evaluationChecklist: string;
+  evaluationChecklistDesc: string;
+  scoreDashboard: string;
+  scoreDashboardDesc: string;
+  evaluationHistoryCard: string;
+  evaluationHistoryCardDesc: string;
+  approvalWorkflow: string;
+  approvalWorkflowDesc: string;
+};
+matchingStatusBadge: {
+  amountMismatch: string;
+  amounts: string;
+  description: string;
+  discrepancies: string;
+  extraItem: string;
+  grn: string;
+  grnQty: string;
+  invAmt: string;
+  itemDescription: string;
+  lineNumber: string;
+  message: string;
+  missingItem: string;
+  noDiscrepancies: string;
+  payable: string;
+  po: string;
+  poAmt: string;
+  poQty: string;
+  pr: string;
+  quantityMismatch: string;
+  title: string;
+  type: string;
+  variance: string;
+
+  servicesTitle: string;
+  servicesDescription: string;
+  contractAmount: string;
+  sacAmount: string;
+  invoiceAmountLabel: string;
+  cumulativeSacPayables: string;
+  noInvoiceYet: string;
+  contractVsSac: string;
+  sacVsInvoice: string;
+  goodsTitle: string;
+  goodsDescription: string;
+};
+pRWorkspacePage: {
+  backToPRList: string;
+  cancelled: string;
+  closureStage: string;
+  completed: string;
+  description: string;
+  error: string;
+  evaluationStage: string;
+  evidence: string;
+  grnStage: string;
+  inProgress: string;
+  justification: string;
+  lineItems: string;
+  loading: string;
+  neededBy: string;
+  notStarted: string;
+  paymentStage: string;
+  pending: string;
+  poStage: string;
+  prDetails: string;
+  prNumber: string;
+  prWorkspace: string;
+  project: string;
+  quantity: string;
+  requester: string;
+  rfqStage: string;
+  skipped: string;
+  status: string;
+  total: string;
+  totalAmount: string;
+  unitPrice: string;
+  urgency: string;
+  workflowTracker: string;
+  workspaceNotActivated: string;
+};
+vendorPerformanceEvaluation2: {
+  autoCalculated: string;
+  backToVendors: string;
+  cancel: string;
+  comments: string;
+  commentsPlaceholder: string;
+  communicationDesc: string;
+  communicationScore: string;
+  complianceDesc: string;
+  complianceScore: string;
+  deliveryDesc: string;
+  deliveryScore: string;
+  description: string;
+  evaluatedBy: string;
+  evaluationDate: string;
+  evaluationError: string;
+  evaluationHistory: string;
+  evaluationPeriod: string;
+  evaluationSaved: string;
+  excellent: string;
+  good: string;
+  invalidScores: string;
+  loading: string;
+  needsImprovement: string;
+  newEvaluation: string;
+  noHistory: string;
+  overallRating: string;
+  performanceTrends: string;
+  periodPlaceholder: string;
+  poor: string;
+  pricingDesc: string;
+  pricingScore: string;
+  qualityDesc: string;
+  qualityScore: string;
+  recommendations: string;
+  recommendationsPlaceholder: string;
+  satisfactory: string;
+  saveEvaluation: string;
+  saving: string;
+  scoreRange: string;
+  scoringCriteria: string;
+  selectVendor: string;
+  selectVendorFirst: string;
+  stable: string;
+  title: string;
+  trendingDown: string;
+  trendingUp: string;
+  viewDetails: string;
+};
+
+deliveryNoteViewer: {
+  back: string;
+  createdBy: string;
+  createdDate: string;
+  delivered: string;
+  deliveredQty: string;
+  deliveryDate: string;
+  description: string;
+  dnNumber: string;
+  grnReference: string;
+  lineItems: string;
+  lineNumber: string;
+  lineRemarks: string;
+  orderedQty: string;
+  pending: string;
+  poReference: string;
+  print: string;
+  readOnly: string;
+  remarks: string;
+  status: string;
+  title: string;
+  unit: string;
+  vendor: string;
+};
+gRNForm: {
+  accept: string;
+  accepted: string;
+  acceptedQty: string;
+  actions: string;
+  back: string;
+  cancel: string;
+  condition: string;
+  confirmation: string;
+  damaged: string;
+  defective: string;
+  delete: string;
+  deleteConfirm: string;
+  deleteGRN: string;
+  deleteGRNConfirm: string;
+  description: string;
+  draft: string;
+  edit: string;
+  error: string;
+  expired: string;
+  good: string;
+  grnNumber: string;
+  inspected: string;
+  inspectedBy: string;
+  inspectedDate: string;
+  inspection: string;
+  inspectionNotes: string;
+  inspectionStatus: string;
+  lineItems: string;
+  lineNumber: string;
+  markInspected: string;
+  orderedQty: string;
+  pending_inspection: string;
+  poRef: string;
+  receivedBy: string;
+  receivedDate: string;
+  receivedQty: string;
+  reject: string;
+  rejected: string;
+  rejectedQty: string;
+  remarks: string;
+  save: string;
+  status: string;
+  success: string;
+  title: string;
+  totalAccepted: string;
+  totalOrdered: string;
+  totalReceived: string;
+  totalRejected: string;
+  unit: string;
+};
+
+bidAnalysisTab: {
+  add: string;
+  addBidder: string;
+  announcementChannel: string;
+  announcementEndDate: string;
+  announcementLink: string;
+  announcementRef: string;
+  announcementStartDate: string;
+  approve: string;
+  approved: string;
+  baApproved: string;
+  baCreated: string;
+  baNumber: string;
+  bidReference: string;
+  bidderAdded: string;
+  bidderName: string;
+  bidderSelected: string;
+  bidders: string;
+  calculateFinancial: string;
+  cancel: string;
+  channelDonorPortal: string;
+  channelNewspaper: string;
+  channelOther: string;
+  channelWebsite: string;
+  combinedScore: string;
+  contactPerson: string;
+  createBA: string;
+  draft: string;
+  email: string;
+  error: string;
+  evaluation: string;
+  failedTechnical: string;
+  financialCalculated: string;
+  financialScore: string;
+  justification: string;
+  justificationRequired: string;
+  minBidders: string;
+  noBA: string;
+  noBADesc: string;
+  passedTechnical: string;
+  phone: string;
+  print: string;
+  printChecklist: string;
+  rank: string;
+  results: string;
+  saveTenderInfo: string;
+  selectBidder: string;
+  status: string;
+  submissionDate: string;
+  submitted: string;
+  subtitle: string;
+  technicalScore: string;
+  technicalThreshold: string;
+  technicalThresholdDesc: string;
+  technicalUpdated: string;
+  tenderInfo: string;
+  tenderInfoSaved: string;
+  tenderLocked: string;
+  title: string;
+  totalBidAmount: string;
+  updateTechnical: string;
+  winner: string;
+
+  quotationDataAvailable: string;
+  biddersHaveQuotations: string;
+  syncFromQuotations: string;
+  syncPrices: string;
+  syncPricesTooltip: string;
+  quotationsSynced: string;
+  biddersUpdated: string;
+  quotationSource: string;
+  quotationRef: string;
+  quotationLines: string;
+  quotationStatus: string;
+  bidderAddedAutoSynced: string;
+  autoSyncHint: string;
+
+  discrepancyAlert: string;
+  discrepancyAlertDesc: string;
+  currentBid: string;
+  quotationTotal: string;
+  resyncToFix: string;
+  mismatch: string;
+  discrepancyDetail: string;
+  differenceLabel: string;
+
+  lineComparison: string;
+  lineComparisonDesc: string;
+  noLineData: string;
+  noLineDataDesc: string;
+  itemDescription: string;
+  qty: string;
+  unit: string;
+  unitPriceHeader: string;
+  lowestPrice: string;
+  lineTotal: string;
+  grandTotal: string;
+
+  supplierOfferMatrix: string;
+  supplierOfferMatrixDesc: string;
+  noMatrixData: string;
+  noMatrixDataDesc: string;
+  backfillMatrix: string;
+  backfillMatrixTooltip: string;
+  backfillSuccess: string;
+  backfillRows: string;
+  backfillBidders: string;
+  estimatedUnitCost: string;
+  lowestBidder: string;
+};
+bidEvaluationCriteriaTab: {
+  addCriteria: string;
+  added: string;
+  cancel: string;
+  confirm: string;
+  confirmDelete: string;
+  confirmLoadDefaults: string;
+  criteria: string;
+  criteriaName: string;
+  criteriaNameAr: string;
+  defaultsLoaded: string;
+  deleteCriteria: string;
+  deleted: string;
+  description: string;
+  editCriteria: string;
+  error: string;
+  isApplicable: string;
+  isApplicableDesc: string;
+  isScreening: string;
+  isScreeningDesc: string;
+  loadDefaults: string;
+  loadDefaultsDesc: string;
+  mandatory: string;
+  maxScore: string;
+  maxScoreRequired: string;
+  na: string;
+  nameRequired: string;
+  noBA: string;
+  noBADesc: string;
+  noCriteria: string;
+  noCriteriaDesc: string;
+  requirement: string;
+  save: string;
+  screeningItems: string;
+  sectionExperience: string;
+  sectionLegal: string;
+  sectionName: string;
+  sectionNameAr: string;
+  sectionNumber: string;
+  sectionOperational: string;
+  sectionReferences: string;
+  sectionSamples: string;
+  sections: string;
+  stage: string;
+  stageAr: string;
+  stageHeader: string;
+  subtitle: string;
+  title: string;
+  totalWeight: string;
+  updated: string;
+  weight: string;
+};
+bidOpeningMinutesTab: {
+  approve: string;
+  approved: string;
+  bidSummary: string;
+  bidSummarySaved: string;
+  bidsOpenedCount: string;
+  bidsRejected: string;
+  bomApproved: string;
+  bomCreated: string;
+  bomFinalized: string;
+  bomNumber: string;
+  cancel: string;
+  chairpersonName: string;
+  committee: string;
+  committeeSaved: string;
+  create: string;
+  createBOM: string;
+  declaration: string;
+  declarationText: string;
+  draft: string;
+  error: string;
+  fillSessionDetails: string;
+  finalize: string;
+  finalized: string;
+  irregularities: string;
+  irregularitiesDesc: string;
+  member1Name: string;
+  member2Name: string;
+  member3Name: string;
+  minCommittee: string;
+  modeHybrid: string;
+  modeOnline: string;
+  modePhysical: string;
+  noBOM: string;
+  noBOMDesc: string;
+  noBidAnalysis: string;
+  noIrregularities: string;
+  noPricesWarning: string;
+  openingDate: string;
+  openingMode: string;
+  openingTime: string;
+  openingVenue: string;
+  print: string;
+  saveBidSummary: string;
+  saveCommittee: string;
+  sessionDetails: string;
+  status: string;
+  subtitle: string;
+  title: string;
+  totalBidsReceived: string;
+};
+deliveryNoteTab: {
+  createdDate: string;
+  delete: string;
+  deleteConfirmCancel: string;
+  deleteConfirmDelete: string;
+  deleteConfirmDesc: string;
+  deleteConfirmTitle: string;
+  deleteError: string;
+  deleteSuccess: string;
+  delivered: string;
+  dnCreatedFromGRN: string;
+  dnNumber: string;
+  error: string;
+  lineItems: string;
+  noDN: string;
+  pending: string;
+  status: string;
+  subtitle: string;
+  title: string;
+  view: string;
+};
+goodsReceiptTab: {
+  accepted: string;
+  createFirst: string;
+  createGRN: string;
+  error: string;
+  grnDate: string;
+  grnNumber: string;
+  inspected: string;
+  noGRN: string;
+  partial: string;
+  pending_inspection: string;
+  poRef: string;
+  print: string;
+  quantitiesFulfilled: string;
+  receivedBy: string;
+  rejected: string;
+  subtitle: string;
+  success: string;
+  successDelete: string;
+  title: string;
+  view: string;
+};
+purchaseOrderTab: {
+  approved: string;
+  cancelled: string;
+  createFirst: string;
+  createPO: string;
+  delivered: string;
+  draft: string;
+  error: string;
+  noPO: string;
+  print: string;
+  submitted: string;
+  subtitle: string;
+  success: string;
+  supplier: string;
+  title: string;
+};
+quotationAnalysisExtendedTab: {
+  approve: string;
+  approved: string;
+  calculateScores: string;
+  createQA: string;
+  deliveryScore: string;
+  description: string;
+  draft: string;
+  evaluationReport: string;
+  evaluationReportDesc: string;
+  financialScore: string;
+  loadFromRFQ: string;
+  minSuppliers: string;
+  multiCriteria: string;
+  multiCriteriaDesc: string;
+  noQA: string;
+  noQADesc: string;
+  offerMatrix: string;
+  prUnitPrice: string;
+  priceScore: string;
+  print: string;
+  qaApproved: string;
+  qaCreated: string;
+  qaNumber: string;
+  qty: string;
+  rank: string;
+  scoresCalculated: string;
+  scoring: string;
+  scoringDesc: string;
+  scoringMethodology: string;
+  selection: string;
+  status: string;
+  submitted: string;
+  subtitle: string;
+  success: string;
+  suppliers: string;
+  suppliersLoaded: string;
+  technicalScore: string;
+  title: string;
+  total: string;
+  totalOffer: string;
+  unit: string;
+  vendorsEvaluation: string;
+  vendorsEvaluationDesc: string;
+  warrantyScore: string;
+  winner: string;
+};
+quotationAnalysisTab: {
+  add: string;
+  addSupplier: string;
+  approve: string;
+  approved: string;
+  autoCreate: string;
+  calculateScores: string;
+  cancel: string;
+  createQA: string;
+  description: string;
+  draft: string;
+  error: string;
+  evaluationReport: string;
+  evaluationReportDesc: string;
+  financialScore: string;
+  item: string;
+  justification: string;
+  justificationRequired: string;
+  minSuppliers: string;
+  noOffers: string;
+  noQA: string;
+  noQADesc: string;
+  offerMatrix: string;
+  offerMatrixDesc: string;
+  offersSaved: string;
+  prUnitPrice: string;
+  print: string;
+  qaApproved: string;
+  contactPerson: string;
+  email: string;
+  phone: string;
+  qaCreated: string;
+  qaNumber: string;
+  qty: string;
+  rank: string;
+  remove: string;
+  save: string;
+  scoresCalculated: string;
+  scoring: string;
+  scoringDesc: string;
+  selectSupplier: string;
+  selected: string;
+  selection: string;
+  selectionDesc: string;
+  status: string;
+  submitted: string;
+  subtitle: string;
+  success: string;
+  supplierAdded: string;
+  supplierName: string;
+  supplierSelected: string;
+  suppliers: string;
+  title: string;
+  total: string;
+  totalOffer: string;
+  unit: string;
+  winner: string;
+};
+tenderInformationTab: {
+  announcementActive: string;
+  announcementChannel: string;
+  announcementClosed: string;
+  announcementLink: string;
+  announcementLinkPlaceholder: string;
+  announcementNotStarted: string;
+  announcementPeriod: string;
+  announcementRef: string;
+  announcementRefPlaceholder: string;
+  cancel: string;
+  channelDonorPortal: string;
+  channelNewspaper: string;
+  channelOther: string;
+  channelRequired: string;
+  channelWebsite: string;
+  closingDate: string;
+  daysPassed: string;
+  daysRemaining: string;
+  edit: string;
+  endDate: string;
+  endDateRequired: string;
+  error: string;
+  evaluationMethod: string;
+  financialWeight: string;
+  methodBestValue: string;
+  methodLowest: string;
+  methodQualityCost: string;
+  minTechnicalScore: string;
+  noBA: string;
+  noBADesc: string;
+  numberOfBidders: string;
+  save: string;
+  saved: string;
+  startDate: string;
+  startDateRequired: string;
+  statusActive: string;
+  statusClosed: string;
+  statusDraft: string;
+  statusPublished: string;
+  subtitle: string;
+  technicalWeight: string;
+  tenderDate: string;
+  title: string;
+};
+bulkIndicatorDataImport: {
+  acceptedFormats: string;
+  achievedValue: string;
+  backToMeal: string;
+  browse: string;
+  cancel: string;
+  clearFile: string;
+  close: string;
+  dataSource: string;
+  downloadTemplate: string;
+  dragDrop: string;
+  errors: string;
+  importAnother: string;
+  importData: string;
+  importFailed: string;
+  importPartial: string;
+  importResults: string;
+  importSuccess: string;
+  imported: string;
+  importing: string;
+  indicatorId: string;
+  indicatorName: string;
+  indicatorNotFound: string;
+  invalid: string;
+  invalidNumber: string;
+  missingField: string;
+  noDataRows: string;
+  noProject: string;
+  notes: string;
+  parseError: string;
+  periodEnd: string;
+  periodStart: string;
+  reportingPeriod: string;
+  row: string;
+  selectProject: string;
+  selectProjectPlaceholder: string;
+  skipped: string;
+  step1: string;
+  step1Desc: string;
+  step2: string;
+  step2Desc: string;
+  step3: string;
+  step3Desc: string;
+  subtitle: string;
+  title: string;
+  valid: string;
+  validationStatus: string;
+};
+dataVerification: {
+  achievedValue: string;
+  actions: string;
+  all: string;
+  approve: string;
+  approveEntry: string;
+  approveSuccess: string;
+  backToMeal: string;
+  baseline: string;
+  cancel: string;
+  confirmApprove: string;
+  confirmReject: string;
+  dataSource: string;
+  disaggregation: string;
+  error: string;
+  evidence: string;
+  indicator: string;
+  indicatorType: string;
+  noEntries: string;
+  noProject: string;
+  notes: string;
+  notesPlaceholder: string;
+  pending: string;
+  pendingReview: string;
+  periodEnd: string;
+  periodStart: string;
+  progress: string;
+  reject: string;
+  rejectEntry: string;
+  rejectSuccess: string;
+  rejected: string;
+  reportingPeriod: string;
+  selectProject: string;
+  selectProjectPlaceholder: string;
+  status: string;
+  statusFilter: string;
+  statusPending: string;
+  statusRejected: string;
+  statusVerified: string;
+  submittedBy: string;
+  submittedDate: string;
+  subtitle: string;
+  target: string;
+  title: string;
+  totalEntries: string;
+  undoSuccess: string;
+  undoVerification: string;
+  unit: string;
+  verificationModal: string;
+  verificationNotes: string;
+  verificationNotesLabel: string;
+  verified: string;
+  verifiedAt: string;
+  verifiedBy: string;
+  viewDetails: string;
+};
+projectsCRUDPage: {
+  addNewProject: string;
+  all: string;
+  backToDashboard: string;
+  balance: string;
+  budgetUtilization: string;
+  completed: string;
+  currency: string;
+  days: string;
+  daysRemaining: string;
+  deleteProject: string;
+  donor: string;
+  endDate: string;
+  expired: string;
+  exportExcel: string;
+  importExcel: string;
+  loading: string;
+  noProjects: string;
+  notStarted: string;
+  ongoing: string;
+  planned: string;
+  projectCode: string;
+  projectList: string;
+  searchByTitle: string;
+  sectors: string;
+  spent: string;
+  startDate: string;
+  totalBudgetLabel: string;
+  update: string;
+  viewDetails: string;
+  active: string;
+  planning: string;
+  onHold: string;
+  cancelled: string;
+};
+
+projectPlanTab: {
+  Finance: string;
+  HR: string;
+  Logistics: string;
+  MEAL: string;
+  Other: string;
+  Program: string;
+  Security: string;
+  activity: string;
+  addActivityTask: string;
+  addObjective: string;
+  addResult: string;
+  addTask: string;
+  cancel: string;
+  code: string;
+  completed: string;
+  create: string;
+  createFirstObjective: string;
+  createFirstResult: string;
+  delete: string;
+  department: string;
+  description: string;
+  endDate: string;
+  mainActivity: string;
+  maxResultsWarning: string;
+  noData: string;
+  notStarted: string;
+  objective: string;
+  ongoing: string;
+  otherSpecify: string;
+  pendingTasks: string;
+  projectDuration: string;
+  projectYears: string;
+  responsible: string;
+  result: string;
+  save: string;
+  selectActivity: string;
+  selectDepartment: string;
+  startDate: string;
+  status: string;
+  subActivity: string;
+  subtitle: string;
+  task: string;
+  title: string;
+};
+
+incidentFormDialog: {
+  arabicDescriptionIsRequired: string;
+  arabicTitleIsRequired: string;
+  attachments: string;
+  cancel: string;
+  category: string;
+  closed: string;
+  compliance: string;
+  createIncident: string;
+  createNewIncident: string;
+  critical: string;
+  descriptionArabic: string;
+  descriptionEnglish: string;
+  descriptionIsRequired: string;
+  editIncident: string;
+  enterIncidentDescriptionInArabic: string;
+  enterIncidentDescriptionInEnglish: string;
+  enterIncidentTitleInArabic: string;
+  enterIncidentTitleInEnglish: string;
+  enterReporterName: string;
+  enterResolutionDetails: string;
+  enterResolutionDetailsInArabic: string;
+  failedToSaveIncident: string;
+  failedToUploadAttachments: string;
+  fillInTheIncidentDetailsFieldsMarkedWithAreRequired: string;
+  financial: string;
+  incidentCreatedSuccessfully: string;
+  incidentDate: string;
+  incidentDateIsRequired: string;
+  incidentUpdatedSuccessfully: string;
+  investigating: string;
+  linkThisIncidentToAnExistingRiskForBetterTracking: string;
+  loadingRisks: string;
+  major: string;
+  max10mbPerFileAllowedPdfDocxXlsxJpgPng: string;
+  minor: string;
+  moderate: string;
+  noRelatedRisk: string;
+  operational: string;
+  pleaseFixValidationErrors: string;
+  relatedRisk: string;
+  reported: string;
+  reportedByEn: string;
+  resolutionAr: string;
+  resolutionEn: string;
+  resolved: string;
+  safety: string;
+  security: string;
+  selectARelatedRiskOptional: string;
+  severity: string;
+  status: string;
+  titleArabic: string;
+  titleEnglish: string;
+  titleIsRequired: string;
+  updateIncident: string;
+};
+
+riskFormDialog: {
+  arabicDescriptionIsRequired: string;
+  arabicTitleIsRequired: string;
+  assessed: string;
+  attachments: string;
+  cancel: string;
+  category: string;
+  closed: string;
+  compliance: string;
+  createNewRisk: string;
+  createRisk: string;
+  descriptionArabic: string;
+  descriptionEnglish: string;
+  descriptionIsRequired: string;
+  editRisk: string;
+  enterMitigationPlan: string;
+  enterMitigationPlanInArabic: string;
+  enterOwnerName: string;
+  enterRiskDescriptionInArabic: string;
+  enterRiskDescriptionInEnglish: string;
+  enterRiskTitleInArabic: string;
+  enterRiskTitleInEnglish: string;
+  failedToSaveRisk: string;
+  failedToUploadAttachments: string;
+  fillInTheRiskDetailsFieldsMarkedWithAreRequired: string;
+  financial: string;
+  identified: string;
+  impact: string;
+  impactMustBeBetween1And5: string;
+  likelihood: string;
+  likelihoodMustBeBetween1And5: string;
+  max10mbPerFileAllowedPdfDocxXlsxJpgPng: string;
+  mitigated: string;
+  mitigationPlanAr: string;
+  mitigationPlanEn: string;
+  operational: string;
+  pleaseFixValidationErrors: string;
+  reputational: string;
+  reviewDate: string;
+  riskCreatedSuccessfully: string;
+  riskOwnerEn: string;
+  riskUpdatedSuccessfully: string;
+  status: string;
+  strategic: string;
+  titleArabic: string;
+  titleEnglish: string;
+  titleIsRequired: string;
+  updateRisk: string;
+};
+retentionPolicyPage: {
+  currentPolicy: string;
+  days30: string;
+  days365: string;
+  days60: string;
+  days90: string;
+  description: string;
+  errorMessage: string;
+  never: string;
+  notificationInfo: string;
+  save: string;
+  saving: string;
+  selectPeriod: string;
+  subtitle: string;
+  successMessage: string;
+  title: string;
+  warningText: string;
+  warningTitle: string;
+  };
+  };
 
 // ========== ENGLISH TRANSLATIONS ==========
 export const en: Translations = {
@@ -10878,6 +14099,7 @@ export const en: Translations = {
     backToSuppliersList: 'Back to Suppliers List',
     backToDetails: 'Back to Details',
     backToDonorCrmDashboard: 'Back to Donor CRM Dashboard',
+    systemHealthSubtitle: 'System Health Subtitle',
  },
 
  navigation: {
@@ -10903,6 +14125,7 @@ export const en: Translations = {
  switchLanguage: 'Switch Language',
  languageEn: 'English',
  languageAr: 'العربية',
+ languageIt: "Italian",
  userMenu: 'User Menu',
  viewProfile: 'View Profile',
  accountSettings: 'Account Settings',
@@ -11025,11 +14248,13 @@ export const en: Translations = {
  noRecentActivity: 'No recent activity',
  lastUpdated: 'Last updated',
  refreshDashboard: 'Refresh Dashboard',
- },
- organizationManagement: 'Organization Management',
+organizationManagement: 'Organization Management',
  platformSettings: 'Platform Settings',
  sidebarTitle: 'Platform Administration',
  sidebarSubtitle: 'System-wide management',
+     },
+  },
+
  organizationDetail: {
  title: 'Organization Details',
  statistics: 'Organization Statistics',
@@ -11049,42 +14274,81 @@ export const en: Translations = {
  operatingUnitsCount: 'operating units',
  backToOrganizations: 'Back to Organizations',
  },
- },
 
- organization: {
- projectForm: {
- planning: 'Planning',
- active: 'Active',
- activeProjects: 'Active Projects',
- acrossAllPrograms: 'Across all programs',
- totalEmployees: 'Total Employees',
- fullTimeStaff: 'Full-time staff',
- totalBudget: 'Total Budget',
- allocatedFunds: 'Allocated funds',
- grantExecution: 'Grant Execution',
- onTrack: 'On Track',
- complianceAlerts: 'Compliance Alerts',
- complianceAlertsDesc: 'Items requiring attention',
- highPriority: 'High Priority',
- mediumPriority: 'Medium Priority',
- daysAgo: 'days ago',
- reportOverdue: 'Report Overdue',
- reportOverdueDesc: 'Q4 Financial Report submission pending',
- budgetReview: 'Budget Review',
- budgetReviewDesc: 'Annual budget review scheduled',
- projectPipeline: 'Project Pipeline',
- projectPipelineDesc: 'Active and upcoming projects',
- waterSanitation: 'Water & Sanitation',
- waterSanitationDesc: 'Rural water access program',
- progress: 'Progress',
- budget: 'Budget',
- endDate: 'End Date',
- educationSupport: 'Education Support',
- educationSupportDesc: 'School infrastructure development',
- inProgress: 'In Progress',
- },
- },
+organization: {
+  projectForm: {
+    planning: 'Planning',
+    active: 'Active',
+    activeProjects: 'Active Projects',
+    acrossAllPrograms: 'Across all programs',
+    totalEmployees: 'Total Employees',
+    fullTimeStaff: 'Full-time staff',
+    totalBudget: 'Total Budget',
+    allocatedFunds: 'Allocated Funds',
+    grantExecution: 'Grant Execution',
+    onTrack: 'On Track',
+    complianceAlerts: 'Compliance Alerts',
+    complianceAlertsDesc: 'Items requiring attention',
+    highPriority: 'High Priority',
+    mediumPriority: 'Medium Priority',
+    daysAgo: 'days ago',
+    reportOverdue: 'Report Overdue',
+    reportOverdueDesc: 'Q4 Financial Report submission pending',
+    budgetReview: 'Budget Review',
+    budgetReviewDesc: 'Annual budget review scheduled',
+    projectPipeline: 'Project Pipeline',
+    projectPipelineDesc: 'Active and upcoming projects',
+    waterSanitation: 'Water & Sanitation',
+    waterSanitationDesc: 'Rural water access program',
+    progress: 'Progress',
+    budget: 'Budget',
+    endDate: 'End Date',
+    educationSupport: 'Education Support',
+    educationSupportDesc: 'School infrastructure development',
+    inProgress: 'In Progress',
 
+    onHold: 'On Hold',
+    completed: 'Completed',
+    cancelled: 'Cancelled',
+
+    createNewProject: 'Create New Project',
+    editProject: 'Edit Project',
+
+    projectCode: 'Project Code',
+    projectCodePlaceholder: 'e.g. PROJ-2026-001',
+
+    projectTitle: 'Project Title',
+    projectTitlePlaceholder: 'Enter project title',
+
+    status: 'Status',
+
+    startDate: 'Start Date',
+    currency: 'Currency',
+
+    sectors: 'Sectors',
+
+    donor: 'Donor',
+    donorPlaceholder: 'Select donor',
+
+    implementingPartner: 'Implementing Partner',
+    implementingPartnerPlaceholder: 'Enter implementing partner name',
+
+    location: 'Location',
+    locationPlaceholder: 'Enter project location',
+
+    description: 'Description',
+    descriptionPlaceholder: 'Enter project description',
+
+    required: 'Required',
+
+    cancel: 'Cancel',
+
+    createProject: 'Create Project',
+    updateProject: 'Update Project',
+
+    fillProjectDetails: 'Fill in project details',
+  },
+},
 
  projects: {
  title: 'Projects',
@@ -11260,6 +14524,7 @@ export const en: Translations = {
  donorGrant: 'Donor/Grant',
  description: 'Description',
  daysRemaining: 'days remaining',
+ statusReview: 'Review',
  // Tab Labels
  tabProgramsOverview: 'Overview',
  tabViewAllActivities: 'Activities',
@@ -11513,6 +14778,23 @@ export const en: Translations = {
  burnRateOnTrack: 'On Track',
  burnRateMonitor: 'Monitor',
  burnRateCritical: 'Critical',
+ statusToDo: 'To Do',
+taskDueDateRequired: 'Task Due Date*',
+importTasksDescription: 'Upload an Excel file with task data.',
+createTask: 'Create Task',
+updateTask: 'Update Task',
+deleteTaskConfirm: 'Are you sure you want to delete this task?',
+tasksImportedSuccess: 'Tasks imported successfully',
+importErrors: 'Import Errors',
+row: 'Row',
+noTasksFoundClickAdd: 'No tasks found. Click Add Task to create one.',
+totalEstHours: 'Total Estimated Hours',
+taskEstHours: 'Estimated Hours',
+
+f: 'Female',
+f29: 'Female',
+facilitator: 'Facilitator',
+failed: 'Failed',
  budgetLines: 'Budget Lines',
  budgetLinesSubtitle: 'Excel-like grid with approved budget, expenditures, and variance tracking',
  addBudgetLine: 'Add Budget Line',
@@ -11717,10 +14999,6 @@ export const en: Translations = {
     exportSelected: 'Export Selected',
     exportSuccessful: 'Export successful',
     external: 'External',
-    f: 'F',
-    f29: 'F',
-    facilitator: 'Facilitator',
-    failed: 'Failed',
     failedToCreate: 'Failed to create',
     failedToDelete: 'Failed to delete',
     failedToGeneratePdfPleaseTry: 'Failed to generate PDF. Please try again.',
@@ -12516,8 +15794,8 @@ export const en: Translations = {
  settingsError: 'Error saving settings',
  },
 
- importData: 'Import Data',
  importExport: {
+ importData: 'Import Data',
  exportData: 'Export Data',
  importHistory: 'Import History',
  importStatus: 'Import Status',
@@ -12645,6 +15923,7 @@ export const en: Translations = {
  archived: 'Archived successfully',
  restored: 'Restored successfully',
  },
+
  error: {
  generic: 'An error occurred',
  notFound: 'Record not found',
@@ -12672,11 +15951,13 @@ export const en: Translations = {
  cancelChanges: 'Discard unsaved changes?',
  overwriteData: 'This will overwrite existing data. Continue?',
  },
- },
+},
 
  deletedRecords: {
  title: 'Deleted Records',
  subtitle: 'View and manage deleted records',
+ enus: 'en-US',
+ noDeletedRecordsFound1: 'No deleted records found',
  deletedBy: 'Deleted By',
  deletedDate: 'Deleted Date',
  deletionReason: 'Deletion Reason',
@@ -12712,7 +15993,6 @@ export const en: Translations = {
     deletedUsers: 'Deleted Users',
     deletionReason4: 'Deletion Reason',
     email: 'Email',
-    enus: 'en-US',
     historicalDataPreserved: 'Historical data preserved',
     last30Days: 'Last 30 Days',
     last7Days: 'Last 7 Days',
@@ -12720,7 +16000,6 @@ export const en: Translations = {
     module: 'Module',
     moduleRecords: 'Module Records',
     noDeletedRecordsFound: 'No deleted records found',
-    noDeletedRecordsFound1: 'No deleted records found',
     noDeletedUsersFound: 'No deleted users found',
     noReasonProvided: 'No reason provided',
     noRoleAssigned: 'No role assigned',
@@ -12754,6 +16033,16 @@ export const en: Translations = {
     userName: 'User Name',
     userRestoredSuccessfully: 'User restored successfully',
     viewDetails: 'View Details',
+      noOrganizationAccess: 'No Organization Access',
+      mustBeAssignedToOrganization: 'You must be assigned to an organization to view deleted records.',
+      manageDeletedRecords: 'Manage deleted records across all modules. Restore or permanently delete items.',
+      archivedRecords: 'Archived Records',
+      allSoftDeletedRecords: 'All soft-deleted records from your organization. You can restore them or permanently delete them.',
+      areYouSureRestore: 'Are you sure you want to restore "{recordName}"? This record will reappear in the {recordType} module.',
+      willReappearIn: 'will reappear in the',
+      failedToRestoreRecord: 'Failed to restore record:',
+      failedToDeleteRecord: 'Failed to delete record:',
+      restoreRecordTitle: 'Restore Record Title',
  },
 
  meal: {
@@ -13765,6 +17054,15 @@ export const en: Translations = {
  // Page Title & Description
  title: 'Risk & Compliance Management',
  subtitle: 'Identify, assess, and mitigate organizational risks and track incidents',
+ registry: 'Risk Registry',
+incidents: 'Incidents',
+reportIncident: 'Report Incident',
+
+mitigationPlan: 'Mitigation Plan',
+owner: 'Owner',
+incidentTitle: 'Incident Title',
+actionsTaken: 'Actions Taken',
+priorityUrgent: 'Urgent',
  
  // Tabs
  dashboard: 'Dashboard',
@@ -15279,7 +18577,7 @@ export const en: Translations = {
     validationAccuracy: 'Validation Accuracy',
     vaultIsEmpty: 'Vault is empty',
     warning: 'Warning',
-    annualProgramsReportSubtitle: 'Comprehensive strategic report on achievements, performance, and next-year planning',
+    annualProgramsReportSubtitle: 'Annual Programs Report Subtitle',
   },
   organizationModule: {
     aExecutiveSummary: 'A. Executive Summary',
@@ -15705,6 +19003,7 @@ export const en: Translations = {
     annualProgramsSubtitle: 'Annual programs performance overview and reporting',
     proposalPipelineSubtitle: 'Track funding opportunities, develop proposals, and manage the full lifecycle from concept to project',
     activitiesSectionSubtitle: 'Implementation plan auto-syncs with activities and reflects project timeline',
+    annualProgramsReportSubtitle: 'Comprehensive strategic report on achievements, performance, and next-year planning',
   },
   orgReports: {
     active: 'Active',
@@ -16436,6 +19735,8 @@ export const en: Translations = {
     xlsxWithAllQuestions: 'XLSX with all questions',
     yes: 'Yes',
     youHaveUnpublishedChanges: 'You have unpublished changes',
+    missingScopeContext: "Missing scope context. Organization and Operating Unit must be selected.",
+
   },
   mealReports: {
     accountabilityCrmSummary: 'Accountability & CRM Summary',
@@ -17060,6 +20361,26 @@ export const en: Translations = {
     view: 'View',
     works: 'Works',
     year: 'Year',
+    itemCodeRequired: 'Item code is required',
+    binLocation: 'Bin Location',
+    enterBinLocation: 'Enter bin location',
+    itemNameRequired: 'Item name is required',
+    itemDetails: 'Item Details',
+    newItem: 'New Item',
+    enterItemCode: 'Enter item code',
+    enterItemName: 'Enter item name',
+    minimumQuantity: 'Minimum Quantity',
+    maximumQuantity: 'Maximum Quantity',
+    unitType: 'Unit Type',
+    unitCost: 'Unit Cost',
+    enterUnitType: 'Enter unit type',
+    warehouseLocation: 'Warehouse Location',
+    enterWarehouseLocation: 'Enter warehouse location',
+    itemNameAr: 'Item Name (Arabic)',
+    enterItemNameAr: 'Enter Arabic item name',
+    selectCategory: 'Select Category',
+    enterDescription: 'Enter description',
+    saving: 'Saving...',
   },
   hrStaff: {
     accountNumber: 'Account Number',
@@ -17523,6 +20844,7 @@ export const en: Translations = {
     approveShortlist: 'Approve (Shortlist)',
     approved: 'Approved',
     approvedBy: 'Approved By',
+    noCandidates: 'No Candidates',
     archive: 'Archive',
     archived: 'Archived',
     areasForImprovement: 'Areas for Improvement',
@@ -17771,11 +21093,9 @@ export const en: Translations = {
     vacancies: 'Vacancies',
     editVacancy: 'Edit Vacancy',
     createNewVacancy: 'Create New Vacancy',
-    vacancyCreatedSuccessfully: 'Vacancy created successfully!',
     vacancyDetails: 'Vacancy Details',
     vacancyInformation: 'Vacancy Information',
     vacancyType: 'Vacancy Type',
-    vacancyUpdatedSuccessfully: 'Vacancy updated successfully!',
     videoCall: 'Video Call',
     view: 'View',
     viewApplications: 'View Applications',
@@ -17789,6 +21109,86 @@ export const en: Translations = {
     yearsOfExperience: 'Years of Experience',
     yes: 'Yes',
     yesno: 'Yes/No',
+    firstName: 'First Name',
+    lastName: 'Last Name',
+    education: 'Education',
+    experience: 'Experience',
+    interviews: 'Interviews',
+    noInterviews: 'No Interviews',
+    noDecision: 'No Decision',
+    skills: 'Skills',
+    candidateDeleted: 'Candidate deleted successfully',
+    confirmDelete: 'Are you sure you want to delete this candidate?',
+    delete: 'Delete',
+    searchCandidates: 'Search candidates...',
+    decisionApproved: 'Hiring decision approved',
+    rejectHiringDecision: 'Reject Hiring Decision',
+    decisionRejected: 'Hiring decision rejected',
+    confirmApprove: 'Are you sure you want to approve this hiring decision?',
+    confirmReject: 'Are you sure you want to reject this hiring decision?',
+    pending: 'Pending',
+    decisionCreated: 'Hiring decision created successfully',
+    candidateRequired: 'Candidate is required',
+    salaryRequired: 'Salary is required',
+    startDateRequired: 'Start date is required',
+    offerSalary: 'Offer Salary',
+    createHiringDecision: 'Create Hiring Decision',
+    saving: 'Saving...',
+    decisionDeleted: 'Hiring decision deleted',
+    selectJob: 'Select Job',
+    noDecisions: 'No hiring decisions found',
+    deleteHiringDecision: 'Delete Hiring Decision',
+    pleaseFixErrors: 'Please fix the errors before submitting',
+    accepted: 'Accepted',
+    offerStatus: 'Offer Status',
+    processing: 'Processing...',
+    selectInterview: 'Select Interview',
+    updateInterview: 'Update Interview',
+    evaluationSaved: 'Evaluation saved successfully',
+    scheduledTime: 'Scheduled Time',
+    poor: 'Poor',
+    fair: 'Fair',
+    good: 'Good',
+    veryGood: 'Very Good',
+    excellent: 'Excellent',
+    evaluateInterview: 'Evaluate Interview',
+    interviewDeleted: 'Interview deleted successfully',
+    location: 'Location',
+    jobTitle: 'Job Title',
+    jobCode: 'Job Code',
+    searchTerm: 'Search Term',
+    feedbackScore: 'Feedback Score',
+    numberOfPositions: 'Number of Positions',
+    gradeLevel: 'Grade Level',
+    salaryRange: 'Salary Range',
+    postingDate: 'Posting Date',
+    description: 'Description',
+    applicationLink: 'Application Link',
+    isRemote: 'Remote Position',
+    requirements: 'Requirements',
+    responsibilities: 'Responsibilities',
+    benefits: 'Benefits',
+    createJob: 'Create Job',
+    jobCreated: 'Job created successfully',
+    jobUpdated: 'Job updated successfully',
+    jobTitleRequired: 'Job title is required',
+    departmentRequired: 'Department is required',
+    closingDateRequired: 'Closing date is required',
+    positionsRequired: 'Number of positions is required',
+    jobTitleAr: 'Job Title (Arabic)',
+    jobDeleted: 'Job deleted successfully',
+    confirmClose: 'Are you sure you want to close this vacancy?',
+    confirmArchive: 'Are you sure you want to archive this vacancy?',
+    interviewUpdated: 'Interview updated successfully',
+    newInterview: 'New Interview',
+    noJobsSelected: 'No jobs selected',
+    interviewer: 'Interviewer',
+    interviewScheduled: 'Interview scheduled successfully',
+    dateRequired: 'Date is required',
+    timeRequired: 'Time is required',
+    interviewers: 'Interviewers',
+    vacancyCreatedSuccessfully: 'Vacancy created successfully',
+    vacancyUpdatedSuccessfully: 'Vacancy updated successfully',
   },
   hrPayroll: {
     actions: 'Actions',
@@ -18998,12 +22398,16 @@ export const en: Translations = {
     trainingSubtitle: 'Centralized overview of all training records across the organization',
     periodManagementSubtitle: 'Lock and unlock attendance periods for payroll processing',
   },
+
   hr: {
     aSalaryGradeDefinition: 'A. Salary Grade Definition',
     acceptedFormats: 'Accepted formats',
     actionType: 'Action Type',
     actions: 'Actions',
     activate: 'Activate',
+    recruitmentSubtitle: 'Recruitment Subtitle',
+    trainingSubtitle: 'Training Subtitle',
+    periodManagementSubtitle: 'Period Management Subtitle',
     active: 'Active',
     activeContracts: 'Active Contracts',
     activeEmployeesWithFullLifecycleProfiles: 'Active employees with full lifecycle profiles',
@@ -19474,6 +22878,12 @@ export const en: Translations = {
     assignedTo: 'Assigned To',
     autodistribute: 'Auto-distribute',
     availableCurrencies: 'Available Currencies',
+    financeLandingSubtitle: 'Budgets, expenditures, accounts, and financial reporting',
+    budgetsSubtitle: 'Create, submit, approve, and track donor-compliant project budgets',
+    expendituresSubtitle: 'Track expenses, payment status, and budget consumption',
+    overviewSubtitle: 'High-level financial dashboard with budgets, expenditures, and variance',
+    reportsSubtitle: 'Generate financial summaries and internal reports',
+    advancesSubtitle: 'Manage staff advance requests and liquidation tracking',
     backToBudgets: 'Back to Budgets',
     backToFinance: 'Back to Finance',
     basicInformation: 'Basic Information',
@@ -19872,13 +23282,7 @@ export const en: Translations = {
     warrantyExpiry: 'Warranty Expiry',
     weekly: 'Weekly',
     years: 'years',
-    financeLandingSubtitle: 'Budgets, expenditures, accounts, and financial reporting',
-    budgetsSubtitle: 'Create, submit, approve, and track donor-compliant project budgets',
-    expendituresSubtitle: 'Track expenses, payment status, and budget consumption',
-    overviewSubtitle: 'High-level financial dashboard with budgets, expenditures, and variance',
-    reportsSubtitle: 'Generate financial summaries and internal reports',
-    advancesSubtitle: 'Manage staff advance requests and liquidation tracking',
-  },
+},
   emailNotifications: {
     accessDenied: 'Access Denied',
     actions: 'Actions',
@@ -20573,6 +23977,7 @@ export const en: Translations = {
       varianceAnalysisReport: 'Variance Analysis Report',
       vendor: 'Vendor',
     },
+    system: {
     adminDashboard: {
       adminDashboardSubtitle: 'Organization-level administration and management',
       adminDashboardTitle: 'Admin Dashboard',
@@ -20600,8 +24005,12 @@ export const en: Translations = {
       viewAuditLogs: 'View Audit Logs',
       viewAuditLogsDesc: 'Platform-level audit trail and logs',
     },
+    },
     auditLogsPage: {
-      auditLogs: 'Audit & Logs',
+      auditLogs: "Audit Logs",
+      activityLog: "Activity Log",
+      allPlatformAdminActions: "All platform administrator actions are logged here",
+      auditLoggingComingSoon: "Audit log logging will be available soon"
     },
     operatingUnitDetailPage: {
       loading: 'Loading...',
@@ -21450,6 +24859,8 @@ export const en: Translations = {
       approveMessage: 'Are you sure you want to approve this payment?',
       approved: 'Approved',
       backToFinance: 'Back to Finance',
+      payeeNameAr: 'Payee NameAr',
+      versionHistory: 'Version History',
       bankAccount: 'Bank Account',
       bankInfo: 'Bank Information',
       bank_transfer: 'Bank Transfer',
@@ -21667,6 +25078,7 @@ export const en: Translations = {
       accountNumber: 'Account Number',
       active: 'Active',
       activeVendors: 'Active Vendors',
+      vendorNameAr: 'Vendor Name (Arabic)',
       address: 'Address',
       addressAr: 'Address (Arabic)',
       allVendors: 'All Vendors',
@@ -21944,6 +25356,9 @@ export const en: Translations = {
     },
     treasuryCashManagement: {
       accountName: 'Account Name',
+      accountNameAr: 'Account Name (Arabic)',
+      bankNameAr: 'Bank Name (Arabic)',
+      fundNameAr: 'Fund Name (Arabic)',
       accountNumber: 'Account Number',
       accountType: 'Account Type',
       active: 'Active',
@@ -22403,6 +25818,7 @@ export const en: Translations = {
       totalOfferPrice: 'Total Offer Price',
       totalTechnicalScore: 'Total Technical Score',
       unlockScores: 'Unlock Scores',
+      technicalBThreshold: 'Technical score is below 70% threshold',
     },
     bidOpeningMinutes: {
       addCommentsAboutApproval: 'Add any comments or notes about the approval',
@@ -22949,6 +26365,7 @@ export const en: Translations = {
       updateSuccess: 'Vendor updated successfully',
       vendorCode: 'Vendor Code',
       vendorName: 'Vendor Name',
+      vendorNameAr: 'Vendor Name Arabic',
       vendorType: 'Vendor Type',
       viewDetails: 'View Details',
       website: 'Website',
@@ -23450,6 +26867,9 @@ export const en: Translations = {
       cancel: 'Cancel',
       createQA: 'Create QA',
       description: 'Description',
+      contactPerson: 'Contact Person:',
+      email: 'Email',
+      phone: 'Phone',
       draft: 'Draft',
       error: 'Error',
       evaluationReport: 'Evaluation Report',
@@ -23660,16 +27080,6 @@ export const en: Translations = {
       report: 'Project Report',
       tasks: 'Tasks',
       varianceAlerts: 'Variance Alerts',
-      projectDetail: {
-        projectCode: 'Project Code',
-        generateReports: 'Generate Reports',
-        end: 'end',
-        projectCharter: 'Project Charter',
-        statusReport: 'Status Report',
-        closureReport: 'Closure Report',
-        programOverview: 'Program Overview',
-        beneficiaryCertificate: 'Beneficiary Certificate',
-      },
     },
     projectsCRUDPage: {
       addNewProject: 'Add New Project',
@@ -23875,12 +27285,7 @@ export const en: Translations = {
       warningText: 'Records in the Deleted Records vault will be automatically and permanently deleted after the retention period expires. This action cannot be undone.',
       warningTitle: 'Important Information',
     },
-  
 
-  
-
-  
-  
     approvalPanel: {
       approveButton: 'Approve',
       approved: 'Approved',
@@ -24013,6 +27418,10 @@ export const en: Translations = {
       totalBudgetLabel: 'Total Budget',
       update: 'Update',
       viewDetails: 'View Details',
+      reportsAnalytics: 'Reports & Analytics',
+      reportsAnalyticsDesc: 'Program performance reporting and dashboards',
+      reports: 'Reports',
+      dashboards: 'Dashboards',
     },
   
   
@@ -24293,64 +27702,7 @@ export const en: Translations = {
     yyyy: "YYYY",
   },
 
-  system: {
-    adminDashboard: {
-      adminDashboardTitle: 'Admin Dashboard',
-      adminDashboardSubtitle: 'Platform administration and management',
-      developmentFeature: 'Development Feature',
-      devNotice: 'This is a development-only feature for testing Phase 0 management functions',
-      organizations: 'Organizations',
-      operatingUnits: 'Operating Units',
-      platformUsers: 'Platform Users',
-      systemHealthTitle: 'System Health',
-      operational: 'Operational',
-      manageOrganizations: 'Manage Organizations',
-      manageOrganizationsDesc: 'Create and manage organizations',
-      manageOperatingUnits: 'Manage Operating Units',
-      manageOperatingUnitsDesc: 'Create and manage operating units',
-      manageUsers: 'Manage Users',
-      manageUsersDesc: 'Manage platform users and permissions',
-      viewAuditLogs: 'View Audit Logs',
-      viewAuditLogsDesc: 'Review platform activity and changes',
-      deletedRecords: 'Deleted Records',
-      deletedRecordsDesc: 'Manage soft-deleted records',
-      quickActions: 'Quick Actions',
-      systemInformation: 'System Information',
-      currentUser: 'Current User',
-      userRole: 'User Role',
-      environment: 'Environment',
-      systemStatus: 'System Status',
-    },
-    auditLogsPage: {
-      auditLogs: 'Audit Logs',
-      activityLog: 'Activity Log',
-      allPlatformAdminActions: 'All platform administration actions are logged here',
-      auditLoggingComingSoon: 'Audit logging coming soon',
-    },
-    deletedRecords: {
-      noOrganizationAccess: 'No Organization Access',
-      mustBeAssignedToOrganization: 'You must be assigned to an organization to view deleted records.',
-      deletedRecordsArchive: 'Deleted Records / Archive',
-      manageDeletedRecords: 'Manage deleted records across all modules. Restore or permanently delete items.',
-      archivedRecords: 'Archived Records',
-      allSoftDeletedRecords: 'All soft-deleted records from your organization. You can restore them or permanently delete them.',
-      noDeletedRecordsFound: 'No deleted records found',
-      recordType: 'Record Type',
-      recordName: 'Name',
-      module: 'Module',
-      deletedBy: 'Deleted By',
-      deletedAt: 'Deleted At',
-      restoreRecord: 'Restore Record',
-      areYouSureRestore: 'Are you sure you want to restore "{recordName}"? This record will reappear in the {recordType} module.',
-      willReappearIn: 'will reappear in the',
-      recordRestoredSuccessfully: 'Record restored successfully',
-      failedToRestoreRecord: 'Failed to restore record:',
-      recordPermanentlyDeleted: 'Record permanently deleted',
-      failedToDeleteRecord: 'Failed to delete record:',
-      restore: 'Restore',
-      permanentlyDelete: 'Permanently Delete',
-    },
-    systemReports: {
+  systemReports: {
       errorReportSubmitted: 'Error Report Submitted',
       errorReportSubmittedDesc: 'Error report submitted successfully to Platform Admin',
       onlyPlatformAdminsCanView: 'Only platform admins can view import error reports',
@@ -24514,8 +27866,8 @@ export const en: Translations = {
       security: 'Security',
       projectPlan: 'Project Plan',
     },
-  },
-  };
+    };
+
 
 // ========== ARABIC TRANSLATIONS ==========
 export const ar: Translations = {
@@ -24635,6 +27987,7 @@ export const ar: Translations = {
     backToSuppliersList: 'العودة إلى قائمة الموردين',
     backToDetails: 'العودة إلى التفاصيل',
     backToDonorCrmDashboard: 'العودة إلى لوحة علاقات المانحين',
+    systemHealthSubtitle: 'مراقبة صحة النظام والحماية',
  },
 
  navigation: {
@@ -24660,6 +28013,7 @@ export const ar: Translations = {
  switchLanguage: 'تغيير اللغة',
  languageEn: 'English',
  languageAr: 'العربية',
+ languageIt: "الإيطالية",
  userMenu: 'قائمة المستخدم',
  viewProfile: 'عرض الملف الشخصي',
  accountSettings: 'إعدادات الحساب',
@@ -24782,12 +28136,14 @@ export const ar: Translations = {
  noRecentActivity: 'لا يوجد نشاط حديث',
  lastUpdated: 'آخر تحديث',
  refreshDashboard: 'تحديث لوحة التحكم',
- },
- organizationManagement: 'إدارة المنظمات',
+organizationManagement: 'إدارة المنظمات',
  platformSettings: 'إعدادات المنصة',
  sidebarTitle: 'إدارة المنصة',
  sidebarSubtitle: 'الإدارة على مستوى النظام',
- organizationDetail: {
+   },
+},
+
+organizationDetail: {
  title: 'تفاصيل المنظمة',
  statistics: 'إحصائيات المنظمة',
  statisticsDescription: 'المقاييس الرئيسية ومؤشرات الأداء',
@@ -24805,7 +28161,6 @@ export const ar: Translations = {
  operatingUnits: 'وحدات التشغيل',
  operatingUnitsCount: 'وحدة تشغيل',
  backToOrganizations: 'العودة إلى المنظمات',
- },
  },
 
  organization: {
@@ -24839,6 +28194,46 @@ export const ar: Translations = {
  educationSupport: 'دعم التعليم',
  educationSupportDesc: 'تطوير البنية التحتية للمدارس',
  inProgress: 'قيد التنفيذ',
+ onHold: 'معلق',
+completed: 'مكتمل',
+cancelled: 'ملغي',
+
+createNewProject: 'إنشاء مشروع جديد',
+editProject: 'تعديل المشروع',
+
+projectCode: 'رمز المشروع',
+projectCodePlaceholder: 'مثال: PROJ-2026-001',
+
+projectTitle: 'عنوان المشروع',
+projectTitlePlaceholder: 'أدخل عنوان المشروع',
+
+status: 'الحالة',
+
+startDate: 'تاريخ البدء',
+currency: 'العملة',
+
+sectors: 'القطاعات',
+
+donor: 'الجهة المانحة',
+donorPlaceholder: 'اختر الجهة المانحة',
+
+implementingPartner: 'الشريك المنفذ',
+implementingPartnerPlaceholder: 'أدخل اسم الشريك المنفذ',
+
+location: 'الموقع',
+locationPlaceholder: 'أدخل موقع المشروع',
+
+description: 'الوصف',
+descriptionPlaceholder: 'أدخل وصف المشروع',
+
+required: 'مطلوب',
+
+cancel: 'إلغاء',
+
+createProject: 'إنشاء المشروع',
+updateProject: 'تحديث المشروع',
+
+fillProjectDetails: 'أدخل تفاصيل المشروع',
  },
  },
 
@@ -25758,6 +29153,23 @@ export const ar: Translations = {
     worksheetFinancialOverviewNotFound: 'لم يتم العثور على ورقة العمل "Financial Overview"',
     year: 'السنة',
     yes: 'نعم',
+    createTask: 'إنشاء مهمة',
+updateTask: 'تحديث المهمة',
+deleteTaskConfirm: 'هل أنت متأكد من حذف هذه المهمة؟',
+taskDueDateRequired: 'تاريخ الاستحقاق مطلوب*',
+importTasksDescription: 'قم بتحميل ملف Excel يحتوي على بيانات المهام. تأكد من استخدام قالب الاستيراد الصحيح.',
+tasksImportedSuccess: 'تم استيراد المهام بنجاح!',
+importErrors: 'أخطاء الاستيراد',
+row: 'الصف',
+noTasksFoundClickAdd: 'لم يتم العثور على مهام. انقر على "إضافة مهمة" لإنشاء مهمة جديدة.',
+totalEstHours: 'إجمالي الساعات المقدرة',
+taskEstHours: 'الساعات المقدرة',
+priorityLow: 'منخفضة',
+priorityMedium: 'متوسطة',
+priorityHigh: 'عالية',
+priorityUrgent: 'عاجلة',
+statusToDo: 'قيد الانتظار',
+statusReview: 'قيد المراجعة',
  },
 
  finance: {
@@ -26269,8 +29681,8 @@ export const ar: Translations = {
  settingsError: 'خطأ في حفظ الإعدادات',
  },
 
- importData: 'استيراد البيانات',
  importExport: {
+ importData: 'استيراد البيانات',
  exportData: 'تصدير البيانات',
  importHistory: 'سجل الاستيراد',
  importStatus: 'حالة الاستيراد',
@@ -26398,6 +29810,7 @@ export const ar: Translations = {
  archived: 'تمت الأرشفة بنجاح',
  restored: 'تمت الاستعادة بنجاح',
  },
+ 
  error: {
  generic: 'حدث خطأ',
  notFound: 'السجل غير موجود',
@@ -26425,8 +29838,7 @@ export const ar: Translations = {
  cancelChanges: 'تجاهل التغييرات غير المحفوظة؟',
  overwriteData: 'سيؤدي هذا إلى الكتابة فوق البيانات الموجودة. متابعة؟',
  },
- },
-
+},
  deletedRecords: {
  title: 'السجلات المحذوفة',
  subtitle: 'عرض وإدارة السجلات المحذوفة',
@@ -26507,6 +29919,16 @@ export const ar: Translations = {
     userName: 'اسم المستخدم',
     userRestoredSuccessfully: 'تم استعادة المستخدم بنجاح',
     viewDetails: 'عرض التفاصيل',
+    restoreRecordTitle: 'استعادة السجل',
+    noOrganizationAccess: 'لا يوجد وصول للمنظمة',
+    mustBeAssignedToOrganization: 'يجب أن تكون معيناً إلى منظمة لعرض السجلات المحذوفة.',
+    manageDeletedRecords: 'إدارة السجلات المحذوفة عبر جميع الوحدات. يمكنك استعادة العناصر أو حذفها نهائياً.',
+    archivedRecords: 'السجلات المؤرشفة',
+    allSoftDeletedRecords: 'جميع السجلات المحذوفة مؤقتاً التابعة لمنظمتك. يمكنك استعادتها أو حذفها نهائياً.',
+    areYouSureRestore: 'هل أنت متأكد من استعادة "{recordName}"؟ سيظهر هذا السجل مرة أخرى في وحدة {recordType}.',
+    willReappearIn: 'سيظهر مرة أخرى في',
+    failedToRestoreRecord: 'فشل في استعادة السجل:',
+    failedToDeleteRecord: 'فشل في حذف السجل:',
  },
 
  meal: {
@@ -29013,8 +32435,8 @@ export const ar: Translations = {
     uptime: 'وقت التشغيل',
     validationAccuracy: 'دقة التحقق',
     vaultIsEmpty: 'الخزنة فارغة',
-    annualProgramsReportSubtitle: 'تقرير استراتيجي شامل عن الإنجازات والأداء وتخطيط العام القادم',
     warning: 'تحذير',
+    annualProgramsReportSubtitle: 'Annual Programs Report Subtitle',
   },
   organizationModule: {
     aExecutiveSummary: 'أ. الملخص التنفيذي',
@@ -29440,6 +32862,7 @@ export const ar: Translations = {
     annualProgramsSubtitle: 'نظرة عامة على أداء البرامج السنوية والتقارير',
     proposalPipelineSubtitle: 'تتبع فرص التمويل وتطوير المقترحات وإدارة دورة الحياة الكاملة من المفهوم إلى المشروع',
     activitiesSectionSubtitle: 'خطة التنفيذ تتزامن تلقائياً مع الأنشطة وتعكس الجدول الزمني للمشروع',
+    annualProgramsReportSubtitle: 'تقرير استراتيجي شامل عن الإنجازات والأداء وتخطيط العام القادم',
   },
   orgReports: {
     active: 'نشط',
@@ -30357,7 +33780,7 @@ export const ar: Translations = {
     additionalNotesForThePo: 'ملاحظات إضافية لأمر الشراء',
     additionalRemarks: 'ملاحظات إضافية',
     address: 'العنوان',
-    alertCountItemsWithLowStock: 'تنبيه: {count} صنف بمخزون منخفض',
+    alertCountItemsWithLowStock: 'تنبيه: صنف بمخزون منخفض',
     all: 'الكل',
     allCategories: 'جميع الفئات',
     allQuantitiesFulfilled: 'تم استيفاء جميع الكميات',
@@ -30796,6 +34219,26 @@ export const ar: Translations = {
     view: 'عرض',
     works: 'أعمال',
     year: 'السنة',
+    itemCodeRequired: 'رمز الصنف مطلوب',
+    binLocation: 'موقع التخزين',
+    enterBinLocation: 'أدخل موقع التخزين',
+    itemNameRequired: 'اسم الصنف مطلوب',
+    itemDetails: 'تفاصيل الصنف',
+    newItem: 'صنف جديد',
+    enterItemCode: 'أدخل رمز الصنف',
+    enterItemName: 'أدخل اسم الصنف',
+    minimumQuantity: 'الحد الأدنى للكمية',
+    maximumQuantity: 'الحد الأقصى للكمية',
+    unitType: 'نوع الوحدة',
+    unitCost: 'تكلفة الوحدة',
+    enterUnitType: 'أدخل نوع الوحدة',
+    warehouseLocation: 'موقع المستودع',
+    enterWarehouseLocation: 'أدخل موقع المستودع',
+    itemNameAr: 'اسم الصنف (عربي)',
+    enterItemNameAr: 'أدخل اسم الصنف بالعربية',
+    selectCategory: 'اختر الفئة',
+    enterDescription: 'أدخل الوصف',
+    saving: 'جاري الحفظ...',
   },
   hrStaff: {
     accountNumber: 'رقم الحساب',
@@ -31241,6 +34684,7 @@ export const ar: Translations = {
   },
   hrRecruitment: {
     actions: 'الإجراءات',
+    noCandidates: 'لا يوجد موظفين',
     addMember: 'إضافة عضو',
     addPanelMember: 'إضافة عضو',
     addSelectionCriterion: 'إضافة معيار اختيار',
@@ -31507,11 +34951,9 @@ export const ar: Translations = {
     vacancies: 'الشواغر',
     editVacancy: 'تحرير الشاغر',
     createNewVacancy: 'إنشاء شاغر جديد',
-    vacancyCreatedSuccessfully: 'تم إنشاء الشاغر بنجاح!',
     vacancyDetails: 'تفاصيل الشاغر',
     vacancyInformation: 'معلومات الشاغر',
     vacancyType: 'نوع الشاغر',
-    vacancyUpdatedSuccessfully: 'تم تحديث الشاغر بنجاح!',
     videoCall: 'مكالمة فيديو',
     view: 'عرض',
     viewApplications: 'عرض التقديمات',
@@ -31525,6 +34967,86 @@ export const ar: Translations = {
     yearsOfExperience: 'سنوات الخبرة',
     yes: 'نعم',
     yesno: 'نعم/لا',
+    firstName: 'الاسم الأول',
+    lastName: 'اسم العائلة',
+    education: 'التعليم',
+    experience: 'الخبرة',
+    interviews: 'المقابلات',
+    noInterviews: 'لا توجد مقابلات',
+    noDecision: 'لا يوجد قرار',
+    skills: 'المهارات',
+    candidateDeleted: 'تم حذف المرشح بنجاح',
+    confirmDelete: 'هل أنت متأكد من حذف هذا المرشح؟',
+    delete: 'حذف',
+    searchCandidates: 'البحث عن المرشحين...',
+    decisionApproved: 'تمت الموافقة على قرار التوظيف',
+    rejectHiringDecision: 'رفض قرار التوظيف',
+    decisionRejected: 'تم رفض قرار التوظيف',
+    confirmApprove: 'هل أنت متأكد من الموافقة على قرار التوظيف؟',
+    confirmReject: 'هل أنت متأكد من رفض قرار التوظيف؟',
+    pending: 'قيد الانتظار',
+    decisionCreated: 'تم إنشاء قرار التوظيف بنجاح',
+    candidateRequired: 'المرشح مطلوب',
+    salaryRequired: 'الراتب مطلوب',
+    startDateRequired: 'تاريخ البدء مطلوب',
+    offerSalary: 'راتب العرض',
+    createHiringDecision: 'إنشاء قرار توظيف',
+    saving: 'جاري الحفظ...',
+    decisionDeleted: 'تم حذف قرار التوظيف',
+    selectJob: 'اختر الوظيفة',
+    noDecisions: 'لا توجد قرارات توظيف',
+    deleteHiringDecision: 'حذف قرار التوظيف',
+    pleaseFixErrors: 'يرجى تصحيح الأخطاء قبل الإرسال',
+    accepted: 'مقبول',
+    offerStatus: 'حالة العرض',
+    processing: 'جاري المعالجة...',
+    selectInterview: 'اختر المقابلة',
+    updateInterview: 'تحديث المقابلة',
+    evaluationSaved: 'تم حفظ التقييم بنجاح',
+    scheduledTime: 'الوقت المجدول',
+    poor: 'ضعيف',
+    fair: 'مقبول',
+    good: 'جيد',
+    veryGood: 'جيد جداً',
+    excellent: 'ممتاز',
+    evaluateInterview: 'تقييم المقابلة',
+    interviewDeleted: 'تم حذف المقابلة بنجاح',
+    location: 'الموقع',
+    jobTitle: 'المسمى الوظيفي',
+    jobCode: 'رمز الوظيفة',
+    searchTerm: 'مصطلح البحث',
+    feedbackScore: 'درجة التقييم',
+    numberOfPositions: 'عدد الوظائف',
+    gradeLevel: 'الدرجة الوظيفية',
+    salaryRange: 'نطاق الراتب',
+    postingDate: 'تاريخ النشر',
+    description: 'الوصف',
+    applicationLink: 'رابط التقديم',
+    isRemote: 'وظيفة عن بعد',
+    requirements: 'المتطلبات',
+    responsibilities: 'المسؤوليات',
+    benefits: 'المزايا',
+    createJob: 'إنشاء وظيفة',
+    jobCreated: 'تم إنشاء الوظيفة بنجاح',
+    jobUpdated: 'تم تحديث الوظيفة بنجاح',
+    jobTitleRequired: 'المسمى الوظيفي مطلوب',
+    departmentRequired: 'القسم مطلوب',
+    closingDateRequired: 'تاريخ الإغلاق مطلوب',
+    positionsRequired: 'عدد الوظائف مطلوب',
+    jobTitleAr: 'المسمى الوظيفي (عربي)',
+    jobDeleted: 'تم حذف الوظيفة بنجاح',
+    confirmClose: 'هل أنت متأكد من إغلاق هذا الشاغر؟',
+    confirmArchive: 'هل أنت متأكد من أرشفة هذا الشاغر؟',
+    interviewUpdated: 'تم تحديث المقابلة بنجاح',
+    newInterview: 'مقابلة جديدة',
+    noJobsSelected: 'لم يتم اختيار أي وظيفة',
+    interviewer: 'المقابل',
+    interviewScheduled: 'تمت جدولة المقابلة بنجاح',
+    dateRequired: 'التاريخ مطلوب',
+    timeRequired: 'الوقت مطلوب',
+    interviewers: 'المقابلون',
+    vacancyCreatedSuccessfully: 'تم إنشاء الشاغر بنجاح',
+    vacancyUpdatedSuccessfully: 'تم تحديث الشاغر بنجاح',
   },
   hrPayroll: {
     actions: 'الإجراءات',
@@ -32740,6 +36262,9 @@ export const ar: Translations = {
     actionType: 'نوع الإجراء',
     actions: 'الإجراءات',
     activate: 'تفعيل',
+    recruitmentSubtitle: 'إدارة التوظيف ومسار المرشحين',
+    trainingSubtitle: 'تخطيط التدريب وتطوير قدرات الموظفين',
+    periodManagementSubtitle: 'إدارة فترات الرواتب وضوابط الإقفال',
     active: 'نشط',
     activeContracts: 'العقود النشطة',
     activeEmployeesWithFullLifecycleProfiles: 'الموظفون النشطون مع ملفات دورة الحياة الكاملة',
@@ -34012,7 +37537,7 @@ export const ar: Translations = {
       countryPlaceholder: 'اختر البلد',
       countryRequired: 'البلد مطلوب',
       createButton: 'إنشاء المنظمة',
-      createError: 'فشل إنشاء المنظمة: {{message}}',
+      createError: 'فشل إنشاء المنظمة:',
       createSuccess: 'تم إنشاء المنظمة بنجاح',
       createTitle: 'إنشاء منظمة',
       domainHelper: 'اختياري. يُستخدم للنطاقات الفرعية المخصصة (أحرف صغيرة، أرقام، نقاط، شرطات فقط)',
@@ -34066,7 +37591,7 @@ export const ar: Translations = {
       tenantIdLabel: 'معرّف المستأجر',
       tenantIdPlaceholder: 'مثال: uuid-generated-tenant-id',
       updateButton: 'تحديث المنظمة',
-      updateError: 'فشل تحديث المنظمة: {{message}}',
+      updateError: 'فشل تحديث المنظمة',
       updateOuButton: 'تحديث الوحدة',
       updateSuccess: 'تم تحديث المنظمة بنجاح',
     },
@@ -34309,6 +37834,7 @@ export const ar: Translations = {
       varianceAnalysisReport: 'تقرير تحليل التباين',
       vendor: 'المورد',
     },
+    system: {
     adminDashboard: {
       adminDashboardSubtitle: 'الإدارة والتنظيم على مستوى المنظمة',
       adminDashboardTitle: 'لوحة تحكم المسؤول',
@@ -34336,9 +37862,14 @@ export const ar: Translations = {
       viewAuditLogs: 'عرض سجلات التدقيق',
       viewAuditLogsDesc: 'مسار التدقيق والسجلات على مستوى المنصة',
     },
+    },
     auditLogsPage: {
       auditLogs: 'التدقيق والسجلات',
+      activityLog: "سجل النشاط",
+      allPlatformAdminActions: "يتم تسجيل جميع إجراءات مسؤول النظام الأساسي هنا",
+      auditLoggingComingSoon: "سيتوفر تسجيل سجل التدقيق قريبًا"
     },
+    
     operatingUnitDetailPage: {
       loading: 'جاري التحميل...',
       status: 'الحالة',
@@ -34570,9 +38101,9 @@ export const ar: Translations = {
       admins: 'Organization Admins',
       backToOrganizations: 'Back to Organizations',
       budgetAllocation: 'Budget Allocation',
-      bulkDeleteSuccess: 'تم حذف {{count}} وحدة تشغيل بنجاح',
-      bulkUpdateError: 'فشل تحديث وحدات التشغيل: {{message}}',
-      bulkUpdateSuccess: 'تم تحديث {{count}} وحدة تشغيل بنجاح',
+      bulkDeleteSuccess: 'تم حذف وحدة تشغيل بنجاح',
+      bulkUpdateError: 'فشل تحديث وحدات التشغيل',
+      bulkUpdateSuccess: 'تم تحديث وحدة تشغيل بنجاح',
       comingSoon: 'Coming soon',
       country: 'Country',
       createdAt: 'Created At',
@@ -34602,12 +38133,12 @@ export const ar: Translations = {
     },
     organizationsPage: {
       allOrganizations: 'جميع المنظمات',
-      bulkDeleteSuccess: 'تم حذف {{count}} منظمات بنجاح',
+      bulkDeleteSuccess: 'تم حذف منظمات بنجاح',
       createFirstOrganization: 'أنشئ منظمتك الأولى للبدء',
       createFirstOrganizationButton: 'إنشاء المنظمة الأولى',
       createOrganization: 'إنشاء منظمة',
       delete: 'حذف',
-      deleteSelected: 'حذف المحدد ({{count}})',
+      deleteSelected: 'حذف المحدد',
       deletedSuccessfully: 'تم حذف السجل بنجاح',
       edit: 'تعديل',
       loading: 'جاري التحميل...',
@@ -34619,7 +38150,7 @@ export const ar: Translations = {
       organizations: 'المنظمات',
       organizations2: 'المنظمات',
       selectAll: 'تحديد الكل',
-      selectedOrganizations: '{{count}} منظمات محددة',
+      selectedOrganizations: 'منظمات محددة',
       status: 'الحالة',
       view: 'عرض',
     },
@@ -34631,7 +38162,7 @@ export const ar: Translations = {
       backToPlatform: 'Back To Platform',
       currentOrganizations: 'المنظمات الحالية وتكوينها',
       enterUserId: 'أدخل معرف المستخدم',
-      failedToAssignUser: 'فشل تعيين المستخدم: {{message}}',
+      failedToAssignUser: 'فشل تعيين المستخدم',
       noPermission: 'ليس لديك إذن للوصول إلى إدارة المستخدمين.',
       organization: 'المنظمة',
       organizationAdmin: 'مسؤول المنظمة',
@@ -34646,7 +38177,7 @@ export const ar: Translations = {
       userId: 'معرف المستخدم',
       userManagementSubtitle: 'تعيين المستخدمين للمنظمات وإدارة أدوارهم',
       userManagementTitle: 'إدارة المستخدمين',
-      usersMustLogin: 'يجب على المستخدمين تسجيل الدخول أولاً عبر Manus OAuth قبل أن يتمكنوا من التعيين للمنظمات',
+      usersMustLogin: 'يجب على المستخدمين تسجيل الدخول أولاً عبر قبل أن يتمكنوا من التعيين للمنظمات',
     },
     advanceDetail: {
       APPROVED: 'معتمد',
@@ -36145,9 +39676,11 @@ export const ar: Translations = {
           totalOfferPrice: 'إجمالي سعر العرض',
           totalTechnicalScore: 'إجمالي الدرجة الفنية',
           unlockScores: 'فتح قفل الدرجات',
+          technicalBThreshold: 'الدرجة الفنية أقل من حد 70%',
     },
     bidOpeningMinutes: {
       addCommentsAboutApproval: 'أضف أي تعليقات أو ملاحظات حول الموافقة',
+      biddersSection: 'قسم المتقدمين',
       approval: 'الموافقة',
       approveBom: 'الموافقة على محضر الفتح',
       approverCommentsOptional: 'تعليقات الموافق (اختياري)',
@@ -36198,7 +39731,6 @@ export const ar: Translations = {
       revokeSignatureTitle: 'إلغاء التوقيع',
       confirmRevoke: 'نعم، إلغاء',
       bidderName: 'اسم مقدم العرض',
-      biddersSection: 'قسم مقدمي العطاءات',
       submissionStatus: 'حالة التقديم',
       submissionDate:  'تأريخ التقديم',
       noBidders:  'عدد مقدمي العطاءات',
@@ -37406,16 +40938,6 @@ export const ar: Translations = {
       report: 'تقرير المشروع',
       tasks: 'المهام',
       varianceAlerts: 'تنبيهات التباين',
-      projectDetail: {
-        projectCode: 'رمز المشروع',
-        generateReports: 'إنشاء التقارير',
-        end: 'start',
-        projectCharter: 'ميثاق المشروع',
-        statusReport: 'تقرير الحالة',
-        closureReport: 'تقرير الإغلاق',
-        programOverview: 'نظرة عامة على البرنامج',
-        beneficiaryCertificate: 'شهادة المستفيد',
-      },
     },
     projectsCRUDPage: {
       addNewProject: 'إضافة مشروع جديد',
@@ -37756,6 +41278,10 @@ export const ar: Translations = {
       totalBudgetLabel: 'إجمالي الميزانية',
       update: 'تحديث',
       viewDetails: 'عرض التفاصيل',
+      reportsAnalytics: 'التقارير والتحليلات',
+      reportsAnalyticsDesc: 'تقارير الأداء ولوحات المتابعة الخاصة بالبرامج',
+      reports: 'التقارير',
+      dashboards: 'لوحات المتابعة',
     },
   
     tenderInformation: {
@@ -38036,227 +41562,22045 @@ export const ar: Translations = {
     yyyy: "YYYY",
   },
 
-  system: {
-    adminDashboard: {
-      adminDashboardTitle: 'Admin Dashboard',
-      adminDashboardSubtitle: 'Platform administration and management',
-      developmentFeature: 'Development Feature',
-      devNotice: 'This is a development-only feature for testing Phase 0 management functions',
-      organizations: 'Organizations',
-      operatingUnits: 'Operating Units',
-      platformUsers: 'Platform Users',
-      systemHealthTitle: 'System Health',
-      operational: 'Operational',
-      manageOrganizations: 'Manage Organizations',
-      manageOrganizationsDesc: 'Create and manage organizations',
-      manageOperatingUnits: 'Manage Operating Units',
-      manageOperatingUnitsDesc: 'Create and manage operating units',
-      manageUsers: 'Manage Users',
-      manageUsersDesc: 'Manage platform users and permissions',
-      viewAuditLogs: 'View Audit Logs',
-      viewAuditLogsDesc: 'Review platform activity and changes',
-      deletedRecords: 'Deleted Records',
-      deletedRecordsDesc: 'Manage soft-deleted records',
-      quickActions: 'Quick Actions',
-      systemInformation: 'System Information',
-      currentUser: 'Current User',
-      userRole: 'User Role',
-      environment: 'Environment',
-      systemStatus: 'System Status',
-    },
-    auditLogsPage: {
-      auditLogs: 'Audit Logs',
-      activityLog: 'Activity Log',
-      allPlatformAdminActions: 'All platform administration actions are logged here',
-      auditLoggingComingSoon: 'Audit logging coming soon',
-    },
-    deletedRecords: {
-      noOrganizationAccess: 'No Organization Access',
-      mustBeAssignedToOrganization: 'You must be assigned to an organization to view deleted records.',
-      deletedRecordsArchive: 'Deleted Records / Archive',
-      manageDeletedRecords: 'Manage deleted records across all modules. Restore or permanently delete items.',
-      archivedRecords: 'Archived Records',
-      allSoftDeletedRecords: 'All soft-deleted records from your organization. You can restore them or permanently delete them.',
-      noDeletedRecordsFound: 'No deleted records found',
-      recordType: 'Record Type',
-      recordName: 'Name',
-      module: 'Module',
-      deletedBy: 'Deleted By',
-      deletedAt: 'Deleted At',
-      restoreRecord: 'Restore Record',
-      areYouSureRestore: 'Are you sure you want to restore "{recordName}"? This record will reappear in the {recordType} module.',
-      willReappearIn: 'will reappear in the',
-      recordRestoredSuccessfully: 'Record restored successfully',
-      failedToRestoreRecord: 'Failed to restore record:',
-      recordPermanentlyDeleted: 'Record permanently deleted',
-      failedToDeleteRecord: 'Failed to delete record:',
-      restore: 'Restore',
-      permanentlyDelete: 'Permanently Delete',
-    },
     systemReports: {
-      errorReportSubmitted: 'Error Report Submitted',
-      errorReportSubmittedDesc: 'Error report submitted successfully to Platform Admin',
-      onlyPlatformAdminsCanView: 'Only platform admins can view import error reports',
-      onlyPlatformAdminsCanUpdate: 'Only platform admins can update report status',
-      databaseNotAvailable: 'Database not available',
-      row: 'Row',
-      field: 'Field',
-      errorType: 'Error Type',
-      errorMessage: 'Error Message',
-      suggestedFix: 'Suggested Fix',
-      checkDataFormatAndTryAgain: 'Check data format and try again',
-      importErrors: 'Import Errors',
-      errorDetails: 'Error Details',
+      errorReportSubmitted: 'تم تقديم تقرير الخطأ',
+      errorReportSubmittedDesc: 'تم تقديم تقرير الخطأ بنجاح إلى مسؤول المنصة',
+      onlyPlatformAdminsCanView: 'يمكن لمسؤولي المنصة فقط عرض تقارير أخطاء الاستيراد',
+      onlyPlatformAdminsCanUpdate: 'يمكن لمسؤولي المنصة فقط تحديث حالة التقرير',
+      databaseNotAvailable: 'قاعدة البيانات غير متاحة',
+      row: 'صف',
+      field: 'حقل',
+      errorType: 'نوع الخطأ',
+      errorMessage: 'رسالة الخطأ',
+      suggestedFix: 'الإصلاح المقترح',
+      checkDataFormatAndTryAgain: 'تحقق من صيغة البيانات وحاول مرة أخرى',
+      importErrors: 'أخطاء الاستيراد',
+      errorDetails: 'تفاصيل الخطأ',
     },
     salaryScale: {
-      salaryScaleTable: 'Salary Scale Table',
-      salaryScaleSubtitle: 'View and manage salary grades and steps',
-      guideline: 'Guideline',
-      table: 'Table',
-      policy: 'Policy',
-      salaryScaleTableGuideline: 'Salary Scale Table Guideline',
-      salaryScaleGuidelineSubtitle: 'Understanding grades, steps, and salary progression',
-      aSalaryGradeDefinition: 'A. Salary Grade Definition',
-      gradeDefinition: 'A Grade represents the seniority level and responsibility level of a position. It does not change the job title or the job description.',
-      gradeExamples: 'Grade Examples:',
-      entryLevel: 'Grade G1: Entry Level / Support roles (Clerk, Assistant, Driver)',
-      juniorLevel: 'Grade G2: Junior / Assistant roles (Junior Officer, Assistant Coordinator)',
-      midLevel: 'Grade G3: Officer / Technical roles (Officer, Technician, Coordinator)',
-      seniorLevel: 'Grade G4: Coordinator / Senior Officer roles (Senior Officer, Coordinator, Specialist)',
-      executiveLevel: 'Grade G5: Manager / Head of Unit roles (Manager, Head of Department)',
-      bPositionVsGradeGuidance: 'B. Position vs Grade Guidance',
-      positionGuidance: 'Grades are organizational decisions. The same position title may have different grades in different organizations.',
-      positionNote: 'Example: "Finance Officer" could be Grade G2 in one organization and Grade G3 in another.',
-      cStepDefinition: 'C. Step Definition',
-      whatIsAStep: 'What is a Step?',
-      stepDefinition: 'Steps represent salary progression within the same grade. They do not change the job title or the grade.',
-      stepExplanation: 'Step 1 represents the entry salary within a specific grade. Higher steps (Step 2, Step 3) reflect salary progression while remaining in the same grade.',
-      stepProgression: 'Step Progression',
+      salaryScaleTable: 'جدول الرواتب',
+      salaryScaleSubtitle: 'عرض وإدارة الدرجات والخطوات',
+      guideline: 'الإرشادات',
+      table: 'الجدول',
+      policy: 'السياسة',
+      salaryScaleTableGuideline: 'إرشادات جدول الرواتب',
+      salaryScaleGuidelineSubtitle: 'فهم الدرجات والخطوات وتطور الراتب',
+      aSalaryGradeDefinition: 'أ. تعريف درجة الراتب',
+      gradeDefinition: 'تمثل الدرجة مستوى الأقدمية ومستوى المسؤولية في الوظيفة. لا تغير عنوان الوظيفة أو وصف الوظيفة.',
+      gradeExamples: 'أمثلة على الدرجات:',
+      entryLevel: 'الدرجة G1: مستوى الدخول / أدوار الدعم (كاتب، مساعد، سائق)',
+      juniorLevel: 'الدرجة G2: أدوار مبتدئة / مساعدة (ضابط مبتدئ، مساعد منسق)',
+      midLevel: 'الدرجة G3: أدوار الضابط / التقنية (ضابط، فني، منسق)',
+      seniorLevel: 'الدرجة G4: أدوار منسق / ضابط أول (ضابط أول، منسق، متخصص)',
+      executiveLevel: 'الدرجة G5: أدوار مدير / رئيس الوحدة (مدير، رئيس القسم)',
+      bPositionVsGradeGuidance: 'ب. إرشادات الوظيفة مقابل الدرجة',
+      positionGuidance: 'الدرجات قرارات تنظيمية. قد تحتوي نفس عنوان الوظيفة على درجات مختلفة في منظمات مختلفة.',
+      positionNote: 'مثال: قد تكون "ضابط مالي" من الدرجة G2 في منظمة واحدة والدرجة G3 في منظمة أخرى.',
+      cStepDefinition: 'ج. تعريف الخطوة',
+      whatIsAStep: 'ما هي الخطوة؟',
+      stepDefinition: 'تمثل الخطوات تطور الراتب ضمن نفس الدرجة. لا تغير عنوان الوظيفة أو الدرجة.',
+      stepExplanation: 'تمثل الخطوة 1 راتب الدخول ضمن درجة معينة. تعكس الخطوات الأعلى (الخطوة 2، الخطوة 3) تطور الراتب مع البقاء في نفس الدرجة.',
+      stepProgression: 'تطور الخطوة',
       stepRules: [
-        'Steps are usually annual or performance-based',
-        'Moving from Step 1 to Step 2 increases salary without changing the grade',
-        'Maximum salary in a grade is usually reached at the highest step'
+        'عادة ما تكون الخطوات سنوية أو قائمة على الأداء',
+        'الانتقال من الخطوة 1 إلى الخطوة 2 يزيد الراتب دون تغيير الدرجة',
+        'عادة ما يتم الوصول إلى أقصى راتب في الدرجة في أعلى خطوة'
       ],
-      dPayrollDependencyWarning: 'D. Payroll Dependency Warning',
-      criticalWarning: 'Critical Warning',
-      warningText: 'Payroll calculations depend directly on this salary scale. Incorrect setup will result in incorrect salaries.',
+      dPayrollDependencyWarning: 'د. تحذير اعتماد الرواتب',
+      criticalWarning: 'تحذير حرج',
+      warningText: 'تعتمد حسابات الرواتب مباشرة على جدول الرواتب. قد يؤدي الإعداد غير الصحيح إلى رواتب غير صحيحة.',
       warningRules: [
-        'Only records with Status = Active will be read by payroll',
-        'Draft records are ignored by payroll',
-        'Historical/Superseded versions are not used in calculations'
+        'فقط السجلات ذات الحالة = نشط سيتم قراءتها بواسطة الرواتب',
+        'يتم تجاهل السجلات المسودة بواسطة الرواتب',
+        'لا يتم استخدام الإصدارات التاريخية / المحلولة في الحسابات'
       ],
-      importantNotes: 'Important Notes',
+      importantNotes: 'ملاحظات مهمة',
       notes: [
-        'Always verify salary data before marking as Active',
-        'This is guidance only - organizations can customize grades and steps',
-        'All salary changes must be documented with effective dates'
+        'تحقق دائماً من بيانات الراتب قبل تحديدها كنشطة',
+        'هذه إرشادات فقط - يمكن للمنظمات تخصيص الدرجات والخطوات',
+        'يجب توثيق جميع تغييرات الراتب بتواريخ فعالة'
       ],
-      editSalaryRecord: 'Edit Salary Record',
-      staffInformation: 'Staff Information',
-      gradeScale: 'Grade Scale',
-      grade: 'Grade',
-      step: 'Step',
-      salaryRange: 'Salary Range',
-      min: 'Min',
-      max: 'Max',
-      approvedGrossSalary: 'Approved Gross Salary',
-      allowances: 'Allowances',
-      housingAllowance: 'Housing Allowance',
-      transportAllowance: 'Transport Allowance',
-      representationAllowance: 'Representation Allowance',
-      annualAllowance: 'Annual Allowance',
-      bonus: 'Bonus',
-      otherAllowances: 'Other Allowances',
+      editSalaryRecord: 'تعديل سجل الراتب',
+      staffInformation: 'معلومات الموظفين',
+      gradeScale: 'مقياس الدرجة',
+      grade: 'الدرجة',
+      step: 'الخطوة',
+      salaryRange: 'نطاق الراتب',
+      min: 'الحد الأدنى',
+      max: 'الحد الأقصى',
+      approvedGrossSalary: 'الراتب الإجمالي المعتمد',
+      allowances: 'البدلات',
+      housingAllowance: 'بدل السكن',
+      transportAllowance: 'بدل المواصلات',
+      representationAllowance: 'بدل التمثيل',
+      annualAllowance: 'البدل السنوي',
+      bonus: 'المكافأة',
+      otherAllowances: 'بدلات أخرى',
       // ✅ NEW: Tax & Social Security Fields
-      deductionsAndTaxes: 'Deductions & Taxes',
-      taxPercent: 'Tax Percentage',
-      taxPercentLabel: 'Tax Percentage on Basic Salary',
-      taxAmount: 'Tax Amount',
-      taxableBaseSalary: 'Taxable Base Salary',
-      socialSecurityContributions: 'Social Security Contributions',
-      socialSecurityEmployeePercent: 'Employee Contribution %',
-      socialSecurityEmployeePercentLabel: 'Employee Social Security Contribution %',
-      socialSecurityEmployerPercent: 'Employer Contribution %',
-      socialSecurityEmployerPercentLabel: 'Employer Social Security Contribution %',
-      socialSecurityDeduction: 'Social Security Deduction',
-      employeeContribution: 'Employee Contribution',
-      employerContribution: 'Employer Contribution',
-      effectiveStartDate: 'Effective Start Date',
-      value: 'Value',
-      percentage: 'Percentage',
-      cancel: 'Cancel',
-      saveAsNewVersion: 'Saving will create a new version of this salary record',
-      versionNote: 'Version Note',
-      salaryHistory: 'Salary History',
-      for: 'for',
-      version: 'Version',
-      effectiveDate: 'Effective Date',
-      endDate: 'End Date',
-      salary: 'Salary',
-      approvedSalary: 'Approved Salary',
-      status: 'Status',
-      approvedBy: 'Approved By',
-      close: 'Close',
-      draft: 'Draft',
-      active: 'Active',
-      superseded: 'Superseded',
-      current: 'Current',
-      noHistoryFound: 'No history found',
-      addNewGrade: 'Add New Grade',
-      gradeCode: 'Grade Code',
-      description: 'Description',
-      minimumSalary: 'Minimum Salary',
-      maximumSalary: 'Maximum Salary',
-      currency: 'Currency',
-      egG6: 'e.g. G6',
-      egExecutiveLevel: 'e.g. Executive Level',
-      pleaseFillAllRequiredFields9: 'Please fill all required fields',
-      addGrade: 'Add Grade',
-      manageSalaryGrades: 'Manage Salary Grades',
-      viewAndDeleteGradeDefinitions: 'View and delete grade definitions',
-      steps: 'Steps',
-      noGradesFound: 'No grades found',
-      salaryScalePolicyDocuments: 'Salary Scale Policy Documents',
-      salaryScalePolicySubtitle: 'Upload and manage salary scale policy documents',
-      uploadPolicy: 'Upload Policy',
-      download10: 'Download',
-      archive: 'Archive',
-      policyName: 'Policy Name',
-      fileName: 'File Name',
-      size: 'Size',
-      archived: 'Archived',
-      uploadNewPolicy: 'Upload New Policy',
-      selectFile: 'Select File',
-      upload: 'Upload',
-      confirmArchive: 'Archive this policy?',
-      confirmDelete: 'Delete this policy document?',
-      of: 'of',
-      type: 'Type',
-      hrDashboard: 'HR Dashboard',
-      name: 'Name',
-      position: 'Position',
-      department: 'Department',
+      deductionsAndTaxes: 'الخصومات والضرائب',
+      taxPercent: 'نسبة الضريبة',
+      taxPercentLabel: 'نسبة الضريبة على الراتب الأساسي',
+      taxAmount: 'مبلغ الضريبة',
+      taxableBaseSalary: 'الراتب الأساسي الخاضع للضريبة',
+      socialSecurityContributions: 'مساهمات الضمان الاجتماعي',
+      socialSecurityEmployeePercent: 'نسبة مساهمة الموظف',
+      socialSecurityEmployeePercentLabel: 'نسبة مساهمة الموظف في الضمان الاجتماعي',
+      socialSecurityEmployerPercent: 'نسبة مساهمة صاحب العمل',
+      socialSecurityEmployerPercentLabel: 'نسبة مساهمة صاحب العمل في الضمان الاجتماعي',
+      socialSecurityDeduction: 'خصم الضمان الاجتماعي',
+      employeeContribution: 'مساهمة الموظف',
+      employerContribution: 'مساهمة صاحب العمل',
+      effectiveStartDate: 'تاريخ البدء الفعلي',
+      value: 'القيمة',
+      percentage: 'النسبة المئوية',
+      cancel: 'إلغاء',
+      saveAsNewVersion: 'سيؤدي الحفظ إلى إنشاء نسخة جديدة من سجل الراتب هذا',
+      versionNote: 'ملاحظة الإصدار',
+      salaryHistory: 'سجل الراتب',
+      for: 'ل',
+      version: 'الإصدار',
+      effectiveDate: 'التاريخ الفعلي',
+      endDate: 'تاريخ الانتهاء',
+      salary: 'الراتب',
+      approvedSalary: 'الراتب المعتمد',
+      status: 'الحالة',
+      approvedBy: 'معتمد من قبل',
+      close: 'إغلاق',
+      draft: 'مسودة',
+      active: 'نشط',
+      superseded: 'ملغى',
+      current: 'الحالي',
+      noHistoryFound: 'لم يتم العثور على سجل',
+      addNewGrade: 'إضافة درجة جديدة',
+      gradeCode: 'رمز الدرجة',
+      description: 'الوصف',
+      minimumSalary: 'الحد الأدنى للراتب',
+      maximumSalary: 'الحد الأقصى للراتب',
+      currency: 'العملة',
+      egG6: 'مثال G6',
+      egExecutiveLevel: 'مثال المستوى التنفيذي',
+      pleaseFillAllRequiredFields9: 'يرجى ملء جميع الحقول المطلوبة',
+      addGrade: 'إضافة درجة',
+      manageSalaryGrades: 'إدارة درجات الراتب',
+      viewAndDeleteGradeDefinitions: 'عرض وحذف تعريفات الدرجة',
+      steps: 'الخطوات',
+      noGradesFound: 'لم يتم العثور على درجات',
+      salaryScalePolicyDocuments: 'وثائق سياسة جدول الرواتب',
+      salaryScalePolicySubtitle: 'تحميل وإدارة وثائق سياسة جدول الرواتب',
+      uploadPolicy: 'تحميل السياسة',
+      download10: 'تحميل',
+      archive: 'أرشيف',
+      policyName: 'اسم السياسة',
+      fileName: 'اسم الملف',
+      size: 'الحجم',
+      archived: 'مؤرشف',
+      uploadNewPolicy: 'تحميل سياسة جديدة',
+      selectFile: 'تحديد ملف',
+      upload: 'تحميل',
+      confirmArchive: 'أرشفة هذه السياسة؟',
+      confirmDelete: 'حذف وثيقة السياسة هذه؟',
+      of: 'من',
+      type: 'النوع',
+      hrDashboard: 'لوحة الموارد البشرية',
+      name: 'الاسم',
+      position: 'الموضع',
+      department: 'القسم',
     },
     systemHealth: {
-      ready: 'Ready',
-      notReady: 'Not Ready',
-      initializing: 'Initializing',
-      info: 'Info',
-      warning: 'Warning',
-      critical: 'Critical',
-      rtlLayoutInconsistency: 'RTL Layout Inconsistency',
-      languageSetToArabic: 'Language set to Arabic but document direction is LTR',
-      applyDirRtl: 'Apply dir="rtl" to root element',
-      noActiveSession: 'No Active Session',
-      systemInitialized: 'System initialized but no user is logged in',
-      redirectToLogin: 'Redirect to login page',
-      planDurationMismatch: 'Plan duration mismatch',
-      timelineNotBound: 'Timeline not bound to project dates',
-      bindTimeline: 'Bind timeline generator to project start/end',
-      uiCore: 'UI Core',
-      security: 'Security',
-      projectPlan: 'Project Plan',
+      ready: 'جاهز',
+      notReady: 'غير جاهز',
+      initializing: 'جاري التهيئة',
+      info: 'معلومات',
+      warning: 'تحذير',
+      critical: 'حرج',
+      rtlLayoutInconsistency: 'عدم اتساق تخطيط RTL',
+      languageSetToArabic: 'تم تعيين اللغة إلى العربية لكن اتجاه المستند هو LTR',
+      applyDirRtl: 'تطبيق dir="rtl" على العنصر الجذر',
+      noActiveSession: 'لا توجد جلسة نشطة',
+      systemInitialized: 'تم تهيئة النظام لكن لا يوجد مستخدم مسجل دخول',
+      redirectToLogin: 'إعادة التوجيه إلى صفحة تسجيل الدخول',
+      planDurationMismatch: 'عدم تطابق مدة الخطة',
+      timelineNotBound: 'الجدول الزمني غير مرتبط بتواريخ المشروع',
+      bindTimeline: 'ربط مولد الجدول الزمني بتاريخ بداية / نهاية المشروع',
+      uiCore: 'نواة واجهة المستخدم',
+      security: 'الأمان',
+      projectPlan: 'خطة المشروع',
     },
-  },
 
-  };
+    risk: {
+  title: 'إدارة المخاطر',
+
+  subtitle: 'مراقبة والتحكم في المخاطر التشغيلية والمالية والأمنية',
+
+  dashboard: 'لوحة المخاطر',
+
+  registry: 'سجل المخاطر',
+
+  incidents: 'سجل الحوادث',
+
+  reports: 'تقارير المخاطر',
+
+  addRisk: 'إضافة خطر جديد',
+
+  editRisk: 'تعديل الخطر',
+
+  reportIncident: 'الإبلاغ عن حادث جديد',
+
+  riskTitle: 'عنوان الخطر',
+
+  category: 'الفئة',
+
+  likelihood: 'الاحتمالية',
+
+  impact: 'الأثر',
+
+  score: 'الدرجة',
+
+  level: 'المستوى',
+
+  status: 'الحالة',
+
+  mitigationPlan: 'خطة التخفيف',
+
+  owner: 'المالك',
+
+  incidentTitle: 'عنوان الحادث',
+
+  severity: 'الخطورة',
+
+  location: 'الموقع',
+
+  actionsTaken: 'الإجراءات المتخذة',
+  },
+};
+
+// ============================================================================
+// SECTION 3: ITALIAN TRANSLATIONS (IT)
+// Lines 38469 - 52312
+// All Italian translation keys are defined here
+// NOTE: Check that structure matches English and Arabic sections exactly
+// ============================================================================
+export const it: Translations = {
+ common: {
+ loading: "Caricamento...",
+ save: "Salva",
+ cancel: "Annulla",
+ delete: "Elimina",
+ edit: "Modifica",
+ add: "Aggiungi",
+ create: "Crea",
+ update: "Aggiorna",
+ search: "Cerca",
+ filter: "Filtra",
+ export: "Esporta",
+ import: "Importa",
+ download: "Scarica",
+ upload: "Carica",
+ submit: "Invia",
+ confirm: "Conferma",
+ close: "Chiudi",
+ back: "Indietro",
+ next: "Avanti",
+ previous: "Precedente",
+ yes: "Sì",
+ no: "No",
+ all: "Tutti",
+ none: "Nessuno",
+ select: "Seleziona",
+ selected: "Selezionato",
+ clear: "Cancella",
+ reset: "Ripristina",
+ apply: "Applica",
+ view: "Visualizza",
+ actions: "Azioni",
+ status: "Stato",
+ date: "Data",
+ name: "Nome",
+ description: "Descrizione",
+ type: "Tipo",
+ total: "Totale",
+ success: "Successo",
+ error: "Errore",
+ warning: "Avviso",
+ info: "Informazioni",
+ required: "Obbligatorio",
+ optional: "Facoltativo",
+ active: "Attivo",
+ inactive: "Inattivo",
+ enabled: "Abilitato",
+ disabled: "Disabilitato",
+ showMore: "Mostra di più",
+ showLess: "Mostra meno",
+ noData: "Nessun dato disponibile",
+ noResults: "Nessun risultato trovato",
+ searchPlaceholder: "Cerca...",
+ loadingData: "Caricamento dati...",
+ savingChanges: "Salvataggio modifiche...",
+ savedSuccessfully: "Salvato con successo",
+ errorOccurred: "Si è verificato un errore",
+ tryAgain: "Riprova",
+ refresh: "Aggiorna",
+ print: "Stampa",
+ share: "Condividi",
+ copy: "Copia",
+ paste: "Incolla",
+ duplicate: "Duplica",
+ archive: "Archivia",
+ restore: "Ripristina",
+ manage: "Gestisci",
+ settings: "Impostazioni",
+ help: "Aiuto",
+ logout: "Esci",
+ profile: "Profilo",
+ today: "Oggi",
+ yesterday: "Ieri",
+ thisWeek: "Questa settimana",
+ thisMonth: "Questo mese",
+ thisYear: "Questo anno",
+ customRange: "Intervallo personalizzato",
+ from: "Da",
+ to: "A",
+ between: "Tra",
+ equals: "Uguale a",
+ contains: "Contiene",
+ startsWith: "Inizia con",
+ endsWith: "Termina con",
+    areYouSureYouWantTo: "Sei sicuro di voler eliminare questo documento?",
+    centralDocuments: "Documenti Centrali",
+    clickToOpenModule: "Fai clic per aprire il modulo",
+    documentRegistry: "Registro Documenti",
+    documents: "documenti",
+    enus: "en-US",
+    fileName: "Nome File",
+    fullDiagnosticsStarted: "Diagnostica completa avviata...",
+    items: "articoli",
+    moduleFolders: "Cartelle dei Moduli",
+    nameen: "nameEn",
+    noSynchronizedDocumentsFoundInThis: "Nessun documento sincronizzato trovato in questa cartella",
+    operationalWorkspaces: "Spazi di Lavoro Operativi",
+    portfolio: "PORTAFOGLIO",
+    projectWorkspace: "SPAZIO DI LAVORO DEL PROGETTO",
+    repositoryRecords: "RECORD DEL REPOSITORY",
+    rerunningAudit: "Riesecuzione auditoria...",
+    searchRecords: "Cerca record...",
+    selectPortfolioProject: "Seleziona Progetto Portafoglio",
+    selectWorkspace: "Seleziona Spazio di Lavoro",
+    systemHealthProtection: "Salute del Sistema e Protezione",
+    uploadDate: "Data Caricamento",
+    uploadedBy: "Caricato da",
+    version: "Versione",
+    backToOrganization: "Torna all'Organizzazione",
+    backToPlatformDashboard: "Torna al Cruscotto della Piattaforma",
+    backToDashboard: "Torna al Cruscotto",
+    goToLogin: "Vai al Login",
+    backToPayables: "Torna ai Debiti",
+    backToSuppliersList: "Torna all'Elenco Fornitori",
+    backToDetails: "Torna ai Dettagli",
+    backToDonorCrmDashboard: "Torna al Cruscotto Donor CRM",
+    systemHealthSubtitle: 'System Health Subtitle',
+ },
+
+ navigation: {
+ dashboard: "Cruscotto",
+ organizations: "Organizzazioni",
+ grants: "Sovvenzioni",
+ projects: "Progetti",
+ finance: "Finanza",
+ meal: "MEAL",
+ surveys: "Sondaggi",
+ cases: "Casi",
+ documents: "Documenti",
+ importHistory: "Cronologia Importazione",
+ deletedRecords: "Record Eliminati",
+ settings: "Impostazioni",
+ reporting: "Rapporto",
+ proposals: "Proposte",
+ },
+
+ header: {
+ switchOrganization: "Cambia Organizzazione",
+ currentOrganization: "Organizzazione Attuale",
+ switchLanguage: "Cambia Lingua",
+ languageEn: "Inglese",
+ languageAr: "Arabic",
+ languageIt: "Italiano",
+ userMenu: "Menu Utente",
+ viewProfile: "Visualizza Profilo",
+ accountSettings: "Impostazioni Account",
+ logoutConfirm: "Sei Sicuro di Voler Uscire?",
+ notifications: "Notifiche",
+ noNotifications: "Nessuna Nuova Notifica",
+ markAllRead: "Segna Tutto Come Letto",
+ projectsManagement: "Sistema di Gestione Integrato (IMS)",
+ rtl: "RTL",
+ platformAdmin: "Amministrazione Piattaforma",
+ dashboard: "Cruscotto",
+ activeOffice: "Ufficio Attivo",
+ switchOperatingUnit: "Cambia Unità Operativa",
+ },
+
+ sidebar: {
+ collapseSidebar: "Comprimi Barra Laterale",
+ expandSidebar: "Espandi Barra Laterale",
+ mainMenu: "Menu Principale",
+ administration: "Amministrazione",
+ organization: "Organizzazione",
+ switchOrganization: "Cambia Organizzazione",
+ imsFoundation: "FONDAZIONE IMS",
+ platformAdmin: "Amministrazione Piattaforma",
+ signOut: "Esci",
+ languageToggle: "AR",
+ },
+
+ platform: {
+ dashboard: {
+ title: "Cruscotto Piattaforma",
+ subtitle: "Gestione e Monitoraggio a Livello di Sistema",
+ accessRestrictionTitle: "Accesso Amministrazione Piattaforma",
+ accessRestrictionDesc: "This dashboard is restricted to Platform ********s. You can view and manage all organizations, users, and system settings from here.",
+ totalOrganizations: "Organizzazioni Totali",
+ totalUsers: "Utenti Totali",
+ platformUsers: "Utenti Piattaforma",
+ orgUsers: "Utenti Organizzazione",
+ microsoft365: "Microsoft 365",
+ ready: "Pronto",
+ entraReady: "Entra ID Pronto",
+ systemHealth: "Salute del Sistema",
+ healthy: "Sano",
+ allSystemsOperational: "Tutti i Sistemi Operativi",
+ quickActions: "Azioni Veloci",
+ viewAllOrganizations: "Visualizza Tutte le Organizzazioni",
+ viewAllOrganizationsDesc: "Gestisci e monitora tutte le organizzazioni registrate",
+ manageIntegrations: "Gestisci Integrazioni",
+ manageIntegrationsDesc: "Configura Connessioni Servizi Esterni",
+ viewAuditLogs: "Visualizza Registri Audit",
+ viewAuditLogsDesc: "Rivedi Attività Sistema ed Eventi Sicurezza",
+ platformActivity: "Attività Piattaforma",
+ platformActivityDesc: "Attività Utente ed Eventi Sistema nel Tempo",
+ activityChartComingSoon: "Grafico Attività Prossimamente",
+ phase1Analytics: "Fase 1 - Cruscotto Analitiche",
+ organizations: "Panoramica Organizzazioni",
+ organizationsDesc: "Tutte le organizzazioni registrate nel sistema",
+ orgName: "Nome Organizzazione",
+ orgCode: "Codice",
+ orgStatus: "Stato",
+ orgProjects: "Progetti",
+ orgActions: "Azioni",
+ viewOrg: "Visualizza",
+ noOrganizations: "Nessuna organizzazione trovata",
+ operatingUnitContext: "Contesto Unità Operativa",
+ compliance: "Conformità",
+ activeGrants: "Sovvenzioni Attive",
+ activeProjects: "Progetti Attivi",
+ acrossAllPrograms: "In Tutti i Programmi",
+ totalEmployees: "Totale Dipendenti",
+ fullTimeStaff: "Personale a Tempo Pieno",
+ totalBudget: "Bilancio Totale",
+ allocatedFunds: "Fondi Allocati",
+ grantExecution: "Esecuzione Sovvenzione",
+ onTrack: "In Traccia",
+ complianceAlerts: "Avvisi Conformità",
+ complianceAlertsDesc: "Elementi che Richiedono Attenzione",
+ highPriority: "Alta Priorità",
+ mediumPriority: "Media Priorità",
+ daysAgo: "giorni fa",
+ reportOverdue: "Rapporto Scaduto",
+ reportOverdueDesc: "Invio Rapporto Finanziario Q4 in Sospeso",
+ budgetReview: "Revisione Budget",
+ budgetReviewDesc: "Revisione Budget Annuale Programmata",
+ projectPipeline: "Pipeline Progetti",
+ projectPipelineDesc: "Progetti Attivi e Prossimi",
+ waterSanitation: "Acqua e Igiene",
+ waterSanitationDesc: "Programma Accesso Acqua Rurale",
+ progress: "Progresso",
+ budget: "Bilancio",
+ endDate: "Data di Fine",
+ educationSupport: "Supporto Educazione",
+ educationSupportDesc: "Sviluppo Infrastruttura Scolastica",
+ inProgress: "In Corso",
+ welcome: "Benvenuto",
+ overview: "Panoramica",
+ quickStats: "Statistiche Veloci",
+ recentActivity: "Attività Recente",
+ upcomingTasks: "Compiti Prossimi",
+ alerts: "Avvisi",
+ totalProjects: "Progetti Totali",
+ completedProjects: "Progetti Completati",
+ onHoldProjects: "In Sospeso",
+ spentBudget: "Speso",
+ remainingBudget: "Rimanente",
+ budgetUtilization: "Utilizzo Budget",
+ totalBeneficiaries: "Beneficiari Totali",
+ directBeneficiaries: "Diretto",
+ indirectBeneficiaries: "Indiretto",
+ reportsOverdue: "Rapporti Scaduti",
+ reportsDueThisWeek: "Scadenza Questa Settimana",
+ reportsSubmitted: "Inviato",
+ projectsByStatus: "Progetti per Stato",
+ projectsByDonor: "Progetti per Donatore",
+ budgetByProject: "Budget per Progetto",
+ beneficiariesByProject: "Beneficiari per Progetto",
+ viewAllProjects: "Visualizza Tutti i Progetti",
+ viewAllReports: "Visualizza Tutti i Rapporti",
+ noActiveProjects: "Nessun Progetto Attivo",
+ noRecentActivity: "Nessuna Attività Recente",
+ lastUpdated: "Ultimo Aggiornamento",
+ refreshDashboard: "Aggiorna Cruscotto",
+  organizationManagement: "Gestione Organizzazione",
+ platformSettings: "Impostazioni Piattaforma",
+ sidebarTitle: "Amministrazione Piattaforma",
+ sidebarSubtitle: "Gestione a Livello di Sistema",
+  },
+},
+
+organizationDetail: {
+ title: "Dettagli Organizzazione",
+ statistics: "Statistiche Organizzazione",
+ statisticsDescription: "Metriche Chiave e Indicatori Prestazioni",
+ totalUsers: "Utenti Totali",
+ activeProjects: "Progetti Attivi",
+ comingSoon: "Prossimamente",
+ organizationInfo: "Informazioni Organizzazione",
+ budgetAllocation: 'Budget Allocation',
+ country: "Paese",
+ domain: "Dominio",
+ timezone: "Fuso Orario",
+ currency: "Valuta",
+ createdAt: "Creato il",
+ lastUpdated: "Ultimo Aggiornamento",
+ operatingUnits: "Unità Operative",
+ operatingUnitsCount: "unità operative",
+ backToOrganizations: "Torna alle Organizzazioni",
+ },
+
+organization: {
+  projectForm: {
+    planning: 'Pianificazione',
+    active: 'Attivo',
+    activeProjects: 'Progetti Attivi',
+    acrossAllPrograms: 'In Tutti i Programmi',
+    totalEmployees: 'Totale Dipendenti',
+    fullTimeStaff: 'Personale a Tempo Pieno',
+    totalBudget: 'Bilancio Totale',
+    allocatedFunds: 'Fondi Allocati',
+    grantExecution: 'Esecuzione Sovvenzione',
+    onTrack: 'In Linea',
+    complianceAlerts: 'Avvisi di Conformità',
+    complianceAlertsDesc: 'Elementi che Richiedono Attenzione',
+    highPriority: 'Alta Priorità',
+    mediumPriority: 'Media Priorità',
+    daysAgo: 'giorni fa',
+    reportOverdue: 'Rapporto Scaduto',
+    reportOverdueDesc: 'Invio del Rapporto Finanziario Q4 in Sospeso',
+    budgetReview: 'Revisione del Budget',
+    budgetReviewDesc: 'Revisione Annuale del Budget Programmata',
+    projectPipeline: 'Pipeline dei Progetti',
+    projectPipelineDesc: 'Progetti Attivi e Futuri',
+    waterSanitation: 'Acqua e Servizi Igienici',
+    waterSanitationDesc: 'Programma di Accesso all’Acqua Rurale',
+    progress: 'Progresso',
+    budget: 'Budget',
+    endDate: 'Data di Fine',
+    educationSupport: 'Supporto all’Istruzione',
+    educationSupportDesc: 'Sviluppo delle Infrastrutture Scolastiche',
+    inProgress: 'In Corso',
+
+    onHold: 'Sospeso',
+    completed: 'Completato',
+    cancelled: 'Annullato',
+
+    createNewProject: 'Crea Nuovo Progetto',
+    editProject: 'Modifica Progetto',
+
+    projectCode: 'Codice Progetto',
+    projectCodePlaceholder: 'es. PROJ-2026-001',
+
+    projectTitle: 'Titolo del Progetto',
+    projectTitlePlaceholder: 'Inserisci il titolo del progetto',
+
+    status: 'Stato',
+
+    startDate: 'Data di Inizio',
+    currency: 'Valuta',
+
+    sectors: 'Settori',
+
+    donor: 'Donatore',
+    donorPlaceholder: 'Seleziona il donatore',
+
+    implementingPartner: 'Partner Esecutore',
+    implementingPartnerPlaceholder: 'Inserisci il nome del partner esecutore',
+
+    location: 'Località',
+    locationPlaceholder: 'Inserisci la località del progetto',
+
+    description: 'Descrizione',
+    descriptionPlaceholder: 'Inserisci la descrizione del progetto',
+
+    required: 'Obbligatorio',
+
+    cancel: 'Annulla',
+
+    createProject: 'Crea Progetto',
+    updateProject: 'Aggiorna Progetto',
+
+    fillProjectDetails: 'Inserisci i dettagli del progetto',
+  },
+},
+
+ projects: {
+ title: "Progetti",
+ subtitle: "Gestisci Tutti i Progetti",
+ createNew: "Crea Nuovo Progetto",
+ backToProjectsDashboard: "Torna al Cruscotto Progetti",
+ editProject: "Modifica Progetto",
+ deleteProject: "Elimina Progetto",
+ deleteConfirm: "Sei Sicuro di Voler Eliminare questo Progetto?",
+ projectDetails: "Dettagli Progetto",
+ projectInfo: "Informazioni Progetto",
+ projectCode: "Codice Progetto",
+ projectName: "Nome Progetto",
+ projectDescription: "Descrizione Progetto",
+ startDate: "Data di Inizio",
+ endDate: "Data di Fine",
+ duration: "Durata",
+ donor: "Donatore",
+ grantId: "ID Sovvenzione",
+ budget: "Bilancio",
+ totalBudget: "Bilancio Totale",
+ spentAmount: "Importo Speso",
+ remainingAmount: "Rimanente",
+ status: "Stato",
+ statusActive: "Attivo",
+ statusCompleted: "Completato",
+ statusOnHold: "In Sospeso",
+ statusPlanning: "Pianificazione",
+ statusClosed: "Chiuso",
+ priority: "Priorità",
+ priorityHigh: "Alto",
+ priorityMedium: "Medio",
+ priorityLow: "Basso",
+ manager: "Responsabile",
+ team: "Team",
+ location: "Posizione",
+ locations: "Posizioni",
+ sector: "Settore",
+ sectors: "Settori",
+ beneficiaries: "Beneficiari",
+ directBeneficiaries: "Beneficiari Diretti",
+ indirectBeneficiaries: "Beneficiari Indiretti",
+ beneficiaryTypes: "Tipi di Beneficiario",
+ objectives: "Obiettivi",
+ activities: "Attività",
+ milestones: "Pietre Miliari",
+ deliverables: "Deliverable",
+ risks: "Rischi",
+ documents: "Documenti",
+ reporting: "Rapporto",
+ financial: "Finanziario",
+ progress: "Progresso",
+ progressPercent: "Progresso",
+ timeline: "Cronologia",
+ created: "Creato",
+ createdBy: "Creato da",
+ modified: "Modificato",
+ modifiedBy: "Modificato da",
+ noProjects: "Nessun Progetto Trovato",
+ noProjectsDesc: "Inizia Creando il Tuo Primo Progetto",
+ createFirstProject: "Crea Primo Progetto",
+ searchProjects: "Cerca Progetti...",
+ filterByStatus: "Filtra per Stato",
+ filterByDonor: "Filtra per Donatore",
+ filterByDate: "Filtra per Data",
+ sortBy: "Ordina Per",
+ sortByName: "Nome",
+ sortByDate: "Data",
+ sortByBudget: "Bilancio",
+ sortAZ: "A-Z",
+ sortZA: "Z-A",
+ sortNewestFirst: "Più Recente Primo",
+ sortOldestFirst: "Più Vecchio Primo",
+ exportList: "Esporta Elenco",
+ importProjects: "Importa Progetti",
+ bulkActions: "Azioni di Massa",
+ selectedProjects: "Progetti Selezionati",
+ // Project Dashboard Specific
+ dashboardTitle: "Cruscotto Gestione Programmi",
+ dashboardSubtitle: "Panoramica di tutti i progetti, budget e metriche di prestazione",
+ grantManagement: "Gestione Sovvenzioni",
+ grantManagementDesc: "Gestisci e Traccia le Sovvenzioni Efficacemente",
+ reportingSchedule: "Programma di Rapporto Progetti",
+ reportingScheduleDesc: "Visualizza i timeline di rapporto attivi",
+ proposalPipeline: "Proposte e Pipeline",
+ proposalPipelineDesc: "Traccia le opportunità di finanziamento e le proposte",
+ activePrograms: "Programmi Attivi",
+ activeProgramsDesc: "Tutte le implementazioni dei progetti in corso",
+ active: "Attivo",
+ opportunities: "Opportunità",
+ totalBudgetUSD: "Budget Totale (USD)",
+ actualSpentUSD: "Effettivamente Speso (USD)",
+ balanceUSD: "Saldo (USD)",
+ avgCompletionRate: "Tasso di Completamento Medio",
+ ongoingProjectsOnly: "Solo Progetti in Corso",
+ allOngoingProjects: "Tutti i Progetti in Corso",
+ fromFinanceOverview: "Da Panoramica Finanziaria",
+ budgetMinusSpent: "Budget - Speso",
+ projectList: "Elenco Progetti",
+ exportToExcel: "Esporta in Excel",
+ exportTemplate: "Esporta Modello",
+ importExcel: "Importa Excel",
+ addNewProject: "Aggiungi Nuovo Progetto",
+ searchByTitle: "Cerca per Titolo",
+ viewDetails: "Visualizza Dettagli",
+ updateProject: "Aggiorna",
+ notAvailable: "N/A",
+ budgetUtilization: "Utilizzo Budget",
+ currency: "Valuta",
+ spent: "Speso",
+ balance: "Saldo",
+ all: "Tutti",
+ statusOngoing: "In Corso",
+ statusPlanned: "Pianificato",
+ statusNotStarted: "Non Avviato",
+ statusSuspended: "Sospeso",
+ submitted: "Inviato",
+ approved: "Approvato",
+ upcoming: "Prossimamente",
+ // Create Project Form
+ createNewProject: "Crea Nuovo Progetto",
+ fillProjectDetails: "Compila i dettagli del progetto per iniziare",
+ basicInformation: "Informazioni di Base",
+ coreProjectDetails: "Dettagli e identificazione del progetto principale",
+ projectTitleEN: "Titolo Progetto",
+ projectTitleAR: "Titolo Progetto (Arabo)",
+ enterProjectTitle: "Inserisci il titolo del progetto",
+ enterProjectTitleAR: "أدخل عنوان المشروع",
+ projectCodePlaceholder: "es. PROJ-2025-001",
+ associatedGrant: "Sovvenzione Associata",
+ selectGrant: "Seleziona una sovvenzione",
+ locationDetails: "Posizione e Dettagli",
+ projectLocationDesc: "Posizione del progetto e informazioni descrittive",
+ locationEN: "Posizione",
+ locationAR: "Posizione (Arabo)",
+ locationPlaceholder: "Città, Regione, Paese",
+ locationPlaceholderAR: "المدينة، المنطقة، البلد",
+ descriptionEN: "Descrizione",
+ descriptionAR: "Descrizione (Arabo)",
+ descriptionPlaceholder: "Descrivi lo scopo e l'ambito del progetto",
+ descriptionPlaceholderAR: "وصف غرض المشروع ونطاقه",
+ objectivesEN: "Obiettivi",
+ objectivesAR: "Obiettivi (Arabo)",
+ objectivesPlaceholder: "Elenca gli obiettivi chiave del progetto",
+ objectivesPlaceholderAR: "قائمة أهداف المشروع الرئيسية",
+ projectManagement: "Gestione Progetti",
+ managementBeneficiaryInfo: "Informazioni sulla gestione e i beneficiari",
+ projectManager: "Responsabile Progetto",
+ projectManagerPlaceholder: "Nome del responsabile del progetto",
+ targetBeneficiaryCount: "Numero di Beneficiari Previsti",
+ beneficiaryCountPlaceholder: "Numero previsto di beneficiari",
+ cancel: "Annulla",
+ createProject: "Crea Progetto",
+ projectCreationPending: "La funzionalità di creazione del progetto sarà collegata all'API backend",
+ tabs: {
+ overview: "Panoramica",
+ team: "Team",
+ budget: "Bilancio",
+ beneficiaries: "Beneficiari",
+ locations: "Posizioni",
+ activities: "Attività",
+ reporting: "Rapporto",
+ documents: "Documenti",
+ timeline: "Cronologia",
+ settings: "Impostazioni",
+ },
+},
+ projectDetail: {
+ backToProjectsList: "Torna all'Elenco Progetti",
+ editProject: "Modifica Progetto",
+ projectCode: "Codice Progetto",
+ donorGrant: "Donatore/Sovvenzione",
+ description: "Descrizione",
+ daysRemaining: "giorni rimanenti",
+ createTask: 'Crea Attività',
+deleteTaskConfirm: 'Sei sicuro di voler eliminare questa attività? Questa azione non può essere annullata.',
+facilitator: 'Facilitatore',
+failed: 'Non riuscito',
+importErrors: 'Errori di importazione',
+importTasksDescription: 'Carica un file Excel con i dati delle attività. Assicurati di utilizzare il formato corretto del modello.',
+noTasksFoundClickAdd: 'Nessuna attività trovata. Fai clic su "Aggiungi Attività" per crearne una.',
+row: 'Riga',
+statusReview: 'Revisione',
+taskDueDateRequired: 'Data di scadenza attività*',
+taskEstHours: 'Ore Stimate',
+tasksImportedSuccess: 'Attività importate con successo!',
+totalEstHours: 'Ore Totali Stimate',
+updateTask: 'Aggiorna Attività',
+ // Tab Labels
+ tabProgramsOverview: "Panoramica",
+ tabViewAllActivities: "Attività",
+ tabTasksMgt: "Gestione Attività",
+ tabProjectIndicators: "Indicatori",
+ tabBeneficiaries: "Beneficiari",
+ tabFinancialOverview: "Panoramica Finanziaria",
+ tabForecastPlan: "Piano di Previsione",
+ tabProcurementPlan: "Piano di Approvvigionamento",
+ tabCaseManagement: "Gestione Casi", // SHORTENED from "Case Management" to fit tabs in one row
+ tabProjectReport: "Rapporti", // SHORTENED from "Project Report" to fit tabs in one row
+ tabProjectPlan: "Piano del Progetto",
+ // Procurement Plan
+ procurementPlanTitle: "Piano di Approvvigionamento",
+ procurementPlanSubtitle: "Pianificare e gestire le attività di approvvigionamento con controllo del budget e tracciamento della conformità",
+ procurementPlanPeriod: "Periodo Piano di Approvvigionamento",
+ itemDescription: "Descrizione Articolo",
+ procurementCategory: "Categoria",
+ quantityLabel: "Quantità",
+ unitOfMeasure: "Unità di Misura",
+ estimatedUnitCost: "Costo Unitario Stimato",
+ estimatedTotalCost: "Costo Totale Stimato",
+ procurementMethod: "Metodo di Approvvigionamento",
+ procurementType: "Tipo di Approvvigionamento",
+ plannedStartDate: "Data Inizio Pianificata",
+ plannedEndDate: "Data Fine Pianificata",
+ responsibleDepartment: "Dipartimento Responsabile",
+ addProcurementItem: "Aggiungi Articolo Approvvigionamento",
+ editProcurementItem: "Modifica Articolo Approvvigionamento",
+ noProcurementItemsFound: "Nessun articolo di approvvigionamento trovato",
+ searchProcurementItems: "Cerca articoli di approvvigionamento...",
+ totalProcurementItems: "Articoli Totali",
+ totalEstimatedCost: "Costo Totale Stimato",
+ remainingBudget: "Budget Rimanente",
+ budgetExceededWarning: "Avviso: il costo totale supera il budget disponibile",
+ // Procurement Categories
+ categoryGoods: "Beni",
+ categoryServices: "Servizi",
+ categoryWorks: "Lavori",
+ // Procurement Methods
+ methodDirectProcurement: "Approvvigionamento Diretto",
+ methodRFQ: "Richiesta di Offerta (RFQ)",
+ methodNationalBidding: "Gara Nazionale Competitiva",
+ methodInternationalBidding: "Gara Internazionale Competitiva",
+ methodLTA: "Accordo a Lungo Termine (LTA)",
+ methodEmergency: "Approvvigionamento di Emergenza",
+ methodOneQuotation: "Una Quotazione",
+ methodThreeQuotation: "Tre Quotazioni",
+ methodNegotiable: "Negoziabile",
+ methodTender: "Gara d'Appalto",
+ categoryConsultancy: "Consulenza",
+ activityName: "Attività",
+ noProcurementItems: "Nessun articolo di approvvigionamento trovato",
+ // Procurement Types
+ typeOneTime: "Una Tantum",
+ typeFramework: "Framework / LTA",
+ typeRecurrent: "Ricorrente",
+ // Procurement Status
+ statusPlanned: "Pianificato",
+ statusSubmitted: "Inviato",
+ statusApproved: "Approvato",
+ statusInProgress: "In Corso",
+ statusCompleted: "Completato",
+ statusCancelled: "Annullato",
+ // Departments
+ deptProgram: "Programma",
+ deptLogistics: "Logistica",
+ deptProcurement: "Approvvigionamento",
+ deptFinance: "Finanza",
+ deptMEAL: "MEAL",
+ deptOther: "Altro",
+ // Overview Tab
+ overviewStatActivities: "Attività",
+ overviewStatIndicators: "Indicatori",
+ overviewStatBeneficiaries: "Beneficiari",
+ overviewStatBudgetUtilization: "Utilizzo Budget",
+ overviewBudgetSubtitle: "Del bilancio totale speso",
+ overviewKeyActivities: "Attività Chiave",
+ overviewProjectTimeline: "Timeline del Progetto",
+ overviewTimelineVisualization: "Visualizzazione Timeline",
+ noActivitiesYet: "Nessuna attività ancora",
+ noDescriptionProvided: "Nessuna descrizione fornita",
+ // Activities Tab
+ activitiesPageTitle: "Attività del Progetto",
+ activitiesPageSubtitle: "Gestisci e traccia tutte le attività del progetto",
+ statusToDo: 'Da Fare',
+
+f: 'Femmina',
+f29: 'Femmina',
+ activityCode: "Codice Attività",
+ activityTitle: "Nome Attività",
+ activityDescription: "Descrizione",
+ activityStatus: "Stato",
+ activityStartDate: "Data di Inizio",
+ activityEndDate: "Data di Fine",
+ activityDuration: "Durata",
+ activityBudget: "Bilancio",
+ activitySpent: "Speso",
+ activityCompletion: "Completamento",
+ activityProgress: "Progresso",
+ activityResponsible: "Persona Responsabile",
+ activityLocation: "Posizione",
+ activityStatusNotStarted: "Non Avviato",
+ activityStatusInProgress: "In Corso",
+ activityStatusCompleted: "Completato",
+ activityStatusOnHold: "In Sospeso",
+ activityStatusCancelled: "Annullato",
+ addActivity: "Aggiungi Attività",
+ editActivity: "Modifica Attività",
+ deleteActivity: "Elimina Attività",
+ viewActivity: "Visualizza Attività",
+ addNewActivity: "Aggiungi Nuova Attività",
+ exportActivities: "Esporta Excel",
+ exportActivitiesTemplate: "Esporta Modello",
+ importActivities: "Importa Excel",
+ timelineView: "Vista Timeline",
+ tableView: "Vista Tabella",
+ totalActivities: "Attività Totali",
+ inProgress: "In Corso",
+ completed: "Completato",
+ totalBudget: "Bilancio Totale",
+ searchActivities: "Cerca attività per nome, codice o persona responsabile...",
+ noActivitiesFound: "Nessuna attività trovata. Fai clic su Aggiungi Attività per crearne una.",
+ activityCodeRequired: "Codice Attività*",
+ activityTitleRequired: "Nome Attività*",
+ confirmDeleteActivity: "Sei sicuro di voler eliminare l'attività Questa azione non può essere annullata.",
+ activityCreatedSuccess: "Attività creata con successo!",
+ activityUpdatedSuccess: "Attività aggiornata con successo!",
+ activityDeletedSuccess: "Attività eliminata con successo!",
+ importActivitiesTitle: "Importa Attività da Excel",
+ importActivitiesDesc: "Carica un file Excel con i dati dell'attività. Assicurati di utilizzare il formato del modello corretto.",
+ fillRequiredFields: "Compila tutti i campi obbligatori",
+ successfullyImported: "Importate con successo {0} attività!",
+ code: "Codice",
+ title: "Nome Attività",
+ responsible: "Responsible",
+ actions: "Azioni",
+ // Tasks Tab
+ tasksPageTitle: "Attività del Progetto",
+ tasksPageSubtitle: "Gestisci attività, incarichi e scadenze",
+ taskCode: "Codice Attività",
+ taskTitle: "Titolo Attività",
+ taskDescription: "Descrizione",
+ taskStatus: "Stato",
+ taskPriority: "Priorità",
+ taskHours: "Ore",
+ taskAssignedTo: "Assegnato a",
+ taskDueDate: "Data di Scadenza",
+ taskEstimatedHours: "Ore Stimate",
+ taskActualHours: "Ore Effettive",
+ taskStatusToDo: "Da Fare",
+ taskStatusInProgress: "In Corso",
+ taskStatusReview: "Revisione",
+ taskStatusCompleted: "Completato",
+ taskPriorityLow: "Basso",
+ taskPriorityMedium: "Medio",
+ taskPriorityHigh: "Alto",
+ taskPriorityUrgent: "Urgente",
+ priorityLow: "Basso",
+ priorityMedium: "Medio",
+ priorityHigh: "Alto",
+ priorityUrgent: "Urgente",
+ addTask: "Aggiungi Attività",
+ editTask: "Modifica Attività",
+ addNewTask: "Aggiungi Nuova Attività",
+ kanbanView: "Vista Kanban",
+ totalTasks: "Attività Totali",
+ totalHoursEst: "Ore Totali (Stimate)",
+ searchTasks: "Cerca attività per titolo, codice o assegnatario...",
+ noTasksFound: "Nessuna attività trovata. Fai clic su Aggiungi Attività per crearne una.",
+ noTasks: "Nessuna attività",
+ taskCodeRequired: "Codice Attività*",
+ taskTitleRequired: "Titolo Attività*",
+ taskCreatedSuccess: "Attività creata con successo!",
+ taskUpdatedSuccess: "Attività aggiornata con successo!",
+ taskDeletedSuccess: "Attività eliminata con successo!",
+ importTasksTitle: "Importa Attività da Excel",
+ importTasksDesc: "Carica un file Excel con i dati dell'attività. Assicurati di utilizzare il formato del modello corretto.",
+ confirmDeleteTask: "Sei sicuro di voler eliminare l'attività Questa azione non può essere annullata.",
+ hours: "Ore",
+ // Indicators Tab
+ indicatorsPageTitle: "Indicatori del Progetto",
+ indicatorsPageSubtitle: "Traccia e monitora gli indicatori chiave di prestazione",
+ indicatorCode: "Codice Indicatore",
+ indicatorTitle: "Titolo Indicatore",
+ indicatorType: "Tipo",
+ indicatorUnit: "Unità",
+ indicatorBaseline: "Baseline",
+ indicatorTarget: "Obiettivo",
+ indicatorAchieved: "Raggiunto",
+ indicatorTypeOutput: "Output",
+ indicatorTypeOutcome: "Risultato",
+ indicatorTypeImpact: "Impatto",
+ addIndicator: "Aggiungi Indicatore",
+ totalIndicators: "Indicatori Totali",
+ searchIndicators: "Cerca indicatori...",
+ noIndicatorsFound: "Nessun indicatore trovato.",
+ // Beneficiaries Tab
+ beneficiariesPageTitle: "Beneficiari del Progetto",
+ beneficiariesPageSubtitle: "Gestisci e traccia le informazioni dei beneficiari",
+ beneficiaryId: "ID Beneficiario",
+ fullName: "Nome Completo",
+ gender: "Genere",
+ genderMale: "Maschio",
+ genderFemale: "Femmina",
+ genderOther: "Altro",
+ genderPreferNotToSay: "Preferisco non dire",
+ ageGroup: "Gruppo di Età",
+ ageGroup05: "Bambini (0-5)",
+ ageGroup617: "Giovani (6-17)",
+ ageGroup1859: "Adulti (18-59)",
+ ageGroup60Plus: "Anziani (60+)",
+ beneficiaryType: "Tipo di Beneficiario",
+ beneficiaryTypeDirect: "Diretto",
+ beneficiaryTypeIndirect: "Indiretto",
+ beneficiaryFullName: "Nome Completo",
+ vulnerability: "Vulnerabilità",
+ district: "Distretto",
+ governorate: "Governatorato",
+ registrationDate: "Data Registrazione",
+ phone: "Telefono",
+ age: "Età",
+ registerBeneficiary: "Registra Beneficiario",
+ allGenders: "Tutti i Generi",
+ allAgeGroups: "Tutti i Gruppi di Età",
+ allTypes: "Tutti i Tipi",
+ genderDisaggregation: "Disaggregazione per Genere",
+ ageDisaggregation: "Disaggregazione per Età",
+ children: "Bambini (0-17)",
+ adults: "Adulti (18-59)",
+ elderly: "Anziani (60+)",
+ locations: "Posizioni",
+ uniqueLocations: "Posizioni uniche coperte",
+ activity: "Attività",
+ noBeneficiariesFound: "Nessun beneficiario trovato.",
+ addBeneficiary: "Aggiungi Beneficiario",
+ totalBeneficiaries: "Beneficiari Totali",
+ searchBeneficiaries: "Search beneficiaries...",
+ // Financial Tab
+ financialPageTitle: "Panoramica Finanziaria",
+ financialPageSubtitle: "Monitora l'esecuzione del budget e le spese",
+ budgetCode: "Codice Budget",
+ budgetItem: "Voce Budget",
+ subItem: "Sottovlice",
+ approvedBudget: "Budget Approvato",
+ totalApprovedBudget: "Budget Totale Approvato",
+ actualSpent: "Effettivamente Speso",
+ spent: "Speso",
+ committed: "Impegnato",
+ committedFunds: "Fondi Impegnati",
+ balance: "Saldo",
+ remainingBalance: "Saldo Rimanente",
+ variance: "Varianza %",
+ burnRate: "Burn Rate",
+ burnRateOnTrack: "In Traccia",
+ burnRateMonitor: "Monitor",
+ burnRateCritical: "Critico",
+ budgetLines: "Budget Lines",
+ budgetLinesSubtitle: "Griglia simile a Excel con budget approvato, spese e tracciamento della varianza",
+ addBudgetLine: "Aggiungi Voce Budget",
+ noBudgetLines: "Nessuna voce budget aggiunta ancora",
+ addBudgetLinePrompt: "Fai clic su Aggiungi Voce Budget per iniziare",
+ budgetTemplate: "Modello Budget",
+ importBudgetLines: "Importa Voci Budget",
+ deleteBudgetLineConfirm: "Sei sicuro di voler eliminare questa voce budget? Questa azione non può essere annullata.",
+ approved: "Approvato",
+    aCriticalAlertWillBeSent: "Un Avviso Critico sarà inviato quando la Spesa supera questa Percentuale",
+    aWarningAlertWillBeSent: "Un avviso di avvertenza verrà inviato quando la spesa supera questa percentuale",
+    accepted: "Accettato",
+    achieved: "Raggiunto",
+    achieved11: "Raggiunto: ",
+    achievement: "Risultato %",
+    acknowledge: "Riconosci",
+    acknowledged: "Riconosciuto",
+    acknowledgmentFailed: "Riconoscimento non riuscito",
+    active: "Attivo",
+    activities: "Attività",
+    activitiesProgress: "Progresso Attività",
+    activitiesServices: "Attività e Servizi",
+    activityAddedSuccessfully: "Attività aggiunta con successo",
+    activityDeletedSuccessfully: "Attività eliminata con successo",
+    activitySourceOfTruth: "Attività (Fonte di Verità)",
+    activityType: "Tipo Attività",
+    activityType25: "Tipo Attività *",
+    activityUpdatedSuccessfully: "Attività aggiornata con successo",
+    actualSpent1: "Effettivamente Speso",
+    actualSpent6: "Effettivamente Speso",
+    addItem: "Aggiungi Articolo",
+    addMultipleIndicatorsForTheSame: "Aggiungi più indicatori per la stessa attività prima di creare",
+    addNewCase: "Aggiungi Nuovo Caso",
+    addNewIndicator: "Aggiungi Nuovo Indicatore",
+    addNewReferral: "Aggiungi Nuovo Rinvio",
+    addNewSession: "Aggiungi Nuova Sessione",
+    addReferral: "Aggiungi Rinvio",
+    addSafeSpace: "Aggiungi Spazio Sicuro",
+    addSession: "Aggiungi Sessione",
+    addSpace: "Aggiungi Spazio",
+    address: "Indirizzo",
+    ageGroups: "Gruppi di Età",
+alertHistory: "Storico Avvisi",
+alertSettingsUpdatedSuccessfully: "Impostazioni degli avvisi aggiornate con successo",
+alertsWillAppearHereWhenSpending: "Gli avvisi appariranno qui quando la spesa supera le soglie configurate",
+
+all: "Tutti",
+allCaseTypes: "Tutti i Tipi di Caso",
+allGender: "Tutti i Generi",
+allImportOperationsWillBeTracked: "Tutte le operazioni di importazione saranno tracciate qui",
+allRiskLevels: "Tutti i Livelli di Rischio",
+allStatus: "Tutti gli Stati",
+
+allowDuplicates: "Consentire Duplicati?",
+amount: "Importo",
+annually: "Annualmente",
+approach: "Approccio",
+
+areYouSureYouWantTo: "Sei sicuro di voler eliminare questa voce di budget?",
+areYouSureYouWantTo26: "Sei sicuro di voler eliminare questa attività?",
+areYouSureYouWantTo44: "Sei sicuro di voler eliminare questo spazio sicuro?",
+areYouSureYouWantTo52: "Sei sicuro di voler eliminare questo rinvio?",
+
+assignTo: "Assegna a",
+assignedBy: "Assegnato da",
+assignedTo: "Assegnato a",
+
+assigneeEmail: "Email dell'assegnatario",
+assigneeName: "Nome dell'assegnatario",
+
+autocalculated: "Calcolato automaticamente",
+autocalculatedFromBudgetItems: "Calcolato automaticamente dalle voci di budget",
+
+awarenessSession: "Sessione di Sensibilizzazione",
+
+baseline: "Valore Baseline",
+
+beneficiaries: "Beneficiari",
+beneficiary: "Beneficiario",
+beneficiaryCertificate: "Certificato Beneficiario",
+beneficiaryCode: "Codice Beneficiario",
+beneficiaryCode30: "Codice Beneficiario *",
+beneficiaryConsentIsRequired: "Il consenso del beneficiario è obbligatorio",
+beneficiaryConsentObtained: "Consenso del beneficiario ottenuto *",
+beneficiaryInformation: "Informazioni sul Beneficiario",
+beneficiaryResponse: "Risposta del Beneficiario",
+
+biannually: "Semestralmente",
+
+blCategory: "Categoria BL",
+
+budget: "Budget",
+budgetBurnRate: "Tasso di Utilizzo del Budget",
+budgetFinancialPerformance: "Budget e Prestazioni Finanziarie",
+budgetItemCreatedSuccessfully: "Voce di budget creata con successo",
+budgetItemDeletedSuccessfully: "Voce di budget eliminata con successo",
+budgetItemDetails: "Dettagli Voce di Budget",
+budgetItemUpdatedSuccessfully: "Voce di budget aggiornata con successo",
+budgetUtilization: "Utilizzo del Budget",
+budgetVsActual: "Budget vs Consuntivo",
+budgetedAmount: "Importo Preventivato",
+
+bulkDeleteFailed: "Eliminazione massiva non riuscita",
+bulkStatusChange: "Modifica Stato Multipla",
+
+burnRate13: "Tasso di Utilizzo",
+burnRate7: "Tasso di Utilizzo (%)",
+
+by: "Da",
+
+calculatedTotalBudgetLine: "Totale Voce di Budget Calcolato",
+
+cancel: "Annulla",
+cancelled: "Annullato",
+
+capacity: "Capacità",
+
+case: "Caso *",
+caseCode: "Codice Caso",
+caseCreatedSuccessfully: "Caso creato con successo",
+caseDeletedSuccessfully: "Caso eliminato con successo",
+caseDetails: "Dettagli del Caso",
+caseId: "ID Caso",
+caseInformation: "Informazioni sul Caso",
+caseManagementDashboard: "Cruscotto Gestione Casi",
+caseType: "Tipo di Caso",
+caseType31: "Tipo di Caso *",
+caseUpdatedSuccessfully: "Caso aggiornato con successo",
+
+casesImportTemplate: "Modello Importazione Casi",
+casesList: "Elenco Casi",
+
+challenges: "Sfide",
+changeStatus: "Modifica Stato",
+changeStatusForSelectedReferrals: "Modifica Stato per i Rinvii Selezionati",
+
+childProtection: "Protezione dell’Infanzia",
+
+childSafeSpaceAddedSuccessfully: "Spazio Sicuro per Bambini aggiunto con successo",
+childSafeSpaceDeletedSuccessfully: "Spazio Sicuro per Bambini eliminato con successo",
+childSafeSpaceUpdatedSuccessfully: "Spazio Sicuro per Bambini aggiornato con successo",
+childSafeSpaces: "Spazi Sicuri per Bambini",
+childSafeSpaces36: "Spazi Sicuri per Bambini",
+
+chooseExportFormat: "Scegli il formato di esportazione",
+
+close: "Chiudi",
+closed: "Chiuso",
+closedCases: "Casi Chiusi",
+
+closureReport: "Rapporto di Chiusura",
+
+code37: "Codice",
+
+confirmBulkDelete: "Conferma Eliminazione Multipla",
+confirmBulkDelete48: "Conferma Eliminazione Multipla",
+confirmDelete: "Conferma Eliminazione",
+
+consent: "Consenso",
+
+contactNumber: "Numero di Contatto",
+
+counseling: "Supporto Psicosociale",
+
+create: "Crea",
+createBudgetItem: "Crea Voce di Budget",
+createNewProcurementItems: "Crea Nuovi Articoli di Approvvigionamento",
+
+critical: "Critico",
+critical14: "Critico",
+critical19: "CRITICO",
+
+criticalThreshold: "Soglia Critica",
+criticalThreshold23: "Soglia Critica (%)",
+criticalThresholdMustBeGreaterThan: "La soglia critica deve essere superiore alla soglia di avviso",
+
+cssActivities: "Attività CSS",
+cssCode: "Codice CSS",
+cssCode40: "Codice CSS *",
+cssName: "Nome CSS",
+cssName41: "Nome CSS *",
+
+currency: "Valuta",
+
+currentAlertThresholds: "Soglie di Avviso Attuali",
+
+dataNotAvailablePleaseWaitFor: "Dati non disponibili. Attendere il caricamento del rapporto.",
+
+date: "Data",
+date24: "Data *",
+dateFrom: "Data Da",
+dateOfBirth: "Data di Nascita",
+dateTo: "Data A",
+
+days: "giorni",
+
+delete: "Elimina",
+deleteAll: "Elimina Tutto",
+deleteSelected: "Elimina Selezionati",
+deleted: "Eliminato",
+
+describeKeyChallengesFaced: "Descrivi le principali sfide affrontate...",
+
+disabled: "Disabilitato",
+
+donor: "Donatore:",
+donor18: "Donatore",
+
+downloadImportTemplate: "Scarica Modello di Importazione",
+downloadPdf: "Scarica PDF",
+
+duplicatesAllowed: "Duplicati Consentiti",
+
+duration: "Durata",
+durationMin: "Durata (min)",
+durationMinutes: "Durata (minuti)",
+
+edit: "Modifica",
+editBudgetItem: "Modifica Voce di Budget",
+editCase: "Modifica Caso",
+editReferral: "Modifica Rinvio",
+editSafeSpace: "Modifica Spazio Sicuro",
+editSession: "Modifica Sessione",
+
+editableTextBlocksForTheReport: "Blocchi di testo modificabili per il rapporto",
+
+educationSupport: "Supporto Educativo",
+educational: "Educativo",
+
+eg612Years: "es. 6-12 anni",
+eg9001500: "es. 09:00 - 15:00",
+egCognitiveBehavioralTherapy: "es. Terapia Cognitivo-Comportamentale",
+egSunThu: "es. Dom - Gio",
+
+email: "Email",
+
+emptyTemplateForDataImport: "Modello vuoto per l’importazione dei dati",
+
+enableAlerts: "Abilita Avvisi",
+enabled: "Abilitato",
+
+end: "Fine",
+endDate: "Data di Fine",
+endOfProject: "Fine del Progetto",
+
+enus: "en-US",
+
+errorReadingFile: "Errore durante la lettura del file",
+errors: "Errori",
+
+executiveSummary: "Sintesi Esecutiva",
+
+export: "Esporta",
+exportCsv: "Esporta CSV",
+exportCurrentData: "Esporta dati correnti",
+exportExcel: "Esporta Excel",
+exportExcelXlsx: "Esporta Excel (.xlsx)",
+exportOptions: "Opzioni di Esportazione",
+exportPdf: "Esporta PDF",
+exportReport: "Esporta Rapporto",
+exportSelected: "Esporta Selezionati",
+
+exportSuccessful: "Esportazione completata con successo",
+
+external: "Esterno",
+
+failedToCreate: "Creazione non riuscita",
+failedToDelete: "Eliminazione non riuscita",
+failedToGeneratePdfPleaseTry: "Impossibile generare il PDF. Riprova.",
+failedToGenerateReport: "Generazione del rapporto non riuscita",
+failedToGetProjectInformation: "Impossibile recuperare le informazioni del progetto",
+failedToLoadProjectReport: "Impossibile caricare il rapporto del progetto",
+failedToParseFile: "Impossibile elaborare il file",
+failedToUpdate: "Aggiornamento non riuscito",
+
+female: "Femmina",
+female35: "Femmina",
+
+fileExportedButSyncToCentral: "File esportato ma sincronizzazione con i Documenti Centrali non riuscita",
+
+filterByBudgetCode: "Filtra per Codice Budget",
+filterResults: "Filtra Risultati",
+
+financial: "Finanziario",
+financialDetails: "Dettagli Finanziari",
+financialOverviewExportedAndSyncedTo: "Panoramica finanziaria esportata e sincronizzata nei Documenti Centrali",
+financialSnapshot: "Istantanea Finanziaria",
+
+firstName: "Nome",
+
+focalPoint: "Punto Focale",
+
+followupDate: "Data Follow-up",
+followupsDue: "Follow-up Previsti",
+
+forCompatibilityWithOtherSoftware: "Per compatibilità con altri software",
+
+formattedReportForPrintingAndSharing: "Rapporto formattato per stampa e condivisione",
+
+fullDataExportWithMultipleWorksheets: "Esportazione completa dei dati con più fogli di lavoro",
+
+gbv: "VBG",
+gbv32: "VBG",
+
+genderSegregation: "Disaggregazione per Genere",
+
+generateReports: "Genera Rapporti",
+
+generated: "Generato:",
+generating: "Generazione in corso...",
+
+goToTheActivitiesTabTo: "Vai alla scheda Attività per aggiungere attività di progetto",
+
+grandTotal: "Totale Generale:",
+
+group: "Gruppo",
+
+healthSupport: "Supporto Sanitario",
+
+high: "Alto",
+high15: "Alto",
+
+highRiskCases: "Casi ad Alto Rischio",
+
+highlightMajorAccomplishments: "Evidenzia i principali risultati raggiunti...",
+
+history: "Cronologia",
+
+idNumber: "Numero ID",
+
+implementationProgress: "Avanzamento dell’Implementazione",
+
+import: "Importa",
+importBudgetItems: "Importa Voci di Budget",
+importError: "Errore di importazione",
+importFailed: "Importazione non riuscita",
+importHistory: "Cronologia Importazioni",
+imported: "Importato",
+
+indicatorName: "Nome Indicatore",
+indicators: "Indicatori",
+indicatorsAchievement: "Raggiungimento Indicatori",
+
+individual: "Individuale",
+
+intakeDate: "Data di Presa in Carico",
+
+interArialSansserif: "Inter, Arial, sans-serif",
+
+internal: "Interno",
+
+ipCostImplementingPartner: "Costo Partner Implementatore",
+
+items: "articoli",
+itemsSuccessfully: "articolo/i elaborato/i con successo",
+
+justifybetween: "justify-between",
+
+keyAchievements: "Risultati Principali",
+keyActivities: "Attività Principali",
+keyObservations: "Osservazioni Principali",
+keyPerformanceSummary: "Sintesi delle Prestazioni",
+
+lastName: "Cognome",
+
+legalSupport: "Supporto Legale",
+
+lifeSkills: "Competenze per la Vita",
+
+livelihoodSupport: "Supporto ai Mezzi di Sussistenza",
+
+loading: "Caricamento...",
+
+location: "Località",
+location42: "Località *",
+
+low: "Basso",
+low17: "Basso",
+
+m: "M",
+m28: "M",
+
+male: "Maschio",
+male34: "Maschio",
+
+manageAllProjectCases: "Gestisci tutti i casi del progetto",
+manageCaseActivitiesAndServices: "Gestisci attività e servizi dei casi",
+manageIndividualAndGroupPssSessions: "Gestisci sessioni PSS individuali e di gruppo",
+manageInternalAndExternalReferrals: "Gestisci rinvii interni ed esterni",
+manageSafeSpacesAndTheirActivities: "Gestisci gli spazi sicuri e le relative attività",
+
+mealActivities: "Attività MEAL",
+
+medium: "Medio",
+medium16: "Medio",
+
+metric: "Metrica",
+
+min: "min",
+
+mitigationActions: "Azioni di Mitigazione",
+
+monitorOverspendingAndReceiveAutomatedAlerts: "Monitora gli sforamenti di budget e ricevi avvisi automatici",
+
+month: "Mese",
+monthly: "Mensile",
+
+monthlyReport: "Rapporto Mensile",
+monthlyReport8: "Rapporto Mensile:",
+
+name: "Nome",
+
+narrativeSections: "Sezioni Narrative",
+
+nationality: "Nazionalità",
+
+newCasesThisMonth: "Nuovi Casi Questo Mese",
+
+nextSessionDate: "Data della Prossima Sessione",
+
+nextSteps: "Prossime Azioni",
+
+no: "No",
+
+noActivitiesAddedYet: "Nessuna attività aggiunta",
+noActivitiesRecordedYet: "Nessuna attività registrata",
+noAlertsYet: "Nessun avviso",
+noBudgetItemsFoundMatchingThe: "Nessuna voce di budget trovata per i filtri selezionati.",
+noCasesMatchTheCurrentFilters: "Nessun caso corrisponde ai filtri correnti",
+noDataFoundInFile: "Nessun dato trovato nel file",
+noImportHistory: "Nessuna cronologia di importazione",
+noReferralsRecordedYet: "Nessun rinvio registrato",
+noSafeSpacesRecordedYet: "Nessuno spazio sicuro registrato",
+noSessionsRecordedYet: "Nessuna sessione registrata",
+noValidDataToImport: "Nessun dato valido da importare",
+noWorksheetFound: "Nessun foglio di lavoro trovato",
+
+none: "Nessuno",
+
+notStarted: "Non Avviato",
+
+notes: "Note",
+
+notificationSettings: "Impostazioni Notifiche",
+
+notifyFinanceTeam: "Notifica il Team Finanziario",
+notifyOwner: "Notifica il Responsabile",
+notifyProjectManager: "Notifica il Project Manager",
+
+numbersMustBePositive: "I numeri devono essere positivi",
+
+onHold: "In Sospeso",
+
+onTrack: "In Linea ✓",
+
+ongoing: "In Corso",
+
+open: "Aperto",
+
+operatingDays: "Giorni Operativi",
+operatingHours: "Orari Operativi",
+
+operatingPartner: "Partner Operativo",
+
+operationCost: "Costo Operativo",
+
+optionalCanUseActivityName: "Facoltativo - può essere utilizzato il nome dell’attività",
+
+other: "Altro",
+
+outlineMitigationStrategies: "Descrivi le strategie di mitigazione...",
+outlineUpcomingActivities: "Descrivi le attività previste...",
+
+overallProjectPerformanceSummary: "Sintesi Complessiva delle Prestazioni del Progetto",
+
+overheadCost: "Costi Generali",
+
+overspending: "Sforamento Budget ⚠️",
+overspending21: "Sforamento Budget",
+
+partial: "Parziale",
+
+participants: "Partecipanti",
+participants39: "Partecipanti",
+participants43: "Partecipanti *",
+
+pending: "In Sospeso",
+pendingReferrals: "Rinvii in Attesa",
+
+percentage: "Percentuale",
+
+personalSalariesStaffCost: "Personale (Stipendi e Costi del Personale)",
+
+phoneNumber: "Numero di Telefono",
+
+planning: "Pianificazione",
+
+pleaseFillAllRequiredFields: "Compila tutti i campi obbligatori",
+pleaseFillRequiredFields: "Compila i campi obbligatori",
+pleaseWait: "Attendere prego",
+
+preview: "Anteprima",
+
+print: "Stampa",
+printPdf: "Stampa / PDF",
+
+printPreviewProjectReport: "Anteprima di Stampa - Rapporto di Progetto",
+
+programOverview: "Panoramica del Programma",
+
+progress: "Avanzamento %",
+progress12: "Avanzamento:",
+progress5: "Avanzamento (%)",
+
+progressSummary: "Sintesi dell’Avanzamento",
+
+project: "Progetto",
+
+projectActivities: "Attività del Progetto",
+
+projectCharter: "Carta del Progetto",
+
+projectCode4: "Codice Progetto",
+
+projectDuration: "Durata del Progetto",
+
+projectName: "Nome del Progetto",
+
+projectNotFound: "Progetto non trovato",
+
+projectPeriod: "Periodo del Progetto",
+projectPeriod9: "Periodo del Progetto:",
+
+projectSnapshot: "Panoramica del Progetto",
+
+projectStatus: "Stato del Progetto",
+
+projectTimeline: "Cronologia del Progetto",
+
+promotingInclusionAndSocialChangeThrough: "Promuovere l’Inclusione e il Cambiamento Sociale attraverso lo Sport",
+
+protection: "Protezione",
+
+provider: "Fornitore",
+
+ps10Pe3Textstart: "ps-10 pe-3 text-start",
+
+pss: "PSS",
+pssApproach: "Approccio PSS",
+pssSessions: "Sessioni PSS",
+pssSessions45: "Sessioni PSS",
+
+psychosocial: "Psicosociale",
+
+qualitative: "Qualitativo",
+quantitative: "Quantitativo",
+
+quantity: "Quantità",
+
+quarterly: "Trimestrale",
+
+receivingOrg: "Organizzazione Ricevente",
+receivingOrganization: "Organizzazione Ricevente",
+receivingOrganization50: "Organizzazione Ricevente *",
+
+recentCases: "Casi Recenti",
+
+recreational: "Ricreativo",
+
+recurrence: "Ricorrenza",
+
+referralAddedSuccessfully: "Rinvio aggiunto con successo",
+
+referralDate: "Data del Rinvio",
+referralDate49: "Data del Rinvio *",
+
+referralDeletedSuccessfully: "Rinvio eliminato con successo",
+
+referralSource: "Fonte del Rinvio",
+
+referralType: "Tipo di Rinvio",
+
+referralUpdatedSuccessfully: "Rinvio aggiornato con successo",
+
+referrals: "Rinvii",
+
+refreshData: "Aggiorna Dati",
+
+rejected: "Rifiutato",
+
+remaining: "Rimanente",
+
+remainingDays: "Giorni Rimanenti:",
+
+reportDownloadedSuccessfully: "Rapporto scaricato con successo",
+
+reportGenerated: "Rapporto Generato:",
+
+reportPeriod: "Periodo del Rapporto:",
+
+reportingFrequency: "Frequenza di Rendicontazione",
+
+resetFilters: "Reimposta Filtri",
+
+retry: "Riprova",
+
+risk: "Rischio",
+
+riskFactors: "Fattori di Rischio",
+
+riskLevel: "Livello di Rischio",
+riskLevel27: "Livello di Rischio",
+riskLevel33: "Livello di Rischio *",
+
+riskScore: "Punteggio di Rischio",
+
+riskSnapshot: "Panoramica dei Rischi",
+
+role: "Ruolo",
+
+safeSpace: "Spazio Sicuro *",
+
+save: "Salva",
+
+saveNarratives: "Salva Sezioni Narrative",
+
+searchBudgetItemsOrActivities: "Cerca voci di budget o attività...",
+
+searchByCodeOrName: "Cerca per codice o nome...",
+
+section: "Sezione",
+
+select: "Seleziona",
+
+selectActivity: "-- Seleziona Attività --",
+
+selectCase: "Seleziona Caso",
+
+selectCategory: "Seleziona Categoria...",
+
+selectExcelFile: "Seleziona File Excel",
+
+selectMonthlyReportPeriod: "Seleziona il Periodo del Rapporto Mensile",
+
+selectSpace: "Seleziona Spazio",
+
+selectStatus: "Seleziona Stato",
+
+service: "Servizio",
+
+serviceRequired: "Servizio Richiesto",
+serviceRequired51: "Servizio Richiesto *",
+
+sessionAddedSuccessfully: "Sessione aggiunta con successo",
+
+sessionDate: "Data della Sessione",
+sessionDate46: "Data della Sessione *",
+
+sessionDeletedSuccessfully: "Sessione eliminata con successo",
+
+sessionType: "Tipo di Sessione",
+sessionType47: "Tipo di Sessione *",
+
+sessionUpdatedSuccessfully: "Sessione aggiornata con successo",
+
+settings: "Impostazioni",
+
+skipped: "Saltato",
+
+space: "Spazio",
+
+spendingVarianceAlerts: "Avvisi di Scostamento della Spesa",
+
+startDate: "Data di Inizio",
+
+status: "Stato",
+
+statusReport: "Rapporto di Stato",
+
+step1SelectActivity: "Passo 1: Seleziona Attività",
+
+step2AddItems: "Passo 2: Aggiungi Articoli",
+
+subBudgetLine: "Sottovoce di Budget",
+
+success: "Successo",
+
+summarizeOverallProgress: "Riassumi l’avanzamento complessivo...",
+
+target: "Obiettivo",
+target10: "Obiettivo:",
+
+tasks: "Attività",
+
+templateDownloaded: "Modello scaricato",
+
+templateDownloadedSuccessfully: "Modello scaricato con successo",
+
+totalActiveCases: "Totale Casi Attivi",
+
+totalAlerts: "Totale Avvisi",
+
+totalBudget20: "Budget Totale",
+
+totalItems: "Totale Articoli:",
+
+totalSpent: "Totale Speso",
+
+turnVarianceAlertsOnOrOff: "Attiva o disattiva gli avvisi di scostamento",
+
+type: "Tipo",
+type38: "Tipo",
+
+unacknowledged: "Non Confermato",
+
+underspending: "Sottoutilizzo del Budget ⚠️",
+
+unitCost: "Costo Unitario",
+
+unitType: "Tipo di Unità",
+
+unknown: "Sconosciuto",
+
+update: "Aggiorna",
+
+updateFailed: "Aggiornamento non riuscito",
+
+useTheSameFormatAsThe: "Utilizzare lo stesso formato del file esportato",
+
+utilizationRate: "Tasso di Utilizzo",
+
+value: "Valore",
+
+variance2: "Scostamento %",
+variance3: "Scostamento %",
+
+varianceAlertSettings: "Impostazioni Avvisi di Scostamento",
+
+view: "Visualizza",
+
+viewAllActivities: "Visualizza tutte le attività",
+
+viewErrorDetails: "Visualizza dettagli errore",
+
+warning: "AVVISO",
+
+warningThreshold: "Soglia di Avviso",
+warningThreshold22: "Soglia di Avviso (%)",
+
+worksheetFinancialOverviewNotFound: "Foglio di lavoro Panoramica Finanziaria non trovato",
+
+year: "Anno",
+
+yes: "Sì"
+ },
+
+finance: {
+title: "Finanza",
+subtitle: "Gestione e monitoraggio finanziario",
+
+chartOfAccounts: "Piano dei Conti",
+budgets: "Bilanci",
+expenditures: "Spese",
+transactions: "Transazioni",
+reports: "Rapporti",
+
+accountCode: "Codice Conto",
+accountName: "Nome Conto",
+accountType: "Tipo di Conto",
+
+accountTypeAsset: "Attività",
+accountTypeLiability: "Passività",
+accountTypeEquity: "Patrimonio Netto",
+accountTypeRevenue: "Ricavi",
+accountTypeExpense: "Spese",
+
+parentAccount: "Conto Principale",
+
+balance: "Saldo",
+debit: "Dare",
+credit: "Avere",
+
+budgetLine: "Voce di Bilancio",
+budgetedAmount: "Importo Preventivato",
+actualAmount: "Importo Effettivo",
+variance: "Scostamento",
+variancePercent: "Scostamento %",
+
+expenditureDate: "Data della Spesa",
+expenditureAmount: "Importo",
+expenditureType: "Tipo di Spesa",
+
+paymentMethod: "Metodo di Pagamento",
+paymentMethodCash: "Contanti",
+paymentMethodBank: "Bonifico Bancario",
+paymentMethodCheck: "Assegno",
+paymentMethodMobile: "Denaro Mobile",
+
+vendor: "Fornitore",
+invoice: "Fattura",
+receipt: "Ricevuta",
+
+approvedBy: "Approvato da",
+approvalDate: "Data di Approvazione",
+
+reconciliationStatus: "Stato della Riconciliazione",
+reconciledStatusPending: "In Attesa",
+reconciledStatusReconciled: "Riconciliato",
+reconciledStatusDisputed: "Contestato",
+
+noFinancialData: "Nessun dato finanziario disponibile",
+
+financeManagement: "Gestione Finanziaria",
+manageBudgetsExpenditures: "Gestisci Bilanci e Spese",
+
+overview: "Panoramica",
+},
+
+forms: {
+requiredField: "Questo campo è obbligatorio",
+
+invalidEmail: "Indirizzo email non valido",
+invalidPhone: "Numero di telefono non valido",
+invalidUrl: "URL non valido",
+invalidDate: "Data non valida",
+invalidNumber: "Numero non valido",
+
+minLength: "La lunghezza minima è",
+maxLength: "La lunghezza massima è",
+
+minValue: "Il valore minimo è",
+maxValue: "Il valore massimo è",
+
+mustBePositive: "Deve essere un numero positivo",
+mustBeUnique: "Il valore deve essere univoco",
+
+passwordMismatch: "Le password non corrispondono",
+
+selectOption: "Seleziona un' opzione",
+selectMultiple: "Seleziona una o più opzioni",
+
+enterValue: "Inserisci un valore",
+
+chooseFile: "Seleziona un file",
+uploadFile: "Carica File",
+
+fileSelected: "file selezionato",
+filesSelected: "file selezionati",
+
+maxFileSize: "Dimensione massima del file",
+allowedFileTypes: "Tipi di file consentiti",
+
+dragDropFile: "Trascina qui il file",
+browseFiles: "Sfoglia i File",
+
+removeFile: "Rimuovi File",
+},
+
+tables: {
+columns: "Colonne",
+rows: "Righe",
+rowsPerPage: "Righe per pagina",
+page: "Pagina",
+of: "di",
+showing: "Visualizzazione",
+noDataAvailable: "Nessun dato disponibile",
+noMatchingRecords: "Nessun record corrispondente trovato",
+loadingRecords: "Caricamento dei record in corso...",
+selectAll: "Seleziona Tutto",
+deselectAll: "Deseleziona Tutto",
+selectedCount: "selezionati",
+sortAscending: "Ordina Crescente",
+sortDescending: "Ordina Decrescente",
+filterColumn: "Filtra Colonna",
+hideColumn: "Nascondi Colonna",
+showColumn: "Mostra Colonna",
+exportTable: "Esporta Tabella",
+exportCSV: "Esporta come CSV",
+exportExcel: "Esporta come Excel",
+exportPDF: "Esporta come PDF",
+printTable: "Stampa Tabella",
+refreshTable: "Aggiorna Tabella",
+},
+
+caseManagement: {
+// Sub-Navigation
+dashboard: "Cruscotto",
+casesList: "Elenco Casi",
+caseProfile: "Profilo Caso",
+pssSessions: "Sessioni PSS",
+activities: "Attività",
+safeSpace: "Spazio Sicuro",
+referrals: "Rinvii",
+reports: "Rapporti",
+
+// Dashboard KPIs
+totalActiveCases: "Casi Attivi Totali",
+newCasesThisMonth: "Nuovi Casi (Questo Mese)",
+closedCases: "Casi Chiusi",
+highRiskCases: "Casi ad Alto Rischio",
+pendingReferrals: "Rinvii in Attesa",
+followUpsDue: "Follow-up in Scadenza",
+
+// Dashboard & List Headers
+caseManagementDashboard: "Cruscotto Gestione Casi",
+project: "Progetto",
+donor: "Donatore",
+role: "Ruolo",
+recentCases: "Casi Recenti",
+
+// Filters
+allGender: "Tutti i Generi",
+male: "Maschio",
+female: "Femmina",
+allRiskLevels: "Tutti i Livelli di Rischio",
+riskHigh: "Alto",
+riskMedium: "Medio",
+riskLow: "Basso",
+allStatus: "Tutti gli Stati",
+statusOpen: "Aperto",
+statusOngoing: "In Corso",
+statusClosed: "Chiuso",
+allCaseTypes: "Tutti i Tipi di Caso",
+typePSS: "PSS",
+typeCP: "Protezione dell’Infanzia",
+typeGBV: "Violenza Basata sul Genere",
+typeProtection: "Protezione",
+
+// Table Headers
+caseId: "ID Caso",
+beneficiaryCode: "Codice Beneficiario",
+gender: "Genere",
+age: "Età",
+riskLevel: "Livello di Rischio",
+caseType: "Tipo",
+status: "Stato",
+actions: "Azioni",
+view: "Visualizza",
+
+// Case List
+addNewCase: "Aggiungi Nuovo Caso",
+searchCases: "Cerca casi...",
+exportCases: "Esporta Casi",
+exportTemplate: "Esporta Modello",
+importCases: "Importa Casi",
+noCasesMatch: "Nessun caso corrisponde ai filtri correnti",
+
+// Case Form Fields
+firstName: "Nome",
+lastName: "Cognome",
+dateOfBirth: "Data di Nascita",
+nationality: "Nazionalità",
+idNumber: "Numero Documento",
+phoneNumber: "Numero di Telefono",
+email: "Email",
+address: "Indirizzo",
+referralSource: "Fonte del Rinvio",
+intakeDate: "Data di Presa in Carico",
+assignedTo: "Assegnato a",
+notes: "Note",
+
+// Case Profile Sections
+backToCasesList: "Torna all’Elenco Casi",
+caseIdLabel: "ID Caso",
+beneficiaryInformation: "A. Informazioni Beneficiario",
+caseDetails: "B. Dettagli del Caso",
+casePlan: "C. Piano del Caso",
+disability: "Disabilità",
+location: "Posizione",
+district: "Distretto",
+householdSize: "Dimensione del Nucleo Familiare",
+vulnerabilityCategory: "Categoria di Vulnerabilità",
+caseOpeningDate: "Data di Apertura del Caso",
+informedConsent: "Consenso Informato",
+identifiedNeeds: "Bisogni Identificati",
+riskFactors: "Fattori di Rischio",
+immediateConcerns: "Preoccupazioni Immediate",
+plannedInterventions: "Interventi Pianificati",
+expectedOutcomes: "Risultati Attesi",
+timeline: "Cronologia",
+yes: "Sì",
+no: "No",
+notAvailable: "N/D",
+
+// PSS Sessions
+pssSessionsTitle: "Sessioni PSS",
+pssSessionsDescription: "Monitora e gestisci le sessioni di supporto psicosociale",
+addSession: "Aggiungi Sessione",
+exportSessions: "Esporta Sessioni",
+exportSessionsTemplate: "Esporta Modello",
+importSessions: "Importa Sessioni",
+totalSessions: "Sessioni Totali",
+individualSessions: "Individuali",
+groupSessions: "Di Gruppo",
+avgSessionDuration: "Durata Media",
+sessionDate: "Data Sessione",
+sessionType: "Tipo di Sessione",
+sessionDuration: "Durata (minuti)",
+pssApproach: "Approccio PSS",
+topicsDiscussed: "Argomenti Discussi",
+followUpDate: "Data Follow-up",
+facilitator: "Facilitatore",
+participantsCount: "Partecipanti",
+typeIndividual: "Individuale",
+typeGroup: "Gruppo",
+editSession: "Modifica",
+deleteSession: "Elimina",
+noSessionsFound: "Nessuna sessione trovata",
+addNewSession: "Aggiungi Nuova Sessione",
+updateSession: "Aggiorna Sessione",
+confirmDeleteSession: "Conferma Eliminazione",
+sessionDeleteMessage: "Sei sicuro di voler eliminare questa sessione?",
+fillRequiredFields: "Compila tutti i campi obbligatori",
+sessionAddedSuccess: "✅ Sessione aggiunta con successo!",
+sessionUpdatedSuccess: "✅ Sessione aggiornata con successo!",
+sessionDeletedSuccess: "✅ Sessione eliminata con successo!",
+minutes: "minuti",
+
+// Activities & Services
+activitiesTitle: "Attività e Servizi",
+activitiesDescription: "Monitora le attività e i servizi forniti ai beneficiari",
+addActivity: "Aggiungi Attività",
+exportActivities: "Esporta Attività",
+exportActivitiesTemplate: "Esporta Modello",
+importActivities: "Importa Attività",
+totalActivities: "Attività Totali",
+activitiesCompleted: "Completate",
+beneficiariesServed: "Beneficiari Assistiti",
+activitiesThisMonth: "Questo Mese",
+activityDate: "Data Attività",
+activityType: "Tipo Attività",
+serviceProvided: "Servizio Fornito",
+duration: "Durata",
+outcome: "Risultato",
+editActivity: "Modifica",
+deleteActivity: "Elimina",
+noActivitiesFound: "Nessuna attività trovata",
+addNewActivity: "Aggiungi Nuova Attività",
+updateActivity: "Aggiorna Attività",
+confirmDeleteActivity: "Conferma Eliminazione",
+activityDeleteMessage: "Sei sicuro di voler eliminare questa attività?",
+activityAddedSuccess: "✅ Attività aggiunta con successo!",
+activityUpdatedSuccess: "✅ Attività aggiornata con successo!",
+activityDeletedSuccess: "✅ Attività eliminata con successo!",
+providedBy: "Fornito da",
+followUp: "Follow-up",
+followUpRequired: "Follow-up Richiesto",
+// Child Safe Space
+childSafeSpaceTitle: "Spazio Sicuro per Bambini",
+childSafeSpaceDescription: "Monitora le sessioni e le attività degli Spazi Sicuri per Bambini",
+addCSSSession: "Aggiungi Sessione CSS",
+exportCSSSessions: "Esporta Sessioni",
+exportCSSTemplate: "Esporta Modello",
+importCSSSessions: "Importa Sessioni",
+
+totalCSSSessions: "Sessioni Totali",
+childrenAttended: "Bambini Partecipanti",
+avgAttendance: "Presenza Media",
+activitiesHeld: "Attività Svolte",
+
+activityTheme: "Tema dell’Attività",
+attendanceCount: "Numero di Partecipanti",
+ageGroup: "Gruppo di Età",
+safeguardingIncidents: "Incidenti di Protezione",
+
+editCSSSession: "Modifica",
+deleteCSSSession: "Elimina",
+
+noCSSSessionsFound: "Nessuna sessione trovata",
+
+addNewCSSSession: "Aggiungi Nuova Sessione CSS",
+updateCSSSession: "Aggiorna Sessione CSS",
+
+confirmDeleteCSSSession: "Conferma Eliminazione",
+cssSessionDeleteMessage: "Sei sicuro di voler eliminare questa sessione?",
+
+cssSessionAddedSuccess: "✅ Sessione CSS aggiunta con successo!",
+cssSessionUpdatedSuccess: "✅ Sessione CSS aggiornata con successo!",
+cssSessionDeletedSuccess: "✅ Sessione CSS eliminata con successo!",
+
+// Referrals
+referralsTitle: "Rinvii",
+referralsDescription: "Monitora e gestisci i rinvii dei casi",
+
+addReferral: "Aggiungi Rinvio",
+
+exportReferrals: "Esporta Rinvii",
+exportReferralsTemplate: "Esporta Modello",
+importReferrals: "Importa Rinvii",
+
+totalReferrals: "Rinvii Totali",
+pendingReferralsCount: "In Attesa",
+completedReferrals: "Completati",
+referralsThisMonth: "Questo Mese",
+
+referralDate: "Data del Rinvio",
+referredTo: "Destinatario del Rinvio",
+serviceType: "Tipo di Servizio",
+
+priority: "Priorità",
+referralStatus: "Stato",
+
+completionDate: "Data di Completamento",
+feedback: "Feedback",
+
+priorityHigh: "Alta",
+priorityMedium: "Media",
+priorityLow: "Bassa",
+
+statusPending: "In Attesa",
+statusInProgress: "In Corso",
+statusCompleted: "Completato",
+
+editReferral: "Modifica",
+deleteReferral: "Elimina",
+
+noReferralsFound: "Nessun rinvio trovato",
+
+addNewReferral: "Aggiungi Nuovo Rinvio",
+updateReferral: "Aggiorna Rinvio",
+
+confirmDeleteReferral: "Conferma Eliminazione",
+referralDeleteMessage: "Sei sicuro di voler eliminare questo rinvio?",
+
+referralAddedSuccess: "✅ Rinvio aggiunto con successo!",
+referralUpdatedSuccess: "✅ Rinvio aggiornato con successo!",
+referralDeletedSuccess: "✅ Rinvio eliminato con successo!",
+ 
+// Reports & Analytics
+reportsTitle: "Rapporti e Analisi",
+reportsDescription: "Genera e visualizza rapporti sulla gestione dei casi",
+
+generateReport: "Genera Rapporto",
+exportReport: "Esporta Rapporto",
+
+reportType: "Tipo di Rapporto",
+dateRange: "Intervallo di Date",
+
+caseManagementSummary: "Sintesi della Gestione dei Casi",
+caseLoad: "Carico di Casi",
+demographics: "Dati Demografici",
+services: "Servizi",
+outcomes: "Risultati",
+
+totalCasesManaged: "Totale Casi Gestiti",
+newIntakes: "Nuove Prese in Carico",
+closedSuccessfully: "Chiusi con Successo",
+averageCaseDuration: "Durata Media dei Casi",
+
+byGender: "Per Genere",
+byAgeGroup: "Per Fascia d’Età",
+byRiskLevel: "Per Livello di Rischio",
+byType: "Per Tipo",
+
+pssSessionsProvided: "Sessioni PSS Erogate",
+activitiesCompletedCount: "Attività Completate",
+referralsMade: "Rinvii Effettuati",
+followUpsCompleted: "Follow-up Completati",
+
+successfulCaseClosure: "Tasso di Chiusura Positiva dei Casi",
+averageSatisfactionScore: "Punteggio Medio di Soddisfazione",
+beneficiariesReachedTarget: "Obiettivo Beneficiari Raggiunto",
+servicesDeliveredOnTime: "Servizi Erogati Puntualmente",
+
+exportPDF: "Esporta PDF",
+
+days: "giorni",
+
+// Reports & Analytics - Auto-Report Labels
+caseManagementAutoReport: "Rapporto Automatico sulla Gestione dei Casi",
+
+autoGeneratedFromData: "Generato automaticamente dai dati reali della Gestione dei Casi",
+
+printSaveAsPDF: "Stampa / Salva come PDF",
+
+exportExcel: "Esporta Excel",
+
+caseManagementReport: "Rapporto sulla Gestione dei Casi",
+
+reportingPeriod: "Periodo di Rendicontazione",
+
+generatedOn: "Generato il",
+
+to: "a",
+
+executiveSummary: "Sintesi Esecutiva",
+
+keyMetrics: "Indicatori Principali",
+
+keyAchievements: "Risultati Principali",
+
+totalBeneficiaries: "Beneficiari Totali",
+
+childrenReached: "Bambini Raggiunti",
+
+cssLocations: "Sedi CSS",
+
+cases: "Casi",
+
+safeSpaces: "Spazi Sicuri",
+
+detailedTables: "Tabelle Dettagliate",
+
+casesOverview: "Panoramica dei Casi",
+
+metric: "Indicatore",
+
+value: "Valore",
+
+totalCases: "Totale Casi",
+
+newCasesPeriod: "Nuovi Casi (Periodo)",
+
+activeCases: "Casi Attivi",
+
+avgCaseDuration: "Durata Media dei Casi",
+
+indicator: "Indicatore",
+
+totalPSSSessions: "Totale Sessioni PSS",
+
+individualSessionsLabel: "Sessioni Individuali",
+
+groupSessionsLabel: "Sessioni di Gruppo",
+
+avgDuration: "Durata Media",
+
+followUpsScheduled: "Follow-up Programmati",
+
+internalReferrals: "Rinvii Interni",
+
+externalReferrals: "Rinvii Esterni",
+
+completedReferralsLabel: "Rinvii Completati",
+
+completionRate: "Tasso di Completamento",
+
+activeCSSLocations: "Spazi Sicuri per Bambini Attivi",
+
+totalCSSActivities: "Totale Attività CSS",
+
+avgChildrenPerSession: "Media Bambini per Sessione",
+
+activitiesServices: "Attività e Servizi",
+
+activityTypeLabel: "Tipo di Attività",
+
+count: "Numero",
+
+ 
+// Detailed Tables Labels
+casesLabel: "Casi",
+pssSessionsLabel: "Sessioni PSS",
+referralsLabel: "Rinvii",
+safeSpacesLabel: "Spazi Sicuri",
+
+totalCasesLabel: "Totale Casi",
+newCasesLabel: "Nuovi Casi (Periodo)",
+activeCasesLabel: "Casi Attivi",
+closedCasesLabel: "Casi Chiusi",
+highRiskCasesLabel: "Casi ad Alto Rischio",
+avgDurationLabel: "Durata Media",
+
+totalSessionsLabel: "Totale Sessioni",
+individualSessionsCount: "Sessioni Individuali",
+groupSessionsCount: "Sessioni di Gruppo",
+followUpsScheduledLabel: "Follow-up Programmati",
+
+totalReferralsLabel: "Totale Rinvii",
+internalReferralsLabel: "Rinvii Interni",
+externalReferralsLabel: "Rinvii Esterni",
+
+completedLabel: "Completati",
+completionRateLabel: "Tasso di Completamento",
+
+activeLocationsLabel: "Sedi Attive",
+totalActivitiesLabel: "Attività Totali",
+avgPerSessionLabel: "Media per Sessione",
+},
+
+organizations: {
+title: "Organizzazioni",
+subtitle: "Gestione delle organizzazioni",
+
+createOrganization: "Crea Organizzazione",
+editOrganization: "Modifica Organizzazione",
+deleteOrganization: "Elimina Organizzazione",
+
+organizationName: "Nome Organizzazione",
+organizationType: "Tipo di Organizzazione",
+
+typeNGO: "ONG",
+typeINGO: "ONG Internazionale",
+typeUN: "Agenzia delle Nazioni Unite",
+typeGovernment: "Ente Governativo",
+typeCommunity: "Organizzazione Comunitaria",
+
+country: "Paese",
+region: "Regione",
+city: "Città",
+address: "Indirizzo",
+
+phone: "Telefono",
+email: "Email",
+website: "Sito Web",
+
+registrationNumber: "Numero di Registrazione",
+taxId: "Codice Fiscale",
+
+activeUsers: "Utenti Attivi",
+totalProjects: "Progetti Totali",
+
+established: "Data di Costituzione",
+
+noOrganizations: "Nessuna organizzazione trovata",
+
+switchOrganization: "Cambia Organizzazione",
+},
+
+users: {
+title: "Utenti",
+subtitle: "Gestione degli utenti",
+
+createUser: "Crea Utente",
+editUser: "Modifica Utente",
+deleteUser: "Elimina Utente",
+
+userName: "Nome Utente",
+userEmail: "Email",
+userRole: "Ruolo",
+
+roleSystemAdmin: "Amministratore di Sistema",
+roleOrgAdmin: "Amministratore dell’Organizzazione",
+roleProjectManager: "Responsabile di Progetto",
+roleFinanceOfficer: "Responsabile Finanziario",
+roleMEALOfficer: "Responsabile MEAL",
+roleFieldOfficer: "Operatore sul Campo",
+roleViewer: "Visualizzatore",
+
+permissions: "Permessi",
+
+permissionsView: "Visualizza",
+permissionsCreate: "Crea",
+permissionsEdit: "Modifica",
+permissionsDelete: "Elimina",
+permissionsManage: "Gestisci",
+
+lastLogin: "Ultimo Accesso",
+
+accountStatus: "Stato dell’Account",
+
+inviteUser: "Invita Utente",
+resendInvitation: "Invia Nuovamente l’Invito",
+
+deactivateUser: "Disattiva Utente",
+activateUser: "Attiva Utente",
+
+resetPassword: "Reimposta Password",
+changePassword: "Modifica Password",
+
+noUsers: "Nessun utente trovato",
+},
+
+settings: {
+title: "Impostazioni",
+subtitle: "Configurazione del sistema",
+
+generalSettings: "Impostazioni Generali",
+userManagement: "Gestione Utenti",
+rolesPermissions: "Ruoli e Permessi",
+optionSets: "Set di Opzioni",
+emailNotifications: "Notifiche Email",
+logoBranding: "Logo e Identità Visiva",
+publishSync: "Pubblicazione e Sincronizzazione",
+adminAccess: "Accesso Amministratore",
+
+systemPreferences: "Preferenze di Sistema",
+languageRegion: "Lingua e Area Geografica",
+dateTimeFormat: "Formato Data e Ora",
+currency: "Valuta",
+timezone: "Fuso Orario",
+fiscalYearStart: "Inizio dell’Anno Fiscale",
+
+saveSettings: "Salva Impostazioni",
+
+settingsSaved: "Impostazioni salvate con successo",
+settingsError: "Errore durante il salvataggio delle impostazioni",
+},
+
+
+importExport: {
+importData: "Importa Dati",
+exportData: "Esporta Dati",
+
+importHistory: "Cronologia Importazioni",
+importStatus: "Stato Importazione",
+
+statusPending: "In Attesa",
+statusProcessing: "Elaborazione in Corso",
+statusCompleted: "Completato",
+statusFailed: "Non Riuscito",
+statusPartial: "Completato Parzialmente",
+
+recordsImported: "Record Importati",
+recordsFailed: "Record Non Riusciti",
+recordsSkipped: "Record Saltati",
+totalRecords: "Totale Record",
+
+validationErrors: "Errori di Validazione",
+duplicatesFound: "Duplicati Trovati",
+
+importDate: "Data Importazione",
+importedBy: "Importato da",
+
+downloadTemplate: "Scarica Modello",
+downloadErrors: "Scarica Errori",
+
+selectFile: "Seleziona File",
+
+mapColumns: "Mappatura Colonne",
+validateData: "Valida Dati",
+confirmImport: "Conferma Importazione",
+
+importInProgress: "Importazione in Corso",
+importCompleted: "Importazione Completata",
+importFailed: "Importazione Non Riuscita",
+
+viewDetails: "Visualizza Dettagli",
+
+duplicateHandling: "Gestione Duplicati",
+duplicateSkip: "Ignora Duplicati",
+duplicateUpdate: "Aggiorna Esistenti",
+duplicateCreateNew: "Crea Nuovo",
+
+actions: "Azioni",
+
+allModules: "Tutti i Moduli",
+allStatus: "Tutti gli Stati",
+allTime: "Tutto il Periodo",
+
+automatedImportTracking: "Monitoraggio Automatico delle Importazioni",
+
+backToImportHistory: "Torna alla Cronologia Importazioni",
+backToSettings: "Torna alle Impostazioni",
+
+close: "Chiudi",
+
+completed: "Completato",
+errors: "Errori",
+failed: "Non Riuscito",
+
+fileName: "Nome File",
+
+importDetails: "Dettagli Importazione",
+importNotFound: "Importazione Non Trovata",
+
+inProgress: "In Corso",
+
+last30Days: "Ultimi 30 Giorni",
+last7Days: "Ultimi 7 Giorni",
+last90Days: "Ultimi 90 Giorni",
+
+loading: "Caricamento...",
+
+module: "Modulo",
+
+noImportsFound: "Nessuna importazione trovata",
+
+partial: "Parziale",
+
+// Technical CSS class - do not translate
+ps10Pe3Textstart: "ps-10 pe-3 text-start",
+
+results: "Risultati",
+
+retry: "Riprova",
+
+rolledBack: "Annullato",
+
+searchByFileNameOrModule: "Cerca per nome file o modulo...",
+
+status: "Stato",
+
+success: "Successo",
+
+theImportRecordYouAreLooking: "Il record di importazione che stai cercando non esiste.",
+
+total: "Totale",
+
+totalImports: "Importazioni Totali",
+totalRows: "Totale Righe",
+},
+
+reports: {
+title: "Rapporti",
+subtitle: "Genera e gestisci rapporti",
+
+generateReport: "Genera Rapporto",
+scheduleReport: "Programma Rapporto",
+
+reportTemplate: "Modello di Rapporto",
+reportType: "Tipo di Rapporto",
+reportPeriod: "Periodo del Rapporto",
+reportFormat: "Formato del Rapporto",
+
+formatPDF: "PDF",
+formatExcel: "Excel",
+formatWord: "Word",
+
+donors: "Rapporti per Donatori",
+internalReports: "Rapporti Interni",
+customReports: "Rapporti Personalizzati",
+
+reportDue: "In Scadenza",
+reportOverdue: "Scaduto",
+reportSubmitted: "Inviato",
+reportApproved: "Approvato",
+reportRejected: "Rifiutato",
+
+submitReport: "Invia Rapporto",
+approveReport: "Approva Rapporto",
+rejectReport: "Rifiuta Rapporto",
+
+reportComments: "Commenti",
+
+noReports: "Nessun rapporto trovato",
+
+viewReport: "Visualizza Rapporto",
+editReport: "Modifica Rapporto",
+deleteReport: "Elimina Rapporto",
+},
+
+notifications: {
+title: "Notifiche",
+
+markAsRead: "Segna come Letto",
+markAsUnread: "Segna come Non Letto",
+
+deleteNotification: "Elimina Notifica",
+
+notificationSettings: "Impostazioni Notifiche",
+
+emailNotifications: "Notifiche Email",
+pushNotifications: "Notifiche Push",
+smsNotifications: "Notifiche SMS",
+
+notifyProjectUpdates: "Aggiornamenti Progetto",
+notifyReportsDue: "Rapporti in Scadenza",
+notifyBudgetAlerts: "Avvisi di Bilancio",
+notifyApprovals: "Approvazioni Richieste",
+notifyMentions: "Menzioni",
+
+noNewNotifications: "Nessuna Nuova Notifica",
+},
+
+messages: {
+success: {
+created: "Creato con successo",
+updated: "Aggiornato con successo",
+deleted: "Eliminato con successo",
+saved: "Salvato con successo",
+imported: "Importato con successo",
+exported: "Esportato con successo",
+sent: "Inviato con successo",
+approved: "Approvato con successo",
+rejected: "Rifiutato con successo",
+published: "Pubblicato con successo",
+archived: "Archiviato con successo",
+restored: "Ripristinato con successo",
+},
+
+error: {
+generic: "Si è verificato un errore",
+notFound: "Record non trovato",
+unauthorized: "Accesso non autorizzato",
+forbidden: "Accesso vietato",
+serverError: "Errore del server",
+networkError: "Errore di rete",
+validationFailed: "Validazione non riuscita",
+duplicateEntry: "Voce duplicata",
+missingFields: "Campi obbligatori mancanti",
+invalidData: "Dati non validi",
+operationFailed: "Operazione non riuscita",
+uploadFailed: "Caricamento non riuscito",
+downloadFailed: "Download non riuscito",
+
+},
+
+confirm: {
+delete: "Sei sicuro di voler eliminare questo elemento?",
+deleteMultiple: "Sei sicuro di voler eliminare gli elementi selezionati?",
+archive: "Sei sicuro di voler archiviare questo elemento?",
+restore: "Sei sicuro di voler ripristinare questo elemento?",
+submit: "Sei sicuro di voler inviare?",
+approve: "Sei sicuro di voler approvare?",
+reject: "Sei sicuro di voler rifiutare?",
+logout: "Sei sicuro di voler uscire?",
+cancelChanges: "Scartare le modifiche non salvate?",
+overwriteData: "Questa operazione sovrascriverà i dati esistenti. Continuare?",
+},
+},
+
+deletedRecords: {
+title: "Record Eliminati",
+subtitle: "Visualizza e gestisci i record eliminati",
+deletedBy: "Eliminato da",
+deletedDate: "Data di Eliminazione",
+deletionReason: "Motivo dell’Eliminazione",
+restoreRecord: "Ripristina Record",
+permanentlyDelete: "Elimina Definitivamente",
+restoreConfirm: "Sei sicuro di voler ripristinare questo record?",
+permanentDeleteConfirm: "Questa azione non può essere annullata. Eliminare definitivamente?",
+noDeletedRecords: "Nessun record eliminato trovato",
+recordType: "Tipo di Record",
+recordName: "Nome del Record",
+originalId: "ID Originale",
+actions: "Azioni",
+allHistory: "Tutta la Cronologia",
+allModules: "Tutti i Moduli",
+allTypes: "Tutti i Tipi",
+assignRoleOptional: "Assegna Ruolo (Facoltativo)",
+auditAndRestoreDeletedDataIncluding:
+"Controlla e ripristina i dati eliminati, inclusi gli utenti",
+back: "Indietro",
+backToSettings: "Torna alle Impostazioni",
+canDelete: "Può Eliminare",
+canRestore: "Può Ripristinare",
+cancel: "Annulla",
+confirmRestore: "Conferma Ripristino",
+dateRange: "Intervallo di Date",
+deleteAllPermanently: "Elimina Tutto Definitivamente",
+deleteForever: "Elimina per Sempre",
+deletePermanently: "Elimina Definitivamente",
+deleteSelected: "Elimina Selezionati",
+deletedAt: "Eliminato il",
+deletedAt3: "Eliminato il",
+deletedBy2: "Eliminato da",
+deletedRecordsArchive: "Archivio Record Eliminati",
+deletedUsers: "Utenti Eliminati",
+deletionReason4: "Motivo dell’Eliminazione",
+email: "Email",
+
+// Locale value - do not translate
+enus: "it-IT",
+historicalDataPreserved: "Dati storici conservati",
+last30Days: "Ultimi 30 Giorni",
+last7Days: "Ultimi 7 Giorni",
+last90Days: "Ultimi 90 Giorni",
+module: "Modulo",
+moduleRecords: "Record del Modulo",
+noDeletedRecordsFound: "Nessun record eliminato trovato",
+noDeletedRecordsFound1: "Nessun record eliminato trovato",
+noDeletedUsersFound: "Nessun utente eliminato trovato",
+noReasonProvided: "Nessun motivo fornito",
+noRoleAssigned: "Nessun ruolo assegnato",
+operationalRecoveryOfProjectDataAnd:
+"Recupero operativo dei dati di progetto e dei record a livello di modulo",
+organizationArchive: "Archivio Organizzazione",
+organizationAuditVault: "Archivio di Audit dell’Organizzazione",
+permanentlyDeleteMultipleRecords:
+"Elimina Definitivamente Più Record",
+permanentlyDeleteRecord:
+"Elimina Definitivamente il Record",
+previousOrganizations: "Organizzazioni Precedenti",
+previousRoles: "Ruoli Precedenti",
+// CSS classes - do not translate
+ps10Pe4: "ps-10 pe-4",
+ps12Pe4Textstart: "ps-12 pe-4 text-start",
+purge: "Eliminazione Definitiva",
+purgedRecordsCannotBeRecovered:
+"I record eliminati definitivamente non possono essere recuperati",
+record: "Record",
+recordPermanentlyDeleted:
+"Record eliminato definitivamente",
+recordRestored: "Record ripristinato",
+recordRestoredSuccessfully:
+"Record ripristinato con successo",
+restore: "Ripristina",
+restoreAll: "Ripristina Tutto",
+restoreMultipleRecords:
+"Ripristina Più Record",
+restoreSelected: "Ripristina Selezionati",
+restoreUser: "Ripristina Utente",
+search: "Cerca...",
+searchRecords: "Cerca record...",
+selectAll: "Seleziona Tutto",
+selected: "selezionati",
+softdeletedUsersCanBeRestoredExternal:
+"Gli utenti eliminati logicamente possono essere ripristinati. Gli account del provider di identità esterno rimangono invariati.",
+thisWillReactivateTheUserReassign:
+"Questa operazione riattiverà l’utente, lo riassegnerà all’organizzazione corrente e consentirà facoltativamente l’assegnazione di un ruolo RBAC.",
+totalDeleted: "Totale Eliminati",
+userName: "Nome Utente",
+userRestoredSuccessfully:
+"Utente ripristinato con successo",
+viewDetails: "Visualizza Dettagli",
+noOrganizationAccess: "Nessun accesso all'organizzazione",
+mustBeAssignedToOrganization: "Devi essere assegnato a un'organizzazione per visualizzare i record eliminati.",
+manageDeletedRecords: "Gestisci i record eliminati in tutti i moduli. Ripristina o elimina definitivamente gli elementi.",
+archivedRecords: "Record Archiviati",
+allSoftDeletedRecords: "Tutti i record eliminati logicamente della tua organizzazione. Puoi ripristinarli o eliminarli definitivamente.",
+areYouSureRestore: 'Sei sicuro di voler ripristinare "{recordName}"? Questo record riapparirà nel modulo {recordType}.',
+willReappearIn: "riapparirà nel",
+failedToRestoreRecord: "Impossibile ripristinare il record:",
+failedToDeleteRecord: "Impossibile eliminare il record:",
+restoreRecordTitle: "Ripristina Record",
+},
+
+meal: {
+// General
+moduleTitle: "Gestione MEAL",
+moduleSubtitle: "Monitoraggio, Valutazione, Responsabilità e Apprendimento",
+
+indicatorsTrackingDesc: "Monitora le prestazioni del progetto tramite dashboard degli indicatori, visualizza i progressi e segui i risultati rispetto agli obiettivi.",
+mealReportsAnalyticsDesc: "Genera rapporti pronti per i donatori con grafici delle prestazioni degli indicatori, audit trail, verifica delle evidenze e funzionalità di esportazione.",
+accountabilityCrmDesc: "Gestisci reclami e feedback, segui i percorsi di rinvio e garantisci che le risposte siano conformi agli standard AAP e di safeguarding.",
+surveyDataCollectionDesc: "Raccogli valutazioni di progetto, sondaggi e dati di monitoraggio per supportare il processo decisionale e rafforzare una programmazione basata sulle evidenze.",
+documentsReportsDesc: "Hub centrale per i documenti MEAL: archivia valutazioni, rapporti, strumenti e modelli per supportare l’apprendimento e la memoria organizzativa.",
+
+// Surveys
+surveys: "Sondaggi",
+surveyName: "Nome del Sondaggio",
+surveyType: "Tipo di Sondaggio",
+surveyStatus: "Stato",
+createSurvey: "Crea Sondaggio",
+editSurvey: "Modifica Sondaggio",
+surveyCreated: "Sondaggio creato con successo",
+surveyUpdated: "Sondaggio aggiornato con successo",
+surveyDeleted: "Sondaggio eliminato con successo",
+
+// Indicators
+indicators: "Indicatori",
+indicatorCode: "Codice Indicatore",
+indicatorName: "Nome Indicatore",
+indicatorType: "Tipo",
+indicatorCategory: "Categoria",
+indicatorSector: "Settore",
+indicatorUnit: "Unità di Misura",
+indicatorDataSource: "Fonte dei Dati",
+indicatorBaseline: "Baseline",
+indicatorTarget: "Obiettivo",
+indicatorCurrent: "Valore Attuale",
+indicatorStatus: "Stato",
+createIndicator: "Crea Indicatore",
+editIndicator: "Modifica Indicatore",
+addIndicator: "Aggiungi Indicatore",
+indicatorCreated: "Indicatore creato con successo",
+indicatorUpdated: "Indicatore aggiornato con successo",
+indicatorDeleted: "Indicatore eliminato con successo",
+
+// Data Entry
+dataEntry: "Inserimento Dati",
+period: "Periodo",
+value: "Valore",
+disaggregation: "Disaggregazione",
+notes: "Note",
+verified: "Verificato",
+verifiedBy: "Verificato da",
+verifiedAt: "Verificato il",
+
+// Common
+project: "Progetto",
+responsiblePerson: "Persona Responsabile",
+collectionFrequency: "Frequenza di Raccolta",
+frequencyMonthly: "Mensile",
+frequencyQuarterly: "Trimestrale",
+frequencyAnnually: "Annualmente",
+frequencyAdhoc: "Ad-hoc",
+
+saveError: "Salvataggio non riuscito. Riprova.",
+loadError: "Caricamento dati non riuscito. Aggiorna la pagina.",
+
+// Extended Indicator Fields
+basicInformation: "Informazioni di Base",
+classification: "Classificazione",
+measurement: "Misurazione",
+dataCollection: "Raccolta Dati",
+description: "Descrizione",
+
+descriptionPlaceholder: "Descrivi cosa misura questo indicatore...",
+indicatorNamePlaceholder: "es. Numero di beneficiari raggiunti",
+
+indicatorCodeRequired: "Il codice dell’indicatore è obbligatorio",
+indicatorNameRequired: "Il nome dell’indicatore è obbligatorio",
+categoryRequired: "La categoria è obbligatoria",
+sectorRequired: "Il settore è obbligatorio",
+targetRequired: "Il valore obiettivo è obbligatorio",
+responsiblePersonRequired: "La persona responsabile è obbligatoria",
+
+category: "Categoria",
+categoryPlaceholder: "es. Erogazione dei Servizi",
+
+sector: "Settore",
+selectSector: "Seleziona Settore",
+
+sectorProtection: "Protezione",
+sectorHealth: "Salute",
+sectorEducation: "Istruzione",
+sectorWASH: "WASH",
+sectorNutrition: "Nutrizione",
+sectorLivelihoods: "Mezzi di Sussistenza",
+sectorMultiSector: "Multisettoriale",
+
+unit: "Unità",
+unitNumber: "Numero",
+unitPercentage: "Percentuale",
+unitRatio: "Rapporto",
+unitIndex: "Indice",
+
+baseline: "Baseline",
+target: "Obiettivo",
+
+dataSource: "Fonte dei Dati",
+
+sourceManual: "Inserimento Manuale",
+sourceSurvey: "Sondaggio",
+sourceAutomatic: "Automatico",
+sourceExternal: "Sistema Esterno",
+
+responsiblePersonPlaceholder: "Inserisci il nome della persona responsabile",
+
+disaggregationDesc: "Seleziona come i dati devono essere disaggregati",
+
+disaggregationGender: "Genere",
+disaggregationAge: "Età",
+disaggregationLocation: "Posizione",
+disaggregationDisability: "Disabilità",
+
+status: "Stato",
+statusActive: "Attivo",
+statusInactive: "Inattivo",
+
+output: "Output",
+outcome: "Risultato",
+impact: "Impatto",
+
+accessRestricted: "Accesso Limitato",
+accountability: "Responsabilità",
+accountabilityCrm: "Responsabilità e CRM",
+accountabilityCrm21: "Responsabilità e CRM",
+
+accuracy: "Precisione",
+accuracyRate: "Tasso di Precisione",
+accurate: "Accurato",
+
+achieved: "Raggiunto",
+achieved16: "Raggiunto",
+
+achievedIndicators: "Indicatori Raggiunti",
+achievedValue: "Valore Raggiunto",
+achievementProgress: "Progresso del Risultato",
+achievementRate: "Tasso di Raggiungimento",
+achievementVsTarget: "Risultato rispetto all’Obiettivo",
+
+action: "Azione",
+actions: "Azioni",
+
+active: "Attivo",
+
+activeTemplates: "Modelli Attivi",
+
+activity: "Attività:",
+activityLog: "Registro Attività",
+
+addAnyRelevantNotesOrComments: "Aggiungi eventuali note o commenti pertinenti...",
+addDataEntry: "Aggiungi Inserimento Dati",
+addFinding: "Aggiungi Risultato",
+
+addNew: "Aggiungi Nuovo",
+addNewIndicator: "Aggiungi Nuovo Indicatore",
+
+addNewRecord: "➕ Aggiungi Nuovo Record",
+addNewRecord1: "Aggiungi Nuovo Record",
+
+addStandard: "Aggiungi Standard",
+addTemplate: "Aggiungi Modello",
+addVisit: "Aggiungi Visita",
+
+admin: "Amministratore",
+
+ageDisaggregation: "Disaggregazione per Età",
+
+ahmedHassan: "Ahmed Hassan",
+
+all: "Tutti",
+allActions: "Tutte le Azioni",
+allEntities: "Tutte le Entità",
+
+annual: "Annuale",
+annually: "Annualmente",
+
+anonymousSubmission: "Invio Anonimo",
+
+approve: "Approva",
+approve22: "Approva",
+
+approved: "Approvato",
+archived: "Archiviato",
+
+areYouSureYouWantTo: "Sei sicuro di voler eliminare questo elemento?",
+areYouSureYouWantTo18: "Sei sicuro di voler eliminare questa voce?",
+areYouSureYouWantTo20: "Sei sicuro di voler eliminare questo elemento?",
+areYouSureYouWantTo28: "Sei sicuro di voler rimuovere questo utente?",
+areYouSureYouWantTo3: "Sei sicuro di voler eliminare questo?",
+
+atRisk: "A Rischio",
+
+attachPhotoOrDocument: "Allega foto o documento",
+
+auditEntries: "Voci di Audit",
+auditTrail: "Registro di Audit",
+
+back: "Indietro",
+
+backToIndicatorDetails: "Torna ai Dettagli dell’Indicatore",
+backToIndicators: "Torna agli Indicatori",
+backToMeal: "Torna a MEAL",
+backToMeal19: "Torna a MEAL",
+backToSettings: "Torna alle Impostazioni",
+backToSurveys: "Torna ai Sondaggi",
+
+balance: "Saldo",
+
+baselineValue: "Valore Baseline",
+
+beneficiariesReportingContaminatedWaterSupply: "Beneficiari che segnalano una fornitura d’acqua contaminata",
+
+beneficiaryDisaggregation: "Disaggregazione dei Beneficiari",
+
+bestPractice: "Buona Pratica",
+bestPractices: "Buone Pratiche",
+
+boys: "Ragazzi",
+
+browse: "Sfoglia",
+
+bulkImport: "Importazione Massiva",
+
+calculation: "Calcolo",
+calculationMethod: "Metodo di Calcolo",
+
+cancel: "Annulla",
+
+captureCurrentLocation: "Acquisisci Posizione Corrente",
+
+categoryActivity: "Categoria / Attività",
+
+changeRole: "Modifica Ruolo",
+
+clickToOpenModule: "Fai clic per aprire il modulo",
+
+close: "Chiudi",
+
+closed: "Chiuso",
+
+code: "Codice",
+
+collectData: "Raccogli Dati",
+
+comingSoon: "Prossimamente",
+
+complainantInformationOptional: "Informazioni del Reclamante (Facoltative)",
+
+complaint: "Reclamo",
+
+completeness: "Completezza",
+
+confirmDelete: "Conferma Eliminazione",
+
+contact: "Contatto",
+
+contextBackground: "Contesto / Background",
+
+create: "Crea",
+
+createDqaVisit: "Crea Visita DQA",
+createIndicatorTemplate: "Crea Modello Indicatore",
+createLearningItem: "Crea Elemento di Apprendimento",
+createSurveyStandard: "Crea Standard di Sondaggio",
+
+created: "Creato",
+
+crosscutting: "Trasversale",
+
+dashboardStatusMetrics: "Dashboard Stato e Metriche",
+
+dataEntryCreatedSuccessfully: "Inserimento dati creato con successo",
+dataEntryHistory: "Cronologia Inserimenti Dati",
+dataEntrySavedSuccessfully: "Inserimento dati salvato con successo",
+dataEntryUpdatedSuccessfully: "Inserimento dati aggiornato con successo",
+
+dataQualityAssuranceDqa: "Assicurazione della Qualità dei Dati (DQA)",
+
+dataSyncedSuccessfully: "Dati sincronizzati con successo",
+
+dataVerification: "Verifica dei Dati",
+dataVerificationSpotChecksAndQuality: "Verifica dei dati, controlli a campione e audit di qualità",
+
+date: "Data:",
+date5: "Data",
+
+defineANewIndicatorForTracking: "Definisci un nuovo indicatore per monitorare le prestazioni del progetto.",
+
+delete: "Elimina",
+
+deselectAll: "Deseleziona Tutto",
+
+details: "Dettagli",
+
+disabilityDisaggregation: "Disaggregazione per Disabilità",
+
+disaggregatedData: "Dati Disaggregati",
+
+disaggregationIsRequiredForBeneficiarytypeIndicators:
+"La disaggregazione è obbligatoria per gli indicatori relativi ai beneficiari",
+
+discrepancies: "Discrepanze",
+
+documentsReports: "Documenti e Rapporti",
+
+donor: "Donatore",
+
+donorshareable: "Condivisibile con i Donatori",
+
+downloadAFormattedPdfReportOf:
+"Scarica un rapporto PDF formattato di questo indicatore.",
+
+downloadRawDataInExcelFormat:
+"Scarica i dati grezzi in formato Excel per l’analisi.",
+
+dqaVisitCreatedSuccessfully: "Visita DQA creata con successo",
+
+dqaVisitDetails: "Dettagli Visita DQA",
+
+dqaVisits: "Visite DQA",
+
+draft: "Bozza",
+draftSavedSuccessfully: "Bozza salvata con successo",
+
+duplicates: "Duplicati",
+
+edit: "Modifica",
+
+editDataEntry: "Modifica Inserimento Dati",
+editDqaVisit: "Modifica Visita DQA",
+editFinding: "Modifica Risultato",
+editIndicatorTemplate: "Modifica Modello Indicatore",
+editLearningItem: "Modifica Elemento di Apprendimento",
+editRecord: "Modifica Record",
+editSurveyStandard: "Modifica Standard di Sondaggio",
+
+egHotlineInpersonOnline: "es. Hotline, In Presenza, Online",
+
+egServiceStaffConductSafeguarding:
+"es. Servizio, Condotta del Personale, Salvaguardia",
+
+emailAddress: "Indirizzo Email",
+
+endDate: "Data di Fine",
+
+enterAchievedValue: "Inserisci il valore raggiunto",
+
+enterDetailedDescription: "Inserisci una descrizione dettagliata",
+
+enterName: "Inserisci il nome",
+
+enterSubject: "Inserisci l’oggetto",
+
+enterValueIn: "Inserisci il valore in",
+
+entity: "Entità",
+
+entityId: "ID Entità",
+
+entityType: "Tipo di Entità",
+
+entryDeletedSuccessfully: "Voce eliminata con successo",
+
+enumerator: "Rilevatore",
+
+evidenceFileAttached: "File di evidenza allegato",
+
+evidenceSupportingDocuments: "Evidenze / Documenti Giustificativi",
+
+exampleValue: "Valore di Esempio",
+
+excellentTeacherPerformance: "Prestazione eccellente dell’insegnante",
+
+export: "Esporta",
+
+exportAsExcel: "Esporta come Excel",
+
+exportAsPdf: "Esporta come PDF",
+
+exportCompletedSuccessfully: "Esportazione completata con successo!",
+
+exportEvidence: "Esportazione ed Evidenze",
+
+exportFailedPleaseTryAgain:
+"Esportazione non riuscita. Riprova.",
+
+exportIndicatorDataAndManageSupporting:
+"Esporta i dati degli indicatori e gestisci la documentazione di supporto.",
+
+exportOptions: "Opzioni di Esportazione",
+
+exportToExcel: "📊 Esporta in Excel",
+
+exportingAuditTrailToExcel:
+"Esportazione del registro di audit in Excel in corso...",
+failedToSaveData: "Impossibile salvare i dati",
+
+failedToSyncData: "Impossibile sincronizzare i dati",
+
+fatimaAli: "Fatima Ali",
+
+feedback: "Feedback",
+
+female: "Femmina",
+female11: "Femmina",
+
+fieldName: "Nome Campo",
+
+fieldsWillBeMasked: "i campi saranno mascherati",
+
+filterByAction: "Filtra per Azione",
+
+filterByEntity: "Filtra per Entità",
+
+filterByStatus: "Filtra per Stato",
+
+filterByType: "Filtra per Tipo",
+
+findingAdded: "Risultato aggiunto",
+
+findingDeleted: "Risultato eliminato",
+
+findingText: "Testo del Risultato",
+
+findingUpdated: "Risultato aggiornato",
+
+findings: "Risultati",
+
+frequency: "Frequenza",
+
+fullFormImplementationComingSoonBasic:
+"L’implementazione completa del modulo sarà disponibile a breve. I campi di base sono disponibili di seguito.",
+
+fullyFunctionalAndReadyToUse:
+"Completamente funzionale e pronto all’uso",
+
+genderDisaggregation: "Disaggregazione per Genere",
+
+geolocation: "Geolocalizzazione",
+
+getLocation: "Ottieni Posizione",
+
+girls: "Ragazze",
+
+gpsRequired: "GPS Obbligatorio",
+
+high: "Alto",
+high7: "Alto",
+
+highSeverity: "Gravità Alta",
+
+importFromExcel: "📥 Importa da Excel",
+
+inProgress: "In Corso",
+
+inactive: "Inattivo",
+
+indicator: "Indicatore",
+indicator9: "Indicatore",
+
+indicatorCharts: "Grafici degli Indicatori",
+
+indicatorCreatedSuccessfully:
+"Indicatore creato con successo",
+
+indicatorDataEntry: "Inserimento Dati Indicatore",
+
+indicatorDetails: "Dettagli Indicatore",
+
+indicatorId: "ID Indicatore:",
+
+indicatorNameArabic: "Nome Indicatore (Arabo)",
+
+indicatorNameEnglish: "Nome Indicatore (Inglese)",
+
+indicatorNotFound: "Indicatore non trovato",
+
+indicatorNotFound15: "Indicatore non trovato.",
+
+indicatorTemplates: "Modelli di Indicatore",
+
+indicatorTemplatesSurveyStandardsConfigurationAnd:
+"Modelli di indicatori, standard dei sondaggi, configurazione e registro attività",
+
+indicatorsList: "Elenco Indicatori",
+
+indicatorsTracking: "Monitoraggio degli Indicatori",
+
+indicatorsUpdated: "Indicatori Aggiornati",
+
+indicatorsWithEvidence: "Indicatori con Evidenze",
+
+integrity: "Integrità",
+
+internal: "Interno",
+
+invitationSentTo: "Invito inviato a",
+
+inviteUser: "+ Invita Utente",
+
+inviteUser27: "Invita Utente",
+
+ipAddress: "Indirizzo IP",
+
+itemCreatedSuccessfully: "Elemento creato con successo",
+
+itemDeletedSuccessfully: "Elemento eliminato con successo",
+
+itemUpdatedSuccessfully: "Elemento aggiornato con successo",
+
+joined: "Data di Adesione",
+
+k05Years: "0-5 anni",
+k05Yrs: "0-5 anni",
+
+k1859Years: "18-59 anni",
+k1859Yrs: "18-59 anni",
+
+k60Years: "60+ anni",
+k60Yrs: "60+ anni",
+
+k617Years: "6-17 anni",
+k617Yrs: "6-17 anni",
+
+lastActive: "Ultima Attività",
+
+learningKnowledgeManagement: "Apprendimento e Gestione della Conoscenza",
+
+learningProduct: "Prodotto di Apprendimento",
+
+leilaAhmed: "Leila Ahmed",
+
+lessonLearned: "Lezione Appresa",
+
+lessons: "Lezioni",
+
+lessonsLearnedBestPracticesAndLearning:
+"Lezioni apprese, buone pratiche e prodotti di apprendimento",
+
+loading: "Caricamento...",
+
+loadingCharts: "Caricamento dei grafici...",
+
+loadingIndicator: "Caricamento indicatore...",
+
+loadingIndicatorDetails: "Caricamento dettagli indicatore...",
+
+loadingIndicators: "Caricamento indicatori...",
+
+locationCaptured: "Posizione acquisita",
+
+low: "Basso",
+
+male: "Maschio",
+male10: "Maschio",
+
+manageTeamMembersAndPermissions:
+"Gestisci membri del team e autorizzazioni",
+
+manager: "Responsabile",
+
+markAsSensitiveCase: "Contrassegna come Caso Sensibile",
+
+masked: "Mascherato",
+
+maskedValue: "Valore Mascherato",
+
+meal: "MEAL",
+
+mealReportsAnalytics: "Rapporti e Analisi MEAL",
+
+mealSettings: "Impostazioni MEAL",
+
+mealSystem: "Sistema MEAL",
+
+medium: "Medio",
+
+missingFields: "Campi Mancanti",
+
+mixed: "Misto",
+
+moduleSource: "Modulo di Origine",
+
+moduleStatusLegend: "Legenda Stato Modulo:",
+
+moduleUnderDevelopment: "Modulo in fase di sviluppo",
+
+mohammedIbrahim: "Mohammed Ibrahim",
+
+monitorProjectPerformanceThroughIndicatorDashboards:
+"Monitora le prestazioni del progetto tramite dashboard degli indicatori, visualizza i progressi e segui i risultati rispetto agli obiettivi.",
+
+monitoringEvaluationLearningDashboard:
+"Cruscotto di Monitoraggio, Valutazione e Apprendimento",
+
+monthly: "Mensile",
+
+na: "N/D",
+
+name: "Nome",
+
+never: "Mai",
+
+no: "No",
+
+noActivityLogsFound: "Nessun registro attività trovato",
+
+noAuditLogsFound: "Nessun registro di audit trovato",
+
+noCasesFound: "Nessun caso trovato",
+
+noDataEntriesToVisualize:
+"Nessun inserimento dati da visualizzare.",
+
+noDataEntriesYetClickCollect:
+"Nessun inserimento dati disponibile. Fai clic su Raccogli Dati per aggiungere il primo record.",
+
+noDocumentsAttached:
+"Nessun documento allegato",
+
+noFindingsFound:
+"Nessun risultato trovato",
+
+noIndicatorsMatchTheSelectedFilters:
+"Nessun indicatore corrisponde ai filtri selezionati.",
+
+noItemsFound:
+"Nessun elemento trovato",
+
+noStandardsFound:
+"Nessuno standard trovato",
+
+noTemplatesFound:
+"Nessun modello trovato",
+
+noUpdateHistoryAvailable:
+"Nessuna cronologia degli aggiornamenti disponibile.",
+
+noUsersFound:
+"Nessun utente trovato",
+
+noVerificationSourceSpecified:
+"Nessuna fonte di verifica specificata",
+
+noVisitsFound:
+"Nessuna visita trovata",
+
+nonpwd: "Senza Disabilità",
+
+notesComments:
+"Note / Commenti",
+
+notesOptional:
+"Note (Facoltative)",
+
+offTrack:
+"Fuori Percorso",
+
+onTrack:
+"In Linea",
+
+ongoing:
+"In Corso",
+
+ongoingIndicators:
+"Indicatori in Corso",
+
+open:
+"Aperto",
+
+overview:
+"Panoramica",
+
+parentsAppreciateTheDedicationOfTeachers:
+"I genitori apprezzano la dedizione degli insegnanti",
+
+pending:
+"In Sospeso",
+
+pending17:
+"In Sospeso",
+
+pendingIndicators:
+"Indicatori in Attesa",
+
+persons:
+"Persone",
+
+personsWithDisabilities:
+"Persone con Disabilità",
+
+personsWithoutDisabilities:
+"Persone senza Disabilità",
+
+phoneOrEmail:
+"Telefono o Email",
+
+photoRequired:
+"Foto Obbligatoria",
+
+pii:
+"Dati Personali Identificabili (PII)",
+
+piiDetected:
+"Rilevati Dati Personali Identificabili (PII)",
+
+piiMaskingConfiguration:
+"Configurazione del Mascheramento dei Dati Personali Identificabili (PII)",
+
+piiMaskingConfigurationSavedSuccessfully:
+"Configurazione del mascheramento PII salvata con successo",
+
+// CSS class - do not translate
+pl12Pr4Textleft:
+"pl-12 pr-4 text-left",
+
+pleaseEnterADescription:
+"Inserisci una descrizione",
+
+pleaseEnterAName:
+"Inserisci un nome",
+
+pleaseEnterASubject:
+"Inserisci un oggetto",
+
+pleaseEnterAValidNumericValue:
+"Inserisci un valore numerico valido",
+
+pleaseEnterAnAchievedValue:
+"Inserisci un valore raggiunto",
+
+pleaseEnterEmailAddress:
+"Inserisci un indirizzo email",
+
+pleaseEnterFindingText:
+"Inserisci il testo del risultato",
+
+pleaseEnterStandardName:
+"Inserisci il nome dello standard",
+
+pleaseFillInAllRequiredFields:
+"Compila tutti i campi obbligatori.",
+
+pleaseFillRequiredFields:
+"Compila i campi obbligatori",
+
+pleaseSelectAProject:
+"Seleziona un progetto",
+
+pleaseSelectAProject2:
+"Seleziona un progetto",
+
+pleaseSelectAProjectToView:
+"Seleziona un progetto per visualizzare gli indicatori",
+
+pleaseSelectAReportingDate:
+"Seleziona una data di rendicontazione",
+
+preview:
+"Anteprima",
+
+print:
+"Stampa",
+
+products:
+"Prodotti",
+
+progress:
+"Progresso",
+
+progressMetrics:
+"Metriche di Progresso",
+
+progressOverTime:
+"Andamento del Progresso nel Tempo",
+
+project4:
+"Progetto",
+
+projectId:
+"ID Progetto *",
+
+// CSS class - do not translate
+ps10Pe4Textstart:
+"ps-10 pe-4 text-start",
+
+published:
+"Pubblicato",
+
+pwd:
+"Persone con Disabilità",
+
+quarterly:
+"Trimestrale",
+
+receivedDate:
+"Data di Ricezione",
+
+recommendation:
+"Raccomandazione:",
+
+recommendation8:
+"Raccomandazione",
+
+recommendations:
+"Raccomandazioni",
+
+recordCode:
+"Codice Record",
+
+recordCreatedSuccessfully:
+"Record creato con successo",
+
+recordDeletedSuccessfully:
+"Record eliminato con successo",
+
+recordDetails:
+"Dettagli Record",
+
+recordUpdatedSuccessfully:
+"Record aggiornato con successo",
+records: "Record",
+
+recordsChecked: "Record Verificati",
+
+recordsImportedSuccessfully:
+"Record importati con successo",
+
+refresh: "Aggiorna",
+
+reject: "Rifiuta",
+
+remove: "Rimuovi",
+
+removeUser: "Rimuovi Utente",
+
+report: "Rapporto",
+
+reportingDate: "Data di Rendicontazione",
+
+reportingFrequency: "Frequenza di Rendicontazione",
+
+reportingFrequency14: "Frequenza di Rendicontazione",
+
+requiredForBeneficiarytypeIndicators:
+"Obbligatorio per gli indicatori relativi ai beneficiari",
+
+reviewer: "Revisore",
+
+role: "Ruolo",
+
+rootCause: "Causa Principale",
+
+samplingMethod: "Metodo di Campionamento",
+
+save: "Salva",
+
+saveConfiguration: "Salva Configurazione",
+
+saveData: "Salva Dati",
+
+saveDraft: "Salva Bozza",
+
+saveIndicator: "Salva Indicatore",
+
+saveRecord: "Salva Record",
+
+saving: "Salvataggio in corso...",
+
+searchAuditLog: "Cerca nel registro di audit...",
+
+searchByNameOrEmail: "Cerca per nome o email...",
+
+searchComplaintsOrFeedback:
+"Cerca reclami o feedback...",
+
+selectAProjectId:
+"Seleziona un ID progetto...",
+
+selectAllPiiFields:
+"Seleziona Tutti i Campi PII",
+
+selectNewRole:
+"Seleziona un nuovo ruolo:",
+
+selectProject:
+"Seleziona Progetto",
+
+semiannual:
+"Semestrale",
+
+sendInvite:
+"Invia Invito",
+
+severity:
+"Gravità *",
+
+severity6:
+"Gravità",
+
+sourceOfVerification:
+"Fonte di Verifica",
+
+standardCreatedSuccessfully:
+"Standard creato con successo",
+
+standardDeleted:
+"Standard eliminato",
+
+standardName:
+"Nome dello Standard",
+
+standardUpdated:
+"Standard aggiornato",
+
+startDate:
+"Data di Inizio",
+
+subject:
+"Oggetto *",
+
+submission:
+"Invio",
+
+submit:
+"Invia",
+
+submitted:
+"Inviato",
+
+submittedVia:
+"Inviato Tramite",
+
+success:
+"Successo",
+
+suggestion:
+"Suggerimento",
+
+summary:
+"Sintesi",
+
+supportingDocuments: "Documenti di Supporto",
+
+survey: "Sondaggio",
+survey24: "Sondaggio",
+
+surveyDataCollection: "Sondaggi e Raccolta Dati",
+
+surveyStandards: "Standard dei Sondaggi",
+
+surveySubmissionsLinked: "Invii di Sondaggi Collegati",
+
+syncData: "Sincronizza Dati",
+
+syncing: "Sincronizzazione in corso...",
+
+tapAnyCardToViewDetailed:
+"Tocca una scheda per visualizzare informazioni dettagliate",
+
+target12: "Obiettivo",
+
+targetValue: "Valore Obiettivo",
+
+templateCreatedSuccessfully:
+"Modello creato con successo",
+
+templateDeleted:
+"Modello eliminato",
+
+templateUpdated:
+"Modello aggiornato",
+
+timeliness:
+"Tempestività",
+
+timestamp:
+"Data e Ora",
+
+title:
+"Titolo",
+
+total:
+"Totale",
+
+totalBeneficiaries:
+"Beneficiari Totali",
+
+totalCases:
+"Totale Casi",
+
+totalIndicators:
+"Indicatori Totali",
+
+totalIndividuals:
+"Totale Individui",
+
+totalTemplates:
+"Totale Modelli",
+
+totalVisits:
+"Totale Visite",
+
+tryAdjustingYourSearchOrFilter:
+"Prova a modificare i criteri di ricerca o i filtri",
+
+type:
+"Tipo *",
+
+type13:
+"Tipo",
+
+unit23:
+"Unità",
+
+unitOfMeasure:
+"Unità di Misura",
+
+unitOfMeasurement:
+"Unità di Misura",
+
+unitType:
+"Tipo di Unità",
+
+units:
+"unità",
+
+update:
+"Aggiorna",
+
+updateData:
+"Aggiorna Dati",
+
+updateHistory:
+"Cronologia Aggiornamenti",
+
+updateIndicatorData:
+"Aggiorna Dati Indicatore",
+
+updateRecord:
+"Aggiorna Record",
+
+updating:
+"Aggiornamento in corso...",
+
+user:
+"Utente",
+
+user26:
+"Utente",
+
+userId:
+"ID Utente",
+
+users:
+"Utenti",
+
+users25:
+"Utenti",
+
+validated:
+"Convalidato",
+
+validationError:
+"Errore di Validazione",
+
+validity:
+"Validità",
+
+valueSubmittedSuccessfully:
+"Valore inviato con successo",
+
+verificationDocumentation:
+"Verifica e Documentazione",
+
+view:
+"Visualizza",
+
+viewAndManageProjectIndicatorsWith:
+"Visualizza e gestisci gli indicatori di progetto con metriche dettagliate e disaggregazione per genere.",
+
+viewCharts:
+"Visualizza Grafici",
+
+viewDetails:
+"Visualizza Dettagli",
+
+viewer:
+"Visualizzatore",
+
+visibility:
+"Visibilità",
+
+visitDate:
+"Data della Visita",
+
+visitDeleted:
+"Visita eliminata",
+
+visitUpdatedSuccessfully:
+"Visita aggiornata con successo",
+visits: "Visite",
+
+visualAnalysisOfIndicatorPerformanceAnd:
+"Analisi visiva delle prestazioni degli indicatori e dei progressi nel tempo.",
+
+waterQualityIssueInAlhudaydah:
+"Problema della qualità dell’acqua ad Al-Hudaydah",
+
+weekly:
+"Settimanale",
+
+whatDidntWork:
+"Cosa non ha funzionato?",
+
+whatIsPiiMasking:
+"Che cos’è il mascheramento dei dati PII?",
+
+whatWorked:
+"Cosa ha funzionato?",
+
+yes:
+"Sì",
+
+yesDelete:
+"Sì, Elimina",
+
+mealModuleSubtitle:
+"Monitoraggio, Valutazione, Responsabilità e Apprendimento",
+
+auditTrailSubtitle:
+"Tutte le modifiche ai dati vengono registrate per garantire conformità e rendicontazione ai donatori",
+
+piiMaskingSubtitle:
+"Configura quali campi devono essere mascherati nelle esportazioni per proteggere la privacy",
+},
+
+auth: {
+login: "Accedi",
+
+logout: "Esci",
+
+email: "Email",
+
+password: "Password",
+
+rememberMe: "Ricordami",
+
+forgotPassword: "Password dimenticata?",
+
+resetPassword: "Reimposta Password",
+
+welcomeBack: "Bentornato",
+
+loginToContinue: "Accedi per continuare",
+
+invalidCredentials: "Email o password non validi",
+
+accountLocked: "Account bloccato. Contatta l’amministratore.",
+
+sessionExpired:
+"Sessione scaduta. Effettua nuovamente l’accesso.",
+
+loginSuccess:
+"Accesso effettuato con successo",
+
+logoutSuccess:
+"Disconnessione effettuata con successo",
+
+enterEmail:
+"Inserisci la tua email",
+
+enterPassword:
+"Inserisci la tua password",
+
+passwordReset:
+"Link per la reimpostazione della password inviato",
+
+checkEmail:
+"Controlla la tua email per le istruzioni di reimpostazione",
+},
+
+risk: {
+title: "Gestione dei Rischi",
+
+subtitle: "Monitora e controlla rischi operativi, finanziari e di sicurezza",
+
+dashboard: "Cruscotto dei Rischi",
+
+registry: "Registro dei Rischi",
+
+incidents: "Registro degli Incidenti",
+
+reports: "Rapporti sui Rischi",
+
+addRisk: "Aggiungi Nuovo Rischio",
+
+editRisk: "Modifica Rischio",
+
+reportIncident: "Segnala Nuovo Incidente",
+
+riskTitle: "Titolo del Rischio",
+
+category: "Categoria",
+
+likelihood: "Probabilità",
+
+impact: "Impatto",
+
+score: "Punteggio",
+
+level: "Livello",
+
+status: "Stato",
+
+mitigationPlan: "Piano di Mitigazione",
+
+owner: "Responsabile",
+
+incidentTitle: "Titolo dell’Incidente",
+
+severity: "Gravità",
+
+location: "Posizione",
+
+actionsTaken: "Azioni Intraprese",
+},
+
+proposals: {
+// Page Titles
+title: "Gestione delle Proposte e della Pipeline",
+
+subtitle:
+"Monitora le opportunità di finanziamento, sviluppa proposte e gestisci l’intero ciclo di vita del progetto dall’idea all’approvazione",
+
+pipelineTab: "Opportunità in Pipeline",
+
+proposalsTab: "Sviluppo delle Proposte",
+
+// Pipeline Management
+pipelineTitle: "Gestione delle Opportunità in Pipeline",
+
+pipelineSubtitle:
+"Identifica e monitora le opportunità di finanziamento",
+
+opportunityTitle: "Titolo dell’Opportunità",
+
+donorName: "Nome del Donatore",
+
+callReference: "Riferimento del Bando",
+
+fundingAmount: "Importo del Finanziamento",
+
+budgetRange: "Fascia di Budget",
+
+probability: "Probabilità",
+
+submissionDeadline: "Scadenza di Presentazione",
+
+opportunityStatus: "Stato dell’Opportunità",
+
+statusIdentified: "Identificata",
+
+statusUnderReview: "In Revisione",
+
+statusMatchedToProposal: "Associata a una Proposta",
+
+statusNotPursuing: "Non da Perseguire",
+
+stageIdentified: "Identificata",
+
+stageUnderReview: "In Revisione",
+
+stageGoDecision: "Decisione Go",
+
+stageNoGo: "Decisione No-Go",
+
+stageConceptRequested: "Concept Note Richiesta",
+
+stageProposalRequested: "Proposta Richiesta",
+
+addOpportunity: "Aggiungi Opportunità",
+
+editOpportunity: "Modifica Opportunità",
+
+deleteOpportunity: "Elimina Opportunità",
+
+convertToProposal: "Converti in Proposta",
+ 
+// Proposal Development
+
+proposalTitle: "Titolo della Proposta",
+
+proposalType: "Tipo di Proposta",
+
+typeConceptNote: "Concept Note",
+
+typeFullProposal: "Proposta Completa",
+
+country: "Paese",
+
+governorate: "Governatorato",
+
+sector: "Settore",
+
+projectDuration: "Durata del Progetto (mesi)",
+
+totalRequestedBudget: "Budget Totale Richiesto",
+
+currency: "Valuta",
+
+proposalStatus: "Stato della Proposta",
+
+statusDraft: "Bozza",
+
+statusUnderInternalReview: "In Revisione Interna",
+
+statusSubmitted: "Inviata",
+
+statusApproved: "Approvata",
+
+statusRejected: "Respinta",
+
+completionPercentage: "Percentuale di Completamento",
+
+createdBy: "Creato da",
+
+createdAt: "Creato il",
+
+updatedAt: "Aggiornato il",
+
+// Actions
+
+createProposal: "Crea Proposta",
+
+editProposal: "Modifica Proposta",
+
+deleteProposal: "Elimina Proposta",
+
+approveProposal: "Approva Proposta",
+
+submitProposal: "Invia Proposta",
+
+exportProposal: "Esporta Proposta",
+
+viewProposal: "Visualizza Proposta",
+
+// Dashboard Stats
+
+totalOpportunities: "Totale Opportunità",
+
+activeProposals: "Proposte Attive",
+
+successRate: "Tasso di Successo",
+
+totalFundingPipeline: "Totale Finanziamenti in Pipeline",
+
+conceptNotesRequested: "Concept Note Richieste",
+
+// Filters
+
+filterByStatus: "Filtra per Stato",
+
+filterByDonor: "Filtra per Donatore",
+
+filterByStage: "Filtra per Fase",
+
+searchOpportunities: "Cerca opportunità...",
+
+searchProposals: "Cerca proposte...",
+
+ 
+// Messages
+
+noOpportunities: "Nessuna opportunità trovata",
+
+noProposals: "Nessuna proposta trovata",
+
+deleteConfirm:
+"Sei sicuro di voler eliminare questo elemento?",
+
+approveConfirm:
+"Sei sicuro di voler approvare questa proposta? Verrà convertita in una Sovvenzione e in un Progetto.",
+
+convertSuccess:
+"Proposta convertita con successo in Sovvenzione e Progetto!",
+
+deleteSuccess:
+"Elemento eliminato con successo!",
+
+createSuccess:
+"Elemento creato con successo!",
+
+updateSuccess:
+"Elemento aggiornato con successo!",
+
+// How This Works Section
+
+howThisWorksTitle:
+"Come Funziona",
+
+howThisWorksPipeline:
+"Pipeline:",
+
+howThisWorksPipelineDesc:
+"Monitora le opportunità di finanziamento prima della preparazione delle proposte (decisioni Go/No-Go)",
+
+howThisWorksProposals:
+"Proposte:",
+
+howThisWorksProposalsDesc:
+"Sviluppa proposte complete direttamente nel sistema tramite moduli strutturati",
+
+howThisWorksWorkflow:
+"Flusso di Lavoro:",
+
+howThisWorksWorkflowDesc:
+"Pipeline → Concept Note → Proposta Completa → Presentazione → Approvazione → Creazione del Progetto",
+
+howThisWorksExport:
+"Esportazione:",
+
+howThisWorksExportDesc:
+"Genera documenti PDF e Word a partire dai dati strutturati",
+
+howThisWorksTemplates:
+"Modelli:",
+
+howThisWorksTemplatesDesc:
+"Modelli preconfigurati per organizzazioni nazionali e internazionali",
+
+aNewPipelineOpportunityWillBe:
+"Verrà creata una nuova opportunità nella pipeline con dati precompilati",
+
+actions:
+"Azioni",
+
+actions6:
+"AZIONI",
+
+activities:
+"Attività",
+
+activitiesSubtotal:
+"Subtotale Attività",
+
+activity:
+"Attività n.",
+
+activity1:
+"Attività",
+
+activityCosts:
+"Costi delle Attività",
+
+activityDescription:
+"Descrizione dell’Attività",
+
+activityName:
+"Nome dell’Attività",
+
+addActivity:
+"Aggiungi Attività",
+
+addDonor:
+"Aggiungi Donatore",
+
+addIndicator:
+"Aggiungi Indicatore",
+
+addNewOpportunity:
+"Aggiungi Nuova Opportunità",
+
+addObjective:
+"Aggiungi Obiettivo",
+
+addPlanItem:
+"Aggiungi Voce del Piano",
+
+addResult:
+"Aggiungi Risultato",
+
+addRisk:
+"Aggiungi Rischio",
+
+addRow:
+"Aggiungi Riga",
+
+administrativeCosts:
+"Costi Amministrativi",
+
+administrativeSubtotal:
+"Subtotale Amministrativo",
+
+all:
+"Tutti",
+
+allocatedBudget:
+"Budget Allocato",
+
+amount:
+"Importo",
+
+annually:
+"Annualmente",
+
+applicationDeadline:
+"Scadenza di Presentazione",
+
+applicationLink:
+"Link alla Candidatura",
+
+approved: "Approvato",
+
+approved12: "Approvato",
+
+archive: "Archivia",
+
+areYouSureYouWantTo:
+"Sei sicuro di voler eliminare questa opportunità?",
+
+areYouSureYouWantTo9:
+"Sei sicuro di voler eliminare questa proposta? Questa azione non può essere annullata.",
+
+autogenerateFromActivities:
+"Genera Automaticamente dalle Attività",
+
+backToDonorCrmDashboard:
+"Torna al Cruscotto CRM Donatori",
+
+backToProposalsList:
+"Torna all’Elenco delle Proposte",
+
+baseline:
+"Baseline",
+
+boys017:
+"Ragazzi (0-17 anni)",
+
+budget:
+"Budget",
+
+cancel:
+"Annulla",
+
+cfpLink:
+"Link al Bando",
+
+chooseExportFormat:
+"Scegli il formato di esportazione:",
+
+clickCreateNewProposalToGet:
+"Fai clic su Crea Nuova Proposta per iniziare",
+
+closed:
+"Chiuso",
+
+closingSoon:
+"In Scadenza",
+
+cofunding:
+"Cofinanziamento",
+
+cofundingSources:
+"Fonti di Cofinanziamento",
+
+completion:
+"Completamento",
+
+conceptNote:
+"Concept Note",
+
+conceptRequested:
+"Concept Note Richiesta",
+
+confirm:
+"Conferma",
+
+confirmDelete:
+"Conferma Eliminazione",
+
+contextProblemAnalysis:
+"Contesto e Analisi del Problema",
+
+continueEditing:
+"Continua la Modifica",
+
+coordinationComplementarity:
+"Coordinamento e Complementarità",
+
+create:
+"Crea",
+
+createNewProposal:
+"Crea Nuova Proposta",
+
+crosscuttingIssues:
+"Tematiche Trasversali",
+
+dataSource:
+"Fonte dei Dati",
+
+deadline:
+"Scadenza",
+
+deadline5:
+"SCADENZA",
+
+delete:
+"Elimina",
+
+describeTheRisk:
+"Descrivi il rischio...",
+
+description:
+"Descrizione",
+
+developFullProposalsInsystemWithStructured:
+"Sviluppa proposte complete direttamente nel sistema tramite moduli strutturati",
+
+direct:
+"Diretto",
+
+donor: "Donatore",
+
+donor4: "DONATORE",
+
+donor7: "Donatore",
+
+donorName8: "Nome del Donatore",
+
+donorType: "Tipo di Donatore",
+
+donorsFoundations: "Donatori / Fondazioni",
+
+draft: "Bozza",
+
+duration: "Durata",
+
+edit: "Modifica",
+
+endMonth: "Mese di Fine",
+
+enterContent: "Inserisci il contenuto...",
+
+enterExpectedResult: "Inserisci il risultato atteso",
+
+enterSpecificObjective: "Inserisci l’obiettivo specifico",
+
+environmentalConsiderations: "Considerazioni Ambientali",
+
+environmentalImpactAndSustainabilityConsiderations:
+"Considerazioni sull’impatto ambientale e sulla sostenibilità",
+
+expectedResults: "Risultati Attesi",
+
+expectedResultsAndActivities:
+"Risultati Attesi e Attività",
+
+export: "Esporta",
+
+export13: "Esporta",
+
+exportAsPdf: "Esporta come PDF",
+
+exportAsWordDocx: "Esporta come Word (.docx)",
+
+exportExcel: "Esporta Excel",
+
+exportToExcel: "Esporta in Excel",
+
+female18: "Donne (18+)",
+
+frequency: "Frequenza",
+
+fullProposal: "Proposta Completa",
+
+fundingOpportunities: "Opportunità di Finanziamento",
+
+genderMainstreaming: "Integrazione della Prospettiva di Genere",
+
+generatePdfAndWordDocumentsFrom:
+"Genera documenti PDF e Word a partire da dati strutturati",
+
+geographicAreas: "Aree Geografiche",
+
+girls017: "Ragazze (0-17 anni)",
+
+goDecision: "Decisione Go",
+
+grandTotal: "Totale Generale",
+
+high: "Alto",
+
+howThisWorks: "Come Funziona",
+
+howWillTheProjectAddressGender:
+"In che modo il progetto promuoverà l’uguaglianza di genere e l’empowerment delle donne?",
+
+howWillTheProjectEnsureProtection:
+"In che modo il progetto garantirà i principi di protezione (do no harm, accesso, sicurezza e dignità)?",
+
+identified: "Identificata",
+
+impact: "Impatto",
+
+implementationPlan: "Piano di Implementazione",
+
+importFromExcel: "Importa da Excel",
+
+indicator: "Indicatore",
+
+indicatorDescription: "Descrizione dell’indicatore...",
+
+indirect: "Indiretto",
+
+interestArea: "Area di Interesse",
+
+linkedObjective: "Obiettivo Collegato",
+
+linkedResult: "Risultato Collegato",
+
+location: "Posizione",
+
+low: "Basso",
+
+male18: "Uomini (18+)",
+
+max: "Massimo",
+
+mealFramework: "Quadro MEAL",
+
+mealFrameworkIndicators: "Quadro MEAL - Indicatori",
+
+medium: "Medio",
+
+mitigationMeasures: "Misure di Mitigazione",
+
+mitigationStrategy: "Strategia di mitigazione...",
+
+monitoringReports: "Rapporti di Monitoraggio",
+
+monthly: "Mensile",
+
+months: "mesi",
+
+months3: "Mesi",
+
+needsAssessmentSummary: "Sintesi della Valutazione dei Bisogni",
+
+no: "No",
+
+noProposalsFound: "Nessuna proposta trovata",
+
+nogo: "No-Go",
+
+notes: "Note",
+
+of: "di",
+
+open: "Aperto",
+
+opportunitiesManagement: "Gestione delle Opportunità",
+
+opportunitiesPipeline: "Opportunità e Pipeline",
+
+opportunity: "OPPORTUNITÀ",
+
+organizationalCapacity: "Capacità Organizzativa",
+
+overallCompletion: "Completamento Complessivo",
+
+overallObjective: "Obiettivo Generale",
+
+overhead: "Costi Generali",
+
+pipeline: "Pipeline",
+
+pipelineConceptNoteFullProposalSubmission:
+"Pipeline → Concept Note → Proposta Completa → Presentazione → Approvazione → Creazione del Progetto",
+
+pipelineOpportunities: "Opportunità in Pipeline",
+
+position: "Posizione",
+
+preconfiguredTemplatesForNationalAndInternational:
+"Modelli preconfigurati per organizzazioni nazionali e internazionali",
+
+probability10: "Probabilità",
+
+programStaffCosts: "Costi del Personale di Programma",
+
+projectDurationMonths: "Durata del Progetto (mesi)",
+
+proposalFound: "proposta trovata",
+
+proposalPipelineManagement: "Gestione delle Proposte e della Pipeline",
+
+proposalRequested: "Proposta Richiesta",
+
+proposalSections: "Sezioni della Proposta",
+
+proposalSummary: "Sintesi della Proposta",
+
+proposals: "Proposte",
+
+proposalsConceptNotes: "Proposte e Concept Note",
+
+proposalsDesigns: "Proposte e Progettazione",
+
+proposalsFound: "proposte trovate",
+
+proposedBudget: "Budget Proposto",
+
+protectionMainstreaming: "Integrazione della Protezione",
+
+pwd: "Persone con Disabilità",
+
+quantity: "Quantità",
+
+quarterly: "Trimestrale",
+
+rejected: "Respinto",
+
+required: "Obbligatorio",
+
+responsibleParty: "Parte Responsabile",
+
+result: "Risultato n.",
+
+resultDescription: "Descrizione del Risultato",
+
+riskAnalysisMitigation: "Analisi dei Rischi e Mitigazione",
+
+riskDescription: "Descrizione del Rischio",
+
+save: "Salva",
+
+saveChanges: "Salva Modifiche",
+
+searchByDonorOrInterestArea:
+"Cerca per donatore o area di interesse...",
+
+searchByTitleOrDonor:
+"Cerca per titolo o donatore...",
+
+semiannually: "Semestrale",
+
+sendToPipeline: "Invia alla Pipeline",
+
+specificObjectives: "Obiettivi Specifici",
+
+staffSubtotal: "Subtotale Personale",
+
+stage: "FASE",
+
+startDate: "Data di Inizio",
+
+startMonth: "Mese di Inizio",
+
+startMonth2: "Mese di Inizio",
+
+startWriting: "Inizia la Redazione",
+
+status: "Stato",
+
+submitted: "Inviato",
+
+submitted11: "inviata",
+
+subtotal: "Subtotale",
+
+sustainabilityExitStrategy:
+"Strategia di Sostenibilità e Uscita",
+
+target: "Obiettivo",
+
+targetPopulation: "Popolazione Target",
+
+targetPopulationDisaggregation:
+"Disaggregazione della Popolazione Target",
+
+template: "Modello",
+
+templates: "Modelli",
+
+timeline: "Cronoprogramma",
+
+total: "Totale",
+
+totalCofunding: "Totale Cofinanziamento",
+
+totalPipelineValue: "Valore Totale della Pipeline",
+
+trackFundingCallsAndOpportunitiesBefore:
+"Monitora bandi e opportunità di finanziamento prima della decisione interna",
+
+trackFundingOpportunitiesBeforeWritingProposals:
+"Monitora le opportunità di finanziamento prima della preparazione delle proposte (decisioni Go/No-Go)",
+
+trackFundingOpportunitiesDevelopProposalsAnd:
+"Monitora le opportunità di finanziamento, sviluppa proposte e gestisci l’intero ciclo di vita dall’idea al progetto",
+
+type: "Tipo",
+
+underInternalReview: "In Revisione Interna",
+
+underReview: "In Revisione",
+
+unitCost: "Costo Unitario",
+
+updated: "Aggiornato",
+
+urgent: "Urgente",
+
+viewedit: "Visualizza/Modifica",
+
+wordCount: "Conteggio Parole",
+
+words: "parole",
+
+wordsRemaining: "parole rimanenti",
+
+workflow: "Flusso di Lavoro",
+
+yes: "Sì",
+},
+
+forecastPlan: {
+// Page Title & Description
+
+title: "Piano di Previsione",
+
+subtitle: "Pianificazione finanziaria mensile del progetto",
+
+// Action Buttons
+
+reinitialize: "Reinizializza",
+
+print: "Stampa",
+
+import: "Importa",
+
+exportExcel: "Esporta Excel",
+
+export: "Esporta",
+
+// KPI / Summary Cards
+
+balance: "Saldo",
+
+actualSpent: "Spesa Effettiva",
+
+totalForecast: "Previsione Totale",
+
+totalBudget: "Budget Totale",
+
+// Alerts & Warnings
+
+balanceWarning: "Avviso Saldo",
+
+balanceWarningBody:
+"linee di budget con una previsione superiore al 90% del saldo disponibile",
+
+varianceAlert: "Avviso di Scostamento",
+
+varianceAlertBody:
+"linee di budget che hanno superato la previsione (spesa effettiva superiore a quella pianificata)",
+
+forecastExceedsBalance:
+"La previsione supera il saldo disponibile",
+
+// Fiscal Year Tabs
+
+fiscalYear: "AF",
+
+// Table Headers
+
+activityCode: "Codice Attività",
+
+activity: "Attività",
+
+budgetCode: "Codice Budget",
+
+subBL: "Sotto-Linea di Budget",
+
+budgetItem: "Voce di Budget",
+
+prevYearBalance: "Saldo Anno Precedente",
+
+month1: "M1",
+month2: "M2",
+month3: "M3",
+month4: "M4",
+month5: "M5",
+month6: "M6",
+month7: "M7",
+month8: "M8",
+month9: "M9",
+month10: "M10",
+month11: "M11",
+month12: "M12",
+ 
+// Empty States / System Messages
+
+noForecastData:
+"Nessun dato di previsione trovato",
+
+noBudgetItems:
+"Nessuna voce di budget trovata",
+
+noActivitiesLinked:
+"Nessuna attività collegata",
+
+loadingForecast:
+"Caricamento del piano di previsione...",
+
+forecastNotInitialized:
+"Piano di previsione non inizializzato",
+
+initializeForecastPrompt:
+"Genera un piano di previsione per l’anno selezionato per visualizzare e modificare le previsioni mensili.",
+
+initializeForecastButton:
+"Inizializza il Piano di Previsione per",
+
+initializing:
+"Inizializzazione in corso...",
+
+// Import/Export
+
+importSuccess:
+"Importazione completata con successo",
+
+importFailed:
+"Importazione non riuscita",
+
+forecastsUpdated:
+"previsioni aggiornate",
+
+forecastsSkipped:
+"saltate",
+
+// Additional keys for modal and warnings
+
+budgetLinesWarning:
+"linee di budget con una previsione superiore al 90% del saldo disponibile",
+
+budgetLinesExceeded:
+"linee di budget che hanno superato la previsione (spesa effettiva superiore a quella pianificata)",
+
+viewOnlyMode:
+"Modalità Sola Lettura",
+
+viewOnlyModeDesc:
+"Solo gli amministratori possono modificare i valori previsionali. Contatta il tuo amministratore se hai bisogno di apportare modifiche.",
+
+importForecastPlan:
+"Importa Piano di Previsione",
+
+importForecastDesc:
+"Carica un file Excel contenente i valori delle previsioni mensili",
+
+selectExcelFile:
+"Seleziona File Excel",
+
+dataPreview:
+"Anteprima Dati",
+
+rows:
+"righe",
+
+andMoreRows:
+"...e altre {count} righe",
+
+allowDuplicates:
+"Consentire Duplicati?",
+
+allowDuplicatesDesc:
+"Se esistono già previsioni per questi elementi, desideri sostituirle o ignorarle?",
+
+skipDuplicates:
+"Ignora Duplicati",
+
+replaceExisting:
+"Sostituisci Esistenti",
+
+cancel:
+"Annulla",
+},
+
+riskCompliance: {
+  // Page Title & Description
+  title: 'Gestione dei Rischi e della Conformità',
+  subtitle: 'Identifica, valuta e mitiga i rischi organizzativi e monitora gli incidenti',
+
+  // Additional Keys
+  registry: 'Registro dei Rischi',
+  incidents: 'Incidenti',
+  reportIncident: 'Segnala Incidente',
+
+  mitigationPlan: 'Piano di Mitigazione',
+  owner: 'Responsabile',
+  incidentTitle: 'Titolo dell’Incidente',
+  actionsTaken: 'Azioni Intraprese',
+  priorityUrgent: 'Urgente',
+
+  // Tabs
+  dashboard: 'Cruscotto',
+  riskRegistry: 'Registro dei Rischi',
+  incidentLog: 'Registro degli Incidenti',
+
+  // Dashboard KPIs
+  totalRisks: 'Totale Rischi',
+  activeRisks: 'Rischi Attivi',
+  highCriticalRisks: 'Rischi Alti/Critici',
+  requireImmediateAttention: 'Richiedono Attenzione Immediata',
+  mitigatedRisks: 'Rischi Mitigati',
+  mitigatedOrClosed: 'Mitigati o Chiusi',
+  mitigationRate: 'Tasso di Mitigazione',
+  ofTotalRisks: 'Del Totale dei Rischi',
+
+  // Charts
+  riskLevelDistribution: 'Distribuzione dei Livelli di Rischio',
+  twelveMonthTrends: 'Andamento degli Ultimi 12 Mesi',
+  risksByCategory: 'Rischi per Categoria',
+  noData: 'Nessun Dato',
+
+  // Risk Registry
+  addRisk: 'Aggiungi Rischio',
+  addFirstRisk: 'Aggiungi il Primo Rischio',
+  noRisksRegistered: 'Nessun Rischio Registrato',
+  editRisk: 'Modifica Rischio',
+  deleteRisk: 'Elimina Rischio',
+  viewRisk: 'Visualizza Rischio',
+
+  // Incident Log
+  addIncident: 'Aggiungi Incidente',
+  addFirstIncident: 'Aggiungi il Primo Incidente',
+  noIncidentsRegistered: 'Nessun Incidente Registrato',
+  editIncident: 'Modifica Incidente',
+  deleteIncident: 'Elimina Incidente',
+  viewIncident: 'Visualizza Incidente',
+
+  // Table Headers
+  id: 'ID',
+  riskTitle: 'Titolo del Rischio',
+  category: 'Categoria',
+  likelihood: 'Probabilità',
+  impact: 'Impatto',
+  score: 'Punteggio',
+  level: 'Livello',
+  status: 'Stato',
+  reviewDate: 'Data di Revisione',
+  severity: 'Gravità',
+  incidentDate: 'Data dell’Incidente',
+  reportedDate: 'Data di Segnalazione',
+  investigationStatus: 'Stato dell’Indagine',
+  actions: 'Azioni',
+
+  // Risk Levels
+  low: 'Basso',
+  medium: 'Medio',
+  high: 'Alto',
+  critical: 'Critico',
+
+  // Risk Categories
+  financial: 'Finanziario',
+  operational: 'Operativo',
+  strategic: 'Strategico',
+  compliance: 'Conformità',
+  reputational: 'Reputazionale',
+
+  // Risk Status
+  identified: 'Identificato',
+  assessed: 'Valutato',
+  mitigated: 'Mitigato',
+  closed: 'Chiuso',
+
+  // Incident Severity
+  minor: 'Minore',
+  moderate: 'Moderato',
+  major: 'Maggiore',
+
+  // Investigation Status
+  reported: 'Segnalato',
+  investigating: 'In Indagine',
+  resolved: 'Risolto',
+
+  // Actions
+  filter: 'Filtra',
+  export: 'Esporta',
+  back: 'Indietro',
+
+  // Messages
+  loading: 'Caricamento...',
+  errorLoading: 'Errore durante il caricamento dei dati',
+  tryAgain: 'Riprova',
+},
+
+// ========== ROLES & PERMISSIONS ==========
+
+rolesPermissions: {
+title: "Ruoli e Permessi",
+
+subtitle:
+"Controllo multilivello delle autorizzazioni per moduli, aree di lavoro e azioni",
+
+back: "Torna alle Impostazioni",
+
+addRole: "Aggiungi Ruolo",
+
+editPerms: "Modifica Permessi",
+
+save: "Salva Modifiche",
+
+cancel: "Annulla",
+
+deleteRole: "Elimina Ruolo",
+
+selectRole:
+"Seleziona un ruolo per visualizzare o modificare l’albero delle autorizzazioni",
+
+locked: "Bloccato",
+
+system: "Sistema",
+
+sensitive: "Sensibile",
+
+sensitiveTooltip:
+"Richiede un’autorizzazione esplicita — non viene ereditata dall’accesso al modulo",
+
+module: "Modulo / Area di Lavoro",
+
+view: "Visualizza",
+
+create: "Crea",
+
+edit: "Modifica",
+
+delete: "Elimina",
+
+export: "Esporta",
+
+approve: "Approva",
+
+submit: "Invia",
+
+roleName: "Nome Ruolo",
+
+roleNameAr: "Nome Ruolo (Arabo)",
+
+description: "Descrizione",
+
+descriptionAr: "Descrizione (Arabo)",
+
+createRole: "Crea Ruolo",
+
+level1: "Livello 1 — Accesso ai Moduli",
+
+level2: "Livello 2 — Accesso alle Aree di Lavoro / Schermate",
+
+level3: "Livello 3 — Permessi di Azione",
+
+permTree: "Albero dei Permessi",
+
+auditLog: "Registro di Audit",
+
+noLogs: "Nessun registro di audit RBAC trovato",
+
+confirmDelete:
+"Sei sicuro di voler eliminare questo ruolo?",
+
+grantAll: "Concedi Tutto",
+
+revokeAll: "Revoca Tutto",
+
+tabPermissions: "Permessi",
+
+tabAudit: "Audit Trail",
+
+tabCompare: "Confronta Ruoli",
+
+protectionNotice:
+"Le aree di lavoro sensibili (contrassegnate con 🔒) richiedono un’autorizzazione esplicita. Il solo accesso al modulo NON concede l’accesso a queste aree di lavoro.",
+
+overrides: "Eccezioni Utente",
+
+overridesDesc:
+"Concedi o revoca autorizzazioni specifiche per singoli utenti oltre al ruolo assegnato",
+
+addOverride: "Aggiungi Eccezione",
+
+noOverrides:
+"Nessuna eccezione di autorizzazione per questo utente",
+
+grant: "Concedi",
+
+revoke: "Revoca",
+
+reason: "Motivo",
+
+expiresAt: "Scadenza",
+
+noExpiry: "Nessuna Scadenza",
+
+permanent: "Permanente",
+
+expired: "Scaduto",
+
+active: "Attivo",
+
+deactivate: "Disattiva",
+
+deleteOverride: "Elimina",
+
+selectUser: "Seleziona Utente",
+
+selectModule: "Seleziona Modulo",
+
+selectScreen: "Seleziona Schermata (Opzionale)",
+
+selectAction: "Seleziona Azione",
+
+overrideType: "Tipo di Eccezione",
+
+createdBy: "Creato da",
+
+selectRoleA: "Seleziona Ruolo A",
+
+selectRoleB: "Seleziona Ruolo B",
+
+differences: "Differenze",
+
+noDifferences: "Questi ruoli hanno autorizzazioni identiche",
+
+onlyInA: "Solo nel Ruolo A",
+
+onlyInB: "Solo nel Ruolo B",
+
+both: "Entrambi",
+
+selectTwoRoles:
+"Seleziona due ruoli per confrontare affiancati i rispettivi alberi delle autorizzazioni",
+
+totalDiffs: "differenze totali",
+
+showDiffsOnly: "Mostra solo le differenze",
+
+tabBulk: "Operazioni Massive",
+
+bulkAssignRole: "Assegna Ruolo in Massa",
+
+bulkAssignDesc:
+"Seleziona più utenti e assegna loro un ruolo contemporaneamente",
+
+bulkOverride: "Eccezione Multipla",
+
+bulkOverrideDesc:
+"Concedi o revoca una specifica autorizzazione per più utenti",
+
+selectUsers: "Seleziona Utenti",
+
+selectedCount: "selezionati",
+
+selectAll: "Seleziona Tutti",
+
+deselectAll: "Deseleziona Tutti",
+
+assignRole: "Assegna Ruolo",
+
+applyOverride: "Applica Eccezione",
+
+processing: "Elaborazione in corso...",
+
+bulkSuccess: "Operazione massiva completata",
+
+usersProcessed: "utenti elaborati",
+
+errors: "errori",
+
+searchUsers: "Cerca utenti...",
+
+tabAuditReport: "Rapporto di Audit",
+
+auditReportDesc:
+"Rapporto di conformità che mostra chi ha accesso a ciascuna area di lavoro",
+
+filterModule: "Filtra per Modulo",
+
+filterScreen: "Filtra per Schermata",
+
+sensitiveOnlyFilter: "Solo aree di lavoro sensibili",
+
+exportCSV: "Esporta CSV",
+
+generateReport: "Genera Rapporto",
+
+reportGenerated: "Rapporto generato",
+
+totalUsersLabel: "Utenti Totali",
+
+sensitiveAccessLabel: "Utenti con Accesso Sensibile",
+
+activeOverridesLabel: "Eccezioni Attive",
+
+sensitiveWorkspacesLabel: "Aree di Lavoro Sensibili",
+
+accessType: "Tipo di Accesso",
+
+grantedBy: "Concesso da",
+
+grantedAt: "Concesso il",
+
+actions: "Azioni",
+
+allModules: "Tutti i Moduli",
+
+allScreens: "Tutte le Schermate",
+
+noReportData:
+"Nessuna autorizzazione corrisponde ai filtri attuali",
+
+role: "Ruolo",
+
+overrideGrant: "Eccezione (Concessione)",
+
+platformAdmin: "Amministratore della Piattaforma",
+
+user: "Utente",
+
+screen: "Schermata",
+
+cloneRole: "Clona Ruolo",
+
+cloneSuccess: "Ruolo clonato con successo",
+
+overrideCreated: "Eccezione creata",
+
+overrideDeactivated: "Eccezione disattivata",
+
+overrideDeleted: "Eccezione eliminata",
+
+moduleLevelPlaceholder: "— Livello Modulo —",
+
+overrideReasonPlaceholder:
+"Motivazione per questa eccezione (facoltativa)",
+
+deleteOverrideConfirm:
+"Eliminare definitivamente questa eccezione?",
+
+inactive: "Inattivo",
+
+pleaseSelectTwoDifferentRoles:
+"Seleziona due ruoli differenti",
+
+roleA: "Ruolo A",
+
+roleB: "Ruolo B",
+
+noUsersFound: "Nessun utente trovato",
+
+optionalReasonForThisOverride:
+"Motivazione facoltativa per questa eccezione",
+
+csvExportedSuccessfully:
+"CSV esportato con successo",
+
+searchByUser: "Cerca per utente...",
+
+generated: "Generato",
+
+by: "da",
+
+entries: "voci",
+
+expires: "Scade",
+
+accessDenied: "Accesso Negato",
+
+roleCreated: "Ruolo creato",
+
+roleUpdated: "Ruolo aggiornato",
+
+roleDeleted: "Ruolo eliminato",
+
+selectAUserAboveToManageTheirPermissionO:
+"Seleziona un utente sopra per gestire le sue eccezioni di autorizzazione",
+},
+
+userMgmt: {
+pageTitle: "Gestione Utenti",
+
+userAddedSuccessfully: "Utente aggiunto con successo",
+
+userUpdatedSuccessfully: "Utente aggiornato con successo",
+
+pageSubtitle: "Gestisci gli account utente e le autorizzazioni",
+
+title: "Gestione Utenti",
+
+subtitle: "Gestisci gli utenti del sistema, assegna ruoli e controlla le autorizzazioni",
+
+back: "Torna alle Impostazioni",
+
+search: "Cerca utenti...",
+
+allRoles: "Tutti i Ruoli",
+
+allStatuses: "Tutti gli Stati",
+
+active: "Attivo",
+
+disabled: "Disabilitato",
+
+name: "Nome",
+
+email: "Email",
+
+role: "Ruolo",
+
+status: "Stato",
+
+lastLogin: "Ultimo Accesso",
+
+actions: "Azioni",
+
+editPermissions: "Modifica Permessi",
+
+save: "Salva",
+
+cancel: "Annulla",
+
+noUsers: "Nessun utente trovato",
+
+selectRole: "Seleziona Modello di Ruolo",
+
+noRole: "Nessun Ruolo",
+
+view: "Visualizza",
+
+create: "Crea",
+
+editAction: "Modifica",
+
+deleteAction: "Elimina",
+
+exportAction: "Esporta",
+
+approveAction: "Approva",
+
+submitAction: "Invia",
+
+never: "Mai",
+
+addUser: "Aggiungi Utente",
+
+addUserTitle: "Aggiungi Nuovo Utente",
+
+fullName: "Nome Completo",
+
+emailLabel: "Indirizzo Email",
+
+assignRole: "Assegna Ruolo",
+
+adding: "Aggiunta in corso...",
+
+deleteUser: "Elimina Utente",
+
+deleteConfirmTitle: "Elimina Utente (Eliminazione Logica)",
+
+deleteConfirmMsg:
+"Questa operazione effettuerà un’eliminazione logica dell’utente dal sistema. L’utente verrà disattivato, rimosso da tutte le organizzazioni e tutte le autorizzazioni verranno revocate. Il record dell’utente sarà conservato nei Record Eliminati per finalità di audit e potrà essere ripristinato in seguito. Gli account del provider di identità esterno NON saranno interessati.",
+
+confirm: "Conferma Eliminazione",
+
+deleting: "Eliminazione in corso...",
+
+deletionReason: "Motivo dell’Eliminazione (Facoltativo)",
+
+deletionReasonPlaceholder:
+"Inserisci il motivo dell’eliminazione di questo utente...",
+
+softDeleteNotice:
+"L’utente può essere ripristinato da Impostazioni → Record Eliminati",
+
+module: "Modulo / Area di Lavoro",
+
+sensitive: "Sensibile",
+
+sensitiveTooltip:
+"Richiede un’autorizzazione esplicita — non ereditata dall’accesso al modulo",
+
+grantAll: "Concedi Tutto",
+
+revokeAll: "Revoca Tutto",
+
+protectionNotice:
+"Le aree di lavoro sensibili (contrassegnate con 🔒) richiedono un’autorizzazione esplicita.",
+
+permissionHistory: "Cronologia delle Autorizzazioni",
+
+noHistory: "Nessuna modifica alle autorizzazioni registrata",
+
+changedBy: "Modificato da",
+
+viewHistory: "Visualizza Cronologia",
+
+closeHistory: "Chiudi",
+
+selectedCount: "selezionati",
+
+bulkDelete: "Elimina Selezionati",
+
+bulkDeleteTitle: "Eliminazione Multipla Utenti (Eliminazione Logica)",
+
+bulkDeleteMsg:
+"Questa operazione effettuerà l’eliminazione logica di tutti gli utenti selezionati. Ogni utente verrà disattivato, rimosso da tutte le organizzazioni e le relative autorizzazioni saranno revocate. I record saranno conservati nei Record Eliminati e potranno essere ripristinati singolarmente.",
+
+bulkDeleteReasonPlaceholder:
+"Inserisci il motivo dell’eliminazione multipla...",
+
+bulkDeleteNotice:
+"Gli utenti possono essere ripristinati singolarmente da Impostazioni → Record Eliminati",
+
+confirmBulkDelete: "Elimina Tutti i Selezionati",
+
+bulkDeleting: "Eliminazione in corso...",
+
+selectAll: "Seleziona Tutti",
+
+deselectAll: "Deseleziona Tutti",
+
+usersSelected: "utenti selezionati",
+
+clearSelection: "Cancella Selezione",
+
+bulkDeleteSuccess: "Eliminazione multipla completata",
+
+selfDeleteWarning:
+"Non puoi eliminare il tuo account: verrà ignorato.",
+
+accessDenied: "Accesso Negato",
+
+adminRequired: "Accesso amministratore richiesto",
+
+permissionsUpdated: "Autorizzazioni aggiornate",
+
+statusUpdated: "Stato aggiornato",
+
+userAddedSuccess: "Utente aggiunto con successo",
+
+userDeletedSuccess:
+"Utente eliminato con successo. Record conservato nei Record Eliminati.",
+
+disable: "Disabilita",
+
+enable: "Abilita",
+
+enterFullName: "Inserisci il nome completo",
+
+enterEmailAddress: "Inserisci l’indirizzo email",
+
+nameAndEmailAreRequired:
+"Nome ed email sono obbligatori",
+
+user: "Utente:",
+
+youSkipped: "Tu (ignorato)",
+
+saving: "Salvataggio in corso...",
+},
+
+donorCRM: {
+donorCrm: "CRM Donatori",
+
+manageDonorRelationshipsOpportunitiesPro:
+"Gestisci relazioni con i donatori, opportunità, proposte e sovvenzioni",
+
+open: "Aperto",
+
+aboutDonorCrm: "Informazioni sul CRM Donatori",
+
+theDonorCrmModuleHelpsYouManageTheComple:
+"Il modulo CRM Donatori ti aiuta a gestire l’intero ciclo di vita del donatore, dall’identificazione delle opportunità al monitoraggio delle sovvenzioni attive e al mantenimento di solide relazioni con i donatori.",
+
+aNewPipelineOpportunityWillBe:
+"Verrà creata una nuova opportunità nella pipeline con dati precompilati",
+
+actions: "Azioni",
+
+addNewOpportunity: "Aggiungi Nuova Opportunità",
+
+addOpportunity: "Aggiungi Opportunità",
+
+allChannels: "Tutti i Canali",
+
+allDonors: "Tutti i Donatori",
+
+allStatus: "Tutti gli Stati",
+
+applicationLink: "Link alla Candidatura",
+
+archive: "Archivia",
+
+areYouSureYouWantTo:
+"Sei sicuro di voler eliminare questa opportunità?",
+
+back: "Indietro",
+
+backToDonorCrmDashboard:
+"Torna al Cruscotto CRM Donatori",
+
+budget: "Budget",
+
+cancel: "Annulla",
+
+cfpLink: "Link al Bando",
+
+channel: "Canale",
+
+channel4: "Canale *",
+
+channelsUsed: "Canali Utilizzati",
+
+close: "Chiudi",
+
+closed: "Chiuso",
+
+closingSoon: "In Scadenza",
+
+cofunding: "Cofinanziamento",
+
+commaSeparatedNames:
+"Nomi separati da virgola",
+
+communicationDetails:
+"Dettagli della Comunicazione",
+
+confirm: "Conferma",
+
+contact: "Contatto",
+
+contactPerson: "Persona di Contatto",
+
+date: "Data",
+
+date3: "Data *",
+
+deadline: "Scadenza",
+
+delete: "Elimina",
+
+deleteCommunication:
+"Elimina Comunicazione",
+
+deleted: "Eliminato",
+
+deleting: "Eliminazione in corso...",
+
+description: "Descrizione",
+
+donor: "Donatore",
+
+donor2: "Donatore *",
+
+donorCommunications:
+"Comunicazioni con i Donatori",
+
+donorType: "Tipo di Donatore",
+
+edit: "Modifica",
+
+editCommunication:
+"Modifica Comunicazione",
+
+editOpportunity:
+"Modifica Opportunità",
+
+export: "Esporta",
+
+failedToSendOpportunityToPipeline:
+"Impossibile inviare l’opportunità alla Pipeline",
+
+fundingOpportunities:
+"Opportunità di Finanziamento",
+
+geographicAreas:
+"Aree Geografiche",
+
+interestArea:
+"Area di Interesse",
+
+loading: "Caricamento...",
+
+logCommunication:
+"Registra Comunicazione",
+
+logCommunication1:
+"Registra Comunicazione",
+
+next: "Avanti",
+
+nextAction:
+"Prossima Azione",
+
+nextActionDate:
+"Data della Prossima Azione",
+
+nextActionDescription:
+"Descrizione della Prossima Azione",
+
+nextActionOptional:
+"Prossima Azione (Facoltativa)",
+
+no: "No",
+
+noCommunicationsFound:
+"Nessuna comunicazione trovata",
+
+noDonorsAvailable:
+"Nessun donatore disponibile",
+
+noFundingOpportunitiesFound:
+"Nessuna opportunità di finanziamento trovata",
+
+notes: "Note",
+
+opportunitySentToPipelineSuccessfully:
+"Opportunità inviata alla Pipeline con successo",
+
+organizationInformationNotFound:
+"Informazioni sull’organizzazione non trovate",
+
+participants:
+"Partecipanti",
+
+pendingFollowups:
+"Follow-up in Sospeso",
+
+previous: "Precedente",
+
+required: "Obbligatorio",
+
+save: "Salva",
+
+saveChanges:
+"Salva Modifiche",
+
+saving: "Salvataggio in corso...",
+
+searchCommunications:
+"Cerca comunicazioni...",
+
+selectDonor:
+"Seleziona Donatore",
+
+sendToPipeline:
+"Invia alla Pipeline",
+
+sending:
+"Invio in corso...",
+
+showDeleted:
+"Mostra Eliminati",
+
+status:
+"Stato",
+
+subject:
+"Oggetto",
+
+subjectArabic:
+"Oggetto (Arabo)",
+
+subjectEnglish:
+"Oggetto (Inglese) *",
+
+summary:
+"Sintesi",
+
+summaryArabic:
+"Sintesi (Arabo)",
+
+summaryEnglish:
+"Sintesi (Inglese) *",
+
+totalCommunications:
+"Totale Comunicazioni",
+
+trackFundingCallsAndOpportunitiesBefore:
+"Monitora bandi e opportunità di finanziamento prima della decisione interna",
+
+urgent:
+"Urgente",
+
+yes:
+"Sì",
+},
+
+ // ========== DONORCOMBOBOX ==========
+donorCombobox: {
+selectDonor: "Seleziona donatore...",
+
+searchDonors: "Cerca donatori...",
+
+noDonorFound: "Nessun donatore trovato.",
+},
+
+// ========== DONORPROJECTLINKING ==========
+
+donorProjectLinking: {
+linkCreatedSuccessfully:
+"Collegamento creato con successo",
+
+failedToCreateLink:
+"Impossibile creare il collegamento",
+
+linkUpdatedSuccessfully:
+"Collegamento aggiornato con successo",
+
+failedToUpdateLink:
+"Impossibile aggiornare il collegamento",
+
+linkRemovedSuccessfully:
+"Collegamento rimosso con successo",
+
+failedToRemoveLink:
+"Impossibile rimuovere il collegamento",
+
+linkedProjects:
+"Progetti Collegati",
+
+linkedDonors:
+"Donatori Collegati",
+
+linkProject:
+"Collega Progetto",
+
+linkDonor:
+"Collega Donatore",
+
+loading:
+"Caricamento...",
+
+noProjectsLinkedToThisDonorYet:
+"Nessun progetto ancora collegato a questo donatore",
+
+noDonorsLinkedToThisProjectYet:
+"Nessun donatore ancora collegato a questo progetto",
+
+project:
+"Progetto",
+
+donor:
+"Donatore",
+
+relationship:
+"Relazione",
+
+funding:
+"Finanziamento",
+
+status:
+"Stato",
+
+actions:
+"Azioni",
+
+linkProjectToDonor:
+"Collega Progetto al Donatore",
+
+linkDonorToProject:
+"Collega Donatore al Progetto",
+
+selectAProjectToLinkWithThisDonor:
+"Seleziona un progetto da collegare a questo donatore",
+
+selectADonorToLinkWithThisProject:
+"Seleziona un donatore da collegare a questo progetto",
+
+project2:
+"Progetto *",
+
+donor2:
+"Donatore *",
+
+selectProject:
+"Seleziona progetto...",
+
+selectDonor:
+"Seleziona donatore...",
+
+searchProjects:
+"Cerca progetti...",
+
+searchDonors:
+"Cerca donatori...",
+
+noProjectsFound:
+"Nessun progetto trovato",
+
+noDonorsFound:
+"Nessun donatore trovato",
+
+relationshipType:
+"Tipo di Relazione",
+
+fundingAmount:
+"Importo del Finanziamento",
+
+currency:
+"Valuta",
+
+fundingPercentage:
+"Percentuale di Finanziamento (%)",
+
+notes:
+"Note",
+
+cancel:
+"Annulla",
+
+linking:
+"Collegamento in corso...",
+
+link:
+"Collega",
+
+editLink:
+"Modifica Collegamento",
+
+saving:
+"Salvataggio in corso...",
+
+saveChanges:
+"Salva Modifiche",
+
+removeLink:
+"Rimuovi Collegamento",
+
+areYouSureYouWantToRemoveThisLinkThisAct:
+"Sei sicuro di voler rimuovere questo collegamento? Questa azione può essere annullata.",
+
+removing:
+"Rimozione in corso...",
+
+remove:
+"Rimuovi",
+},
+
+ // ========== DONORREGISTRY ==========
+donorRegistry: {
+donorCreatedSuccessfully:
+"Donatore creato con successo",
+
+donorUpdatedSuccessfully:
+"Donatore aggiornato con successo",
+
+donorDeletedSuccessfully:
+"Donatore eliminato con successo",
+
+donorRestoredSuccessfully:
+"Donatore ripristinato con successo",
+
+donorsExportedToExcel:
+"Donatori esportati in Excel",
+
+back:
+"Indietro",
+
+donorRegistry:
+"Registro Donatori",
+
+manageDonorProfilesContactInformationAnd:
+"Gestisci i profili dei donatori, le informazioni di contatto e la cronologia dei finanziamenti",
+
+export:
+"Esporta",
+
+addDonor:
+"Aggiungi Donatore",
+
+totalDonors:
+"Totale Donatori",
+
+activeDonors:
+"Donatori Attivi",
+
+donorTypes:
+"Tipologie di Donatori",
+
+searchDonors:
+"Cerca donatori...",
+
+allTypes:
+"Tutti i Tipi",
+
+allStatus:
+"Tutti gli Stati",
+
+active:
+"Attivo",
+
+inactive:
+"Inattivo",
+
+showDeleted:
+"Mostra Eliminati",
+
+code:
+"Codice",
+
+name:
+"Nome",
+
+type:
+"Tipo",
+
+contact:
+"Contatto",
+
+email:
+"Email",
+
+status:
+"Stato",
+
+actions:
+"Azioni",
+
+loading:
+"Caricamento...",
+
+noDonorsFound:
+"Nessun donatore trovato",
+
+deleted:
+"Eliminato",
+
+previous:
+"Precedente",
+
+next:
+"Avanti",
+
+addNewDonor:
+"Aggiungi Nuovo Donatore",
+
+fillInTheDonorInformationBelow:
+"Compila le informazioni del donatore qui sotto",
+
+cancel:
+"Annulla",
+
+creating:
+"Creazione in corso...",
+
+createDonor:
+"Crea Donatore",
+
+editDonor:
+"Modifica Donatore",
+
+updateTheDonorInformationBelow:
+"Aggiorna le informazioni del donatore qui sotto",
+
+saving:
+"Salvataggio in corso...",
+
+saveChanges:
+"Salva Modifiche",
+
+donorDetails:
+"Dettagli del Donatore",
+
+nameArabic:
+"Nome (Arabo)",
+
+contactInformation:
+"Informazioni di Contatto",
+
+address:
+"Indirizzo",
+
+notes:
+"Note",
+
+close:
+"Chiudi",
+
+deleteDonor:
+"Elimina Donatore",
+
+deleting:
+"Eliminazione in corso...",
+
+delete:
+"Elimina",
+
+code2:
+"Codice *",
+
+egUsaid:
+"es. USAID",
+
+nameEnglish:
+"Nome (Inglese) *",
+
+category:
+"Categoria",
+
+egHealthEducation:
+"es. Salute, Istruzione",
+
+contactPersonName:
+"Nome della Persona di Contatto",
+
+contactPersonTitle:
+"Ruolo della Persona di Contatto",
+
+phone:
+"Telefono",
+
+website:
+"Sito Web",
+
+streetAddress:
+"Indirizzo",
+
+city:
+"Città",
+
+country:
+"Paese",
+
+postalCode:
+"Codice Postale",
+
+notesEnglish:
+"Note (Inglese)",
+
+notesArabic:
+"Note (Arabo)",
+},
+
+ // ========== DONORREPORTS ==========
+donorReports: {
+reportGeneratedSuccessfully:
+"Rapporto generato con successo",
+
+reportUpdatedSuccessfully:
+"Rapporto aggiornato con successo",
+
+reportDeletedSuccessfully:
+"Rapporto eliminato con successo",
+
+reportRestoredSuccessfully:
+"Rapporto ripristinato con successo",
+
+pdfGeneratedSuccessfully:
+"PDF generato con successo",
+
+reportsExportedToExcel:
+"Rapporti esportati in Excel",
+
+back:
+"Indietro",
+
+donorReports:
+"Rapporti Donatori",
+
+generateAndManageDonorrelatedReportsAndA:
+"Genera e gestisci rapporti e analisi relativi ai donatori",
+
+export:
+"Esporta",
+
+generateReport:
+"Genera Rapporto",
+
+totalReports:
+"Totale Rapporti",
+
+reportTypes:
+"Tipologie di Rapporto",
+
+finalReports:
+"Rapporti Finali",
+
+searchReports:
+"Cerca rapporti...",
+
+allDonors:
+"Tutti i Donatori",
+
+allTypes:
+"Tutti i Tipi",
+
+allStatus:
+"Tutti gli Stati",
+
+showDeleted:
+"Mostra Eliminati",
+
+title:
+"Titolo",
+
+type:
+"Tipo",
+
+donorproject:
+"Donatore/Progetto",
+
+period:
+"Periodo",
+
+status:
+"Stato",
+
+generated:
+"Generato",
+
+actions:
+"Azioni",
+
+loading:
+"Caricamento...",
+
+noReportsFound:
+"Nessun rapporto trovato",
+
+deleted:
+"Eliminato",
+
+previous:
+"Precedente",
+
+next:
+"Avanti",
+
+configureAndGenerateANewDonorReport:
+"Configura e genera un nuovo rapporto per i donatori",
+
+cancel:
+"Annulla",
+
+generating:
+"Generazione in corso...",
+
+editReport:
+"Modifica Rapporto",
+
+saving:
+"Salvataggio in corso...",
+
+saveChanges:
+"Salva Modifiche",
+
+reportDetails:
+"Dettagli del Rapporto",
+
+relatedTo:
+"Relativo a",
+
+donor:
+"Donatore",
+
+project:
+"Progetto",
+
+grant:
+"Sovvenzione",
+
+reportingPeriod:
+"Periodo di Rendicontazione",
+
+close:
+"Chiudi",
+
+downloadPdf:
+"Scarica PDF",
+
+deleteReport:
+"Elimina Rapporto",
+
+deleting:
+"Eliminazione in corso...",
+
+delete:
+"Elimina",
+
+reportType:
+"Tipo di Rapporto *",
+
+titleEnglish:
+"Titolo (Inglese) *",
+
+titleArabic:
+"Titolo (Arabo)",
+
+scopeOptional:
+"Ambito (Facoltativo)",
+
+selectDonor:
+"Seleziona Donatore",
+
+none:
+"Nessuno",
+
+selectProject:
+"Seleziona Progetto",
+
+selectGrant:
+"Seleziona Sovvenzione",
+
+reportingPeriodOptional:
+"Periodo di Rendicontazione (Facoltativo)",
+
+startDate:
+"Data di Inizio",
+
+endDate:
+"Data di Fine",
+},
+
+ // ========== DONORSELECTOR ==========
+donorSelector: {
+errorLoadingDonors:
+"Errore durante il caricamento dei donatori",
+
+loading:
+"Caricamento...",
+
+searchDonors:
+"Cerca donatori...",
+
+clearSelection:
+"— Cancella selezione —",
+
+noDonorsMatchYourSearch:
+"Nessun donatore corrisponde alla ricerca",
+
+noDonorsAvailable:
+"Nessun donatore disponibile",
+},
+
+// ========== GRANTSELECTOR ==========
+
+grantSelector: {
+errorLoadingGrants:
+"Errore durante il caricamento delle sovvenzioni",
+
+loading:
+"Caricamento...",
+
+searchGrants:
+"Cerca sovvenzioni...",
+
+clearSelection:
+"— Cancella selezione —",
+
+noGrantsMatchYourSearch:
+"Nessuna sovvenzione corrisponde alla ricerca",
+
+noGrantsForThisProject:
+"Nessuna sovvenzione associata a questo progetto",
+
+noGrantsAvailable:
+"Nessuna sovvenzione disponibile",
+},
+
+// ========== PROJECTSELECTOR ==========
+
+projectSelector: {
+errorLoadingProjects:
+"Errore durante il caricamento dei progetti",
+
+loading:
+"Caricamento...",
+
+searchProjects:
+"Cerca progetti...",
+
+clearSelection:
+"— Cancella selezione —",
+
+noProjectsMatchYourSearch:
+"Nessun progetto corrisponde alla ricerca",
+
+noProjectsAvailable:
+"Nessun progetto disponibile",
+},
+
+// ========== PROCUREMENT ==========
+
+procurement: {
+title:
+"Area di Lavoro Approvvigionamenti",
+
+back:
+"Torna alle Richieste di Acquisto",
+
+backDash:
+"Torna al Cruscotto",
+
+intro:
+"Cruscotto del ciclo di approvvigionamento — fai clic su qualsiasi scheda per visualizzare o gestire il relativo documento.",
+
+secPrimary:
+"Flusso Principale di Approvvigionamento",
+
+secExec:
+"Esecuzione degli Approvvigionamenti e Pagamenti Finanziari",
+
+secFin:
+"Finanza e Controllo",
+
+secDocControl:
+"Controllo Documentale",
+
+notCreated:
+"Non Creato",
+
+notFound:
+"Richiesta di Acquisto Non Trovata",
+
+notFoundDesc:
+"La richiesta di acquisto richiesta non esiste o non è ancora stata approvata.",
+
+backToList:
+"Torna all’Elenco",
+
+prDetails:
+"Dettagli della Richiesta di Acquisto",
+
+rfq:
+"Richiesta di Offerta (RFQ)",
+
+tenderInfo:
+"Informazioni sulla Gara",
+
+evalCriteria:
+"Criteri di Valutazione delle Offerte",
+
+cba:
+"Analisi Comparativa delle Offerte (CBA)",
+
+analysis:
+"Analisi dei Preventivi / Offerte",
+
+po:
+"Ordine di Acquisto",
+
+grn:
+"Nota di Ricevimento Merci",
+
+delivery:
+"Documento di Consegna",
+
+payment:
+"Pagamento",
+
+documents:
+"Documenti",
+
+audit:
+"Registro di Audit",
+
+dept:
+"Dipartimento",
+
+totalCost:
+"Costo Totale",
+
+process:
+"Processo",
+
+prNum:
+"Numero RA",
+
+reqDate:
+"Data della Richiesta",
+
+requester:
+"Richiedente",
+
+urgency:
+"Urgenza",
+
+status:
+"Stato",
+
+items:
+"Articoli",
+
+print:
+"Stampa",
+
+noItems:
+"Nessuna voce trovata",
+item: "Articolo",
+
+qty: "Quantità",
+
+unit: "Unità",
+
+unitPrice: "Prezzo Unitario",
+
+total: "Totale",
+
+specs: "Specifiche",
+
+budgetLine: "Linea di Budget",
+
+justification: "Giustificazione",
+
+delivLoc: "Luogo di Consegna",
+
+neededBy: "Necessario Entro",
+
+project: "Progetto",
+
+donor: "Donatore",
+
+currency: "Valuta",
+
+comingSoon: "Disponibile a Breve",
+
+comingSoonDesc:
+"Questa funzionalità sarà disponibile in un aggiornamento futuro.",
+
+category: "Categoria",
+
+importPR: "Importa RA",
+
+exportPR: "Esporta RA",
+
+importWithData: "Importa con Dati",
+
+importEmpty: "Importa Modello Vuoto",
+
+exportSuccess:
+"Richiesta di Acquisto esportata con successo",
+
+importSuccess:
+"Richiesta di Acquisto importata con successo",
+
+addBidder:
+"Aggiungi Offerente",
+
+announcementChannel:
+"Canale di Pubblicazione",
+
+announcementLinkReferenceUrl:
+"Link dell’Avviso / URL di Riferimento",
+
+approval:
+"Approvazione",
+
+approvalSignatures:
+"Approvazione e Firme",
+
+approveLock:
+"Approva e Blocca",
+
+approved:
+"Approvato",
+
+approvedBy:
+"Approvato da",
+
+bestEvaluatedSupplier:
+"Fornitore Miglior Valutato",
+
+bgwhiteTextblue600Shadowsm:
+"bg-white text-blue-600 shadow-sm",
+
+bidEvaluationCriteriaChecklist:
+"Criteri di Valutazione delle Offerte / Checklist",
+
+bidder:
+"Offerente",
+
+bidderName:
+"Nome dell’Offerente",
+
+bidders:
+"Offerenti",
+
+biddersAreLockedCannotAddOr:
+"Gli offerenti sono bloccati. Non è possibile aggiungere o rimuovere offerenti.",
+
+biddersSubmissionRegistry:
+"Registro di Presentazione delle Offerte",
+
+blockingValidationErrors:
+"Errori di Validazione Bloccanti",
+
+budgetAmount:
+"Importo del Budget",
+
+cbaNumber:
+"Numero CBA",
+
+close:
+"Chiudi",
+
+competitiveBidAnalysisCba:
+"Analisi Comparativa delle Offerte (CBA)",
+
+completeCba:
+"Completa il CBA",
+
+completed:
+"Completato",
+
+country:
+"Paese",
+
+criteria:
+"Criteri",
+
+criteriaAreLockedCannotAddOr:
+"I criteri sono bloccati. Non è possibile aggiungere o modificare i requisiti.",
+
+date:
+"Data",
+
+decisionJustification:
+"Decisione e Giustificazione",
+
+details:
+"Dettagli",
+
+donorGrant:
+"Donatore / Sovvenzione",
+
+draft:
+"Bozza",
+
+endDate:
+"Data di Fine",
+
+englishLtr:
+"Inglese (LTR)",
+
+enus:
+"en-US",
+
+enus1:
+"en-US",
+
+evaluationCommitteeMember:
+"Membro del Comitato di Valutazione",
+
+evaluationDate:
+"Data di Valutazione",
+
+evaluationScoringSummary:
+"Riepilogo della Valutazione e dei Punteggi",
+
+finalApproval:
+"Approvazione Finale",
+
+finalScore100Points:
+"Punteggio Finale (100 Punti)",
+
+finalSelection:
+"Selezione Finale",
+
+finalizeEvaluation:
+"Finalizza la Valutazione",
+
+finalized:
+"Finalizzato",
+
+financial:
+"Finanziario",
+
+financial50:
+"Finanziario (50)",
+
+financialEvaluation50Points:
+"Valutazione Finanziaria (50 Punti)",
+
+financialScore:
+"Punteggio Finanziario",
+
+inEvaluation:
+"In Valutazione",
+
+inProgress:
+"In Corso",
+
+itemDescription:
+"Descrizione Articolo",
+
+justificationIsRequiredWhenSelectedSupplier:
+"La giustificazione è obbligatoria quando il fornitore selezionato non è l’offerente con il prezzo più basso.",
+
+justificationMandatoryIfNotLowestBidder:
+"Giustificazione (OBBLIGATORIA se non viene selezionata l’offerta più bassa)",
+
+locked:
+"Bloccato",
+
+lowestBidAmount:
+"Importo dell’Offerta Più Bassa",
+
+maxScore:
+"Punteggio Massimo",
+
+name:
+"Nome",
+
+noBiddersFoundPleaseAddBidders:
+"Nessun offerente trovato. Aggiungere prima gli offerenti nella sezione Criteri di Valutazione.",
+
+notQualified:
+"Non Qualificato",
+
+noticeIdReference:
+"ID Avviso / Riferimento",
+
+offeredPrice:
+"Prezzo Offerto",
+
+percentage:
+"Percentuale",
+
+pleaseCompleteAllPricingAndTechnical:
+"Completare tutte le valutazioni tecniche ed economiche per identificare l’offerta con il miglior rapporto qualità-prezzo.",
+
+prNumber:
+"Numero RA",
+
+preparedBy:
+"Preparato da",
+
+printOfficialQa:
+"Stampa QA Ufficiale",
+
+printPreview:
+"Anteprima di Stampa",
+
+processType:
+"Tipo di Procedura",
+
+projectName:
+"Nome Progetto",
+
+qualified:
+"Qualificato",
+
+quotationAnalysisForm:
+"Modulo di Analisi delle Offerte",
+
+rank:
+"Classifica",
+
+registerNewBidder:
+"Registra Nuovo Offerente",
+
+remove:
+"Rimuovi",
+
+requirement:
+"Requisito",
+
+reviewedBy:
+"Revisionato da",
+
+save:
+"Salva",
+
+saveDraft:
+"Salva Bozza",
+
+section:
+"Sezione",
+
+selectedSupplier:
+"Fornitore Selezionato",
+
+selectionJustification:
+"Giustificazione della Selezione",
+
+signature:
+"Firma",
+
+startDate:
+"Data di Inizio",
+
+startEvaluation:
+"Avvia Valutazione",
+
+startingEvaluationWillLockCriteriaAnd:
+"L’avvio della valutazione bloccherà criteri e offerenti. Continuare?",
+
+supplier:
+"Fornitore",
+
+supplierOfferMatrix:
+"Matrice delle Offerte dei Fornitori",
+
+supplierOfferMatrixSubtitle:
+"Le offerte dei fornitori vengono caricate automaticamente dalla registrazione delle offerte dei fornitori.",
+
+noSupplierQuotationsSubmitted:
+"Nessuna offerta di fornitore è stata ancora presentata. La registrazione delle offerte dei fornitori deve essere completata prima che la matrice delle offerte sia disponibile.",
+
+supplierSubtotal:
+"SUBTOTALE FORNITORE",
+
+syncFromCriteria:
+"Sincronizza dai Criteri",
+
+technical:
+"Tecnico",
+
+technical50:
+"Tecnico (50)",
+
+technicalEvaluation50Points:
+"Valutazione Tecnica (50 Punti)",
+
+technicalThreshold70:
+"Soglia Tecnica: 70%",
+
+tenderAnnouncementDetails:
+"Dettagli dell’Avviso di Gara",
+
+tenderRfqNumber:
+"Numero Gara / RFQ",
+
+tenderRfqNumber2:
+"Numero Gara / RFQ",
+
+textgray500Hovertextgray700:
+"text-gray-500 hover:text-gray-700",
+
+total100:
+"Totale (100)",
+
+totalPrAmount:
+"Importo Totale della Richiesta di Acquisto",
+
+totalScore:
+"Punteggio Totale",
+
+totalTechnical:
+"Totale Tecnico",
+
+totalWeight:
+"Peso Totale",
+
+weight:
+"Peso",
+
+addCommitteeMember:
+"Aggiungi Membro del Comitato",
+
+removeCommitteeMember:
+"Rimuovi Membro",
+
+clearSignature:
+"Cancella",
+
+confirmSignature:
+"Conferma",
+
+signHere:
+"Firma qui...",
+
+digitalSignature:
+"Firma Digitale",
+
+verificationQrCode:
+"Codice QR di Verifica",
+
+signedOn:
+"Firmato il",
+
+committeeMembers:
+"Membri del Comitato",
+
+generatingPdf:
+"Generazione PDF in corso...",
+
+exportPdfLandscape:
+"Esporta PDF (A4 Orizzontale)",
+
+role:
+"Ruolo",
+
+memberNumber:
+"Membro",
+
+roleAr:
+"Ruolo (Arabo)",
+
+// Workspace card status labels
+
+statusAwarded:
+"Aggiudicato",
+
+statusPending:
+"In Sospeso",
+
+statusReady:
+"Pronto",
+
+statusRequired:
+"Obbligatorio",
+
+statusPaid:
+"Pagato",
+
+// Card meta labels
+
+cardLabelType:
+"Tipo",
+
+cardLabelInfo:
+"Informazioni",
+
+cardLabelSource:
+"Fonte",
+
+cardLabelCount:
+"Numero",
+
+cardLabelLatest:
+"Ultimo",
+
+cardLabelStatus:
+"Stato",
+
+cardLabelPo:
+"ODA",
+
+// Card titles
+
+bidOpeningMinutes:
+"Verbale di Apertura delle Offerte",
+
+deliveryNotes:
+"Documenti di Consegna",
+
+// CBA finalized meta
+
+cbaFinalizedAwarded:
+"Finalizzato — Aggiudicato / ODA Sbloccato",
+
+poUnlocked:
+"ODA Sbloccato",
+
+// Validation messages
+
+rfqApprovedRequired:
+"La RFQ deve essere approvata prima di accedere a questa fase",
+
+bomMustBeApprovedFirst:
+"Il Verbale di Apertura delle Offerte deve essere approvato prima",
+
+bomMustBeCompletedFirst:
+"Il Verbale di Apertura delle Offerte deve essere completato prima",
+
+evalCriteriaRequiresBomApproved:
+"I criteri di valutazione richiedono l’approvazione del Verbale di Apertura delle Offerte",
+
+cbaAnnouncementMustClose:
+"L’avviso di gara deve essere chiuso prima del CBA",
+
+cbaBomMustBeCompleted:
+"Il Verbale di Apertura delle Offerte deve essere completato prima del CBA",
+
+cbaEvalMustBeCompleted:
+"La valutazione delle offerte deve essere completata (finalizzata) prima del CBA",
+
+rfqWithQuotationsRequired:
+"È richiesta una RFQ con almeno un’offerta ricevuta",
+
+grnAcceptedRequired:
+"La Nota di Ricevimento Merci deve essere accettata prima del pagamento",
+
+poAcknowledgedRequired:
+"L’Ordine di Acquisto deve essere confermato prima della Nota di Ricevimento Merci",
+
+readyToGenerate:
+"Pronto per la generazione",
+
+readyToRecordGoodsReceipt:
+"Pronto per registrare la ricezione delle merci",
+
+autoCreatedWhenGrnAccepted:
+"Creato automaticamente quando la Nota di Ricevimento Merci viene accettata",
+
+fromQa:
+"Da QA",
+
+fromBa:
+"Da BA",
+
+grnCreated:
+"Nota di Ricevimento Merci Creata",
+
+poCount:
+"Ordini di Acquisto",
+
+grnCount:
+"Note di Ricevimento Merci",
+
+payableCount:
+"Pagamenti da Effettuare",
+
+payablePending:
+"In Sospeso",
+
+payableApproved:
+"Approvato",
+
+payablePaid:
+"Pagato",
+
+payableTotal:
+"Totale da Pagare",
+
+officialCbaDocument:
+"Documento Ufficiale CBA",
+
+quotationAnalysisType:
+"Analisi delle Offerte",
+
+active:
+"Attivo",
+
+// Type 2 Consultancy Flow
+
+contract:
+"Contratto",
+
+contractManagement:
+"Gestione Contratti",
+
+contractNotCreated:
+"Non Creato",
+
+contractDraft:
+"Bozza",
+
+contractActive:
+"Attivo",
+
+contractApproved:
+"Approvato",
+
+contractCompleted:
+"Completato",
+
+contractTerminated:
+"Terminato",
+
+contractRequiresCbaAwarded:
+"Il CBA deve essere aggiudicato prima di creare un contratto",
+
+sacTitle:
+"Certificato di Accettazione del Servizio (SAC)",
+
+sacNotCreated:
+"Non Creato",
+
+sacPending:
+"In Attesa di Approvazione",
+
+sacApproved:
+"Approvato",
+
+sacRequiresContract:
+"Il contratto deve essere approvato prima di creare un SAC",
+
+sacCount:
+"SAC",
+
+invoiceTitle:
+"Fattura",
+
+invoiceNotCreated:
+"Non Creata",
+
+invoiceRequiresSac:
+"Almeno un SAC deve essere approvato prima di creare una fattura",
+
+guardContractNotFound:
+"Contratto non trovato",
+
+guardContractNotApproved:
+"Il contratto deve essere approvato prima di procedere",
+
+guardNoApprovedSac:
+"È richiesto almeno un SAC approvato prima di creare una fattura",
+
+guardAllSacInvoiced:
+"Tutti gli importi dei SAC approvati sono già stati completamente fatturati",
+
+guardInvoiceExceedsSacCoverage:
+"L’importo della fattura supera il valore residuo coperto dai SAC approvati",
+
+guardPrNotFound:
+"Richiesta di Acquisto non trovata",
+
+guardNotConsultancyPr:
+"Solo le Richieste di Acquisto di consulenza (Tipo 2) possono generare contratti",
+
+guardCbaNotFound:
+"Il CBA non esiste per questa Richiesta di Acquisto",
+
+guardCbaNotAwarded:
+"Il CBA deve essere nello stato di aggiudicazione",
+
+guardNoWinnerSelected:
+"Nel CBA non è stato selezionato alcun fornitore vincitore",
+guardContractAlreadyExists:
+"Esiste già un contratto per questa Richiesta di Acquisto",
+
+invoiceCount:
+"Fatture",
+
+type2ConsultancyFlow:
+"Approvvigionamento di Consulenza (Tipo 2)",
+
+contractNumber:
+"Numero Contratto",
+
+contractValue:
+"Valore del Contratto",
+
+contractStartDate:
+"Data di Inizio Contratto",
+
+contractEndDate:
+"Data di Fine Contratto",
+
+contractVendor:
+"Fornitore",
+
+sacNumber:
+"Numero SAC",
+
+sacAmount:
+"Importo",
+
+sacDate:
+"Data",
+
+sacDescription:
+"Descrizione",
+
+invoiceNumber:
+"Numero Fattura",
+
+invoiceAmount:
+"Importo Fattura",
+
+invoiceDate:
+"Data Fattura",
+
+poBlockedForConsultancy:
+"L’Ordine di Acquisto non è applicabile agli approvvigionamenti di consulenza (Tipo 2). Utilizzare il flusso Contratto → SAC → Fattura.",
+
+grnBlockedForConsultancy:
+"La Nota di Ricevimento Merci non è applicabile agli approvvigionamenti di consulenza (Tipo 2). Utilizzare il SAC per l’accettazione del servizio.",
+
+dnBlockedForConsultancy:
+"I Documenti di Consegna non sono applicabili agli approvvigionamenti di consulenza (Tipo 2).",
+
+createContract:
+"Crea Contratto",
+
+createSac:
+"Crea SAC",
+
+createInvoice:
+"Crea Fattura",
+
+contractDetails:
+"Dettagli del Contratto",
+
+sacDetails:
+"Dettagli SAC",
+
+invoiceDetails:
+"Dettagli della Fattura",
+
+milestones:
+"Milestone",
+
+addMilestone:
+"Aggiungi Milestone",
+
+milestoneTitle:
+"Titolo Milestone",
+
+milestoneAmount:
+"Importo Milestone",
+
+milestoneDate:
+"Data di Scadenza",
+
+milestoneStatus:
+"Stato",
+
+totalContractValue:
+"Valore Totale del Contratto",
+
+remainingBalance:
+"Saldo Residuo",
+
+sacCoverage:
+"Copertura SAC",
+
+approveContract:
+"Approva Contratto",
+
+approveSac:
+"Approva SAC",
+
+approveInvoice:
+"Approva Fattura",
+
+paymentRequiresSac:
+"È richiesto almeno un SAC approvato prima del pagamento",
+
+contractPendingApproval:
+"In Attesa di Approvazione",
+
+fillAllRequiredFields:
+"Compila tutti i campi obbligatori",
+
+addAtLeastOneMilestone:
+"Aggiungi almeno una milestone",
+
+prNotFoundTitle:
+"Richiesta di Acquisto Non Trovata",
+
+goBack:
+"Torna Indietro",
+
+cbaRequiredDesc:
+"Il CBA deve essere aggiudicato prima che possa essere creato un contratto.",
+
+acceptanceDate:
+"Data di Accettazione",
+
+approve:
+"Approva",
+
+approveContractDesc:
+"Sei sicuro di voler approvare questo contratto? Questo consentirà la creazione dei SAC.",
+
+approveSacDesc:
+"Sei sicuro di voler approvare questo SAC?",
+
+approvedAmountLabel:
+"Importo Approvato",
+
+cancel:
+"Annulla",
+
+confirmApprove:
+"Conferma Approvazione",
+
+confirmDeleteSac:
+"Sei sicuro di voler eliminare questo SAC?",
+
+confirmReject:
+"Conferma Rifiuto",
+
+contractApprovedDesc:
+"Questo contratto è stato approvato. Ora puoi creare Certificati di Accettazione del Servizio (SAC) per le prestazioni completate.",
+
+contractApprovedSuccess:
+"Contratto Approvato",
+
+contractCreated:
+"Contratto creato con successo",
+
+contractNotApproved:
+"Il contratto deve essere approvato prima di creare SAC",
+
+contractRejected:
+"Contratto respinto",
+
+contractSubmitted:
+"Contratto inviato per approvazione",
+
+contractUpdated:
+"Contratto aggiornato con successo",
+
+createFirstSac:
+"Crea un Certificato di Accettazione del Servizio per le prestazioni completate",
+
+createSacDesc:
+"Crea un nuovo SAC per questo contratto",
+
+deliverableBased:
+"Basato sui Deliverable",
+
+deliverables:
+"Deliverable",
+
+deliverablesPlaceholder:
+"Descrivi i deliverable accettati...",
+
+fixedAmount:
+"Importo Fisso",
+
+goToSac:
+"Vai alla Gestione SAC",
+
+linkedMilestone:
+"Milestone Collegata",
+
+lumpSum:
+"Importo Forfettario",
+
+milestoneDesc:
+"Descrizione",
+
+milestoneDueDate:
+"Data di Scadenza",
+
+milestoneExceedsContract:
+"L’importo totale delle milestone supera il valore del contratto",
+
+milestoneTotal:
+"Totale",
+
+milestonesAdded:
+"Milestone salvate con successo",
+
+milestonesDesc:
+"Definisci le milestone di pagamento collegate ai deliverable",
+
+noContractForSac:
+"Nessun contratto trovato per questa Richiesta di Acquisto. Creare prima un contratto.",
+
+noMilestone:
+"Nessuna Milestone",
+
+noMilestones:
+"Nessuna milestone definita",
+
+noSacs:
+"Nessun SAC creato",
+
+paymentStructure:
+"Struttura di Pagamento",
+
+percentageBased:
+"Basato su Percentuale",
+
+reject:
+"Rifiuta",
+
+rejectContract:
+"Rifiuta Contratto",
+
+rejectContractDesc:
+"Sei sicuro di voler rifiutare questo contratto? Verrà riportato allo stato di bozza.",
+
+rejectSac:
+"Rifiuta SAC",
+
+rejectSacDesc:
+"Fornisci una motivazione per il rifiuto del SAC",
+
+rejectionReason:
+"Motivazione del Rifiuto",
+
+rejectionReasonPlaceholder:
+"Spiega il motivo del rifiuto...",
+
+remaining:
+"Residuo",
+
+retentionPercentage:
+"Percentuale di Trattenuta",
+
+sacCreated:
+"SAC creato con successo",
+
+sacDeleted:
+"SAC eliminato",
+
+sacList:
+"Elenco SAC",
+
+sacProgress:
+"Copertura SAC",
+
+sacRecords:
+"certificati",
+
+sacRejected:
+"SAC respinto",
+
+sacSubmitted:
+"SAC inviato per approvazione",
+
+saveMilestones:
+"Salva Milestone",
+
+selectMilestone:
+"Seleziona Milestone",
+
+selectVendor:
+"Seleziona Fornitore",
+
+submitForApproval:
+"Invia per Approvazione",
+
+totalAllocated:
+"Totale Allocato",
+
+totalApprovedSac:
+"Totale Approvato",
+
+totalMilestones:
+"Totale Milestone",
+
+type2Label:
+"Tipo 2: Consulenza",
+},
+
+supplierQuotationTab: {
+title:
+"Registrazione Offerte Fornitori",
+
+titleAr:
+"Inserimento Offerte Fornitori",
+
+subtitle:
+"Registra le offerte dei fornitori per ciascuna voce della Richiesta di Acquisto ai fini della valutazione e della generazione dell’Ordine di Acquisto",
+
+subtitleAr:
+"Registrazione delle offerte dei fornitori per ogni voce della richiesta di acquisto ai fini della valutazione e della generazione dell’ordine di acquisto",
+
+recordQuotation:
+"Registra Offerta",
+
+editQuotation:
+"Modifica Offerta",
+
+viewQuotation:
+"Visualizza Offerta",
+
+deleteQuotation:
+"Elimina",
+
+confirmDelete:
+"Conferma Eliminazione",
+
+confirmDeleteMsg:
+"Sei sicuro di voler eliminare questa offerta? Questa azione non può essere annullata.",
+
+noQuotations:
+"Nessuna Offerta Registrata",
+
+noQuotationsDesc:
+"Fai clic su Registra Offerta per inserire un’offerta fornitore per questa Richiesta di Acquisto.",
+
+quotationList:
+"Offerte dei Fornitori",
+
+vendor:
+"Venditore / Fornitore",
+
+selectVendor:
+"Seleziona Fornitore",
+
+selectBidder:
+"Seleziona Offerente",
+
+quotationRef:
+"Numero di Riferimento Offerta",
+
+quotationDate:
+"Data Offerta",
+
+currency:
+"Valuta",
+
+notes:
+"Note",
+
+attachment:
+"Allegato",
+
+uploadAttachment:
+"Carica Offerta del Fornitore",
+
+attachmentRequired:
+"È obbligatorio allegare il documento dell’offerta del fornitore",
+
+supplierOffer:
+"Documento Offerta del Fornitore",
+
+itemLines:
+"Righe Articoli (caricate automaticamente dalla RA)",
+
+itemNo:
+"#",
+
+item:
+"Articolo",
+
+specifications:
+"Specifiche",
+
+qty:
+"Quantità",
+
+unit:
+"Unità",
+
+unitPrice:
+"Prezzo Unitario",
+
+lineTotal:
+"Totale Riga",
+
+grandTotal:
+"Totale Complessivo",
+
+save:
+"Salva",
+
+saveDraft:
+"Salva Bozza",
+
+submit:
+"Invia",
+
+cancel:
+"Annulla",
+
+status:
+"Stato",
+
+statusDraft:
+"Bozza",
+
+statusSubmitted:
+"Inviato",
+
+statusUnderReview:
+"In Revisione",
+
+statusAccepted:
+"Accettato",
+
+statusRejected:
+"Rifiutato",
+
+quotationCount:
+"offerte",
+
+latestVendor:
+"Ultimo Fornitore",
+
+totalSuppliers:
+"Totale Fornitori",
+
+completed:
+"Completato",
+
+inProgress:
+"In Corso",
+
+notCreated:
+"Non Creato",
+
+locked:
+"Bloccato",
+
+quotationRequired:
+"È richiesta almeno un’offerta prima della Valutazione delle Offerte",
+
+quotationSaved:
+"Offerta salvata con successo",
+
+quotationUpdated:
+"Offerta aggiornata con successo",
+
+quotationDeleted:
+"Offerta eliminata con successo",
+
+attachmentUploaded:
+"Allegato caricato con successo",
+
+error:
+"Si è verificato un errore",
+
+prNumber:
+"Numero RA",
+
+autoLoaded:
+"Caricato automaticamente dalla RA",
+
+enterUnitPrice:
+"Inserisci il prezzo unitario",
+
+cardDescription:
+"Registra i prezzi offerti dai fornitori per ogni articolo. Obbligatorio prima della Valutazione delle Offerte.",
+
+bomRequiredFirst:
+"Il Verbale di Apertura delle Offerte deve essere completato prima",
+
+readOnly:
+"Sola lettura: la valutazione è stata finalizzata",
+
+evaluationFinalized:
+"Valutazione finalizzata - le offerte sono bloccate",
+},
+
+settingsModule: {
+accentColor:
+"Colore Accento",
+
+updateTheUnitInformation:
+"Aggiorna le Informazioni dell’Unità",
+
+actions:
+"Azioni",
+
+active:
+"Attivo",
+
+activeSystemRules:
+"Regole di Sistema Attive",
+
+add:
+"Aggiungi",
+
+addNewUnit:
+"Aggiungi Nuova Unità",
+
+addOptionSet:
+"Aggiungi Set di Opzioni",
+
+addPlatformAdmin:
+"Aggiungi Amministratore della Piattaforma",
+
+addUnit:
+"Aggiungi Unità",
+
+addValue:
+"Aggiungi Valore",
+
+adminOnly:
+"Solo Amministratori",
+
+administratorAccess:
+"Accesso Amministratore",
+
+advancedSystemControlsAndMaintenance:
+"Controlli avanzati e manutenzione del sistema",
+
+allCategories:
+"Tutte le Categorie",
+
+apiServer:
+"Server API",
+
+applicationSettingsAndPreferences:
+"Impostazioni e preferenze dell’applicazione",
+
+applyFix:
+"Applica Correzione",
+
+arabicName:
+"Nome Arabo",
+
+areYouSure:
+"Sei sicuro?",
+
+areYouSureYouWantTo:
+"Sei sicuro di voler eliminare questo tipo di unità?",
+
+authentication:
+"Autenticazione",
+
+authenticationMethod:
+"Metodo di Autenticazione",
+
+autofixAvailable:
+"Correzione Automatica Disponibile",
+
+backToSettings:
+"Torna alle Impostazioni",
+
+category:
+"Categoria",
+
+changingTheLanguageWillImmediatelyUpdate:
+"La modifica della lingua aggiornerà immediatamente l’intera interfaccia, inclusi testo e direzione.",
+
+clearAllCachedDataMayTemporarily:
+"Cancella tutti i dati in cache. Potrebbe rallentare temporaneamente il sistema.",
+
+clearSystemCache:
+"Cancella Cache di Sistema",
+
+colorPalette:
+"Palette Colori",
+
+confirm:
+"Conferma",
+
+connected:
+"Connesso",
+
+controlPublishingAndDataSynchronization:
+"Controlla la pubblicazione e la sincronizzazione dei dati",
+
+coreProjectData:
+"Dati Principali del Progetto",
+
+create:
+"Crea",
+
+createANewStandardizedUnitFor:
+"Crea una nuova unità standardizzata da utilizzare in tutti i moduli",
+
+createAdmin:
+"Crea Amministratore",
+
+created:
+"Creato",
+
+creating:
+"Creazione in corso...",
+
+current:
+"Corrente",
+
+customizeSystemBrandingAndAppearance:
+"Personalizza il marchio e l’aspetto del sistema",
+
+customizeThePublicLandingPageContent:
+"Personalizza il contenuto della pagina pubblica di destinazione",
+
+dangerZone:
+"Area Critica",
+
+database:
+"Database",
+
+days:
+"Giorni",
+
+delete:
+"Elimina",
+
+deleteSelectedUsers:
+"Eliminare gli utenti selezionati?",
+
+deleting:
+"Eliminazione in corso...",
+
+deletionReasonIsRequired:
+"La motivazione dell’eliminazione è obbligatoria",
+
+description:
+"Descrizione",
+
+descriptionArabicOptional:
+"Descrizione in Arabo (Facoltativa)",
+
+descriptionOptional:
+"Descrizione (Facoltativa)",
+
+detectedCause:
+"Causa Rilevata",
+
+displayOptions:
+"Opzioni di Visualizzazione",
+
+down:
+"Non Disponibile",
+
+downloadACompleteBackupOfAll:
+"Scarica un backup completo di tutti i dati del sistema.",
+
+editUnit:
+"Modifica Unità",
+
+eg:
+"es. قطعة",
+
+egPiece:
+"es. Pezzo",
+
+email:
+"Email",
+
+emailPassword:
+"Email / Password",
+
+enableToBlockAllNonadminUsers:
+"Abilita per bloccare tutti gli utenti non amministratori dall’accesso al sistema",
+
+enterEmailAddress:
+"Inserisci indirizzo email",
+
+enterFullName:
+"Inserisci nome completo",
+
+envVariables:
+"Variabili Ambiente",
+
+error:
+"Errore",
+
+errorCreatingUnitType:
+"Errore durante la creazione del tipo di unità",
+
+errorDeletingUnitType:
+"Errore durante l’eliminazione del tipo di unità",
+
+errorUpdatingUnitType:
+"Errore durante l’aggiornamento del tipo di unità",
+
+exportAllData:
+"Esporta Tutti i Dati",
+
+failed:
+"Non Riuscito",
+
+failedToFetchSystemStatus:
+"Impossibile recuperare lo stato del sistema",
+
+favicon:
+"Favicon",
+
+faviconUploadedSuccessfully:
+"Favicon caricata con successo",
+
+fileSizeMustBeUnder5mb:
+"La dimensione del file deve essere inferiore a 5 MB",
+
+fixAppliedSuccessfully:
+"Correzione applicata con successo",
+
+footerConfiguration:
+"Configurazione del Footer",
+
+footerText:
+"Testo del Footer",
+
+footerTextArabic:
+"Testo del Footer (Arabo)",
+
+forceLogoutAllUsersTheyWill:
+"Forza la disconnessione di tutti gli utenti. Sarà necessario autenticarsi nuovamente.",
+
+goodsPhysical:
+"Beni e Materiali",
+
+heroSection:
+"Sezione Principale",
+
+heroSubtitle:
+"Sottotitolo Principale",
+
+heroSubtitleArabic:
+"Sottotitolo Principale (Arabo)",
+
+heroTitle:
+"Titolo Principale",
+
+heroTitleArabic:
+"Titolo Principale (Arabo)",
+
+inactive:
+"Inattivo",
+
+invalidFileTypeUsePngJpg:
+"Tipo di file non valido. Utilizzare PNG, JPG, SVG o ICO",
+
+issuesDetected:
+"Problemi Rilevati",
+
+label:
+"Etichetta",
+
+labelArabic:
+"Etichetta (Arabo)",
+
+landingPageSettings:
+"Impostazioni della Pagina di Benvenuto",
+
+landingPageSettingsSaved:
+"Impostazioni della pagina salvate",
+
+languageLocalization:
+"Lingua e Localizzazione",
+
+lastAudit:
+"Ultimo Controllo",
+
+lastSignIn:
+"Ultimo Accesso",
+
+loaded:
+"Caricato",
+
+loadingPlatformAdmins:
+"Caricamento amministratori della piattaforma...",
+
+loginMethod:
+"Metodo di Accesso",
+
+logoBranding:
+"Logo e Branding",
+
+logoUploadedSuccessfully:
+"Logo caricato con successo",
+
+maintenanceMode:
+"Modalità Manutenzione",
+
+manageDropdownValuesUsedAcrossThe:
+"Gestisci i valori dei menu a discesa utilizzati in tutto il sistema",
+addPlatformAdministrator: 'Aggiungi Amministratore della Piattaforma',
+addYourFirstPlatformAdministratorTo: 'Aggiungi il primo amministratore della piattaforma per iniziare',
+
+bggray300Ms0: 'bg-gray-300 ms-0',
+bordergray200Hoverbordergreen300: 'border-gray-200 hover:border-green-300',
+bordergreen500Bggreen50: 'border-green-500 bg-green-50',
+
+brandingUpdated: 'Branding aggiornato con successo',
+
+buttonText: 'Testo del Pulsante',
+buttonTextArabic: 'Testo del Pulsante (Arabo)',
+buttonUrl: 'URL del Pulsante',
+callToAction: 'Invito all’Azione',
+
+cancel: 'Annulla',
+
+deletePlatformAdministrator: 'Eliminare l’Amministratore della Piattaforma?',
+
+enus: 'it-IT',
+
+importHistorySubtitle: 'Monitora tutte le importazioni Excel nel sistema. Visualizza i dettagli, scarica i report degli errori e riprova le importazioni non riuscite.',
+
+mandatory: 'Obbligatorio',
+missing: 'Mancante',
+
+monitoringInfrastructureReadinessAndBusinessRules: 'Monitoraggio dello stato dell’infrastruttura e delle regole aziendali.',
+
+name: 'Nome',
+nameArabic: 'Nome (Arabo)',
+nameEnglish: 'Nome (Inglese)',
+
+never: 'Mai',
+
+noOptionSetsFound: 'Nessun set di opzioni trovato',
+noPlatformAdminsFound: 'Nessun amministratore della piattaforma trovato',
+noRegressionsOrBusinessRuleViolations: 'Nessuna regressione o violazione delle regole aziendali rilevata.',
+noUnitsFound: 'Nessuna unità trovata',
+
+optionSetsLookups: 'Set di Opzioni / Tabelle di Riferimento',
+
+organizationLogo: 'Logo dell’Organizzazione',
+organizationSsoFuture: 'SSO Organizzazione (futuro)',
+
+permanentlyRemoveAllSoftdeletedRecordsFrom: 'Rimuovi definitivamente tutti i record eliminati logicamente dal database.',
+
+permissions: 'permessi',
+
+planDurationMustMatchProjectDuration: 'La durata del piano deve corrispondere alla durata del progetto fino al singolo giorno.',
+
+platformAdmin: 'Amministratore della Piattaforma',
+platformAdminCreatedSuccessfully: 'Amministratore della piattaforma creato con successo',
+platformAdminDeletedSuccessfully: 'Amministratore della piattaforma eliminato con successo',
+platformAdminUpdatedSuccessfully: 'Amministratore della piattaforma aggiornato con successo',
+platformAdministrators: 'Amministratori della Piattaforma',
+platformAuditor: 'Revisore della Piattaforma',
+platformRole: 'Ruolo della Piattaforma',
+platformSuperAdmin: 'Super Amministratore della Piattaforma',
+platformUsers: 'Utenti della Piattaforma',
+
+pleaseFillAllRequiredFields: 'Compila tutti i campi obbligatori',
+pleaseFillInAllRequiredFields: 'Compila tutti i campi richiesti',
+
+pleaseProvideAReasonForDeleting: 'Fornisci una motivazione per eliminare questo amministratore...',
+pleaseProvideAReasonForDeleting1: 'Fornisci una motivazione per eliminare questi amministratori...',
+
+pleaseSelectARetentionPeriod: 'Seleziona un periodo di conservazione',
+
+preview: 'Anteprima',
+previewLandingPage: 'Anteprima Pagina di Benvenuto',
+
+primaryColor: 'Colore Primario',
+
+programmaticservices: 'Programmi / Servizi',
+
+projectManagerMustAppearInAll: 'Il responsabile del progetto deve apparire in tutte le viste e i report relativi a sovvenzioni e piani.',
+projectPlanDuration: 'Durata del Piano di Progetto',
+
+ps10Pe4: 'ps-10 pe-4',
+ps12: 'ps-12',
+ps9Pe3: 'ps-9 pe-3',
+
+publishAllChanges: 'Pubblica Tutte le Modifiche',
+
+purgeAllDeletedRecords: 'Elimina Definitivamente Tutti i Record Eliminati',
+
+pushAllPendingChangesToThe: 'Pubblica tutte le modifiche in sospeso nell’ambiente live',
+
+ready: 'Pronto',
+
+reasonForDeletion: 'Motivazione dell’Eliminazione *',
+
+regressionProtection: 'Protezione dalle Regressioni',
+regressionProtectionEngine: 'Motore di Protezione dalle Regressioni',
+
+remove: 'Rimuovi',
+
+requiresHumanIntervention: 'Richiede intervento umano',
+
+rerunAudit: 'Esegui Nuovamente il Controllo',
+
+resetAllSessions: 'Reimposta Tutte le Sessioni',
+
+role: 'Ruolo',
+
+rtlDirectionAndAllElementAlignments: 'La direzione RTL e tutti gli allineamenti vengono applicati automaticamente per l’arabo.',
+rtlLayoutEnforcement: 'Applicazione Layout RTL',
+
+runNow: 'Esegui Ora',
+running: 'In Esecuzione',
+
+save: 'Salva',
+saveChanges: 'Salva Modifiche',
+saving: 'Salvataggio...',
+
+searchByNameOrEmail: 'Cerca per nome o email...',
+searchUnits: 'Cerca unità...',
+
+secondaryColor: 'Colore Secondario',
+
+selectARole: 'Seleziona un ruolo',
+selectAuthenticationMethod: 'Seleziona metodo di autenticazione',
+selectInterfaceLanguage: 'Seleziona la Lingua dell’Interfaccia',
+
+settings: 'Impostazioni',
+
+showAnnouncements: 'Mostra Annunci',
+showQuickStatistics: 'Mostra Statistiche Rapide',
+
+status: 'Stato',
+
+suggestedFix: 'Correzione Suggerita',
+
+switchBetweenArabicAndEnglishInterface: 'Passa tra interfaccia araba e inglese',
+
+syncJobs: 'Processi di Sincronizzazione',
+
+system: 'Sistema',
+systemIdentity: 'Identità del Sistema',
+systemIsHealthy: 'Il sistema è operativo',
+systemName: 'Nome del Sistema',
+systemNameArabic: 'Nome del Sistema (Arabo)',
+systemPublishSync: 'Pubblicazione e Sincronizzazione del Sistema',
+systemTools: 'Strumenti di Sistema',
+
+theseActionsAreIrreversibleProceedWith: 'Queste azioni sono irreversibili. Procedere con estrema cautela.',
+thisActionCannotBeUndone: 'Questa azione non può essere annullata.',
+
+timebased: 'Basato sul Tempo',
+
+tryAdjustingYourSearchQuery: 'Prova a modificare i criteri di ricerca',
+
+unitDescription: 'Descrizione dell’Unità',
+
+unitTypeCreatedSuccessfully: 'Tipo di unità creato con successo',
+unitTypeDeletedSuccessfully: 'Tipo di unità eliminato con successo',
+unitTypeManagement: 'Gestione Tipi di Unità',
+unitTypeUpdatedSuccessfully: 'Tipo di unità aggiornato con successo',
+
+unitsList: 'Elenco Unità',
+
+updateTheStandardizedUnitDetails: 'Aggiorna i dettagli dell’unità standardizzata',
+
+uploadAFaviconForBrowserTabs: 'Carica una favicon per le schede del browser. Consigliato: 32x32px o 64x64px, ICO/PNG/SVG',
+uploadFavicon: 'Carica Favicon',
+uploadLogo: 'Carica Logo',
+uploadYourOrganizationLogoRecommended200x200px: 'Carica il logo dell’organizzazione. Consigliato: 200x200px, PNG/JPG/SVG, max 5 MB',
+
+uploading: 'Caricamento...',
+
+useArabicForTheEntireInterface: 'Usa l’arabo per l’intera interfaccia (RTL)',
+useEnglishForTheEntireInterface: 'Usa l’inglese per l’intera interfaccia',
+
+valueKey: 'Chiave Valore',
+values: 'valori',
+editPlatformAdministrator: 'Modifica Amministratore della Piattaforma',
+
+},
+
+printTemplates: {
+achieved: "Raggiunto",
+achieved2: "Raggiunto",
+achievement: "Risultato",
+achievementLevel: "Livello di Raggiungimento",
+activeProjects: "Progetti Attivi",
+activitiesProgress: "Progresso delle Attività",
+activity: "Attività",
+actual: "Effettivo",
+actualDate: "Data Effettiva",
+actualDuration: "Durata Effettiva",
+advanced: "Avanzato",
+allocated: "Allocato",
+approvalSignoff: "Approvazione e Firma",
+approvedBy: "Approvato da:",
+area: "Area",
+atRisk: "A Rischio",
+available: "Disponibile",
+basic: "Base",
+budget: "Bilancio",
+budgetUtilization: "Utilizzo del Bilancio",
+budgeted: "Preventivato",
+category: "Categoria",
+certificateNo: "Numero Certificato",
+certificateOfCompletion: "CERTIFICATO DI COMPLETAMENTO",
+challenge: "Sfida",
+challengesIssues: "Sfide e Problemi",
+close: "Chiudi",
+closedBy: "Chiuso da:",
+code: "Codice",
+committed: "Impegnato",
+completed: "Completato",
+completion: "Completamento",
+completionDate: "Data di Completamento",
+date: "Data",
+days: "giorni",
+delayed: "In Ritardo",
+deliverable: "Prodotto Atteso",
+department: "Dipartimento",
+description: "Descrizione",
+document: "Documento n.",
+donorfunder: "Donatore/Finanziatore",
+duration: "Durata",
+duration4: "Durata",
+en: "it",
+excellent: "Eccellente",
+executiveSummary: "Riepilogo Esecutivo",
+finalProjectDocumentation: "Documentazione Finale del Progetto",
+from: "Da",
+generated: "Generato:",
+generatedOn: "Generato il",
+good: "Buono",
+grantInformation: "Informazioni sulla Sovvenzione",
+grantNumber: "Numero della Sovvenzione",
+grantPeriod: "Periodo della Sovvenzione",
+grantProgressReport: "Rapporto sullo Stato di Avanzamento della Sovvenzione",
+high: "Alto",
+high6: "Alto",
+hoursCompleted: "Ore Completate",
+impact: "Impatto",
+implementingPartner: "Partner Esecutore",
+improvement: "Miglioramento",
+inProgress: "In Corso",
+inScope: "Incluso nell’Ambito:",
+indicator: "Indicatore",
+indicatorsAchievement: "Raggiungimento degli Indicatori",
+intermediate: "Intermedio",
+issue: "Problema",
+issuedBy: "Rilasciato da",
+k1ExecutiveSummary: "1. Riepilogo Esecutivo",
+k1ProjectBackground: "1. Contesto del Progetto",
+k2DeliverablesStatus: "2. Stato dei Prodotti Attesi",
+k2KeyAccomplishments: "2. Principali Risultati Raggiunti",
+k2ProjectObjectives: "2. Obiettivi del Progetto",
+k2StrategicObjectives: "2. Obiettivi Strategici",
+k3PlannedActivitiesNextPeriod: "3. Attività Pianificate (Periodo Successivo)",
+k3ProjectAchievements:
+"3. Risultati del Progetto",
+
+k3ProjectPortfolio:
+"3. Portafoglio Progetti",
+
+k3ProjectScope:
+"3. Ambito del Progetto",
+
+k4LessonsLearned:
+"4. Lezioni Apprese",
+
+k4MilestoneStatus:
+"4. Stato delle Milestone",
+
+k4ProgramlevelMetrics:
+"4. Indicatori a Livello di Programma",
+
+k4ProjectTeamStructure:
+"4. Struttura del Team di Progetto",
+k5ResourceAllocation:
+"5. Allocazione delle Risorse",
+
+k5FinalBudgetSummary:
+"5. Riepilogo Finale del Bilancio",
+
+k5IssuesConcerns:
+"5. Problemi e Preoccupazioni",
+
+k5KeyMilestones:
+"5. Milestone Principali",
+
+
+k6KeyRisks:
+"6. Rischi Principali",
+
+k6RecommendationsForFutureProjects:
+"6. Raccomandazioni per Progetti Futuri",
+
+k6RiskRegister:
+"6. Registro dei Rischi",
+
+k6ThematicAreas:
+"6. Aree Tematiche",
+
+k7Acknowledgments:
+"7. Ringraziamenti",
+
+k7BudgetStatus:
+"7. Stato del Bilancio",
+
+k7KeyAchievements:
+"7. Principali Risultati",
+
+k7KeyAssumptions:
+"7. Ipotesi Principali",
+
+k8ChallengesMitigation:
+"8. Sfide e Misure di Mitigazione",
+
+k9NextSteps:
+"9. Prossimi Passi",
+
+low:
+"Basso",
+
+low8:
+"Basso",
+
+medium:
+"Medio",
+
+medium7:
+"Medio",
+
+milestone:
+"Milestone",
+
+mitigation:
+"Mitigazione",
+
+monthlyReport:
+"Rapporto Mensile",
+
+months:
+"mesi",
+
+name:
+"Nome",
+
+nextStepsPlans:
+"Prossimi Passi e Piani",
+
+notCompleted:
+"Non Completato",
+
+notes:
+"Note",
+
+objective:
+"Obiettivo",
+
+offTrack:
+"Fuori Traccia",
+
+officialSeal:
+"Timbro Ufficiale",
+
+onTrack:
+"In Traccia",
+
+onTrack5:
+"In Traccia",
+
+open:
+"Aperto",
+
+outOfScope:
+"Fuori Ambito:",
+
+outstanding:
+"In Sospeso",
+
+overBudget:
+"Oltre il Bilancio",
+
+overallStatus:
+"Stato Generale",
+
+partiallyCompleted:
+"Parzialmente Completato",
+
+period:
+"Periodo:",
+
+planned:
+"Pianificato",
+
+plannedDate:
+"Data Pianificata",
+
+plannedDuration:
+"Durata Pianificata",
+
+preparedBy:
+"Preparato da",
+
+preparedBy3:
+"Preparato da:",
+
+print:
+"Stampa",
+
+priority:
+"Priorità",
+
+probability:
+"Probabilità",
+
+programCode:
+"Codice Programma",
+
+programDashboard:
+"Cruscotto Programma",
+
+programInformation:
+"Informazioni sul Programma",
+
+programManager:
+"Responsabile del Programma",
+programName:
+"Nome del Programma",
+
+programOverviewReport:
+"RAPPORTO GENERALE DEL PROGRAMMA",
+
+programType:
+"Tipo di Programma",
+
+progress:
+"Progresso",
+
+progressPerformanceUpdate:
+"Aggiornamento su Progresso e Prestazioni",
+
+project:
+"Progetto",
+
+projectCharter:
+"DOCUMENTO DI AVVIO DEL PROGETTO",
+
+projectClosureApproval:
+"Approvazione della Chiusura del Progetto",
+
+projectClosureReport:
+"RAPPORTO DI CHIUSURA DEL PROGETTO",
+
+projectCode:
+"Codice Progetto",
+
+projectInformation:
+"Informazioni sul Progetto",
+
+projectInitiationDocument:
+"DOCUMENTO DI AVVIO DEL PROGETTO",
+
+projectManager:
+"Responsabile del Progetto",
+
+projectName:
+"Nome del Progetto",
+
+projectReport:
+"Rapporto di Progetto",
+
+projectSponsor:
+"Sponsor del Progetto",
+
+projectStatusReport:
+"RAPPORTO SULLO STATO DEL PROGETTO",
+
+projects:
+"Progetti",
+
+recommendation:
+"Raccomandazione",
+
+remaining:
+"Rimanente",
+
+reportDate:
+"Data del Rapporto",
+
+reportingPeriod:
+"Periodo di Rendicontazione",
+
+resolved:
+"Risolto",
+
+risk:
+"Rischio",
+
+role:
+"Ruolo",
+
+satisfactory:
+"Soddisfacente",
+
+signature:
+"Firma",
+
+skillsCompetenciesAcquired:
+"Competenze e Capacità Acquisite",
+
+spent:
+"Speso",
+
+spent1:
+"Speso",
+
+status:
+"Stato",
+
+strategicPortfolioSummary:
+"Sintesi Strategica del Portafoglio",
+
+submittedTo:
+"Presentato a",
+
+success:
+"Successo",
+
+target:
+"Obiettivo",
+
+thisCertificateIsProudlyPresentedTo:
+"Questo certificato è conferito con orgoglio a",
+
+to:
+"A",
+
+total:
+"TOTALE",
+
+totalBeneficiaries:
+"Beneficiari Totali",
+
+totalBudget:
+"Bilancio Totale",
+
+totalSpent:
+"Totale Speso",
+
+underBudget:
+"Sotto il Bilancio",
+
+utilization:
+"Utilizzo",
+
+utilized:
+"Utilizzato",
+
+variance:
+"Scostamento",
+},
+
+platformModule: {
+actions:
+"Azioni",
+
+administrativeRecoveryOfGlobalSystemEntities:
+"Ripristino amministrativo delle entità globali del sistema e dei record di identità",
+
+administrator:
+"Amministratore",
+
+allEntities:
+"Tutte le Entità",
+
+allHistory:
+"Cronologia Completa",
+
+back:
+"Indietro",
+
+backToSystemHealthProtection:
+"Torna a Integrità e Protezione del Sistema",
+enus: 'it-IT',
+
+ps10Pe3: 'ps-10 pe-3',
+
+ps12Pe4Textstart: 'ps-12 pe-4 text-start',
+critical:
+"Critico",
+
+dataIntegrity:
+"Integrità dei Dati",
+
+dateRange:
+"Intervallo di Date",
+
+deleteAllPermanently:
+"Elimina Tutto Definitivamente",
+
+deletePermanently:
+"Elimina Definitivamente",
+
+deletedRecords:
+"Record Eliminati",
+
+deletionReason:
+"MOTIVO DELL’ELIMINAZIONE",
+
+duplicationRate:
+"Tasso di Duplicazione",
+
+ecosystemwideHealthPerformanceAndInfrastructureMonitoring:
+"Monitoraggio globale dello stato di salute, delle prestazioni e dell’infrastruttura del sistema",
+
+entityClass:
+"Classe Entità",
+
+globalArchive:
+"Archivio Globale",
+
+globalDeleted:
+"Eliminati Globalmente",
+
+globalIdentifier:
+"Identificatore Globale",
+
+governanceLevel:
+"Livello di Governance",
+
+healthStatus:
+"Stato di Salute",
+
+infrastructure:
+"Infrastruttura",
+
+last30Days:
+"Ultimi 30 Giorni",
+
+last7Days:
+"Ultimi 7 Giorni",
+
+last90Days:
+"Ultimi 90 Giorni",
+
+lastDiagnosticScan:
+"Ultima Scansione Diagnostica",
+
+latency:
+"Latenza",
+
+noReasonProvided:
+"Nessun motivo fornito",
+
+open:
+"Aperto",
+
+operational:
+"Operativo",
+
+operationalHealth:
+"Salute Operativa",
+
+organizationRef:
+"Riferimento Organizzazione",
+
+overallHealthScore:
+"Punteggio Complessivo di Salute",
+
+performance:
+"Prestazioni",
+
+permanentlyDeleteMultipleRecords:
+"Elimina Definitivamente Più Record",
+
+permanentlyDeleteRecord:
+"Elimina Definitivamente il Record",
+
+platformAdminOnly:
+"Solo Amministratori della Piattaforma",
+
+platformAdminSettings:
+"Impostazioni Amministratore della Piattaforma",
+
+platformGovernanceVault:
+"Archivio di Governance della Piattaforma",
+
+platformSettingsGovernance:
+"Governance delle Impostazioni della Piattaforma",
+
+purgeEligible:
+"Idoneo all’Eliminazione Permanente",
+
+purgeEntity:
+"Elimina Definitivamente Entità",
+
+purgeSelected:
+"Elimina Definitivamente Selezionati",
+
+recordCompletion:
+"Completezza del Record",
+
+recordPermanentlyDeleted:
+"Record eliminato definitivamente",
+
+recordRestoredSuccessfully:
+"Record ripristinato con successo",
+
+recoverable:
+"Recuperabile",
+
+restore:
+"Ripristina",
+
+restoreAll:
+"Ripristina Tutto",
+
+restoreMultipleRecords:
+"Ripristina Più Record",
+
+restoreRecord:
+"Ripristina Record",
+
+restoreSelected:
+"Ripristina Selezionati",
+
+runFullDiagnostics:
+"Esegui Diagnostica Completa",
+
+scanningSystem:
+"Scansione del sistema in corso...",
+
+searchGlobalEntities:
+"Cerca entità globali...",
+
+securityProtection:
+"Sicurezza e Protezione",
+
+selectAll:
+"Seleziona Tutto",
+
+selected:
+"selezionati",
+
+syncConsistency:
+"Coerenza della Sincronizzazione",
+
+timestamp:
+"Data e Ora",
+
+uptime:
+"Tempo di Operatività",
+
+validationAccuracy:
+"Accuratezza della Validazione",
+
+vaultIsEmpty:
+"L'archivio è vuoto",
+
+warning:
+"Avviso",
+
+annualProgramsReportSubtitle:
+"Rapporto strategico completo sui risultati, le prestazioni e la pianificazione per l'anno successivo",
+},
+
+organizationModule: {
+aExecutiveSummary: "A. Riepilogo Esecutivo",
+achieved: "Raggiunto",
+achieved16: "Raggiunto",
+achievement: "Risultato",
+achievementLevel: "Livello di Raggiungimento",
+actions: "Azioni",
+active: "Attivo",
+activeGrants: "Sovvenzioni Attive",
+activeGrantsManagement: "Gestione delle Sovvenzioni Attive",
+activeProjects: "Progetti Attivi",
+activities: "Attività",
+activitiesProgress: "Progresso delle Attività",
+activity: "Attività",
+actual: "Effettivo",
+actualDate: "Data Effettiva",
+actualDuration: "Durata Effettiva",
+addGrant: "Aggiungi Sovvenzione",
+addNewGrant: "Aggiungi Nuova Sovvenzione",
+advanced: "Avanzate",
+allCountries: "Tutti i Paesi",
+allDonors: "Tutti i Donatori",
+allProjects: "(Tutti i Progetti)",
+allStatus: "Tutti gli Stati",
+allocated: "Allocato",
+amount: "Importo",
+amountMustBeGreaterThan0: "L’importo deve essere maggiore di 0",
+annual: "Annuale",
+annualProgramsReport: "Rapporto Annuale dei Programmi",
+approvalRate: "Tasso di Approvazione",
+approvalSignoff: "Approvazione e Firma",
+approvedBy: "Approvato da:",
+areYouSureYouWantTo: "Sei sicuro di voler eliminare questo documento?",
+area: "Area",
+atRisk: "A Rischio",
+auditHistory: "Cronologia Audit",
+autoaggregatedFromRealSystemData: "Aggregato automaticamente dai dati reali del sistema",
+autodetect: "Rilevamento Automatico",
+autodetectRisks: "Rileva Automaticamente i Rischi",
+autodetectedRisks: "Rischi Rilevati Automaticamente",
+autogenerated: "Generato Automaticamente",
+available: "Disponibile",
+bKeyAchievements: "B. Risultati Principali",
+back: "Indietro",
+backToRiskCompliance: "Torna a Rischi e Conformità",
+basic: "Base",
+biannual: "Semestrale",
+budget: "Bilancio",
+budget12: "Bilancio",
+budgetUtilization: "Utilizzo del Bilancio",
+budgetUtilization11: "Utilizzo del Bilancio",
+budgetVsSpentBySector: "Bilancio vs Spesa per Settore",
+budgeted: "Pianificato a Bilancio",
+by: "da",
+cProgramGrantPerformance: "C. Performance dei Programmi e delle Sovvenzioni",
+cancel: "Annulla",
+category: "Categoria",
+certificateNo: "Numero Certificato",
+certificateOfCompletion: "CERTIFICATO DI COMPLETAMENTO",
+challenge: "Sfida",
+challengesIssues: "Sfide e Problemi",
+changeHistory: "Cronologia delle Modifiche",
+chooseFile: "Seleziona File",
+clickToOpenModule: "Fai clic per aprire il modulo",
+clickToOpenModule27: "Fai clic per aprire il modulo",
+clickToViewActiveGrants: "Fai clic per visualizzare le Sovvenzioni Attive",
+clickToViewAnnualReport: "Fai clic per visualizzare il Rapporto Annuale",
+clickToViewProposalPipeline: "Fai clic per visualizzare la Pipeline delle Proposte",
+clickToViewReportingSchedule: "Fai clic per visualizzare il Calendario di Rendicontazione",
+close: "Chiudi",
+closedBy: "Chiuso da:",
+closedGrants: "Sovvenzioni Chiuse",
+code: "Codice",
+cofunder: "Cofinanziatore",
+cofunderName: "Nome del Cofinanziatore",
+cofunderName8: "Nome del cofinanziatore",
+cofunding: "Cofinanziamento",
+
+comingSoon: "Prossimamente",
+committed: "Impegnato",
+completed: "Completato",
+completedGrants: "Sovvenzioni Completate",
+completedProjects: "Progetti Completati",
+completion: "Completamento",
+completionDate: "Data di Completamento",
+confirmDelete: "Conferma Eliminazione",
+count: "Conteggio",
+country: "Paese",
+createGrant: "Crea Sovvenzione",
+created: "Creato il:",
+critical: "Critico",
+currency: "Valuta *",
+dChallengesConstraints: "D. Sfide e Vincoli",
+dataSource: "Fonte dei Dati",
+date: "Data",
+dates: "Date",
+datesReporting: "Date e Rendicontazione",
+days: "giorni",
+delayed: "In Ritardo",
+delete: "Elimina",
+deliverable: "Risultato Atteso",
+department: "Dipartimento",
+describeChallengesAndOperationalConstraints: "Descrivi le sfide e i vincoli operativi...",
+description: "Descrizione",
+document: "Documento n.",
+documentDeletedSuccessfully: "Documento eliminato con successo",
+documentName: "Nome Documento",
+documentType: "Tipo di Documento",
+documentUploadFailedPleaseTryAgain: "Caricamento del documento non riuscito. Riprova.",
+documents: "Documenti",
+donor: "Donatore",
+donorName: "Nome del Donatore *",
+donorNameIsRequired: "Il nome del donatore è obbligatorio",
+donorProject: "Donatore e Progetto",
+donorReference: "Riferimento del Donatore",
+donorfunder: "Donatore/Finanziatore",
+download: "Scarica",
+due: "In Scadenza",
+dueDate: "Data di Scadenza:",
+duration: "Durata",
+duration21: "Durata",
+ePipelineFutureOutlook: "E. Pipeline e Prospettive Future",
+edit: "Modifica",
+edit1: "Modifica",
+editable: "Modificabile",
+editableByAdminCountryDirectorProgram: "Modificabile da: Amministratore, Direttore Paese, Responsabile Programma",
+egDonref001: "es. DON-REF-001",
+egEducation: "es. Istruzione",
+egEuropeanUnion: "es. Unione Europea",
+egGr2024001: "es. GR-2024-001",
+en: "it",
+endDate: "Data di Fine",
+endDate10: "Data di Fine *",
+endDateIsRequired: "La data di fine è obbligatoria",
+endDateMustBeAfterStart: "La data di fine deve essere successiva alla data di inizio",
+
+enterDocumentName: "Inserisci il nome del documento",
+enterExecutiveSummaryHere: "Inserisci qui il riepilogo esecutivo...",
+enterGrantName: "Inserisci il nome della sovvenzione",
+enterManagementNotesLessonsLearnedDonor: "Inserisci note di gestione, lezioni apprese e osservazioni del donatore...",
+enterStrategicOutlookForNextYear: "Inserisci la prospettiva strategica per il prossimo anno...",
+evaluateAllProjects: "Valuta Tutti i Progetti",
+evaluating: "Valutazione in corso...",
+excellent: "Eccellente",
+executiveSummary: "Riepilogo Esecutivo",
+exportPdf: "Esporta PDF",
+fManagementNotes: "F. Note di Gestione",
+failedToDeleteDocument: "Impossibile eliminare il documento",
+failedToDownloadDocument: "Impossibile scaricare il documento",
+failedToLoadDashboardData: "Impossibile caricare i dati del cruscotto",
+failedToLoadRiskDetails: "Impossibile caricare i dettagli del rischio",
+failedToLoadRiskRegistry: "Impossibile caricare il registro dei rischi",
+failedToViewDocument: "Impossibile visualizzare il documento",
+finalProjectDocumentation: "Documentazione Finale del Progetto",
+finance: "Finanza",
+financialDetails: "Dettagli Finanziari",
+from: "Da",
+fullyFunctionalAndReadyToUse: "Completamente funzionale e pronto all’uso",
+gap2: "gap-2",
+generatedOn: "Generato il",
+good: "Buono",
+grantAmount: "Importo della Sovvenzione",
+grantAmount7: "Importo della Sovvenzione *",
+grantDescription: "Descrizione della sovvenzione...",
+grantDetails: "Dettagli della Sovvenzione",
+grantIdentification: "Identificazione della Sovvenzione",
+grantInformation: "Informazioni sulla Sovvenzione",
+grantName: "Nome della Sovvenzione",
+grantName6: "Nome della Sovvenzione *",
+grantNameIsRequired: "Il nome della sovvenzione è obbligatorio",
+grantNumber: "Numero della Sovvenzione",
+grantNumber5: "Numero della Sovvenzione *",
+grantNumberIsRequired: "Il numero della sovvenzione è obbligatorio",
+grantPeriod: "Periodo della Sovvenzione",
+grantProgressReport: "Rapporto sul Progresso della Sovvenzione",
+grantStatus: "Stato della Sovvenzione",
+high: "Alto",
+high23: "Alto",
+highlights: "Punti Salienti",
+hoursCompleted: "Ore Completate",
+identifyAssessAndManageOrganizationalRisks: "Identificare, valutare e gestire i rischi organizzativi",
+impact: "Impatto",
+implementingPartner: "Partner di Implementazione",
+import: "Importa",
+improvement: "Miglioramento",
+improving: "In Miglioramento",
+inProgress: "In Corso",
+inScope: "Nell’Ambito:",
+incidentsRelatedToThisRisk: "Incidenti Relativi a Questo Rischio",
+increasing: "In Aumento",
+indicator: "Indicatore",
+indicatorsAchievement: "Raggiungimento degli Indicatori",
+intermediate: "Intermedio",
+issue: "Problema",
+issuedBy: "Emesso da",
+k1ExecutiveSummary: "1. Riepilogo Esecutivo",
+k1ProjectBackground: "1. Contesto del Progetto",
+k2DeliverablesStatus: "2. Stato dei Risultati Attesi",
+k2KeyAccomplishments: "2. Principali Risultati Raggiunti",
+k2ProjectObjectives: "2. Obiettivi del Progetto",
+k2StrategicObjectives: "2. Obiettivi Strategici",
+k3PlannedActivitiesNextPeriod: "3. Attività Pianificate (Periodo Successivo)",
+k3ProjectAchievements: "3. Risultati del Progetto",
+k3ProjectPortfolio: "3. Portafoglio Progetti",
+k3ProjectScope: "3. Ambito del Progetto",
+k4LessonsLearned: "4. Lezioni Apprese",
+k4MilestoneStatus: "4. Stato delle Milestone",
+k4ProgramlevelMetrics: "4. Metriche a Livello di Programma",
+k4ProjectTeamStructure: "4. Struttura del Team di Progetto",
+k5FinalBudgetSummary: "5. Riepilogo Finale del Bilancio",
+k5IssuesConcerns: "5. Problemi e Preoccupazioni",
+k5KeyMilestones: "5. Milestone Principali",
+k5ResourceAllocation: "5. Allocazione delle Risorse",
+k6KeyRisks: "6. Rischi Principali",
+k6RecommendationsForFutureProjects: "6. Raccomandazioni per Progetti Futuri",
+k6RiskRegister: "6. Registro dei Rischi",
+k6ThematicAreas: "6. Aree Tematiche",
+k7Acknowledgments: "7. Ringraziamenti",
+k7BudgetStatus: "7. Stato del Bilancio",
+k7KeyAchievements: "7. Risultati Principali",
+k7KeyAssumptions: "7. Ipotesi Principali",
+k8ChallengesMitigation: "8. Sfide e Misure di Mitigazione",
+k9NextSteps: "9. Prossimi Passi",
+
+lastUpdated: "Ultimo Aggiornamento",
+lastUpdated3: "Ultimo aggiornamento:",
+level: "Livello",
+likelihood: "Probabilità",
+linkedProjectReference: "Riferimento al Progetto Collegato",
+linkedTo: "Collegato a",
+loadingOrganizationAndOperatingUnitData: "Caricamento dei dati dell’organizzazione e dell’unità operativa...",
+loadingProjects: "Caricamento dei progetti...",
+
+low: "Basso",
+low25: "Basso",
+
+m1519l7777: "M15 19l-7-7 7-7",
+
+manageAndTrackGrantedFunds: "Gestire e monitorare i fondi assegnati",
+manual: "Manuale",
+
+medium: "Medio",
+medium24: "Medio",
+
+milestone: "Milestone",
+milestonesWillBeAddedFromProject: "Le milestone saranno aggiunte dal calendario di rendicontazione del progetto",
+
+mitigation: "Mitigazione",
+mitigationPlan: "Piano di Mitigazione",
+mitigationSuggestions: "Suggerimenti di Mitigazione",
+
+moduleStatusLegend: "Legenda Stato Modulo:",
+moduleUnderDevelopment: "Modulo in fase di sviluppo",
+
+monthly: "Mensile",
+monthlyTrend: "Tendenza Mensile",
+
+months: "mesi",
+
+name: "Nome",
+nameOfResponsiblePerson: "Nome della persona responsabile",
+
+next: "Avanti",
+
+nextStepsPlans: "Prossimi Passi e Piani",
+
+no: "No",
+
+noActiveProjectsOrGrantsFound: "Nessun progetto o sovvenzione attiva trovata per questo anno. Grafici e metriche si basano esclusivamente su dati reali.",
+noChangeHistory: "Nessuna cronologia delle modifiche",
+noData: "Nessun dato disponibile",
+noDataEnteredYetClickEdit: "Nessun dato inserito. Fare clic su Modifica per aggiungerlo.",
+noDocumentsUploadedYet: "Nessun documento caricato",
+noMilestonesYet: "Nessuna milestone disponibile",
+noMitigationPlanSpecified: "Nessun piano di mitigazione specificato",
+noOperatingUnitSelected: "Nessuna unità operativa selezionata",
+noProjectsAvailablePleaseCreateA: "⚠️ Nessun progetto disponibile. Creare prima un progetto.",
+noProjectsFound: "Nessun Progetto Trovato",
+noRelatedIncidents: "Nessun incidente correlato",
+noRisksDetected: "Nessun rischio rilevato",
+
+notCompleted: "Non Completato",
+notStarted: "Non Avviato",
+
+notes: "Note",
+
+objective: "Obiettivo",
+
+offTrack: "Fuori Traccia",
+
+officialSeal: "Timbro Ufficiale",
+
+onHold: "In Sospeso",
+
+onTrack: "In Traccia",
+onTrack18: "In Traccia",
+onTrack22: "In Traccia",
+
+ongoing: "In Corso",
+ongoingProjects: "Progetti in Corso",
+
+open: "Aperto",
+
+outOfScope: "Fuori Ambito:",
+
+outstanding: "In Sospeso",
+
+overBudget: "Oltre il Bilancio",
+
+overallStatus: "Stato Generale",
+
+overdue: "Scaduto",
+
+overview: "Panoramica",
+
+overviewOfRisksAndIncidentsWith: "Panoramica dei rischi e degli incidenti con KPI e analisi delle tendenze",
+
+owner: "Responsabile",
+
+partiallyCompleted: "Parzialmente Completato",
+
+pending: "In Sospeso",
+pipelineValue: "Valore della Pipeline",
+
+planned: "Pianificato",
+planned26: "Pianificato",
+
+plannedDate: "Data Pianificata",
+plannedDuration: "Durata Pianificata",
+
+planning: "Pianificazione",
+
+pleaseSelectDocumentTypeEnterName: "Seleziona il tipo di documento, inserisci il nome e carica il file",
+
+preparedBy: "Preparato da",
+preparedBy19: "Preparato da:",
+
+previous: "Precedente",
+
+print: "Stampa",
+
+priority: "Priorità",
+
+probability: "Probabilità",
+
+programCode: "Codice Programma",
+
+programDashboard: "Cruscotto del Programma",
+
+programInformation: "Informazioni sul Programma",
+
+programManager: "Responsabile del Programma",
+
+programName: "Nome del Programma",
+
+programOverviewReport: "RAPPORTO GENERALE DEL PROGRAMMA",
+
+programType: "Tipo di Programma",
+
+progress: "Progresso",
+
+progressPerformanceUpdate: "Aggiornamento su Progresso e Prestazioni",
+
+project: "Progetto",
+
+projectCharter: "STATUTO DEL PROGETTO",
+
+projectClosureApproval: "Approvazione della Chiusura del Progetto",
+
+projectClosureReport: "RAPPORTO DI CHIUSURA DEL PROGETTO",
+
+projectCode: "Codice Progetto",
+
+projectId: "ID Progetto:",
+
+projectInformation: "Informazioni sul Progetto",
+
+projectInitiationDocument: "Documento di Avvio del Progetto",
+
+projectKeyDocuments: "Documenti Principali del Progetto",
+
+projectManager: "Responsabile del Progetto",
+
+projectName: "Nome del Progetto *",
+projectName20: "Nome Progetto",
+
+projectNameIsRequired: "Il nome del progetto è obbligatorio",
+
+projectSponsor: "Sponsor del Progetto",
+
+projectStatusReport: "RAPPORTO SULLO STATO DEL PROGETTO",
+
+projects: "Progetti",
+projects17: "Progetti",
+
+projectsByStatus: "Progetti per Stato",
+
+proposalsSubmitted: "Proposte Presentate",
+
+ps10Pe4Textstart: "ps-10 pe-4 text-start",
+
+quarterly: "Trimestrale",
+
+readonly: "Sola Lettura",
+
+recommendation: "Raccomandazione",
+
+relatedIncidents: "Incidenti Correlati",
+
+relatedRisk: "Rischio Correlato",
+
+remaining: "Rimanente",
+
+remarks: "Osservazioni:",
+
+reportDate: "Data del Rapporto",
+
+reportingFrequency: "Frequenza di Rendicontazione",
+
+reportingPeriod: "Periodo di Rendicontazione",
+
+reportingStatus: "Stato della Rendicontazione",
+
+resolved: "Risolto",
+
+responsible: "Responsabile",
+
+responsible2: "Responsabile:",
+
+responsiblePerson: "Persona Responsabile *",
+
+responsiblePersonIsRequired: "La persona responsabile è obbligatoria",
+
+reviewDate: "Data di Revisione",
+
+risk: "Rischio",
+
+riskCompliance: "Rischi e Conformità",
+
+riskDetails: "Dettagli del Rischio",
+
+riskMetrics: "Metriche del Rischio",
+
+role: "Ruolo",
+
+satisfactory: "Soddisfacente",
+
+save: "Salva",
+
+saveFailed: "Salvataggio non riuscito",
+
+savedSuccessfully: "Salvato con successo",
+
+score: "Punteggio",
+
+searchGrants: "Cerca sovvenzioni...",
+
+sector: "Settore",
+
+sectorIsRequired: "Il settore è obbligatorio",
+
+sectorTheme: "Settore / Tema *",
+
+selectAProject: "Seleziona un progetto...",
+
+selectDocumentType: "Seleziona il tipo di documento",
+
+selectGrant: "Seleziona Sovvenzione",
+selectProject: "-- Seleziona Progetto --",
+selectProject29: "Seleziona progetto...",
+selectProject30: "Seleziona Progetto",
+
+severity: "Gravità",
+
+signature: "Firma",
+
+skillsCompetenciesAcquired: "Competenze e Abilità Acquisite",
+
+spent: "Speso",
+spent13: "Speso",
+spent15: "Speso",
+
+stable: "Stabile",
+
+startDate: "Data di Inizio",
+startDate9: "Data di Inizio *",
+
+startDateIsRequired: "La data di inizio è obbligatoria",
+
+status: "Stato",
+
+strategicAnnualReport: "Rapporto Strategico Annuale",
+
+strategicOutlook: "Prospettive Strategiche",
+
+strategicPortfolioSummary: "Sintesi Strategica del Portafoglio",
+
+submitted: "Presentato:",
+submittedTo: "Presentato a",
+
+success: "Successo",
+
+suspended: "Sospeso",
+
+sync: "Sincronizza",
+
+syncWithProjects: "Sincronizza con i Progetti",
+
+target: "Obiettivo",
+
+thisCertificateIsProudlyPresentedTo: "Questo certificato è conferito con orgoglio a",
+
+thisGrantIsLinkedTo: "Questa sovvenzione è collegata a:",
+
+timeline: "Cronologia",
+
+title: "Titolo",
+
+to: "A",
+
+top5PriorityRisks: "I 5 Rischi Prioritari Principali",
+
+total: "TOTALE",
+total28: "Totale",
+
+totalAmount: "Importo Totale",
+
+totalBeneficiaries: "Beneficiari Totali",
+
+totalBudget: "Bilancio Totale",
+totalBudget14: "Bilancio Totale",
+
+totalGrantValue: "Valore Totale della Sovvenzione",
+
+totalGrants: "Totale Sovvenzioni",
+
+totalProjects: "Progetti Totali",
+
+totalSpent: "Totale Speso",
+
+trackAndManageIncidentsAndMonitor: "Monitora e gestisci gli incidenti e controlla lo stato di risoluzione",
+
+trigger: "Attivatore",
+
+type: "Tipo:",
+
+underBudget: "Sotto Budget",
+
+updateGrant: "Aggiorna Sovvenzione",
+
+upload: "Carica",
+
+uploadDocument: "Carica documento",
+uploadDocument4: "Carica Documento",
+
+uploadedDocuments: "Documenti Caricati",
+
+useUploadDocumentButtonToUpload: "Utilizza il pulsante Carica documento per caricare documenti",
+
+utilization: "Utilizzo",
+
+utilized: "Utilizzato",
+
+variance: "Scostamento",
+
+version: "Versione",
+
+view: "Visualizza",
+
+viewDetails: "Visualizza Dettagli",
+
+year: "Anno",
+
+yes: "Sì",
+
+youDontHavePermission: "Non disponi delle autorizzazioni necessarie per accedere a questa pagina.",
+
+annualProgramsSubtitle: "Panoramica annuale delle prestazioni dei programmi e della rendicontazione",
+proposalPipelineSubtitle:
+  "Monitora le opportunità di finanziamento, sviluppa proposte e gestisci l’intero ciclo di vita dal concetto al progetto",
+
+activitiesSectionSubtitle:
+  "Il piano di implementazione si sincronizza automaticamente con le attività e riflette la cronologia del progetto",
+annualProgramsReportSubtitle:
+  "Rapporto strategico completo sui risultati raggiunti, le prestazioni e la pianificazione per l’anno successivo",
+ },
+orgReports: {
+active: "Attivo",
+amount: "Importo",
+applicants: "Candidati",
+archived: "Archiviato",
+attendance: "Presenze",
+attendanceAnalytics: "Analisi delle Presenze",
+attendanceRateByDepartment: "Tasso di Presenza per Dipartimento",
+auditGovernance: "Audit e Governance",
+auditLog: "Log di Audit",
+auditTrailLog: "Registro delle Verifiche (Audit Trail)",
+avgstaffYear: "Media per Dipendente (Anno)",
+backToReports: "Torna ai Report",
+candidates: "Candidati",
+candidatesPerVacancy: "Candidati per Posizione Vacante",
+complianceRiskAnalytics: "Analisi di Conformità e Rischi",
+complianceShieldStatus: "Stato dello Scudo di Conformità",
+contracts: "Contratti",
+contractsExpiring: "Contratti in Scadenza",
+count: "Conteggio",
+dataSources: "Fonti Dati",
+days: "giorni",
+daysOpen: "Giorni di Apertura",
+daysTaken: "Giorni Impiegati",
+disciplinaryCases: "Procedimenti Disciplinari",
+downloadRiskRegister: "Scarica Registro dei Rischi",
+estAnnualPayroll: "Costo Annuale Stimato del Personale",
+exited: "Usciti",
+exportToExcel: "Esporta in Excel",
+female: "Femmina",
+files: "File",
+financialControlDonorCompliance: "Controllo Finanziario e Conformità ai Donatori",
+flaggedAnomalies: "Anomalie Segnalate",
+fullManagementReport: "Report Completo di Gestione",
+genderDistribution: "Distribuzione di Genere",
+headcountByContractType: "Personale per Tipo di Contratto",
+headcountByDepartment: "Personale per Dipartimento",
+hiringEffectivenessFairness: "Efficacia ed Equità del Reclutamento",
+hrPlanningLiabilityTracking: "Pianificazione HR e Monitoraggio delle Passività",
+lastRefresh: "Ultimo Aggiornamento",
+late: "In Ritardo",
+leaveAnalytics: "Analisi dei Congedi",
+leaveBalancesByType: "Saldo Congedi per Tipologia",
+leaveLiabilityProjection: "Proiezione delle Passività per Congedi",
+leaves: "Congedi",
+male: "Maschio",
+managementAndAuditreadyHrInsights: "Analisi HR per la Direzione e Pronte per l’Audit",
+missingDocuments: "Documenti Mancanti",
+ongoingScreening: "Selezione in Corso",
+operationalDisciplineFairness: "Disciplina Operativa ed Equità",
+overallAttendanceRate: "Tasso Complessivo di Presenza",
+overtime: "Straordinari",
+payroll: "Buste Paga",
+payrollByProject: "Costo del Personale per Progetto",
+payrollCostAnalytics: "Analisi dei Costi del Personale",
+payrollCostByMonth: "Costo del Personale per Mese",
+pendingAppraisals: "Valutazioni in Sospeso",
+policies: "Politiche",
+position: "Posizione",
+printReport: "Stampa Report",
+profiles: "Profili",
+project: "Progetto",
+recruitmentAnalytics: "Analisi del Reclutamento",
+reportsAnalytics: "Report e Analisi",
+scales: "Scale",
+scope: "Ambito",
+selectionRate: "Tasso di Selezione",
+status: "Stato",
+strategicWorkforceOverview: "Panoramica Strategica della Forza Lavoro",
+syncData: "Sincronizza Dati",
+target45Days: "Obiettivo: 45 giorni",
+timetohire: "Tempo di Assunzione",
+total: "Totale",
+totalDaysUsed: "Totale Giorni Utilizzati",
+totalEstimatedAnnualPayrollCost: "Costo Totale Annuale Stimato del Personale",
+unusedLeaveAccrualFinancialProjection: "Proiezione Finanziaria dei Congedi Accumulati Non Utilizzati",
+vacancies: "Posizioni Vacanti",
+vacancyAging: "Anzianità delle Posizioni Vacanti",
+viewAnalytics: "Visualizza Analisi",
+workforceAnalytics: "Analisi della Forza Lavoro",
+},
+
+mealTabs: {
+actions: "Azioni",
+activity: "Attività",
+add: "Aggiungi",
+addUser: "Aggiungi utente",
+advancedOptions: "Opzioni avanzate",
+allEvents: "Tutti gli eventi",
+allQuestions: "Tutte le domande",
+allowAnonymousSubmissions: "Consenti invii anonimi",
+allowSubmissionsToThisFormWithout: "Consenti l’invio di questo modulo senza nome utente e password",
+and: "e",
+android: "Android",
+anyoneCanViewSubmissionsMadeTo: "Chiunque può visualizzare gli invii effettuati a questo modulo",
+anyoneCanViewThisForm: "Chiunque può visualizzare questo modulo",
+applySavedExportSettings: "Applica le impostazioni di esportazione salvate",
+approved: "Approvato",
+arabic: "Arabo",
+arabicAra: "Arabo (ara)",
+archiveProject: "Archivia Progetto",
+archiveProjectToStopAcceptingSubmissions: "Archivia il progetto per interrompere l’accettazione degli invii.",
+archived: "Archiviato",
+areYouSureYouWantTo: "Sei sicuro di voler archiviare questo sondaggio?",
+attachFiles: "Allega file",
+attachedFiles: "File allegati",
+between: "Tra",
+cancel: "Annulla",
+close: "Chiudi",
+cloudFolder: "Cartella Cloud",
+collectData: "Raccogli dati",
+collectData4: "Raccogli Dati",
+copy: "Copia",
+copyEmbedCode: "Copia codice di incorporamento",
+copyTeamFromAnotherProject: "Copia il team da un altro progetto",
+copyThisEmbedCode: "Copia questo codice di incorporamento:",
+copyThisLink: "Copia questo collegamento:",
+country: "Paese",
+countryRequired: "Paese (obbligatorio)",
+created: "Creato",
+current: "Corrente",
+currentVersion: "Versione corrente",
+data: "Dati",
+date: "Data",
+defaultReport: "Rapporto predefinito",
+deleteProjectAndData: "Elimina progetto e dati",
+deploy: "PUBBLICA",
+deployed: "(pubblicato)",
+deployed5: "Pubblicato",
+deployments: "Pubblicazioni",
+description: "Descrizione",
+download: "Scarica",
+downloadAndroidApkForOfflineCollection: "Scarica APK Android per la raccolta dati offline",
+downloadApk: "Scarica APK",
+downloadQr: "Scarica QR",
+downloads: "Download",
+draft: "Bozza",
+dragAndDropFilesHere: "Trascina e rilascia i file qui",
+edit: "Modifica",
+editForm: "Modifica modulo",
+editor: "Editor",
+embed: "Incorpora",
+embedCodeCopiedToClipboard: "Codice di incorporamento copiato negli appunti!",
+embedFormInYourWebsiteUsing: "Incorpora il modulo nel tuo sito web utilizzando un iframe",
+embeddableWebFormCode: "Codice del modulo web incorporabile",
+end: "fine",
+endDate: "Data di Fine",
+english: "Inglese",
+english6: "Inglese",
+enterADate: "Inserisci una data",
+enterUsername: "Inserisci nome utente",
+enus: "it-IT",
+error: "Errore",
+errorDeployingForm: "Errore durante la pubblicazione del modulo",
+eventDescription: "Descrizione evento",
+export: "Esporta",
+exportAllData: "Esporta tutti i dati",
+exportCreatedSuccessfully: "Esportazione creata con successo!",
+exportReport: "Esporta Rapporto",
+exportingActivityLog: "Esportazione del registro attività in corso...",
+exports: "Esportazioni",
+failedToCopyLink: "Impossibile copiare il collegamento",
+fileName: "Nome File",
+files: "File",
+filesFromSurveySubmissionsWillAppear: "I file inviati tramite i sondaggi appariranno qui",
+filesManager: "Gestione File",
+filesSyncedSuccessfully: "File sincronizzati con successo!",
+filterBy: "Filtra per",
+filters: "Filtri",
+formBuilderInterface: "Interfaccia di Creazione Moduli",
+formChanges: "Modifiche al Modulo",
+formDeployedSuccessfully: "Modulo pubblicato con successo!",
+formLink: "Collegamento al Modulo:",
+formLinkCopiedToClipboard: "Collegamento del modulo copiato negli appunti!",
+formLinkCopiedToClipboard2: "Collegamento del modulo copiato negli appunti!",
+frequency: "Frequenza",
+from: "Da",
+gallery: "Galleria",
+general: "Generale",
+hideFields: "Nascondi campi",
+hideHistory: "NASCONDI CRONOLOGIA",
+imageGallery: "Galleria Immagini",
+imagesFromSurveySubmissionsWillAppear: "Le immagini inviate tramite i sondaggi appariranno qui",
+imagesSyncedSuccessfully: "Immagini sincronizzate con successo!",
+installIosAppViaTestflight: "Installa l’app iOS tramite TestFlight",
+ios: "iOS",
+isOwner: "è proprietario",
+language: "Lingua",
+languageSettings: "Impostazioni della lingua",
+languages: "Lingue:",
+lastDeployed: "Ultima Pubblicazione",
+lastModified: "Ultima Modifica",
+latestSubmission: "Ultimo Invio",
+learnMore: "Scopri di più",
+loadingSubmissions: "Caricamento degli invii in corso...",
+map: "Mappa",
+maxSubmissionsLimit: "Limite Massimo di Invii",
+media: "Media",
+moreActions: "Altre azioni",
+noChartDataAvailableForCurrent: "Nessun dato disponibile per il periodo corrente.",
+noDataAvailable: "Nessun dato disponibile",
+noExportHistory: "Nessuna cronologia di esportazione",
+noExportSettingsSelected: "Nessuna impostazione di esportazione selezionata",
+noFilesAvailable: "Nessun file disponibile",
+noFilesUploadedYet: "Nessun file caricato finora",
+noGpsDataAvailable: "Nessun dato GPS disponibile",
+noImagesAvailable: "Nessuna immagine disponibile",
+noSubmissionDataAvailable: "Nessun dato di invio disponibile",
+noSubmissionsToExport: "Nessun invio da esportare",
+notApproved: "Non approvato",
+notSynced: "Non sincronizzato",
+on: "il",
+onHold: "In sospeso",
+onlineofflineMultipleSubmission: "Online-Offline (invii multipli)",
+onlineofflineMultipleSubmission1: "Online-Offline (invii multipli)",
+onlineonlyMultipleSubmissions: "Solo online (invii multipli)",
+onlineonlyOncePerRespondent: "Solo online (una sola volta per rispondente)",
+onlineonlySingleSubmission: "Solo online (invio singolo)",
+open: "Aperto",
+openTestflight: "Apri TestFlight",
+optional: "Facoltativo",
+orClickHereToBrowse: "oppure fai clic qui per sfogliare",
+owner: "Proprietario",
+past12Months: "Ultimi 12 mesi",
+past31Days: "Ultimi 31 giorni",
+past3Months: "Ultimi 3 mesi",
+past7Days: "Ultimi 7 giorni",
+pasteUrlHere: "Incolla qui l’URL",
+pending: "In Sospeso",
+pending8: "In Sospeso",
+percentage: "Percentuale",
+preview: "Anteprima",
+previewForm: "Anteprima Modulo",
+projectInformation: "Informazioni Progetto",
+projectNameRequired: "Nome Progetto (obbligatorio)",
+qrCode: "Codice QR",
+question: "Domanda",
+questionEditorAndFormStructure: "Editor delle Domande e Struttura del Modulo",
+questions: "domande",
+questions3: "Domande",
+quickLinks: "Collegamenti Rapidi",
+recentProjectActivity: "Attività Recenti del Progetto",
+redeploy: "RIPUBBLICA",
+rejected: "Rifiutato",
+remove: "Rimuovi",
+reports: "Rapporti",
+reports10: "Rapporti",
+respondentsAnsweredThisQuestion: "rispondenti hanno risposto a questa domanda",
+results: "risultati",
+saveChanges: "Salva Modifiche",
+scanQrCode: "Scansiona Codice QR",
+search: "Cerca",
+sector: "Settore",
+sectorRequired: "Settore (obbligatorio)",
+selectAQuestionToAnalyze: "Seleziona una domanda da analizzare",
+selectExportType: "Seleziona il tipo di esportazione",
+settingsSavedSuccessfully: "Impostazioni salvate con successo!",
+shareProject: "Condividi Progetto",
+sharePubliclyByLink: "Condividi pubblicamente tramite collegamento",
+shareTheWebLinkDirectlyWith: "Condividi direttamente il collegamento web con i rispondenti",
+sharing: "Condivisione",
+showAll: "Mostra Tutto",
+showFullHistory: "MOSTRA CRONOLOGIA COMPLETA",
+size: "Dimensione",
+start: "inizio",
+startCollectingDataToSeeSubmissions: "Inizia a raccogliere dati per visualizzare qui gli invii",
+startDate: "Data di Inizio",
+status: "Stato",
+submissionDate: "Data di Invio",
+submissionId: "ID Invio",
+submissionMap: "Mappa degli Invii",
+submissions: "Invii",
+submitSurveyResponsesToEnableData: "Invia risposte al sondaggio per abilitare l’esportazione dei dati",
+submitSurveyResponsesToSeeAnalytics: "Invia risposte al sondaggio per visualizzare qui le analisi",
+submittedBy: "Inviato da",
+submittedBy9: "Inviato da",
+surveyArchivedSuccessfully: "Sondaggio archiviato con successo!",
+surveyDeleted: "Sondaggio eliminato!",
+surveyLanguage: "Lingua del Sondaggio",
+surveyLinkCopiedToClipboard: "Collegamento del sondaggio copiato negli appunti!",
+syncAllFiles: "Sincronizza Tutti i File",
+syncAllImages: "Sincronizza Tutte le Immagini",
+syncToSharepointOnedrive: "Sincronizza con SharePoint / OneDrive",
+synced: "Sincronizzato",
+synced7: "Sincronizzato",
+syncing: "Sincronizzazione in corso...",
+table: "Tabella",
+thisActionCannotBeUndoneAre: "Questa azione non può essere annullata. Sei sicuro?",
+thisSurveyHasNoFileUpload: "Questo sondaggio non contiene domande per il caricamento di file",
+thisSurveyHasNoPhotoQuestions: "Questo sondaggio non contiene domande relative a fotografie",
+total: "Totale",
+totalFiles: "Totale File",
+totalImages: "Totale Immagini",
+totalLocations: "Totale Posizioni",
+transfer: "Trasferisci",
+transferProjectOwnership: "Trasferisci la proprietà del progetto",
+type: "Tipo",
+undeployed: "(non pubblicato)",
+userChanges: "Modifiche Utente",
+validation: "Validazione",
+value: "Valore",
+valueAndHeaderFormat: "Formato dei valori e delle intestazioni",
+version: "Versione",
+versionHistory: "Cronologia Versioni",
+view: "Visualizza",
+viewAndValidate: "Visualizza e Valida",
+viewSubmission: "Visualizza Invio",
+web: "Web",
+whoHasAccess: "Chi ha accesso",
+youCanAlsoAddFilesUsing: "Puoi anche aggiungere file utilizzando un URL",
+  },
+mealSurvey: {
+aapAccountabilityToAffectedPopulations: "AAP (Responsabilità verso le Popolazioni Interessate)",
+aboutKoboImport: "ℹ️ Informazioni sull’Importazione KOBO",
+actions: "Azioni",
+activeSurveys: "Sondaggi Attivi",
+addADescriptionOrHint: "Aggiungi una descrizione o un suggerimento",
+addAtLeastOneQuestionBefore: "Aggiungi almeno una domanda prima di salvare",
+addNotesAboutThisSubmission: "Aggiungi note su questo invio...",
+addOption: "Aggiungi Opzione",
+addQuestion: "+ Aggiungi Domanda",
+addSubmissionDetailsVerifierInfoAnd: "Aggiungi dettagli dell’invio, informazioni del verificatore e metadati di importazione",
+additionalCommentsOrSuggestions: "Commenti o suggerimenti aggiuntivi",
+ahmedHassan: "Ahmed Hassan",
+all: "Tutti",
+allRecords: "Tutti i record",
+allSubmissionsMustBeVerified: "Tutti gli invii devono essere verificati",
+allSurveyForms: "Tutti i moduli di sondaggio",
+allSurveys: "Tutti i Sondaggi",
+allTime: "Sempre",
+allowDataEntryWithoutInternet: "Consenti l’inserimento dati senza connessione Internet",
+allowEditsAfterSubmit: "Consenti modifiche dopo l’invio",
+analyticsDashboard: "Cruscotto Analitico",
+and: "... e",
+appearanceOptional: "Aspetto (facoltativo)",
+approve: "Approva",
+approved: "Approvato",
+approvedSubmissions: "Invii approvati",
+arabic: "Arabo",
+archive: "Archivia",
+archiveThisSurvey: "Archiviare questo sondaggio?",
+archived: "Archiviato",
+archived18: "Archiviato",
+areYouSureYouWantTo: "Sei sicuro di voler eliminare questa domanda?",
+areYouSureYouWantTo15: "Sei sicuro di voler eliminare questo sondaggio? Questa azione non può essere annullata.",
+areYouSureYouWantTo21: "Sei sicuro di voler eliminare questo invio? Questa azione non può essere annullata.",
+askRespondentsForConsentBeforeSurvey: "Richiedi il consenso dei rispondenti prima del sondaggio",
+atLeast2OptionsAreRequired: "Sono richieste almeno 2 opzioni",
+auditTrail: "Registro di Audit",
+avgCompletion: "Completamento Medio",
+back: "Indietro",
+backToDataTable: "Torna alla Tabella Dati",
+backToMeal: "Torna a MEAL",
+backToSubmissions: "Torna agli Invii",
+backToSurveys: "Torna ai Sondaggi",
+backToSurveys3: "Torna ai Sondaggi",
+baseline: "Baseline",
+beneficiarySatisfactionSurvey: "Sondaggio di Soddisfazione dei Beneficiari",
+borderl4: "border-l-4",
+browseAndManageSurveyForms: "Sfoglia e gestisci i moduli di sondaggio",
+calculationFormula: "Formula di Calcolo",
+cancel: "Annulla",
+changeQuestionType: "Cambia tipo di domanda",
+childProtection: "Protezione Minori",
+chooseFormat: "Scegli il formato:",
+close: "Chiudi",
+compact: "Compatto",
+completed: "Completato",
+completionRate: "Tasso di Completamento",
+compliance: "Conformità",
+complianceDataProtection: "🔒 Conformità e Protezione dei Dati",
+configureMasking: "Configura Mascheramento",
+configureModulePreferences: "Configura le preferenze del modulo",
+consentRequired: "Consenso Richiesto",
+country: "Paese",
+createForm: "+ Crea Modulo",
+createSurveyForm: "Crea Modulo di Sondaggio",
+createTemplate: "Crea Modello",
+createYourFirstSurveyFormTo: "Crea il tuo primo modulo di sondaggio per iniziare",
+createYourFirstSurveyTemplateTo: "Crea il tuo primo modello di sondaggio per iniziare",
+createYourFirstSurveyToGet: "Crea il tuo primo sondaggio per iniziare",
+created: "Creato",
+csvForDataAnalysis: "CSV per l’analisi dei dati",
+csvFormatForDataAnalysis: "Formato CSV per l’analisi dei dati",
+custom: "Personalizzato",
+data: "Dati",
+dataCollection: "Raccolta Dati",
+dataManagement: "Gestione Dati",
+dataQuality: "Qualità dei Dati",
+dataRetentionPeriod: "Periodo di Conservazione dei Dati",
+dataValidation: "Validazione dei dati",
+date: "Data",
+dateEnd: "Data Fine",
+dateStarted: "Data di Inizio",
+default: "Predefinito",
+defaultSinglePage: "Predefinito - Pagina Singola",
+defaultValueOptional: "Valore Predefinito (facoltativo)",
+delete: "Elimina",
+deploy: "Pubblica",
+deployed: "Pubblicato",
+deployed17: "Pubblicato",
+describeThePurposeOfThisSurvey: "Descrivi lo scopo di questo sondaggio...",
+description: "Descrizione",
+descriptionOptional: "Descrizione (facoltativa)",
+device: "Dispositivo",
+district: "Distretto",
+draft: "Bozza",
+dropdown: "Menu a tendina",
+duplicate: "Duplica",
+edit: "Modifica",
+edit8: "Modifica",
+editQuestion: "Modifica Domanda",
+editSurveyForm: "Modifica Modulo di Sondaggio",
+editsWillNotAffectLiveData: "Le modifiche non influenzeranno i dati attivi fino alla pubblicazione",
+educationInEmergency: "Educazione in Emergenza",
+eg18: "es. >= 18",
+egAge18: "es. ${age} > 18",
+egAge2: "es. ${age} * 2",
+egAlWahda: "es. Al Wahda",
+egBeneficiariesStaffCommunityLeaders: "es. Beneficiari, Personale, Leader Comunitari",
+egBeneficiarySatisfactionSurvey: "es. Sondaggio di Soddisfazione dei Beneficiari",
+egSanaa: "es. Sana'a",
+endline: "Valutazione Finale",
+english: "Inglese",
+enterANumber: "Inserisci un numero",
+enterDefaultValue: "Inserisci un valore predefinito",
+enterQuestionText: "Inserisci il testo della domanda",
+enterRejectionReason: "Inserisci il motivo del rifiuto:",
+enterYourAnswer: "Inserisci la tua risposta",
+enumeratorsCanModifySubmittedData: "Gli enumeratori possono modificare i dati inviati",
+enus: "en-US",
+error: "Errore",
+errorLoadingSurvey: "Errore nel caricamento del sondaggio",
+errorSavingForm: "Errore nel salvataggio del modulo",
+excellent90: "Eccellente (90+)",
+expand: "Espandi",
+export: "Esporta",
+export16: "⬇ Esporta",
+export9: "⬇️ Esporta",
+exportAsCsv: "Esporta come CSV",
+exportAsCsv12: "Esporta come CSV",
+exportAsExcel: "Esporta come Excel",
+exportAsExcel11: "Esporta come Excel",
+exportAsKoboXlsform: "Esporta come KOBO XLSForm",
+exportAsPdf: "Esporta come PDF",
+exportDetails: "📌 Dettagli Esportazione",
+exportInformation: "ℹ️ Informazioni Esportazione",
+exportReport: "📥 Esporta Rapporto",
+exportSubmission: "Esporta Invio",
+exportSuccessful: "✓ Esportazione completata con successo!",
+exportSurvey: "Esporta Sondaggio",
+exportSurveyData: "📥 Esporta Dati del Sondaggio",
+exportSurveyData10: "Esporta Dati del Sondaggio",
+exporting: "Esportazione in corso",
+exportingAs: "Esportazione come",
+exportingSubmissionData: "Esportazione dei dati inviati...",
+exportingSurveyReports: "Esportazione dei rapporti del sondaggio...",
+failedToLoadSurveyForm: "Impossibile caricare il modulo del sondaggio",
+failedToSaveFormPleaseTry: "Impossibile salvare il modulo. Riprova.",
+failedToSubmitSurvey: "Invio del sondaggio non riuscito",
+fair6074: "Discreto (60-74)",
+fatimaAli: "Fatima Ali",
+filter: "Filtra",
+flatFormatCompatibleWithMostAnalysis: "Formato piatto compatibile con la maggior parte degli strumenti di analisi",
+flexGap3Justifyend: "flex gap-3 justify-end",
+form: "Modulo",
+formMetadata: "Metadati del Modulo",
+formName: "Nome del Modulo",
+formPreview: "Anteprima Modulo",
+formPreview5: "Anteprima Modulo",
+formPublishedSuccessfully: "Modulo pubblicato con successo",
+formSavedAsDraft: "Modulo salvato come bozza",
+formSavedSuccessfully: "Modulo salvato con successo",
+formSavedSuccessfully4: "Modulo salvato con successo!",
+formStyle: "Stile del Modulo",
+formattedReportWithChartsAndSummary: "Rapporto formattato con grafici e statistiche riassuntive",
+generateDonorreadyReportsInMultipleFormats: "Genera rapporti pronti per i donatori in più formati",
+generateDownloadExport: "⬇️ Genera e Scarica Esportazione",
+generatingExport: "Generazione esportazione in corso...",
+good7589: "Buono (75-89)",
+governorate: "Governatorato",
+gps: "GPS",
+gpsAccuracyMeters: "Precisione GPS (metri)",
+gridMultiplePages: "Griglia + Pagine Multiple",
+gridMultiplePagesCaps: "Griglia + Pagine Multiple + MAIUSCOLE",
+gridTheme: "Tema Griglia",
+gridThemeAllCaps: "Tema Griglia (TUTTO MAIUSCOLO)",
+health: "Salute",
+highBestQuality: "Alta (migliore qualità)",
+howOldAreYou: "Quanti anni hai?",
+howSatisfiedAreYouWithOur: "Quanto sei soddisfatto dei nostri servizi?",
+id: "ID",
+import: "⬆️ Importa",
+importError: "❌ Errore di Importazione",
+importExport: "Importazione / Esportazione",
+importHistory: "Cronologia Importazioni",
+importKobo: "⬆️ Importa KOBO",
+importKoboSurvey: "Importa Sondaggio KOBO",
+importSurvey: "✅ Importa Sondaggio",
+importSurveyData: "Importa Dati del Sondaggio",
+importing: "Importazione in corso",
+includeAuditTrail: "Includi Audit Trail",
+indefinite: "Indefinito",
+indicatorsConnected: "# indicatori collegati",
+isRequired: "è obbligatorio",
+jsonFormatForKoboImport: "Formato JSON per importazione KOBO",
+k1SelectSurveyForm: "1. Seleziona Modulo Sondaggio",
+k1Year: "1 Anno",
+k2SelectExportFormat: "2. Seleziona Formato di Esportazione",
+k2Years: "2 Anni",
+k3ExportOptions: "3. Opzioni di Esportazione",
+k4pxSolidEf4444: "4px solid #EF4444",
+k6Months: "6 Mesi",
+keyMetrics: "Metriche Chiave",
+koboDataManagement: "KOBO e Gestione Dati",
+kpiOverview: "Panoramica KPI",
+language: "Lingua",
+lastDeployed: "Ultima Pubblicazione",
+lastEdited: "Ultima Modifica",
+lastModified: "Ultima modifica",
+lastSaved: "Ultimo salvataggio:",
+leilaAhmed: "Leila Ahmed",
+linkedIndicators: "Indicatori Collegati",
+livelihood: "Mezzi di Sussistenza",
+loading: "Caricamento...",
+loadingAnalytics: "Caricamento analisi...",
+loadingSubmission: "Caricamento invio...",
+loadingSurvey: "Caricamento sondaggio...",
+loadingSurveys: "Caricamento sondaggi...",
+location: "Posizione",
+locationDetails: "Posizione e Dettagli",
+lowFasterUpload: "Bassa (caricamento più rapido)",
+lowerValuesRequireMoreAccuracy: "Valori inferiori richiedono maggiore precisione",
+markThisSubmissionAsVerified: "Contrassegnare questo invio come verificato?",
+max: "Massimo",
+maximumValue: "Valore Massimo",
+mediaQuality: "Qualità Media",
+min: "Minimo",
+minimumValue: "Valore Minimo",
+minutes: "minuti",
+mohammedIbrahim: "Mohammed Ibrahim",
+month: "Mese",
+monthly: "Mensile",
+moreQuestions: "altre domande",
+moveDataInAndOutOf: "Importa ed esporta dati dal sistema",
+multiline: "Multilinea",
+multilingualEnglishArabic: "Multilingue (Inglese e Arabo)",
+multiplePages: "Pagine Multiple",
+multisheetWorkbookWithMetadataRawData: "Cartella di lavoro multi-foglio con metadati, dati grezzi, disaggregazione e audit trail",
+newSurvey: "+ Nuovo Sondaggio",
+next: "Avanti",
+ngo: "ONG",
+no: "No",
+noDescription: "Nessuna descrizione",
+noFormsFound: "Nessun modulo trovato",
+noQuestionsAddedYet: "Nessuna domanda aggiunta",
+noRecentImportsSelectAFile: "Nessuna importazione recente. Seleziona un file per iniziare.",
+noSubmissionsFound: "Nessun invio trovato",
+noSurveysFound: "Nessun sondaggio trovato",
+noTemplatesFound: "Nessun modello trovato",
+none: "Nessuno",
+normalRecommended: "Normale (consigliato)",
+notStarted: "Non Avviato",
+numbersKeyboard: "Tastiera numerica",
+of: "di",
+offlineCollection: "Raccolta Dati Offline",
+offlineMode: "⚠ Modalità Offline",
+ongoing: "In Corso",
+online: "✓ Online",
+option: "Opzione",
+optionalFeedback: "Feedback facoltativo",
+options: "Opzioni",
+other: "Altro",
+otherSpecify: "Altro (specificare)",
+owner: "Proprietario",
+page: "Pagina",
+paused: "In Pausa",
+pdfReportPdf: "Rapporto PDF (.pdf)",
+pdfReportWithSummary: "Rapporto PDF con riepilogo",
+pdmPostDistributionMonitoring: "PDM (Monitoraggio Post Distribuzione)",
+pending: "In Sospeso",
+pending19: "In Sospeso",
+pendingReviews: "Revisioni in Attesa",
+periodQ12025: "Periodo: Q1 2025",
+piiMasking: "Mascheramento PII",
+pl12: "pl-12",
+pleaseEnterAFormName: "Inserisci un nome per il modulo",
+pleaseSelectASurveyForm: "Seleziona un modulo di sondaggio",
+pleaseSpecify: "Specificare",
+poor60: "Scarso (<60)",
+prebuiltSurveyTemplates: "Modelli di sondaggio predefiniti",
+preview: "Anteprima",
+previewForm: "Anteprima Modulo",
+previous: "Precedente",
+project: "Progetto:",
+project2: "Progetto",
+projectId: "ID Progetto",
+projectSectors: "Settori del Progetto",
+protection: "Protezione",
+ps10Textstart: "ps-10 text-start",
+publish: "Pubblica",
+published: "Pubblicato",
+publishedCollecting: "Pubblicato e in raccolta dati",
+q12025: "Q1 2025",
+qualityDistribution: "Distribuzione della Qualità",
+question: "domanda",
+questionHint: "Suggerimento per la domanda",
+questionLabel: "Etichetta della domanda",
+questionLabelIsRequired: "L'etichetta della domanda è obbligatoria",
+questionType: "Tipo di domanda",
+questionTypeNotSupported: "Tipo di domanda non supportato",
+questions: "Domande",
+questions13: "domande",
+questionsAdded: "domande aggiunte",
+quickAccess: "Accesso Rapido",
+quickSelect: "Selezione Rapida",
+rateYourOverallExperience: "Valuta la tua esperienza complessiva",
+readonlyViewOfTheSurveyForm: "Visualizzazione in sola lettura del modulo di sondaggio",
+redeploy: "Ripubblica",
+redeploy14: "Ripubblica",
+reject: "Rifiuta",
+rejected: "Rifiutato",
+rejectionReason: "Motivo del rifiuto:",
+reportsAnalytics: "Rapporti e Analisi",
+requireVerification: "Richiedi Verifica",
+required: "Obbligatorio",
+requiredField: "Campo obbligatorio",
+responses: "Risposte",
+sampleQuestions: "Domande di esempio",
+saveAddQuestions: "Salva e Aggiungi Domande",
+saveAsDraft: "Salva come Bozza",
+saveContinue: "Salva e Continua",
+saveEditQuestions: "Salva e Modifica Domande",
+saveOffline: "Salva Offline",
+
+saveQuestion: "Salva Domanda",
+saveSettings: "💾 Salva Impostazioni",
+saving: "Salvataggio in corso...",
+search: "Cerca...",
+searchForms: "Cerca moduli...",
+searchSubmissions: "Cerca invii...",
+searchTemplates: "Cerca modelli...",
+selectAProject: "Seleziona un progetto...",
+selectAtLeastOne: "(Selezionane almeno uno)",
+selectQuestionType: "Seleziona Tipo di Domanda",
+serviceQualityAssessment: "Valutazione della Qualità del Servizio",
+settings: "Impostazioni",
+settingsSavedSuccessfully: "Impostazioni salvate con successo",
+showThisQuestionOnlyWhenCondition: "Mostra questa domanda solo quando la condizione è vera",
+specifyProjectNameOrDescription: "Specifica il nome o la descrizione del progetto...",
+status: "Stato",
+submissionApprovedSuccessfully: "Invio approvato con successo",
+submissionDeleted: "Invio eliminato",
+submissionDetail: "Dettaglio Invio",
+submissionNotFound: "Invio non trovato",
+submissionRejected: "Invio rifiutato",
+submissionStatus: "Stato dell'Invio",
+submissionVerified: "Invio verificato",
+submissionVerified22: "Invio verificato",
+submissions: "invii",
+submissions7: "Invii",
+submissionsWillAppearHereOnceData: "Gli invii appariranno qui una volta raccolti i dati",
+submitSurvey: "Invia Sondaggio",
+submittedBy: "Inviato da",
+success: "Successo",
+summary: "Riepilogo",
+supportedExcelCsvXlsform: "Supportati: Excel, CSV, XLSForm",
+supportedXlsformJsonExcelXls: "Supportati: XLSForm JSON, Excel, XLS",
+surveyArchived: "Sondaggio archiviato",
+surveyArchivedSuccessfully: "Sondaggio archiviato con successo",
+surveyDataCollection: "Sondaggio e Raccolta Dati",
+surveyDataCollectionReports: "Sondaggio e Raccolta Dati – Rapporti",
+surveyDeletedSuccessfully: "Sondaggio eliminato con successo",
+surveyDeployedSuccessfully: "Sondaggio pubblicato con successo!",
+surveyEditor: "Editor del Sondaggio",
+surveyForms: "Moduli di Sondaggio",
+surveyImportedWith: "Sondaggio importato con",
+surveyLanguage: "Lingua del Sondaggio",
+surveyName: "Nome del Sondaggio",
+surveyNotFound: "Sondaggio non trovato",
+surveyNotFound6: "Sondaggio non trovato",
+surveyPerformanceInsights: "Prestazioni e approfondimenti del sondaggio",
+surveySubmittedSuccessfully: "Sondaggio inviato con successo!",
+surveyTitle: "Titolo del Sondaggio",
+surveyType: "Tipo di Sondaggio",
+tapToSelectFile: "Tocca per selezionare un file",
+targetGroupOptional: "Gruppo Target (Facoltativo)",
+templates: "Modelli",
+thisMonth: "Questo mese",
+thisSubmissionHasBeenVerifiedAnd: "Questo invio è stato verificato ed è pronto per l'analisi.",
+thisSurveyHasNoQuestionsYet: "Questo sondaggio non ha ancora domande",
+thisSurveyUsesDynamicQuestions: "Questo sondaggio utilizza domande dinamiche",
+thisWeek: "Questa settimana",
+time: "Ora",
+topEnumerators: "Migliori Enumeratori",
+totalSubmissions: "Totale Invii",
+totalSurveys: "Totale Sondaggi",
+type: "Tipo",
+untitledQuestion: "Domanda Senza Titolo",
+use: "Usa",
+useFieldnameToReferenceOtherFields: "Usa ${field_name} per fare riferimento ad altri campi",
+useToReferToThisQuestions: "Usa . per fare riferimento al valore di questa domanda",
+usersMustAnswerThisQuestion: "Gli utenti devono rispondere a questa domanda",
+validationError: "Errore di Validazione",
+validationRuleOptional: "Regola di Validazione (facoltativa)",
+verification: "Verifica",
+verificationNotes: "Note di Verifica",
+verified: "verificato",
+verified1: "Verificato",
+verified20: "Verificato",
+verifiedAndApproved: "Verificato e Approvato",
+verify: "Verifica",
+version: "Versione",
+versionHistory: "Cronologia Versioni",
+view: "Visualizza",
+viewAllSurveys: "Visualizza Tutti i Sondaggi",
+viewAndManageAllSurveysIn: "Visualizza e gestisci tutti i sondaggi in formato tabellare",
+viewAndVerifySubmissions: "Visualizza e verifica gli invii",
+viewAuditLog: "Visualizza Registro di Audit",
+viewSurvey: "Visualizza Sondaggio",
+viewSurveyInsightsAndCharts: "Visualizza approfondimenti e grafici del sondaggio",
+visibilityLogicOptional: "Logica di Visibilità (facoltativa)",
+week: "Settimana",
+whatIsYourGender: "Qual è il tuo genere?",
+whatIsYourName: "Come ti chiami?",
+whatServicesDidYouReceive: "Quali servizi hai ricevuto?",
+whereDoYouLive: "Dove vivi?",
+wouldYouRecommendUsToOthers: "Ci raccomanderesti ad altre persone?",
+xlsxFormatWithAllSubmissions: "Formato XLSX con tutti gli invii",
+xlsxWithAllQuestions: "XLSX con tutte le domande",
+yes: "Sì",
+youHaveUnpublishedChanges: "Hai modifiche non pubblicate",
+missingScopeContext: 'Missing Scope Context',
+  },
+mealReports: {
+accountabilityCrmSummary: "Riepilogo Accountability e CRM",
+achieved: "Raggiunto",
+achievementRate: "Tasso di Raggiungimento",
+actual: "Effettivo",
+allProjects: "Tutti i Progetti",
+archived: "Archiviato",
+atRisk: "A Rischio",
+atriskIndicators: "Indicatori a Rischio",
+backToMeal: "Torna a MEAL",
+bySeverity: "Per Gravità",
+byType: "Per Tipologia",
+closed: "Chiuso",
+comingSoonModuleUnderDevelopment: "Prossimamente – Modulo in Sviluppo",
+complaints: "Reclami",
+completed: "Completato",
+confidentialInternalUseOnly: "Riservato – Solo per Uso Interno",
+correctiveActionsNeeded: "Azioni Correttive Necessarie",
+critical: "Critico",
+dataCompleteness: "Completezza dei Dati",
+dataCompletenessBelowTarget: "Completezza dei dati inferiore all’obiettivo",
+dqaFindingsTrend: "Trend dei Risultati DQA",
+draft: "Bozza",
+enus: "en-US",
+exportPdf: "Esporta PDF",
+feedback: "Feedback",
+feedbackByCategory: "Feedback per Categoria",
+filters: "Filtri",
+generatedOn: "Generato il",
+generatingPdf: "Generazione PDF in corso...",
+goodAccountabilityPractices: "Buone pratiche di accountability",
+high: "Alto",
+improveDataCollectionProcesses: "Migliorare i processi di raccolta dati",
+inProgress: "In Corso",
+indicatorPerformanceAnalysis: "Analisi delle Prestazioni degli Indicatori",
+indicatorStatusDistribution: "Distribuzione dello Stato degli Indicatori",
+indicatorsOffTrack: "indicatori fuori percorso",
+integratedRiskLearningAnalysis: "Analisi Integrata di Rischi e Apprendimento",
+keyRisksIdentified: "Principali Rischi Identificati",
+learningItemsPublished: "Prodotti di Apprendimento Pubblicati",
+left: "rimanenti",
+lessonsLearned: "Lezioni Apprese",
+loadingMealData: "Caricamento dati MEAL...",
+low: "Basso",
+lowFeedbackResolutionRate: "Basso tasso di risoluzione dei feedback",
+mealReports: "Rapporti MEAL",
+medium: "Medio",
+noCriticalRisksIdentified: "Nessun rischio critico identificato",
+noDataAvailable: "Nessun dato disponibile",
+offTrack: "Fuori Percorso",
+onTrack: "In Traccia",
+open: "Aperto",
+overallMealSnapshot: "Panoramica Generale MEAL",
+page: "Pagina",
+partial: "Parziale",
+performanceSummary: "Riepilogo delle Prestazioni",
+preparedBy: "Preparato da",
+progressOverTime: "Progresso nel Tempo",
+project: "Progetto",
+published: "Pubblicato",
+resolutionRate: "Tasso di Risoluzione",
+resolvePendingFeedbackCases: "Risolvere i casi di feedback in sospeso",
+resolved: "Risolto",
+reviewUnderperformingIndicators: "Rivedere gli indicatori con prestazioni insufficienti",
+strongOverallPerformance: "Prestazioni complessive solide",
+submissionStatus: "Stato degli Invii",
+suggestions: "Suggerimenti",
+surveyDataCollectionInsights: "Approfondimenti su Sondaggi e Raccolta Dati",
+surveysByStatus: "Sondaggi per Stato",
+surveysByType: "Sondaggi per Tipologia",
+target: "Obiettivo",
+targetVsActual: "Obiettivo vs Effettivo",
+totalDocuments: "Totale Documenti",
+totalFeedback: "Totale Feedback",
+totalIndicators: "Indicatori Totali",
+totalSubmissions: "Totale Invii",
+totalSurveys: "Totale Sondaggi",
+unifiedAnalyticalSummaryDashboard: "Cruscotto Unificato di Sintesi Analitica",
+overallAchievementRateIs: "Il tasso complessivo di raggiungimento è",
+indicatorsAchievedTargets: "indicatore/i hanno raggiunto i propri obiettivi",
+onTrackCount: "in linea",
+requireAttention: "indicatore/i richiedono attenzione",
+dataCompletenessStandsAt: "La completezza dei dati è pari a",
+verifiedEntriesOutOf: "voci verificate su",
+surveysDeployedSuccessfully: "sondaggi pubblicati con successo",
+},
+mealDocuments: {
+aboutMealDocuments: "Informazioni sui Documenti MEAL",
+accountability: "Accountability",
+accountabilityTab: "Scheda Accountability",
+allFileTypesSupported: "Tutti i tipi di file supportati",
+autogeneratesDocuments: "Genera automaticamente i documenti",
+autosynced: "Sincronizzato Automaticamente",
+autosyncedFolder: "Cartella sincronizzata automaticamente",
+autosyncedFrom: "Sincronizzato automaticamente da",
+autosyncedToSharepointonedrive: "Sincronizzato automaticamente con SharePoint/OneDrive",
+backToDocuments: "Torna ai Documenti",
+backToMeal: "Torna a MEAL",
+cancel: "Annulla",
+cloudSync: "Sincronizzazione Cloud",
+create: "Crea",
+createFolder: "Crea Cartella",
+delete: "Elimina",
+deleteThisDocument: "Eliminare questo documento?",
+documents: "Documenti",
+documentsAreSystemgeneratedOnly: "I documenti sono generati esclusivamente dal sistema",
+download: "Scarica",
+en: "en",
+enus: "en-US",
+filesSelected: "file selezionato/i",
+folderNameArabic: "Nome Cartella (Arabo)",
+folderNameEnglish: "Nome Cartella (Inglese)",
+folderStructure: "Struttura delle Cartelle",
+folders: "Cartelle",
+foldersAreReadonly: "Le cartelle sono in sola lettura",
+hideFlow: "Nascondi Flusso",
+hideVersions: "Nascondi Versioni",
+indicators: "Indicatori",
+indicatorsTab: "Scheda Indicatori",
+keyRules: "🔒 Regole Principali:",
+lastSync: "Ultima Sincronizzazione",
+loadingDocuments: "Caricamento documenti...",
+mealDocuments: "Documenti MEAL",
+mealTabFolderAutosyncFlow: "Scheda MEAL → Flusso di Sincronizzazione Automatica Cartelle",
+noDocumentsInThisFolder: "Nessun documento in questa cartella",
+noManualUploadsToFolders: "Nessun caricamento manuale consentito nelle cartelle",
+noVersionHistoryAvailable: "Nessuna cronologia versioni disponibile",
+notConnected: "Non Connesso",
+notSynced: "Non Sincronizzato",
+on: "il",
+other: "Altro",
+pendingFiles: "File in Attesa",
+preview: "Anteprima",
+readOnly: "Sola Lettura",
+rename: "Rinomina",
+renameFolder: "Rinomina Cartella",
+reports: "Rapporti",
+reportsTab: "Scheda Rapporti",
+save: "Salva",
+selectFiles: "Seleziona File",
+showVersions: "Mostra Versioni",
+source: "Fonte",
+surveys: "Sondaggi",
+surveysTab: "Scheda Sondaggi",
+syncNow: "Sincronizza Ora",
+syncStatus: "Stato Sincronizzazione",
+syncToSharepointonedrive: "Sincronizza con SharePoint/OneDrive",
+synced: "Sincronizzato",
+syncedFiles: "File Sincronizzati",
+syncing: "Sincronizzazione in corso...",
+systemGenerated: "Generato dal Sistema",
+upload: "Carica",
+uploadFiles: "Carica File",
+uploadFilesToGetStarted: "Carica file per iniziare",
+uploadNotAllowed: "Caricamento Non Consentito",
+uploadedAt: "Caricato il",
+uploadedBy: "Caricato da",
+version: "Versione",
+versionHistory: "Cronologia Versioni",
+versioningEnabledAutomatically: "Versionamento abilitato automaticamente",
+viewDocumentFlow: "Visualizza Flusso Documenti",
+documentsSubtitle: "Documenti generati dal sistema da tutte le attività MEAL",
+manualDocumentsSubtitle: "Area di lavoro per la gestione manuale dei documenti",
+},
+logistics: {
+accept: "Accetta",
+accepted: "Accettato",
+acceptedQty: "Quantità Accettata",
+acknowledged: "Confermato",
+actions: "Azioni",
+active: "Attivo",
+activeTrips: "Viaggi Attivi",
+addAdditionalRemarks: "Aggiungi Note Aggiuntive",
+addDriver: "Aggiungi Autista",
+addDriver10: "+ Aggiungi Autista",
+addItem: "Aggiungi Articolo",
+addItem18: "Aggiungi Articolo",
+addItem20: "+ Aggiungi Articolo",
+addNewItem: "Aggiungi Nuovo Articolo",
+addVehicle: "Aggiungi Veicolo",
+addVehicle15: "+ Aggiungi Veicolo",
+additionalNotesForThePo: "Note aggiuntive per l'Ordine di Acquisto",
+additionalRemarks: "Osservazioni Aggiuntive",
+address: "Indirizzo",
+alertCountItemsWithLowStock: "Avviso: {count} articoli con scorte basse",
+all: "Tutti",
+allCategories: "Tutte le Categorie",
+allQuantitiesFulfilled: "Tutte le quantità sono state soddisfatte",
+allStages: "Tutte le Fasi",
+allStatus: "Tutti gli Stati",
+allStatuses: "Tutti gli Stati",
+allocated: "Allocato",
+allocationStatus: "Stato Allocazione",
+amount: "Importo",
+anEmailNotificationWillBeSent: "Verrà inviata una notifica email al team Logistica per la convalida.",
+anErrorOccurred: "Si è verificato un errore",
+approvePm: "Approva (PM)",
+approved: "Approvato",
+approved7: "Approvato",
+areYouSureYouWantTo: "Sei sicuro di voler eliminare questo GRN?",
+areYouSureYouWantTo1: "Sei sicuro di voler eliminare questo ordine?",
+areYouSureYouWantTo6: "Sei sicuro di voler eliminare questa richiesta?",
+areYouSureYouWantTo9: "Sei sicuro di voler eliminare questo record?",
+atLeastOneLineItemIs: "È richiesto almeno un articolo",
+autogenerated: "Generato automaticamente",
+backToGrnList: "Torna alla Lista GRN",
+backToIssuedItems: "Torna agli Articoli Emessi",
+backToLogistics: "Torna alla Logistica",
+backToProcurementWorkspace: "Torna all’Area di Lavoro Approvvigionamenti",
+backToPurchaseOrders: "Torna agli Ordini di Acquisto",
+backToPurchaseRequests: "Torna alle Richieste di Acquisto",
+backToReturns: "Torna ai Resi",
+backToStockManagement: "Torna alla Gestione Magazzino",
+backToWorkspace: "Torna all'Area di Lavoro",
+basicInformation: "Informazioni di Base",
+basicInformation16: "Informazioni di Base",
+budget: "Bilancio",
+budgetExceeded: "Budget Superato",
+budgetInformation: "Informazioni di Bilancio",
+budgetLine: "Voce di Bilancio",
+bus: "Autobus",
+cancel: "Annulla",
+cancelled: "Annullato",
+category: "Categoria",
+chassisNumber: "Numero di Telaio",
+color: "Colore",
+completed: "Completato",
+compliance: "Conformità",
+condition: "Condizione",
+consultancy: "Consulenza",
+conversionPreview: "Anteprima Conversione:",
+cost: "Costo",
+createFirstIssue: "Crea la Prima Emissione",
+createFirstReturn: "Crea il Primo Reso",
+createNewGrn: "Crea Nuovo GRN",
+createNewOrder: "Crea Nuovo Ordine",
+createNewPurchaseOrder: "Crea nuovo Ordine di Acquisto",
+createNewPurchaseOrder3: "Crea Nuovo Ordine di Acquisto",
+createPurchaseOrder: "Crea Ordine di Acquisto",
+createdSuccessfully: "Creato con successo",
+creating: "Creazione in corso...",
+criteria: "Criteri",
+critical: "Critico",
+currency: "Valuta",
+currentOdometer: "Chilometraggio Attuale",
+currentQuantity: "Quantità Attuale",
+dataRefreshed: "Dati aggiornati",
+date: "Data",
+delete: "Elimina",
+delivered: "Consegnato",
+deliveryDate: "Data di Consegna",
+deliveryLocation: "Luogo di Consegna",
+department: "Dipartimento",
+departmentOrUnit: "Dipartimento o Unità",
+description: "Descrizione",
+destination: "Destinazione",
+diesel: "Diesel",
+distanceKm: "Distanza (km)",
+distanceTraveled: "Distanza Percorsa",
+donor: "Donatore",
+draft: "Bozza",
+driver: "Autista",
+driverInformation: "Informazioni Autista",
+driverName: "Nome Autista",
+drivers: "Autisti",
+driversRegistry: "Registro Autisti",
+editDriver: "Modifica Autista",
+editIssue: "Modifica Emissione",
+editItem: "Modifica Articolo",
+editPurchaseRequest: "Modifica Richiesta di Acquisto",
+editRequest: "Modifica Richiesta",
+editReturn: "Modifica Reso",
+editVehicle: "Modifica Veicolo",
+egIss2026001: "es. ISS-2026-001",
+egMainOfficeWarehouseAden: "es. Magazzino Ufficio Principale, Aden",
+egNet30DaysAfterDelivery: "es. Netto 30 giorni dopo la consegna",
+egRet2026001: "es. RET-2026-001",
+electric: "Elettrico",
+email: "Email",
+emergencyContact: "Contatto di Emergenza",
+emergencyPhone: "Telefono di Emergenza",
+en: "en",
+end: "Fine",
+endOdometer: "Chilometraggio Finale",
+endtoendProcurementVisibility: "Visibilità completa del processo di approvvigionamento",
+engineNumber: "Numero Motore",
+enterFinanceEmail: "Inserisci email Finanza",
+enterPmEmail: "Inserisci email PM",
+enterReferenceNumber: "Inserisci numero di riferimento",
+enterRejectionReason: "Inserisci il motivo del rifiuto...",
+enus: "en-US",
+exchangeRate: "Tasso di Cambio",
+exchangeTo: "Converti in",
+expired: "Scaduto",
+expiringSoon: "In Scadenza",
+export: "Esporta",
+exportFailed: "Esportazione non riuscita",
+exportPdf: "Esporta PDF",
+exportingTemplate: "Esportazione modello in corso...",
+failedToCreatePurchaseOrder: "Impossibile creare l'Ordine di Acquisto",
+failedToSubmitPr: "Impossibile inviare la Richiesta di Acquisto",
+financeValidated: "Validato dalla Finanza",
+fleetManagement: "Gestione Flotta",
+fuelConsumed: "Carburante Consumato",
+fuelDetails: "Dettagli Carburante",
+fuelStation: "Stazione di Rifornimento",
+fuelTracking: "Monitoraggio Carburante",
+fuelTracking11: "Monitoraggio Carburante",
+fuelType: "Tipo di Carburante",
+goods: "Beni",
+goodsReceiptNotes: "Note di Ricezione Merci",
+grnDeleted: "GRN eliminato",
+grnNumber: "Numero GRN",
+grnsac: "GRN/SAC",
+high: "Alto",
+hybrid: "Ibrido",
+import: "Importa",
+importFailed: "Importazione non riuscita",
+importing: "Importazione in corso...",
+inDelivery: "In Consegna",
+inProgress: "In Corso",
+inStock: "Disponibile in Magazzino",
+inactive: "Inattivo",
+initializingScope: "Inizializzazione ambito in corso...",
+inspected: "Ispezionato",
+inspectedBy: "Ispezionato da",
+inspectorName: "Nome dell'Ispettore",
+insuranceExpiry: "Scadenza Assicurazione",
+insuranceProvider: "Compagnia Assicurativa",
+insuranceRegistrationAndInspections: "Assicurazione, registrazione e ispezioni",
+issue: "Emissione",
+issueDate: "Data Emissione",
+issueItems: "Articoli Emessi",
+issueNumber: "Numero Emissione",
+issued: "Emesso",
+issuedBy: "Emesso da",
+issuedItems: "Articoli Emessi",
+issuedRecords: "Registri Emissioni",
+issuedThisMonth: "Emessi Questo Mese",
+issuedTo: "Emesso a",
+issuerName: "Nome dell'Emittente",
+item: "Articolo",
+itemCode: "Codice Articolo",
+itemDescription: "Descrizione dell'Articolo",
+itemInformation: "Informazioni Articolo",
+itemName: "Nome Articolo",
+itemNameArabic: "Nome Articolo (Arabo)",
+itemNameEnglish: "Nome Articolo (Inglese)",
+justification: "Giustificazione",
+justification5: "Giustificazione",
+licenseExpiry: "Scadenza Licenza",
+licenseNumber: "Numero Licenza",
+lineItems: "Righe Articolo",
+lineItems17: "Righe Articolo",
+loading: "Caricamento...",
+logisticsEmail: "Email Logistica",
+logisticsValidated: "Validato dalla Logistica",
+low: "Basso",
+lowStock: "Scorte Basse",
+lowStock21: "Scorte Basse",
+maintenance: "Manutenzione",
+maintenance14: "Manutenzione",
+
+maintenanceDetails: "Dettagli Manutenzione",
+maintenanceRecords: "Registri di Manutenzione",
+maintenanceRecordsAndScheduling: "Registri e pianificazione della manutenzione",
+maintenanceType: "Tipo di Manutenzione",
+make: "Marca",
+manageDriverRegistryAndLicenses: "Gestisci il registro autisti e le licenze",
+manageGoodsReceiptNotes: "Gestisci le note di ricezione merci",
+manageInventoryRequestsIssuedItemsAnd: "Gestisci inventario, richieste, articoli emessi e resi",
+managePurchaseOrders: "Gestisci gli ordini di acquisto",
+managePurchaseRequisitions: "Gestisci le richieste di acquisto",
+manageReturnsAndInspections: "Gestisci resi e ispezioni",
+manageStockIssuedRecords: "Gestisci i registri degli articoli emessi dal magazzino",
+manageStockItemsAndQuantities: "Gestisci articoli e quantità di magazzino",
+manageStockRequestsAndApprovals: "Gestisci richieste e approvazioni di magazzino",
+manageStockReturns: "Gestisci i resi di magazzino",
+manageVehicleRegistryAndStatus: "Gestisci il registro e lo stato dei veicoli",
+manageVehiclesDriversTripsAndMaintenance: "Gestisci veicoli, autisti, viaggi e manutenzione",
+markInspected: "Segna come Ispezionato",
+model: "Modello",
+motorcycle: "Motocicletta",
+neededByDate: "Necessario Entro il",
+newDriver: "Nuovo Autista",
+newFuelRecord: "Nuovo Record Carburante",
+newGrn: "Nuovo GRN",
+newIssue: "Nuova Emissione",
+newMaintenanceRecord: "Nuovo Record di Manutenzione",
+newOrder: "Nuovo Ordine",
+newPurchaseRequest: "Nuova Richiesta di Acquisto",
+newRecord: "+ Nuovo Record",
+newRequest: "Nuova Richiesta",
+newRequest23: "+ Nuova Richiesta",
+newReturn: "Nuovo Reso",
+newStockRequest: "Nuova Richiesta di Magazzino",
+newTrip: "Nuovo Viaggio",
+newTrip13: "+ Nuovo Viaggio",
+noBudgetsAvailable: "Nessun budget disponibile",
+noDataFound: "Nessun dato trovato",
+noDataToExport: "Nessun dato da esportare",
+noGrnsFound: "Nessun GRN trovato",
+noPurchaseOrdersFound: "Nessun ordine di acquisto trovato",
+noPurchaseRequestsFound: "Nessuna richiesta di acquisto trovata",
+noRecordsFound: "Nessun record trovato",
+normal: "Normale",
+notes: "Note",
+odometer: "Contachilometri",
+odometerReading: "Lettura Contachilometri",
+ongoing: "In Corso",
+payable: "Da Pagare",
+payment: "Pagamento",
+paymentTerms: "Termini di Pagamento",
+pending: "In Sospeso",
+pending8: "In Sospeso",
+pendingInspection: "In Attesa di Ispezione",
+pendingRequests: "Richieste in Attesa",
+petrol: "Benzina",
+phone: "Telefono",
+phoneNumber: "Numero di Telefono",
+pleaseEnterAcceptedQuantityForAll: "Inserisci la quantità accettata per tutti gli articoli",
+pleaseEnterFinanceEmail: "Inserisci l’email della Finanza",
+pleaseEnterLogisticsEmail: "Inserisci l’email della Logistica",
+pleaseEnterPmEmail: "Inserisci l’email del PM",
+pleaseEnterRejectionReasonAtLeast: "Inserisci il motivo del rifiuto (almeno 10 caratteri)",
+pleaseEnterTheReasonForRejection: "Inserisci il motivo del rifiuto (almeno 10 caratteri)",
+pleaseFillAllLineItems: "Compila tutte le righe articolo",
+pleaseFillAllRequiredFields: "Compila tutti i campi obbligatori",
+po: "OA",
+poNumber: "Numero OA",
+poNumber2: "Numero OA",
+poWillBeAutogeneratedFromThe: "L'Ordine di Acquisto verrà generato automaticamente dal fornitore selezionato nell'analisi delle offerte.",
+pr: "RA",
+prApproved: "Richiesta di Acquisto approvata",
+prNumber: "Numero RA",
+prRejected: "Richiesta di Acquisto rifiutata",
+prSubmittedLogisticsTeamNotified: "Richiesta di Acquisto inviata. Il team Logistica è stato notificato.",
+print: "Stampa",
+procurementStage: "Fase di Approvvigionamento",
+procurementTracker: "Monitoraggio Approvvigionamento",
+procurementTracking: "Tracciamento Approvvigionamento",
+progress: "Progresso",
+project: "Progetto",
+projectTitle: "Titolo Progetto",
+ps10Pe3: "ps-10 pe-3",
+purchaseDate: "Data di Acquisto",
+purchaseOrderCreatedSuccessfully: "Ordine di Acquisto creato con successo",
+purchaseOrderDeleted: "Ordine di Acquisto eliminato",
+purchaseOrders: "Ordini di Acquisto",
+purchaseOrdersForProcurementRequest: "Ordini di Acquisto per la Richiesta di Approvvigionamento",
+purchaseOrdersForQuotationAnalysis: "Ordini di Acquisto per l’Analisi delle Offerte",
+purchasePrice: "Prezzo di Acquisto",
+purchaseRequestCreated: "Richiesta di Acquisto creata",
+purchaseRequestDeleted: "Richiesta di Acquisto eliminata",
+purchaseRequestUpdated: "Richiesta di Acquisto aggiornata",
+purchaseRequests: "Richieste di Acquisto",
+purpose: "Scopo",
+qty: "Qtà",
+quantity: "Quantità",
+quantityL: "Quantità (L)",
+quickActions: "Azioni Rapide",
+quotationAnalysis: "Analisi delle Offerte",
+quotationAnalysisIdIsMissing: "Manca l'ID dell'Analisi delle Offerte",
+reason: "Motivo",
+reasonArabic: "Motivo (Arabo)",
+reasonEnglish: "Motivo (Inglese)",
+reasonForReturn: "Motivo del Reso",
+receiptDate: "Data di Ricezione",
+recipientName: "Nome del Destinatario",
+recurrence: "Ricorrenza",
+refreshData: "Aggiorna Dati",
+registerReturn: "Registra Reso",
+registrationNumber: "Numero di Registrazione",
+reject: "Rifiuta",
+rejectPurchaseRequest: "Rifiuta Richiesta di Acquisto",
+rejected: "Rifiutato",
+rejecting: "Rifiuto in corso...",
+rejectionReason: "Motivo del Rifiuto",
+remainingBudget: "Budget Rimanente",
+remarks: "Osservazioni",
+reorderLevel: "Livello di Riordino",
+requestDate: "Data della Richiesta",
+requestInformation: "Informazioni sulla Richiesta",
+requestNumber: "Numero Richiesta",
+requestedBy: "Richiesto da",
+requestedItems: "Articoli Richiesti",
+requester: "Richiedente",
+requesterInformation: "Informazioni sul Richiedente",
+requesterName: "Nome del Richiedente",
+returnDate: "Data Reso",
+returnNumber: "Numero Reso",
+returnRecords: "Registri Resi",
+returnedBy: "Restituito da",
+returnedQty: "Qtà Restituita",
+returnerName: "Nome del Restituente",
+returns: "Resi",
+returnsThisMonth: "Resi Questo Mese",
+rfqqa: "RFQ/QA",
+save: "Salva",
+saveAsDraft: "Salva come Bozza",
+saveDraft: "Salva Bozza",
+scheduleMaintenance: "Pianifica Manutenzione",
+scheduled: "Programmato",
+scoring: "Valutazione",
+search: "Cerca...",
+searchByIssueNumberOrRecipient: "Cerca per numero emissione o destinatario...",
+searchByReturnNumberOrReturner: "Cerca per numero reso o restituente...",
+sedan: "Berlina",
+selectBudget: "Seleziona Budget...",
+selectBudgetLine: "Seleziona Riga di Budget...",
+selectDriver: "Seleziona Autista",
+selectItem: "Seleziona Articolo",
+selectProject: "Seleziona Progetto...",
+selectVehicle: "Seleziona Veicolo",
+serviceProvider: "Fornitore del Servizio",
+services: "Servizi",
+showLowStockOnly: "Mostra Solo Scorte Basse",
+source: "Fonte:",
+start: "Inizio",
+startLocation: "Luogo di Partenza",
+startOdometer: "Contachilometri Iniziale",
+status: "Stato",
+stockItem: "Articolo di Magazzino",
+stockItems: "Articoli di Magazzino",
+stockItems19: "Articoli di Magazzino",
+stockItemsDesc: "Gestisci articoli, quantità e categorie di magazzino",
+stockItemRecords: "Registri Articoli",
+searchByItemCodeOrName: "Cerca per codice o nome articolo...",
+createFirstItem: "Crea il Primo Articolo",
+stockAdjustments: "Rettifiche di Magazzino",
+stockAdjustmentsDesc: "Correzioni riservate agli amministratori: perdite, conteggi fisici, danni, donazioni",
+stockAnalytics: "Analisi di Magazzino",
+stockAnalyticsDesc: "Trend di emissione, volumi di trasferimento, frequenza delle rettifiche e grafici del valore di magazzino",
+stockBatches: "Lotti di Magazzino",
+stockBatchesDesc: "Visualizza tutti i lotti con quantità disponibili, date di scadenza e ubicazioni",
+stockLedger: "Registro di Magazzino",
+stockLedgerDesc: "Registro transazioni verificabile: GRN_POST, EMISSIONE, RESO, TRASFERIMENTO, RETTIFICA",
+stockManagement: "Gestione Magazzino",
+stockRequests: "Richieste di Magazzino",
+stockRequestsDesc: "Gestisci richieste e approvazioni di magazzino",
+stockRequestRecords: "Registri Richieste",
+searchByRequestNumberOrRequester: "Cerca per numero richiesta o richiedente...",
+createFirstRequest: "Crea la Prima Richiesta",
+stockValue: "Valore di Magazzino",
+storeLocation: "Ubicazione Magazzino",
+submit: "Invia",
+submit22: "Invia",
+submitForApproval: "Invia per Approvazione",
+submitPurchaseRequest: "Invia Richiesta di Acquisto",
+submitted: "Inviato",
+submitting: "Invio in corso...",
+submodules: "Sottomoduli",
+supplier: "Fornitore",
+scheduledAlerts: "Avvisi Programmati",
+scheduledAlertsDesc: "Configura notifiche automatiche giornaliere o settimanali per le scadenze",
+physicalCount: "Inventario Fisico",
+physicalCountDesc: "Carica fogli di conteggio (CSV), confronta con le scorte di sistema e genera rettifiche",
+transferTracking: "Monitoraggio Trasferimenti",
+transferTrackingDesc: "Monitora trasferimenti in transito con ETA, aggiornamenti posizione e note di tracciamento",
+warehouse: "Magazzino",
+warehouses: "Magazzini",
+warehouseTransfers: "Trasferimenti tra Magazzini",
+warehouseTransfersDesc: "Bozza → Inviato → Spedito → Ricevuto con tracciamento nel registro",
+expiryAlerts: "Avvisi di Scadenza",
+expiryAlertsDesc: "Monitora lotti prossimi alla scadenza o scaduti e invia notifiche ai responsabili",
+newAdjustment: "Nuova Rettifica",
+newTransfer: "Nuovo Trasferimento",
+nearExpiry: "Prossimo alla Scadenza",
+inTransit: "In Transito",
+fefoFifo: "Emissione basata su lotti FEFO/FIFO con supporto per emissioni parziali",
+issuedItemsDesc: "Emissione basata su lotti FEFO/FIFO con supporto per emissioni parziali",
+scanBarcode: "Scansiona Codice a Barre",
+warehouseAlertConfig: "Configurazione Avvisi Magazzino",
+warehouseAlertConfigDesc: "Imposta soglie di scadenza personalizzate per magazzino e categoria articolo",
+backToPhysicalCount: "Torna all’Inventario Fisico",
+backToTransferTracking: "Torna al Monitoraggio Trasferimenti",
+backToScheduledAlerts: "Torna agli Avvisi Programmati",
+backToStockAnalytics: "Torna alle Analisi di Magazzino",
+backToExpiryAlerts: "Torna agli Avvisi di Scadenza",
+backToStockAdjustments: "Torna alle Rettifiche di Magazzino",
+backToWarehouseTransfers: "Torna ai Trasferimenti tra Magazzini",
+backToStockLedger: "Torna al Registro di Magazzino",
+backToStockBatches: "Torna ai Lotti di Magazzino",
+suv: "SUV",
+templateExportFailed: "Esportazione modello non riuscita",
+templateExported: "Modello esportato con successo",
+thisMonthL: "Questo Mese (L)",
+total: "Totale",
+total4: "Totale:",
+totalDrivers: "Totale Autisti",
+totalItems: "Totale Articoli",
+totalRequests: "Totale Richieste",
+totalVehicles: "Totale Veicoli",
+trackFuelConsumptionAndCosts: "Monitora consumi e costi del carburante",
+trackIssuedItemsAndDistributions: "Monitora articoli emessi e distribuzioni",
+trackTripsAndAssignments: "Monitora viaggi e assegnazioni",
+tripDate: "Data Viaggio",
+tripDetails: "Dettagli Viaggio",
+tripLogs: "Registri Viaggi",
+tripLogs12: "Registri Viaggi",
+tripsThisMonth: "Viaggi Questo Mese",
+truck: "Camion",
+type: "Tipo",
+underInspection: "In Ispezione",
+unit: "Unità",
+unitPrice: "Prezzo Unitario",
+unitTypesNotLoadedYet: "Tipi di unità non ancora caricati",
+upcomingMaintenance: "Manutenzioni Programmate",
+updatedSuccessfully: "Aggiornato con successo",
+urgency: "Urgenza",
+validateFinance: "Convalida (Finanza)",
+validateLogistics: "Convalida (Logistica)",
+validatedByFinance: "Convalidato dalla Finanza",
+validatedByLogistics: "Convalidato dalla Logistica",
+van: "Furgone",
+vehicle: "Veicolo",
+vehicleInformation: "Informazioni Veicolo",
+vehicleNumber: "Numero Veicolo",
+vehicleType: "Tipo Veicolo",
+vehicles: "Veicoli",
+vehiclesRegistry: "Registro Veicoli",
+view: "Visualizza",
+works: "Lavori",
+year: "Anno",
+itemCodeRequired: "Il codice articolo è obbligatorio",
+binLocation: "Ubicazione Scaffale",
+enterBinLocation: "Inserisci l'ubicazione dello scaffale",
+itemNameRequired: "Il nome articolo è obbligatorio",
+itemDetails: "Dettagli Articolo",
+newItem: "Nuovo Articolo",
+enterItemCode: "Inserisci codice articolo",
+enterItemName: "Inserisci nome articolo",
+minimumQuantity: "Quantità Minima",
+maximumQuantity: "Quantità Massima",
+unitType: "Tipo di Unità",
+unitCost: "Costo Unitario",
+enterUnitType: "Inserisci tipo di unità",
+warehouseLocation: "Ubicazione Magazzino",
+enterWarehouseLocation: "Inserisci ubicazione magazzino",
+itemNameAr: "Nome Articolo (Arabo)",
+enterItemNameAr: "Inserisci nome articolo in arabo",
+selectCategory: "Seleziona Categoria",
+enterDescription: "Inserisci descrizione",
+saving: "Salvataggio in corso...",
+  },
+hrStaff: {
+accountNumber: "Numero Conto",
+actions: "Azioni",
+active: "Attivo",
+addNewStaffMember: "Aggiungi Nuovo Dipendente",
+addProject: "Aggiungi Progetto",
+addStaffMember: "Aggiungi Dipendente",
+all: "Tutti",
+archived: "Archiviato",
+assignedProjects: "Progetti Assegnati",
+bankName: "Nome Banca",
+bankPayment: "Banca e Pagamenti",
+basicSalary: "Stipendio Base",
+cancel: "Annulla",
+close: "Chiudi",
+consultancy: "Consulenza",
+contractEndDate: "Data Fine Contratto",
+contractStartDate: "Data Inizio Contratto",
+contractType: "Tipo Contratto",
+currency: "Valuta",
+dailyWorker: "Lavoratore Giornaliero",
+dateOfBirth: "Data di Nascita",
+department: "Dipartimento",
+documents: "Documenti",
+editStaffMember: "Modifica Dipendente",
+egEchoyem001: "es. ECHO-YEM-001",
+emailAddress: "Indirizzo Email",
+employmentInformation: "Informazioni Contrattuali",
+en: "en",
+endDate: "Data di Fine",
+errorLoadingStaff: "Errore durante il caricamento del personale",
+exited: "Uscito",
+exited2: "Uscito",
+exportStaff: "Esporta Personale",
+female: "Femmina",
+fixedterm: "A Tempo Determinato",
+fullName: "Nome Completo",
+fulltime: "Tempo Pieno",
+gender: "Genere",
+grade: "Grado",
+gradeScale: "Grado e Scala Salariale",
+healthInsuranceRate: "Aliquota Assicurazione Sanitaria (%)",
+healthInsuranceRate5: "Aliquota Assicurazione Sanitaria",
+hireDate: "Data Assunzione",
+housingAllowance: "Indennità di Alloggio",
+hrDashboard: "Cruscotto HR",
+iban: "IBAN",
+loadingStaff: "Caricamento personale...",
+male: "Maschio",
+masterStaffRegistryAndProfiles: "Registro principale del personale e profili",
+na: "N/D",
+nationality: "Nazionalità",
+noProjectsAssigned: "Nessun progetto assegnato",
+noStaffMembersFound: "Nessun dipendente trovato",
+of: "di",
+other: "Altro",
+otherAllowances: "Altre Indennità",
+parttime: "Part-Time",
+permanent: "Permanente",
+personalInformation: "Informazioni Personali",
+phoneNumber: "Numero di Telefono",
+pleaseFillInAllRequiredFields: "Compila tutti i campi obbligatori",
+position: "Posizione",
+projectAssignment: "Assegnazione Progetto",
+projects: "Progetto/i",
+representationAllowance: "Indennità di Rappresentanza",
+representationAllowance1: "Indennità di Rappresentanza",
+requiredField: "Campo obbligatorio",
+salaryInformation: "Informazioni Salariali",
+salaryRange: "Fascia Salariale",
+saveChanges: "Salva Modifiche",
+searchStaff: "Cerca personale...",
+shortterm: "Breve Termine",
+showing: "Visualizzazione",
+socialSecurityRate: "Aliquota Previdenza Sociale (%)",
+socialSecurityRate4: "Aliquota Previdenza Sociale",
+staffDictionary: "Anagrafica del Personale",
+staffId: "ID Personale",
+staffMembers: "dipendenti",
+staffProfile: "Profilo Dipendente",
+startedDate: "Data Inizio",
+status: "Stato",
+step: "Scatto",
+taxRate: "Aliquota Fiscale (%)",
+taxRate6: "Aliquota Fiscale",
+transportAllowance: "Indennità di Trasporto",
+transportAllowance3: "Indennità di Trasporto",
+viewProfile: "Visualizza Profilo",
+volunteer: "Volontario",
+},
+
+hrSettings: {
+accessDisciplinaryModule: "Accesso Modulo Disciplinare",
+accessHrArchive: "Accesso Archivio HR",
+accessHrReports: "Accesso Rapporti HR",
+actions: "Azioni",
+active: "Attivo",
+addContractType: "Aggiungi Tipo Contratto",
+addDepartment: "Aggiungi Dipartimento",
+addExitReason: "Aggiungi Motivo di Uscita",
+addLeaveType: "Aggiungi Tipo di Congedo",
+addNew: "Aggiungi Nuovo",
+addPosition: "Aggiungi Posizione",
+adminhrManagerOnlyChangesAffectAll: "⚙️ Solo Admin/Responsabile HR - Le modifiche influenzano tutti i moduli",
+annualLeaveAccrualRateDaysmonth: "Maturazione Ferie Annuali (Giorni/Mese)",
+approvalFlow: "Flusso di Approvazione",
+approveAttendance: "Approva Presenze",
+approveLeave: "Approva Congedi",
+attendanceRules: "Regole Presenze",
+auditLog: "Registro Audit",
+carryoverDays: "Giorni Riportabili",
+configureHrPoliciesRulesAndPreferences: "Configura politiche, regole e preferenze HR",
+createdDate: "Data Creazione",
+deductibleFromAnnualLeave: "Detraibile dalle Ferie Annuali",
+delete: "Elimina",
+disciplinaryRules: "Regole Disciplinari",
+documentTemplates: "Modelli Documenti",
+edit: "Modifica",
+editIdentityPersonal: "Modifica Identità e Dati Personali",
+enableBackdatedEdits: "Consenti Modifiche Retroattive",
+enforceReadonlyAfterApproval: "Imposta Sola Lettura Dopo Approvazione",
+hrDashboard: "Cruscotto HR",
+hrSettings: "Impostazioni HR",
+inactive: "Inattivo",
+leaveRules: "Regole Congedi",
+lockPayrollAfterCutoff: "Blocca Payroll Dopo la Chiusura",
+lockPeriodDays: "Periodo di Blocco (Giorni)",
+manageContracts: "Gestisci Contratti",
+manageSalaryScale: "Gestisci Scala Salariale",
+masterData: "Dati Principali",
+maxEmergencyDaysWithoutJustification: "Massimi Giorni di Emergenza Senza Giustificazione",
+name: "Nome",
+overtimeEligibleContracts: "Contratti Idonei agli Straordinari",
+overview: "Panoramica",
+permissions: "Permessi",
+permissionsRoles: "Permessi e Ruoli",
+preventHrRecordDeletion: "Impedisci Eliminazione dei Record HR",
+printexport: "Stampa/Esporta",
+requiredApprovalLevels: "Livelli di Approvazione Richiesti",
+roleName: "Nome Ruolo",
+saveChanges: "Salva Modifiche",
+settingsSavedSuccessfully: "Impostazioni salvate con successo!",
+systemRules: "Regole di Sistema",
+templateName: "Nome Modello",
+templateUploadedSuccessfully: "Modello caricato con successo!",
+type: "Tipo",
+upload: "Carica",
+uploadDate: "Data Caricamento",
+uploadTemplate: "Carica Modello",
+usedByXEmployees: "Utilizzato da X dipendenti",
+version: "Versione",
+viewEmployeeProfiles: "Visualizza Profili Dipendenti",
+viewPayroll: "Visualizza Payroll",
+visibilityRules: "Regole di Visibilità",
+whoCanInitiate: "Chi Può Avviare",
+workflowRules: "Regole del Flusso di Lavoro",
+},
+
+hrSanctions: {
+actions: "Azioni",
+active: "Attivo",
+allDepartments: "Tutti i Dipartimenti",
+allStatuses: "Tutti gli Stati",
+
+allegationSummary: "Sintesi dell'Accusa",
+allegationSummaryIsRequired: "La sintesi dell'accusa è obbligatoria",
+
+applicablePolicyReference: "Riferimento alla Politica Applicabile",
+
+approvalAuthority: "Autorità Approvatrice",
+approvalDate: "Data di Approvazione",
+approvalDateIsRequired: "La data di approvazione è obbligatoria",
+
+approvalDecision: "Decisione di Approvazione",
+approvalNotes: "Note di Approvazione",
+approvalNotesAreRequired: "Le note di approvazione sono obbligatorie",
+
+approve: "Approva",
+approveCloseCase: "Approva e Chiudi Caso",
+
+archived: "Archiviato",
+
+back: "Indietro",
+backToCases: "Torna ai Casi",
+
+caseDetails: "Dettagli del Caso",
+caseReference: "Riferimento Caso",
+caseReferenceNumber: "Numero di Riferimento del Caso",
+caseSavedAsDraftSuccessfully: "Caso salvato come bozza con successo!",
+
+caseTitle: "Titolo Caso",
+caseTitleIsRequired: "Il titolo del caso è obbligatorio",
+
+conclusion: "Conclusioni",
+conclusionIsRequired: "Le conclusioni sono obbligatorie",
+
+confirmInvestigationTeam: "Conferma Team di Indagine",
+
+createdBy: "Creato da",
+createdDate: "Data di Creazione",
+
+dateIsRequired: "La data è obbligatoria",
+
+dateOfAllegation: "Data della Segnalazione",
+
+decisionAuthority: "Autorità Decisionale",
+decisionAuthorityIsRequired: "L'autorità decisionale è obbligatoria",
+
+decisionDate: "Data della Decisione",
+decisionDateIsRequired: "La data della decisione è obbligatoria",
+
+decisionSubmittedForApproval: "Decisione inviata per approvazione!",
+
+department: "Dipartimento",
+
+describeAnyImmediateActionsTaken: "Descrivi le eventuali azioni immediate intraprese...",
+describePayrollImpact: "Descrivi l'impatto sulla retribuzione",
+describeTheScopeAndObjectivesOf: "Descrivi l'ambito e gli obiettivi dell'indagine...",
+describeTheSpecificPayrollChangesEg: "Descrivi le modifiche retributive specifiche (es. detrazioni, sospensioni, ecc.)...",
+
+disciplinaryApproval: "Approvazione Disciplinare",
+disciplinaryApprovalForm: "MODULO DI APPROVAZIONE DISCIPLINARE",
+
+disciplinaryCaseInitiation: "Apertura Caso Disciplinare",
+disciplinaryCaseInitiationForm: "MODULO DI APERTURA CASO DISCIPLINARE",
+
+disciplinaryDecision: "Decisione Disciplinare",
+disciplinaryDecisionForm: "MODULO DI DECISIONE DISCIPLINARE",
+
+disciplinaryPoliciesProcedures: "Politiche e Procedure Disciplinari",
+
+documentYourInvestigationFindings: "Documenta gli esiti della tua indagine...",
+
+documents: "Documenti",
+
+effectiveDate: "Data di Decorrenza",
+effectiveDateIsRequired: "La data di decorrenza è obbligatoria",
+
+egAllegedMisconductInProcurementProcess: "es. Presunta condotta scorretta nel processo di approvvigionamento",
+egCodeOfConductSection42: "es. Codice di Condotta Sezione 4.2",
+
+employee: "Dipendente",
+employeeDetails: "Dettagli Dipendente",
+employeeInformation: "Informazioni Dipendente",
+employeesList: "Elenco Dipendenti",
+
+evidenceFiles: "File delle Prove",
+evidenceReviewed: "Prove Esaminate",
+
+expectedEndDate: "Data Prevista di Conclusione",
+expectedEndDateIsRequired: "La data prevista di conclusione è obbligatoria",
+
+filters: "Filtri",
+
+finalActionDetails: "Dettagli dell'Azione Finale",
+finalActionTaken: "Azione Finale Adottata",
+
+finalDisciplinaryActionFreeText: "Azione Disciplinare Finale (TESTO LIBERO)",
+finalDisciplinaryActionIsRequired: "L'azione disciplinare finale è obbligatoria",
+
+finalDisciplinaryRecord: "Verbale Disciplinare Finale",
+finalDisciplinaryRecord3: "VERBALE DISCIPLINARE FINALE",
+
+finalRecordNotAvailable: "Verbale Finale Non Disponibile",
+
+findings: "Esiti dell'Indagine",
+findingsAreRequired: "Gli esiti dell'indagine sono obbligatori",
+
+form1Of6: "Modulo 1 di 6",
+form2Of6: "Modulo 2 di 6",
+form3Of6: "Modulo 3 di 6",
+form4Of6: "Modulo 4 di 6",
+form5Of6: "Modulo 5 di 6",
+form6Of6Autogenerated: "Modulo 6 di 6 (Generato Automaticamente)",
+
+fullName: "Nome Completo",
+
+generatedBy: "Generato da",
+generatedDate: "Data di Generazione",
+
+hideFilters: "Nascondi Filtri",
+
+high: "Alto",
+
+hrDashboard: "Cruscotto HR",
+
+immediateActionTakenIfAny: "Azione Immediata Adottata (se applicabile)",
+
+importantNote: "Nota Importante",
+
+initialRiskLevel: "Livello di Rischio Iniziale",
+
+interviewRecords: "Verbali delle Interviste",
+
+investigationAppointment: "Nomina della Commissione d'Indagine",
+investigationAppointmentForm: "MODULO DI NOMINA DELLA COMMISSIONE D'INDAGINE",
+
+investigationLead: "Responsabile dell'Indagine",
+investigationLeadIsRequired: "Il responsabile dell'indagine è obbligatorio",
+
+investigationReport: "Rapporto di Indagine",
+investigationReport1: "RAPPORTO DI INDAGINE",
+
+investigationReportSubmitted: "Rapporto di indagine inviato!",
+
+investigationStartDate: "Data di Avvio dell'Indagine",
+
+investigationTeamConfirmed: "Team di indagine confermato!",
+investigationTeamMembers: "Membri della Commissione d'Indagine",
+
+justification: "Giustificazione",
+justificationIsRequired: "La giustificazione è obbligatoria",
+
+listAllEvidenceReviewedDocumentsEmails: "Elenca tutte le prove esaminate (documenti, email, registri, ecc.)...",
+listTeamMembersCommaSeparated: "Elenca i membri del team (separati da virgole)",
+listWitnessesInterviewedAndKeyPoints: "Elenca i testimoni intervistati e i principali elementi emersi...",
+
+low: "Basso",
+medium: "Medio",
+
+nameOfPersonReporting: "Nome della Persona Segnalante",
+
+no: "No",
+
+noPoliciesUploadedYet: "Nessuna politica caricata",
+noStaffMembersFound: "Nessun membro del personale trovato",
+
+officialRecord: "VERBALE UFFICIALE",
+
+officialStampSignature: "[Timbro Ufficiale e Firma]",
+organizationNameLogo: "[Nome e Logo dell'Organizzazione]",
+
+otherSupportingDocuments: "Altri Documenti di Supporto",
+
+payrollImpact: "Impatto sulla Retribuzione",
+
+permanentHrFile: "Fascicolo Personale Permanente",
+
+pleaseFillInAllRequiredFields: "Compila tutti i campi obbligatori",
+
+policiesGuidelines: "Politiche e Linee Guida",
+
+position: "Posizione",
+
+print: "Stampa",
+
+proposedAction: "Azione Proposta",
+
+provideAComprehensiveSummaryOfThe: "Fornisci una sintesi completa del processo di indagine...",
+provideADetailedSummaryOfThe: "Fornisci una descrizione dettagliata dell'accusa...",
+provideApprovalOrRejectionNotes: "Fornisci le note di approvazione o rifiuto...",
+provideDetailedJustificationForThisDecision: "Fornisci una giustificazione dettagliata per questa decisione...",
+provideYourRecommendationForDisciplinaryAction: "Fornisci la tua raccomandazione per eventuali azioni disciplinari...",
+
+recommendationFreeText: "Raccomandazione (TESTO LIBERO)",
+recommendationIsRequired: "La raccomandazione è obbligatoria",
+
+recordMetadata: "Metadati del Record",
+
+reject: "Rifiuta",
+rejectReturn: "Rifiuta e Restituisci",
+
+reportedBy: "Segnalato da",
+reporterNameIsRequired: "Il nome del segnalante è obbligatorio",
+
+required: "Obbligatorio",
+
+reset: "Ripristina",
+
+reviewedBy: "Revisionato da",
+reviewerNameIsRequired: "Il nome del revisore è obbligatorio",
+
+sanctionsDisciplinary: "Sanzioni e Procedimenti Disciplinari",
+
+save: "Salva",
+saveAsDraft: "Salva come Bozza",
+
+savedSuccessfully: "Salvato con successo!",
+
+scopeIsRequired: "L'ambito dell'indagine è obbligatorio",
+scopeOfInvestigation: "Ambito dell'Indagine",
+
+searchByNameStaffIdPosition: "Cerca per nome, ID personale o posizione...",
+
+showFilters: "Mostra Filtri",
+
+signedDisciplinaryLetter: "Lettera Disciplinare Firmata",
+
+staffId: "ID Personale",
+
+startDateIsRequired: "La data di inizio è obbligatoria",
+
+startDisciplinaryCase: "Avvia Caso Disciplinare",
+
+stateYourConclusionBasedOnThe: "Indica le tue conclusioni sulla base dell'indagine...",
+
+status: "Stato",
+
+statusChange: "Modifica dello Stato",
+
+submitForApproval: "Invia per Approvazione",
+submitForInvestigation: "Invia per Indagine",
+submitInvestigationReport: "Invia Rapporto di Indagine",
+
+submittedDate: "Data di Invio",
+
+summaryIsRequired: "La sintesi è obbligatoria",
+summaryOfInvestigation: "Sintesi dell'Indagine",
+
+supportingDocuments: "Documenti di Supporto",
+supportingDocuments2: "Documenti di Supporto",
+
+systemImpact: "Impatto sui Sistemi HR",
+
+totalStaff: "Totale Personale",
+
+uploadFile: "Carica File",
+uploadPolicyDocument: "Carica Documento di Politica",
+
+witnessesIfApplicable: "Testimoni (se applicabile)",
+
+yes: "Sì",
+},
+
+hrReports: {
+absencePatterns: "Modelli di Assenza",
+across3Employees: "Coinvolgono 3 dipendenti",
+
+active: "Attivo",
+activeCases: "Casi Attivi",
+activeEmployees: "Dipendenti Attivi",
+
+all: "Tutti",
+
+allReportsAreReadonlyAndAutogenerated: "📊 Tutti i report sono in sola lettura e generati automaticamente dai dati del sistema",
+
+allowancesSummary: "Riepilogo Indennità",
+
+amount: "Importo",
+
+applications: "Candidature",
+
+applyFilters: "Applica Filtri",
+
+archived: "Archiviato",
+archivedEmployees: "Dipendenti Archiviati",
+
+attendanceAnalytics: "Analisi Presenze",
+attendanceAnomalies: "Anomalie Presenze",
+attendanceRateByDepartment: "Tasso di Presenza per Dipartimento",
+
+auditGovernance: "Audit e Governance",
+
+average: "Media",
+
+backToHr: "Torna a HR",
+backToReports: "Torna ai Report",
+
+candidatesPerVacancy: "Candidati per Posizione Vacante",
+
+chartVisualizationWouldAppearHere: "La visualizzazione del grafico apparirà qui",
+
+complianceReports: "Report di Conformità",
+complianceReportsComingSoon: "Report di conformità disponibili prossimamente",
+
+complianceRiskAnalytics: "Analisi di Conformità e Rischio",
+
+contractsExpiring: "Contratti in Scadenza",
+
+costTrendsOverTime: "Andamento dei Costi nel Tempo",
+
+count: "Numero",
+
+dataSources: "Fonti Dati",
+
+dateRange: "Intervallo di Date",
+dateRange2: "Intervallo di Date",
+
+days: "giorni",
+daysLeft: "Giorni Rimanenti",
+daysOpen: 'Days Open',
+department: "Dipartimento",
+
+disciplinaryCasesSummary: "Riepilogo Casi Disciplinari",
+
+employee: "Dipendente",
+
+endDate: "Data di Fine",
+
+escalated: "Escalato",
+
+exited: "Uscito",
+exitedEmployees: "Dipendenti Usciti",
+
+exportToExcel: "Esporta in Excel",
+
+female: "Femmina",
+
+filters: "Filtri",
+
+financialControlDonorCompliance: "Controllo finanziario e conformità ai requisiti dei donatori",
+
+from: "Da",
+
+genderBreakdown: "Ripartizione per Genere",
+genderDistribution: "Distribuzione per Genere",
+
+headcountByContractType: "Organico per Tipologia Contrattuale",
+headcountByDepartment: "Organico per Dipartimento",
+headcountByDepartment3: "Organico per Dipartimento",
+headcountByProject: "Organico per Progetto",
+headcountByProject4: "Organico per Progetto",
+
+highriskStaffExcessiveLeave: "Personale ad Alto Rischio (Assenze Eccessive)",
+
+hiringEffectivenessFairness: "Efficacia ed Equità del Reclutamento",
+
+hrDashboard: "Cruscotto HR",
+
+hrPlanningLiabilityTracking: "Pianificazione HR e Monitoraggio delle Passività",
+
+lastRefresh: "Ultimo Aggiornamento",
+
+lateArrivals: "Ritardi in Entrata",
+lateArrivalsTrends: "Trend dei Ritardi",
+
+leaveAnalytics: "Analisi Congedi",
+leaveBalancesByType: "Saldo Congedi per Tipologia",
+leaveLiabilityProjection: "Proiezione delle Passività per Congedi",
+leaveReports: "Report Congedi",
+leaveTakenPerPeriod: "Congedi Fruiti per Periodo",
+
+leaveType: "Tipologia di Congedo",
+
+lockedVsAdjustedRecords: "Record Bloccati vs Modificati",
+
+male: "Maschio",
+
+managementAndAuditreadyHrInsights: "Analisi HR per la gestione e la conformità agli audit",
+managementAndAuditreadyHrInsights1: "Analisi HR per la gestione e la conformità agli audit",
+
+missingMandatoryDocuments: "Documenti Obbligatori Mancanti",
+
+nationalityBreakdown: "Ripartizione per Nazionalità",
+nationalityDistribution: "Distribuzione per Nazionalità",
+
+operationalDisciplineFairness: "Disciplina Operativa ed Equità",
+
+overdue: "Scaduto",
+
+overtimeCost: "Costo Straordinari",
+overtimeHoursByProject: "Ore di Straordinario per Progetto",
+
+payrollByProject: "Costo del Personale per Progetto",
+
+payrollCostAnalytics: "Analisi Costi del Personale",
+payrollCostByMonth: "Costo del Personale per Mese",
+
+payrollExceptions: "Eccezioni Retributive",
+
+payrollReports: "Report Retribuzioni",
+payrollReportsComingSoon: "Report retribuzioni disponibili prossimamente",
+
+pendingAppraisals: "Valutazioni in Attesa",
+
+percentage: "Percentuale",
+
+position: "Posizione",
+
+printReport: "Stampa Report",
+
+project: "Progetto",
+
+rate: "Tasso",
+
+recruitmentAnalytics: "Analisi Reclutamento",
+recruitmentReports: "Report Reclutamento",
+
+remaining: "Rimanente",
+
+reportsAnalytics: "Report e Analisi",
+
+resolved2024: "Risolti (2024)",
+
+salaryDistributionByGrade: "Distribuzione Salariale per Livello",
+
+scope: "Ambito",
+
+selectionRate: "Tasso di Selezione",
+
+shortlistVsSelectionRatio: "Rapporto Shortlist / Assunzioni",
+
+sourceEffectiveness: "Efficacia delle Fonti di Reclutamento",
+
+staffGrowthOverTime: "Crescita del Personale nel Tempo",
+
+staffStatusDistribution: "Distribuzione dello Stato del Personale",
+
+status: "Stato",
+
+strategicWorkforceOverview: "Panoramica Strategica della Forza Lavoro",
+
+timetohire: "Tempo di Assunzione",
+
+to: "A",
+
+total: "Totale",
+
+totalAllocated: "Totale Allocato",
+
+totalHeadcount: "Organico Totale",
+
+underReview: "In Revisione",
+
+used: "Utilizzato",
+
+vacancyAging: "Anzianità delle Posizioni Vacanti",
+
+viewAnalytics: "Visualizza Analisi",
+
+willShowContractsExpiringMissingDocuments: "Mostrerà contratti in scadenza, documenti mancanti e valutazioni in sospeso",
+
+willShowPayrollCostsByMonth: "Mostrerà i costi del personale per mese, progetto e riepilogo delle indennità",
+
+within30Days: "Entro 30 giorni",
+
+workforceAnalytics: "Analisi della Forza Lavoro",
+
+workforceReports: "Report sulla Forza Lavoro",
+},
+
+hrRecruitment: {
+  actions: 'Azioni',
+  createNewVacancy: 'Crea Nuova Vacanza',
+  addMember: 'Aggiungi Membro',
+  addPanelMember: 'Aggiungi Membro del Panel',
+  addSelectionCriterion: 'Aggiungi Criterio di Selezione',
+  additionalNotes: 'Note Aggiuntive',
+  address: 'Indirizzo',
+  all: 'Tutti',
+  allCandidates: 'Tutti i Candidati',
+  anErrorOccurred: 'Si è verificato un errore',
+  annualLeave: 'Ferie Annuali',
+  appScore: 'Punteggio Candidatura',
+  applicationScore: 'Punteggio Domanda',
+  appliedAt: 'Data di Candidatura',
+  approve: 'Approva',
+  approveHire: 'Approva e Assumi',
+  approveHire4: 'Approva e Assumi',
+  approveShortlist: 'Approva Shortlist',
+  approved: 'Approvato',
+  approvedBy: 'Approvato da',
+  archive: 'Archivia',
+  archived: 'Archiviato',
+  areasForImprovement: 'Aree di Miglioramento',
+  atLeastOnePanelMemberIs: 'È richiesto almeno un membro del panel',
+  awaitingDecision: 'In Attesa di Decisione',
+  cancel: 'Annulla',
+  cancelled: 'Annullato',
+  candidate: 'Candidato',
+  candidateAcceptance: 'Accettazione del Candidato',
+  candidateAddress: 'Indirizzo del Candidato',
+  candidateDetails: 'Dettagli del Candidato',
+  candidateInformation: 'Informazioni del Candidato',
+  candidateManagement: 'Gestione Candidati',
+  candidateName: 'Nome del Candidato',
+  candidates: 'Candidati',
+  candidatesPendingDecision: 'Candidati in Attesa di Decisione',
+  checklist: 'Checklist',
+  close: 'Chiudi',
+  closed: 'Chiuso',
+  closing: 'Chiusura',
+  closingDate: 'Data di Chiusura',
+  closingDateMustBeAfterOpening: 'La data di chiusura deve essere successiva alla data di apertura',
+  communicationSkills: 'Capacità Comunicative',
+  compensationBenefits: 'Compenso e Benefici',
+  completed: 'Completato',
+  completed5: 'Completato',
+  consultancy: 'Consulenza',
+  consultant: 'Consulente',
+  contract: 'Contratto',
+  contractEndDateIfApplicable: 'Data Fine Contratto (se applicabile)',
+  contractEndDateOptional: 'Data Fine Contratto (Opzionale)',
+  contractStartDate: 'Data Inizio Contratto',
+  contractType: 'Tipo di Contratto',
+  copyApplicationLink: 'Copia Link di Candidatura',
+  copyLink: 'Copia Link',
+  createYourFirstVacancyToStart: 'Crea la tua prima vacanza per iniziare il reclutamento',
+  criterion: 'Criterio',
+  criterionName: 'Nome del Criterio',
+  culturalFit: 'Compatibilità Culturale',
+  currency: 'Valuta',
+  currentEmployer: 'Datore di Lavoro Attuale',
+  currentLocation: 'Località Attuale',
+  currentPosition: 'Posizione Attuale',
+  date: 'Data',
+  dateOfBirth: 'Data di Nascita',
+  dear: 'Gentile',
+  decision: 'Decisione',
+  decisionJustification: 'Motivazione della Decisione',
+  decisionRef: 'Riferimento Decisione',
+  department: 'Dipartimento',
+  directSupervisor: 'Supervisore Diretto',
+  doNotRecommend: 'Non Raccomandare',
+  documents: 'Documenti',
+  download: 'Scarica',
+  draft: 'Bozza',
+  dutyStation: 'Sede di Servizio',
+  edit: 'Modifica',
+  editOfferDetails: 'Modifica Dettagli Offerta',
+  educationLevel: 'Livello di Istruzione',
+  email: 'Email',
+  email1: 'Email',
+  employeeId: 'ID Dipendente',
+  employeeIdAlreadyExists: 'L’ID Dipendente esiste già',
+  employeeProfile: 'Profilo Dipendente',
+  employmentDetails: 'Dettagli dell’Impiego',
+  employmentTerms: 'Condizioni di Impiego',
+  employmentType: 'Tipo di Impiego',
+  evaluate: 'Valuta',
+  evaluated: 'Valutato',
+  evaluation: 'Valutazione',
+  evaluationRatings: 'Punteggi di Valutazione',
+  exportAll: 'Esporta Tutto',
+  exportLonglist: 'Esporta Longlist',
+  exportShortlist: 'Esporta Shortlist',
+  exportToExcel: 'Esporta in Excel',
+  fieldOfStudy: 'Campo di Studio',
+  fileName: 'Nome File',
+  finalInterview: 'Colloquio Finale',
+  finalRecommendation: 'Raccomandazione Finale',
+  fixedterm: 'Tempo Determinato',
+  frequency: 'Frequenza',
+  fullName: 'Nome Completo',
+  firstName: 'Nome',
+  lastName: 'Cognome',
+  education: 'Istruzione',
+  experience: 'Esperienza',
+  interviews: 'Colloqui',
+  noInterviews: 'Nessun Colloquio',
+  noDecision: 'Nessuna Decisione',
+  skills: 'Competenze',
+  candidateDeleted: 'Candidato eliminato con successo',
+  confirmDelete: 'Sei sicuro di voler eliminare questo candidato?',
+  searchCandidates: 'Cerca candidati...',
+  delete: 'Elimina',
+  decisionApproved: 'Decisione di assunzione approvata',
+  rejectHiringDecision: 'Rifiuta Decisione di Assunzione',
+  decisionRejected: 'Decisione di assunzione rifiutata',
+  confirmApprove: 'Sei sicuro di voler approvare questa decisione di assunzione?',
+  confirmReject: 'Sei sicuro di voler rifiutare questa decisione di assunzione?',
+  pending: 'In Attesa',
+  decisionCreated: 'Decisione di assunzione creata con successo',
+  candidateRequired: 'Il candidato è obbligatorio',
+  salaryRequired: 'Lo stipendio è obbligatorio',
+  startDateRequired: 'La data di inizio è obbligatoria',
+  offerSalary: 'Stipendio Offerto',
+  createHiringDecision: 'Crea Decisione di Assunzione',
+  saving: 'Salvataggio...',
+  decisionDeleted: 'Decisione di assunzione eliminata',
+  selectJob: 'Seleziona Posizione',
+  noDecisions: 'Nessuna decisione di assunzione trovata',
+  deleteHiringDecision: 'Elimina Decisione di Assunzione',
+  pleaseFixErrors: 'Correggere gli errori prima di inviare',
+  accepted: 'Accettato',
+  offerStatus: 'Stato Offerta',
+  processing: 'Elaborazione...',
+  selectInterview: 'Seleziona Colloquio',
+  updateInterview: 'Aggiorna Colloquio',
+  evaluationSaved: 'Valutazione salvata con successo',
+  scheduledTime: 'Orario Programmato',
+  poor: 'Scarso',
+  fair: 'Discreto',
+  good: 'Buono',
+  excellent: 'Eccellente',
+  veryGood: 'Molto Buono',
+  evaluateInterview: 'Valuta Colloquio',
+  interviewDeleted: 'Colloquio eliminato con successo',
+  location: 'Luogo',
+  fulltime: 'Tempo Pieno',
+  jobTitle: 'Titolo della Posizione',
+  jobCode: 'Codice Posizione',
+  searchTerm: 'Termine di Ricerca',
+  feedbackScore: 'Punteggio Feedback',
+  numberOfPositions: 'Numero di Posizioni',
+  gradeLevel: 'Livello Grado',
+  salaryRange: 'Fascia Salariale',
+  postingDate: 'Data di Pubblicazione',
+  description: 'Descrizione',
+  applicationLink: 'Link di Candidatura',
+  isRemote: 'Posizione Remota',
+  requirements: 'Requisiti',
+  responsibilities: 'Responsabilità',
+  benefits: 'Benefici',
+  createJob: 'Crea Posizione',
+  jobCreated: 'Posizione creata con successo',
+  jobUpdated: 'Posizione aggiornata con successo',
+  jobTitleRequired: 'Il titolo della posizione è obbligatorio',
+  departmentRequired: 'Il dipartimento è obbligatorio',
+  closingDateRequired: 'La data di chiusura è obbligatoria',
+  positionsRequired: 'Il numero di posizioni è obbligatorio',
+  editVacancy: 'Modifica Vacanza',
+  jobTitleAr: 'Titolo della Posizione (Arabo)',
+  jobDeleted: 'Posizione eliminata con successo',
+  confirmClose: 'Sei sicuro di voler chiudere questa vacanza?',
+  confirmArchive: 'Sei sicuro di voler archiviare questa vacanza?',
+  gender: 'Genere',
+  generateOfferLetter: 'Genera Lettera di Offerta',
+  grade: 'Grado',
+  gradeOptional: 'Grado (Opzionale)',
+  highlyRecommended: 'Fortemente Raccomandato',
+  hired: 'Assunto',
+  hiringDecision: 'Decisione di Assunzione',
+  hiringDecisions: 'Decisioni di Assunzione',
+  hiringManager: 'Responsabile Assunzioni',
+  inperson: 'In Presenza',
+  interviewDate: 'Data Colloquio',
+  interviewDetails: 'Dettagli Colloquio',
+  interviewUpdated: 'Colloquio aggiornato con successo',
+  newInterview: 'Nuovo Colloquio',
+  noJobsSelected: 'Nessuna posizione selezionata',
+  interviewer: 'Intervistatore',
+  interviewEvaluation: 'Valutazione Colloquio',
+  interviewManagement: 'Gestione Colloqui',
+  interviewPanelMembers: 'Membri Panel Colloquio',
+  interviewRef: 'Riferimento Colloquio',
+  interviewScheduling: 'Pianificazione Colloqui',
+  interviewScheduled: 'Colloquio programmato con successo',
+  interviewScore: 'Punteggio Colloquio',
+  interviewStatus: 'Stato Colloquio',
+  interviewSummary: 'Riepilogo Colloquio',
+  interviewTime: 'Ora Colloquio',
+  interviewType: 'Tipo Colloquio',
+  interviewedCandidates: 'Candidati Intervistati',
+  justification: 'Giustificazione',
+  keyStrengths: 'Punti di Forza',
+  letterDate: 'Data Lettera',
+  letterHeading: 'Intestazione Lettera',
+  linkCopied: 'Link copiato!',
+  locationMeetingLink: 'Luogo / Link Riunione',
+  longlist: 'Longlist',
+  makeDecision: 'Prendi Decisione',
+  makeHiringDecision: 'Prendi Decisione di Assunzione',
+  medicalInsurance: 'Assicurazione Medica',
+  monthlySalary: 'Stipendio Mensile',
+  motivationEnthusiasm: 'Motivazione ed Entusiasmo',
+  name: 'Nome',
+  nationality: 'Nazionalità',
+  needsSecondInterview: 'Richiede Secondo Colloquio',
+  newPosition: 'Nuova Posizione',
+  newVacancy: 'Nuova Vacanza',
+  no: 'No',
+  noCandidatesAwaitingDecision: 'Nessun candidato in attesa di decisione',
+  noCandidatesFound: 'Nessun candidato trovato',
+  noCriteriaAddedYet: 'Nessun criterio aggiunto',
+  noDocumentsUploaded: 'Nessun documento caricato',
+  noHiringDecisionsFound: 'Nessuna decisione di assunzione trovata',
+  noInterviewedCandidates: 'Nessun candidato intervistato',
+  noInterviewsConducted: 'Nessun colloquio effettuato',
+  noInterviewsFound: 'Nessun colloquio trovato',
+  noPastInterviews: 'Nessun colloquio precedente',
+  noSelectionCriteriaDefined: 'Nessun criterio di selezione definito',
+  noShortlistedCandidatesFound: 'Nessun candidato in shortlist trovato',
+  noShow: 'Assente',
+  noUpcomingInterviews: 'Nessun colloquio imminente',
+  noVacanciesFound: 'Nessuna vacanza trovata',
+  notRecommended: 'Non Raccomandato',
+  notes: 'Note',
+  notesOptional: 'Note (Opzionale)',
+  numericEgYears: 'Numerico (es. anni)',
+  onHold: 'Sospeso',
+  open: 'Aperto',
+  opening: 'Apertura',
+  openingDate: 'Data Apertura',
+  organizationDetails: 'Dettagli Organizzazione',
+  organizationName: 'Nome Organizzazione',
+  otherBenefits: 'Altri Benefici',
+  overallInterviewScore: 'Punteggio Complessivo Colloquio (%)',
+  overallRating: 'Valutazione Complessiva',
+  panel: 'Panel',
+  panelInterview: 'Colloquio Panel',
+  panelMembers: 'Membri del Panel',
+  parttime: 'Part-Time',
+  pastInterviews: 'Colloqui Passati',
+  pendingEvaluation: 'Valutazione in Attesa',
+  personalInformation: 'Informazioni Personali',
+  phone: 'Telefono',
+  phone6: 'Telefono',
+  phoneScreening: 'Screening Telefonico',
+  pleaseSelectAVacancyToView: 'Seleziona una vacanza per visualizzare i candidati',
+  position: 'Posizione',
+  positionDetails: 'Dettagli Posizione',
+  positionTitle: 'Titolo Posizione',
+  preview: 'Anteprima',
+  printSavePdf: 'Stampa / Salva PDF',
+  probationPeriod: 'Periodo di Prova',
+  probationPeriodMonths: 'Periodo di Prova (Mesi)',
+  problemSolving: 'Problem Solving',
+  project: 'Progetto',
+  projectOptional: 'Progetto (Opzionale)',
+  proposedSalary: 'Stipendio Proposto',
+  proposedTerms: 'Condizioni Proposte',
+  publicApplicationLink: 'Link Pubblico di Candidatura',
+  publishVacancy: 'Pubblica Vacanza',
+  putOnHold: 'Metti in Sospeso',
+  rating: 'Valutazione',
+  recommendForHiring: 'Raccomanda per Assunzione',
+  recommendation: 'Raccomandazione',
+  recommended: 'Raccomandato',
+  ref: 'Rif.',
+  reference: 'Riferimento',
+  referenceNumber: 'Numero di Riferimento',
+  reject: 'Rifiuta',
+  rejected: 'Respinto',
+  remove: 'Rimuovi',
+  replacement: 'Sostituzione',
+  reportingTo: 'Riporta a',
+  dateRequired: 'La data è obbligatoria',
+  timeRequired: 'L’orario è obbligatorio',
+  interviewers: 'Intervistatori',
+  required: 'Obbligatorio',
+  response: 'Risposta',
+  salary: 'Stipendio',
+  saveAsDraft: 'Salva come Bozza',
+  saveEvaluation: 'Salva Valutazione',
+  saveOfferLetter: 'Salva Lettera di Offerta',
+  saveVacancy: 'Salva Vacanza',
+  scale15: 'Scala (1-5)',
+  schedule: 'Pianifica',
+  scheduleInterview: 'Pianifica Colloquio',
+  scheduleInterview7: 'Pianifica Colloquio',
+  scheduled: 'Programmato',
+  score: 'Punteggio',
+  scoringDetails: 'Dettagli Punteggio',
+  searchVacancies: 'Cerca vacanze...',
+  selectCandidate: 'Seleziona Candidato',
+  selectVacancy: 'Seleziona Vacanza',
+  selectionCriteria: 'Criteri di Selezione',
+  selectionCriteriaScoring: 'Criteri di Selezione e Punteggio',
+  shortlist: 'Shortlist',
+  shortlistThreshold: 'Soglia Shortlist',
+  shortlistThreshold8: 'Soglia Shortlist (%)',
+  shortlisted: 'In Shortlist',
+  shortlisted2: 'In Shortlist',
+  shortlisted3: 'In Shortlist',
+  shortlistedCandidates: 'Candidati in Shortlist',
+  shortterm: 'Breve Termine',
+  signatoryName: 'Nome Firmatario',
+  signatoryTitle: 'Titolo Firmatario',
+  signature: 'Firma',
+  sincerely: 'Cordiali Saluti',
+  specialConditionsOptional: 'Condizioni Speciali (Opzionale)',
+  staffDictionaryRecord: 'Record Dizionario Personale',
+  startDate: 'Data Inizio',
+  status: 'Stato',
+  step: 'Passaggio',
+  subjectOfferOfEmployment: 'Oggetto: Offerta di Impiego',
+  submitDecision: 'Invia Decisione',
+  submitEvaluation: 'Invia Valutazione',
+  submitting: 'Invio in corso...',
+  success: 'Successo!',
+  technicalInterview: 'Colloquio Tecnico',
+  technicalSkills: 'Competenze Tecniche',
+  termsConditions: 'Termini e Condizioni',
+  thisFieldIsRequired: 'Questo campo è obbligatorio',
+  threshold: 'Soglia',
+  time: 'Ora',
+  total: 'Totale',
+  totalDecisions: 'Totale Decisioni',
+  totalInterviews: 'Totale Colloqui',
+  totalScore: 'Punteggio Totale',
+  totalWeight: 'Peso Totale',
+  type: 'Tipo',
+  upcoming: 'Prossimi',
+  upcomingInterviews: 'Prossimi Colloqui',
+  uponApprovalSystemWillAutomaticallyCreate: 'Dopo l’approvazione il sistema creerà automaticamente:',
+  vacancies: 'Vacanze',
+  vacancyCreatedSuccessfully: 'Vacanza creata con successo',
+  vacancyDetails: 'Dettagli Vacanza',
+  vacancyInformation: 'Informazioni Vacanza',
+  vacancyType: 'Tipo di Vacanza',
+  vacancyUpdatedSuccessfully: 'Vacanza aggiornata con successo',
+  videoCall: 'Videochiamata',
+  view: 'Visualizza',
+  viewApplications: 'Visualizza Candidature',
+  volunteer: 'Volontario',
+  website: 'Sito Web',
+  weight: 'Peso',
+  weight9: 'Peso (%)',
+  weightsMustTotal100: 'I pesi devono totalizzare il 100%',
+  workLocation: 'Luogo di Lavoro',
+  workingHours: 'Orario di Lavoro',
+  yearsOfExperience: 'Anni di Esperienza',
+  yes: 'Sì',
+  yesno: 'Sì/No',
+  noCandidates: 'Nessun candidato',
+},
+
+hrLeave: {
+actions: "Azioni",
+activeStaff: "Personale Attivo",
+allRequests: "Tutte le Richieste",
+allStatuses: "Tutti gli Stati",
+allTypes: "Tutti i Tipi",
+
+annualEntitlement: "Diritto Annuale alle Ferie",
+annualLeave: "Ferie Annuali",
+annualLeaveEntitlementsAndBalancesFor: "Diritti e saldi delle ferie annuali per tutto il personale attivo",
+
+approvalDate: "Data di Approvazione",
+approvalWorkflow: "FLUSSO DI APPROVAZIONE",
+
+approve: "Approva",
+approved: "Approvato",
+approved1: "Approvato",
+approvedBy: "Approvato da",
+
+archivedOrExitedStaffCannotRequest: "Il personale archiviato o cessato non può richiedere congedi",
+
+areYouSureYouWantTo: "Sei sicuro di voler approvare questa richiesta di congedo?",
+
+available: "Disponibile",
+availableBalance: "Saldo Disponibile",
+avgAvailableBalance: "Saldo Disponibile Medio",
+
+cancel: "Annulla",
+chooseAnEmployeeToCreateA: "Scegli un dipendente per creare una richiesta di congedo",
+
+close: "Chiudi",
+
+contractPeriod: "Periodo Contrattuale",
+contractStartDate: "Data di Inizio Contratto",
+
+date: "Data",
+dates: "Date",
+
+days: "Giorni",
+days4: "giorni",
+days7: "giorni",
+
+delete: "Elimina",
+
+department: "Dipartimento",
+
+edit: "Modifica",
+
+emailPreview: "Anteprima Email",
+
+emergencyLeave: "Congedo di Emergenza",
+
+employeeInformation: "Informazioni del Dipendente",
+employeeInformation5: "INFORMAZIONI DEL DIPENDENTE",
+
+en: "en",
+
+endDate: "Data di Fine",
+
+enterReasonForLeave: "Inserisci il motivo del congedo...",
+
+export: "Esporta",
+
+fileName: "Nome File",
+
+fileSizeMustBeLessThan: "La dimensione del file deve essere inferiore a 5 MB",
+
+fileUploaded: "File Caricato",
+
+filterByStatus: "Filtra per Stato",
+filterByType: "Filtra per Tipo",
+
+from: "Da",
+
+fullName: "Nome Completo",
+
+hrDashboard: "Cruscotto HR",
+
+hrManager: "Responsabile HR",
+
+justification: "Giustificazione",
+
+justificationRequiredForEmergency3Days: "Giustificazione (Obbligatoria per congedi di emergenza superiori a 3 giorni)",
+
+leaveBalance: "Saldo Ferie",
+leaveBalanceSummary: "RIEPILOGO SALDO FERIE",
+leaveBalances: "Saldi Ferie",
+
+leaveDetails: "Dettagli del Congedo",
+leaveDetails6: "DETTAGLI DEL CONGEDO",
+
+leaveManagement: "Gestione Congedi",
+
+leaveRequest: "Richiesta di Congedo",
+leaveRequestForm: "MODULO DI RICHIESTA CONGEDO",
+
+leaveType: "Tipo di Congedo",
+
+lineManager: "Responsabile Diretto",
+
+manageLeaveRequestsApprovalsAndBalances: "Gestisci richieste di congedo, approvazioni e saldi",
+
+medicalReportAttached: "Certificato Medico Allegato",
+
+medicalReportRequiredForSick3: "Certificato Medico (Obbligatorio per malattia superiore a 3 giorni)",
+
+messageBody: "Corpo del Messaggio",
+
+name: "Nome",
+
+newLeaveRequest: "Nuova Richiesta di Congedo",
+
+noActiveEmployeeFound: "Nessun dipendente attivo trovato",
+noActiveEmployeesFound: "Nessun dipendente attivo trovato",
+noActiveStaffFound: "Nessun membro del personale attivo trovato",
+
+noLeaveRequestsFound: "Nessuna richiesta di congedo trovata",
+
+notes: "NOTE",
+
+onlyPdfFilesAreAllowed: "Sono consentiti solo file PDF",
+
+opening: "Saldo Iniziale",
+openingBalance: "Saldo Iniziale",
+
+otherLeave: "Altro Congedo",
+
+pending: "In Sospeso",
+pending3: "In Sospeso",
+pendingApproval: "In Attesa di Approvazione",
+pendingLeave: "Congedo in Attesa",
+
+pleaseProvideAReasonForRejection: "Fornire un motivo per il rifiuto:",
+
+position: "Posizione",
+
+printSaveAsPdf: "Stampa / Salva come PDF",
+
+printedOn: "Stampato il",
+
+provideDetailedJustification: "Fornire una giustificazione dettagliata...",
+
+reason: "Motivo",
+
+reject: "Rifiuta",
+
+rejected: "Rifiutato",
+rejectedBy: "Rifiutato da",
+
+rejectionDate: "Data di Rifiuto",
+rejectionReason: "Motivo del Rifiuto",
+
+remaining: "Rimanente",
+remainingBalance: "Saldo Rimanente",
+
+requestLeave: "Richiedi Congedo",
+
+requestNo: "N. Richiesta",
+
+right: "destra",
+
+saveAsDraft: "Salva come Bozza",
+
+searchByStaffIdNamePosition: "Cerca per ID dipendente, nome o posizione...",
+searchByStaffIdNamePosition2: "Cerca per ID dipendente, nome, posizione o dipartimento...",
+
+select: "Seleziona",
+selectEmployee: "Seleziona Dipendente",
+
+sentAt: "Inviato il",
+
+sickLeave: "Congedo per Malattia",
+
+signature: "Firma",
+
+simulated: "Simulato",
+
+staffId: "ID Dipendente",
+
+staffLeaveBalances: "Saldi Congedi del Personale",
+
+startByCreatingANewLeave: "Inizia creando una nuova richiesta di congedo",
+
+startDate: "Data di Inizio",
+
+status: "Stato",
+
+subject: "Oggetto",
+
+submitRequest: "Invia Richiesta",
+
+thisIsASystemgeneratedDocument: "Questo è un documento generato automaticamente dal sistema",
+
+to: "A",
+
+totalActiveStaff: "Totale Personale Attivo",
+totalDays: "Totale Giorni",
+totalLeaveDays: "Totale Giorni di Congedo",
+totalLeaveUsed: "Totale Congedo Utilizzato",
+totalPending: "Totale in Attesa",
+totalRequests: "Totale Richieste",
+
+uploadPdf: "Carica PDF",
+
+used: "Utilizzato",
+usedDays: "Giorni Utilizzati",
+usedLeave: "Congedo Utilizzato",
+
+view: "Visualizza",
+},
+
+hrEmployeeCards: {
+acknowledged: "Confermato",
+actions: "Azioni",
+active: "Attivo",
+
+addAppraisalForm: "📄 Aggiungi Scheda di Valutazione",
+addContract: "Aggiungi Contratto",
+addReview: "Aggiungi Valutazione",
+addTraining: "Aggiungi Formazione",
+
+adminClearance: "Autorizzazione Amministrativa",
+
+allegation: "Accusa",
+allegationDate: "Data dell’Accusa",
+allegationDetails: "Dettagli dell’Accusa",
+
+allowances: "Indennità",
+
+approval: "Approvazione",
+approvalDate: "Data di Approvazione",
+approved: "Approvato",
+approvedBy: "Approvato da",
+
+areYouSureYouWantTo: "Sei sicuro di voler eliminare questa valutazione delle prestazioni?",
+areYouSureYouWantTo3: "Sei sicuro di voler eliminare questo record di formazione?",
+
+basicSalary: "Stipendio Base",
+
+cancelled: "Annullato",
+
+caseReference: "Riferimento Caso",
+
+certificate: "Certificato",
+
+cleanDisciplinaryRecordNoSanctionsOn: "Fedina disciplinare pulita - Nessuna sanzione registrata",
+
+clearanceChecklist: "Lista di Verifica per il Nulla Osta",
+
+close: "Chiudi",
+closed: "Chiuso",
+
+completed: "Completato",
+completion: "Completamento",
+
+confidentialPersonnelFile: "RISERVATO - Fascicolo del Personale",
+
+contractHistory: "Storico Contratti",
+contractHistoryAndEmploymentRecords: "Storico contratti e registri di impiego",
+
+contractType: "Tipo di Contratto",
+
+coreEmployeeInformationAndContactDetails: "Informazioni principali del dipendente e dettagli di contatto",
+
+cost: "Costo",
+
+currentContract: "Contratto Attuale",
+currentSalaryStructure: "Struttura Salariale Attuale",
+
+currentlyActive: "Attualmente Attivo",
+
+cvResume: "CV / Curriculum Vitae",
+
+date: "Data",
+dateIssued: "Data di Emissione",
+dateRequested: "Data della Richiesta",
+dates: "Date",
+
+delete: "Elimina",
+
+department: "Dipartimento",
+
+disciplinaryAction: "Azione Disciplinare",
+disciplinaryActionToBeTaken: "Azione Disciplinare da Adottare",
+
+download: "Scarica",
+downloadSignedForm: "Scarica Modulo Firmato",
+
+draft: "Bozza",
+draftPendingActivation: "Bozza - In Attesa di Attivazione",
+
+duration: "Durata",
+
+edit: "Modifica",
+
+effectiveDate: "Data di Decorrenza",
+
+email: "Email",
+
+employeeAcknowledgment: "Conferma del Dipendente",
+employeeInformation: "Informazioni del Dipendente",
+employeeIsCurrentlyActive: "Il dipendente è attualmente attivo",
+employeeSignature: "Firma del Dipendente",
+
+employmentContract: "Impiego e Contratto",
+employmentHistory: "Storico Impiego",
+employmentPeriod: "Periodo di Impiego",
+employmentVerificationAndReferences: "Verifica dell’impiego e referenze",
+
+en: "en",
+
+endDate: "Data di Fine",
+
+exitCompleted: "Uscita Completata",
+exitInterviewConducted: "Colloquio di Uscita Effettuato",
+
+exitOffboarding: "Uscita e Offboarding",
+exitProcessAndClearance: "Processo di uscita e nulla osta",
+exitProcessInProgress: "Processo di uscita in corso",
+
+exitType: "Tipo di Uscita",
+
+experienceCertificateIssued: "Certificato di Esperienza Emesso",
+
+expired: "Scaduto",
+
+fileSizeMustBeLessThan: "La dimensione del file deve essere inferiore a 5 MB",
+
+finalDecision: "Decisione Finale",
+finalSettlementPaid: "Liquidazione Finale Pagata",
+finalStatus: "Stato Finale",
+
+financeClearance: "Nulla Osta Finanza",
+
+fullAddress: "Indirizzo Completo",
+fullName: "Nome Completo",
+
+gender: "Genere",
+
+generateOfficialForm: "Genera Modulo Ufficiale",
+generateReferenceSummary: "Genera Riepilogo Referenze",
+
+generatedFromPayrollAllowancesModule: "Generato dal modulo Payroll e Indennità",
+generatedOn: "Generato il",
+
+grade: "Livello",
+
+grossSalary: "Stipendio Lordo",
+
+hireDate: "Data di Assunzione",
+
+hours: "ore",
+
+housing: "Alloggio",
+
+hrClearance: "Nulla Osta HR",
+
+humanitarianOrganization: "Organizzazione Umanitaria",
+
+identificationCopy: "Copia del Documento di Identità",
+
+identityPersonalProfile: "Identità e Profilo Personale",
+
+importantNote: "Nota Importante",
+
+inProgress: "In Corso",
+
+initiateExitProcess: "Avvia Processo di Uscita",
+initiated: "Avviato",
+
+issued: "Emesso",
+
+itClearance: "Nulla Osta IT",
+
+lastPosition: "Ultima Posizione",
+lastWorkingDay: "Ultimo Giorno di Lavoro",
+
+loadingSalaryData: "Caricamento dati salariali...",
+
+locked: "Bloccato",
+
+nationality: "Nazionalità",
+
+noAddressProvided: "Nessun indirizzo fornito",
+noContractRecordsFound: "Nessun contratto trovato",
+noDisciplinaryRecords: "Nessun record disciplinare",
+noExitProcessInitiated: "Nessun processo di uscita avviato",
+noFileUploaded: "Nessun file caricato",
+noPayrollSlipsAvailable: "Nessuna busta paga disponibile",
+noPerformanceReviewsYet: "Nessuna valutazione delle prestazioni disponibile",
+noReferenceFormsUploadedYet: "Nessun modulo di referenza caricato",
+noSalaryRecordFound: "Nessun record salariale trovato",
+noSupervisorAssigned: "Nessun supervisore assegnato",
+noTrainingRecordsYet: "Nessun record di formazione disponibile",
+
+notAssigned: "Non Assegnato",
+notIssued: "Non Emesso",
+
+officialAppraisalForms: "Moduli Ufficiali di Valutazione",
+officialDisciplinaryForm: "Modulo Disciplinare Ufficiale",
+
+ongoing: "In Corso",
+ongoing2: "In Corso",
+
+onlyPdfFilesAreAllowed: "Sono consentiti solo file PDF",
+
+other: "Altro",
+
+overallRating: "Valutazione Complessiva",
+
+payrollSlipsReadonly: "Buste Paga (Sola Lettura)",
+
+pending: "In Sospeso",
+pendingClearance: "Nulla Osta in Attesa",
+
+performanceAppraisal: "Prestazioni e Valutazione",
+performanceReviewsAndEvaluations: "Valutazioni delle prestazioni e performance",
+
+phone: "Telefono",
+
+planned: "Pianificato",
+
+position: "Posizione",
+position1: "Posizione",
+
+print: "Stampa",
+
+printForm: "Stampa Modulo",
+
+projects: "Progetti",
+
+provider: "Fornitore",
+
+readonlyManagedCentrallyViaSalaryScale: "Sola lettura - Gestito centralmente tramite la Tabella delle Scale Salariali",
+
+referenceType: "Tipo di Referenza",
+
+referenceVerification: "Referenze e Verifica",
+representation: "Indennità di Rappresentanza",
+
+requestingOrganization: "Organizzazione Richiedente",
+
+reviewDate: "Data di Valutazione",
+reviewPeriod: "Periodo di Valutazione",
+
+reviewedBy: "Valutato da",
+reviewer: "Valutatore",
+
+salary: "Stipendio",
+
+salaryCompensation: "Stipendio e Compensazione",
+
+sanctionsDisciplinary: "Sanzioni e Disciplina",
+
+signature: "Firma",
+
+signedDocument: "Documento Firmato",
+signedFormUploadedSuccessfully: "Modulo firmato caricato con successo",
+
+staffId: "ID Dipendente",
+
+startDate: "Data di Inizio",
+
+status: "Stato",
+
+step: "Fase",
+
+supervisor: "Supervisore",
+supervisorAtExit: "Supervisore al Momento dell’Uscita",
+
+terminated: "Terminato",
+
+totalCases: "Totale Casi",
+
+trainingDevelopment: "Formazione e Sviluppo",
+trainingProgramsAndCertifications: "Programmi di formazione e certificazioni",
+trainingTitle: "Titolo della Formazione",
+
+transport: "Trasporto",
+
+type: "Tipo",
+
+updateClearance: "Aggiorna Nulla Osta",
+
+uploadDate: "Data di Caricamento",
+
+uploadDocument: "Carica Documento",
+uploadReferenceForm: "Carica Modulo di Referenza",
+uploadSignedForm: "Carica Modulo Firmato",
+
+uploaded: "Caricato",
+uploadedBy: "Caricato da",
+uploadedOn: "Caricato il",
+
+uploadedReferenceRequests: "Richieste di Referenza Caricate",
+
+uploadsDocuments: "Caricamenti e Documenti",
+
+viewDetails: "Visualizza Dettagli",
+viewFullCase: "Visualizza Caso Completo",
+},
+
+hrAttendance: {
+aboutPeriodLocking: "Informazioni sul Blocco del Periodo",
+
+absent: "Assente",
+absentDays: "Giorni di Assenza",
+absentToday: "Assente Oggi",
+
+actions: "Azioni",
+
+actual: "Effettivo",
+actualHours: "Ore Effettive",
+
+addAttachment: "Aggiungi Allegato",
+addRecord: "Aggiungi Record",
+
+all: "Tutti",
+allPeriods: "Tutti i Periodi",
+allRecords: "Tutti i Record",
+
+approval: "Approvazione",
+
+approve: "Approva",
+
+approveRejectAndTrackOvertimeHours: "Approva, rifiuta e monitora le ore di straordinario",
+approveTrackOvertime: "Approva e Gestisci Straordinari",
+
+approved: "Approvato",
+approvedBy: "Approvato da",
+
+approvedOvertime: "Straordinari Approvati",
+
+attachmentsOptional: "Allegati (Facoltativi)",
+
+attendanceAdjustmentForm: "Modulo di Rettifica Presenze",
+
+attendanceCalendar: "Calendario Presenze",
+
+attendanceDashboard: "Cruscotto Presenze",
+
+attendanceDetail: "Dettaglio Presenza",
+
+attendanceManagement: "Gestione Presenze",
+
+attendanceRecords: "Registri Presenze",
+
+attendanceReport: "Rapporto Presenze",
+attendanceReports: "Rapporti Presenze",
+
+cancel: "Annulla",
+
+cannotSubmitExplanationsForLockedPeriods: "Non è possibile inviare giustificazioni per periodi bloccati",
+
+checkIn: "Entrata",
+checkOut: "Uscita",
+
+close: "Chiudi",
+
+completeMonthlyAttendanceReportWithAll: "Rapporto mensile completo delle presenze di tutto il personale",
+
+confirm: "Conferma",
+
+confirmPeriodLock: "Conferma Blocco Periodo",
+confirmPeriodUnlock: "Conferma Sblocco Periodo",
+
+currentMonth: "Mese Corrente",
+currentPeriod: "Periodo Corrente",
+
+date: "Data",
+date2: "Data: ",
+
+day: "Giorno",
+
+dayWeekMonthViews: "Visualizzazione Giorno / Settimana / Mese",
+
+detailedViewComingSoon: "Vista dettagliata disponibile prossimamente...",
+
+enterYourExplanationHere: "Inserisci qui la tua giustificazione...",
+
+enus: "it-IT",
+
+explanation: "Giustificazione",
+
+explanationSubmitted: "Giustificazione Inviata",
+explanationSubmittedSuccessfully: "Giustificazione inviata con successo",
+
+export: "Esporta",
+
+fieldWork: "Lavoro sul Campo",
+
+filterBySource: "Filtra per Fonte",
+filterByStatus: "Filtra per Stato",
+
+flaggedDay: "Giorno Segnalato",
+flaggedRecords: "Record Segnalati",
+
+formForAttendanceAdjustmentsAndCorrections: "Modulo per rettifiche e correzioni delle presenze",
+
+fri: "Ven",
+
+generateAndPrintAttendanceReports: "Genera e stampa rapporti presenze",
+
+generatedOn: "Generato il",
+
+hours: "Ore",
+hours1: "ore",
+
+hrDashboard: "Cruscotto HR",
+
+humanitarianOrganization: "Organizzazione Umanitaria",
+
+importantNotice: "Avviso Importante",
+
+integratedManagementSystemIms: "Sistema di Gestione Integrato (IMS)",
+
+lastMonth: "Mese Scorso",
+
+late: "In Ritardo",
+lateArrivals: "Ritardi",
+lateDays: "Giorni di Ritardo",
+
+lockDeadline: "Scadenza Blocco",
+lockPeriod: "Blocca Periodo",
+lockUnlockPeriods: "Blocca e Sblocca Periodi",
+
+locked: "Bloccato",
+
+lockedAt: "Bloccato il",
+lockedBy: "Bloccato da",
+
+lockedPeriod: "Periodo Bloccato",
+
+manualHr: "Inserimento Manuale HR",
+
+mon: "Lun",
+
+month: "Mese",
+
+monthlyAttendanceSheet: "Foglio Presenze Mensile",
+
+monthlySheetsForms: "Fogli e Moduli Mensili",
+
+more: "altro",
+
+myAttendance: "Le Mie Presenze",
+
+next: "Avanti",
+
+no: "No",
+
+noAttendanceRecordsForThisPeriod: "Nessun record di presenza per questo periodo",
+noAttendanceRecordsFound: "Nessun record di presenza trovato",
+
+noExplanationSubmitted: "Nessuna giustificazione inviata",
+
+noOvertimeRecordsForThisPeriod: "Nessun record di straordinario per questo periodo",
+noOvertimeRecordsFound: "Nessun record di straordinario trovato",
+
+noPeriodsFound: "Nessun periodo trovato",
+
+noRecordsFoundForSelectedPeriod: "Nessun record trovato per il periodo selezionato",
+
+notes: "Note",
+
+onLeave: "In Congedo",
+
+open: "Aperto",
+
+overtime: "Straordinario",
+
+overtimeApprovalSheet: "Scheda di Approvazione Straordinari",
+
+overtimeApprovedSuccessfully: "Straordinario approvato con successo",
+
+overtimeHoursApprovalSheet: "Scheda di approvazione delle ore di straordinario",
+
+overtimeManagement: "Gestione Straordinari",
+
+overtimeRejected: "Straordinario Rifiutato",
+
+overtimeThisMonth: "Straordinari del Mese",
+overtimeToday: "Straordinari Oggi",
+
+payroll: "Buste Paga",
+
+pending: "In Attesa",
+
+pendingApprovals: "Approvazioni in Attesa",
+
+period: "Periodo",
+
+periodManagement: "Gestione Periodi",
+
+planned: "Pianificato",
+plannedHours: "Ore Pianificate",
+
+pleaseEnterAnExplanation: "Inserire una giustificazione",
+
+preparedBy: "Preparato da",
+
+present: "Presente",
+
+presentDays: "Giorni di Presenza",
+presentToday: "Presente Oggi",
+
+preview: "Anteprima",
+
+previous: "Precedente",
+
+print: "Stampa",
+printReports: "Stampa Rapporti",
+
+provideAnExplanationForThisAttendance: "Fornire una giustificazione per questo record di presenza",
+
+quickStatistics: "Statistiche Rapide",
+
+records: "record",
+
+reject: "Rifiuta",
+rejected: "Rifiutato",
+
+rejectedOvertime: "Straordinario Rifiutato",
+
+rejectionReason: "Motivo del rifiuto:",
+
+reviewedBy: "Verificato da",
+
+sat: "Sab",
+
+searchByNameOrId: "Cerca per nome o ID...",
+
+searchFilterExport: "Ricerca, filtro ed esportazione",
+
+selectMonth: "Seleziona Mese",
+
+signature: "Firma",
+
+source: "Fonte",
+
+staff: "Personale",
+staff3: "dipendenti",
+
+staffId: "ID Dipendente",
+staffName: "Nome Dipendente",
+
+staffWithOvertime: "Personale con Straordinari",
+
+statistics: "Statistiche",
+
+status: "Stato",
+
+submit: "Invia",
+
+submitExplanation: "Invia Giustificazione",
+
+summary: "Riepilogo",
+
+sun: "Dom",
+
+thu: "Gio",
+
+today: "Oggi",
+
+totalDays: "Totale Giorni",
+totalHours: "Totale Ore",
+totalOvertimeHours: "Totale Ore Straordinarie",
+totalRecords: "Totale Record",
+totalStaff: "Totale Personale",
+
+tue: "Mar",
+
+unlockPeriod: "Sblocca Periodo",
+
+update: "Aggiorna",
+
+view: "Visualizza",
+
+viewAllRecords: "Visualizza Tutti i Record",
+
+viewCalendar: "Visualizza Calendario",
+
+viewDetails: "Visualizza Dettagli",
+
+viewSearchAndManageAllAttendance: "Visualizza, cerca e gestisci tutti i record di presenza",
+
+viewSubmitExplanations: "Visualizza e Invia Giustificazioni",
+
+viewYourAttendanceRecordsAndSubmit: "Visualizza i tuoi record di presenza e invia giustificazioni",
+
+visualAttendanceTrackingWithDayWeek: "Monitoraggio visivo delle presenze con visualizzazione giornaliera, settimanale e mensile",
+
+wed: "Mer",
+
+week: "Settimana",
+
+yes: "Sì",
+
+yourExplanation: "La Tua Giustificazione",
+
+halfDay: "Mezza Giornata",
+
+holiday: "Festività",
+
+weekend: "Fine Settimana",
+
+filterByApprovalStatus: "Filtra per Stato di Approvazione",
+
+workHours: "Ore Lavorative",
+
+approvalStatus: "Stato di Approvazione",
+
+location: "Sede di Lavoro",
+
+loading: "Caricamento..."
+},
+
+hrAnnualPlan: {
+actions: "Azioni",
+actions2: "Azioni",
+
+addCostItem: "Aggiungi Voce di Costo",
+addHrRisk: "Aggiungi Rischio HR",
+addNewPosition: "Aggiungi Nuova Posizione",
+addPlannedPosition: "Aggiungi Posizione Pianificata",
+addRisk: "Aggiungi Rischio",
+addTraining: "Aggiungi Formazione",
+addTrainingActivity: "Aggiungi Attività Formativa",
+
+additionalNotes: "Note aggiuntive...",
+
+allDepartments: "Tutti i Dipartimenti",
+allProjects: "Tutti i Progetti",
+
+allowances: "Indennità",
+
+annualCost: "Costo Annuale",
+annualSalary: "Stipendio Annuale",
+annualSalaryCost: "Costo Salariale Annuale",
+
+approval: "Approvazione",
+approvalComments: "Commenti di Approvazione",
+approvalDate: "Data di Approvazione",
+approvalDetails: "Dettagli Approvazione",
+approvalGovernance: "Approvazione e Governance",
+approvalWorkflow: "Flusso di Approvazione",
+
+approvePlan: "Approva Piano",
+
+approved: "Approvato",
+approvedBy: "Approvato da",
+
+autocalculatedFromPlannedPositions: "Calcolato automaticamente dalle posizioni pianificate",
+
+autogeneratedRecruitmentPlan: "Piano di Reclutamento Generato Automaticamente",
+
+autosyncedReferenceData: "Dati di Riferimento Sincronizzati Automaticamente",
+
+backToPlans: "Torna ai Piani",
+
+briefDescription: "Breve descrizione...",
+
+budgetCosts: "Budget e Costi",
+
+cancel: "Annulla",
+
+category: "Categoria",
+
+comments: "Commenti",
+
+completed: "Completato",
+
+consultancy: "Consulenza",
+
+contractType: "Tipo di Contratto",
+
+copyFromBasePlanOptional: "Copia dal Piano Base (Facoltativo)",
+
+core: "Core",
+
+cost: "Costo",
+
+createNewAnnualPlan: "Crea Nuovo Piano Annuale",
+createNewPlan: "Crea Nuovo Piano",
+createPlan: "Crea Piano",
+
+creating: "Creazione in corso...",
+
+delete: "Elimina",
+
+deleteThisCostItem: "Eliminare questa voce di costo?",
+deleteThisPosition: "Eliminare questa posizione?",
+deleteThisRisk: "Eliminare questo rischio?",
+deleteThisTrainingActivity: "Eliminare questa attività formativa?",
+
+department: "Dipartimento",
+dept: "Dip.",
+
+description: "Descrizione",
+
+draft: "Bozza",
+
+edit: "Modifica",
+
+editCostItem: "Modifica Voce di Costo",
+editPlan: "Modifica Piano",
+editPosition: "Modifica Posizione",
+editRisk: "Modifica Rischio",
+editTraining: "Modifica Formazione",
+
+egProgramOfficer: "es. Program Officer",
+egProgramStaff: "es. Personale di Programma",
+
+en: "it",
+
+endOfService: "Fine Servizio",
+
+enhancedSecurityMeasuresAndRiskAllowances: "Misure di sicurezza rafforzate e indennità per rischio",
+
+enterYourName: "Inserisci il tuo nome",
+
+estCost: "Costo Stim.",
+
+estimatedAmount: "Importo Stimato",
+estimatedCost: "Costo Stimato",
+
+estimatedHrCostAnnual: "Costo HR Annuale Stimato",
+
+existingStaff: "Personale Esistente",
+
+existingStaffStartOfYear: "Personale Esistente (Inizio Anno)",
+
+existingWorkforce: "Forza Lavoro Esistente",
+
+existingWorkforceSnapshot: "Panoramica della Forza Lavoro Esistente",
+
+expectedMonth: "Mese Previsto",
+
+explainWhyThisPositionIsNeeded: "Spiega perché questa posizione è necessaria...",
+
+exportExcel: "Esporta Excel",
+exportPdf: "Esporta PDF",
+
+exportPlans: "Esporta Piani",
+
+exportWorkforceData: "Esporta Dati della Forza Lavoro",
+
+external: "Esterno",
+
+failedToCreatePlan: "Impossibile creare il piano",
+
+fixedterm: "Tempo Determinato",
+
+fullName: "Nome Completo",
+
+funding: "Finanziamento",
+fundingSource: "Fonte di Finanziamento",
+
+governanceNotes: "Note di Governance",
+
+grade: "Livello",
+
+grandTotalHrBudget: "Budget HR Totale Complessivo",
+
+grant: "Sovvenzione",
+
+high: "Alto",
+high4: "Alto",
+
+highPriorityRisks: "Rischi ad Alta Priorità",
+
+highStaffTurnoverDueToSecurity: "Elevato turnover del personale dovuto a problematiche di sicurezza",
+
+hrAnnualPlan: "Piano Annuale HR",
+
+hrBudgetSummary: "Riepilogo Budget HR",
+
+hrCostBudgetEstimation: "Stima Costi e Budget HR",
+
+hrRisks: "Rischi HR",
+
+hrRisksMitigationPlan: "Piano di Mitigazione dei Rischi HR",
+
+identifiedRisks: "Rischi Identificati",
+
+impact: "Impatto",
+
+insurance: "Assicurazione",
+
+internal: "Interno",
+
+justification: "Giustificazione",
+
+lastUpdated: "Ultimo Aggiornamento",
+
+likelihood: "Probabilità",
+
+loadCurrentWorkforce: "Carica la Forza Lavoro Attuale",
+
+loadingPlan: "Caricamento piano in corso...",
+
+locked: "Bloccato",
+
+low: "Basso",
+low6: "Basso",
+
+medical: "Assistenza Medica",
+
+medium: "Medio",
+medium5: "Medio",
+
+mitigationAction: "Azione di Mitigazione",
+
+new: "Nuovo",
+
+newPositionsRequired: "Nuove Posizioni Richieste",
+
+noHrRisksIdentifiedYet: "Nessun rischio HR identificato.",
+
+noNonsalaryCostsAddedYet: "Nessun costo non salariale aggiunto.",
+
+noTrainingActivitiesPlannedYet: "Nessuna attività formativa pianificata.",
+
+nonsalaryCostItems: "Voci di Costo Non Salariali",
+
+nonsalaryHrCosts: "Costi HR Non Salariali",
+
+notes: "Note",
+
+numberOfPositions: "Numero di Posizioni",
+
+objective: "Obiettivo",
+
+open: "Aperto",
+organization: "Organizzazione",
+organizationBranchoffice: "Filiale/Ufficio dell'Organizzazione",
+
+other: "Altro",
+
+overview: "Panoramica",
+
+pending: "In Sospeso",
+
+period: "Periodo",
+
+permanent: "Permanente",
+
+planNotFound: "Piano non trovato",
+
+planOverview: "Panoramica del Piano",
+
+planSummary: "Riepilogo del Piano",
+
+planYear: "Anno del Piano",
+
+plannedEndDate: "Data Fine Pianificata",
+
+plannedPeriod: "Periodo Pianificato",
+
+plannedPositions: "Posizioni Pianificate",
+
+plannedStaffing: "Dotazione di Personale Pianificata",
+
+plannedStaffingRequirements: "Fabbisogno di Personale Pianificato",
+
+plannedStartDate: "Data Inizio Pianificata",
+
+pleaseFillRequiredFields: "Compila tutti i campi obbligatori",
+
+pleaseSelectATargetYear: "Seleziona un anno di riferimento",
+
+pleaseSelectAnOrganization: "Seleziona un’organizzazione",
+
+position: "Posizione",
+position3: "Posizione",
+
+positionTitle: "Titolo della Posizione",
+
+positions: "Posizioni",
+
+preparationDate: "Data di Preparazione",
+
+preparedBy: "Preparato da",
+preparedBy1: "Preparato da",
+
+priority: "Priorità",
+
+project: "Progetto",
+
+projectprogram: "Progetto/Programma",
+
+projects: "Progetto/i",
+
+protectionMainstreaming: "Integrazione della Protezione",
+
+qty: "Qtà",
+
+quantity: "Quantità",
+
+recruitment: "Reclutamento",
+
+recruitmentActions: "Azioni di Reclutamento",
+
+recruitmentActionsPlanned: "Azioni di Reclutamento Pianificate",
+
+recruitmentMethod: "Metodo di Reclutamento",
+
+recruitmentPlan: "Piano di Reclutamento",
+
+recruitmentType: "Tipo di Reclutamento",
+
+replacement: "Sostituzione",
+
+responsiblePerson: "Persona Responsabile",
+
+reviewDate: "Data di Revisione",
+
+reviewedBy: "Revisionato da",
+
+riskDescription: "Descrizione del Rischio",
+
+roster: "Graduatoria",
+
+salaryCostForecast: "Previsione dei Costi Salariali",
+
+save: "Salva",
+
+saveChanges: "Salva Modifiche",
+
+selectOrganization: "Seleziona organizzazione...",
+
+shortterm: "Breve Termine",
+
+staffId: "ID Staff",
+
+startFreshNoBasePlan: "Inizia da zero (senza piano base)",
+
+status: "Stato",
+
+step1Preparation: "Fase 1: Preparazione",
+
+step2Review: "Fase 2: Revisione",
+
+step3Approval: "Fase 3: Approvazione",
+
+step4Locked: "Fase 4: Bloccato",
+
+strategicHrPlanning: "Pianificazione Strategica delle Risorse Umane",
+
+submitForReview: "Invia per Revisione",
+
+targetGroup: "Gruppo Target",
+
+targetYear: "Anno di Riferimento",
+
+tbd: "Da Definire",
+
+timeline: "Cronologia",
+
+totalAnnualCost: "Costo Annuale Totale",
+
+totalCost: "Costo Totale",
+
+totalCostPerPosition: "Costo Totale (per posizione)",
+
+totalEstimatedCost: "Costo Totale Stimato",
+
+totalIdentifiedRisks: "Totale Rischi Identificati",
+
+totalNonsalaryCost: "Costo Totale Non Salariale",
+
+totalPlannedPositions: "Totale Posizioni Pianificate",
+
+totalPositions: "Totale Posizioni",
+
+totalPositionsToRecruit: "Totale Posizioni da Reclutare",
+
+totalRecruitmentActions: "Totale Azioni di Reclutamento",
+
+totalSalaryCost: "Costo Salariale Totale",
+
+totalStaff: "Totale Personale",
+
+totalTrainingActivities: "Totale Attività Formative",
+
+totalTrainingBudget: "Budget Totale per la Formazione",
+
+training: "Formazione",
+
+trainingActions: "Azioni Formative",
+
+trainingActionsPlanned: "Azioni Formative Pianificate",
+
+trainingActivities: "Attività Formative",
+
+trainingCapacityDevelopmentPlan: "Piano di Formazione e Sviluppo delle Capacità",
+
+trainingObjective: "Obiettivo della formazione...",
+
+trainingPlan: "Piano Formativo",
+
+trainingTopic: "Argomento della Formazione",
+
+type: "Tipo",
+
+underReview: "In Revisione",
+
+view: "Visualizza",
+
+viewApprovedPlans: "Visualizza Piani Approvati",
+
+year: "Anno",
+
+recruitmentSubtitle: "Gestione completa del ciclo di reclutamento e selezione",
+
+trainingSubtitle: "Panoramica centralizzata di tutti i registri formativi dell’organizzazione",
+
+periodManagementSubtitle: "Blocca e sblocca i periodi di presenza per l’elaborazione delle buste paga",
+
+},
+
+hr: {
+aSalaryGradeDefinition: "A. Definizione del Livello Salariale",
+
+acceptedFormats: "Formati Accettati",
+
+actionType: "Tipo di Azione",
+
+actions: "Azioni",
+
+activate: "Attiva",
+
+active: "Attivo",
+
+activeContracts: "Contratti Attivi",
+
+activeEmployeesWithFullLifecycleProfiles: "Dipendenti attivi con profili completi del ciclo lavorativo",
+
+activeEmployeesWithFullProfilesAnd: "Dipendenti attivi con profili completi e gestione dell’intero ciclo lavorativo",
+
+add: "Aggiungi",
+
+addAnyNotesAboutThisDocument: "Aggiungi eventuali note su questo documento...",
+
+addEmployee: "Aggiungi Dipendente",
+
+addGrade: "Aggiungi Livello",
+
+addGrade11: "Aggiungi Livello",
+
+addNewEmployee: "Aggiungi Nuovo Dipendente",
+
+addNewGrade: "Aggiungi Nuovo Livello",
+
+addNewStaff: "Aggiungi Nuovo Membro del Personale",
+
+affectedEmployee: "Dipendente Interessato",
+
+after: "Dopo",
+
+all: "Tutti",
+
+allActionTypes: "Tutti i Tipi di Azione",
+
+allDepartments: "Tutti i Dipartimenti",
+
+allFolders: "Tutte le Cartelle",
+
+allModules: "Tutti i Moduli",
+
+allRecordTypes: "Tutti i Tipi di Record",
+
+allStatuses: "Tutti gli Stati",
+
+allTypes: "Tutti i Tipi",
+
+allowances: "Indennità",
+
+annualAllowance: "Indennità Annuale",
+
+applyFilters: "Applica Filtri",
+
+applyFilters15: "Applica Filtri",
+
+approved: "Approvato",
+
+approvedBy: "Approvato da",
+
+approvedGross: "Lordo Approvato",
+
+approvedGrossSalary: "Stipendio Lordo Approvato",
+
+approvedSalary: "Stipendio Approvato",
+
+archive: "Archivia",
+
+archiveEmployee: "Archivia Dipendente",
+
+archived: "Archiviato",
+
+archivedEmployees: "Dipendenti Archiviati",
+
+autocreationEnabled: "🔁 Creazione Automatica Abilitata:",
+
+autocreationEnabled5: "Creazione Automatica Abilitata",
+
+avgTimeToHire: "Tempo Medio di Assunzione",
+
+bPositionVsGradeGuidance: "B. Linee Guida Posizione e Livello",
+
+backToDirectory: "Torna alla Directory",
+
+backToEmployees: "Torna ai Dipendenti",
+
+before: "Prima",
+
+bonus: "Bonus",
+
+cStepDefinition: "C. Definizione degli Scatti",
+
+cancel: "Annulla",
+
+cancelled: "Annullato",
+
+candidates: "Candidati",
+
+candidatesInPipeline: "Candidati nel Processo di Selezione",
+
+centralArchiveForAllHrDocumentation: "Archivio centrale per tutta la documentazione HR",
+
+certificate: "Certificato",
+
+changeDetails: "Dettagli della Modifica",
+
+clearFilters: "Cancella Filtri",
+
+clickToOpen: "Fai clic per aprire",
+
+clickToOpenModule: "Fai clic per aprire il modulo",
+
+close: "Chiudi",
+
+comingSoon: "Prossimamente...",
+
+comingSoon2: "Prossimamente",
+
+completed: "Completato",
+
+compliance: "Conformità",
+
+confidentialInternalUse: "RISERVATO – USO INTERNO",
+
+consultant: "Consulente",
+
+contract: "Contratto",
+
+contract12: "Contratto",
+
+contractEnd: "Fine Contratto",
+
+contractEndDate: "Data Fine Contratto",
+
+contractType: "Tipo di Contratto",
+
+contractTypes: "Tipologie di Contratto",
+
+contractsAssignments: "Contratti e Assegnazioni",
+
+contractsExpiringSoon: "Contratti in Scadenza",
+
+corePrinciple: "Principio Fondamentale:",
+
+corePrinciple4: "Principio Fondamentale",
+
+createANewEmployeeProfile: "Crea un nuovo profilo dipendente",
+
+createEmployee: "Crea Dipendente",
+
+createdBy: "Creato da",
+
+createdDate: "Data di Creazione",
+
+creating: "Creazione in corso...",
+
+criticalWarning: "AVVISO CRITICO",
+
+currency: "Valuta",
+
+current: "Attuale",
+
+currentPlan: "Piano Attuale:",
+
+dPayrollDependencyWarning: "D. Avviso di Dipendenza dalle Paghe",
+
+dashboard: "Cruscotto",
+
+dateFrom: "Data Da",
+
+dateFrom17: "Data Da",
+
+dateTime: "Data e Ora",
+
+dateTo: "Data A",
+
+days: "giorni",
+
+deductibleFromAnnualLeave: "Detraibile dal Congedo Annuale",
+
+delete: "Elimina",
+
+department: "Dipartimento",
+
+departments: "Dipartimenti",
+
+description: "Descrizione",
+
+documentType: "Tipo Documento",
+
+documents: "Documenti",
+
+download: "Scarica",
+
+download10: "Scarica",
+
+draft: "Bozza",
+
+edit: "Modifica",
+
+editEmployee: "Modifica Dipendente",
+
+editEmployeeInformation: "Modifica Informazioni Dipendente",
+
+editProfile: "Modifica Profilo",
+
+editSalaryRecord: "Modifica Record Salariale",
+
+effectiveDate: "Data Effettiva",
+
+effectiveStartDate: "Data di Inizio Effettiva",
+
+egExecutiveLevel: "es. Livello Dirigenziale",
+
+egG6: "es. G6",
+
+email: "Email",
+
+employee: "Dipendente",
+
+employeeCreatedSuccessfully: "Dipendente creato con successo",
+
+employeeNotFound: "Dipendente non trovato",
+
+employeeNotFound1: "Dipendente non trovato",
+
+employeeUpdatedSuccessfully: "Dipendente aggiornato con successo",
+
+employees: "Dipendenti",
+
+employees7: "dipendenti",
+
+employeesDirectory: "Directory dei Dipendenti",
+
+employeesProfiles: "Profili dei Dipendenti",
+
+employeesWhoCompletedOffboardingProcess: "Dipendenti che hanno completato il processo di uscita",
+
+employmentInformation: "Informazioni sull’Impiego",
+
+en: "it",
+
+endDate: "Data di Fine",
+
+entryLevel: "Livello di Ingresso",
+
+errorMessage: "Messaggio di Errore",
+
+eventDetails: "Dettagli Evento",
+
+eventSummary: "Riepilogo Evento",
+
+excelExportComingSoon: "Esportazione Excel disponibile a breve",
+
+executiveLevel: "Livello Dirigenziale",
+
+exitDate: "Data di Uscita",
+
+exitReason: "Motivo dell’Uscita",
+
+exitReasons: "Motivi dell’Uscita",
+
+exited: "Uscito",
+
+exitedStaff: "Personale Uscito",
+
+export: "Esporta",
+
+exportData: "Esporta Dati",
+
+exportExcel: "Esporta Excel",
+
+exportFeatureComingSoon: "Funzione di esportazione disponibile a breve",
+
+exportHrSnapshot: "Esporta Snapshot HR",
+
+exportToExcel: "Esporta in Excel",
+
+failed: "Non Riuscito",
+
+failedToSaveChanges: "Impossibile salvare le modifiche",
+
+female: "Femmina",
+
+fileName: "Nome File",
+
+filterByStatus: "Filtra per Stato",
+
+filterByType: "Filtra per Tipo",
+
+filters: "Filtri",
+
+filters14: "Filtri",
+
+folders: "Cartelle",
+
+for: "per",
+
+fullAddress: "Indirizzo Completo",
+
+fullName: "Nome Completo",
+
+fullRecruitmentModuleComingSoon: "Modulo completo di reclutamento disponibile a breve...",
+
+fulltime: "Tempo Pieno",
+
+fullyFunctionalAndReadyToUse: "Completamente funzionante e pronto all’uso",
+
+fundedByProject: "Finanziato da (Progetto)",
+
+gender: "Genere",
+
+genderDistribution: "Distribuzione per Genere",
+
+generatedBy: "Generato da",
+generatedOn: "Generato il",
+
+grade: "Classe",
+
+gradeCode: "Codice Classe",
+
+gradeExamples: "Esempi di Classe:",
+
+gradeScale: "Classe e Scala Salariale",
+
+guideline: "Linea Guida",
+
+hideFilters: "Nascondi Filtri",
+
+hireDate: "Data di Assunzione",
+
+hireDate6: "Data di Assunzione",
+
+hiringDecisions: "Decisioni di Assunzione",
+
+housing: "Alloggio",
+
+housingAllowance: "Indennità di Alloggio",
+
+hrAnnualPlan: "Piano Annuale HR",
+
+hrDashboard: "Cruscotto HR",
+
+hrDocuments: "Documenti HR",
+
+hrFormsRequests: "Moduli e Richieste HR",
+
+hrLogEventsAuditTrail: "Registro Eventi HR (Audit Trail)",
+
+humanResourcesDepartment: "Dipartimento Risorse Umane",
+
+humanResourcesManagement: "Gestione delle Risorse Umane",
+
+id: "ID:",
+
+import: "Importa",
+
+importExcel: "Importa Excel",
+
+importFeatureComingSoon: "Funzione di importazione disponibile a breve",
+
+importantNote: "Nota Importante",
+
+importantNotes: "Note Importanti",
+
+inProgress: "In Corso",
+
+inactive: "Inattivo",
+
+intern: "Stagista",
+
+internationalStaff: "Personale Internazionale",
+
+interviews: "Colloqui",
+
+interviewsScheduled: "Colloqui Programmati",
+
+ipAddress: "Indirizzo IP",
+
+juniorLevel: "Livello Junior",
+
+justification: "Giustificazione",
+
+kpisAndStatisticsDashboard: "Cruscotto KPI e statistiche",
+
+last30Days: "Ultimi 30 Giorni",
+
+last60Days: "Ultimi 60 Giorni",
+
+last90Days: "Ultimi 90 Giorni",
+
+leaveTypes: "Tipologie di Congedo",
+
+leaveTypesMonthly: "Tipologie di Congedo (Mensile)",
+
+loading: "Caricamento...",
+
+loadingEmployeeData: "Caricamento dati dipendente...",
+
+loadingEmployeeProfile: "Caricamento profilo dipendente...",
+
+loadingEmployees: "Caricamento dipendenti...",
+
+lock: "Blocca",
+
+locked: "Bloccato",
+
+lockedDocuments: "Documenti Bloccati",
+
+male: "Maschio",
+
+manageGrades: "Gestisci Classi",
+
+manageSalaryGrades: "Gestisci Classi Salariali",
+
+management: "Management",
+
+masterData: "Dati Principali",
+
+max: "Massimo",
+
+maximumSalary: "Stipendio Massimo",
+
+midLevel: "Livello Intermedio",
+
+min: "Minimo",
+
+min13: "Minimo",
+
+minimumSalary: "Stipendio Minimo",
+
+module: "Modulo",
+
+moduleStatusLegend: "Legenda Stato Moduli:",
+
+moduleUnderDevelopment: "Modulo in fase di sviluppo",
+
+monthlyPayrollValue: "Valore Mensile delle Paghe",
+
+name: "Nome",
+
+nationalStaff: "Personale Nazionale",
+
+nationality: "Nazionalità",
+
+newHires: "Nuove Assunzioni",
+
+newVacancy: "Nuova Posizione Vacante",
+
+noCertificate: "Nessun certificato",
+
+noDocumentsFound: "Nessun documento trovato",
+
+noEmployeesFound: "Nessun dipendente trovato",
+
+noFieldChangesApprovalActionOnly: "Nessuna modifica ai campi - solo azione di approvazione",
+
+noGradesFound: "Nessuna classe trovata",
+
+noHistoryFound: "Nessuna cronologia trovata",
+
+noTrainingRecordsFound: "Nessun record di formazione trovato",
+
+notYetImplemented: "Non Ancora Implementato",
+
+notesOptional: "Note (Facoltative)",
+
+of: "di",
+
+ofTotalStaff: "del personale totale",
+
+openVacancies: "Posizioni Vacanti Aperte",
+
+orDragAndDrop: "oppure trascina e rilascia",
+
+organizationContextNotAvailable: "Contesto organizzativo non disponibile",
+
+organizationDashboard: "Cruscotto Organizzazione",
+
+other: "Altro",
+
+other18: "Altro",
+
+otherAllowances: "Altre Indennità",
+
+overview: "Panoramica",
+
+overviewAndStatisticsOfAllEmployee: "Panoramica e statistiche di tutti i profili dipendenti",
+
+page: "Pagina",
+
+parttime: "Part-Time",
+
+payrollCostByProject: "Costo delle Paghe per Progetto",
+
+percentage: "Percentuale",
+
+performedBy: "Eseguito da",
+
+personalInformation: "Informazioni Personali",
+
+phone: "Telefono",
+
+pleaseFillAllRequiredFields: "Compila tutti i campi obbligatori",
+
+pleaseFillAllRequiredFields9: "Compila tutti i campi obbligatori",
+
+policyName: "Nome della Politica",
+
+position: "Posizione",
+
+position16: "Posizione",
+
+positions: "Posizioni",
+
+positionsFilled: "Posizioni Coperte",
+
+postexitReferenceAndEmploymentVerification: "Referenze e verifica dell’impiego dopo l’uscita",
+
+print: "Stampa",
+
+printPdf: "Stampa / PDF",
+
+printSummary: "Stampa Riepilogo",
+
+profilesSummary: "Riepilogo Profili",
+
+projects: "Progetto/i",
+
+provider: "Fornitore",
+
+readOnly: "Sola Lettura",
+
+recordActivated: "Record attivato",
+
+recordDeleted: "Record eliminato",
+
+recordLocked: "Record bloccato",
+
+recordReference: "Riferimento Record",
+
+recordType: "Tipo di Record",
+
+recordUnlocked: "Record sbloccato",
+
+records: "record",
+
+records3: "record",
+
+recruitmentManagement: "Gestione del Reclutamento",
+
+referenceVerification: "Referenze e Verifica",
+
+representation: "Rappresentanza",
+
+representationAllowance: "Indennità di Rappresentanza",
+
+reset: "Ripristina",
+
+restoreStaff: "Ripristina Personale",
+
+restricted: "Riservato",
+
+restrictedAccess: "Accesso Riservato",
+
+role: "Ruolo",
+
+safety: "Sicurezza",
+
+salaryHistory: "Storico Salariale",
+
+salaryRange: "Fascia Salariale",
+
+salaryScalePolicy: "Politica della Scala Salariale",
+
+salaryScalePolicyDocuments: "Documenti della Politica della Scala Salariale",
+
+salaryScaleTable: "Tabella della Scala Salariale",
+
+salaryScaleTableGuideline: "Tabella della Scala Salariale - Linee Guida",
+
+saveAsNewVersion: "Salva come Nuova Versione",
+
+saveChanges: "Salva Modifiche",
+
+saving: "Salvataggio in corso...",
+
+scheduled: "Programmato",
+
+searchByNameTrainingOrStaff: "Cerca per nome, formazione o ID Staff...",
+
+searchDocuments: "Cerca documenti...",
+
+searchEmployee: "Cerca Dipendente...",
+
+searchEmployees: "Cerca dipendenti...",
+
+searchUser: "Cerca Utente...",
+
+selectASectionToViewDetails: "Seleziona una sezione per visualizzare i dettagli",
+
+selectFile: "Seleziona File",
+
+selectedFile: "File Selezionato",
+
+seniorLevel: "Livello Senior",
+
+showFilters: "Mostra Filtri",
+
+showing: "Visualizzazione",
+
+showingCountResults: "Visualizzazione di {count} risultati",
+
+size: "Dimensione",
+
+softSkills: "Competenze Trasversali",
+
+sourceModule: "Modulo di Origine",
+
+staffByContractType: "Personale per Tipo di Contratto",
+
+staffByDepartment: "Personale per Dipartimento",
+
+staffByProject: "Personale per Progetto",
+
+staffId: "ID Staff",
+
+staffInformation: "Informazioni sul Personale",
+
+staffMemberRestoredToActiveStatus: "Membro del personale ripristinato allo stato Attivo",
+
+staffName: "Nome del Personale",
+
+staffOnLeaveToday: "Personale in Congedo Oggi",
+
+startDate: "Data di Inizio",
+
+startedDate: "Data di Inizio",
+
+status: "Stato",
+
+status8: "Stato:",
+
+step: "Livello",
+
+stepProgression: "Progressione Livelli:",
+
+steps: "Livelli",
+
+strategicHr: "HR Strategico",
+
+success: "Successo",
+
+superseded: "Sostituito",
+
+supervisor: "Supervisore",
+
+syncWithStaff: "Sincronizza con il Personale",
+
+technical: "Tecnico",
+
+theEmployeeProfileYoureLookingFor: "Il profilo dipendente che stai cercando non esiste oppure non hai i permessi per accedervi.",
+
+thisFieldIsRequired: "Questo campo è obbligatorio",
+
+thisIsAReadonlyArchiveDocuments: "📌 Questo è un archivio in sola lettura. I documenti vengono sincronizzati automaticamente dai moduli di origine.",
+
+total: "Totale",
+
+totalActiveStaff: "Totale Personale Attivo",
+
+totalCost: "Costo Totale",
+
+totalDocuments: "Totale Documenti",
+
+totalEvents: "Totale Eventi",
+
+totalRecords: "Totale Record",
+
+totalTrainings: "Totale Formazioni",
+
+trainingManagement: "Gestione della Formazione",
+
+trainingTitle: "Titolo della Formazione",
+
+trainingType: "Tipo di Formazione",
+
+trainingsOngoing: "Formazioni in Corso",
+
+transport: "Trasporto",
+
+transportAllowance: "Indennità di Trasporto",
+
+type: "Tipo",
+
+underDevelopment: "In sviluppo",
+
+unlock: "Sblocca",
+
+unlocked: "Sbloccato",
+
+updateEmployeeProfile: "Aggiorna profilo dipendente",
+
+upload: "Carica",
+
+uploadDate: "Data di Caricamento",
+
+uploadFailedPleaseTryAgain: "Caricamento non riuscito. Riprova.",
+
+uploadNewPolicy: "Carica Nuova Politica",
+
+uploadPolicy: "Carica Politica",
+
+uploadedBy: "Caricato da",
+
+uploading: "Caricamento in corso...",
+
+vacancies: "Posizioni Vacanti",
+
+value: "Valore",
+
+version: "Versione",
+
+view: "Visualizza",
+
+viewAll: "Visualizza Tutto",
+
+viewAndDeleteGradeDefinitions: "Visualizza ed elimina le definizioni delle classi",
+
+viewArchivedEmployeeRecords: "Visualizza i record dei dipendenti archiviati",
+
+viewCertificate: "Visualizza Certificato",
+
+viewDetails: "Visualizza Dettagli",
+
+viewHistory: "Visualizza Cronologia",
+
+viewProfile: "Visualizza Profilo",
+
+vsLastMonth: "rispetto al mese scorso",
+
+whatIsAStep: "Che cos’è un Livello?",
+
+withCertificate: "Con Certificato",
+
+within60Days: "Entro 60 Giorni",
+
+youDoNotHaveAccessTo: "Non hai accesso a questo modulo",
+
+hrDashboardSubtitle: "Registro del personale, gestione paghe e congedi",
+
+hrModuleSubtitle: "Registro del personale, paghe, congedi e gestione contratti",
+
+employeeProfilesSubtitle: "Gestione completa del ciclo di vita del dipendente dall’assunzione all’uscita",
+
+auditLogSubtitle: "Audit trail generato dal sistema per conformità e supervisione",
+
+masterDataSubtitle: "Gestisci i dati di riferimento HR utilizzati in tutti i moduli",
+
+payrollSubtitle: "Cedolini mensili e gestione salariale",
+
+salaryScaleSubtitle: "Fonte unica e ufficiale per tutti i dati salariali - il modulo Payroll legge da questa tabella",
+
+salaryScaleGuidelineSubtitle: "Come utilizzare correttamente la Tabella della Scala Salariale",
+
+salaryScalePolicySubtitle: "Documenti ufficiali della politica salariale a livello organizzativo",
+
+annualPlanSubtitle: "Pianificazione strategica della forza lavoro, previsione del reclutamento e stima del budget",
+
+createAnnualPlanSubtitle: "Inizializza un nuovo Piano Annuale HR per la pianificazione strategica della forza lavoro",
+
+attendanceSubtitle: "Gestione presenze, turni, straordinari e blocco periodi",
+
+sanctionsSubtitle: "Gestione completa dei casi disciplinari dall’accusa alla chiusura",
+
+sanctionsDisciplinarySubtitle: "Record disciplinari finali approvati dal Modulo Sanzioni",
+
+generatePayrollSubtitle: "Genera le buste paga per tutti i dipendenti attivi dalla Tabella della Scala Salariale",
+
+performanceReviewSubtitle: "Valutazione periodica semplice (modificabile)",
+
+readOnlyAuditTrail: "Audit Trail in sola lettura - Nessuna modifica o eliminazione consentita",
+
+accessRestrictedToHRManagerAdmin: "Accesso limitato esclusivamente a HR Manager e Amministratori",
+
+systemGeneratedLogsOnly: "Solo registri generati dal sistema - Conservazione permanente",
+
+salaryDataManagedCentrally: "I dati salariali sono gestiti centralmente tramite la Tabella della Scala Salariale",
+
+formSubmittedReadOnly: "Questo modulo è stato inviato ed è ora in sola lettura",
+
+decisionSubmittedReadOnly: "Questa decisione è stata inviata ed è ora in sola lettura",
+
+approvalFinalizedLocked: "Questa approvazione è stata finalizzata ed è bloccata",
+recruitmentSubtitle: "Gestione completa del ciclo di reclutamento dalla vacanza all'assunzione",
+
+trainingSubtitle: "Pianificazione, monitoraggio e gestione della formazione del personale",
+
+periodManagementSubtitle: "Gestione dei periodi HR, blocchi operativi e controllo dei processi",
+},
+
+financeModule: {
+accumulatedDepreciation: "Ammortamento Accumulato",
+acquisitionCost: "Costo di Acquisizione",
+acquisitionDate: "Data di Acquisizione",
+actions: "Azioni",
+actions16: "Azioni",
+active: "Attivo",
+activeAssets: "Risorse Attive",
+actual: "Effettivo",
+actual21: "Effettivo",
+actualSpent: "Spesa Effettiva",
+actualSpent29: "Spesa Effettiva",
+add: "Aggiungi",
+addBudgetLine: "Aggiungi Voce di Budget",
+addBudgetLinesFirstToDistribute: "Aggiungi prima le voci di budget per distribuirle tra i mesi",
+addExchangeRate: "Aggiungi Tasso di Cambio",
+addLine: "Aggiungi Riga",
+addLine15: "Aggiungi Riga",
+addMaintenanceRecord: "Aggiungi Record di Manutenzione",
+addNewExchangeRate: "Aggiungi Nuovo Tasso di Cambio",
+addSettlement: "Aggiungi Liquidazione",
+additionalNotes: "Note Aggiuntive",
+additionalNotes25: "Note aggiuntive...",
+advance: "Anticipo #",
+advanceApprovedSuccessfully: "Anticipo approvato con successo",
+advanceRejected: "Anticipo rifiutato",
+advanceRequestCreatedSuccessfully: "Richiesta di anticipo creata con successo",
+advanceRequestDeletedSuccessfully: "Richiesta di anticipo eliminata con successo",
+advanceRequestUpdatedSuccessfully: "Richiesta di anticipo aggiornata con successo",
+advanceSubmittedForApproval: "Anticipo inviato per approvazione",
+advanceType: "Tipo di Anticipo",
+advances: "Anticipi",
+advancesSettlements: "Anticipi e Liquidazioni",
+advancesTemplate: "Modello Anticipi",
+all: "Tutti",
+allAccounts: "Tutti i Conti",
+allCategories: "Tutte le Categorie",
+allCurrencies: "Tutte le Valute",
+allGrants: "Tutte le Sovvenzioni",
+allProjects: "Tutti i Progetti",
+allStatuses: "Tutti gli Stati",
+allTypes: "Tutti i Tipi",
+allYears: "Tutti gli Anni",
+allocatedAmount: "Importo Allocato",
+allocation: "Allocazione %",
+allocationKey: "Chiave di Allocazione",
+allowDuplicates: "Consenti Duplicati",
+amount: "Importo",
+annualTotal: "Totale Annuale",
+approve: "Approva",
+approveAdvance: "Approva Anticipo",
+approved: "Approvato",
+approved1: "Approvato",
+approvedAmount: "Importo Approvato",
+approvedAt: "Approvato il",
+areYouSureYouWantTo: "Sei sicuro di voler eliminare questo anticipo?",
+areYouSureYouWantTo13: "Sei sicuro di voler eliminare questa riga?",
+areYouSureYouWantTo4: "Sei sicuro di voler eliminare questa risorsa?",
+areYouSureYouWantTo5: "Sei sicuro di voler eliminare questa categoria?",
+asset: "Risorsa",
+assetCategories: "Categorie Risorse",
+assetCode: "Codice Risorsa",
+assetCode7: "Codice Risorsa *",
+assetCreatedSuccessfully: "Risorsa creata con successo",
+assetDeletedSuccessfully: "Risorsa eliminata con successo",
+assetDisposalRequest: "Richiesta di Dismissione Risorsa",
+assetRegistry: "Registro Risorse",
+assetTransferRequest: "Richiesta di Trasferimento Risorsa",
+assetUpdatedSuccessfully: "Risorsa aggiornata con successo",
+assetsManagement: "Gestione Risorse",
+assignedTo: "Assegnato a",
+autodistribute: "Distribuzione Automatica",
+availableCurrencies: "Valute Disponibili",
+backToBudgets: "Torna ai Budget",
+backToFinance: "Torna alla Finanza",
+basicInformation: "Informazioni di Base",
+bookValue: "Valore Contabile",
+budget: "Budget",
+budgetApproved: "Budget approvato",
+budgetBreakdown: "Dettaglio Budget",
+budgetCode: "Codice Budget",
+budgetCreatedSuccessfully: "Budget creato con successo",
+budgetDeletedSuccessfully: "Budget eliminato con successo",
+budgetExportedSuccessfully: "Budget esportato con successo",
+budgetId: "ID Budget",
+budgetIdIsMissing: "ID Budget mancante",
+budgetLine: "Voce di Budget",
+budgetLines: "Voci di Budget",
+budgetNotFound: "Budget non trovato",
+budgetRejected: "Budget rifiutato",
+budgetSubmittedForApproval: "Budget inviato per approvazione",
+budgetTitle: "Titolo Budget",
+budgetUpdatedSuccessfully: "Budget aggiornato con successo",
+budgetVsActual: "Budget vs Effettivo",
+budgetVsActualSpending: "Budget vs Spesa Effettiva",
+budgeted: "Preventivato",
+budgets: "Budget",
+byLine: "Per Riga",
+byLines: "Per Righe",
+byMonth: "Per Mese",
+byMonth30: "Per Mese",
+cancel: "Annulla",
+cancelled: "Annullato",
+cashFlow: "Flusso di Cassa",
+cashFlowInterval: "Intervallo del Flusso di Cassa",
+cashFlowTrends: "Andamento del Flusso di Cassa",
+categories: "Categorie",
+categories26: "categorie",
+category: "Categoria",
+categoryCreatedSuccessfully: "Categoria creata con successo",
+categoryDeletedSuccessfully: "Categoria eliminata con successo",
+categoryDetails: "Dettagli Categoria",
+categoryUpdatedSuccessfully: "Categoria aggiornata con successo",
+clickAnyCellToEdit: "Fai clic su una cella per modificarla",
+clickToOpenModule: "Fai clic per aprire il modulo",
+clickToOpenModule32: "Fai clic per aprire il modulo",
+close: "Chiudi",
+code: "Codice",
+code9: "Codice *",
+comingSoon: "Prossimamente",
+complianceStatement: "Dichiarazione di Conformità:",
+condition: "Condizione",
+confirmApproval: "Conferma Approvazione",
+confirmDelete: "Conferma Eliminazione",
+confirmRejection: "Conferma Rifiuto",
+convert: "Converti",
+convertAmountsBetweenCurrencies: "Converti importi tra valute",
+cost: "Costo",
+costCalculation: "Calcolo del Costo",
+costPool: "Centro di Costo",
+create: "Crea",
+createBudget: "Crea Budget",
+createRequest: "Crea Richiesta",
+createRevision: "Crea Revisione",
+created: "Creato",
+createdAt: "Creato il",
+currencies: "Valute",
+currency: "Valuta",
+currencyConverter: "Convertitore Valutario",
+currentValue: "Valore Attuale",
+daily: "Giornaliero",
+dataExportedSuccessfully: "Dati esportati con successo",
+date: "Data",
+dateOptional: "Data (Facoltativa)",
+defaultUsefulLifeYears: "Vita Utile Predefinita (Anni)",
+delete: "Elimina",
+deleteBudget: "Elimina Budget",
+department: "Dipartimento",
+depreciationMethod: "Metodo di Ammortamento",
+depreciationRate: "Tasso di Ammortamento",
+depreciationRate10: "Tasso di Ammortamento (%)",
+description: "Descrizione",
+details: "Dettagli",
+difference: "Differenza",
+disposal: "Dismissione #",
+disposalRequestCreatedSuccessfully: "Richiesta di dismissione creata con successo",
+disposalRequests: "Richieste di Dismissione",
+disposalType: "Tipo di Dismissione",
+disposals: "Dismissioni",
+dispose: "Dismettere",
+donor: "Donatore",
+donorEligibility: "Percentuale Ammissibile per il Donatore (%)",
+donorEligibleAmount: "Importo Ammissibile per il Donatore",
+donorFormat: "Formato Donatore",
+donorGrantInformation: "Informazioni Donatore e Sovvenzione",
+donorName: "Nome del Donatore",
+downloadTemplate: "Scarica Modello",
+draft: "Bozza",
+dragAndDropFileHereOr: "Trascina qui il file oppure fai clic per selezionarlo",
+duration: "Durata",
+durationMonths: "Durata (Mesi)",
+edit: "Modifica",
+editAdvanceRequest: "Modifica Richiesta di Anticipo",
+editBudget: "Modifica Budget",
+editExchangeRate: "Modifica Tasso di Cambio",
+effectiveDate: "Data Effettiva",
+egQ12024: "es. Q1 2024",
+eligibleAmount: "Importo Ammissibile",
+employee: "Dipendente",
+employeeName: "Nome del Dipendente",
+end: "Fine",
+endDate: "Data di Fine",
+enterReasonForRejection: "Inserisci il motivo del rifiuto...",
+enterRejectionReason: "Inserisci il motivo del rifiuto...",
+enterRevisionReason: "Inserisci il motivo della revisione...",
+enterTheDetailsOfTheNew: "Inserisci i dettagli del nuovo tasso di cambio",
+enus: "en-US",
+enus36: "en-US",
+errors: "Errori",
+evidenceDocuments: "Documenti di Supporto",
+exchangeRateCreatedSuccessfully: "Tasso di cambio creato con successo",
+exchangeRateDeletedSuccessfully: "Tasso di cambio eliminato con successo",
+exchangeRateUpdatedSuccessfully: "Tasso di cambio aggiornato con successo",
+exchangeRates: "Tassi di Cambio",
+exchangeRatesManagement: "Gestione dei Tassi di Cambio",
+expectedSettlementDate: "Data Prevista di Liquidazione",
+expenditures: "Spese",
+expenditures31: "Spese",
+expenseBreakdown: "Dettaglio delle Spese",
+expenseBreakdownByCategory: "Dettaglio delle Spese per Categoria",
+expenseCategory: "Categoria di Spesa",
+expiryDate: "Data di Scadenza",
+expiryDateOptional: "Data di Scadenza (Facoltativa)",
+export: "Esporta",
+exportBudgetInDonorFormat: "Esporta il Budget nel Formato del Donatore",
+exportCsv: "Esporta CSV",
+failedToAdd: "Impossibile aggiungere",
+failedToApprove: "Impossibile approvare",
+failedToCreate: "Creazione non riuscita",
+failedToCreateRevision: "Impossibile creare la revisione",
+failedToDelete: "Eliminazione non riuscita",
+failedToDistribute: "Impossibile distribuire",
+failedToReject: "Impossibile rifiutare",
+failedToSave: "Impossibile salvare",
+failedToSubmit: "Impossibile inviare",
+failedToUpdate: "Aggiornamento non riuscito",
+fetchLatestRates: "Recupera gli Ultimi Tassi",
+field: "Campo",
+filter: "Filtro",
+filterByStatus: "Filtra per Stato",
+filterByYear: "Filtra per Anno",
+filters: "Filtri",
+financialAnalyticsDashboard: "Dashboard di Analisi Finanziaria",
+financialInformation: "Informazioni Finanziarie",
+financialManagement: "Gestione Finanziaria",
+financialOverview: "Panoramica Finanziaria",
+financialReports: "Report Finanziari",
+financialSummary: "Riepilogo Finanziario",
+fiscalYear: "Anno Fiscale",
+from: "Da",
+fromAssignee: "Da Assegnatario",
+fromCurrency: "Valuta di Origine",
+fromLocation: "Da Posizione",
+fullyFunctionalAndReadyToUse: "Completamente funzionale e pronto all’uso",
+fullySettled: "Completamente Liquidato",
+generated: "Generato",
+grant: "Sovvenzione",
+grantCode: "Codice Sovvenzione",
+import: "Importa",
+importAdvances: "Importa Anticipi",
+importAssets: "Importa Risorse",
+importBankStatement: "Importa Estratto Conto Bancario",
+importFeatureComingSoon: "Funzione di importazione disponibile prossimamente",
+importResults: "Risultati dell’Importazione",
+imported: "Importato",
+inMaintenance: "In Manutenzione",
+inactive: "Inattivo",
+includeMonthlyBreakdown: "Includi dettaglio mensile",
+inflow: "Entrata",
+insuranceExpiry: "Scadenza Assicurazione",
+insurancePolicy: "Polizza Assicurativa",
+item: "Articolo",
+justification: "Giustificazione",
+labelen: "Etichetta (EN)",
+largestExpensesByAmount: "Spese più elevate per importo",
+lastUpdated: "Ultimo Aggiornamento",
+line: "Riga",
+lineAddedSuccessfully: "Riga aggiunta con successo",
+lineCode: "Codice Riga",
+lineDeletedSuccessfully: "Riga eliminata con successo",
+lines: "Righe",
+listOfSupportedCurrenciesInThe: "Elenco delle valute supportate nel sistema",
+loading: "Caricamento...",
+location: "Posizione",
+lumpSum: "Importo Forfettario",
+maintenance: "Manutenzione",
+maintenanceRecordAddedSuccessfully: "Record di manutenzione aggiunto con successo",
+maintenanceType: "Tipo di Manutenzione",
+manualExpenditures: "Spese Manuali",
+manufacturer: "Produttore",
+matchTransactions: "Abbina Transazioni",
+message: "Messaggio",
+metric: "Metrica",
+mo: "mesi",
+model: "Modello",
+moduleStatusLegend: "Legenda Stato Modulo:",
+moduleUnderDevelopment: "Modulo in fase di sviluppo",
+month: "Mese",
+monthly: "Mensile",
+monthlyAllocations: "Allocazioni Mensili",
+monthlyAllocationsSaved: "Allocazioni mensili salvate",
+monthlyTotal: "Totale Mensile",
+name: "Nome",
+name8: "Nome *",
+net: "Netto",
+newAdvanceRequest: "Nuova Richiesta di Anticipo",
+newAsset: "Nuova Risorsa",
+newBudget: "Nuovo Budget",
+newCategory: "Nuova Categoria",
+next: "Avanti",
+nextDueDate: "Prossima Data di Scadenza",
+noAdvancesFound: "Nessun anticipo trovato",
+noAssetsFound: "Nessuna risorsa trovata",
+noBudgetsFound: "Nessun budget trovato",
+noBudgetsToExport: "Nessun budget da esportare",
+noCategoriesFound: "Nessuna categoria trovata",
+noData: "Nessun dato",
+noDataAvailable: "Nessun dato disponibile",
+noDataToExport: "Nessun dato da esportare",
+noDisposalRequests: "Nessuna richiesta di dismissione",
+noExchangeRatesFound: "Nessun tasso di cambio trovato",
+noLinesInThisBudget: "Nessuna riga in questo budget",
+noTransactions: "Nessuna transazione",
+noTransferRequests: "Nessuna richiesta di trasferimento",
+notes: "Note",
+numberOfCostPools: "Numero di Centri di Costo",
+numberOfPeriods: "Numero di Periodi",
+numberOfProjects: "Numero di Progetti",
+ok: "OK",
+operational: "Operativo",
+originalVersion: "Versione Originale",
+other: "Altro",
+outflow: "Uscita",
+outstanding: "In Sospeso",
+outstanding3: "In sospeso:",
+over: "Oltre",
+overBudget: "(Oltre il Budget)",
+overBudget27: "oltre il budget",
+partiallySettled: "Parzialmente Liquidato",
+payablesManagement: "Gestione Debiti",
+pending: "In Sospeso",
+pendingApproval: "In Attesa di Approvazione",
+pendingDisposal: "In Attesa di Dismissione",
+pendingInvoices: "fatture in sospeso",
+performedBy: "Eseguito da",
+performedDate: "Data di Esecuzione",
+period: "Periodo",
+periodCode: "Codice Periodo",
+periodEnd: "Fine Periodo",
+periodStart: "Inizio Periodo",
+planned: "Pianificato",
+planned23: "Pianificato",
+pleaseEnterRejectionReason: "Inserisci il motivo del rifiuto",
+pleaseEnterRevisionNotes: "Inserisci le note della revisione",
+pleaseEnterTheReasonForRejecting: "Inserisci il motivo del rifiuto di questo budget",
+pleaseFillAllConversionFields: "Compila tutti i campi di conversione",
+pleaseFillAllRequiredFields: "Compila tutti i campi obbligatori",
+pleaseFillRequiredFields: "Compila i campi obbligatori",
+pleaseSelectAProject: "Seleziona un progetto",
+pleaseSelectAProjectFirstTo: "Seleziona prima un progetto per visualizzare i budget",
+pleaseSelectAnAsset: "Seleziona una risorsa",
+poolCode: "Codice Centro di Costo",
+posted: "Registrato",
+processingFile: "Elaborazione file...",
+project: "Progetto",
+project12: "Progetto",
+projectName: "Nome Progetto",
+projects: "Progetti",
+proposedDate: "Data Proposta",
+proposedValue: "Valore Proposto",
+purpose: "Scopo",
+purposeArabic: "Scopo (Arabo)",
+qty: "Qtà",
+quantity: "Quantità",
+rate: "Tasso",
+rate24: "Tasso:",
+reason: "Motivo",
+reasonForIncludingThisLine: "Motivo dell’inclusione di questa riga...",
+receiptNumber: "Numero Ricevuta",
+refresh: "Aggiorna",
+refundAmount: "Importo Rimborsato",
+reject: "Rifiuta",
+rejectAdvance: "Rifiuta Anticipo",
+rejected: "Rifiutato",
+rejectionReason: "Motivo del Rifiuto",
+remaining: "Rimanente",
+remaining17: "rimanente",
+reportDate: "Data del Rapporto",
+requestDate: "Data Richiesta",
+requestDateYyyymmdd: "Data Richiesta (AAAA-MM-GG)",
+requested: "Richiesto",
+requested2: "Richiesto:",
+requestedAmount: "Importo Richiesto",
+retry: "Riprova",
+reversed: "Stornato",
+revision: "Revisione",
+revisionNotes: "Note della Revisione",
+row: "Riga",
+rules: "regole",
+salary: "Stipendio",
+salvageValue: "Valore Residuo",
+save: "Salva",
+search: "Cerca...",
+searchAdvances: "Cerca anticipi...",
+searchAssets: "Cerca risorse...",
+selectAccount: "Seleziona Conto",
+selectCategory: "Seleziona categoria",
+selectCategory14: "Seleziona Categoria",
+selectCurrency: "Seleziona valuta",
+selectExcelFile: "Seleziona File Excel",
+selectGrantOptional: "Seleziona Sovvenzione (Facoltativo)",
+selectProject: "Seleziona Progetto",
+serialNumber: "Numero di Serie",
+service: "Servizio",
+settled: "Liquidato",
+settledAmount: "Importo Liquidato",
+settledThisMonth: "Liquidato Questo Mese",
+settlementAddedSuccessfully: "Liquidazione aggiunta con successo",
+settlementDate: "Data di Liquidazione",
+skipped: "Saltato",
+source: "Fonte",
+staff: "Personale",
+startDate: "Data di Inizio",
+status: "Stato",
+statusLocation: "Stato e Posizione",
+submitForApproval: "Invia per Approvazione",
+submittedAt: "Inviato il",
+summary: "Riepilogo",
+symbol: "Simbolo",
+technicalDetails: "Dettagli Tecnici",
+to: "A",
+toAssignee: "A Assegnatario",
+toCurrency: "Valuta di Destinazione",
+toLocation: "A Posizione",
+top5Expenses: "Top 5 Spese",
+topExpenses: "Principali Spese",
+total: "Totale",
+total20: "TOTALE",
+totalAdvances: "Totale Anticipi",
+totalAllocatedAmount: "Importo Totale Allocato",
+totalAmount: "Importo Totale",
+totalAssets: "Totale Risorse",
+totalBudget: "Budget Totale",
+totalBudget11: "Budget Totale",
+totalExpenditure: "Spesa Totale",
+totalOutstanding: "Totale in Sospeso",
+totalPoolAmount: "Importo Totale del Centro di Costo",
+totalRecords: "Totale Record",
+totalSpent: "Totale Speso",
+totalSpent33: "Totale Speso",
+transactions: "transazioni",
+transfer: "Trasferimento",
+transfer6: "Trasferimento #",
+transferDate: "Data di Trasferimento",
+transferRequestCreatedSuccessfully: "Richiesta di trasferimento creata con successo",
+transferRequests: "Richieste di Trasferimento",
+transfers: "Trasferimenti",
+travel: "Viaggio",
+type: "Tipo",
+typeTravelprojectoperationalsalaryother: "Tipo (VIAGGIO/PROGETTO/OPERATIVO/STIPENDIO/ALTRO)",
+underBudget: "(Sotto Budget)",
+unitCost: "Costo Unitario",
+unitType: "Tipo di Unità",
+update: "Aggiorna",
+updateBudget: "Aggiorna Budget",
+updating: "Aggiornamento...",
+useAutodistributeToEvenlySpreadThe: "Utilizza la distribuzione automatica per ripartire uniformemente il budget",
+usefulLife: "Vita Utile",
+usefulLifeYears: "Vita Utile (Anni)",
+user: "Utente",
+utilization: "Utilizzo",
+utilization19: "Utilizzo",
+utilization34: "utilizzo",
+utilizationRate: "Tasso di Utilizzo",
+utilizationRate18: "Tasso di Utilizzo",
+value: "Valore",
+variance: "Scostamento",
+variance22: "Scostamento",
+variance35: "Scostamento %",
+varianceAnalysis: "Analisi degli Scostamenti",
+vendor: "Fornitore",
+vendorName: "Nome del Fornitore",
+version: "Versione",
+versionHistory: "Cronologia Versioni",
+viewDetails: "Visualizza Dettagli",
+void: "Annullato",
+warning: "Avviso",
+warning28: "avviso",
+warrantyExpiry: "Scadenza Garanzia",
+weekly: "Settimanale",
+years: "anni",
+
+financeLandingSubtitle: "Budget, spese, conti e rendicontazione finanziaria",
+budgetsSubtitle: "Crea, invia, approva e monitora budget di progetto conformi ai requisiti dei donatori",
+expendituresSubtitle: "Monitora spese, stato dei pagamenti e consumo del budget",
+overviewSubtitle: "Dashboard finanziaria ad alto livello con budget, spese e analisi degli scostamenti",
+reportsSubtitle: "Genera riepiloghi finanziari e report interni",
+advancesSubtitle: "Gestisci richieste di anticipo del personale e monitoraggio delle liquidazioni",
+},
+emailNotifications: {
+accessDenied: "Accesso Negato",
+actions: "Azioni",
+active: "Attivo",
+advancedOptional: "Avanzate / Facoltative",
+allowedDomains: "Domini Consentiti",
+areYouSureThisCannotBe: "Sei sicuro? Questa azione non può essere annullata.",
+attempts: "Tentativi",
+authenticationMethod: "Metodo di Autenticazione",
+backToSettings: "Torna alle Impostazioni",
+cancel: "Annulla",
+certificate: "Certificato",
+channel: "Canale",
+clickATagToCopyIt: "Fai clic su un tag per copiarlo negli appunti, quindi incollalo nel corpo del modello.",
+clientIdApplicationId: "Client ID (ID Applicazione)",
+clientSecret: "Segreto Client",
+commaseparatedListOfAllowedRecipientDomains: "Elenco separato da virgole dei domini destinatari consentiti",
+commonEmailSettings: "Impostazioni Email Comuni",
+configureEmailProvidersNotificationEventsAnd: "Configura provider email, eventi di notifica e registri di consegna",
+configureWhichEventsTriggerNotificationsAnd: "Configura quali eventi attivano le notifiche e come vengono consegnate",
+connected: "Connesso",
+connectionStatus: "Stato della Connessione",
+createAndManageEmailTemplatesWith: "Crea e gestisci modelli email con tag dinamici per contenuti personalizzati",
+createYourFirstTemplateToCustomize: "Crea il tuo primo modello per personalizzare le email di notifica.",
+created: "Creato",
+deadLetter: "Messaggi Non Consegnati",
+defaultBcc: "BCC Predefinito",
+defaultCc: "CC Predefinito",
+delete: "Elimina",
+deliveryLog: "Registro di Consegna",
+disabled: "Disabilitato",
+displayName: "Nome Visualizzato",
+edit: "Modifica",
+editTemplate: "Modifica Modello",
+email: "Email",
+emailBodyArabicHtml: "Corpo Email in Arabo (HTML)",
+emailBodyHtml: "Corpo Email (HTML)",
+emailNotifications: "Email e Notifiche",
+emailProvider: "Provider Email",
+emailSubject: "Oggetto Email",
+emailSubjectArabic: "Oggetto Email (Arabo)",
+emailTemplates: "Modelli Email",
+emailTemplates1: "Modelli Email",
+encryption: "Crittografia",
+enterEmailsSeparatedByCommas: "Inserisci gli indirizzi email separati da virgole...",
+event: "Evento",
+eventSettingUpdated: "Impostazione evento aggiornata",
+explicitEmails: "Email Esplicite",
+failed: "Non Riuscito",
+fromEmailAddress: "Indirizzo Email Mittente",
+inactive: "Inattivo",
+inapp: "In-App",
+insertTag: "Inserisci Tag",
+lastError: "Ultimo Errore",
+lastTested: "Ultimo Test",
+loadingEvents: "Caricamento eventi...",
+mergeTags: "Tag Dinamici",
+microsoft365: "Microsoft 365",
+mixedRoleEmail: "Misto (Ruolo + Email)",
+monitorNotificationDeliveryStatusAndRetry: "Monitora lo stato di consegna delle notifiche e ritenta i messaggi non riusciti",
+newTemplate: "Nuovo Modello",
+noEmailSendingUsefulForTeststaging: "Nessun invio email — utile per ambienti di test e staging",
+noEmailTemplatesYet: "Nessun modello email disponibile",
+noNotificationEntriesYet: "Nessuna notifica disponibile",
+notConnected: "Non Connesso",
+notificationEvents: "Eventi di Notifica",
+notificationQueuedForRetry: "Notifica messa in coda per un nuovo tentativo",
+notificationsWillAppearHereOnceThe: "Le notifiche appariranno qui una volta configurato il provider email e attivati gli eventi.",
+optionalRecommended: "Facoltativo (Consigliato)",
+preview: "Anteprima",
+providerSettingsSaved: "Impostazioni del provider salvate",
+queued: "In Coda",
+recipientRule: "Regola Destinatario",
+recipients: "Destinatari",
+recommended: "Consigliato",
+replytoEmail: "Email Rispondi-A",
+requiredFieldsAdminOnly: "Campi Obbligatori (Solo Amministratore)",
+retry: "Riprova",
+rolebased: "Basato sui Ruoli",
+save: "Salva",
+saveConfiguration: "Salva Configurazione",
+saveTemplate: "Salva Modello",
+selectEmailProvider: "Seleziona Provider Email",
+sendEmailsViaMicrosoftGraphApi: "Invia email tramite Microsoft Graph API con autenticazione OAuth2",
+sendTestEmail: "Invia Email di Test",
+senderMode: "Modalità Mittente",
+sending: "Invio in corso",
+sent: "Inviato",
+sharedMailboxRecommended: "Cassetta Postale Condivisa (Consigliata)",
+smtpHost: "Host SMTP",
+smtpPassword: "Password SMTP",
+smtpPort: "Porta SMTP",
+smtpServer: "Server SMTP",
+smtpUsername: "Nome Utente SMTP",
+status: "Stato",
+tagCopiedToClipboard: "Tag copiato negli appunti",
+templateCreated: "Modello creato",
+templateDeleted: "Modello eliminato",
+templateKey: "Chiave Modello",
+templateKeyAndNameAreRequired: "La chiave e il nome del modello sono obbligatori",
+templateName: "Nome Modello",
+templateNameArabic: "Nome Modello (Arabo)",
+templateUpdated: "Modello aggiornato",
+tenantIdGuid: "Tenant ID (GUID)",
+testConnection: "Testa Connessione",
+uniqueIdentifierEgGrantapprovedTaskreminder: "Identificatore univoco (es. grant_approved, task_reminder)",
+useOnlyIfMicrosoft365Is: "Utilizzare solo se Microsoft 365 non è disponibile",
+useSmtpOnlyIfMicrosoft365: "Utilizzare SMTP solo se Microsoft 365 non è disponibile. SMTP con autenticazione di base può presentare limitazioni di sicurezza.",
+userMailbox: "Cassetta Postale Utente",
+workflowAssignees: "Assegnatari del Flusso di Lavoro",
+},
+
+documents: {
+budget: "Bilancio",
+cancel: "Annulla",
+caseFile: "Fascicolo del Caso",
+contract: "Contratto",
+description: "Descrizione",
+documentType: "Tipo di Documento",
+documentUploadedSuccessfully: "Documento caricato con successo",
+dragAndDropFileHereOr: "Trascina qui il file oppure fai clic per selezionarlo",
+fileWillBeAutomaticallyStoredIn: "Il file verrà automaticamente archiviato nella cartella corretta",
+financialReport: "Rapporto Finanziario",
+grantAgreement: "Accordo di Sovvenzione",
+hrDocument: "Documento HR",
+indicatorData: "Dati degli Indicatori",
+noFileSelected: "Nessun file selezionato",
+optionalDocumentDescription: "Descrizione facoltativa del documento",
+other: "Altro",
+procurementPlan: "Piano di Approvvigionamento",
+progressReport: "Rapporto di Avanzamento",
+project: "Progetto",
+projectProposal: "Proposta di Progetto",
+selectFile: "Seleziona File",
+targetFolder: "Cartella di Destinazione",
+upload: "Carica",
+uploadDocument: "Carica Documento",
+uploadFailed: "Caricamento non riuscito",
+uploading: "Caricamento in corso...",
+},
+
+components: {
+activeGrants: "Sovvenzioni Attive",
+activities: "Attività",
+addACondition: "+ Aggiungi una Condizione",
+addOption: "Aggiungi Opzione",
+addQuestion: "Aggiungi Domanda",
+addValidationRule: "+ Aggiungi Regola di Convalida",
+advanced: "Avanzate",
+allowDuplicates: "Consenti Duplicati",
+allowImport: "Consenti Importazione",
+appearance: "Aspetto",
+ar: "ar",
+back: "Indietro",
+beneficiaries: "Beneficiari",
+blockImport: "Blocca Importazione",
+blockImportRecommended: "Blocca Importazione (Consigliato)",
+borderrBordergray200: "border-r border-gray-200",
+budgets: "Bilanci",
+cancel: "Annulla",
+cancelImport: "Annulla Importazione",
+caseManagement: "Gestione dei Casi",
+changeFile: "Cambia File",
+chartOfAccounts: "Piano dei Conti",
+choiceList: "Elenco delle Scelte",
+close: "Chiudi",
+compact: "Compatto",
+completed: "Completato",
+contactPerson: "Persona di Contatto",
+contains: "contiene",
+create: "Crea",
+createANewImportRecord: "Crea un nuovo record di importazione",
+creating: "Creazione in corso...",
+customErrorMessage: "Messaggio di errore personalizzato",
+customExpression: "Espressione personalizzata",
+dateRange: "Intervallo di date",
+default: "Predefinito",
+defaultSinglePage: "Predefinito - pagina singola",
+defaultValue: "Valore Predefinito",
+downloadErrorReport: "Scarica Rapporto Errori",
+downloadErrorReport1: "Scarica Rapporto Errori",
+downloadFullReport: "Scarica Rapporto Completo",
+dragAndDropYourExcelFile: "Trascina qui il tuo file Excel oppure fai clic per selezionarlo",
+dropdown: "Menu a Tendina",
+duplicateDataSettings: "Impostazioni Dati Duplicati",
+duplicateFields: "Campi Duplicati",
+duplicateRecordsDetected: "Record Duplicati Rilevati",
+duplicateRecordsFirst10: "Record Duplicati (Primi 10)",
+duplicateRows: "Righe Duplicate",
+duplicationCheckBasedOn: "Controllo Duplicati Basato su",
+email: "Email",
+en: "en",
+end: "fine",
+enterQuestionText: "Inserisci il testo della domanda...",
+enus: "en-US",
+error: "Errore",
+errorDetails: "Dettagli Errore",
+errorMessage: "Messaggio di Errore",
+errorReport: "Rapporto Errori",
+errorRows: "Righe con Errori",
+errors: "Errori",
+expenditures: "Spese",
+exportBlankTemplate: "Esporta Modello Vuoto",
+exportExcel: "Esporta Excel",
+exportExcelFile: "Esporta File Excel",
+exportWithData: "Esporta con Dati",
+exporting: "Esportazione in corso...",
+failed: "Non Riuscito",
+field: "Campo",
+file: "File",
+fileInformation: "Informazioni sul File",
+fileName: "Nome File",
+fileSelected: "File selezionato",
+fileSize: "Dimensione File",
+fileSizeExceeds10mb: "La dimensione del file supera 10 MB",
+fileSummary: "Riepilogo File",
+fileType: "Tipo di File",
+financeOverview: "Panoramica Finanziaria",
+finishImport: "Completa Importazione",
+forecastPlan: "Piano Previsionale",
+formStyle: "Stile del Modulo",
+globalImport: "Importazione Globale",
+gridTheme: "Tema Griglia",
+gridThemeMultiplePages: "Tema griglia + pagine multiple",
+gridThemeWithHeadingsInAll: "Tema griglia con intestazioni in MAIUSCOLO",
+hideThisQuestion: "Nascondi questa domanda",
+howShouldWeProceed: "Come desideri procedere?",
+ifQuestion: "SE la domanda",
+importComplete: "Importazione Completata",
+importCompletedSuccessfully: "Importazione completata con successo!",
+importDate: "Data Importazione",
+importDetails: "Dettagli Importazione",
+importFromExcel: "Importa da Excel",
+importId: "ID Importazione",
+importResults: "Risultati Importazione",
+importSettings: "Impostazioni Importazione",
+importTimeline: "Cronologia Importazione",
+imported: "Importato",
+importedBy: "Importato da",
+importing: "Importazione in corso...",
+ims: "Sistema di Gestione Integrato (IMS)",
+inProgress: "In Corso",
+indicators: "Indicatori",
+integratedManagementSystem: "Sistema di Gestione Integrato",
+invalidFileTypePleaseUploadXlsx: "Tipo di file non valido. Caricare un file .xlsx o .xls",
+labelen: "labelEn",
+locationGeometry: "Posizione e Geometria",
+manuallyEnterSkipLogicInXlsform: "Inserire manualmente la logica di salto nel codice XLSForm",
+maxRetries: "Numero massimo di tentativi",
+maximumValue: "Valore massimo",
+media: "Media",
+message: "Messaggio",
+minimumValue: "Valore minimo",
+module: "Modulo",
+multiline: "Multilinea",
+multiplePages: "Pagine multiple",
+next: "Avanti",
+no: "No",
+noErrorsToDisplay: "Nessun errore da visualizzare",
+numbersKeyboard: "Tastiera numerica",
+numericDate: "Numerico e Data",
+of: "di",
+operator: "Operatore",
+optional: "Facoltativo",
+partial: "Parziale",
+patternRegex: "Modello (regex)",
+phone: "Telefono",
+pleaseSelectAFile: "Seleziona un file",
+preventEditingAfterSubmission: "Impedisci modifiche dopo l’invio",
+previewSummary: "Anteprima Riepilogo",
+previousErrors: "Errori Precedenti",
+proceed: "Procedi",
+processAllRowsAgain: "Elabora nuovamente tutte le righe",
+processOnlyFailedRows: "Elabora solo le righe non riuscite",
+processing: "Elaborazione in corso...",
+procurementPlan: "Piano di Approvvigionamento",
+project: "Progetto",
+questionLabel: "Etichetta della Domanda",
+questionOptions: "Opzioni della Domanda",
+questionSettings: "Impostazioni della Domanda",
+questionType: "Tipo di Domanda",
+quickSelect: "Selezione Rapida",
+readonly: "Sola Lettura",
+reason: "Motivo",
+recommended: "Consigliato",
+recordsFailed: "Record Non Riusciti",
+recordsInserted: "Record Inseriti",
+recordsSkipped: "Record Saltati",
+recordsUpdated: "Record Aggiornati",
+removeCondition: "Rimuovi Condizione",
+removeRule: "Rimuovi Regola",
+required: "Obbligatorio",
+requiresJustification: "Richiede Giustificazione",
+rerunValidation: "Esegui Nuovamente la Convalida",
+responseIsMandatory: "La risposta è obbligatoria",
+retryAllRows: "Riprova Tutte le Righe",
+retryAttempt: "Tentativo di Riprova",
+retryCount: "Conteggio Tentativi",
+retryFailedRowsOnly: "Riprova Solo le Righe Non Riuscite",
+retryImport: "Riprova Importazione",
+retryInformation: "Informazioni sul Tentativo",
+retryMode: "Modalità di Riprova",
+retryOfImport: "Riprova dell’Importazione",
+reupload: "Ricarica",
+reuseTheSameFile: "Riutilizza lo stesso file",
+right: "destra",
+rollbackApplied: "Rollback Applicato",
+rolledBack: "Ripristinato",
+row: "Riga",
+rowsFailedValidation: "Righe che non hanno superato la convalida",
+rowsToInsert: "Righe da Inserire",
+rowsToSkip: "Righe da Saltare",
+rowsToUpdate: "Righe da Aggiornare",
+save: "Salva",
+saveQuestion: "Salva Domanda",
+selectExcelFile: "Seleziona File Excel",
+selectionText: "Selezione e Testo",
+sendReportToPlatformAdmin: "Invia Rapporto all’Amministratore della Piattaforma",
+showThisQuestion: "Mostra questa domanda",
+showingFirst10Errors: "Visualizzazione dei primi 10 errori",
+skipLogic: "Logica di Salto",
+skipToQuestion: "Salta alla domanda",
+skipped: "Saltato",
+smartImportLogic: "Logica di Importazione Intelligente",
+status: "Stato",
+successRows: "Righe Elaborate con Successo",
+suggestedFix: "Correzione Suggerita",
+summary: "Riepilogo",
+supportedFormatsXlsxXlsMax10mb: "Formati supportati: .xlsx, .xls (Max 10 MB)",
+targetQuestion: "Domanda di Destinazione",
+targetTable: "Tabella di Destinazione",
+tasksManagement: "Gestione Attività",
+thenAction: "ALLORA azione",
+thisWill: "Questa operazione:",
+totalRows: "Totale Righe",
+totalRowsDetected: "Totale righe rilevate",
+uniqueRows: "Righe Uniche",
+uploadFailedPleaseTryAgain: "Caricamento non riuscito. Riprova.",
+uploadedAt: "Caricato il",
+uploadedBy: "Caricato da",
+validationCriteria: "Criteri di Convalida",
+validationType: "Tipo di Convalida",
+value: "Valore",
+vendorCode: "Codice Fornitore",
+vendorName: "Nome Fornitore",
+vendorType: "Tipo di Fornitore",
+viewImportHistory: "Visualizza Cronologia Importazioni",
+warning: "Avviso",
+yes: "Sì",
+},
+
+deleteConfirmationDialog: {
+cancel: "Annulla",
+confirmDelete: "Conferma Eliminazione",
+deleteArchiveNote: "Questo record verrà spostato nell’archivio e nascosto da tutti gli elenchi standard.",
+deleteConfirmation: "Sei sicuro di voler eliminare questo record?",
+deleteWarning: "Questa azione archivierà {{name}}. Potrai ripristinarlo successivamente da Amministrazione → Record Eliminati.",
+reasonLabel: "Motivo dell’eliminazione",
+reasonPlaceholder: "Fornisci un motivo per l’eliminazione (minimo 3 caratteri)...",
+reasonMinLength: "Il motivo deve contenere almeno 3 caratteri",
+},
+
+operatingUnitFormModal: {
+cancel: "Annulla",
+create: "Crea",
+createOperatingUnit: "Crea Unità Operativa",
+editOperatingUnit: "Modifica Unità Operativa",
+officeAdminEmail: "Email Amministratore dell’Ufficio",
+officeAdminEmailPlaceholder: "es. [admin@organization.org](mailto:admin@organization.org)",
+officeAdminName: "Nome Amministratore dell’Ufficio",
+officeAdminNamePlaceholder: "es. Ahmed Al-Mansour",
+organization: "Organizzazione",
+unitCountry: "Paese",
+unitName: "Nome Unità",
+unitType: "Tipo di Unità",
+update: "Aggiorna",
+},
+
+organizationFormModal: {
+active: "Attivo",
+addOuButton: "Aggiungi Unità",
+addOuCardDesc: "Crea una nuova unità operativa per questa organizzazione",
+addOuCardTitle: "Aggiungi Unità Operativa",
+addedOusTitle: "Unità Operative Aggiunte ({{count}})",
+adminEmailInvalid: "Formato email non valido",
+adminEmailLabel: "Email Amministratore",
+adminEmailPlaceholder: "es. [admin@organization.org](mailto:admin@organization.org)",
+adminEmailRequired: "L’email dell’amministratore è obbligatoria",
+adminNameLabel: "Nome Amministratore",
+adminNamePlaceholder: "es. Ahmed Al-Mansour",
+adminNameRequired: "Il nome dell’amministratore è obbligatorio",
+adminSectionDescCreate: "L’Amministratore dell’Organizzazione avrà accesso completo per gestire questa organizzazione.",
+adminSectionDescEdit: "L’Amministratore dell’Organizzazione viene definito durante la creazione e non può essere modificato.",
+adminSectionTitle: "Amministratore dell’Organizzazione",
+backButton: "Indietro",
+cancelButton: "Annulla",
+cancelEditButton: "Annulla",
+countryLabel: "Paese",
+countryPlaceholder: "Seleziona Paese",
+countryRequired: "Il paese è obbligatorio",
+createButton: "Crea Organizzazione",
+createError: "Impossibile creare l’organizzazione: {{message}}",
+createSuccess: "Organizzazione creata con successo",
+createTitle: "Crea Organizzazione",
+domainHelper: "Facoltativo. Utilizzato per sottodomini personalizzati (solo lettere minuscole, numeri, punti e trattini)",
+domainInvalid: "Il dominio può contenere solo lettere minuscole, numeri, punti e trattini",
+domainLabel: "Dominio",
+domainPlaceholder: "es. ims-foundation",
+editOuCardTitle: "Modifica Unità Operativa",
+editTitle: "Modifica Organizzazione",
+inactive: "Inattivo",
+nameLabel: "Nome Organizzazione",
+namePlaceholder: "es. IMS Foundation",
+nameRequired: "Il nome dell’organizzazione è obbligatorio",
+nextAdminsButton: "Avanti: Amministratori dell’Organizzazione",
+nextOusButton: "Avanti: Unità Operative",
+noOusHelper: "Aggiungi almeno un’unità operativa per continuare.",
+noOusMessage: "Nessuna unità operativa aggiunta.",
+organizationAdminRole: "Amministratore dell’Organizzazione",
+shortCodeHelper: "Facoltativo. Codice breve dell’organizzazione (es. YDH, EFADAH)",
+shortCodeLabel: "Codice Breve",
+shortCodePlaceholder: "es. YDH",
+ouAdded: "Unità operativa aggiunta",
+ouCountryLabel: "Paese",
+ouCountryPlaceholder: "Seleziona Paese",
+ouCountryRequired: "Il paese è obbligatorio",
+ouNameLabel: "Nome Unità",
+ouNamePlaceholder: "es. Sede Centrale, Ufficio Giordania",
+ouNameRequired: "Il nome dell’unità operativa è obbligatorio",
+ouRemoved: "Unità operativa rimossa",
+ouSectionDesc: "Aggiungi unità operative (sede centrale, uffici regionali, uffici sul campo) per questa organizzazione.",
+ouSectionTitle: "Unità Operative",
+ouTypeField: "Ufficio sul Campo",
+ouTypeHq: "Sede Centrale (HQ)",
+ouTypeLabel: "Tipo di Unità",
+ouTypePlaceholder: "Seleziona tipo di unità",
+ouTypeRegional: "Ufficio Regionale",
+ouUpdated: "Unità operativa aggiornata",
+roleDescription: "Il ruolo di Amministratore dell’Organizzazione fornisce accesso completo a questa organizzazione.",
+roleLabel: "Ruolo",
+secondaryAdminEmailLabel: "Email Amministratore Secondario",
+secondaryAdminEmailPlaceholder: "es. [secondary@organization.org](mailto:secondary@organization.org)",
+secondaryAdminNameLabel: "Nome Amministratore Secondario",
+secondaryAdminNamePlaceholder: "es. Sara Al-Hassan",
+secondaryAdminSectionDesc: "Facoltativamente puoi assegnare un amministratore secondario che avrà anch’esso accesso completo alla gestione dell’organizzazione.",
+secondaryAdminSectionTitle: "Amministratore Secondario (Facoltativo)",
+statusLabel: "Stato",
+step1Description: "Passaggio 1 di 3: Informazioni sull’Organizzazione",
+step2Description: "Passaggio 2 di 3: Amministratori dell’Organizzazione",
+step3Description: "Passaggio 3 di 3: Unità Operative",
+suspended: "Sospeso",
+tenantIdHelper: "Facoltativo. UUID per l’isolamento multi-tenant. Lasciare vuoto per la generazione automatica.",
+tenantIdLabel: "Tenant ID",
+tenantIdPlaceholder: "es. uuid-generato-tenant-id",
+updateButton: "Aggiorna Organizzazione",
+updateError: "Impossibile aggiornare l’organizzazione: {{message}}",
+updateOuButton: "Aggiorna Unità",
+updateSuccess: "Organizzazione aggiornata con successo",
+},
+projectFormModal: {
+  active: "Attivo",
+  budgetPositive: "Il budget deve essere positivo",
+  cancel: "Annulla",
+  cancelled: "Annullato",
+  codeRequired: "Il codice progetto è obbligatorio",
+  completed: "Completato",
+  createNewProject: "Crea Nuovo Progetto",
+  createProject: "Crea Progetto",
+  currency: "Valuta",
+  descriptionPlaceholder: "Inserisci la descrizione del progetto",
+  donor: "Donatore",
+  donorPlaceholder: "es. Fondazione UEFA",
+  editProject: "Modifica Progetto",
+  endDate: "Data di Fine",
+  endDateAfterStart: "La data di fine deve essere successiva alla data di inizio",
+  endDateRequired: "La data di fine è obbligatoria",
+  implementingPartner: "Partner di Implementazione",
+  location: "Località",
+  locationPlaceholder: "es. Sana'a",
+  onHold: "In Sospeso",
+  partnerPlaceholder: "es. ONG Locale",
+  planning: "Pianificazione",
+  projectCode: "Codice Progetto",
+  projectCodePlaceholder: "es. UEFA-FOUND-001",
+  projectFormDescription: "Descrizione",
+  projectTitle: "Titolo del Progetto",
+  projectTitlePlaceholder: "Inserisci il titolo del progetto",
+  required: "*",
+  saving: "Salvataggio in corso...",
+  sectors: "Settori",
+  sectorsRequired: "È richiesto almeno un settore",
+  startDate: "Data di Inizio",
+  startDateRequired: "La data di inizio è obbligatoria",
+  status: "Stato",
+  titleRequired: "Il titolo del progetto è obbligatorio",
+  totalBudget: "Budget Totale",
+  updateProject: "Aggiorna Progetto",
+},
+
+budgetsTab: {
+account: "Conto",
+actions: "Azioni",
+approve: "Approva",
+approved: "Approvato",
+budgetCreated: "Budget Creato",
+budgetDeleted: "Budget Eliminato",
+budgetManagement: "Gestione Budget",
+budgetManagementDesc: "Gestione e monitoraggio dei budget di progetto",
+budgetStatusUpdated: "Stato del budget aggiornato",
+budgeted: "Preventivato",
+budgetedAmount: "Importo Preventivato",
+close: "Chiudi",
+closed: "Chiuso",
+confirmDeleteBudget: "Conferma Eliminazione Budget",
+createBudget: "Crea Budget",
+createNewBudget: "Crea Nuovo Budget",
+currency: "Valuta",
+draft: "Bozza",
+exportToExcel: "Esporta in Excel",
+exportedSuccessfully: "Esportazione completata con successo",
+forecast: "Previsione",
+forecastAmount: "Importo Previsto",
+importExcel: "Importa Excel",
+importFailed: "Importazione non riuscita",
+importedSuccessfully: "Importazione completata con successo",
+linkBudgetToProjectAccount: "Collega il Budget al Conto del Progetto",
+newBudget: "Nuovo Budget",
+noBudgetsYet: "Nessun Budget Disponibile",
+noDataInFile: "Nessun dato nel file",
+notes: "Note",
+notesPlaceholder: "Inserisci eventuali note",
+period: "Periodo",
+pleaseEnterBudgetedAmount: "Inserisci l’importo preventivato",
+pleaseSelectProjectAccount: "Seleziona un conto progetto",
+project: "Progetto",
+records: "Record",
+revised: "Revisionato",
+selectAccount: "Seleziona Conto",
+selectProject: "Seleziona Progetto",
+skippedInvalidRows: "Righe non valide saltate",
+status: "Stato",
+templateDownloaded: "Modello scaricato",
+},
+
+chartOfAccountsTab: {
+accountCode: "Codice Conto",
+accountCreated: "Conto Creato",
+accountDeleted: "Conto Eliminato",
+accountDescriptionPlaceholder: "Inserisci la descrizione del conto",
+accountNameArabic: "Nome Conto (Arabo)",
+accountNameEnglish: "Nome Conto (Inglese)",
+accountType: "Tipo di Conto",
+accountTypeAsset: "Attività",
+accountTypeEquity: "Patrimonio Netto",
+accountTypeExpense: "Spesa",
+accountTypeIncome: "Entrata",
+accountTypeLiability: "Passività",
+accountUpdated: "Conto Aggiornato",
+actions: "Azioni",
+chartOfAccounts: "Piano dei Conti",
+chartOfAccountsDesc: "Gestione della struttura contabile e dei conti finanziari",
+code: "Codice",
+confirmDeleteAccount: "Conferma Eliminazione Conto",
+createAccount: "Crea Conto",
+exportToExcel: "Esporta in Excel",
+exportedSuccessfully: "Esportazione completata con successo",
+financeDescription: "Descrizione",
+importExcel: "Importa Excel",
+importFailed: "Importazione non riuscita",
+name: "Nome",
+newAccount: "Nuovo Conto",
+noAccountsYet: "Nessun Conto Disponibile",
+noDataInFile: "Nessun dato nel file",
+noneTopLevel: "Nessun Livello Superiore",
+parent: "Conto Padre",
+parentAccount: "Conto Principale",
+templateDownloaded: "Modello scaricato",
+type: "Tipo",
+updateAccount: "Aggiorna Conto",
+},
+
+expendituresTab: {
+actions: "Azioni",
+amount: "Importo",
+approve: "Approva",
+approved: "Approvato",
+budget: "Budget",
+budgetLine: "Voce di Budget",
+confirmDeleteExpenditure: "Conferma Eliminazione Spesa",
+createExpenditure: "Crea Spesa",
+currency: "Valuta",
+date: "Data",
+draft: "Bozza",
+enterExpenditureDetails: "Inserisci i Dettagli della Spesa",
+expenditureCreated: "Spesa Creata",
+expenditureDeleted: "Spesa Eliminata",
+expenditureDescription: "Descrizione della Spesa",
+expenditureRecordingDesc: "Registrazione e monitoraggio delle spese di progetto",
+expenditureStatusUpdated: "Stato della Spesa Aggiornato",
+exportToExcel: "Esporta in Excel",
+exportedSuccessfully: "Esportazione completata con successo",
+financeDescription: "Descrizione",
+importExcel: "Importa Excel",
+importFailed: "Importazione non riuscita",
+importedSuccessfully: "Importazione completata con successo",
+invoiceNumber: "Numero Fattura",
+invoiceNumberPlaceholder: "Inserisci il numero della fattura",
+markPaid: "Segna come Pagato",
+maxFileSize: "Dimensione Massima File",
+newExpenditure: "Nuova Spesa",
+noDataInFile: "Nessun dato nel file",
+noExpendituresYet: "Nessuna Spesa Disponibile",
+paid: "Pagato",
+pleaseEnterAmount: "Inserisci l’importo",
+pleaseSelectProjectBudget: "Seleziona un budget di progetto",
+project: "Progetto",
+receiptFileTooLarge: "Il file della ricevuta è troppo grande",
+receiptUpload: "Carica Ricevuta",
+receiptUploadFailed: "Caricamento della ricevuta non riuscito",
+receiptUploaded: "Ricevuta caricata con successo",
+recordNewExpenditure: "Registra Nuova Spesa",
+records: "Record",
+reject: "Rifiuta",
+rejected: "Rifiutato",
+selectBudgetLine: "Seleziona Voce di Budget",
+selectProject: "Seleziona Progetto",
+status: "Stato",
+submit: "Invia",
+submitted: "Inviato",
+supportedFormats: "Formati Supportati",
+templateDownloaded: "Modello scaricato",
+uploadingReceipt: "Caricamento ricevuta in corso",
+vendor: "Fornitore",
+vendorName: "Nome Fornitore",
+},
+
+overviewTab: {
+acrossAllProjects: "In Tutti i Progetti",
+budgetUtilization: "Utilizzo del Budget",
+criticalUtilization: "Utilizzo Critico",
+expendituresAwaitingReview: "Spese in Attesa di Revisione",
+healthyUtilization: "Utilizzo Ottimale",
+highUtilization: "Utilizzo Elevato",
+overBudget: "Oltre il Budget",
+overallSpending: "Spesa Complessiva",
+pendingApprovals: "Approvazioni in Attesa",
+totalBudget: "Budget Totale",
+totalSpent: "Totale Speso",
+underBudget: "Sotto il Budget",
+utilizationRate: "Tasso di Utilizzo",
+utilized: "Utilizzato",
+variance: "Scostamento",
+},
+
+reportsTab: {
+accountId: "ID Conto",
+amount: "Importo",
+approved: "Approvato",
+budgetId: "ID Budget",
+budgetUtilizationReport: "Rapporto di Utilizzo del Budget",
+budgetUtilized: "Budget Utilizzato",
+budgetVsActualComparison: "Confronto Budget vs Consuntivo",
+budgetedAmount: "Importo Preventivato",
+budgets: "Budget",
+currency: "Valuta",
+date: "Data",
+detailedExpenditureBreakdown: "Dettaglio Analitico delle Spese",
+donorComplianceReport: "Rapporto di Conformità del Donatore",
+donorComplianceReportDesc: "Verifica della conformità delle spese ai requisiti del donatore",
+draft: "Bozza",
+euUnEchoFormat: "Formato UE / ONU / ECHO",
+excelDescription: "Descrizione Excel",
+excelReportFailed: "Generazione del report Excel non riuscita",
+excelReportGenerated: "Report Excel generato con successo",
+expenditureId: "ID Spesa",
+expenditureSummary: "Riepilogo delle Spese",
+expenditures: "Spese",
+exportNote: "Nota di Esportazione",
+exportToExcel: "Esporta in Excel",
+exportToPDF: "Esporta in PDF",
+financialReports: "Rapporti Finanziari",
+financialReportsDesc: "Genera e scarica rapporti finanziari dettagliati",
+financialSummaryReport: "Rapporto di Sintesi Finanziaria",
+forecastAmount: "Importo Previsto",
+generateReportComingSoon: "Generazione report disponibile prossimamente",
+generated: "Generato",
+metric: "Metrica",
+note: "Nota",
+paid: "Pagato",
+pdfReportFailed: "Generazione del report PDF non riuscita",
+pdfReportGenerated: "Report PDF generato con successo",
+period: "Periodo",
+projectId: "ID Progetto",
+spendingAnalysisByProject: "Analisi delle Spese per Progetto",
+status: "Stato",
+submitted: "Inviato",
+totalBudget: "Budget Totale",
+totalSpent: "Totale Speso",
+utilizationRate: "Tasso di Utilizzo",
+variance: "Scostamento",
+varianceAnalysisReport: "Rapporto di Analisi degli Scostamenti",
+vendor: "Fornitore",
+},
+
+operatingUnitDetailPage: {
+loading: "Caricamento...",
+status: "Stato",
+},
+
+operatingUnitsPage: {
+delete: "Elimina",
+deletedSuccessfully: "Record eliminato con successo",
+edit: "Modifica",
+loading: "Caricamento...",
+operatingUnit: "Unità Operativa",
+operatingUnits: "Unità Operative",
+status: "Stato",
+},
+organizationDashboard: {
+acrossAllPrograms: "In Tutti i Programmi",
+activeGrants: "Sovvenzioni Attive",
+activeProjectProgress: "Avanzamento dei progetti attivi",
+activeProjects: "Progetti Attivi",
+allocatedFunds: "Fondi Allocati",
+atRisk: "A Rischio",
+budgetRevisionNeeded: "Revisione del Budget Necessaria",
+budgetVarianceExceeds: "La variazione di budget del progetto {projectName} supera il 10%",
+comingSoon: "Prossimamente",
+compliance: "Conformità",
+complianceAlerts: "Avvisi di Conformità",
+contactAdmin: "Contatta il tuo amministratore per essere assegnato a un’organizzazione.",
+coreModules: "Moduli Operativi Principali",
+daysAgo: "{count} giorni fa",
+donorCRM: "CRM Donatori",
+donorCRMDesc: "Relazioni e comunicazioni con i donatori",
+financeManagement: "Gestione Finanziaria",
+financeManagementDesc: "Budget, spese e report finanziari",
+fullTimeStaff: "Personale a Tempo Pieno",
+grantExecution: "Esecuzione delle Sovvenzioni",
+highPriority: "Alta Priorità",
+humanResources: "Risorse Umane",
+humanResourcesDesc: "Gestione del personale, buste paga e congedi",
+inProgress: "In Corso",
+itemsRequiringAttention: "Elementi che Richiedono Attenzione",
+logisticsProcurement: "Logistica e Approvvigionamenti",
+logisticsProcurementDesc: "Ordini di acquisto, inventario e fornitori",
+meal: "MEAL",
+mealDesc: "Monitoraggio, valutazione, responsabilità e apprendimento",
+medium: "Medio",
+noActiveProjects: "Nessun Progetto Attivo",
+noOperatingUnit: "Nessuna unità operativa selezionata",
+noOrganization: "Nessuna Organizzazione Selezionata",
+onTrack: "In Linea",
+openModule: "Apri Modulo",
+operatingUnitContext: "Contesto dell’Unità Operativa",
+phase0Complete: "🚧 Fase 0: Fondamenta Completate",
+phase0CompleteDesc: "Le fondamenta dell’IMS sono ora operative con supporto multi-tenant e isolamento delle unità operative. I moduli operativi saranno sviluppati progressivamente nella Fase 1.",
+programsGrants: "Programmi e Sovvenzioni",
+programsGrantsDesc: "Gestione di programmi, sovvenzioni e progetti",
+projectPipelineStatus: "Stato della Pipeline Progetti",
+quarterlyReportOverdue: "Rapporto Trimestrale in Ritardo",
+quarterlyReportPending: "Rapporto trimestrale della sovvenzione #{{grantId}} in attesa",
+totalBudget: "Budget Totale",
+totalEmployees: "Totale Dipendenti",
+viewAll: "Visualizza Tutto",
+
+budget: "Budget",
+budgetReview: "Revisione del Budget",
+budgetReviewDesc: "La variazione di budget del progetto Acqua e Igiene supera il 10%",
+complianceAlertsDesc: "Elementi che Richiedono Attenzione",
+educationSupport: "Programma di Supporto all’Istruzione",
+educationSupportDesc: "Infrastrutture scolastiche e formazione degli insegnanti",
+endDate: "Data di Fine",
+mediumPriority: "PRIORITÀ MEDIA",
+progress: "Progresso",
+projectPipeline: "Pipeline Progetti",
+projectPipelineDesc: "Avanzamento dei progetti attivi",
+reportOverdue: "Rapporto Trimestrale in Ritardo",
+reportOverdueDesc: "Rapporto trimestrale della sovvenzione in attesa di revisione",
+waterSanitation: "Acqua e Igiene - Fase 2",
+waterSanitationDesc: "Accesso comunitario all’acqua e strutture igienico-sanitarie",
+
+// ERP Operations Center Dashboard
+activeContracts: "Contratti Attivi",
+activeDonors: "Donatori Attivi",
+activeRFQs: "Richieste di Offerta Attive",
+activeStaff: "Personale Attivo",
+activeSurveys: "Sondaggi Attivi",
+
+addEmployee: "Aggiungi Dipendente",
+addEmployeeDesc: "Registra un nuovo membro del personale",
+
+addProject: "Nuovo Progetto",
+addProjectDesc: "Crea un nuovo progetto",
+
+allClear: "Tutto Regolare",
+approved: "Approvato",
+attendance: "Presenze",
+attendanceDesc: "Registri delle presenze del personale",
+
+budgetExecution: "Esecuzione del Budget",
+category: "Categoria",
+complete: "Completo",
+completed: "Completato",
+contract: "contratto",
+created: "creato",
+
+critical: "Critico",
+criticalAlerts: "Avvisi Critici",
+criticalAlertsBottlenecks: "Avvisi Critici e Colli di Bottiglia",
+criticalAlertsDesc: "Elementi urgenti che richiedono attenzione immediata",
+
+criticalRisk: "Rischio Critico",
+criticalRisks: "Rischi Critici",
+
+deleted: "eliminato",
+donor: "donatore",
+dqaFindings: "Risultati DQA",
+
+employee: "dipendente",
+
+executiveSnapshot: "Panoramica Esecutiva",
+executiveSnapshotDesc: "Indicatori chiave di performance a colpo d’occhio",
+
+expenseRequest: "Richiesta di Spesa",
+expenseRequestDesc: "Invia una nuova richiesta di spesa",
+
+expired: "Scaduto",
+expiredGrant: "Sovvenzione Scaduta",
+expiringContracts: "Contratti in Scadenza",
+expiringSoon: "In Scadenza",
+
+finance: "Finanza",
+
+governorates: "Governatorati",
+
+grant: "sovvenzione",
+
+healthCritical: "Critico",
+healthHealthy: "Sano",
+healthUnknown: "Sconosciuto",
+healthWarning: "Richiede Attenzione",
+
+high: "Alto",
+
+humanitarianIdentity: "Identità Umanitaria",
+humanitarianIdentityDesc: "Copertura organizzativa e presenza operativa",
+
+implementingPartners: "Partner di Implementazione",
+
+inventoryAlerts: "Avvisi Inventario",
+inventoryManagement: "Gestione Magazzino",
+inventoryManagementDesc: "Livelli di stock e gestione dei magazzini",
+
+issues: "problemi",
+
+leave: "Congedo",
+leaveManagement: "Gestione Congedi",
+leaveManagementDesc: "Gestione delle richieste di congedo del personale",
+
+leaveRequest: "richiesta di congedo",
+leaveRequests: "Richieste di Congedo",
+
+liveStatus: "STATO OPERATIVO IN TEMPO REALE",
+
+myPRs: "Le Mie Richieste di Acquisto",
+myPRsDesc: "Visualizza e monitora le tue richieste di acquisto",
+myPRsShortcutDesc: "Monitora e gestisci le tue richieste",
+
+myTasks: "Le Mie Attività",
+
+myWorkQueue: "La Mia Coda di Lavoro",
+myWorkQueueDesc: "Approvazioni in sospeso e attività assegnate",
+
+newPR: "Nuova Richiesta di Acquisto",
+newPRDesc: "Invia una nuova richiesta di acquisto",
+
+newPayment: "Nuovo Pagamento",
+newPaymentDesc: "Registra un nuovo pagamento",
+
+newStockRequest: "Nuova Richiesta di Magazzino",
+newStockRequestDesc: "Richiedi articoli dal magazzino",
+
+noBottlenecks: "Nessun collo di bottiglia rilevato",
+noHealthData: "Nessun dato disponibile sullo stato",
+noIdentityData: "Nessun dato disponibile sull’identità organizzativa",
+noRecentActivity: "Nessuna Attività Recente",
+noUpcomingDeadlines: "Nessuna Scadenza Imminente",
+
+openIncidents: "Incidenti Aperti",
+openPositions: "Posizioni Aperte",
+
+openProjects: "Progetti Aperti",
+openProjectsDesc: "Esplora i progetti attivi",
+
+openReports: "Report Disponibili",
+openReportsDesc: "Visualizza analisi e report",
+openRisks: "Rischi Aperti",
+operatingCountries: "Paesi Operativi",
+operationalHealth: "Stato Operativo",
+operationalHealthDesc: "Punteggio ponderato di preparazione in tutte le dimensioni",
+operationalModules: "Moduli Operativi",
+operationalModulesDesc: "Metriche in tempo reale per tutti i moduli del sistema",
+operationsRunning: "Operazioni in Corso",
+organization: "Organizzazione",
+organizationDashboard: "Cruscotto Organizzazione",
+overdue: "In Ritardo",
+overduePayment: "Pagamento Scaduto",
+overdueProject: "Progetto in Ritardo",
+payee: "Beneficiario",
+payment: "pagamento",
+pending: "In Sospeso",
+pendingApprovals: "Approvazioni in Sospeso",
+pendingContracts: "Contratti in Sospeso",
+pendingLeave: "Congedi in Sospeso",
+pendingPRApprovals: "Approvazioni PR in Sospeso",
+pendingPayments: "Pagamenti in Sospeso",
+pr: "PR",
+procurement: "Approvvigionamento",
+programsDashboard: "Cruscotto Programmi",
+programsDashboardDesc: "Analisi e reporting a livello di portafoglio",
+project: "progetto",
+projects: "Progetti",
+projectsGrants: "Progetti e Sovvenzioni",
+purchaseRequest: "richiesta di acquisto",
+quickActions: "Azioni Rapide",
+quickActionsDesc: "Operazioni utilizzate più frequentemente",
+recentActivity: "Attività Recenti",
+recentActivityDesc: "Ultime attività nell’organizzazione",
+recentPendingApprovals: "Approvazioni Recenti in Sospeso",
+recruitment: "Reclutamento",
+recruitmentDesc: "Offerte di lavoro e pipeline dei candidati",
+rejected: "rifiutato",
+reports: "Rapporti",
+reportsAnalytics: "Rapporti e Analisi",
+reportsAnalyticsDesc: "Rapporti operativi e dashboard",
+requestLeave: "Richiedi Congedo",
+requestLeaveDesc: "Invia una richiesta di congedo",
+riskCompliance: "Rischio e Conformità",
+riskRegister: "Registro dei Rischi",
+riskRegisterDesc: "Rischi attivi e stato delle misure di mitigazione",
+score: "Punteggio",
+searchPlaceholder: "Cerca PR, progetti, dipendenti, fornitori…",
+sectors: "Settori",
+smartShortcuts: "Scorciatoie Intelligenti",
+smartShortcutsDesc: "Accesso rapido alle funzionalità più utilizzate",
+stalledPR: "PR Bloccata",
+stockRequests: "Richieste di Magazzino",
+submitReport: "Invia Rapporto",
+submitReportDesc: "Invia un nuovo rapporto operativo",
+submitted: "inviato",
+task: "attività",
+totalBeneficiaries: "Beneficiari Totali",
+totalGrants: "Totale Sovvenzioni",
+totalPRs: "Totale PR",
+totalSpent: "Totale Speso",
+upcomingDeadlines: "Scadenze Imminenti",
+upcomingDeadlinesDesc: "Progetti, sovvenzioni e attività in scadenza nei prossimi 30 giorni",
+updated: "aggiornato",
+vendor: "fornitore",
+vendors: "Fornitori",
+vendorsDesc: "Gestione fornitori e venditori",
+welcomeUser: "Benvenuto",
+},
+organizationDetailPage: {
+activateSelected: "Attiva Selezionati",
+activeProjects: "Progetti Attivi",
+addFirstUnit: "Aggiungi la tua prima unità operativa per iniziare",
+admins: "Amministratori dell’Organizzazione",
+backToOrganizations: "Torna alle Organizzazioni",
+budgetAllocation: "Allocazione del Budget",
+bulkDeleteSuccess: "Eliminate con successo {{count}} unità operative",
+bulkUpdateError: "Aggiornamento delle unità operative non riuscito: {{message}}",
+bulkUpdateSuccess: "Aggiornate con successo {{count}} unità operative",
+comingSoon: "Prossimamente",
+country: "Paese",
+createdAt: "Creato il",
+currency: "Valuta",
+deactivateSelected: "Disattiva Selezionati",
+deleteSelected: "Elimina Selezionati",
+deletedSuccessfully: "Record eliminato con successo",
+domain: "Dominio",
+loading: "Caricamento...",
+noUnitsMessage: "Nessuna unità operativa configurata per questa organizzazione",
+operatingUnit: "Unità Operativa",
+operatingUnits: "Unità Operative",
+operatingUnits2: "Unità Operative",
+organizationDetailTitle: "Dettagli Organizzazione",
+organizationInfo: "Informazioni Organizzazione",
+selectAll: "Seleziona Tutto",
+selectUnitsFirst: "Seleziona almeno un’unità operativa",
+statistics: "Statistiche Organizzative",
+statisticsDescription: "Metriche Chiave e Indicatori di Prestazione",
+status: "Stato",
+statusLabel: "Stato",
+timezone: "Fuso Orario",
+totalUsers: "Totale Utenti",
+units: "unità operative",
+updatedAt: "Ultimo Aggiornamento",
+view: "Visualizza",
+},
+organizationsPage: {
+allOrganizations: "Tutte le Organizzazioni",
+bulkDeleteSuccess: "Eliminate con successo {{count}} organizzazioni",
+createFirstOrganization: "Crea la tua prima organizzazione per iniziare",
+createFirstOrganizationButton: "Crea la Prima Organizzazione",
+createOrganization: "Crea Organizzazione",
+delete: "Elimina",
+deleteSelected: "Elimina Selezionati ({{count}})",
+deletedSuccessfully: "Record eliminato con successo",
+edit: "Modifica",
+loading: "Caricamento...",
+manageDescription: "Gestisci le organizzazioni e le relative impostazioni",
+noCountry: "Nessun paese",
+noDomain: "Nessun dominio",
+noOrganizationsYet: "Nessuna organizzazione presente",
+organization: "Organizzazione",
+organizations: "Organizzazioni",
+organizations2: "Organizzazioni",
+selectAll: "Seleziona Tutto",
+selectedOrganizations: "{{count}} organizzazioni selezionate",
+status: "Stato",
+view: "Visualizza",
+},
+userManagement: {
+accessDenied: "Accesso Negato",
+assignUserToOrganization: "Assegna Utente all’Organizzazione",
+assignUserToOrganizationButton: "Assegna Utente all’Organizzazione",
+assigning: "Assegnazione in corso...",
+backToPlatform: "Torna alla Piattaforma",
+currentOrganizations: "Organizzazioni attuali e relativa configurazione",
+enterUserId: "Inserisci ID Utente",
+failedToAssignUser: "Impossibile assegnare l’utente: {{message}}",
+noPermission: "Non hai i permessi per accedere alla gestione utenti.",
+organization: "Organizzazione",
+organizationAdmin: "Amministratore Organizzazione",
+organizationAdminsCanManage: "Gli Amministratori dell’Organizzazione possono gestire le impostazioni della propria organizzazione",
+organizationsOverview: "Panoramica Organizzazioni",
+pleaseSelectBoth: "Seleziona sia un utente che un’organizzazione",
+productionNote: "Nota: In produzione sarà disponibile un selettore utenti ricercabile che mostrerà tutti gli utenti autenticati",
+role: "Ruolo",
+selectOrganization: "Seleziona Organizzazione",
+user: "Utente",
+userAssignedSuccess: "Utente assegnato all’organizzazione con successo",
+userId: "ID Utente",
+userManagementSubtitle: "Assegna utenti alle organizzazioni e gestisci i relativi ruoli",
+userManagementTitle: "Gestione Utenti",
+usersMustLogin: "Gli utenti devono prima accedere tramite Manus OAuth prima di poter essere assegnati alle organizzazioni",
+},
+
+advanceDetail: {
+APPROVED: "Approvato",
+CANCELLED: "Annullato",
+DRAFT: "Bozza",
+FULLY_SETTLED: "Completamente Liquidato",
+OPERATIONAL: "Operativo",
+OTHER: "Altro",
+PARTIALLY_SETTLED: "Parzialmente Liquidato",
+PENDING: "In Sospeso",
+PROJECT: "Progetto",
+REJECTED: "Rifiutato",
+SALARY: "Stipendio",
+TRAVEL: "Viaggio",
+
+accountCode: "Codice Conto",
+actualSettlement: "Data Effettiva di Liquidazione",
+advanceApproved: "Anticipo approvato",
+advanceInfo: "Informazioni Anticipo",
+advanceNumber: "Numero Anticipo",
+advanceRejected: "Anticipo rifiutato",
+advanceSubmitted: "Anticipo inviato per approvazione",
+advanceType: "Tipo di Anticipo",
+approve: "Approva",
+approvedAmount: "Importo Approvato",
+approvedAt: "Approvato il",
+approvedBy: "Approvato da",
+backToAdvances: "Torna agli Anticipi",
+cancel: "Annulla",
+date: "Data",
+department: "Dipartimento",
+description: "Descrizione",
+employeeName: "Nome Dipendente",
+evidence: "Documenti Giustificativi",
+expectedSettlement: "Data Prevista di Liquidazione",
+expenseCategory: "Categoria di Spesa",
+goBack: "Indietro",
+loading: "Caricamento dettagli anticipo...",
+noSettlements: "Nessuna liquidazione registrata per questo anticipo.",
+noVersionHistory: "Nessuna cronologia delle versioni disponibile.",
+notFound: "Anticipo non trovato",
+notFoundDesc: "L’anticipo richiesto non esiste o è stato eliminato.",
+notes: "Note",
+outstandingBalance: "Saldo Residuo",
+purpose: "Finalità",
+reason: "Motivo",
+receiptNumber: "Numero Ricevuta",
+refundAmount: "Importo Rimborsato",
+reject: "Rifiuta",
+rejectionReason: "Motivo del Rifiuto",
+requestDate: "Data Richiesta",
+requestedAmount: "Importo Richiesto",
+settledAmount: "Importo Liquidato",
+settlementAmount: "Importo",
+settlementDate: "Data Liquidazione",
+settlementNumber: "Numero Liquidazione",
+settlementStatus: "Stato",
+settlements: "Liquidazioni",
+status: "Stato",
+submit: "Invia per Approvazione",
+version: "Versione",
+versionHistory: "Cronologia Versioni",
+},
+
+assetDetail: {
+accumulatedDepreciation: "Ammortamento Accumulato",
+acquisitionCost: "Costo di Acquisizione",
+acquisitionDate: "Data di Acquisizione",
+assetCode: "Codice Bene",
+assetName: "Nome Bene",
+assignedTo: "Assegnato a",
+backToAssets: "Torna ai Beni",
+bookValue: "Valore Contabile",
+category: "Categoria",
+condition: "Condizione",
+currentValue: "Valore Attuale",
+
+depreciation: "Ammortamento",
+depreciationMethod: "Metodo di Ammortamento",
+depreciationRate: "Tasso di Ammortamento",
+
+description: "Descrizione",
+
+disposal: "Dismissione",
+disposalDate: "Data di Dismissione",
+disposalMethod: "Metodo di Dismissione",
+disposalReason: "Motivo della Dismissione",
+disposalValue: "Valore di Dismissione",
+
+donorGrantInfo: "Informazioni Donatore / Sovvenzione",
+donorName: "Nome Donatore",
+
+edit: "Modifica Bene",
+
+fromAssignee: "Da Assegnatario",
+fromLocation: "Da Posizione",
+
+gainLoss: "Plusvalenza / Minusvalenza",
+
+generalInfo: "Informazioni Generali",
+goBack: "Indietro",
+
+grantCode: "Codice Sovvenzione",
+
+insuranceExpiry: "Scadenza Assicurazione",
+insuranceInfo: "Informazioni Assicurative",
+insurancePolicy: "Polizza Assicurativa",
+
+lastMaintenance: "Ultima Manutenzione",
+
+loading: "Caricamento dettagli del bene...",
+
+location: "Posizione",
+
+maintenanceCost: "Costo",
+maintenanceDescription: "Descrizione",
+maintenanceHistory: "Cronologia Manutenzioni",
+maintenanceType: "Tipo",
+
+manufacturer: "Produttore",
+model: "Modello",
+
+nextDueDate: "Prossima Scadenza",
+nextMaintenance: "Prossima Manutenzione",
+
+noDisposal: "Questo bene non è stato dismesso.",
+noMaintenance: "Nessun record di manutenzione trovato per questo bene.",
+noTransfers: "Nessun trasferimento registrato per questo bene.",
+
+notFound: "Bene non trovato",
+notFoundDesc: "Il bene richiesto non esiste o è stato eliminato.",
+
+performedBy: "Eseguito da",
+performedDate: "Data Esecuzione",
+
+proceeds: "Proventi",
+
+reason: "Motivo",
+
+salvageValue: "Valore Residuo",
+
+serialNumber: "Numero di Serie",
+
+status: "Stato",
+
+subcategory: "Sottocategoria",
+
+toAssignee: "A Assegnatario",
+toLocation: "A Posizione",
+
+transferCode: "Codice Trasferimento",
+transferDate: "Data Trasferimento",
+transferStatus: "Stato",
+transfers: "Trasferimenti",
+
+usefulLife: "Vita Utile",
+usefulLifeYears: "Vita Utile (Anni)",
+
+warrantyExpiry: "Scadenza Garanzia",
+
+years: "anni",
+},
+
+prPayables: {
+title: "Elenco Debiti",
+subtitle: "Visualizza tutti i debiti associati a questa Richiesta di Acquisto",
+backToPR: "Torna alla Richiesta di Acquisto",
+noPayables: "Nessun debito associato a questa Richiesta di Acquisto",
+
+payableID: "ID Debito",
+vendor: "Fornitore",
+amount: "Importo",
+dueDate: "Data di Scadenza",
+status: "Stato",
+
+actions: "Azioni",
+view: "Visualizza",
+edit: "Modifica",
+delete: "Elimina",
+
+uploadInvoice: "Carica Fattura",
+recordPayment: "Registra Pagamento",
+
+pendingInvoice: "Fattura in Attesa",
+pendingApproval: "In Attesa di Approvazione",
+approved: "Approvato",
+paid: "Pagato",
+
+totalPayables: "Totale Debiti",
+totalAmount: "Importo Totale",
+},
+
+paymentRecording: {
+title: "Registrazione Pagamento",
+subtitle: "Registra un nuovo pagamento per questo debito",
+
+payableNumber: "Numero Debito",
+vendor: "Fornitore",
+
+paymentDate: "Data del Pagamento",
+paymentMethod: "Metodo di Pagamento",
+
+bankTransfer: "Bonifico Bancario",
+check: "Assegno",
+cash: "Contanti",
+letterOfCredit: "Lettera di Credito",
+
+referenceNumber: "Numero di Riferimento / Conto Bancario",
+
+amount: "Importo",
+remarks: "Osservazioni",
+
+uploadProof: "Carica Prova del Pagamento",
+dragDrop: "Trascina il file qui o fai clic per selezionarlo",
+fileSelected: "File selezionato",
+
+recordPayment: "Registra Pagamento",
+cancel: "Annulla",
+
+validationError: "Compila tutti i campi obbligatori",
+success: "Pagamento registrato con successo",
+error: "Errore durante la registrazione del pagamento",
+
+required: "Obbligatorio",
+},
+
+bankStatementImport: {
+balanceColumn: "Colonna Saldo",
+bankAccount: "Conto Bancario",
+bankStatementImport: "Importazione Estratto Conto Bancario",
+
+cancel: "Annulla",
+
+clickToUpload: "Fai clic per caricare o trascina il file qui",
+
+creditColumn: "Colonna Accredito",
+dateColumn: "Colonna Data",
+debitColumn: "Colonna Addebito",
+descriptionColumn: "Colonna Descrizione",
+
+duplicates: "Duplicati",
+errors: "Errori",
+
+failedToImport: "Impossibile importare l’estratto conto",
+failedToPreviewFile: "Impossibile visualizzare l’anteprima del file",
+filePreviewLoaded: "Anteprima del file caricata con successo",
+
+importFailed: "Importazione non riuscita. Verificare gli errori riportati di seguito.",
+importResults: "Risultati Importazione",
+importTransactions: "Importa Transazioni",
+
+imported: "Importato",
+importing: "Importazione in corso...",
+
+invalidFileFormat: "Formato file non valido. Caricare un file CSV o Excel.",
+
+mapFileColumnsDescription: "Mappa le colonne del file ai campi richiesti per le transazioni",
+
+none: "Nessuno",
+optional: "Facoltativo",
+
+pleaseMapRequiredColumns: "Mappare tutte le colonne obbligatorie (Data, Descrizione, Addebito, Accredito)",
+pleaseSelectFileAndAccount: "Selezionare un file e un conto bancario",
+
+previewFirst10Rows: "Anteprima delle prime 10 righe del file",
+
+referenceColumn: "Colonna Riferimento",
+
+selectBankAccount: "Seleziona Conto Bancario",
+selectBankStatementFile: "Seleziona un file CSV o Excel contenente l’estratto conto bancario",
+selectColumn: "Seleziona Colonna",
+
+statementFile: "File Estratto Conto",
+
+step1UploadFile: "Fase 1: Caricamento File",
+step2MapColumns: "Fase 2: Mappatura Colonne",
+step3PreviewData: "Fase 3: Anteprima Dati",
+
+supportedFormats: "CSV, XLSX, XLS (max 10 MB)",
+
+transactionsImported: "Transazioni importate con successo",
+
+uploadBankStatementDescription: "Carica file CSV o Excel contenenti transazioni bancarie per l’importazione automatica e la riconciliazione",
+},
+
+costAllocationManagement: {
+actions: "Azioni",
+
+activeRules: "Regole Attive",
+
+addAllocationKey: "Aggiungi Chiave di Ripartizione",
+addCostPool: "Aggiungi Centro di Costo",
+addLine: "Aggiungi Riga",
+addPeriod: "Aggiungi Periodo",
+addReallocation: "Aggiungi Riallocazione",
+addRule: "Aggiungi Regola",
+addTemplate: "Aggiungi Modello",
+addTransaction: "Aggiungi Transazione",
+
+allocatedAmount: "Importo Allocato",
+
+allocationExecuted: "Ripartizione eseguita con successo",
+
+allocationKey: "Chiave di Ripartizione",
+
+allocationKeysDesc: "Definisci i metodi per distribuire i costi tra i progetti",
+allocationKeysTitle: "Chiavi di Ripartizione",
+
+allocationPercentage: "Percentuale di Ripartizione",
+
+allocationReport: "Report di Ripartizione Costi",
+
+amount: "Importo",
+
+applyTemplate: "Applica Modello",
+applyTemplateDesc: "Crea un nuovo periodo di allocazione utilizzando questo modello",
+
+approve: "Approva",
+approveSuccess: "Riallocazione approvata",
+
+backToFinance: "Torna alla Finanza",
+
+baseCurrencyAmount: "Importo in Valuta Base",
+
+basesCalculated: "Basi di ripartizione calcolate con successo",
+
+budgetItem: "Voce di Budget",
+
+calculateBases: "Calcola Basi",
+
+cancel: "Annulla",
+
+completedPeriods: "Periodi Completati",
+
+complianceStatement: "Questo report è conforme agli standard di rendicontazione finanziaria UE, ONU ed ECHO.",
+
+confirm: "Conferma",
+
+costPool: "Centro di Costo",
+
+costPoolsDesc: "Definisci categorie di costi indiretti da ripartire tra i progetti",
+costPoolsTitle: "Centri di Costo",
+
+createSuccess: "Creato con successo",
+
+currency: "Valuta",
+
+delete: "Elimina",
+
+deleteAllocationKey: "Elimina Chiave di Ripartizione",
+deleteConfirm: "Sei sicuro di voler eliminare questo elemento?",
+deleteCostPool: "Elimina Centro di Costo",
+deletePeriod: "Elimina Periodo",
+deleteReallocation: "Elimina Riallocazione",
+deleteRule: "Elimina Regola",
+deleteSuccess: "Eliminato con successo",
+deleteTemplate: "Elimina Modello",
+
+description: "Descrizione",
+
+destination: "Destinazione",
+destinationProject: "Progetto di Destinazione",
+
+editAllocationKey: "Modifica Chiave di Ripartizione",
+editCostPool: "Modifica Centro di Costo",
+editPeriod: "Modifica Periodo",
+editReallocation: "Modifica Riallocazione",
+editRule: "Modifica Regola",
+editTemplate: "Modifica Modello",
+
+effectiveFrom: "Valido Dal",
+effectiveTo: "Valido Fino Al",
+
+endDate: "Data di Fine",
+
+exchangeRate: "Tasso di Cambio",
+
+execute: "Esegui",
+executeAllocation: "Esegui Ripartizione",
+
+executeSuccess: "Riallocazione eseguita con successo",
+
+executionWizard: "Procedura Guidata di Ripartizione",
+
+exportSuccess: "Esportazione completata con successo",
+exportToExcel: "Esporta in Excel",
+exportToPDF: "Esporta in PDF",
+
+generatedOn: "Generato il",
+
+glAccount: "Conto GL",
+
+isActive: "Attivo",
+
+justification: "Giustificazione",
+justificationAr: "Giustificazione (Arabo)",
+
+keyCode: "Codice Chiave",
+keyName: "Nome Chiave",
+keyType: "Tipo Chiave",
+
+keyTypeBudgetPercentage: "Percentuale di Budget",
+keyTypeCustom: "Personalizzato",
+keyTypeDirectCosts: "Costi Diretti",
+keyTypeEqual: "Distribuzione Equa",
+keyTypeHeadcount: "Numero di Dipendenti",
+keyTypeRevenue: "Ricavi",
+
+lineType: "Tipo Riga",
+lines: "Righe",
+
+loading: "Caricamento...",
+
+noData: "Nessun dato disponibile",
+
+period: "Periodo",
+periodCode: "Codice Periodo",
+periodName: "Nome Periodo",
+
+periodType: "Tipo Periodo",
+periodTypeAnnual: "Annuale",
+periodTypeCustom: "Personalizzato",
+periodTypeMonthly: "Mensile",
+periodTypeQuarterly: "Trimestrale",
+
+periodsDesc: "Definisci i periodi temporali per eseguire le allocazioni dei costi",
+periodsTitle: "Periodi di Ripartizione",
+poolCode: "Codice Centro di Costo",
+poolName: "Nome Centro di Costo",
+poolType: "Tipo Centro di Costo",
+
+poolTypeAdministrative: "Amministrativo",
+poolTypeFacility: "Struttura",
+poolTypeOther: "Altro",
+poolTypeOverhead: "Costi Generali",
+poolTypeSharedService: "Servizio Condiviso",
+
+priority: "Priorità",
+project: "Progetto",
+
+reallocationCode: "Codice Riallocazione",
+reallocationDate: "Data Riallocazione",
+
+reallocationDesc: "Rialloca il budget tra progetti tramite un flusso di approvazione",
+reallocationTitle: "Riallocazione del Budget",
+
+reject: "Rifiuta",
+rejectSuccess: "Riallocazione rifiutata",
+
+rejectionReason: "Motivo del Rifiuto",
+rejectionReasonAr: "Motivo del Rifiuto (Arabo)",
+
+removeLine: "Rimuovi Riga",
+
+resultsDesc: "Visualizza gli importi allocati per progetto e centro di costo",
+resultsTitle: "Risultati dell’Allocazione",
+
+reversalDialog: "Annulla Allocazione",
+reversalReason: "Motivo dell’Annullamento",
+reversalReasonAr: "Motivo dell’Annullamento (Arabo)",
+
+reversalSuccess: "Allocazione annullata con successo",
+reverseAllocation: "Annulla Allocazione",
+
+reverseConfirm: "Sei sicuro di voler annullare questa allocazione? Verranno create registrazioni contabili inverse.",
+
+rulesDesc: "Collega i centri di costo alle chiavi di allocazione con date di validità",
+rulesTitle: "Regole di Allocazione",
+
+save: "Salva",
+
+selectPeriod: "Seleziona Periodo",
+
+source: "Fonte",
+sourceExpense: "Spesa",
+sourceImport: "Importazione",
+sourceJournalEntry: "Registrazione Contabile",
+sourceManual: "Manuale",
+sourceModule: "Modulo di Origine",
+sourcePayment: "Pagamento",
+
+sourceProject: "Progetto di Origine",
+
+startDate: "Data di Inizio",
+
+status: "Stato",
+statusApproved: "Approvato",
+statusCancelled: "Annullato",
+statusCompleted: "Completato",
+statusDraft: "Bozza",
+statusExecuted: "Eseguito",
+statusInProgress: "In Corso",
+statusPendingApproval: "In Attesa di Approvazione",
+statusRejected: "Rifiutato",
+statusReversed: "Annullato",
+
+step1: "Fase 1: Seleziona Periodo",
+step2: "Fase 2: Calcola le Basi di Allocazione",
+step3: "Fase 3: Esegui Allocazione",
+
+submitForApproval: "Invia per Approvazione",
+submitSuccess: "Inviato per l’approvazione",
+
+subtitle: "Distribuisci i costi indiretti tra i progetti utilizzando metodi di allocazione configurabili",
+
+summaryStatistics: "Statistiche di Riepilogo",
+
+tabAllocationKeys: "Chiavi di Allocazione",
+tabCostPools: "Centri di Costo",
+tabDashboard: "Cruscotto",
+tabPeriods: "Periodi",
+tabReallocation: "Riallocazione Budget",
+tabResults: "Risultati",
+tabRules: "Regole di Allocazione",
+tabTemplates: "Modelli",
+tabTransactions: "Transazioni",
+
+templateApplied: "Modello applicato con successo",
+
+templateCode: "Codice Modello",
+templateName: "Nome Modello",
+templateNameAr: "Nome Modello (Arabo)",
+
+templateRules: "Regole del Modello",
+
+templatesDesc: "Crea modelli riutilizzabili per scenari di allocazione comuni",
+templatesTitle: "Modelli di Allocazione",
+
+title: "Allocazione dei Costi",
+
+totalAllocated: "Totale Allocato",
+totalAllocationKeys: "Chiavi di Allocazione",
+totalAmount: "Importo Totale",
+totalCostPools: "Totale Centri di Costo",
+totalPoolAmount: "Importo del Centro di Costo",
+totalRecords: "Totale Record",
+
+transactionDate: "Data Transazione",
+
+transactionsDesc: "Registra i costi accumulati in ciascun centro di costo",
+transactionsTitle: "Transazioni dei Centri di Costo",
+
+updateSuccess: "Aggiornato con successo",
+},
+
+financeChartOfAccounts: {
+accountCreated: "Conto creato con successo",
+accountDeleted: "Conto eliminato con successo",
+accountUpdated: "Conto aggiornato con successo",
+
+accounts: "Conti",
+
+actions: "Azioni",
+
+active: "Attivo",
+
+addAccount: "Aggiungi Conto",
+addCategory: "Aggiungi Categoria",
+
+asset: "Attività",
+
+backToFinance: "Torna alla Finanza",
+
+balance: "Saldo",
+
+bankAccount: "Conto Bancario",
+
+cancel: "Annulla",
+
+cashAccount: "Conto Cassa",
+
+categories: "Categorie",
+
+categoryCreated: "Categoria creata con successo",
+categoryDeleted: "Categoria eliminata con successo",
+categoryUpdated: "Categoria aggiornata con successo",
+
+code: "Codice",
+
+collapseAll: "Comprimi Tutto",
+
+confirmDelete: "Sei sicuro di voler eliminare questo elemento?",
+
+createAccount: "Crea Conto",
+createCategory: "Crea Categoria",
+
+credit: "Avere",
+debit: "Dare",
+
+delete: "Elimina",
+
+deleteAccount: "Elimina Conto",
+deleteCategory: "Elimina Categoria",
+
+description: "Descrizione",
+descriptionAr: "Descrizione (Arabo)",
+
+dragToReorder: "Trascina per riordinare",
+
+editAccount: "Modifica Conto",
+editCategory: "Modifica Categoria",
+
+equity: "Patrimonio Netto",
+
+error: "Errore durante il caricamento dei dati",
+
+expandAll: "Espandi Tutto",
+
+expense: "Spesa",
+
+export: "Esporta",
+import: "Importa",
+
+inactive: "Inattivo",
+
+level: "Livello",
+
+liability: "Passività",
+
+loading: "Caricamento...",
+
+name: "Nome",
+
+no: "No",
+
+noAccounts: "Nessun conto trovato",
+noCategories: "Nessuna categoria trovata",
+
+noParent: "Nessun Genitore (Livello Principale)",
+
+normalBalance: "Saldo Normale",
+
+parent: "Categoria Genitore",
+
+postable: "Registrabile",
+
+retry: "Riprova",
+
+revenue: "Ricavo",
+
+save: "Salva",
+
+search: "Cerca...",
+
+selectBalance: "Seleziona Saldo",
+selectCategory: "Seleziona Categoria",
+selectParent: "Seleziona Genitore",
+selectType: "Seleziona Tipo",
+
+status: "Stato",
+
+subtitle: "Gestisci codici contabili, categorie e struttura finanziaria",
+
+title: "Piano dei Conti",
+
+type: "Tipo",
+
+yes: "Sì",
+},
+
+financePaymentReports: {
+advance: "Anticipo",
+agingReport: "Report Scadenze Debiti",
+
+allBankAccounts: "Tutti i Conti Bancari",
+allProjects: "Tutti i Progetti",
+allVendors: "Tutti i Fornitori",
+
+amount: "Importo",
+
+approved: "Approvato",
+
+asOfDate: "Alla Data del",
+
+averageWeekly: "Media Settimanale",
+
+backToPayments: "Torna ai Pagamenti",
+
+bankAccount: "Conto Bancario",
+
+bank_transfer: "Bonifico Bancario",
+
+byMethod: "Per Metodo",
+byStatus: "Per Stato",
+byType: "Per Tipologia",
+
+cancelled: "Annullato",
+
+cash: "Contanti",
+
+cashFlowForecast: "Previsione del Flusso di Cassa",
+
+cheque: "Assegno",
+
+count: "Conteggio",
+
+current: "Corrente",
+
+days1to30: "1-30 Giorni",
+days31to60: "31-60 Giorni",
+days61to90: "61-90 Giorni",
+
+draft: "Bozza",
+
+endDate: "Data di Fine",
+
+error: "Errore",
+
+exportReport: "Esporta Report",
+
+generateReport: "Genera Report",
+
+grandTotal: "Totale Generale",
+
+loading: "Caricamento...",
+
+mobile_money: "Denaro Mobile",
+
+month: "Mese",
+
+monthlyForecast: "Previsione Mensile",
+
+noData: "Nessun dato disponibile",
+noVendorPayments: "Nessun pagamento fornitore trovato",
+
+other: "Altro",
+
+outflows: "Uscite",
+
+over90: "Oltre 90 Giorni",
+
+paid: "Pagato",
+
+paidAmount: "Importo Pagato",
+
+paymentHistory: "Storico Pagamenti",
+
+paymentReports: "Report Pagamenti",
+
+paymentReportsDescription: "Visualizza lo scadenzario dei pagamenti, lo storico fornitori e le previsioni di flusso di cassa",
+
+payments: "Pagamenti",
+
+pendingAmount: "Importo in Attesa",
+
+pending_approval: "In Attesa di Approvazione",
+
+project: "Progetto",
+
+refresh: "Aggiorna",
+
+refund: "Rimborso",
+
+settlement: "Liquidazione",
+
+staff: "Personale",
+
+startDate: "Data di Inizio",
+
+statusSummary: "Riepilogo Stato",
+
+totalAmount: "Importo Totale",
+totalOutflows: "Totale Uscite",
+totalPayments: "Totale Pagamenti",
+
+vendor: "Fornitore",
+
+vendorHistory: "Storico Fornitore",
+
+vendor_payment: "Pagamento Fornitore",
+
+void: "Annullato",
+
+week: "Settimana",
+
+weeklyForecast: "Previsione Settimanale",
+
+wire: "Bonifico Bancario",
+},
+
+financePayments: {
+actions: "Azioni",
+
+advance: "Anticipo",
+
+allMethods: "Tutti i Metodi",
+allStatuses: "Tutti gli Stati",
+allTypes: "Tutti i Tipi",
+
+amount: "Importo",
+
+approvalNotes: "Note di Approvazione",
+
+approve: "Approva",
+
+approveMessage: "Sei sicuro di voler approvare questo pagamento?",
+
+approved: "Approvato",
+
+backToFinance: "Torna alla Finanza",
+
+bankAccount: "Conto Bancario",
+
+bankInfo: "Informazioni Bancarie",
+
+bank_transfer: "Bonifico Bancario",
+
+batchActionMessage: "Sei sicuro di voler eseguire questa azione sui pagamenti selezionati?",
+
+batchActionSuccess: "Operazione massiva completata con successo",
+
+batchActions: "Azioni Multiple",
+
+batchApprove: "Approva Selezionati",
+batchComplete: "Completa Selezionati",
+batchDelete: "Elimina Selezionati",
+batchProcessing: "Elaborazione Multipla",
+batchReject: "Rifiuta Selezionati",
+batchSubmit: "Invia Selezionati",
+
+cancel: "Annulla",
+
+cancelMessage: "Inserisci un motivo per l’annullamento.",
+
+cancellationReason: "Motivo dell’Annullamento",
+
+cancelled: "Annullato",
+
+cash: "Contanti",
+
+check: "Assegno",
+
+clearSelection: "Cancella Selezione",
+
+complete: "Completa",
+
+completeMessage: "Contrassegnare questo pagamento come completato?",
+
+completed: "Completato",
+
+completedThisMonth: "Completati Questo Mese",
+
+confirmApprove: "Conferma Approvazione",
+confirmBatchAction: "Conferma Azione Multipla",
+confirmCancel: "Conferma Annullamento",
+confirmComplete: "Conferma Completamento",
+confirmReject: "Conferma Rifiuto",
+confirmSubmit: "Conferma Invio",
+
+createNewPayment: "Crea Nuovo Pagamento",
+createPayment: "Crea Pagamento",
+
+date: "Data",
+
+delete: "Elimina",
+
+description: "Descrizione",
+
+draft: "Bozza",
+
+dueDate: "Data di Scadenza",
+
+edit: "Modifica",
+editPayment: "Modifica Pagamento",
+
+error: "Errore",
+
+export: "Esporta",
+
+failed: "Non Riuscito",
+
+filterByMethod: "Filtra per Metodo",
+filterByStatus: "Filtra per Stato",
+filterByType: "Filtra per Tipo",
+
+import: "Importa",
+
+loading: "Caricamento...",
+
+method: "Metodo",
+
+mobile_money: "Denaro Mobile",
+
+newPayment: "Nuovo Pagamento",
+
+noPayments: "Nessun Pagamento Trovato",
+
+noPaymentsDescription: "Crea il tuo primo pagamento per iniziare",
+
+other: "Altro",
+
+payee: "Beneficiario",
+payeeBankAccount: "Conto Bancario del Beneficiario",
+payeeBankName: "Banca del Beneficiario",
+payeeIban: "IBAN del Beneficiario",
+payeeInfo: "Informazioni Beneficiario",
+payeeName: "Nome Beneficiario",
+payeeNameAr: "Nome Beneficiario in Arabo",
+versionHistory: "Cronologia Versioni",
+payeeSwiftCode: "Codice SWIFT del Beneficiario",
+
+paymentApproved: "Pagamento approvato",
+paymentCancelled: "Pagamento annullato",
+paymentCompleted: "Pagamento completato",
+paymentCreated: "Pagamento creato con successo",
+
+paymentDate: "Data del Pagamento",
+
+paymentDeleted: "Pagamento eliminato con successo",
+
+paymentDetails: "Dettagli Pagamento",
+
+paymentInfo: "Informazioni Pagamento",
+
+paymentLines: "Righe di Pagamento",
+
+paymentMethod: "Metodo di Pagamento",
+
+paymentNumber: "N. Pagamento",
+
+paymentProcessing: "Pagamento in elaborazione",
+
+paymentRejected: "Pagamento rifiutato",
+
+paymentSubmitted: "Pagamento inviato per approvazione",
+
+paymentType: "Tipo di Pagamento",
+
+paymentUpdated: "Pagamento aggiornato con successo",
+
+payments: "Pagamenti",
+
+paymentsDescription: "Gestisci i pagamenti ai fornitori con workflow di approvazione e selezione del conto bancario",
+
+pendingApproval: "In Attesa di Approvazione",
+pending_approval: "In Attesa di Approvazione",
+
+process: "Processo",
+processing: "Elaborazione",
+
+reference: "Riferimento",
+
+refund: "Rimborso",
+
+reject: "Rifiuta",
+
+rejectMessage: "Inserisci un motivo per il rifiuto.",
+
+rejected: "Rifiutato",
+
+rejectionReason: "Motivo del Rifiuto",
+
+required: "Obbligatorio",
+
+save: "Salva",
+
+saving: "Salvataggio in corso...",
+
+search: "Cerca pagamenti...",
+
+selectAll: "Seleziona Tutto",
+
+selectBankAccount: "Seleziona Conto Bancario",
+
+selectGrant: "Seleziona Sovvenzione",
+
+selectProject: "Seleziona Progetto",
+
+selectVendor: "Seleziona Fornitore",
+
+selectedCount: "selezionati",
+
+staff: "Personale",
+
+status: "Stato",
+
+submit: "Invia per Approvazione",
+
+submitMessage: "Sei sicuro di voler inviare questo pagamento per l’approvazione?",
+
+totalAmount: "Importo Totale",
+
+totalPayments: "Totale Pagamenti",
+
+transactionReference: "Riferimento Transazione",
+
+type: "Tipo",
+
+vendor: "Fornitore",
+
+view: "Visualizza",
+
+viewReports: "Visualizza Report",
+
+wire: "Bonifico Bancario",
+},
+
+financeSettings: {
+accountCode: "Codice Contabile",
+
+action: "Azione",
+
+active: "Attivo",
+
+activeCurrencies: "Valute Attive",
+activeThresholds: "Soglie Attive",
+
+advance: "Anticipo",
+
+all: "Tutti",
+
+approvalThresholds: "Soglie di Approvazione",
+
+approve: "Approva",
+
+approverRole: "Ruolo Approvatore",
+
+archived: "Archiviato",
+
+assetDisposal: "Dismissione Beni",
+
+backToFinance: "Torna alla Finanza",
+
+baseCurrency: "Valuta Base",
+
+budget: "Bilancio",
+
+budgetCategories: "Categorie di Bilancio",
+
+budgetType: "Tipo di Bilancio",
+
+cancel: "Annulla",
+
+capital: "Capitale",
+
+category: "Categoria",
+
+categoryCode: "Codice Categoria",
+
+categoryName: "Nome Categoria",
+
+closed: "Chiuso",
+
+confirmDelete: "Sei sicuro di voler eliminare questo elemento?",
+
+create: "Crea",
+createAction: "Crea",
+
+createSuccess: "Creato con successo",
+
+currencies: "Valute",
+
+currency: "Valuta",
+
+currencyCode: "Codice Valuta",
+
+currencyName: "Nome Valuta",
+
+currencySymbol: "Simbolo",
+
+currentFiscalYear: "Anno Fiscale Corrente",
+
+decimalPlaces: "Posizioni Decimali",
+
+delete: "Elimina",
+deleteAction: "Elimina",
+
+deleteSuccess: "Eliminato con successo",
+
+description: "Descrizione",
+
+edit: "Modifica",
+editAction: "Modifica",
+
+endDate: "Data di Fine",
+
+exchangeRate: "Tasso di Cambio",
+
+expense: "Spesa",
+
+export: "Esporta",
+exportAction: "Esporta",
+
+exportSuccess: "Esportazione avviata",
+
+fiscalYearCode: "Codice",
+
+fiscalYearName: "Nome Anno Fiscale",
+
+fiscalYears: "Anni Fiscali",
+
+import: "Importa",
+importAction: "Importa",
+
+importSuccess: "Importato con successo",
+
+indirect: "Indiretto",
+
+isBaseCurrency: "Valuta Base",
+
+isCurrent: "Anno Corrente",
+
+maxAmount: "Importo Massimo",
+
+minAmount: "Importo Minimo",
+
+minimumApprovers: "Numero Minimo di Approvatori",
+
+module: "Modulo",
+
+newCategory: "Nuova Categoria",
+
+newCurrency: "Nuova Valuta",
+
+newFiscalYear: "Nuovo Anno Fiscale",
+
+newPermission: "Nuovo Permesso",
+
+newRole: "Nuovo Ruolo",
+
+newThreshold: "Nuova Soglia",
+
+no: "No",
+
+noData: "Nessun dato trovato",
+
+none: "Nessuno",
+
+operational: "Operativo",
+
+parentCategory: "Categoria Padre",
+
+permissionCode: "Codice Permesso",
+
+permissionName: "Nome Permesso",
+
+personnel: "Personale",
+
+planning: "Pianificazione",
+
+procurement: "Approvvigionamento",
+
+program: "Programma",
+
+requiresMultiple: "Richiede Più Approvatori",
+
+roleCode: "Codice Ruolo",
+
+roleDescription: "Descrizione",
+
+roleLevel: "Livello",
+
+roleName: "Nome Ruolo",
+
+rolesPermissions: "Ruoli e Permessi",
+
+save: "Salva",
+
+search: "Cerca...",
+
+sortOrder: "Ordine di Visualizzazione",
+
+startDate: "Data di Inizio",
+
+status: "Stato",
+
+subtitle: "Configura valute, anni fiscali, workflow di approvazione e controlli di accesso",
+
+thresholdName: "Nome Soglia",
+
+title: "Impostazioni Finanziarie",
+
+totalCategories: "Totale Categorie",
+
+totalCurrencies: "Totale Valute",
+
+totalFiscalYears: "Totale Anni Fiscali",
+
+totalPermissions: "Totale Permessi",
+
+totalRoles: "Totale Ruoli",
+
+totalThresholds: "Totale Soglie",
+
+update: "Aggiorna",
+
+updateSuccess: "Aggiornato con successo",
+
+view: "Visualizza",
+
+yes: "Sì",
+},
+
+financeVendors: {
+accountHolderName: "Nome Intestatario del Conto",
+
+accountNumber: "Numero di Conto",
+vendorNameAr: 'Nome del fornitore in arabo',
+active: "Attivo",
+
+activeVendors: "Fornitori Attivi",
+
+address: "Indirizzo",
+
+addressAr: "Indirizzo (Arabo)",
+
+allVendors: "Tutti i Fornitori",
+
+backToFinance: "Torna alla Finanza",
+
+bankBranch: "Filiale Bancaria",
+
+bankDetails: "Dettagli Bancari",
+
+bankName: "Nome della Banca",
+
+bankTransfer: "Bonifico Bancario",
+
+blocked: "Bloccato",
+
+cancel: "Annulla",
+
+cash: "Contanti",
+
+check: "Assegno",
+
+city: "Città",
+
+confirmDelete: "Sei sicuro di voler eliminare questo fornitore?",
+
+consultant: "Consulente",
+
+contactPerson: "Persona di Contatto",
+
+contractor: "Appaltatore",
+
+contractors: "Appaltatori",
+
+country: "Paese",
+
+create: "Crea",
+
+createSuccess: "Fornitore creato con successo",
+
+creditCard: "Carta di Credito",
+
+creditLimit: "Limite di Credito",
+
+currency: "Valuta",
+
+delete: "Elimina",
+
+deleteSuccess: "Fornitore eliminato con successo",
+
+editVendor: "Modifica Fornitore",
+
+email: "Email",
+
+export: "Esporta",
+
+iban: "IBAN",
+
+import: "Importa",
+
+inactive: "Inattivo",
+
+loading: "Caricamento...",
+
+newVendor: "Nuovo Fornitore",
+
+noData: "Nessun fornitore trovato",
+
+notes: "Note",
+
+other: "Altro",
+
+paymentDays: "Giorni di Pagamento",
+
+paymentMethod: "Metodo di Pagamento",
+
+paymentTerms: "Termini di Pagamento",
+
+pendingPayments: "Pagamenti in Attesa",
+
+phone: "Telefono",
+
+postalCode: "CAP",
+
+registrationNumber: "Numero di Registrazione",
+
+save: "Salva",
+
+search: "Cerca fornitori...",
+
+serviceProvider: "Fornitore di Servizi",
+
+serviceProviders: "Fornitori di Servizi",
+
+status: "Stato",
+
+subtitle: "Gestisci fornitori, appaltatori e prestatori di servizi",
+
+supplier: "Fornitore",
+
+suppliers: "Fornitori",
+
+swiftCode: "Codice SWIFT/BIC",
+
+taxId: "Partita IVA / Codice Fiscale",
+
+title: "Gestione Fornitori",
+
+totalPayables: "Totale Debiti",
+
+totalVendors: "Totale Fornitori",
+
+update: "Aggiorna",
+
+updateSuccess: "Fornitore aggiornato con successo",
+
+vendorCode: "Codice Fornitore",
+
+vendorName: "Nome Fornitore",
+
+vendorType: "Tipologia Fornitore",
+
+viewDetails: "Visualizza Dettagli",
+
+website: "Sito Web",
+},
+
+journalEntries: {
+accountCode: "Codice Conto",
+accountLedger: "Libro Mastro",
+accountName: "Nome Conto",
+accountType: "Tipo Conto",
+
+addLine: "Aggiungi Riga",
+
+adjusting: "Scrittura di Assestamento",
+
+advance: "Anticipo",
+
+asset: "Risorsa",
+
+backToFinance: "Torna alla Finanza",
+
+balance: "Saldo",
+
+balanceError: "La registrazione contabile non è bilanciata. Dare e Avere devono essere uguali.",
+
+balanceType: "Tipo di Saldo",
+
+budget: "Bilancio",
+
+cancel: "Annulla",
+
+cash_transaction: "Transazione in Contanti",
+
+closing: "Chiusura",
+
+confirmDelete: "Sei sicuro di voler eliminare questa registrazione contabile?",
+
+confirmPost: "Sei sicuro di voler contabilizzare questa registrazione? Le registrazioni contabilizzate non possono essere modificate.",
+
+confirmReverse: "Sei sicuro di voler stornare questa registrazione contabile?",
+
+create: "Crea",
+
+createSuccess: "Registrazione contabile creata con successo",
+
+credit: "Avere",
+creditAmount: "Importo Avere",
+
+debit: "Dare",
+debitAmount: "Importo Dare",
+
+delete: "Elimina",
+
+deleteSuccess: "Registrazione contabile eliminata con successo",
+
+description: "Descrizione",
+
+draft: "Bozza",
+
+edit: "Modifica",
+
+entryDate: "Data Registrazione",
+
+entryNumber: "Numero Registrazione",
+
+entryType: "Tipo Registrazione",
+
+expense: "Spesa",
+
+export: "Esporta",
+
+filter: "Filtra",
+
+glAccount: "Conto Co.Ge.",
+
+invalidAmount: "Importo non valido",
+
+journalEntries: "Registrazioni Contabili",
+
+lineNumber: "Riga #",
+
+lines: "Righe Contabili",
+
+loading: "Caricamento...",
+
+manual: "Manuale",
+
+newEntry: "Nuova Registrazione",
+
+noEntries: "Nessuna registrazione contabile trovata",
+
+noLines: "Nessuna riga contabile aggiunta",
+
+opening: "Apertura",
+
+payroll: "Buste Paga",
+
+post: "Contabilizza",
+
+postSuccess: "Registrazione contabile contabilizzata con successo",
+
+posted: "Contabilizzata",
+
+postedAt: "Contabilizzata il",
+
+postedBy: "Contabilizzata da",
+
+procurement: "Approvvigionamento",
+
+removeLine: "Rimuovi Riga",
+
+required: "Questo campo è obbligatorio",
+
+reverse: "Storna",
+
+reverseSuccess: "Registrazione contabile stornata con successo",
+
+reversed: "Stornata",
+
+reversing: "Storno in corso",
+
+runningBalance: "Saldo Progressivo",
+
+save: "Salva",
+
+search: "Cerca",
+
+selectAccount: "Seleziona Conto Co.Ge.",
+
+selectGLAccount: "Seleziona un conto Co.Ge.",
+
+settlement: "Liquidazione",
+
+sourceModule: "Modulo Origine",
+
+standard: "Standard",
+
+status: "Stato",
+
+subtitle: "Registrazioni del Libro Mastro con contabilità a partita doppia",
+
+title: "Registrazioni Contabili",
+
+totalCredit: "Totale Avere",
+
+totalDebit: "Totale Dare",
+
+trialBalance: "Bilancio di Verifica",
+
+trialBalanceReport: "Report Bilancio di Verifica",
+
+update: "Aggiorna",
+
+updateSuccess: "Registrazione contabile aggiornata con successo",
+
+view: "Visualizza",
+
+void: "Annulla",
+},
+
+paymentDetail: {
+advance: "Anticipo",
+
+approvalNotes: "Note di Approvazione",
+
+approve: "Approva",
+
+approveMessage: "Sei sicuro di voler approvare questo pagamento?",
+
+approved: "Approvato",
+
+backToPayments: "Torna ai Pagamenti",
+
+bankAccount: "Conto Bancario",
+
+bank_transfer: "Bonifico Bancario",
+
+cancel: "Annulla",
+
+cancelMessage: "Fornire un motivo per l’annullamento.",
+
+cancellationReason: "Motivo dell’Annullamento",
+
+cancelled: "Annullato",
+
+cash: "Contanti",
+
+check: "Assegno",
+
+complete: "Completa",
+
+completeMessage: "Contrassegnare questo pagamento come completato?",
+
+completed: "Completato",
+
+confirmApprove: "Conferma Approvazione",
+
+confirmCancel: "Conferma Annullamento",
+
+confirmComplete: "Conferma Completamento",
+
+confirmReject: "Conferma Rifiuto",
+
+confirmSubmit: "Conferma Invio",
+
+date: "Data",
+
+description: "Descrizione",
+
+draft: "Bozza",
+
+dueDate: "Data di Scadenza",
+
+evidence: "Documenti Giustificativi",
+
+failed: "Non Riuscito",
+
+goBack: "Torna Indietro",
+
+lineAccountCode: "Codice Conto",
+
+lineAmount: "Importo",
+
+lineBudgetCode: "Codice Budget",
+
+lineDescription: "Descrizione",
+
+lineNumber: "Riga #",
+
+loading: "Caricamento dettagli pagamento...",
+
+mobile_money: "Denaro Mobile",
+
+noLines: "Nessuna riga di pagamento registrata.",
+
+noVersionHistory: "Nessuna cronologia delle versioni disponibile.",
+
+notFound: "Pagamento non trovato",
+
+notFoundDesc: "Il pagamento che stai cercando non esiste o è stato eliminato.",
+
+other: "Altro",
+
+payee: "Beneficiario",
+
+payeeBankAccount: "Conto Bancario Beneficiario",
+
+payeeBankInfo: "Informazioni Bancarie Beneficiario",
+
+payeeBankName: "Nome Banca Beneficiario",
+
+payeeIban: "IBAN Beneficiario",
+
+payeeSwiftCode: "Codice SWIFT Beneficiario",
+
+paymentApproved: "Pagamento approvato",
+
+paymentCancelled: "Pagamento annullato",
+
+paymentCompleted: "Pagamento completato",
+
+paymentDate: "Data Pagamento",
+
+paymentInfo: "Informazioni sul Pagamento",
+
+paymentLines: "Righe di Pagamento",
+
+paymentMethod: "Metodo di Pagamento",
+
+paymentNumber: "Numero Pagamento",
+
+paymentRejected: "Pagamento rifiutato",
+
+paymentSubmitted: "Pagamento inviato per approvazione",
+
+paymentType: "Tipo di Pagamento",
+
+pending_approval: "In Attesa di Approvazione",
+
+processing: "In Elaborazione",
+
+reason: "Motivo",
+
+reference: "Riferimento",
+
+refund: "Rimborso",
+
+reject: "Rifiuta",
+
+rejectMessage: "Fornire un motivo per il rifiuto.",
+
+rejected: "Rifiutato",
+
+rejectionReason: "Motivo del Rifiuto",
+
+staff: "Personale",
+
+status: "Stato",
+
+submit: "Invia per Approvazione",
+
+submitMessage: "Sei sicuro di voler inviare questo pagamento per l’approvazione?",
+
+totalAmount: "Importo Totale",
+
+transactionReference: "Riferimento Transazione",
+
+vendor: "Fornitore",
+
+version: "Versione",
+
+versionHistory: "Cronologia Versioni",
+
+wire: "Bonifico"
+},
+
+reconciliationDetail: {
+adjustedBookBalance: "Saldo Contabile Rettificato",
+
+amount: "Importo",
+
+approveReconciliation: "Approva Riconciliazione",
+
+approved: "Approvato",
+
+approvedAt: "Approvato il",
+
+approvedBy: "Approvato da",
+
+backToTreasury: "Torna alla Tesoreria",
+
+bookBalance: "Saldo Contabile",
+
+completeReconciliation: "Completa Riconciliazione",
+
+completed: "Completato",
+
+completedAt: "Completato il",
+
+completedBy: "Completato da",
+
+credit: "Avere",
+
+debit: "Dare",
+
+description: "Descrizione",
+
+difference: "Differenza",
+
+draft: "Bozza",
+
+goBack: "Torna Indietro",
+
+in_progress: "In Corso",
+
+loading: "Caricamento dettagli riconciliazione...",
+
+matchedTransactions: "Transazioni Abbinate",
+
+netMovement: "Movimento Netto",
+
+noTransactions: "Nessuna transazione trovata.",
+
+noUnmatchedTransactions: "Nessuna transazione non abbinata trovata.",
+
+notFound: "Riconciliazione non trovata",
+
+notFoundDesc: "La riconciliazione richiesta non esiste o è stata eliminata.",
+
+notes: "Note",
+
+outstandingCheques: "Assegni in Sospeso",
+
+outstandingDeposits: "Depositi in Transito",
+
+periodEnd: "Fine Periodo",
+
+periodStart: "Inizio Periodo",
+
+reconciliationApproved: "Riconciliazione approvata",
+
+reconciliationCompleted: "Riconciliazione completata",
+
+reconciliationDate: "Data Riconciliazione",
+
+reconciliationNumber: "Numero Riconciliazione",
+
+reconciliationStarted: "Riconciliazione avviata",
+
+reference: "Riferimento",
+
+startReconciliation: "Avvia Riconciliazione",
+
+statementBalance: "Saldo Estratto Conto",
+
+statementDate: "Data Estratto Conto",
+
+status: "Stato",
+
+summary: "Riepilogo",
+
+totalCredits: "Totale Avere",
+
+totalDebits: "Totale Dare",
+
+transactionCount: "Numero Transazioni",
+
+transactionDate: "Data Transazione",
+
+type: "Tipo",
+
+unmatchedTransactions: "Transazioni Non Abbinate",
+},
+
+treasuryCashManagement: {
+accountName: "Nome Conto",
+
+accountNumber: "Numero Conto",
+
+accountType: "Tipo Conto",
+accountNameAr: "Nome Conto (Arabo)",
+
+bankNameAr: "Nome Banca (Arabo)",
+
+fundNameAr: "Nome Fondo (Arabo)",
+active: "Attivo",
+
+activeAccounts: "Conti Attivi",
+
+adjustment: "Rettifica",
+
+allowDuplicates: "Consenti Duplicati",
+
+amount: "Importo",
+
+approveReconciliation: "Approva Riconciliazione",
+
+approved: "Approvato",
+
+autoMatch: "Abbinamento Automatico",
+
+backToFinance: "Torna alla Finanza",
+
+balanceAfter: "Saldo Finale",
+
+bankAccounts: "Conti Bancari",
+
+bankCharge: "Commissione Bancaria",
+
+bankName: "Nome Banca",
+
+bankReconciliation: "Riconciliazione Bancaria",
+
+bookBalance: "Saldo Contabile",
+
+branchCode: "Codice Filiale",
+
+branchName: "Nome Filiale",
+
+cancel: "Annulla",
+
+cashTransactions: "Movimenti di Cassa",
+
+checking: "Conto Corrente",
+
+completeReconciliation: "Completa Riconciliazione",
+
+completed: "Completato",
+
+confirmDelete: "Sei sicuro di voler eliminare questo elemento?",
+
+contactPerson: "Persona di Contatto",
+
+contactPhone: "Telefono di Contatto",
+
+create: "Crea",
+
+createSuccess: "Elemento creato con successo",
+
+currency: "Valuta",
+
+currentBalance: "Saldo Attuale",
+
+delete: "Elimina",
+
+deleteSuccess: "Elemento eliminato con successo",
+
+deposit: "Deposito",
+
+description: "Descrizione",
+
+difference: "Differenza",
+
+donorDesignated: "Vincolato dal Donatore",
+
+downloadTemplate: "Scarica Modello",
+
+draft: "Bozza",
+
+editBankAccount: "Modifica Conto Bancario",
+
+editFund: "Modifica Fondo",
+
+errors: "Errori",
+
+export: "Esporta",
+
+fundBalances: "Saldi dei Fondi",
+
+fundCode: "Codice Fondo",
+
+fundName: "Nome Fondo",
+
+fundType: "Tipologia Fondo",
+
+import: "Importa",
+
+importBankAccounts: "Importa Conti Bancari",
+
+importFunds: "Importa Fondi",
+
+importResults: "Risultati Importazione",
+
+importStatement: "Importa Estratto Conto",
+
+importSuccess: "Importazione completata",
+
+imported: "Importato",
+
+importing: "Importazione in corso...",
+
+inProgress: "In Corso",
+
+inactive: "Inattivo",
+
+interest: "Interessi",
+
+loading: "Caricamento...",
+
+manualMatch: "Abbinamento Manuale",
+
+matchTransactions: "Abbina Transazioni",
+
+matchedTransactions: "Transazioni Abbinate",
+
+moneyMarket: "Mercato Monetario",
+
+netMovement: "Movimento Netto",
+
+newBankAccount: "Nuovo Conto Bancario",
+
+newFund: "Nuovo Fondo",
+
+newReconciliation: "Nuova Riconciliazione",
+
+newTransaction: "Nuova Transazione",
+
+noData: "Nessun dato trovato",
+
+noReconciliations: "Nessuna riconciliazione trovata",
+
+notes: "Note",
+
+openingBalance: "Saldo Iniziale",
+
+payee: "Beneficiario/Pagatore",
+
+periodEnd: "Fine Periodo",
+
+periodStart: "Inizio Periodo",
+
+pettyCash: "Cassa Contanti",
+
+reconciledBalance: "Saldo Riconciliato",
+
+reconciliationDate: "Data Riconciliazione",
+
+reconciliationHistory: "Storico Riconciliazioni",
+
+reconciliationStatus: "Stato Riconciliazione",
+
+reconciliationSummary: "Riepilogo Riconciliazione",
+
+referenceNumber: "Riferimento #",
+
+restricted: "Vincolato",
+
+restrictedFunds: "Fondi Vincolati",
+
+safe: "Cassaforte",
+
+save: "Salva",
+
+savings: "Conto di Risparmio",
+
+search: "Cerca...",
+
+selectBankAccount: "Seleziona Conto Bancario",
+
+selectFile: "Seleziona File Excel",
+
+skipped: "Saltato",
+
+startReconciliation: "Avvia Riconciliazione",
+
+statementBalance: "Saldo Estratto Conto",
+
+status: "Stato",
+
+subtitle: "Gestisci conti bancari, movimenti di cassa e saldi dei fondi",
+
+swiftCode: "Codice SWIFT/BIC",
+
+temporarilyRestricted: "Temporaneamente Vincolato",
+
+title: "Tesoreria e Gestione della Liquidità",
+
+totalAccounts: "Totale Conti",
+
+totalBalance: "Saldo Totale",
+
+totalBudget: "Bilancio Totale",
+
+totalCredits: "Totale Avere",
+
+totalDebits: "Totale Dare",
+
+transactionDate: "Data Transazione",
+
+transactionMatching: "Abbinamento Transazioni",
+
+transactionNumber: "Transazione #",
+
+transactionType: "Tipo Transazione",
+
+transferIn: "Trasferimento in Entrata",
+
+transferOut: "Trasferimento in Uscita",
+
+unmatchedTransactions: "Transazioni Non Abbinate",
+
+unrestricted: "Non Vincolato",
+
+unrestrictedFunds: "Fondi Non Vincolati",
+
+update: "Aggiorna",
+
+updateSuccess: "Elemento aggiornato con successo",
+
+viewDetails: "Visualizza Dettagli",
+
+withdrawal: "Prelievo",
+
+bankReconciliationMatching: "Abbinamento Riconciliazione Bancaria",
+
+matchBankTransactionsDesc: "Abbina le transazioni bancarie alle registrazioni contabili per una riconciliazione accurata",
+
+selectReconciliation: "Seleziona Riconciliazione",
+
+selectReconciliationDesc: "Seleziona un conto bancario e una riconciliazione attiva per iniziare l’abbinamento",
+
+bankAccount: "Conto Bancario",
+
+reconciliation: "Riconciliazione",
+
+selectReconciliationPlaceholder: "Seleziona riconciliazione",
+
+unmatchedBankTransactions: "Transazioni Bancarie Non Abbinate",
+
+transactionsNeedMatching: "Queste transazioni devono essere abbinate alle registrazioni del Libro Mastro",
+
+allTransactionsMatched: "Tutte le transazioni sono state abbinate!",
+
+actions: "Azioni",
+
+match: "Abbina",
+
+autoMatchSuggestions: "Suggerimenti di Abbinamento Automatico",
+
+aiPoweredMatchingDesc: "Suggerimenti di abbinamento basati su IA utilizzando importo, data e riferimento",
+
+noAutoMatchSuggestions: "Nessun suggerimento di abbinamento trovato",
+
+glEntriesNotAvailable: "Le registrazioni contabili del Libro Mastro potrebbero non essere ancora disponibili",
+
+confidence: "Affidabilità",
+
+acceptMatch: "Accetta Abbinamento",
+
+selectAccountAndReconciliation: "Seleziona un conto bancario e una riconciliazione per iniziare l’abbinamento",
+
+matchedSuccessfully: "Abbinamento completato con successo",
+
+failedToMatch: "Impossibile abbinare la transazione",
+
+unmatchedSuccessfully: "Abbinamento rimosso con successo",
+
+failedToUnmatch: "Impossibile rimuovere l’abbinamento",
+
+pleaseSelectReconciliation: "Seleziona una riconciliazione",
+},
+
+vendorDetail: {
+accountHolderName: "Nome Intestatario del Conto",
+accountNumber: "Numero Conto",
+active: "Attivo",
+
+addressInfo: "Informazioni Indirizzo",
+addressLine1: "Indirizzo Riga 1",
+addressLine2: "Indirizzo Riga 2",
+
+backToVendors: "Torna ai Fornitori",
+
+bankBranch: "Filiale Bancaria",
+bankDetails: "Dettagli Bancari",
+bankName: "Nome Banca",
+
+bank_transfer: "Bonifico Bancario",
+
+blocked: "Bloccato",
+
+cancel: "Annulla",
+
+cash: "Contanti",
+
+check: "Assegno",
+
+city: "Città",
+
+consultant: "Consulente",
+
+contactPerson: "Persona di Contatto",
+
+contractor: "Appaltatore",
+
+country: "Paese",
+
+creditLimit: "Limite di Credito",
+
+credit_card: "Carta di Credito",
+
+currency: "Valuta",
+
+edit: "Modifica Fornitore",
+
+email: "Email",
+
+fax: "Fax",
+
+generalInfo: "Informazioni Generali",
+
+goBack: "Torna Indietro",
+
+iban: "IBAN",
+
+inactive: "Inattivo",
+
+loading: "Caricamento dettagli fornitore...",
+
+mobile: "Cellulare",
+
+noBankDetails: "Nessun dato bancario registrato per questo fornitore.",
+
+noPaymentTerms: "Nessuna condizione di pagamento configurata per questo fornitore.",
+
+notFound: "Fornitore non trovato",
+
+notFoundDesc: "Il fornitore richiesto non esiste o è stato eliminato.",
+
+notes: "Note",
+
+other: "Altro",
+
+paymentDays: "Giorni di Pagamento",
+
+paymentMethod: "Metodo di Pagamento",
+
+paymentTerms: "Condizioni di Pagamento",
+
+phone: "Telefono",
+
+postalCode: "CAP",
+
+registrationNumber: "Numero di Registrazione",
+
+save: "Salva Modifiche",
+
+service_provider: "Fornitore di Servizi",
+
+state: "Stato / Provincia",
+
+status: "Stato",
+
+supplier: "Fornitore",
+
+swiftCode: "Codice SWIFT/BIC",
+
+taxId: "Partita IVA / Codice Fiscale",
+
+vendorCode: "Codice Fornitore",
+
+vendorName: "Nome Fornitore",
+
+vendorType: "Tipo Fornitore",
+
+website: "Sito Web",
+},
+
+vendorDetailEnhanced: {
+accountNumber: "Numero Conto",
+
+activateFinancially: "Attiva per i Pagamenti",
+
+activateSuccess: "Fornitore attivato con successo per i pagamenti",
+
+active: "Attivo",
+
+activityDate: "Data",
+
+activityDescription: "Descrizione",
+
+activityTimeline: "Cronologia Attività",
+
+activityType: "Tipo di Attività",
+
+addEvaluation: "Aggiungi Valutazione",
+
+address: "Indirizzo",
+
+approvalStatus: "Stato Approvazione",
+
+approved: "Approvato",
+
+awarded: "Aggiudicato",
+
+backToVendors: "Torna alla Gestione Fornitori",
+
+bankDetails: "Dettagli Bancari",
+
+bankName: "Nome Banca",
+
+blacklisted: "Inserito nella Blacklist",
+
+blocked: "Bloccato",
+
+categories: "Categorie",
+
+city: "Città",
+
+complianceScore: "Punteggio di Conformità",
+
+complianceStatus: "Stato di Conformità",
+
+compliant: "Conforme",
+
+contactPerson: "Persona di Contatto",
+
+country: "Paese",
+
+creditLimit: "Limite di Credito",
+
+currency: "Valuta",
+
+currentBalance: "Saldo Attuale",
+
+deactivate: "Disattiva",
+
+deactivateSuccess: "Fornitore disattivato con successo",
+
+deliveryScore: "Punteggio Consegne",
+
+documentNumber: "Numero Documento",
+
+documentType: "Tipo Documento",
+
+documents: "Documenti",
+
+downloadDocument: "Scarica Documento",
+
+edit: "Modifica Fornitore",
+
+email: "Email",
+
+evaluatedBy: "Valutato da",
+
+evaluationDate: "Data Valutazione",
+
+evaluationPeriod: "Periodo",
+
+evaluationSuccess: "Valutazione delle prestazioni aggiunta con successo",
+
+expiryDate: "Data di Scadenza",
+
+financialInfo: "Informazioni Finanziarie",
+
+financialScore: "Punteggio Finanziario",
+
+financial_statement: "Bilancio Finanziario",
+
+financiallyActive: "Attivo Finanziariamente",
+
+generalInfo: "Informazioni Generali",
+
+goBack: "Torna Indietro",
+
+high: "Alto",
+
+iban: "IBAN",
+
+inactive: "Inattivo",
+
+insurance_certificate: "Certificato Assicurativo",
+
+issueDate: "Data di Emissione",
+
+lastScreeningDate: "Data Ultimo Screening",
+
+legalName: "Ragione Sociale",
+
+loading: "Caricamento dettagli fornitore...",
+
+low: "Basso",
+
+medium: "Medio",
+
+noActivity: "Nessuna attività registrata",
+
+noDocuments: "Nessun documento caricato",
+
+noEvaluations: "Nessuna valutazione delle prestazioni trovata",
+
+noParticipations: "Nessuna partecipazione registrata",
+
+non_compliant: "Non Conforme",
+
+notAwarded: "Non Aggiudicato",
+
+notFound: "Fornitore non trovato",
+
+notFoundDesc: "Il fornitore richiesto non esiste o è stato eliminato.",
+
+other: "Altro",
+
+outcome: "Esito",
+
+overallRating: "Valutazione Complessiva",
+
+overview: "Panoramica",
+
+participationHistory: "Storico Partecipazioni",
+
+participationType: "Tipo",
+
+paymentTerms: "Condizioni di Pagamento",
+
+pending: "In Sospeso",
+
+pending_approval: "In Attesa di Approvazione",
+
+performanceEvaluations: "Valutazioni delle Prestazioni",
+
+performanceRating: "Valutazione Prestazioni",
+
+performedBy: "Eseguito da",
+
+phone: "Telefono",
+
+primaryCategory: "Categoria Principale",
+
+procurementInfo: "Informazioni Approvvigionamento",
+
+qualityScore: "Punteggio Qualità",
+
+quality_certificate: "Certificato di Qualità",
+
+ranking: "Classifica",
+
+referenceNumber: "Numero di Riferimento",
+
+registrationNumber: "Numero di Registrazione",
+
+registration_certificate: "Certificato di Registrazione",
+
+rejected: "Rifiutato",
+
+riskLevel: "Livello di Rischio",
+
+sanctionsScreened: "Verifica Sanzioni Completata",
+
+status: "Stato",
+
+submissionDate: "Data di Presentazione",
+
+swiftCode: "Codice SWIFT",
+
+taxId: "Partita IVA",
+
+tax_certificate: "Certificato Fiscale",
+
+technicalScore: "Punteggio Tecnico",
+
+totalContracts: "Valore Totale Contratti",
+
+totalParticipations: "Partecipazioni Totali",
+
+tradeName: "Nome Commerciale",
+
+under_review: "In Revisione",
+
+uploadDocument: "Carica Documento",
+
+uploadSuccess: "Documento caricato con successo",
+
+uploadedAt: "Caricato il",
+
+uploadedBy: "Caricato da",
+
+vendorCode: "Codice Fornitore",
+
+vendorProfile: "Profilo Fornitore",
+
+vendorType: "Tipo Fornitore",
+
+viewDocument: "Visualizza Documento",
+
+website: "Sito Web",
+
+winRate: "Tasso di Successo",
+},
+
+vendorManagement: {
+activeVendors: "Fornitori Attivi",
+
+addVendor: "Aggiungi Fornitore",
+
+addVendorDesc: "Registra un nuovo fornitore o appaltatore",
+
+allVendors: "Tutti i Fornitori",
+
+allVendorsDesc: "Visualizza e gestisci tutti i fornitori registrati",
+
+backToFinance: "Torna alla Finanza",
+
+blacklisted: "Blacklist",
+
+blacklistedDesc: "Fornitori con problemi di conformità",
+
+contractors: "Appaltatori",
+
+contractorsDesc: "Gestisci appaltatori e accordi di servizio",
+
+export: "Esporta",
+
+exportVendors: "Esporta Fornitori",
+
+exportVendorsDesc: "Scarica l’elenco dei fornitori",
+
+import: "Importa",
+
+importVendors: "Importa Fornitori",
+
+importVendorsDesc: "Importazione massiva dei dati fornitori",
+
+newVendor: "Nuovo Fornitore",
+
+pendingEvaluations: "Valutazioni in Attesa",
+
+pendingEvaluationsDesc: "Fornitori in attesa di valutazione delle prestazioni",
+
+pendingPayments: "Pagamenti in Attesa",
+
+performanceTracking: "Monitoraggio Prestazioni",
+
+quickActions: "Azioni Rapide",
+
+serviceProviders: "Fornitori di Servizi",
+
+serviceProvidersDesc: "Gestisci le relazioni con i fornitori di servizi",
+
+settings: "Impostazioni",
+
+subtitle: "Gestisci fornitori, appaltatori e fornitori di servizi",
+
+suppliers: "Fornitori",
+
+suppliersDesc: "Gestisci l’anagrafica fornitori e la conformità",
+
+title: "Gestione Fornitori",
+
+topPerformers: "Migliori Fornitori",
+
+topPerformersDesc: "Fornitori con le migliori valutazioni",
+
+totalPayables: "Totale Debiti",
+
+totalVendors: "Totale Fornitori",
+
+viewDetails: "Visualizza Dettagli",
+},
+
+vendorPerformanceEvaluation: {
+autoCalculated: "Calcolato automaticamente in base ai punteggi",
+
+backToVendors: "Torna alla Gestione Fornitori",
+
+cancel: "Annulla",
+
+comments: "Commenti sulla Valutazione",
+
+commentsPlaceholder: "Fornire feedback dettagliato, punti di forza, aree di miglioramento e raccomandazioni",
+
+communicationDesc: "Reattività, chiarezza e professionalità",
+
+communicationScore: "Punteggio Comunicazione",
+
+complianceDesc: "Conformità normativa, documentazione e certificazioni",
+
+complianceScore: "Punteggio Conformità",
+
+deliveryDesc: "Consegna puntuale, rispetto dei tempi e capacità di risposta",
+
+deliveryScore: "Punteggio Consegna",
+
+description: "Effettua revisioni periodiche delle prestazioni e monitora la qualità dei fornitori",
+
+evaluatedBy: "Valutato da",
+
+evaluationDate: "Data di Valutazione",
+
+evaluationError: "Impossibile salvare la valutazione",
+
+evaluationHistory: "Storico Valutazioni",
+
+evaluationPeriod: "Periodo di Valutazione",
+
+evaluationSaved: "Valutazione delle prestazioni salvata con successo",
+
+excellent: "Eccellente",
+
+good: "Buono",
+
+invalidScores: "Inserire punteggi validi (0-10) per tutti i criteri",
+
+loading: "Caricamento...",
+
+needsImprovement: "Necessita Miglioramenti",
+
+newEvaluation: "Nuova Valutazione",
+
+noHistory: "Nessuno storico delle valutazioni trovato",
+
+overallRating: "Valutazione Complessiva",
+
+performanceTrends: "Andamento delle Prestazioni",
+
+periodPlaceholder: "es. Q1 2026, Gen-Mar 2026",
+
+poor: "Scarso",
+
+pricingDesc: "Prezzi competitivi, rapporto qualità-prezzo e stabilità dei costi",
+
+pricingScore: "Punteggio Prezzi",
+
+qualityDesc: "Qualità di prodotti/servizi, tasso di difetti e conformità alle specifiche",
+
+qualityScore: "Punteggio Qualità",
+
+recommendations: "Raccomandazioni",
+
+recommendationsPlaceholder: "Azioni correttive, piani di miglioramento o raccomandazioni per il rinnovo del contratto",
+
+satisfactory: "Soddisfacente",
+
+saveEvaluation: "Salva Valutazione",
+
+saving: "Salvataggio...",
+
+scoreRange: "Punteggio: 0-10 (0 = Scarso, 10 = Eccellente)",
+
+scoringCriteria: "Criteri di Valutazione",
+
+selectVendor: "Seleziona Fornitore",
+
+selectVendorFirst: "Selezionare prima un fornitore",
+
+stable: "Stabile",
+
+title: "Valutazione delle Prestazioni del Fornitore",
+
+trendingDown: "In Peggioramento",
+
+trendingUp: "In Miglioramento",
+
+viewDetails: "Visualizza Dettagli",
+},
+
+bidEvaluationChecklist: {
+allScoresSavedSuccessfully: "Tutti i punteggi sono stati salvati con successo",
+
+bidEvaluationChecklist: "Checklist di Valutazione delle Offerte",
+
+bidEvaluationCriteria: "Criteri di Valutazione delle Offerte",
+
+bidder: "Offerente",
+
+biddersSummary: "Riepilogo Offerenti",
+
+collapseAll: "Comprimi Tutto",
+
+confirmFinalize: "Sei sicuro di voler finalizzare questa valutazione? Questa azione bloccherà tutti i punteggi e creerà il documento di Analisi Comparativa delle Offerte (CBA).",
+
+currency: "Valuta",
+
+details: "Dettagli",
+
+evaluationAlreadyFinalized: "Questa valutazione è già stata finalizzata.",
+
+evaluationCriteriaInitialized: "Criteri di valutazione inizializzati",
+
+evaluationCriteriaNotInitialized: "I criteri di valutazione non sono ancora stati inizializzati. Fare clic sul pulsante sottostante per creare i criteri standard.",
+
+evaluationFinalized: "Valutazione finalizzata con successo. La scheda CBA è stata creata.",
+
+expandAll: "Espandi Tutto",
+
+exportExcel: "Esporta Excel",
+
+exportExcelTemplate: "Esporta Modello Vuoto",
+
+exportExcelWithData: "Esporta con Dati",
+
+exportPdf: "Esporta PDF",
+
+failedToLockScores: "Impossibile bloccare i punteggi",
+
+failedToSaveTotalOfferPrice: "Impossibile salvare il prezzo totale dell’offerta",
+
+failedToUnlockScores: "Impossibile sbloccare i punteggi",
+
+final: "Finale",
+
+finalScore: "Punteggio Finale",
+
+finalizeEvaluation: "Finalizza Valutazione",
+
+finalizing: "Finalizzazione in corso...",
+
+financial: "Finanziario",
+
+financialScore: "Punteggio Finanziario",
+
+generatingExcel: "Generazione Excel...",
+
+generatingPdf: "Generazione PDF...",
+
+initializeEvaluationCriteria: "Inizializza Criteri di Valutazione",
+
+loading: "Caricamento...",
+
+mandatoryCriteriaFailed: "Criterio obbligatorio non superato",
+
+mandatoryHardStop: "Criterio obbligatorio con esclusione automatica. Un punteggio pari a 0 comporta la squalifica automatica.",
+
+maxScore: "Punteggio Massimo",
+
+noRemarksAllQualified: "Tutti gli offerenti sono qualificati — nessuna osservazione da visualizzare.",
+
+notQualified: "Non Qualificato",
+
+officialRecordFor: "Verbale ufficiale per",
+
+paymentTerms: "Condizioni di Pagamento",
+
+prReference: "Riferimento PR",
+
+price: "Prezzo",
+
+priceMissingOrInvalid: "Il prezzo totale dell’offerta manca o non è valido (deve essere > 0)",
+
+printExportPdf: "Stampa / Esporta PDF",
+
+qualified: "Qualificato",
+
+remarks: "Osservazioni",
+
+remarksDescription: "Commenti raccolti automaticamente per gli offerenti non qualificati",
+
+requirement: "Requisito",
+
+saveAllScores: "Salva Tutti i Punteggi",
+
+score: "Punteggio",
+
+scoresAreLocked: "I punteggi sono bloccati. Fare clic su Sblocca Punteggi per apportare modifiche.",
+
+scoresLockedSuccessfully: "Punteggi bloccati con successo",
+
+scoresUnlockedForEditing: "Punteggi sbloccati per la modifica",
+
+screening: "Screening",
+
+section: "Sezione",
+
+sectionTotal: "Totale Sezione",
+
+selectOnePerBidder: "selezionarne uno per offerente",
+
+status: "Stato",
+
+sumOfSections: "Somma delle Sezioni 1–5",
+
+technical: "Tecnico",
+
+technicalBelowThreshold: "Il punteggio tecnico è inferiore alla soglia del 70%",
+technicalBThreshold: 'Technical score is below 70% threshold',
+technicalPlusFinancial: "Tecnico + Finanziario",
+
+totalOfferPrice: "Prezzo Totale dell'Offerta",
+
+totalTechnicalScore: "Punteggio Tecnico Totale",
+
+unlockScores: "Sblocca Punteggi",
+},
+
+bidOpeningMinutes: {
+addCommentsAboutApproval: "Aggiungi commenti o note sull’approvazione",
+
+approval: "Approvazione",
+
+approveBom: "Approva Verbale di Apertura Offerte",
+
+approverCommentsOptional: "Commenti dell’Approvatore (Facoltativi)",
+
+bidSummary: "Riepilogo Offerte",
+
+bidsOpened: "Offerte Aperte",
+
+chairperson: "Presidente",
+
+conferenceRoomExample: "es. Sala Conferenze A",
+
+createBidOpeningMinutes: "Crea Verbale di Apertura Offerte",
+
+documentTitle: "VERBALE DI APERTURA DELLE OFFERTE",
+
+finalizeBom: "Finalizza Verbale",
+
+generating: "Generazione in corso...",
+
+irregularities: "Irregolarità o Problemi",
+
+issuesOrIrregularities: "Eventuali problemi o irregolarità rilevati",
+
+loading: "Caricamento...",
+
+meetingDetails: "Dettagli della Riunione",
+
+member: "Membro",
+
+nameAndRole: "Nome e Ruolo",
+
+observationsDuringBidOpening: "Osservazioni durante l’apertura delle offerte",
+
+officialRecord: "Verbale ufficiale per",
+
+openingCommittee: "Commissione di Apertura",
+
+openingDate: "Data di Apertura",
+
+openingMode: "Modalità di Apertura",
+
+openingModeHybrid: "Ibrida",
+
+openingModeOnline: "Online",
+
+openingModePhysical: "In Presenza",
+
+openingNotes: "Note di Apertura",
+
+openingTime: "Ora di Apertura",
+
+optional: "Facoltativo",
+
+printPdf: "Stampa PDF",
+
+saveBidSummary: "Salva Riepilogo Offerte",
+
+status: "Stato",
+
+statusFinalized: "Finalizzato",
+
+totalBidsReceived: "Totale Offerte Ricevute",
+
+venue: "Luogo",
+
+digitalSignatures: "Firme Digitali",
+
+committeeSignatures: "Firme dei Membri della Commissione",
+
+signatureRequired: "Firma Richiesta",
+
+allMembersMustSign: "Tutti i membri della commissione devono firmare prima che il presidente possa approvare.",
+
+signedMembers: "Firmato",
+
+pendingSignatures: "Firme in Attesa",
+
+signatureCollected: "Firma raccolta",
+
+awaitingSignature: "In attesa di firma",
+
+signNow: "Firma Ora",
+
+verificationCode: "Codice di Verifica",
+
+allSignaturesCollected: "Tutte le firme della commissione sono state raccolte.",
+
+cannotApproveUnsigned: "Impossibile approvare: tutti i membri della commissione devono firmare prima.",
+
+revokeSignature: "Revoca Firma",
+
+revokeSignatureTitle: "Revoca Firma",
+
+confirmRevoke: "Sì, Revoca",
+
+bidderName: "Nome Offerente",
+
+biddersSection: "Sezione Offerenti",
+
+submissionStatus: "Stato Presentazione",
+
+submissionDate: "Data di Presentazione",
+
+noBidders: "Numero di Offerenti",
+},
+
+invoiceUploadDialog: {
+cancel: "Annulla",
+
+clickBrowse: "fai clic per selezionare",
+
+currency: "Valuta",
+
+description: "Carica la fattura del fornitore per la verifica a tre vie (3-Way Matching)",
+
+dragDrop: "Trascina qui il file della fattura oppure rilascialo",
+
+fileInfo: "Formati supportati: PDF, JPEG, PNG (Max 10 MB)",
+
+invoiceAmount: "Importo Fattura",
+
+invoiceDate: "Data Fattura",
+
+or: "oppure",
+
+title: "Carica Fattura",
+
+upload: "Carica Fattura",
+
+uploadFile: "Carica File Fattura",
+
+uploading: "Caricamento in corso...",
+
+vendorInvoiceNumber: "Numero Fattura del Fornitore",
+},
+
+logisticsWorkspace: {
+active: "Attivo",
+
+activeVendors: "Fornitori Attivi",
+
+addStockItem: "Aggiungi Articolo di Magazzino",
+
+addStockItemDesc: "Aggiungi un nuovo articolo all’inventario",
+
+approved: "Approvato",
+
+availableVehicles: "Veicoli Disponibili",
+
+completed: "Completato",
+
+createPurchaseRequest: "Crea Richiesta di Acquisto",
+
+createPurchaseRequestDesc: "Avvia una nuova richiesta di approvvigionamento",
+
+draft: "Bozza",
+
+drivers: "Autisti",
+
+fleetManagement: "Gestione Flotta",
+
+fleetManagementDesc: "Gestisci veicoli, autisti e missioni",
+
+inStock: "Disponibile in Magazzino",
+
+logisticsSubtitle: "Gestisci approvvigionamenti, inventario e operazioni della flotta",
+
+logisticsTitle: "Logistica e Approvvigionamento",
+
+lowStock: "Scorte Basse",
+
+lowStockItems: "Articoli con Scorte Basse",
+
+modules: "Moduli",
+
+myPrs: "Le Mie PR",
+
+newPurchaseRequest: "Nuova Richiesta di Acquisto",
+
+openPOs: "Ordini di Acquisto Aperti",
+
+pending: "In Sospeso",
+
+pendingPRs: "PR in Attesa",
+
+prWorkflowDashboard: "Cruscotto Flusso di Lavoro PR",
+
+prWorkflowDashboardDesc: "Monitora le richieste di acquisto e il ciclo di approvvigionamento",
+
+procurementTracker: "Monitoraggio Approvvigionamenti",
+
+procurementTrackerDesc: "Visibilità completa del processo di approvvigionamento",
+
+purchaseRequests: "Richieste di Acquisto",
+
+purchaseRequestsDesc: "Crea e gestisci richieste di approvvigionamento",
+
+quickActions: "Azioni Rapide",
+
+rejected: "Rifiutato",
+
+settings: "Impostazioni",
+
+stockManagement: "Gestione Magazzino",
+
+stockManagementDesc: "Monitora inventario e movimenti di magazzino",
+
+submitted: "Inviato",
+
+total: "Totale",
+
+totalVendors: "Totale Fornitori",
+
+vehicles: "Veicoli",
+
+vendorManagement: "Gestione Fornitori",
+
+vendorManagementDesc: "Gestisci l’anagrafica fornitori e la conformità",
+
+viewDetails: "Visualizza Dettagli",
+
+reportsAnalytics: "Report e Analisi",
+
+reportsAnalyticsDesc: "Analisi approfondite e reportistica completa",
+
+reports: "Rapporti",
+
+dashboards: "Cruscotti",
+},
+
+matchingStatusBadge: {
+amountMismatch: "Differenza di Importo",
+
+amounts: "Importi",
+
+description: "Analisi di Confronto a 3 Vie: PO-GRN-Fattura",
+
+discrepancies: "Discrepanze",
+
+extraItem: "Articolo Extra",
+
+grn: "Importo GRN",
+
+grnQty: "Quantità GRN",
+
+invAmt: "Importo Fattura",
+
+itemDescription: "Descrizione",
+
+lineNumber: "Riga",
+
+message: "Messaggio",
+
+missingItem: "Articolo Mancante",
+
+noDiscrepancies: "Nessuna discrepanza rilevata",
+
+payable: "Importo da Pagare",
+
+po: "Importo PO",
+
+poAmt: "Importo PO",
+
+poQty: "Quantità PO",
+
+pr: "Importo PR",
+
+quantityMismatch: "Differenza di Quantità",
+
+title: "Dettagli del Confronto",
+
+type: "Tipo",
+
+variance: "Importo della Differenza",
+
+// Services matching keys
+servicesTitle: "Dettagli Confronto Servizi",
+
+servicesDescription: "Analisi di Confronto a 3 Vie: Contratto-SAC-Fattura",
+
+contractAmount: "Valore Contratto",
+
+sacAmount: "Importo SAC Approvato",
+
+invoiceAmountLabel: "Importo Fattura",
+
+cumulativeSacPayables: "Totale Cumulativo SAC da Pagare",
+
+noInvoiceYet: "Nessuna fattura caricata",
+
+contractVsSac: "Contratto vs SAC",
+
+sacVsInvoice: "SAC vs Fattura",
+
+goodsTitle: "Dettagli Confronto Beni/Lavori",
+
+goodsDescription: "Analisi di Confronto a 3 Vie: PR-PO-GRN",
+},
+myPRs: {
+allStatuses: "Tutti gli Stati",
+
+allTypes: "Tutti i Tipi",
+
+approved: "Approvato",
+
+consultancy: "Consulenza",
+
+draft: "Bozza",
+
+error: "Errore",
+
+goods: "Beni",
+
+myPrs: "Le Mie PR",
+
+newRequest: "Nuova Richiesta",
+
+noPRsFound: "Nessuna richiesta di acquisto trovata",
+
+prNumber: "Numero PR",
+
+prStatus: "Stato PR",
+
+prWorkflowDashboardDesc: "Monitora le richieste di acquisto e il ciclo di approvvigionamento",
+
+procurementProgress: "Avanzamento dell’Approvvigionamento",
+
+procurementType: "Tipo di Approvvigionamento",
+
+project: "Progetto",
+
+rejected: "Rifiutato",
+
+requestDate: "Data Richiesta",
+
+requesterName: "Richiedente",
+
+searchPRs: "Cerca PR...",
+
+services: "Servizi",
+
+stockRequest: "Richiesta di Magazzino",
+
+submitted: "Inviato",
+
+totalCost: "Costo Totale",
+
+works: "Lavori",
+},
+
+pRWorkspacePage: {
+backToPRList: "Torna all'Elenco PR",
+
+cancelled: "Annullato",
+
+closureStage: "Chiusura",
+
+completed: "Completato",
+
+description: "Descrizione",
+
+error: "Errore nel caricamento dei dati",
+
+evaluationStage: "Valutazione",
+
+evidence: "Documenti Giustificativi",
+
+grnStage: "Ricezione Merci",
+
+inProgress: "In Corso",
+
+justification: "Giustificazione",
+
+lineItems: "Voci della Richiesta",
+
+loading: "Caricamento...",
+
+neededBy: "Necessario Entro",
+
+notStarted: "Non Avviato",
+
+paymentStage: "Pagamento",
+
+pending: "In Sospeso",
+
+poStage: "Ordine di Acquisto",
+
+prDetails: "Dettagli PR",
+
+prNumber: "Numero PR",
+
+prWorkspace: "Area di Lavoro PR",
+
+project: "Progetto",
+
+quantity: "Quantità",
+
+requester: "Richiedente",
+
+rfqStage: "Richiesta di Offerta (RFQ)",
+
+skipped: "Saltato",
+
+status: "Stato",
+
+total: "Totale",
+
+totalAmount: "Importo Totale",
+
+unitPrice: "Prezzo Unitario",
+
+urgency: "Urgenza",
+
+workflowTracker: "Monitoraggio del Flusso di Lavoro",
+
+workspaceNotActivated: "L’area di lavoro non è ancora attivata. La PR deve essere approvata prima.",
+},
+
+rFQManagementPage: {
+rfqManagement: "Gestione RFQ",
+
+inviteVendor: "Invita Fornitore",
+
+selectVendor: "Seleziona Fornitore",
+
+addNewSupplier: "Aggiungi Nuovo Fornitore",
+
+noSuppliersFound: "Nessun Fornitore Trovato",
+
+invitationMethod: "Metodo di Invito",
+
+email: "Email",
+
+portal: "Portale",
+
+handDelivery: "Consegna a Mano",
+
+mail: "Posta",
+
+notes: "Note",
+
+invite: "Invita",
+
+submitQuotation: "Invia Offerta",
+
+quotationDetails: "Dettagli Offerta",
+
+selectRfqVendor: "Seleziona Fornitore",
+
+quotedAmount: "Importo Offerto",
+
+currency: "Valuta",
+
+deliveryDays: "Giorni di Consegna",
+
+warrantyMonths: "Mesi di Garanzia",
+
+yearsOfExperience: "Anni di Esperienza",
+
+supplierQuoteNumber: "Numero Offerta del Fornitore",
+
+quotationDocument: "Documento Offerta",
+
+attachment: "Allegato",
+
+uploadFile: "Carica File",
+
+viewDocument: "Visualizza Documento",
+
+uploaded: "Caricato",
+
+fileUploadedSuccessfully: "File caricato con successo",
+
+fileUploadFailed: "Caricamento del file non riuscito",
+
+uploadingFile: "Caricamento file in corso...",
+
+lineItems: "Voci dell’Offerta",
+
+description: "Descrizione",
+
+quantity: "Quantità",
+
+unit: "Unità",
+
+unitPrice: "Prezzo Unitario",
+
+total: "Totale",
+
+grandTotal: "Totale Generale",
+
+itemNotes: "Note Articolo",
+
+pending: "In Attesa",
+
+submitted: "Inviato",
+
+late: "In Ritardo",
+
+withdrawn: "Ritirato",
+
+rfqNumber: "Numero RFQ",
+
+vendorName: "Nome Fornitore",
+
+invitationDate: "Data Invito",
+
+submissionDeadline: "Scadenza Presentazione",
+
+quotationStatus: "Stato Offerta",
+
+actions: "Azioni",
+
+downloadRFQPDF: "Scarica PDF RFQ",
+
+invitationSent: "Invito inviato con successo",
+
+quotationRecorded: "Offerta registrata con successo",
+
+vendorInvitationDeleted: "Invito al fornitore eliminato con successo",
+
+rfqPdfDownloadedSuccessfully: "PDF RFQ scaricato con successo",
+
+failedToGenerateRfqPdf: "Impossibile generare il PDF RFQ",
+
+noHtmlContentReceived: "Nessun contenuto HTML ricevuto dal server",
+
+unknownError: "Errore sconosciuto",
+
+summary: "Riepilogo",
+
+totalVendorsInvited: "Totale Fornitori Invitati",
+
+quotationsReceived: "Offerte Ricevute",
+
+quotationsPending: "Offerte in Attesa",
+},
+
+vendorDetail2: {
+accountHolderName: "Nome Intestatario del Conto",
+
+accountNumber: "Numero Conto",
+
+active: "Attivo",
+
+addressInfo: "Informazioni Indirizzo",
+
+addressLine1: "Indirizzo Riga 1",
+
+addressLine2: "Indirizzo Riga 2",
+
+backToVendors: "Torna ai Fornitori",
+
+bankBranch: "Filiale Bancaria",
+
+bankDetails: "Dettagli Bancari",
+
+bankName: "Nome Banca",
+
+bank_transfer: "Bonifico Bancario",
+
+blocked: "Bloccato",
+
+cancel: "Annulla",
+
+cash: "Contanti",
+
+check: "Assegno",
+
+city: "Città",
+
+consultant: "Consulente",
+
+contactPerson: "Persona di Contatto",
+
+contractor: "Appaltatore",
+
+country: "Paese",
+
+creditLimit: "Limite di Credito",
+
+credit_card: "Carta di Credito",
+
+currency: "Valuta",
+
+edit: "Modifica Fornitore",
+
+email: "Email",
+
+fax: "Fax",
+
+generalInfo: "Informazioni Generali",
+
+goBack: "Torna Indietro",
+
+iban: "IBAN",
+
+inactive: "Inattivo",
+
+loading: "Caricamento dettagli fornitore...",
+
+mobile: "Cellulare",
+
+noBankDetails: "Nessun dato bancario registrato per questo fornitore.",
+
+noPaymentTerms: "Nessuna condizione di pagamento configurata per questo fornitore.",
+
+notFound: "Fornitore non trovato",
+
+notFoundDesc: "Il fornitore richiesto non esiste o è stato eliminato.",
+
+notes: "Note",
+
+other: "Altro",
+
+paymentDays: "Giorni di Pagamento",
+
+paymentMethod: "Metodo di Pagamento",
+
+paymentTerms: "Condizioni di Pagamento",
+
+phone: "Telefono",
+
+postalCode: "CAP",
+
+registrationNumber: "Numero di Registrazione",
+
+save: "Salva Modifiche",
+
+saving: "Salvataggio...",
+
+service_provider: "Fornitore di Servizi",
+
+state: "Stato / Provincia",
+
+status: "Stato",
+
+supplier: "Fornitore",
+
+swiftCode: "Codice SWIFT/BIC",
+
+taxId: "Partita IVA / Codice Fiscale",
+
+updateError: "Impossibile aggiornare il fornitore",
+
+updateSuccess: "Fornitore aggiornato con successo",
+
+vendorCode: "Codice Fornitore",
+
+vendorName: "Nome Fornitore",
+
+vendorType: "Tipo Fornitore",
+
+website: "Sito Web",
+},
+
+vendorDetailEnhanced2: {
+accountNumber: "Numero Conto",
+
+activateFinancially: "Attiva per i Pagamenti",
+
+activateSuccess: "Fornitore attivato con successo per i pagamenti",
+
+active: "Attivo",
+
+activityDate: "Data",
+
+activityDescription: "Descrizione",
+
+activityTimeline: "Cronologia Attività",
+
+activityType: "Tipo di Attività",
+
+addEvaluation: "Aggiungi Valutazione",
+
+address: "Indirizzo",
+
+approvalStatus: "Stato Approvazione",
+
+approved: "Approvato",
+
+awarded: "Aggiudicato",
+
+backToVendors: "Torna alla Gestione Fornitori",
+
+bankDetails: "Dettagli Bancari",
+
+bankName: "Nome Banca",
+
+blacklisted: "Inserito in Lista Nera",
+
+blocked: "Bloccato",
+
+categories: "Categorie",
+
+city: "Città",
+
+complianceScore: "Punteggio di Conformità",
+
+complianceStatus: "Stato di Conformità",
+
+compliant: "Conforme",
+
+contactPerson: "Persona di Contatto",
+
+country: "Paese",
+
+creditLimit: "Limite di Credito",
+
+currency: "Valuta",
+
+currentBalance: "Saldo Corrente",
+
+deactivate: "Disattiva",
+
+deactivateSuccess: "Fornitore disattivato con successo",
+
+deliveryScore: "Punteggio di Consegna",
+
+documentNumber: "Numero Documento",
+
+documentType: "Tipo Documento",
+
+documents: "Documenti",
+
+downloadDocument: "Scarica",
+
+edit: "Modifica Fornitore",
+
+email: "Email",
+
+evaluatedBy: "Valutato da",
+
+evaluationDate: "Data di Valutazione",
+
+evaluationPeriod: "Periodo",
+
+evaluationSuccess: "Valutazione delle prestazioni aggiunta con successo",
+
+expiryDate: "Data di Scadenza",
+
+financialInfo: "Informazioni Finanziarie",
+
+financialScore: "Punteggio Finanziario",
+
+financial_statement: "Bilancio Finanziario",
+
+financiallyActive: "Attivo per i Pagamenti",
+
+generalInfo: "Informazioni Generali",
+
+goBack: "Torna Indietro",
+
+high: "Alto",
+
+iban: "IBAN",
+
+inactive: "Inattivo",
+
+insurance_certificate: "Certificato Assicurativo",
+
+issueDate: "Data di Emissione",
+
+lastScreeningDate: "Data Ultimo Controllo",
+
+legalName: "Ragione Sociale",
+
+loading: "Caricamento dettagli fornitore...",
+
+low: "Basso",
+
+medium: "Medio",
+
+noActivity: "Nessuna attività registrata",
+
+noDocuments: "Nessun documento caricato",
+
+noEvaluations: "Nessuna valutazione delle prestazioni trovata",
+
+noParticipations: "Nessuna partecipazione registrata",
+
+non_compliant: "Non Conforme",
+
+notAwarded: "Non Aggiudicato",
+
+notFound: "Fornitore non trovato",
+
+notFoundDesc: "Il fornitore richiesto non esiste o è stato eliminato.",
+
+other: "Altro",
+
+outcome: "Esito",
+
+overallRating: "Valutazione Complessiva",
+
+overview: "Panoramica",
+
+participationHistory: "Storico Partecipazioni",
+
+participationType: "Tipo di Partecipazione",
+
+paymentTerms: "Condizioni di Pagamento",
+
+pending: "In Attesa",
+
+pending_approval: "In Attesa di Approvazione",
+
+performanceEvaluations: "Valutazioni delle Prestazioni",
+
+performanceRating: "Valutazione Prestazioni",
+
+performedBy: "Eseguito da",
+
+phone: "Telefono",
+
+primaryCategory: "Categoria Principale",
+
+procurementInfo: "Informazioni di Approvvigionamento",
+
+qualityScore: "Punteggio Qualità",
+
+quality_certificate: "Certificato di Qualità",
+
+ranking: "Classifica",
+
+referenceNumber: "Numero di Riferimento",
+
+registrationNumber: "Numero di Registrazione",
+
+registration_certificate: "Certificato di Registrazione",
+
+rejected: "Rifiutato",
+
+riskLevel: "Livello di Rischio",
+
+sanctionsScreened: "Controllo Sanzioni Effettuato",
+
+status: "Stato",
+
+submissionDate: "Data di Presentazione",
+
+swiftCode: "Codice SWIFT",
+
+taxId: "Partita IVA / Codice Fiscale",
+
+tax_certificate: "Certificato Fiscale",
+
+technicalScore: "Punteggio Tecnico",
+
+totalContracts: "Valore Totale Contratti",
+
+totalParticipations: "Numero Totale Partecipazioni",
+
+tradeName: "Nome Commerciale",
+
+under_review: "In Revisione",
+
+uploadDocument: "Carica Documento",
+
+uploadSuccess: "Documento caricato con successo",
+
+uploadedAt: "Caricato il",
+
+uploadedBy: "Caricato da",
+
+vendorCode: "Codice Fornitore",
+
+vendorProfile: "Profilo Fornitore",
+
+vendorType: "Tipo Fornitore",
+
+viewDocument: "Visualizza",
+
+website: "Sito Web",
+
+winRate: "Tasso di Successo"
+},
+
+vendorList: {
+accountHolderName: "Nome Intestatario del Conto",
+
+accountNumber: "Numero Conto",
+vendorNameAr: 'Nome del venditore Arabo',
+active: "Attivo",
+
+activeVendors: "Fornitori Attivi",
+
+address: "Indirizzo",
+
+addressAr: "Indirizzo (Arabo)",
+
+allVendors: "Tutti i Fornitori",
+
+backToLogistics: "Torna a Logistica",
+
+bankBranch: "Filiale Bancaria",
+
+bankDetails: "Dettagli Bancari",
+
+bankName: "Nome Banca",
+
+bankTransfer: "Bonifico Bancario",
+
+blocked: "Bloccato",
+
+cancel: "Annulla",
+
+cash: "Contanti",
+
+check: "Assegno",
+
+city: "Città",
+
+confirmDelete: "Sei sicuro di voler eliminare questo fornitore?",
+
+consultant: "Consulente",
+
+contactPerson: "Persona di Contatto",
+
+contractor: "Appaltatore",
+
+contractors: "Appaltatori",
+
+contractorsList: "Elenco Appaltatori",
+
+contractorsSubtitle: "Monitora appaltatori e accordi di servizio",
+
+country: "Paese",
+
+create: "Crea",
+
+createSuccess: "Fornitore creato con successo",
+
+creditCard: "Carta di Credito",
+
+creditLimit: "Limite di Credito",
+
+currency: "Valuta",
+
+delete: "Elimina",
+
+deleteSuccess: "Fornitore eliminato con successo",
+
+editVendor: "Modifica Fornitore",
+
+email: "Email",
+
+export: "Esporta",
+
+iban: "IBAN",
+
+import: "Importa",
+
+inactive: "Inattivo",
+
+loading: "Caricamento...",
+
+newContractor: "Nuovo Appaltatore",
+
+newServiceProvider: "Nuovo Fornitore di Servizi",
+
+newSupplier: "Nuovo Fornitore",
+
+newVendor: "Nuovo Fornitore",
+
+next: "Avanti",
+
+noData: "Nessun fornitore trovato",
+
+notes: "Note",
+
+other: "Altro",
+
+paymentDays: "Giorni di Pagamento",
+
+paymentMethod: "Metodo di Pagamento",
+
+paymentTerms: "Condizioni di Pagamento",
+
+pendingPayments: "Pagamenti in Sospeso",
+
+phone: "Telefono",
+
+postalCode: "CAP",
+
+previous: "Precedente",
+
+registrationNumber: "Numero di Registrazione",
+
+save: "Salva",
+
+search: "Cerca fornitori...",
+
+serviceProvider: "Fornitore di Servizi",
+
+serviceProviders: "Fornitori di Servizi",
+
+serviceProvidersList: "Elenco Fornitori di Servizi",
+
+serviceProvidersSubtitle: "Gestisci i rapporti con i fornitori di servizi",
+
+status: "Stato",
+
+subtitle: "Gestisci fornitori, appaltatori e prestatori di servizi",
+
+supplier: "Fornitore",
+
+suppliers: "Fornitori",
+
+suppliersList: "Elenco Fornitori",
+
+suppliersSubtitle: "Gestisci l’anagrafica fornitori e la conformità",
+
+swiftCode: "Codice SWIFT/BIC",
+
+taxId: "Partita IVA / Codice Fiscale",
+
+title: "Gestione Fornitori",
+
+totalPayables: "Totale Debiti",
+
+totalVendors: "Totale Fornitori",
+
+update: "Aggiorna",
+
+updateSuccess: "Fornitore aggiornato con successo",
+
+vendorCode: "Codice Fornitore",
+
+vendorName: "Nome Fornitore",
+
+vendorType: "Tipo Fornitore",
+
+viewDetails: "Visualizza Dettagli",
+
+website: "Sito Web"
+},
+
+vendorManagement2: {
+activeVendors: "Fornitori Attivi",
+
+addVendor: "Aggiungi Fornitore",
+
+addVendorDesc: "Registra un nuovo fornitore o appaltatore",
+
+allVendors: "Tutti i Fornitori",
+
+allVendorsDesc: "Visualizza e gestisci tutti i fornitori registrati",
+
+backToLogistics: "Torna a Logistica",
+
+blacklisted: "Inseriti in Lista Nera",
+
+blacklistedDesc: "Fornitori con problemi di conformità",
+
+contractors: "Appaltatori",
+
+contractorsDesc: "Monitora appaltatori e contratti di servizio",
+
+export: "Esporta",
+
+exportVendors: "Esporta Fornitori",
+
+exportVendorsDesc: "Scarica l’elenco dei fornitori",
+
+import: "Importa",
+
+importVendors: "Importa Fornitori",
+
+importVendorsDesc: "Importazione massiva dei dati fornitori",
+
+newVendor: "Nuovo Fornitore",
+
+pendingEvaluations: "Valutazioni in Sospeso",
+
+pendingEvaluationsDesc: "Fornitori in attesa di valutazione delle prestazioni",
+
+pendingPayments: "Pagamenti in Sospeso",
+
+performanceTracking: "Monitoraggio Prestazioni",
+
+quickActions: "Azioni Veloci",
+
+serviceProviders: "Fornitori di Servizi",
+
+serviceProvidersDesc: "Gestisci i rapporti con i fornitori di servizi",
+
+settings: "Impostazioni",
+
+subtitle: "Gestisci fornitori, appaltatori e prestatori di servizi",
+
+suppliers: "Fornitori",
+
+suppliersDesc: "Gestisci l’anagrafica fornitori e la conformità",
+
+title: "Gestione Fornitori",
+
+topPerformers: "Migliori Fornitori",
+
+topPerformersDesc: "Fornitori con le valutazioni più elevate",
+
+totalPayables: "Totale Debiti",
+
+totalVendors: "Totale Fornitori",
+
+viewDetails: "Visualizza Dettagli",
+
+evaluationAndPerformance: "Valutazione e Prestazioni",
+
+evaluationAndPerformanceDesc: "Checklist unificata di valutazione fornitori con punteggi ponderati, classificazione automatica e tracciabilità audit",
+
+newEvaluation: "Nuova Valutazione",
+
+viewAllEvaluations: "Visualizza Tutte le Valutazioni",
+
+evaluationChecklist: "Checklist di Valutazione",
+
+evaluationChecklistDesc: "Checklist standard IMS: Aspetti Legali, Esperienza, Capacità Operativa, Campioni e Referenze",
+
+scoreDashboard: "Cruscotto Punteggi",
+
+scoreDashboardDesc: "Punteggio finale, classificazione fornitore, livello di rischio e data ultima valutazione",
+
+evaluationHistoryCard: "Storico Valutazioni",
+
+evaluationHistoryCardDesc: "Monitora valutatore, data, variazioni punteggio e cronologia versioni",
+
+approvalWorkflow: "Flusso di Approvazione",
+
+approvalWorkflowDesc: "Da Responsabile Acquisti a Compliance, Finanza e Approvazione Finale"
+},
+
+vendorPerformanceEvaluation2: {
+autoCalculated: "Calcolato automaticamente in base ai punteggi",
+
+backToVendors: "Torna alla Gestione Fornitori",
+
+cancel: "Annulla",
+
+comments: "Commenti di Valutazione",
+
+commentsPlaceholder: "Fornire feedback dettagliato, punti di forza, aree di miglioramento e raccomandazioni",
+
+communicationDesc: "Reattività, chiarezza e professionalità",
+
+communicationScore: "Punteggio Comunicazione",
+
+complianceDesc: "Conformità normativa, documentazione e certificazioni",
+
+complianceScore: "Punteggio Conformità",
+
+deliveryDesc: "Consegne puntuali, rispetto dei tempi e reattività",
+
+deliveryScore: "Punteggio Consegna",
+
+description: "Esegui revisioni periodiche delle prestazioni e monitora la qualità dei fornitori",
+
+evaluatedBy: "Valutato da",
+
+evaluationDate: "Data di Valutazione",
+
+evaluationError: "Impossibile salvare la valutazione",
+
+evaluationHistory: "Storico Valutazioni",
+
+evaluationPeriod: "Periodo di Valutazione",
+
+evaluationSaved: "Valutazione delle prestazioni salvata con successo",
+
+excellent: "Eccellente",
+
+good: "Buono",
+
+invalidScores: "Inserire punteggi validi (0-10) per tutti i criteri",
+
+loading: "Caricamento...",
+
+needsImprovement: "Necessita Miglioramenti",
+
+newEvaluation: "Nuova Valutazione",
+
+noHistory: "Nessuno storico valutazioni trovato",
+
+overallRating: "Valutazione Complessiva",
+
+performanceTrends: "Andamento Prestazioni",
+
+periodPlaceholder: "es. Q1 2026, Gen-Mar 2026",
+
+poor: "Scarso",
+
+pricingDesc: "Competitività dei prezzi, rapporto qualità-prezzo e stabilità dei costi",
+
+pricingScore: "Punteggio Prezzi",
+
+qualityDesc: "Qualità del prodotto/servizio, tasso di difetti e conformità alle specifiche",
+
+qualityScore: "Punteggio Qualità",
+
+recommendations: "Raccomandazioni",
+
+recommendationsPlaceholder: "Azioni correttive, piani di miglioramento o raccomandazioni per il rinnovo del contratto",
+
+satisfactory: "Soddisfacente",
+
+saveEvaluation: "Salva Valutazione",
+
+saving: "Salvataggio...",
+
+scoreRange: "Punteggio: 0-10 (0 = Scarso, 10 = Eccellente)",
+
+scoringCriteria: "Criteri di Valutazione",
+
+selectVendor: "Seleziona Fornitore",
+
+selectVendorFirst: "Selezionare prima un fornitore",
+
+stable: "Stabile",
+
+title: "Valutazione Prestazioni Fornitore",
+
+trendingDown: "In Peggioramento",
+
+trendingUp: "In Miglioramento",
+
+viewDetails: "Visualizza Dettagli"
+},
+
+deliveryNoteViewer: {
+back: "Indietro",
+
+createdBy: "Creato da",
+
+createdDate: "Data di Creazione",
+
+delivered: "Consegnato",
+
+deliveredQty: "Quantità Consegnata",
+
+deliveryDate: "Data di Consegna",
+
+description: "Descrizione",
+
+dnNumber: "Numero DN",
+
+grnReference: "Riferimento GRN",
+
+lineItems: "Righe Articoli",
+
+lineNumber: "Riga #",
+
+lineRemarks: "Note Riga",
+
+orderedQty: "Quantità Ordinata",
+
+pending: "In Sospeso",
+
+poReference: "Riferimento PO",
+
+print: "Stampa",
+
+readOnly: "Questa Nota di Consegna è di sola lettura e non modificabile",
+
+remarks: "Osservazioni",
+
+status: "Stato",
+
+title: "Nota di Consegna",
+
+unit: "Unità",
+
+vendor: "Fornitore"
+},
+
+gRNForm: {
+accept: "Accetta GRN",
+
+accepted: "Accettato",
+
+acceptedQty: "Quantità Accettata",
+
+actions: "Azioni",
+
+back: "Indietro",
+
+cancel: "Annulla",
+
+condition: "Condizione",
+
+confirmation: "Conferma",
+
+damaged: "Danneggiato",
+
+defective: "Difettoso",
+
+delete: "Elimina",
+
+deleteConfirm: "Sei sicuro di voler eliminare questa riga?",
+
+deleteGRN: "Elimina GRN",
+
+deleteGRNConfirm: "Sei sicuro di voler eliminare questo GRN? Questa azione non può essere annullata.",
+
+description: "Descrizione",
+
+draft: "Bozza",
+
+edit: "Modifica",
+
+error: "Errore",
+
+expired: "Scaduto",
+
+good: "Buono",
+
+grnNumber: "Numero GRN",
+
+inspected: "Ispezionato",
+
+inspectedBy: "Ispezionato da",
+
+inspectedDate: "Data Ispezione",
+
+inspection: "Ispezione",
+
+inspectionNotes: "Note di Ispezione",
+
+inspectionStatus: "Stato Ispezione",
+
+lineItems: "Righe Articoli",
+
+lineNumber: "Riga #",
+
+markInspected: "Segna come Ispezionato",
+
+orderedQty: "Quantità Ordinata",
+
+pending_inspection: "In Attesa di Ispezione",
+
+poRef: "Riferimento PO",
+
+receivedBy: "Ricevuto da",
+
+receivedDate: "Data Ricezione",
+
+receivedQty: "Quantità Ricevuta",
+
+reject: "Rifiuta GRN",
+
+rejected: "Rifiutato",
+
+rejectedQty: "Quantità Rifiutata",
+
+remarks: "Osservazioni",
+
+save: "Salva",
+
+status: "Stato",
+
+success: "Operazione completata con successo",
+
+title: "Nota di Ricevimento Merci",
+
+totalAccepted: "Totale Accettato",
+
+totalOrdered: "Totale Ordinato",
+
+totalReceived: "Totale Ricevuto",
+
+totalRejected: "Totale Rifiutato",
+
+unit: "Unità"
+},
+
+bidAnalysisTab: {
+add: "Aggiungi",
+
+addBidder: "Aggiungi Offerente",
+
+announcementChannel: "Canale di Pubblicazione",
+
+announcementEndDate: "Data di Chiusura Pubblicazione",
+
+announcementLink: "Link della Pubblicazione",
+
+announcementRef: "Riferimento della Pubblicazione",
+
+announcementStartDate: "Data di Inizio Pubblicazione",
+
+approve: "Approva CBA",
+
+approved: "Approvato",
+
+baApproved: "Analisi Comparativa Offerte approvata",
+
+baCreated: "Analisi Comparativa Offerte creata con successo",
+
+baNumber: "Numero CBA",
+
+bidReference: "Riferimento Gara",
+
+bidderAdded: "Offerente aggiunto con successo",
+
+bidderName: "Nome Offerente / Azienda",
+
+bidderSelected: "Offerente selezionato come vincitore",
+
+bidders: "Offerenti",
+
+calculateFinancial: "Calcola Punteggi Finanziari",
+
+cancel: "Annulla",
+
+channelDonorPortal: "Portale Donatore",
+
+channelNewspaper: "Giornale",
+
+channelOther: "Altro",
+
+channelWebsite: "Sito Web",
+
+combinedScore: "Punteggio Complessivo (100%)",
+
+contactPerson: "Persona di Contatto",
+
+createBA: "Crea CBA",
+
+draft: "Bozza",
+
+email: "Email",
+
+error: "Errore",
+
+evaluation: "Valutazione e Punteggio",
+
+failedTechnical: "Non Superato",
+
+financialCalculated: "Punteggi finanziari calcolati",
+
+financialScore: "Punteggio Finanziario (30%)",
+
+justification: "Giustificazione",
+
+justificationRequired: "La giustificazione è obbligatoria se il vincitore non è l’offerente con il prezzo più basso",
+
+minBidders: "Sono richiesti almeno 3 offerenti per una procedura di gara",
+
+noBA: "Nessuna Analisi Comparativa Offerte Creata",
+
+noBADesc: "Fare clic su Crea CBA per avviare il processo di analisi delle offerte",
+
+passedTechnical: "Superato",
+
+phone: "Telefono",
+
+print: "Stampa CBA",
+
+printChecklist: "Stampa Checklist di Valutazione",
+
+rank: "Classifica",
+
+results: "Risultati e Selezione",
+
+saveTenderInfo: "Salva Informazioni della Gara",
+
+selectBidder: "Seleziona come Vincitore",
+
+status: "Stato",
+
+submissionDate: "Data di Presentazione",
+
+submitted: "Inviato",
+
+subtitle: "Analisi Comparativa Offerte (CBA) per PR superiori a 25.000 USD (Procedura di Gara)",
+
+technicalScore: "Punteggio Tecnico (70%)",
+
+technicalThreshold: "Soglia Tecnica del 70%",
+
+technicalThresholdDesc: "Gli offerenti devono ottenere almeno il 70% nella valutazione tecnica per accedere alla valutazione finanziaria",
+
+technicalUpdated: "Punteggio tecnico aggiornato",
+
+tenderInfo: "Informazioni Gara",
+
+tenderInfoSaved: "Informazioni gara salvate",
+
+tenderLocked: "Il periodo di pubblicazione della gara non è ancora terminato. La valutazione degli offerenti sarà disponibile dopo la chiusura della pubblicazione.",
+
+title: "Analisi Comparativa Offerte (CBA)",
+
+totalBidAmount: "Importo Totale Offerta",
+
+updateTechnical: "Aggiorna",
+
+winner: "Vincitore",
+
+quotationDataAvailable: "I dati dei preventivi dei fornitori sono disponibili per questa analisi",
+
+biddersHaveQuotations: "offerenti hanno preventivi registrati",
+
+syncFromQuotations: "Sincronizza Prezzi dai Preventivi",
+
+syncPrices: "Sincronizza Prezzi",
+
+syncPricesTooltip: "Aggiorna gli importi totali offerti utilizzando i totali dei preventivi fornitori",
+
+quotationsSynced: "Prezzi sincronizzati dai preventivi",
+
+biddersUpdated: "offerenti aggiornati",
+
+quotationSource: "Dati Preventivo",
+
+quotationRef: "Riferimento Preventivo",
+
+quotationLines: "Righe Preventivo",
+
+quotationStatus: "Stato",
+
+bidderAddedAutoSynced: "Offerente aggiunto e importo sincronizzato automaticamente dal preventivo fornitore",
+
+autoSyncHint: "Se questo offerente dispone di un preventivo registrato, l’importo sarà compilato automaticamente.",
+
+discrepancyAlert: "Differenze di prezzo rilevate",
+
+discrepancyAlertDesc: "Alcuni importi offerti differiscono dai totali dei preventivi. Fare clic su Sincronizza per aggiornare.",
+
+currentBid: "Offerta Corrente",
+
+quotationTotal: "Totale Preventivo",
+
+resyncToFix: "Risincronizza",
+
+mismatch: "Differenza",
+
+discrepancyDetail: "Dettaglio Differenza Prezzo",
+
+differenceLabel: "Differenza",
+
+lineComparison: "Confronto per Riga",
+
+lineComparisonDesc: "Confronto dei prezzi per singolo articolo tra tutti gli offerenti",
+
+noLineData: "Nessun dato disponibile per le righe",
+
+noLineDataDesc: "Registrare preventivi con dettaglio articoli per visualizzare la matrice comparativa.",
+
+itemDescription: "Descrizione Articolo",
+
+qty: "Qtà",
+
+unit: "Unità",
+
+unitPriceHeader: "Prezzo Unitario",
+
+lowestPrice: "Più Basso",
+
+lineTotal: "Totale Riga",
+
+grandTotal: "Totale Complessivo",
+
+supplierOfferMatrix: "Matrice Comparativa Offerte Fornitori (PCE)",
+
+supplierOfferMatrixDesc: "Prezzi per articolo provenienti dai Preventivi Fornitori e sincronizzati nelle righe CBA",
+
+noMatrixData: "Nessun dato disponibile",
+
+noMatrixDataDesc: "I fornitori devono presentare i preventivi oppure eseguire il backfill dei dati esistenti.",
+
+backfillMatrix: "Importa dai Preventivi",
+
+backfillMatrixTooltip: "Sincronizza le righe CBA dai preventivi esistenti (migrazione una tantum)",
+
+backfillSuccess: "Importazione completata",
+
+backfillRows: "righe sincronizzate per",
+
+backfillBidders: "offerente/i",
+
+estimatedUnitCost: "Costo Stimato PR",
+
+lowestBidder: "Migliore Offerta Economica"
+},
+
+bidEvaluationCriteriaTab: {
+addCriteria: "Aggiungi Criterio",
+
+added: "Criterio aggiunto con successo",
+
+cancel: "Annulla",
+
+confirm: "Conferma",
+
+confirmDelete: "Sei sicuro di voler eliminare questo criterio?",
+
+confirmLoadDefaults: "Verrà caricata la checklist standard di valutazione. Continuare?",
+
+criteria: "Criteri",
+
+criteriaName: "Nome Criterio (EN)",
+
+criteriaNameAr: "Nome Criterio (AR)",
+
+defaultsLoaded: "Modello standard caricato con successo",
+
+deleteCriteria: "Elimina",
+
+deleted: "Criterio eliminato",
+
+description: "Descrizione",
+
+editCriteria: "Modifica Criterio",
+
+error: "Errore",
+
+isApplicable: "Applicabile",
+
+isApplicableDesc: "Deselezionare se il criterio non è applicabile a questa gara",
+
+isScreening: "Criterio di Screening",
+
+isScreeningDesc: "Criterio obbligatorio da verificare (evidenziato in verde)",
+
+loadDefaults: "Carica Modello Standard",
+
+loadDefaultsDesc: "Carica il modello standard di valutazione (Legale, Tecnico, Operativo, Campioni, Referenze)",
+
+mandatory: "Obbligatorio",
+
+maxScore: "Punteggio Massimo (Peso)",
+
+maxScoreRequired: "Il punteggio massimo è obbligatorio",
+
+na: "N/D",
+
+nameRequired: "Il nome del criterio è obbligatorio",
+
+noBA: "Nessuna Analisi Comparativa Offerte Creata",
+
+noBADesc: "È necessario creare una CBA prima di gestire i criteri di valutazione. Vai alla scheda CBA per crearla.",
+
+noCriteria: "Nessun Criterio di Valutazione Definito",
+
+noCriteriaDesc: "Aggiungi criteri di valutazione per definire come verranno valutate le offerte. Puoi caricare il modello standard o crearne di personalizzati.",
+
+requirement: "Requisito",
+
+save: "Salva",
+
+screeningItems: "Criteri di Screening",
+
+sectionExperience: "Esperienza e Capacità Tecnica",
+
+sectionLegal: "Aspetti Legali e Amministrativi",
+
+sectionName: "Nome Sezione (EN)",
+
+sectionNameAr: "Nome Sezione (AR)",
+
+sectionNumber: "Sezione #",
+
+sectionOperational: "Capacità Operativa e Finanziaria",
+
+sectionReferences: "Referenze",
+
+sectionSamples: "Campioni (se applicabili)",
+
+sections: "Sezioni",
+
+stage: "Fase / Requisito",
+
+stageAr: "Fase (AR)",
+
+stageHeader: "Fase",
+
+subtitle: "Definisci sezioni, criteri e pesi per la valutazione delle offerte",
+
+title: "Criteri di Valutazione delle Offerte",
+
+totalWeight: "Peso Totale",
+
+updated: "Criterio aggiornato con successo",
+
+weight: "Peso"
+},
+
+bidOpeningMinutesTab: {
+approve: "Approva BOM",
+
+approved: "Approvato",
+
+bidSummary: "Riepilogo Offerte Ricevute",
+
+bidSummarySaved: "Riepilogo offerte salvato",
+
+bidsOpenedCount: "Offerte Aperte",
+
+bidsRejected: "Offerte Respinte (Tardive/Incomplete)",
+
+bomApproved: "Verbale di Apertura Offerte approvato",
+
+bomCreated: "Verbale di Apertura Offerte creato con successo",
+
+bomFinalized: "Verbale di Apertura Offerte finalizzato",
+
+bomNumber: "Numero BOM",
+
+cancel: "Annulla",
+
+chairpersonName: "Nome del Presidente",
+
+committee: "Commissione di Apertura",
+
+committeeSaved: "Commissione aggiornata",
+
+create: "Crea",
+
+createBOM: "Crea Verbale di Apertura Offerte",
+
+declaration: "Dichiarazione",
+
+declarationText: "Noi, membri sottoscritti della Commissione di Apertura delle Offerte, certifichiamo che le informazioni sopra riportate costituiscono un resoconto veritiero e accurato della sessione di apertura delle offerte. Tutte le offerte sono state aperte alla presenza dei membri della commissione indicati. Nessun prezzo o dettaglio finanziario è stato divulgato durante questa sessione.",
+
+draft: "Bozza",
+
+error: "Errore",
+
+fillSessionDetails: "Compilare i dettagli della sessione per creare il BOM",
+
+finalize: "Finalizza BOM",
+
+finalized: "Finalizzato",
+
+irregularities: "Irregolarità e Osservazioni",
+
+irregularitiesDesc: "Registrare eventuali irregolarità: offerte tardive, buste non sigillate, documenti mancanti, ecc.",
+
+member1Name: "Nome Membro 1",
+
+member2Name: "Nome Membro 2",
+
+member3Name: "Nome Membro 3 (Facoltativo)",
+
+minCommittee: "Sono richiesti almeno 3 membri della commissione (1 Presidente + 2 Membri)",
+
+modeHybrid: "Ibrida",
+
+modeOnline: "Virtuale",
+
+modePhysical: "In Presenza",
+
+noBOM: "Nessun Verbale di Apertura Offerte Creato",
+
+noBOMDesc: "Crea un BOM per registrare ufficialmente la sessione di apertura delle offerte",
+
+noBidAnalysis: "Nessuna Analisi Comparativa Offerte trovata. Creare prima una CBA.",
+
+noIrregularities: "Nessuna irregolarità osservata",
+
+noPricesWarning: "IMPORTANTE: Nel BOM non vengono registrati prezzi. Viene registrata solo la conferma di ricezione delle offerte.",
+
+openingDate: "Data di Apertura",
+
+openingMode: "Modalità",
+
+openingTime: "Ora di Apertura",
+
+openingVenue: "Luogo di Apertura",
+
+print: "Stampa BOM",
+
+saveBidSummary: "Salva Riepilogo Offerte",
+
+saveCommittee: "Salva Commissione",
+
+sessionDetails: "Dettagli della Sessione di Apertura",
+
+status: "Stato",
+
+subtitle: "Verbale ufficiale della sessione di apertura offerte - solo per procedure di gara",
+
+title: "Verbale di Apertura Offerte (BOM)",
+
+totalBidsReceived: "Totale Offerte Ricevute",
+},
+
+quotationAnalysisExtendedTab: {
+approve: "Approva QA",
+
+approved: "Approvato",
+
+calculateScores: "Calcola Punteggi",
+
+createQA: "Crea QA",
+
+deliveryScore: "Punteggio Consegna (20%)",
+
+description: "Descrizione",
+
+draft: "Bozza",
+
+evaluationReport: "Rapporto di Valutazione",
+
+evaluationReportDesc: "Descrizione del processo di selezione, conclusioni e raccomandazione",
+
+financialScore: "Punteggio Finanziario",
+
+loadFromRFQ: "Carica da RFQ",
+
+minSuppliers: "Sono richiesti almeno 3 fornitori per l’analisi comparativa",
+
+multiCriteria: "Valutazione Multi-Criterio",
+
+multiCriteriaDesc: "Valutazione dei fornitori tramite criteri multipli con pesi ponderati",
+
+noQA: "Nessuna Analisi Comparativa Preventivi Creata",
+
+noQADesc: "Fare clic su Crea QA per iniziare il confronto dei preventivi",
+
+offerMatrix: "Matrice Comparativa Offerte Fornitori",
+
+prUnitPrice: "Prezzo Unitario PR",
+
+priceScore: "Punteggio Prezzo (60%)",
+
+print: "Stampa QA",
+
+qaApproved: "Analisi Comparativa Preventivi approvata con successo",
+
+qaCreated: "Analisi Comparativa Preventivi creata con successo",
+
+qaNumber: "Numero QA",
+
+qty: "Qtà",
+
+rank: "Classifica",
+
+scoresCalculated: "Punteggi finanziari calcolati",
+
+scoring: "Valutazione Finanziaria",
+
+scoringDesc: "Punteggio automatico: l’offerta più economica riceve 100 punti",
+
+scoringMethodology: "Metodologia di Valutazione",
+
+selection: "Selezione del Fornitore",
+
+status: "Stato",
+
+submitted: "Inviato",
+
+subtitle: "Analisi Comparativa Preventivi per PR da 5.001 USD a 25.000 USD",
+
+success: "Successo",
+
+suppliers: "Fornitori",
+
+suppliersLoaded: "Fornitori caricati correttamente dall’RFQ",
+
+technicalScore: "Punteggio Tecnico (10%)",
+
+title: "Analisi Comparativa Preventivi (QA)",
+
+total: "Totale",
+
+totalOffer: "Importo Totale Offerta",
+
+unit: "Unità",
+
+vendorsEvaluation: "Valutazione Fornitori",
+
+vendorsEvaluationDesc: "Punteggi individuali e ponderati per ciascun fornitore",
+
+warrantyScore: "Punteggio Garanzia (10%)",
+
+winner: "Fornitore Selezionato"
+},
+
+quotationAnalysisTab: {
+add: "Aggiungi",
+addSupplier: "Aggiungi Fornitore",
+
+approve: "Approva QA",
+
+approved: "Approvato",
+
+autoCreate: "Crea QA Automaticamente",
+
+calculateScores: "Calcola Punteggi",
+
+cancel: "Annulla",
+
+createQA: "Crea QA",
+
+description: "Descrizione",
+
+draft: "Bozza",
+
+error: "Errore",
+
+evaluationReport: "Rapporto di Valutazione",
+
+evaluationReportDesc: "Descrizione del processo di selezione, conclusioni e raccomandazione",
+
+financialScore: "Punteggio Finanziario",
+
+item: "Articolo",
+
+justification: "Giustificazione",
+
+justificationRequired: "La giustificazione è obbligatoria quando viene selezionato un fornitore diverso da quello con il prezzo più basso",
+
+minSuppliers: "Sono richiesti almeno 3 fornitori per l’analisi comparativa",
+
+noOffers: "Nessuna offerta inserita",
+
+noQA: "Nessuna Analisi Comparativa Preventivi Creata",
+
+noQADesc: "Fare clic su Crea QA per iniziare il confronto dei preventivi",
+
+offerMatrix: "Matrice Comparativa Offerte Fornitori",
+
+offerMatrixDesc: "Inserire i prezzi unitari di ciascun fornitore per ogni articolo",
+
+offersSaved: "Offerte salvate con successo",
+
+prUnitPrice: "Prezzo Unitario PR",
+
+print: "Stampa QA",
+
+qaApproved: "Analisi Comparativa Preventivi approvata con successo",
+
+qaCreated: "Analisi Comparativa Preventivi creata con successo",
+
+qaNumber: "Numero QA",
+
+qty: "Qtà",
+
+rank: "Classifica",
+
+remove: "Rimuovi",
+
+save: "Salva Offerte",
+
+scoresCalculated: "Punteggi finanziari calcolati",
+
+scoring: "Valutazione Finanziaria",
+
+scoringDesc: "Punteggio automatico: l’offerta più economica riceve 100 punti",
+
+selectSupplier: "Seleziona come Vincitore",
+
+selected: "Selezionato",
+
+selection: "Selezione del Fornitore",
+
+selectionDesc: "Selezionare il fornitore vincitore con relativa giustificazione",
+
+status: "Stato",
+
+submitted: "Inviato",
+
+subtitle: "Analisi Comparativa Preventivi per PR fino a 25.000 USD",
+
+success: "Successo",
+
+supplierAdded: "Fornitore aggiunto con successo",
+
+supplierName: "Nome Fornitore",
+
+supplierSelected: "Fornitore selezionato come vincitore",
+
+suppliers: "Fornitori",
+
+title: "Analisi Comparativa Preventivi (QA)",
+
+total: "Totale",
+
+totalOffer: "Importo Totale Offerta",
+
+unit: "Unità",
+
+winner: "Fornitore Vincitore",
+contactPerson: "Persona di Contatto",
+
+email: "Email",
+
+phone: "Telefono",
+},
+
+tenderInformationTab: {
+announcementActive: "L’avviso di gara è attualmente attivo e accetta offerte",
+
+announcementChannel: "Canale di Pubblicazione",
+
+announcementClosed: "Il periodo di pubblicazione della gara è terminato. Le offerte possono ora essere valutate.",
+
+announcementLink: "Link / URL di Pubblicazione",
+
+announcementLinkPlaceholder: "https://www.esempio.com/avviso-gara",
+
+announcementNotStarted: "L’avviso di gara non è ancora stato pubblicato",
+
+announcementPeriod: "Periodo di Pubblicazione",
+
+announcementRef: "Numero di Riferimento della Gara",
+
+announcementRefPlaceholder: "es. TEND-2026-001",
+
+cancel: "Annulla",
+
+channelDonorPortal: "Portale del Donatore",
+
+channelNewspaper: "Giornale / Stampa",
+
+channelOther: "Altro Canale",
+
+channelRequired: "Il canale di pubblicazione è obbligatorio",
+
+channelWebsite: "Sito Web dell’Organizzazione",
+
+closingDate: "Scadenza per la Presentazione delle Offerte",
+
+daysPassed: "{{count}} giorni dalla chiusura",
+
+daysRemaining: "{{count}} giorni rimanenti",
+
+edit: "Modifica",
+
+endDate: "Data di Chiusura della Pubblicazione",
+
+endDateRequired: "La data di chiusura della pubblicazione è obbligatoria",
+
+error: "Errore",
+
+evaluationMethod: "Metodo di Valutazione",
+
+financialWeight: "Peso Finanziario",
+
+methodBestValue: "Miglior Rapporto Qualità-Prezzo",
+
+methodLowest: "Prezzo Più Basso",
+
+methodQualityCost: "Qualità-Costo",
+
+minTechnicalScore: "Punteggio Tecnico Minimo",
+
+noBA: "Nessuna Analisi Comparativa Offerte Creata",
+
+noBADesc: "È necessario creare una CBA prima di gestire le informazioni di gara. Vai alla scheda CBA per crearne una.",
+
+numberOfBidders: "Numero di Offerenti",
+
+save: "Salva Informazioni di Gara",
+
+saved: "Informazioni di gara salvate con successo",
+
+startDate: "Data di Inizio Pubblicazione",
+
+startDateRequired: "La data di inizio pubblicazione è obbligatoria",
+
+statusActive: "Attivo",
+
+statusClosed: "Chiuso",
+
+statusDraft: "Bozza",
+
+statusPublished: "Pubblicato",
+
+subtitle: "Gestisci le informazioni relative alla pubblicazione e all’annuncio della gara",
+
+technicalWeight: "Peso Tecnico",
+
+tenderDate: "Data di Apertura delle Offerte",
+
+title: "Informazioni di Gara",
+},
+
+bulkIndicatorDataImport: {
+acceptedFormats: "Formati accettati: CSV (.csv)",
+
+achievedValue: "Valore Raggiunto",
+
+backToMeal: "Torna a MEAL",
+
+browse: "sfoglia i file",
+
+cancel: "Annulla",
+
+clearFile: "Rimuovi File",
+
+close: "Chiudi",
+
+dataSource: "Fonte dei Dati",
+
+downloadTemplate: "Scarica Modello",
+
+dragDrop: "Trascina qui il file CSV oppure",
+
+errors: "Errori",
+
+importAnother: "Importa un Altro File",
+
+importData: "Importa Dati",
+
+importFailed: "Importazione non riuscita. Verificare gli errori riportati di seguito.",
+
+importPartial: "Importazione completata con alcuni errori.",
+
+importResults: "Risultati dell’Importazione",
+
+importSuccess: "Dati importati con successo!",
+
+imported: "Importato",
+
+importing: "Importazione in corso...",
+
+indicatorId: "ID Indicatore",
+
+indicatorName: "Nome Indicatore",
+
+indicatorNotFound: "Indicatore non trovato nel progetto",
+
+invalid: "Non Valido",
+
+invalidNumber: "Numero non valido",
+
+missingField: "Campo obbligatorio mancante",
+
+noDataRows: "Nessuna riga di dati trovata nel file.",
+
+noProject: "Selezionare un progetto per iniziare l’importazione.",
+
+notes: "Note",
+
+parseError: "Errore durante l’elaborazione del file. Verificare il formato.",
+
+periodEnd: "Fine Periodo",
+
+periodStart: "Inizio Periodo",
+
+reportingPeriod: "Periodo di Rendicontazione",
+
+row: "Riga",
+
+selectProject: "Seleziona Progetto",
+
+selectProjectPlaceholder: "Seleziona un progetto...",
+
+skipped: "Saltato",
+
+step1: "Passo 1: Scarica il Modello",
+
+step1Desc: "Scarica un modello CSV precompilato con gli indicatori del progetto.",
+
+step2: "Passo 2: Carica il File",
+
+step2Desc: "Carica il file CSV compilato con i dati degli indicatori.",
+
+step3: "Passo 3: Anteprima e Importazione",
+
+step3Desc: "Controlla i dati elaborati prima dell’importazione.",
+
+subtitle: "Carica file CSV o Excel per importare in blocco i dati degli indicatori.",
+
+title: "Importazione Massiva Dati Indicatori",
+
+valid: "Valido",
+
+validationStatus: "Stato"
+},
+
+dataVerification: {
+achievedValue: "Valore Raggiunto",
+
+actions: "Azioni",
+
+all: "Tutti",
+
+approve: "Approva",
+
+approveEntry: "Approva Voce",
+
+approveSuccess: "Voce dati approvata con successo",
+
+backToMeal: "Torna a MEAL",
+
+baseline: "Baseline",
+
+cancel: "Annulla",
+
+confirmApprove: "Conferma Approvazione",
+
+confirmReject: "Conferma Rifiuto",
+
+dataSource: "Fonte dei Dati",
+
+disaggregation: "Disaggregazione",
+
+error: "Si è verificato un errore. Riprova.",
+
+evidence: "Documenti di Supporto",
+
+indicator: "Indicatore",
+
+indicatorType: "Tipo di Indicatore",
+
+noEntries: "Nessuna voce dati trovata per questo progetto.",
+
+noProject: "Seleziona un progetto per visualizzare le voci dati.",
+
+notes: "Note",
+
+notesPlaceholder: "Aggiungi note sulla decisione di verifica...",
+
+pending: "In Attesa",
+
+pendingReview: "In Revisione",
+
+periodEnd: "Fine Periodo",
+
+periodStart: "Inizio Periodo",
+
+progress: "Progresso",
+
+reject: "Rifiuta",
+
+rejectEntry: "Rifiuta Voce",
+
+rejectSuccess: "Voce dati rifiutata con successo",
+
+rejected: "Rifiutato",
+
+reportingPeriod: "Periodo di Rendicontazione",
+
+selectProject: "Seleziona Progetto",
+
+selectProjectPlaceholder: "Seleziona un progetto...",
+
+status: "Stato",
+
+statusFilter: "Stato:",
+
+statusPending: "In Attesa",
+
+statusRejected: "Rifiutato",
+
+statusVerified: "Verificato",
+
+submittedBy: "Inserito Da",
+
+submittedDate: "Data di Inserimento",
+
+subtitle: "Rivedi e verifica le registrazioni degli indicatori per garantire qualità e accuratezza dei dati.",
+
+target: "Obiettivo",
+
+title: "Verifica dei Dati",
+
+totalEntries: "Totale Voci",
+
+undoSuccess: "Verifica annullata con successo",
+
+undoVerification: "Annulla Verifica",
+
+unit: "Unità",
+
+verificationModal: "Revisione della Verifica",
+
+verificationNotes: "Note di Verifica",
+
+verificationNotesLabel: "Note di Verifica",
+
+verified: "Verificato",
+
+verifiedAt: "Verificato il",
+
+verifiedBy: "Verificato da",
+
+viewDetails: "Visualizza Dettagli"
+},
+
+projectDetailsPage: {
+activities: "Attività",
+backToProjectsList: "Torna all'Elenco dei Progetti",
+beneficiaries: "Beneficiari",
+caseManagement: "Gestione dei Casi",
+evidence: "Documenti di Supporto",
+financial: "Panoramica Finanziaria",
+forecastPlan: "Piano di Previsione",
+indicators: "Indicatori",
+monthlyReport: "Rapporto Mensile",
+overview: "Panoramica",
+procurementPlan: "Piano di Approvvigionamento",
+projectPlan: "Piano di Progetto",
+report: "Rapporto di Progetto",
+tasks: "Attività",
+varianceAlerts: "Avvisi di Scostamento",
+},
+projectsCRUDPage: {
+addNewProject: "Aggiungi Nuovo Progetto",
+
+all: "Tutti",
+
+backToDashboard: "Torna al Cruscotto",
+
+balance: "Saldo",
+
+budgetUtilization: "Utilizzo del Budget",
+
+completed: "Completato",
+
+currency: "Valuta",
+
+days: "giorni",
+
+daysRemaining: "Giorni Rimanenti",
+
+deleteProject: "Elimina Progetto",
+
+donor: "Donatore",
+
+endDate: "Data di Fine",
+
+expired: "Scaduto",
+
+exportExcel: "Esporta in Excel",
+
+importExcel: "Importa da Excel",
+
+loading: "Caricamento...",
+
+noProjects: "Nessun Progetto Trovato",
+
+notStarted: "Non Avviato",
+
+ongoing: "In Corso",
+
+planned: "Pianificato",
+
+projectCode: "Codice Progetto",
+
+projectList: "Elenco Progetti",
+
+searchByTitle: "Cerca per Titolo",
+
+sectors: "Settori",
+
+spent: "Speso",
+
+startDate: "Data di Inizio",
+
+totalBudgetLabel: "Budget Totale",
+
+update: "Aggiorna",
+
+viewDetails: "Visualizza Dettagli",
+
+active: "Attivo",
+
+planning: "Pianificazione",
+
+onHold: "In Sospeso",
+
+cancelled: "Annullato",
+},
+
+projectPlanTab: {
+Finance: "Finanza",
+
+HR: "Risorse Umane",
+
+Logistics: "Logistica",
+
+MEAL: "MEAL",
+
+Other: "Altro",
+
+Program: "Programma",
+
+Security: "Sicurezza",
+
+activity: "Attività",
+
+addActivityTask: "Aggiungi Attività e Compito",
+
+addObjective: "Aggiungi Obiettivo",
+
+addResult: "Aggiungi Risultato",
+
+addTask: "Aggiungi Compito",
+
+cancel: "Annulla",
+
+code: "Codice",
+
+completed: "Completato",
+
+create: "Crea",
+
+createFirstObjective: "Crea prima un Obiettivo per poter aggiungere Risultati",
+
+createFirstResult: "Crea prima un Risultato per poter aggiungere Attività e Compiti",
+
+delete: "Elimina",
+
+department: "Dipartimento",
+
+description: "Descrizione",
+
+endDate: "Data di Fine",
+
+mainActivity: "Attività Principale",
+
+maxResultsWarning: "Massimo 3 risultati per obiettivo",
+
+noData: "Nessun elemento nel piano di progetto. Fare clic su Aggiungi Obiettivo per iniziare.",
+
+notStarted: "Non Avviato",
+
+objective: "Obiettivo",
+
+ongoing: "In Corso",
+
+otherSpecify: "Specificare il Dipartimento",
+
+pendingTasks: "Compiti in Sospeso",
+
+projectDuration: "Durata del Progetto",
+
+projectYears: "Anni del Progetto",
+
+responsible: "Responsabile",
+
+result: "Risultato",
+
+save: "Salva",
+
+selectActivity: "Seleziona Attività (Fonte Principale)",
+
+selectDepartment: "Seleziona Dipartimento",
+
+startDate: "Data di Inizio",
+
+status: "Stato",
+
+subActivity: "Sotto-attività (Compito)",
+
+subtitle: "Pianificazione operativa e monitoraggio dell’implementazione",
+
+task: "Compito",
+
+title: "Piano di Progetto",
+},
+
+incidentFormDialog: {
+arabicDescriptionIsRequired: "La descrizione in arabo è obbligatoria",
+
+arabicTitleIsRequired: "Il titolo in arabo è obbligatorio",
+
+attachments: "Allegati",
+
+cancel: "Annulla",
+
+category: "Categoria",
+
+closed: "Chiuso",
+
+compliance: "Conformità",
+
+createIncident: "Crea Incidente",
+
+createNewIncident: "Crea Nuovo Incidente",
+
+critical: "Critico",
+
+descriptionArabic: "Descrizione (Arabo)",
+
+descriptionEnglish: "Descrizione (Inglese)",
+
+descriptionIsRequired: "La descrizione è obbligatoria",
+
+editIncident: "Modifica Incidente",
+
+enterIncidentDescriptionInArabic: "Inserisci la descrizione dell’incidente in arabo",
+
+enterIncidentDescriptionInEnglish: "Inserisci la descrizione dell’incidente in inglese",
+
+enterIncidentTitleInArabic: "Inserisci il titolo dell’incidente in arabo",
+
+enterIncidentTitleInEnglish: "Inserisci il titolo dell’incidente in inglese",
+
+enterReporterName: "Inserisci il nome del segnalatore",
+
+enterResolutionDetails: "Inserisci i dettagli della risoluzione",
+
+enterResolutionDetailsInArabic: "Inserisci i dettagli della risoluzione in arabo",
+
+failedToSaveIncident: "Impossibile salvare l’incidente",
+
+failedToUploadAttachments: "Impossibile caricare gli allegati",
+
+fillInTheIncidentDetailsFieldsMarkedWithAreRequired: "Compila i dettagli dell’incidente. I campi contrassegnati con * sono obbligatori.",
+
+financial: "Finanziario",
+
+incidentCreatedSuccessfully: "Incidente creato con successo",
+
+incidentDate: "Data dell’Incidente",
+
+incidentDateIsRequired: "La data dell’incidente è obbligatoria",
+
+incidentUpdatedSuccessfully: "Incidente aggiornato con successo",
+
+investigating: "In Investigazione",
+
+linkThisIncidentToAnExistingRiskForBetterTracking: "Collega questo incidente a un rischio esistente per un migliore monitoraggio",
+
+loadingRisks: "Caricamento rischi...",
+
+major: "Grave",
+
+max10mbPerFileAllowedPdfDocxXlsxJpgPng: "Massimo 10 MB per file. Formati consentiti: PDF, DOCX, XLSX, JPG, PNG",
+
+minor: "Minore",
+
+moderate: "Moderato",
+
+noRelatedRisk: "Nessun rischio correlato",
+
+operational: "Operativo",
+
+pleaseFixValidationErrors: "Correggere gli errori di validazione",
+
+relatedRisk: "Rischio Correlato",
+
+reported: "Segnalato",
+
+reportedByEn: "Segnalato Da (EN)",
+
+resolutionAr: "Risoluzione (AR)",
+
+resolutionEn: "Risoluzione (EN)",
+
+resolved: "Risolto",
+
+safety: "Salute e Sicurezza",
+
+security: "Sicurezza",
+
+selectARelatedRiskOptional: "Seleziona un rischio correlato (facoltativo)",
+
+severity: "Gravità",
+
+status: "Stato",
+
+titleArabic: "Titolo (Arabo)",
+
+titleEnglish: "Titolo (Inglese)",
+
+titleIsRequired: "Il titolo è obbligatorio",
+
+updateIncident: "Aggiorna Incidente",
+},
+
+riskFormDialog: {
+arabicDescriptionIsRequired: "La descrizione in arabo è obbligatoria",
+
+arabicTitleIsRequired: "Il titolo in arabo è obbligatorio",
+
+assessed: "Valutato",
+
+attachments: "Allegati",
+
+cancel: "Annulla",
+
+category: "Categoria",
+
+closed: "Chiuso",
+
+compliance: "Conformità",
+
+createNewRisk: "Crea Nuovo Rischio",
+
+createRisk: "Crea Rischio",
+
+descriptionArabic: "Descrizione (Arabo)",
+
+descriptionEnglish: "Descrizione (Inglese)",
+
+descriptionIsRequired: "La descrizione è obbligatoria",
+
+editRisk: "Modifica Rischio",
+
+enterMitigationPlan: "Inserisci il piano di mitigazione",
+
+enterMitigationPlanInArabic: "Inserisci il piano di mitigazione in arabo",
+
+enterOwnerName: "Inserisci il nome del responsabile",
+
+enterRiskDescriptionInArabic: "Inserisci la descrizione del rischio in arabo",
+
+enterRiskDescriptionInEnglish: "Inserisci la descrizione del rischio in inglese",
+
+enterRiskTitleInArabic: "Inserisci il titolo del rischio in arabo",
+
+enterRiskTitleInEnglish: "Inserisci il titolo del rischio in inglese",
+
+failedToSaveRisk: "Impossibile salvare il rischio",
+
+failedToUploadAttachments: "Impossibile caricare gli allegati",
+
+fillInTheRiskDetailsFieldsMarkedWithAreRequired: "Compila i dettagli del rischio. I campi contrassegnati con * sono obbligatori.",
+
+financial: "Finanziario",
+
+identified: "Identificato",
+
+impact: "Impatto",
+
+impactMustBeBetween1And5: "L’impatto deve essere compreso tra 1 e 5",
+
+likelihood: "Probabilità",
+
+likelihoodMustBeBetween1And5: "La probabilità deve essere compresa tra 1 e 5",
+
+max10mbPerFileAllowedPdfDocxXlsxJpgPng: "Massimo 10 MB per file. Formati consentiti: PDF, DOCX, XLSX, JPG, PNG",
+
+mitigated: "Mitigato",
+
+mitigationPlanAr: "Piano di Mitigazione (AR)",
+
+mitigationPlanEn: "Piano di Mitigazione (EN)",
+
+operational: "Operativo",
+
+pleaseFixValidationErrors: "Correggere gli errori di validazione",
+
+reputational: "Reputazionale",
+
+reviewDate: "Data di Revisione",
+
+riskCreatedSuccessfully: "Rischio creato con successo",
+
+riskOwnerEn: "Responsabile del Rischio (EN)",
+
+riskUpdatedSuccessfully: "Rischio aggiornato con successo",
+
+status: "Stato",
+
+strategic: "Strategico",
+
+titleArabic: "Titolo (Arabo)",
+
+titleEnglish: "Titolo (Inglese)",
+
+titleIsRequired: "Il titolo è obbligatorio",
+
+updateRisk: "Aggiorna Rischio",
+},
+
+retentionPolicyPage: {
+currentPolicy: "Periodo di Conservazione Attuale",
+days30: "30 Giorni",
+days365: "365 Giorni (1 Anno)",
+days60: "60 Giorni",
+days90: "90 Giorni",
+description: "Il periodo di conservazione determina per quanto tempo i record eliminati vengono mantenuti nell’archivio prima di essere eliminati automaticamente. Impostare su Mai per disabilitare l’eliminazione automatica.",
+errorMessage: "Impossibile aggiornare la politica di conservazione",
+never: "Mai (Solo Manuale)",
+notificationInfo: "Gli amministratori della piattaforma riceveranno notifiche e-mail 30 giorni prima dell’eliminazione definitiva dei record.",
+save: "Salva Politica",
+saving: "Salvataggio...",
+selectPeriod: "Seleziona il Periodo di Conservazione",
+subtitle: "Configura la politica di eliminazione automatica dei record eliminati",
+successMessage: "Politica di conservazione aggiornata con successo",
+title: "Impostazioni della Politica di Conservazione",
+warningText: "I record presenti nell’archivio dei record eliminati verranno eliminati automaticamente e definitivamente allo scadere del periodo di conservazione. Questa azione non può essere annullata.",
+warningTitle: "Informazioni Importanti",
+},
+
+approvalPanel: {
+approveButton: "Approva",
+approved: "Approvato",
+approver: "Approvatore",
+cancel: "Annulla",
+commentsLabel: "Commenti (Facoltativi)",
+commentsPlaceholder: "Aggiungi eventuali commenti aggiuntivi...",
+date: "Data",
+locked: "Bloccato",
+noPermission: "Non disponi dell’autorizzazione per approvare questo passaggio",
+notStarted: "Non Avviato",
+pending: "In Sospeso",
+reasonRequired: "Il motivo del rifiuto è obbligatorio",
+rejectButton: "Rifiuta",
+rejectLabel: "Motivazione del Rifiuto (Obbligatoria)",
+rejectPlaceholder: "Fornisci una motivazione per il rifiuto...",
+rejectTitle: "Rifiuta Richiesta",
+rejected: "Rifiutato",
+status: "Stato",
+submit: "Invia",
+title: "Flusso di Approvazione",
+},
+
+orgDashboardLabels: {
+acrossAllPrograms: "In Tutti i Programmi",
+activeGrants: "Sovvenzioni Attive",
+activeProjectProgress: "Avanzamento dei Progetti Attivi",
+allocatedFunds: "Fondi Allocati",
+budgetRevisionDesc: "La variazione di bilancio del progetto Acqua e Servizi Igienici supera il 10%",
+budgetRevisionNeeded: "Revisione del Bilancio Necessaria",
+compliance: "Conformità del Progetto",
+complianceAlerts: "Avvisi di Conformità",
+daysAgo: "giorni fa",
+educationSupport: "Programma di Supporto all’Istruzione",
+educationSupportDesc: "Infrastrutture scolastiche e formazione degli insegnanti",
+fullTimeStaff: "Personale a Tempo Pieno",
+healthClinics: "Cliniche Sanitarie Mobili",
+healthClinicsDesc: "Erogazione di assistenza sanitaria primaria nelle aree remote",
+highPriority: "ALTA PRIORITÀ",
+itemsRequiringAttention: "Elementi che Richiedono Attenzione",
+mediumPriority: "PRIORITÀ MEDIA",
+needsReview: "Richiede Revisione",
+onTrack: "In Linea",
+onTrackStatus: "In Linea",
+operatingUnitContext: "Contesto dell’Unità Operativa",
+projectPipelineStatus: "Stato della Pipeline dei Progetti",
+quarterlyReportDesc: "Rapporto trimestrale della sovvenzione #G2024-042 in attesa",
+quarterlyReportOverdue: "Rapporto Trimestrale Scaduto",
+viewAll: "Visualizza Tutto",
+waterSanitation: "Acqua e Servizi Igienici - Fase 2",
+waterSanitationDesc: "Accesso comunitario all’acqua e strutture igienico-sanitarie",
+},
+
+prSelectionModal: {
+amount: "Importo Totale",
+cancel: "Annulla",
+costRange: "Fascia di Costo",
+department: "Dipartimento",
+description: "Descrizione",
+extended_quotations: "Preventivi Estesi (3-5 preventivi)",
+multiple_quotations: "Preventivi Multipli (minimo 3 preventivi)",
+noApprovedPRs: "Nessuna Richiesta di Acquisto Approvata",
+noApprovedPRsDesc: "Non sono disponibili richieste di acquisto approvate per l’analisi. Le PR devono essere approvate prima di creare un’analisi delle offerte o una gara.",
+prNumber: "Numero PR",
+processType: "Tipo di Procedura",
+requestDate: "Data della Richiesta",
+search: "Cerca numero PR, descrizione...",
+selectContinue: "Seleziona e Continua",
+selectPRFirst: "Seleziona una PR per continuare",
+single_quotation: "Preventivo Singolo (1 preventivo)",
+subtitle: "Il sistema determinerà automaticamente se è richiesta un’Analisi delle Offerte o un’Analisi Comparativa delle Offerte (CBA) in base all’importo della PR",
+tender: "Gara Formale / CBA",
+title: "Seleziona Richiesta di Acquisto",
+},
+
+projectMgmtDashboard: {
+actualSpent: "Totale Speso",
+addNewProject: "Aggiungi Nuovo Progetto",
+all: "Tutti",
+annualReport: "Rapporto Annuale dei Programmi",
+annualReportDesc: "Rapporto Strategico Annuale",
+annualReportLink: "Clicca per visualizzare il Rapporto Annuale",
+annualReportSubdesc: "Rapporto completo sui risultati, le prestazioni e la pianificazione annuale",
+avgCompletionRate: "Tasso Medio di Completamento",
+balance: "Saldo",
+budgetUtilization: "Utilizzo del Budget",
+completed: "Completato",
+compliance: "Conformità",
+currency: "Valuta",
+days: "giorni",
+daysRemaining: "Giorni Rimanenti",
+deleteConfirmDesc: "Sei sicuro di voler eliminare questo progetto? Questa azione non può essere annullata.",
+deleteConfirmTitle: "Eliminare il Progetto?",
+deleteProject: "Elimina Progetto",
+donor: "Donatore",
+endDate: "Data di Fine",
+expired: "Scaduto",
+exportExcel: "Esporta in Excel",
+importExcel: "Importa da Excel",
+loading: "Caricamento...",
+noProjects: "Nessun Progetto Trovato",
+notStarted: "Non Avviato",
+ongoing: "In Corso",
+pendingApprovals: "Approvazioni in Attesa",
+performance: "Prestazioni",
+planned: "Pianificato",
+portfolioHealth: "Stato del Portafoglio",
+projectCode: "Codice Progetto",
+projectList: "Elenco Progetti",
+projectsManagement: "Progetti Attivi",
+projectsManagementDesc: "Operazioni quotidiane dei progetti",
+projectsManagementLink: "Apri Progetti",
+projectsOnTrack: "In Linea / A Rischio",
+proposalPipeline: "Proposte e Pipeline",
+proposalPipelineDesc: "Opportunità",
+proposalPipelineLink: "Clicca per visualizzare la Pipeline delle Proposte",
+proposalPipelineSubdesc: "Monitora opportunità di finanziamento e proposte",
+proposalPipelineValue: "8",
+reportingComplianceRate: "Tasso di Conformità della Rendicontazione",
+reportingSchedule: "Programma di Rendicontazione dei Progetti",
+reportingScheduleDesc: "Attivo",
+reportingScheduleLink: "Clicca per visualizzare il Programma di Rendicontazione",
+reportingScheduleSubdesc: "Visualizza le scadenze di rendicontazione attive",
+reportingScheduleValue: "2",
+searchByTitle: "Cerca per Titolo",
+sectors: "Settori",
+spent: "Speso",
+startDate: "Data di Inizio",
+subtitle: "Panoramica completa di tutti i progetti, budget e indicatori di performance",
+title: "Area di Lavoro Progetti",
+totalBudget: "Budget Totale",
+totalBudgetLabel: "Budget Totale",
+update: "Aggiorna",
+viewDetails: "Visualizza Dettagli",
+annualReportValue: "",
+reportsAnalytics: "Report e Analisi",
+reportsAnalyticsDesc: "Approfondimenti completi, dashboard e reportistica",
+reports: "Report",
+dashboards: "Dashboard",
+},
+
+tenderInformation: {
+acknowledgement: "Riconoscimento",
+actions: "Azioni",
+addBidder: "Aggiungi Offerente",
+addNewBidder: "Aggiungi Nuovo Offerente",
+addNewSupplier: "Aggiungi Nuovo Fornitore",
+adding: "Aggiunta in corso...",
+announcementChannel: "Canale di Pubblicazione",
+announcementDetails: "Dettagli della Pubblicazione",
+announcementEndDate: "Data di Fine della Pubblicazione",
+announcementLinkRequired: "Il link della pubblicazione è obbligatorio per questo canale",
+announcementLinkUrl: "Link della Pubblicazione / URL di Riferimento",
+announcementRefId: "Riferimento della Pubblicazione / ID Avviso",
+announcementRefRequired: "Il Riferimento della Pubblicazione / ID Avviso è obbligatorio",
+announcementStartDate: "Data di Inizio della Pubblicazione",
+backToProcurement: "Torna all’Area Approvvigionamenti",
+bidderAdded: "Offerente aggiunto con successo",
+bidderDeleted: "Offerente eliminato con successo",
+bidderUpdated: "Offerente aggiornato con successo",
+bidderName: "Nome Offerente",
+biddersList: "Elenco Offerenti",
+cbaNumber: "Numero CBA",
+disqualified: "Squalificato",
+donorPortal: "Portale del Donatore",
+endDateAfterStart: "La data di fine deve essere successiva alla data di inizio",
+fillRequiredFields: "Compila tutti i campi obbligatori",
+ifSupplierNotExist: "Se il fornitore non esiste, fare clic su",
+newspaper: "Giornale",
+noBiddersYet: "Nessun offerente registrato",
+noSuppliersFound: "Nessun fornitore trovato",
+numBiddersReceived: "Numero di Offerenti Ricevuti",
+optionalRefNumber: "Numero di riferimento facoltativo",
+other: "Altro",
+pickADate: "Seleziona una data",
+received: "Ricevuto",
+saveTenderInfo: "Salva Informazioni Gara",
+saving: "Salvataggio in corso...",
+selectAnnouncementChannel: "Seleziona un canale di pubblicazione",
+selectChannel: "Seleziona canale",
+selectSupplier: "Seleziona Fornitore",
+selectSupplierAndDate: "Seleziona un fornitore e una data di presentazione",
+status: "Stato",
+submissionDate: "Data di Presentazione",
+tenderInformationTitle: "Informazioni sulla Gara",
+valid: "Valido",
+website: "Sito Web",
+supplierDuplicate: "Il fornitore è già stato aggiunto a questa gara. Non sono consentiti offerenti duplicati.",
+},
+
+placeholders: {
+  accountNameInArabic: "Nome del conto in arabo",
+  activityMilestoneName: "Nome attività/milestone...",
+  activityName: "Nome attività",
+  addAProgressUpdateOrComment: "Aggiungi un aggiornamento sullo stato o un commento...",
+  additionalInformationPartnerDiscussionsEtc: "Informazioni aggiuntive, discussioni con partner, ecc.",
+  additionalNotes: "Note aggiuntive...",
+  additionalNotesAboutThisQuotation: "Note aggiuntive su questo preventivo",
+  additionalNotesForThePo: "Note aggiuntive per l'ordine di acquisto",
+  additionalNotesOrComments: "Note o commenti aggiuntivi",
+  additionalNotesOrCommentsAboutTheBeneficiary: "Note o commenti aggiuntivi sul beneficiario...",
+  ahmedMohammedAli: "Ahmed Mohammed Ali",
+  alSalamCamp: "Campo Al Salam",
+  allStatuses: "Tutti gli stati",
+  anyAdditionalNotesOrInstructions: "Eventuali note o istruzioni aggiuntive...",
+  anyAdditionalObservationsOrComments: "Eventuali osservazioni o commenti aggiuntive...",
+  anySpecialConditionsOrNotes: "Eventuali condizioni speciali o note...",
+  assets: "Immobilizzazioni",
+  attendanceSheets: "Fogli presenze",
+  auditYourdomainOrg: "audit@yourdomain.org",
+  autoGenerated: "Generato automaticamente",
+  autoGeneratedAchievementsBasedOnData: "Risultati generati automaticamente sulla base dei dati...",
+  autoGeneratedSummaryBasedOnReportingPeriodData: "Riepilogo generato automaticamente sulla base dei dati del periodo di rendicontazione...",
+  bankTransactionReference: "Riferimento transazione bancaria",
+  bc001: "BC-001",
+  briefDescriptionOfTheIndicator: "Breve descrizione dell'indicatore",
+  budgets: "Budget",
+  capital: "Capitale",
+  cashOnHand: "Cassa disponibile",
+  ccYourdomainOrg: "cc@yourdomain.org",
+  centralDistrict: "Distretto Centrale",
+  cityCountry: "Città, Paese",
+  communityCenterHealthClinicSchoolEtc: "Centro comunitario, clinica sanitaria, scuola, ecc.",
+  companyLegalName: "Ragione Sociale",
+  companyOrganization: "Azienda/Organizzazione",
+  conferenceRoomA: "Sala Conferenze A",
+  confirmNewPassword: "Conferma nuova password",
+  contactPerson: "Persona di contatto",
+  contributionDescription: "Descrizione del contributo",
+  describeTheActivity: "Descrivi l'attività...",
+  describeTheExpectedResult: "Descrivi il risultato previsto...",
+  describeTheMitigationActionInDetail: "Descrivi in dettaglio l'azione di mitigazione...",
+  describeWhatWasCorrectedOrChanged: "Descrivi cosa è stato corretto o modificato...",
+  description: "Descrizione...",
+  descriptionLabel: "Descrizione",
+  detailedEvaluationNotes: "Note dettagliate di valutazione...",
+  documentNumber: "Numero documento",
+
+  eG1000: "es. 1000",
+  eG10005100: "es. 1000-5100",
+  eG111: "es. 111",
+  eG123: "es. 123",
+  eG500: "es. 500",
+  eG500000: "es. 500000",
+
+  eGAge18AndCountrySyria: "es. Età 18, Paese Siria",
+  eGAhmedHassanMohamed: "es. Ahmed Hassan Mohamed",
+  eGAmmanJordan: "es. Amman, Giordania",
+  eGAnnualOperatingBudget2024: "es. Budget Operativo Annuale 2024",
+  eGCashSalariesExpense: "es. Spese stipendi in contanti",
+  eGComputerScience: "es. Informatica",
+  eGConferenceRoomA: "es. Sala Conferenze A",
+  eGCountRatio: "es. Conteggio, Rapporto",
+  eGDonRef2024123: "es. DON-REF-2024-123",
+  eGEducationHealth: "es. Educazione, Salute",
+  eGEducationSupportProgram: "es. Programma di Supporto all'Istruzione",
+  eGEmergencyEducationSupportProgram: "es. Programma di Supporto Educativo di Emergenza",
+  eGFoundationGrantGovernmentFund: "es. Fondazione, Sovvenzione, Fondo Governativo",
+  eGG5G6G7: "es. G5, G6, G7",
+  eGGr2024001: "es. GR-2024-001",
+  eGGrade5: "es. Classe 5",
+  eGGrantApproved: "es. Sovvenzione Approvata",
+  eGHouseholdsSessions: "es. Famiglie, Sessioni",
+  eGIdCards: "es. Carte d'identità",
+  eGImplementBudgetMonitoringDashboard: "es. Implementare dashboard monitoraggio budget",
+  eGInd001: "es. IND-001",
+  eGJohnDoe: "es. Mario Rossi",
+  eGJordanian: "es. Giordano",
+  eGLegalAndAdministrative: "es. Legale e Amministrativo",
+  eGMainOfficeWarehouseAden: "es. Ufficio Centrale, Magazzino Aden",
+  eGMealOfficer: "es. Responsabile MEAL",
+  eGNet30Days: "es. Netto 30 giorni",
+  eGNet30DaysAfterDelivery: "es. Netto 30 giorni dopo la consegna",
+  eGOfficeRentUtilities: "es. Affitto ufficio e utenze",
+  eGOfficeRoom301OrHttpsZoomUs: "es. Ufficio 301 o https://zoom.us",
+  eGPcsKg: "es. Pz, Kg",
+  eGPcsKgUnits: "es. Pz, Kg, Unità",
+  eGPhysicalVisualHearingCognitive: "es. Fisico, Visivo, Uditivo, Cognitivo",
+  eGProgramManagerFieldOfficer: "es. Program Manager, Field Officer",
+  eGPrograms: "es. Programmi",
+  eGProgramsOperationsFinance: "es. Programmi, Operazioni, Finanza",
+  eGProjectManager: "es. Responsabile di Progetto",
+  eGProjectManagerSalary: "es. Stipendio Responsabile di Progetto",
+  eGQ12024JanMar2024: "es. Q1 2024 (Gen-Mar 2024)",
+  eGQ12026: "es. Q1 2026",
+  eGQ32024Call: "es. Q3 2024 Call",
+  eGSq2026001: "es. SQ-2026-001",
+  eGTask001: "es. TASK-001",
+  eGTender2026001: "es. TENDER-2026-001",
+  eGUnicef: "es. UNICEF",
+  eGValidCompanyRegistrationCommercialRegister: "es. Registrazione aziendale valida, Registro commerciale",
+  eGWorldBank: "es. Banca Mondiale",
+  eGYearsOfExperience: "es. Anni di esperienza",
+  eGYemen: "es. Yemen",
+  eGYemenFieldOffice: "es. Ufficio sul campo Yemen",
+  eGYourGrantGrantnameHasBeenApproved: "es. La tua sovvenzione {GrantName} è stata approvata",
+
+  echoYem001: "ECHO-YEM-001",
+  educationSupportProgram: "Programma di Supporto all'Istruzione",
+
+  email: "email@example.com",
+  emailExampleCom: "email@example.com",
+  emailRequired: "Email *",
+
+  enterBeneficiaryCount: "Inserisci il numero di beneficiari",
+  enterCustomReportType: "Inserisci un tipo di report personalizzato",
+  enterDescription: "Inserisci descrizione",
+  enterGrantDescriptionAndObjectives: "Inserisci la descrizione e gli obiettivi della sovvenzione...",
+  enterItemDescription: "Inserisci la descrizione dell'articolo",
+  enterLocation: "Inserisci località",
+  enterLocationInArabic: "Inserisci la località in arabo",
+  enterName: "Inserisci nome",
+  enterNewPassword: "Inserisci nuova password",
+  enterObjectiveTitle: "Inserisci il titolo dell'obiettivo",
+  enterProjectDescription: "Inserisci la descrizione del progetto",
+  enterProjectDescriptionInArabic: "Inserisci la descrizione del progetto in arabo",
+  enterProjectManagerName: "Inserisci il nome del responsabile del progetto",
+  enterProjectObjectives: "Inserisci gli obiettivi del progetto",
+  enterProjectObjectivesInArabic: "Inserisci gli obiettivi del progetto in arabo",
+  enterProjectTitle: "Inserisci il titolo del progetto",
+  enterProjectTitleInArabic: "Inserisci il titolo del progetto in arabo",
+  enterReasonForRejection: "Inserisci il motivo del rifiuto...",
+  enterReasonForRejectionCancellation: "Inserisci il motivo del rifiuto/annullamento",
+  enterReasonForReversal: "Inserisci il motivo dello storno...",
+  enterResultTitle: "Inserisci il titolo del risultato",
+  enterSalary: "Inserisci stipendio",
+  enterTaskTitle: "Inserisci il titolo dell'attività",
+  enterUserSFullName: "Inserisci il nome completo dell'utente",
+  enterYourFullName: "Inserisci il tuo nome completo",
+  enterYourPassword: "Inserisci la tua password",
+
+  eqp: "EQP",
+  equipment: "Attrezzatura",
+
+  evaluationCommentsAndRecommendations: "Commenti e raccomandazioni della valutazione",
+
+  explainWhyThisPositionIsNeeded: "Spiega perché questa posizione è necessaria...",
+  explainWhyThisSupplierWasSelected: "Spiega perché è stato selezionato questo fornitore...",
+
+  fieldVisitsReports: "Visite sul campo, Rapporti",
+
+  filterByModule: "Filtra per modulo",
+
+  fin_mgr: "FIN_MGR",
+  financeManager: "Responsabile Finanza",
+
+  fiscalYear2026: "Anno Fiscale 2026",
+  fullNameOfAssignee: "Nome completo dell'assegnatario",
+  fy2026: "AF2026",
+
+  goalsForNextReviewPeriod: "Obiettivi per il prossimo periodo di valutazione",
+
+  hrManager: "Responsabile Risorse Umane",
+
+  imsNotifications: "Notifiche IMS",
+  imsYourdomainOrg: "ims@yourdomain.org",
+
+  invoiceDescriptionOrNotes: "Descrizione o note della fattura",
+  invoicePoNumber: "Numero Fattura/PO",
+
+  january2026: "Gennaio 2026",
+
+  johnDoe: "Mario Rossi",
+  johnDoeExampleCom: "mario.rossi@example.com",
+
+  level1Approval: "Approvazione Livello 1",
+
+  listAreasForImprovement: "Elenca le aree di miglioramento...",
+  listTheCandidateSKeyStrengths: "Elenca i principali punti di forza del candidato...",
+
+  logisticsOrganizationOrg: "logistics@organization.org",
+
+  managerName: "Nome del responsabile",
+
+  mandatoryJustificationForSupplierSelection: "Giustificazione obbligatoria per la selezione del fornitore...",
+
+  mm: "MM",
+
+  monthlyOverheadAllocation: "Allocazione mensile dei costi indiretti",
+
+  mustBeSubmittedWithTheBid: "DEVE essere presentato con l'offerta",
+
+  nC: "N/C",
+
+  name: "Nome",
+
+  nameOfVerifier: "Nome del verificatore",
+
+  net30: "Netto 30 giorni",
+
+  noreplyYourdomainOrg: "noreply@yourdomain.org",
+
+  numberOfBeneficiariesReached: "Numero di beneficiari raggiunti",
+
+  ongoing: "In Corso",
+
+  optional: "Facoltativo",
+
+  optionalNotesForAllItems: "Note facoltative per tutti gli articoli...",
+
+  panelMemberName: "Nome del membro della commissione",
+
+  personTripItem: "persona, viaggio, articolo...",
+
+  personnelCosts: "Costi del personale",
+
+  personsPercentageEvents: "Persone / Percentuale / Eventi",
+
+  phone: "Telefono",
+
+  pleaseProvideAReasonForRejection: "Fornisci un motivo per il rifiuto",
+  pleaseProvideAReasonForRejectionOptional: "Fornisci un motivo per il rifiuto...",
+
+  programManagerExampleComLogisticsExampleComFinance: "program.manager@example.com, logistics@example.com, finance@example.com",
+
+  progress: "Avanzamento %",
+
+  projectCode: "Codice progetto",
+
+  provideDetailedJustificationForSupplierSelection: "Fornisci una giustificazione dettagliata per la selezione del fornitore...",
+  provideDetailedJustificationForYourDecision: "Fornisci una giustificazione dettagliata per la tua decisione...",
+
+  q22026: "Q2 2026",
+
+  realloc001: "REALLOC-001",
+
+  responsiblePerson: "Persona responsabile",
+
+  roleDescription: "Descrizione del ruolo...",
+
+  searchByGrantNumberNameOrDonor: "Cerca per numero sovvenzione, nome o donatore...",
+  searchByNameOrType: "Cerca per nome o tipo...",
+  searchFrameworks: "Cerca framework...",
+  searchProjects: "Cerca progetti...",
+  searchVendor: "Cerca fornitore...",
+
+  selectAFruit: "Seleziona un frutto",
+  selectAProject: "Seleziona un progetto",
+  selectChannel: "Seleziona canale",
+  selectCountry: "Seleziona paese",
+  selectDocumentType: "Seleziona tipo di documento",
+  selectOperatingUnit: "Seleziona unità operativa",
+  selectOrganization: "Seleziona organizzazione",
+
+  smtpOffice365Com: "smtp.office365.com",
+
+  specifyCommunityType: "Specifica il tipo di comunità",
+  specifyIdentificationType: "Specifica il tipo di identificazione",
+  specifyServiceType: "Specifica il tipo di servizio",
+  specifyVulnerabilityCategory: "Specifica la categoria di vulnerabilità",
+
+  supplierName: "Nome Fornitore *",
+
+  supportYourdomainOrg: "support@yourdomain.org",
+
+  teamPerson: "Team/Persona",
+
+  trySendingAMessage: "Prova a inviare un messaggio...",
+
+  typeSomething: "Digita qualcosa...",
+  typeYourMessageHere: "Scrivi qui il tuo messaggio.",
+
+  unicefEchoUsaid: "UNICEF, ECHO, USAID...",
+
+  unit: "Unità",
+
+  unlimited: "Illimitato",
+
+  usDollar: "Dollaro USA",
+
+  userExampleCom: "utente@example.com",
+
+  viewBudgets: "Visualizza Budget",
+
+  whatAreasNeedDevelopment: "Quali aree necessitano di sviluppo?",
+  whatHasTheEmployeeDoneWell: "Cosa ha fatto bene il dipendente?",
+
+  yemenSanaAHodeidah: "Yemen (Sana'a, Hodeidah)",
+
+  yourCurrentRole: "Il tuo ruolo attuale",
+
+  yourEmailExampleCom: "tua.email@example.com",
+  yourEmailOrganizationOrg: "tua.email@organization.org",
+
+  yourdomainOrgPartnerOrg: "yourdomain.org, partner.org",
+
+  yyyy: "AAAA"
+},
+
+system: {
+adminDashboard: {
+adminDashboardTitle: "Cruscotto Amministratore",
+adminDashboardSubtitle: "Amministrazione e gestione della piattaforma",
+developmentFeature: "Funzionalità di sviluppo",
+devNotice: "Questa è una funzionalità disponibile solo in ambiente di sviluppo per testare le funzioni di gestione della Fase 0",
+organizations: "Organizzazioni",
+operatingUnits: "Unità Operative",
+platformUsers: "Utenti della Piattaforma",
+systemHealthTitle: "Stato del Sistema",
+operational: "Operativo",
+manageOrganizations: "Gestisci Organizzazioni",
+manageOrganizationsDesc: "Crea e gestisci organizzazioni",
+manageOperatingUnits: "Gestisci Unità Operative",
+manageOperatingUnitsDesc: "Crea e gestisci unità operative",
+manageUsers: "Gestisci Utenti",
+manageUsersDesc: "Gestisci utenti e autorizzazioni della piattaforma",
+viewAuditLogsDesc: "Esamina attività e modifiche della piattaforma",
+deletedRecords: "Record Eliminati",
+deletedRecordsDesc: "Gestisci i record eliminati logicamente",
+quickActions: "Azioni Rapide",
+systemInformation: "Informazioni di Sistema",
+currentUser: "Utente Corrente",
+userRole: "Ruolo Utente",
+environment: "Ambiente",
+systemStatus: "Stato del Sistema",
+viewAuditLogs: "Visualizza Log di Audit",
+},
+},
+
+auditLogsPage: {
+auditLogs: "Log di Audit",
+activityLog: "Registro Attività",
+allPlatformAdminActions: "Tutte le azioni degli amministratori della piattaforma sono registrate qui",
+auditLoggingComingSoon: "La registrazione dei log di audit sarà disponibile a breve",
+},
+
+systemReports: {
+errorReportSubmitted: "Rapporto di errore inviato",
+errorReportSubmittedDesc: "Rapporto di errore inviato con successo all'Amministratore della Piattaforma",
+onlyPlatformAdminsCanView: "Solo gli amministratori della piattaforma possono visualizzare i rapporti di errore di importazione",
+onlyPlatformAdminsCanUpdate: "Solo gli amministratori della piattaforma possono aggiornare lo stato del rapporto",
+databaseNotAvailable: "Database non disponibile",
+row: "Riga",
+field: "Campo",
+errorType: "Tipo di Errore",
+errorMessage: "Messaggio di Errore",
+suggestedFix: "Correzione Suggerita",
+checkDataFormatAndTryAgain: "Controlla il formato dei dati e riprova",
+importErrors: "Errori di Importazione",
+errorDetails: "Dettagli Errore"
+},
+salaryScale: {
+salaryScaleTable: "Tabella delle Scale Salariali",
+salaryScaleSubtitle: "Visualizza e gestisci gradi e livelli salariali",
+guideline: "Linee Guida",
+table: "Tabella",
+policy: "Politica",
+salaryScaleTableGuideline: "Linee Guida della Tabella delle Scale Salariali",
+salaryScaleGuidelineSubtitle: "Comprendere gradi, livelli e progressione salariale",
+
+aSalaryGradeDefinition: "A. Definizione del Grado Salariale",
+gradeDefinition: "Un Grado rappresenta il livello di anzianità e responsabilità di una posizione. Non modifica il titolo o la descrizione della posizione.",
+
+gradeExamples: "Esempi di Grado:",
+entryLevel: "Grado G1: Livello Base / Ruoli di Supporto (Impiegato, Assistente, Autista)",
+juniorLevel: "Grado G2: Ruoli Junior / Assistente (Junior Officer, Assistente Coordinatore)",
+midLevel: "Grado G3: Ruoli Tecnici / Officer (Officer, Tecnico, Coordinatore)",
+seniorLevel: "Grado G4: Coordinatore / Senior Officer (Senior Officer, Coordinatore, Specialista)",
+executiveLevel: "Grado G5: Manager / Responsabile di Unità (Manager, Responsabile di Dipartimento)",
+
+bPositionVsGradeGuidance: "B. Guida Posizione vs Grado",
+positionGuidance: "I gradi sono decisioni organizzative. Lo stesso titolo di posizione può avere gradi diversi in organizzazioni differenti.",
+positionNote: "Esempio: Finance Officer potrebbe essere Grado G2 in un’organizzazione e Grado G3 in un’altra.",
+
+cStepDefinition: "C. Definizione del Livello (Step)",
+whatIsAStep: "Cos’è uno Step?",
+stepDefinition: "Gli Step rappresentano la progressione salariale all’interno dello stesso grado. Non modificano il titolo della posizione né il grado.",
+stepExplanation: "Lo Step 1 rappresenta il salario iniziale all’interno di uno specifico grado. Gli Step successivi (Step 2, Step 3) riflettono la progressione salariale mantenendo lo stesso grado.",
+
+stepProgression: "Progressione degli Step",
+stepRules: [
+"Gli step sono generalmente annuali o basati sulle prestazioni",
+"Il passaggio da Step 1 a Step 2 aumenta il salario senza cambiare il grado",
+"Il salario massimo di un grado viene generalmente raggiunto allo step più alto"
+],
+
+dPayrollDependencyWarning: "D. Avviso sulla Dipendenza del Payroll",
+criticalWarning: "Avviso Critico",
+warningText: "I calcoli delle buste paga dipendono direttamente da questa scala salariale. Una configurazione errata produrrà salari errati.",
+
+warningRules: [
+"Solo i record con Stato = Attivo verranno utilizzati dal payroll",
+"I record in Bozza vengono ignorati dal payroll",
+"Le versioni Storiche/Sostituite non vengono utilizzate nei calcoli"
+],
+
+importantNotes: "Note Importanti",
+notes: [
+"Verificare sempre i dati salariali prima di impostarli come Attivi",
+"Queste sono linee guida: ogni organizzazione può personalizzare gradi e step",
+"Tutte le modifiche salariali devono essere documentate con le relative date di validità"
+],
+
+editSalaryRecord: "Modifica Record Salariale",
+staffInformation: "Informazioni sul Personale",
+
+gradeScale: "Scala Salariale",
+grade: "Grado",
+step: "Step",
+salaryRange: "Fascia Salariale",
+min: "Minimo",
+max: "Massimo",
+
+approvedGrossSalary: "Salario Lordo Approvato",
+
+allowances: "Indennità",
+housingAllowance: "Indennità Alloggio",
+transportAllowance: "Indennità di Trasporto",
+representationAllowance: "Indennità di Rappresentanza",
+annualAllowance: "Indennità Annuale",
+bonus: "Bonus",
+otherAllowances: "Altre Indennità",
+
+deductionsAndTaxes: "Detrazioni e Imposte",
+taxPercent: "Percentuale Imposta",
+taxPercentLabel: "Percentuale Imposta sul Salario Base",
+taxAmount: "Importo Imposta",
+taxableBaseSalary: "Salario Base Imponibile",
+
+socialSecurityContributions: "Contributi Previdenziali",
+socialSecurityEmployeePercent: "Contributo Dipendente %",
+socialSecurityEmployeePercentLabel: "Percentuale Contributo Previdenziale del Dipendente",
+socialSecurityEmployerPercent: "Contributo Datore di Lavoro %",
+socialSecurityEmployerPercentLabel: "Percentuale Contributo Previdenziale del Datore di Lavoro",
+
+socialSecurityDeduction: "Detrazione Previdenziale",
+employeeContribution: "Contributo del Dipendente",
+employerContribution: "Contributo del Datore di Lavoro",
+
+effectiveStartDate: "Data Inizio Validità",
+
+value: "Valore",
+percentage: "Percentuale",
+
+cancel: "Annulla",
+
+saveAsNewVersion: "Il salvataggio creerà una nuova versione di questo record salariale",
+versionNote: "Nota Versione",
+
+salaryHistory: "Storico Salariale",
+for: "per",
+version: "Versione",
+effectiveDate: "Data di Validità",
+endDate: "Data di Fine",
+salary: "Salario",
+approvedSalary: "Salario Approvato",
+status: "Stato",
+approvedBy: "Approvato da",
+close: "Chiudi",
+
+draft: "Bozza",
+active: "Attivo",
+superseded: "Sostituito",
+current: "Corrente",
+
+noHistoryFound: "Nessuno storico trovato",
+
+addNewGrade: "Aggiungi Nuovo Grado",
+gradeCode: "Codice Grado",
+description: "Descrizione",
+minimumSalary: "Salario Minimo",
+maximumSalary: "Salario Massimo",
+currency: "Valuta",
+
+egG6: "es. G6",
+egExecutiveLevel: "es. Livello Direttivo",
+
+pleaseFillAllRequiredFields9: "Compila tutti i campi obbligatori",
+
+addGrade: "Aggiungi Grado",
+manageSalaryGrades: "Gestisci Gradi Salariali",
+viewAndDeleteGradeDefinitions: "Visualizza ed elimina le definizioni dei gradi",
+
+steps: "Step",
+noGradesFound: "Nessun grado trovato",
+
+salaryScalePolicyDocuments: "Documenti della Politica Salariale",
+salaryScalePolicySubtitle: "Carica e gestisci i documenti della politica salariale",
+
+uploadPolicy: "Carica Politica",
+download10: "Scarica",
+archive: "Archivia",
+
+policyName: "Nome Politica",
+fileName: "Nome File",
+size: "Dimensione",
+
+archived: "Archiviato",
+
+uploadNewPolicy: "Carica Nuova Politica",
+selectFile: "Seleziona File",
+upload: "Carica",
+
+confirmArchive: "Archiviare questa politica?",
+confirmDelete: "Eliminare questo documento della politica?",
+
+of: "di",
+type: "Tipo",
+
+hrDashboard: "Cruscotto HR",
+name: "Nome",
+position: "Posizione",
+department: "Dipartimento",
+},
+
+systemHealth: {
+ready: "Pronto",
+notReady: "Non Pronto",
+initializing: "Inizializzazione",
+
+info: "Informazione",
+warning: "Avviso",
+critical: "Critico",
+
+rtlLayoutInconsistency: "Incoerenza Layout RTL",
+languageSetToArabic: "La lingua è impostata su Arabo ma la direzione del documento è LTR",
+applyDirRtl: "Applicare all’elemento radice",
+
+noActiveSession: "Nessuna Sessione Attiva",
+systemInitialized: "Sistema inizializzato ma nessun utente ha effettuato l’accesso",
+redirectToLogin: "Reindirizza alla pagina di accesso",
+
+	planDurationMismatch: "Discrepanza nella Durata del Piano",
+	timelineNotBound: "La timeline non è collegata alle date del progetto",
+	bindTimeline: "Collega il generatore della timeline alle date di inizio e fine del progetto",
+	uiCore: "Interfaccia Utente",
+	security: "Sicurezza",
+	projectPlan: "Piano del Progetto",
+	},
+
+  purchaseOrderTab: {
+  approved: "Approvato",
+  cancelled: "Annullato",
+  createFirst: "Creare prima",
+  createPO: "Crea Ordine di Acquisto",
+  delivered: "Consegnato",
+  draft: "Bozza",
+  error: "Errore",
+  noPO: "Nessun Ordine di Acquisto disponibile",
+  print: "Stampa",
+  submitted: "Inviato",
+  subtitle: "Gestione Ordini di Acquisto",
+  success: "Operazione completata con successo",
+  supplier: "Fornitore",
+  title: "Ordine di Acquisto",
+},
+goodsReceiptTab: {
+  accepted: "Accettato",
+  createFirst: "Creare prima",
+  createGRN: "Crea Ricezione Merci",
+  error: "Errore",
+  grnDate: "Data Ricezione",
+  grnNumber: "Numero Ricezione",
+  inspected: "Ispezionato",
+  noGRN: "Nessuna Ricezione Merci disponibile",
+  partial: "Parziale",
+  pending_inspection: "In attesa di ispezione",
+  poRef: "Riferimento Ordine",
+  print: "Stampa",
+  quantitiesFulfilled: "Quantità soddisfatte",
+  receivedBy: "Ricevuto da",
+  rejected: "Rifiutato",
+  subtitle: "Gestione Ricezione Merci",
+  success: "Operazione completata con successo",
+  successDelete: "Eliminato con successo",
+  title: "Ricezione Merci",
+  view: "Visualizza",
+},
+deliveryNoteTab: {
+  createdDate: "Data di creazione",
+  delete: "Elimina",
+  deleteConfirmCancel: "Annulla",
+  deleteConfirmDelete: "Elimina",
+  deleteConfirmDesc: "Questa operazione non può essere annullata.",
+  deleteConfirmTitle: "Conferma eliminazione",
+  deleteError: "Errore durante l'eliminazione",
+  deleteSuccess: "Eliminato con successo",
+  delivered: "Consegnato",
+  dnCreatedFromGRN: "Documento creato dalla Ricezione Merci",
+  dnNumber: "Numero Documento di Consegna",
+  error: "Errore",
+  lineItems: "Righe",
+  noDN: "Nessun Documento di Consegna disponibile",
+  pending: "In attesa",
+  status: "Stato",
+  subtitle: "Gestione Documenti di Consegna",
+  title: "Documento di Consegna",
+  view: "Visualizza",
+},
+hrPayroll: {
+  actions: "Azioni",
+  allowances: "Indennità",
+  approve: "Approva",
+  approved: "Approvato",
+  approvedBy: "Approvato da",
+  approvedByName: "Nome dell'Approvatore",
+  april: "Aprile",
+  august: "Agosto",
+  basicSalary: "Stipendio Base",
+  cancel: "Annulla",
+  close: "Chiudi",
+  currency: "Valuta",
+  date: "Data",
+  december: "Dicembre",
+  deductions: "Detrazioni",
+  deductions2: "Detrazioni",
+  delete: "Elimina",
+  deleteThisPayroll: "Elimina questa Busta Paga",
+  draft: "Bozza",
+  edit: "Modifica",
+  egHrManager: "es. Responsabile HR",
+  en: "IT",
+  exportExcel: "Esporta Excel",
+  exportToExcel: "Esporta in Excel",
+  february: "Febbraio",
+  generate: "Genera",
+  generateMonthlyPayroll: "Genera Busta Paga Mensile",
+  gross: "Lordo",
+  grossSalary: "Stipendio Lordo",
+  health: "Sanità",
+  healthIns: "Assicurazione Sanitaria",
+  healthInsuranceRate: "Aliquota Assicurazione Sanitaria",
+  housing: "Alloggio",
+  housing3: "Alloggio",
+  housingAllowance: "Indennità Alloggio",
+  hrDashboard: "Cruscotto HR",
+  id: "ID",
+  january: "Gennaio",
+  july: "Luglio",
+  june: "Giugno",
+  march: "Marzo",
+  may: "Maggio",
+  monthYear: "Mese/Anno",
+  monthlyPayrollSheet: "Foglio Paghe Mensile",
+  monthyear: "Mese-Anno",
+  name: "Nome",
+  netSalary: "Stipendio Netto",
+  netSalary6: "Stipendio Netto",
+  november: "Novembre",
+  october: "Ottobre",
+  optional: "Facoltativo",
+  other: "Altro",
+  other5: "Altro",
+  otherAllowances: "Altre Indennità",
+  otherDeductions: "Altre Detrazioni",
+  payrollAllowances: "Indennità Retributive",
+  payrollDeleted: "Busta paga eliminata",
+  payrollGeneratedSuccessfully: "Busta paga generata con successo",
+  payrollHistory: "Storico Buste Paga",
+  position: "Posizione",
+  preparedBy: "Preparato da",
+  print: "Stampa",
+  printPdf: "Stampa PDF",
+  project: "Progetto",
+  referenceNo: "Numero di Riferimento",
+  represent: "Rappresentanza",
+  representation: "Rappresentanza",
+  representationAllowance: "Indennità di Rappresentanza",
+  results: "Risultati",
+  reviewedBy: "Revisionato da",
+  salaryCalculator: "Calcolatore Stipendi",
+  save: "Salva",
+  selectMonth: "Seleziona Mese",
+  selectYear: "Seleziona Anno",
+  september: "Settembre",
+  signature: "Firma",
+  socialSec: "Previdenza Sociale",
+  socialSecurityRate: "Aliquota Previdenza Sociale",
+  staffCount: "Numero Dipendenti",
+  staffId: "ID Dipendente",
+  staffName: "Nome Dipendente",
+  status: "Stato",
+  statusUpdated: "Stato aggiornato",
+  submit: "Invia",
+  submitted: "Inviato",
+  tax: "Imposta",
+  tax1: "Imposta",
+  taxAmount: "Importo Imposta",
+  taxBase: "Base Imponibile",
+  taxCalculation: "Calcolo Imposta",
+  taxRate: "Aliquota Fiscale",
+  taxableBase: "Base Tassabile",
+  taxableIncomeBase: "Reddito Imponibile",
+  title: "Gestione Paghe",
+  total: "Totale",
+  totalDed: "Totale Detrazioni",
+  totalDeductions: "Detrazioni Totali",
+  totalNet: "Totale Netto",
+  transport: "Trasporto",
+  transport4: "Trasporto",
+  transportAllowance: "Indennità Trasporto",
+  view: "Visualizza",
+  viewPayrollSheet: "Visualizza Foglio Paga",
+},
+
+hrModals: {
+  accountNumber: "Numero Conto",
+  acknowledgedBy: "Confermato Da",
+  acknowledgedBy16: "Confermato Da",
+  acknowledgedByEmployee: "Confermato Da (Dipendente)",
+  actionDate: "Data Azione",
+  actionTaken: "Azione Intrapresa",
+  active: "Attivo",
+  addRemarks: "Aggiungi osservazioni...",
+  addTrainingRecord: "Aggiungi Registro Formazione",
+  additionalComments: "Commenti Aggiuntivi",
+  additionalNotes: "Note Aggiuntive",
+  address: "Indirizzo",
+  allDepartmentsCleared: "✓ Tutti i dipartimenti hanno completato il nulla osta",
+  allowances: "Indennità",
+  annualPeriodicPerformanceReview: "Valutazione Annuale / Periodica delle Prestazioni",
+  appraisalPeriod: "Periodo di Valutazione",
+  appraisalSavedSuccessfully: "Valutazione salvata con successo",
+  archive: "Archivia",
+  archived: "Archiviato",
+  areasForDevelopment: "Aree di Sviluppo",
+  areasForImprovement: "Aree di Miglioramento",
+  authorizedSignature: "Firma Autorizzata",
+  bankName: "Nome Banca",
+  basicSalary: "Stipendio Base",
+  cancel: "Annulla",
+  cancelled: "Annullato",
+  careerDevelopment: "Sviluppo Professionale",
+  careerGrowthOpportunities: "Opportunità di Crescita Professionale",
+  category: "Categoria",
+  certificateIssued: "Certificato Emesso",
+  certificateNo: "N. Certificato",
+  certificateNumber: "Numero Certificato",
+  certificateOfCompletion: "CERTIFICATO DI COMPLETAMENTO",
+  clearanceChecklist: "Checklist di Nulla Osta",
+  clearanceCompletedSuccessfully: "Nulla osta completato con successo",
+  clearanceForm: "Modulo di Nulla Osta",
+  clearanceSavedSuccessfully: "Nulla osta salvato con successo",
+  cleared: "Autorizzato",
+  cleared3: "Autorizzato",
+  clearedBy: "Autorizzato Da",
+  close: "Chiudi",
+  closedActionTaken: "Chiuso (Azione Intrapresa)",
+  closedNoAction: "Chiuso (Nessuna Azione)",
+  commaseparatedIfMultiple: "Separati da virgola se multipli",
+  comments: "Commenti",
+  communication: "Comunicazione",
+  compensation: "Compenso",
+  compensationBenefits: "Compenso e Benefici",
+  competency: "Competenza",
+  competencyRatings: "Valutazione Competenze",
+  completeLock: "Completa e Blocca",
+  completed: "Completato",
+  completionDate: "Data di Completamento",
+  compliance: "Conformità",
+  conduct: "Condotta",
+  conductedBy: "Condotto Da",
+  confidentialForHrUseOnly: "RISERVATO - SOLO USO HR",
+  confidentialForOfficialUseOnly: "RISERVATO - Solo Uso Ufficiale",
+  confirm: "Conferma",
+  confirmedByHrManager: "Confermato Da (Responsabile HR)",
+  consequencesOfRepeatedViolations: "Conseguenze delle Violazioni Ripetute",
+  consultant: "Consulente",
+  continue: "Continua",
+  contractAmendments: "Emendamenti Contrattuali",
+  contractDocuments: "Documenti Contrattuali",
+  contractEnd: "Fine Contratto",
+  contractEndDate: "Data Fine Contratto",
+  contractInformation: "Informazioni Contrattuali",
+  contractStart: "Inizio Contratto",
+  contractStartDate: "Data Inizio Contratto",
+  contractStatus: "Stato Contratto",
+  contractType: "Tipo Contratto",
+  critical: "Critico",
+  currency: "Valuta",
+  currentlyEmployed: "Attualmente Impiegato",
+  cvResume: "CV / Curriculum Vitae",
+  dataSource: "Fonte Dati",
+  date: "Data",
+  dateIssuedOptional: "Data Emissione (Facoltativa)",
+  dateOfBirth: "Data di Nascita",
+  dateRequested: "Data Richiesta",
+  days: "giorni",
+  deductions: "Detrazioni",
+  delete: "Elimina",
+  department: "Dipartimento",
+  departmentClearanceChecklist: "Checklist Nulla Osta Dipartimento",
+  departmentClearances: "Nulla Osta Dipartimentali",
+  describeImpact: "Descrivi l'Impatto",
+  descriptionOfIncident: "Descrizione dell'Incidente",
+  disciplinaryActionDescription: "Descrizione dell'Azione Disciplinare",
+  disciplinaryActionForm: "Modulo Azione Disciplinare",
+  disciplinaryActionLetter: "Lettera Azione Disciplinare",
+  disciplinaryRecordSavedSuccessfully: "Record disciplinare salvato con successo",
+  disciplinaryStage: "Fase Disciplinare",
+  disciplinaryStage5: "Fase Disciplinare",
+  documentUploads: "Caricamento Documenti",
+  downloadPdf: "Scarica PDF",
+  duration: "Durata",
+  durationIfApplicable: "Durata (se applicabile)",
+  earnings: "Retribuzioni",
+  editCurrentSalaryStructure: "Modifica Struttura Salariale Corrente",
+  editEmployeeInformation: "Modifica Informazioni Dipendente",
+  editEmploymentContract: "Modifica Impiego e Contratto",
+  editIdentityPersonalProfile: "Modifica Identità e Profilo Personale",
+  editTrainingRecord: "Modifica Registro Formazione",
+  editableInformation: "Informazioni Modificabili",
+effectiveDate: "Data di Entrata in Vigore",
+effectiveStartDate: "Data di Inizio Validità",
+
+eg3Days40Hours: "es. 3 giorni, 40 ore",
+egAnnual2024Q12024: "es. Annuale 2024, T1 2024",
+egHrManager: "es. Responsabile HR",
+egUnhcrWorldBankEmbassyOf: "es. UNHCR, Banca Mondiale, Ambasciata del Canada",
+
+email: "Email",
+emailAddress: "Indirizzo Email",
+emailPreview: "Anteprima Email",
+
+employee: "Dipendente",
+employeeAcknowledgement: "Conferma del Dipendente",
+employeeComments: "Commenti del Dipendente",
+employeeInformation: "Informazioni sul Dipendente",
+employeeProfiles: "Profili Dipendenti",
+employeeSignature: "Firma del Dipendente",
+
+employment: "Impiego",
+employmentDetails: "Dettagli Impiego",
+employmentReferenceSummary: "Sintesi Referenza Lavorativa",
+employmentType: "Tipologia di Impiego",
+
+en: "en",
+
+endDate: "Data Fine",
+endOfContract: "Fine Contratto",
+
+escalated: "Escalato",
+excellent: "Eccellente",
+
+exitClearance: "Nulla Osta di Uscita",
+exitClearanceForm: "Modulo di Nulla Osta di Uscita",
+exitDate: "Data di Uscita",
+exitDetails: "Dettagli di Uscita",
+exitEmployee: "Uscita Dipendente",
+exitFeedback: "Feedback di Uscita",
+exitInterviewNotes: "Note del Colloquio di Uscita",
+exitInterviewReport: "Rapporto del Colloquio di Uscita",
+exitInterviewSavedSuccessfully: "Colloquio di uscita salvato con successo",
+exitType: "Tipologia di Uscita",
+exited: "Uscito",
+
+experienceRatings15: "Valutazione Esperienza (1-5)",
+
+expired: "Scaduto",
+expiryDateOptional: "Data di Scadenza (Facoltativa)",
+
+feedback: "Feedback",
+
+female: "Femmina",
+
+fileTooLargeMaximumSizeIs: "File troppo grande. Dimensione massima 10 MB.",
+
+finalActionDetails: "Dettagli Azione Finale",
+finalActionOptional: "Azione Finale (Facoltativa)",
+finalActionType: "Tipo di Azione Finale",
+finalApproval: "Approvazione Finale",
+finalRecommendation: "Raccomandazione Finale",
+finalSettlement: "Liquidazione Finale",
+finalWarning: "Avvertimento Finale",
+
+fixedAmount: "Importo Fisso",
+fixedTerm: "Tempo Determinato",
+
+from: "Da",
+
+fullAddress: "Indirizzo Completo",
+fullEmployeeProfile: "Profilo Completo del Dipendente",
+fullName: "Nome Completo",
+
+fulltime: "Tempo Pieno",
+
+fundedBy: "Finanziato Da",
+
+gender: "Genere",
+general: "Generale",
+
+generatePayroll: "Genera Busta Paga",
+
+generatedBy: "Generato Da",
+generatedOn: "Generato il",
+generatedOn10: "Generato il",
+generatedOn14: "Generato il",
+
+generating: "Generazione in corso...",
+
+goalsForNextPeriod: "Obiettivi per il Prossimo Periodo",
+goalsObjectives: "Obiettivi",
+
+good: "Buono",
+
+grade: "Grado",
+
+grossSalary: "Stipendio Lordo",
+
+hasPayrollImpact: "Ha Impatto sulla Busta Paga?",
+
+healthInsurance: "Assicurazione Sanitaria",
+
+high: "Alto",
+
+hireDate: "Data di Assunzione",
+
+hours: "ore",
+
+housingAllowance: "Indennità di Alloggio",
+
+hrManager: "Responsabile HR",
+
+hrManagerAdminOnly: "🔐 Solo Responsabile HR / Amministratore",
+
+hrManagerApproval: "Approvazione Responsabile HR",
+
+hrManagerName: "Nome Responsabile HR",
+
+hrManagerSignature: "Firma Responsabile HR",
+
+hrSupervisorName: "Nome HR / Supervisore",
+
+humanResourcesDepartment: "Dipartimento Risorse Umane",
+
+humanitarianOrganization: "Organizzazione Umanitaria",
+
+iban: "IBAN",
+
+identificationCopy: "Copia Documento di Identità",
+
+importantSalaryVersioning: "⚠️ Importante: Versionamento Salariale",
+
+inProgress: "In Corso",
+
+incidentDate: "Data dell'Incidente",
+
+incidentDetails: "Dettagli dell'Incidente",
+
+incomeTax: "Imposta sul Reddito",
+
+intern: "Tirocinante",
+
+interviewDate: "Data Colloquio",
+
+interviewedBy: "Intervistato Da",
+
+interviewerHr: "Intervistatore (HR)",
+
+interviewerNotes: "Note dell'Intervistatore",
+
+invalidEmailFormat: "Formato email non valido",
+
+invalidFileTypePleaseUploadPdf:
+  "Tipo di file non valido. Caricare PDF o DOC.",
+
+investigationInitiated: "Indagine Avviata",
+
+issuedBy: "Emesso Da",
+
+issuedDate: "Data Emissione",
+
+jobDetails: "Dettagli Posizione",
+
+jobTitlePosition: "Titolo Posizione",
+
+k1IdentityPersonalProfile:
+  "1. Identità e Profilo Personale",
+
+k2EmploymentContract:
+  "2. Impiego e Contratto",
+
+k3SalaryCompensationActiveRecordOnly:
+  "3. Salario e Compenso (Solo Record Attivo)",
+
+keyAchievements: "Risultati Principali",
+
+lastWorkingDay: "Ultimo Giorno Lavorativo",
+
+leadership: "Leadership",
+
+low: "Basso",
+
+male: "Maschio",
+
+management: "Gestione",
+management17: "Gestione",
+
+managementLeadership: "Gestione e Leadership",
+
+medium: "Medio",
+
+messageBody: "Corpo del Messaggio",
+
+midyearReview: "Valutazione di Metà Anno",
+
+mustBeAPositiveNumber: "Deve essere un numero positivo",
+
+na: "N/D",
+
+nameOfDirectSupervisor:
+  "Nome del Supervisore Diretto",
+
+nationality: "Nazionalità",
+
+needsImprovement: "Necessita Miglioramento",
+
+netSalary: "STIPENDIO NETTO",
+
+noActiveSalaryRecordAvailable:
+  "Nessun record salariale attivo disponibile",
+
+noDataAvailable: "Nessun dato disponibile",
+
+noFileSelected: "Nessun file selezionato",
+notes: "Note",
+notesOptional: "Note (Facoltative)",
+
+noticePeriod: "Periodo di Preavviso",
+noticePeriodDays: "Giorni di Preavviso",
+
+obligationsDuringNoticePeriod:
+  "Obblighi Durante il Periodo di Preavviso",
+
+observationNote: "Nota di Osservazione",
+
+ofBase: "% della Base",
+
+officialEmployeeResignation:
+  "Dimissioni Ufficiali del Dipendente",
+
+officialStamp: "Timbro Ufficiale",
+
+organizationStrengths:
+  "Punti di Forza dell'Organizzazione",
+
+originalHireDate:
+  "Data di Assunzione Originale",
+
+other: "Altro",
+other6: "Altro",
+
+otherAllowance: "Altra Indennità",
+otherAllowances: "Altre Indennità",
+
+otherDeductions: "Altre Detrazioni",
+
+overallRating: "Valutazione Complessiva",
+overallRating12: "Valutazione Complessiva",
+overallRating15: "Valutazione Complessiva",
+
+parttime: "Part-Time",
+
+payDate: "Data di Pagamento",
+payPeriod: "Periodo di Pagamento",
+
+paymentDetails: "Dettagli di Pagamento",
+
+payrollSlip: "Cedolino Paga",
+
+pending: "In Attesa",
+
+pendingClearanceFromSomeDepartments:
+  "Nulla osta ancora in sospeso da alcuni dipartimenti",
+
+performanceAppraisalForm:
+  "Modulo di Valutazione delle Prestazioni",
+
+performanceImprovementPlan:
+  "Piano di Miglioramento delle Prestazioni",
+
+performanceRating:
+  "Valutazione delle Prestazioni",
+
+performanceReview:
+  "Revisione delle Prestazioni",
+
+permanent: "Permanente",
+
+phone: "Telefono",
+phoneNumber: "Numero di Telefono",
+
+pleaseFillInAllRequiredFields:
+  "Compilare tutti i campi obbligatori",
+
+pleaseFillInAllRequiredFields15:
+  "Compilare tutti i campi obbligatori",
+
+policyReferenceOptional:
+  "Riferimento Politica (Facoltativo)",
+
+position: "Posizione",
+position2: "Posizione",
+
+primaryReasonForLeaving:
+  "Motivo Principale della Cessazione",
+
+print: "Stampa",
+
+probation: "Periodo di Prova",
+
+probationReview:
+  "Valutazione del Periodo di Prova",
+
+problemSolving:
+  "Risoluzione dei Problemi",
+
+project: "Progetto",
+projects: "Progetti",
+
+promote: "Promuovi",
+
+quarterOptional:
+  "Trimestre (Facoltativo)",
+
+quarterlyReview:
+  "Valutazione Trimestrale",
+
+rating: "Valutazione",
+
+ratingDescription:
+  "Descrizione della Valutazione",
+
+readonlyInformation:
+  "Informazioni di Sola Lettura",
+
+reasonForLeaving:
+  "Motivo della Cessazione",
+
+reasonForResignation:
+  "Motivo delle Dimissioni",
+
+reference: "Riferimento",
+
+referenceDocumentUploadedSuccessfully:
+  "Documento di riferimento caricato con successo",
+
+referenceType:
+  "Tipo di Referenza",
+
+remarks: "Osservazioni",
+
+renewed: "Rinnovato",
+
+representationAllowance:
+  "Indennità di Rappresentanza",
+
+requestingOrganization:
+  "Organizzazione Richiedente",
+
+resignation: "Dimissioni",
+
+resignationAcceptanceLetter:
+  "Lettera di Accettazione delle Dimissioni",
+
+resignationDate:
+  "Data delle Dimissioni",
+
+resignationLetter:
+  "Lettera di Dimissioni",
+
+resignationSubmitted:
+  "Dimissioni Presentate",
+
+resignationSubmittedSuccessfullyExitProcessStarted:
+  "Dimissioni inviate con successo. Processo di uscita avviato.",
+
+restore: "Ripristina",
+
+reviewDate: "Data Revisione",
+reviewDate1: "Data Revisione",
+
+reviewPeriod: "Periodo di Revisione",
+reviewPeriod11: "Periodo di Revisione",
+
+reviewType: "Tipo di Revisione",
+
+reviewYear: "Anno di Revisione",
+
+reviewedBy: "Revisionato Da",
+
+reviewer: "Valutatore",
+
+reviewerComments:
+  "Commenti del Valutatore",
+
+reviewerInformation:
+  "Informazioni del Valutatore",
+
+reviewerName:
+  "Nome del Valutatore",
+
+reviewerPosition:
+  "Posizione del Valutatore",
+
+reviewerSignature:
+  "Firma del Valutatore",
+
+reviewerTitle:
+  "Titolo del Valutatore",
+
+role: "Ruolo",
+
+rolePosition:
+  "Ruolo / Posizione",
+
+safety: "Sicurezza",
+
+salary: "Stipendio",
+
+salaryDeduction:
+  "Detrazione Salariale",
+
+salaryScaleTable:
+  "Tabella Scala Salariale",
+
+salaryStructure:
+  "Struttura Salariale",
+
+satisfactionRatings15:
+  "Valutazione Soddisfazione (1-5)",
+
+satisfactory:
+  "Soddisfacente",
+
+save: "Salva",
+
+saveChanges:
+  "Salva Modifiche",
+
+saveLock:
+  "Salva e Blocca",
+
+saveNewVersion:
+  "Salva Nuova Versione",
+
+saveProgress:
+  "Salva Avanzamento",
+
+saveReview:
+  "Salva Revisione",
+
+scheduled:
+  "Programmato",
+
+selectFile:
+  "Seleziona File",
+
+selectedPeriod:
+  "Periodo Selezionato",
+
+sentAt:
+  "Inviato il",
+
+severity:
+  "Gravità",
+
+severity4:
+  "Gravità",
+  signature: "Firma",
+
+signatures: "Firme",
+
+signedContract: "Contratto Firmato",
+
+simulated: "Simulato",
+
+socialSecurity: "Previdenza Sociale",
+
+softSkills: "Competenze Trasversali",
+
+spotReview: "Valutazione Straordinaria",
+
+staffId: "ID Dipendente",
+
+staffId13: "ID Dipendente",
+
+startDate: "Data di Inizio",
+
+status: "Stato",
+
+step: "Fase",
+
+strengths: "Punti di Forza",
+
+structuredExitFeedback: "Feedback Strutturato di Uscita",
+
+subject: "Oggetto",
+
+subject8: "Oggetto",
+
+supervisor: "Supervisore",
+
+suspension: "Sospensione",
+
+teamwork: "Lavoro di Squadra",
+
+technical: "Tecnico",
+
+technicalSkills: "Competenze Tecniche",
+
+termination: "Cessazione",
+
+thisActionCannotBeEditedOr:
+  "Questa azione non può essere modificata o annullata dopo il completamento",
+
+thisCertificateIsProudlyPresentedTo:
+  "Questo certificato è conferito con orgoglio a",
+
+thisFieldIsRequired:
+  "Questo campo è obbligatorio",
+
+thisIsToCertifyThat:
+  "Si certifica che",
+
+to: "A",
+
+to7: "A",
+
+toWhomItMayConcern:
+  "A Chi di Competenza",
+
+totalCompensationSummary:
+  "Riepilogo Totale Compensi",
+
+totalDeductions:
+  "Totale Detrazioni",
+
+totalDuration:
+  "Durata Totale",
+
+totalGrossSalary:
+  "Stipendio Lordo Totale",
+
+trainer:
+  "Formatore",
+
+trainingCost:
+  "Costo della Formazione",
+
+trainingProvider:
+  "Ente Formatore",
+
+trainingRecordSavedSuccessfully:
+  "Registro della formazione salvato con successo",
+
+trainingRequired:
+  "Formazione Richiesta",
+
+trainingTitle:
+  "Titolo della Formazione",
+
+trainingType:
+  "Tipologia di Formazione",
+
+transportAllowance:
+  "Indennità di Trasporto",
+
+transportAllowance9:
+  "Indennità di Trasporto",
+
+unsatisfactory:
+  "Insoddisfacente",
+
+updateContractAndEmploymentInformation:
+  "Aggiorna Contratto e Informazioni di Impiego",
+
+updateCoreEmployeeInformation:
+  "Aggiorna Informazioni Principali del Dipendente",
+
+updateEmployeeSalaryAndAllowances:
+  "Aggiorna Stipendio e Indennità del Dipendente",
+
+updateReview:
+  "Aggiorna Valutazione",
+
+upload:
+  "Carica",
+
+uploadFailedPleaseTryAgain:
+  "Caricamento non riuscito. Riprova.",
+
+uploadReferenceDocument:
+  "Carica Documento di Riferimento",
+
+uploadReferenceVerificationForm:
+  "Carica Modulo di Verifica Referenze",
+
+uploadSave:
+  "Carica e Salva",
+
+uploading:
+  "Caricamento in corso...",
+
+verbalWarning:
+  "Richiamo Verbale",
+
+warning:
+  "Avvertimento",
+
+whatWorkedWell:
+  "Cosa Ha Funzionato Bene",
+
+whenDoesThisNewSalaryTake:
+  "Quando entra in vigore questo nuovo stipendio?",
+
+witnessHr:
+  "Testimone HR",
+
+workEnvironment:
+  "Ambiente di Lavoro",
+
+workedWithOurOrganizationInThe:
+  "Ha lavorato con la nostra organizzazione nel ruolo di",
+
+worklifeBalance:
+  "Equilibrio Vita-Lavoro",
+
+wouldRecommendOrganization:
+  "Raccomanderebbe l'organizzazione",
+
+wouldRejoinIfOpportunity:
+  "Rientrerebbe se si presentasse un'opportunità",
+
+wouldYouConsiderReturning:
+  "Prenderebbe in considerazione un ritorno?",
+
+writtenWarning:
+  "Ammonizione Scritta",
+},
+
+};
+
+export const translations = {
+  en,
+  ar,
+  it,
+} as const;
+
+export type Language = keyof typeof translations;

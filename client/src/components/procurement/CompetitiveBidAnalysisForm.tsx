@@ -12,7 +12,7 @@ import { useAuth } from '@/_core/hooks/useAuth';
 import { competitiveBidAnalysisService } from '@/services/competitiveBidAnalysisService';
 import { bidEvaluationCriteriaService } from '@/services/bidEvaluationCriteriaService';
 import { CompetitiveBidAnalysisPrintModal } from './CompetitiveBidAnalysisPrintModal';
-import { useTranslation } from '@/i18n/useTranslation';
+import { useTranslation } from '@/i18n/TranslationProvider';
 import type { CompetitiveBidAnalysis, ProcurementRequest } from '@/types/logistics.types';
 
 interface Props {
@@ -21,7 +21,7 @@ interface Props {
 
 export function CompetitiveBidAnalysisForm({
  pr }: Props) {
- const { t } = useTranslation();
+ const t = useTranslation();
  const { language, isRTL } = useLanguage();
  const { user } = useAuth();
 

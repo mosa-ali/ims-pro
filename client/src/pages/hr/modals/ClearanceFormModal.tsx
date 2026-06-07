@@ -10,7 +10,7 @@ import { useLanguage } from '@/app/contexts/LanguageContext';
 import { StaffMember } from '../types/hrTypes';
 import { exitService, ClearanceRecord, ClearanceItem } from '@/app/services/exitService';
 import { ModalOverlay } from '@/app/components/ui/ModalOverlay';
-import { useTranslation } from '@/i18n/useTranslation';
+import { useTranslation } from '@/i18n/TranslationProvider';
 
 interface Props {
  employee: StaffMember;
@@ -20,7 +20,7 @@ interface Props {
 
 export function ClearanceFormModal({
  employee, onClose, onSave }: Props) {
- const { t } = useTranslation();
+ const t = useTranslation();
  const { language, isRTL } = useLanguage();
  
  // Check if clearance already exists

@@ -13,7 +13,7 @@ import { rfqService, type RequestForQuotation, type RFQSupplier } from '@/servic
 import { procurementWorkflowAutomationService } from '@/services/procurementWorkflowAutomationService';
 import { useAuth } from '@/_core/hooks/useAuth';
 import { RFQPrintModal } from './RFQPrintModal';
-import { useTranslation } from '@/i18n/useTranslation';
+import { useTranslation } from '@/i18n/TranslationProvider';
 
 interface Props {
  rfq: RequestForQuotation;
@@ -22,7 +22,7 @@ interface Props {
 
 export function RFQForm({
  rfq, onUpdate }: Props) {
- const { t } = useTranslation();
+ const t = useTranslation();
  const { language, isRTL } = useLanguage();
  const { user } = useAuth();
  

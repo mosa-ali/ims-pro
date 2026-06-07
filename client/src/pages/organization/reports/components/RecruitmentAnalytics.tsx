@@ -1,6 +1,6 @@
 import { UserPlus, TrendingUp } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { useTranslation } from '@/i18n/useTranslation';
+import { useTranslation } from '@/i18n/TranslationProvider';
 
 interface RecruitmentStats {
  timeToHire: number;
@@ -15,7 +15,7 @@ interface Props {
 
 export function RecruitmentAnalytics({
  data }: Props) {
- const { t } = useTranslation();
+ const t = useTranslation();
  const { language, isRTL} = useLanguage();
  const localT = {
  recruitmentAnalytics: t.orgReports.recruitmentAnalytics,

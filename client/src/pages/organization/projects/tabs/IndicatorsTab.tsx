@@ -5,7 +5,7 @@ import {
 } from 'lucide-react';
 import { trpc } from '@/lib/trpc';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { useTranslation } from '@/i18n/useTranslation';
+import { useTranslation } from '@/i18n/TranslationProvider';
 import { Workbook } from 'exceljs';
 import { saveAs } from 'file-saver';
 import { exportToStandardExcel, exportExcelTemplate, type ExcelColumn } from '@/lib/standardExcelExport';
@@ -56,7 +56,7 @@ interface IndicatorsTabProps {
 
 export function IndicatorsTab({
  projectId }: IndicatorsTabProps) {
- const { t } = useTranslation();
+ const t = useTranslation();
  const { isRTL } = useLanguage();
 const utils = trpc.useUtils();
  

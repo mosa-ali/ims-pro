@@ -20,7 +20,7 @@
 import { useState, useEffect } from 'react';
 import { X, Save, Star } from 'lucide-react';
 import { useLanguage } from '@/app/contexts/LanguageContext';
-import { useTranslation } from '@/i18n/useTranslation';
+import { useTranslation } from '@/i18n/TranslationProvider';
 
 interface PerformanceReview {
  id: string;
@@ -57,7 +57,7 @@ const STORAGE_KEY = 'hr_performance_reviews';
 
 export function PerformanceReviewModal({
  employee, existingReview, onClose, onSave }: Props) {
- const { t } = useTranslation();
+ const t = useTranslation();
  const { language, isRTL } = useLanguage();
  
  const [formData, setFormData] = useState({

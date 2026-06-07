@@ -75,7 +75,7 @@ import {
 import { toast } from"sonner";
 import ExcelJS from"exceljs";
 import { VersionHistoryModal } from '@/components/finance/VersionHistoryModal';
-import { useTranslation } from '@/i18n/useTranslation';
+import { useTranslation } from '@/i18n/TranslationProvider';
 import { BackButton } from "@/components/BackButton";
 
 // Types
@@ -112,7 +112,7 @@ interface Settlement {
 }
 
 export default function AdvancesSettlements() {
- const { t } = useTranslation();
+ const t = useTranslation();
  const { language, isRTL } = useLanguage();
  const { currentOrganization } = useOrganization();
  const navigate = useNavigate();

@@ -9,7 +9,7 @@ import { trpc } from '@/lib/trpc';
 import { toast } from 'sonner';
 import { useOrganization } from '@/contexts/OrganizationContext';
 import { useOperatingUnit } from '@/contexts/OperatingUnitContext';
-import { useTranslation } from '@/i18n/useTranslation';
+import { useTranslation } from '@/i18n/TranslationProvider';
 import { useAuth } from '@/_core/hooks/useAuth';
 import { BackButton } from "@/components/BackButton";
 import { exportOpportunities } from '@/utils/exportOpportunities';
@@ -35,7 +35,7 @@ interface Opportunity {
 type DeadlineStatus = 'open' | 'closing-soon' | 'urgent' | 'closed';
 
 export default function Opportunities() {
- const { t } = useTranslation();
+ const t = useTranslation();
  const { isRTL } = useLanguage();
  const [, setLocation] = useLocation();
  const { currentOrganizationId } = useOrganization();

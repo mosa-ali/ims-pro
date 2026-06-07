@@ -47,7 +47,7 @@ interface CRUDCard {
 
 export default function DonorCRMDashboard() {
   const { language, isRTL} = useLanguage();
- const { t } = useTranslation();
+ const t = useTranslation();
 const { currentOrganizationId } = useOrganization();
  const { currentOperatingUnitId } = useOperatingUnit();
 

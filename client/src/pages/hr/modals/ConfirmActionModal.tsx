@@ -8,7 +8,7 @@
 import { X, AlertTriangle } from 'lucide-react';
 import { useLanguage } from '@/app/contexts/LanguageContext';
 import { ModalOverlay } from '@/app/components/ui/ModalOverlay';
-import { useTranslation } from '@/i18n/useTranslation';
+import { useTranslation } from '@/i18n/TranslationProvider';
 
 interface ConfirmActionModalProps {
  isOpen: boolean;
@@ -29,7 +29,7 @@ export function ConfirmActionModal({
  actionType,
  employeeName
 }: ConfirmActionModalProps) {
- const { t } = useTranslation();
+ const t = useTranslation();
  const { language, isRTL } = useLanguage();
 
  const labels = {

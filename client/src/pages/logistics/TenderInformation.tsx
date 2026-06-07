@@ -32,7 +32,7 @@ import SignatureCapture from "@/components/SignatureCapture";
 import { toast } from "sonner";
 import { format } from "date-fns";
 import { ar } from "date-fns/locale";
-import { useTranslation } from '@/i18n/useTranslation';
+import { useTranslation } from '@/i18n/TranslationProvider';
 import { BackButton } from "@/components/BackButton";
 import {
   Plus,
@@ -60,7 +60,7 @@ interface Bidder {
 }
 
 export default function TenderInformation() {
- const { t } = useTranslation();
+ const t = useTranslation();
  const { id } = useParams<{ id: string }>();
  const [, setLocation] = useLocation();
  const { language, isRTL } = useLanguage();

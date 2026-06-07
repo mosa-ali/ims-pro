@@ -22,12 +22,12 @@ import {
 import { Plus, Search, Download, Eye, Edit, FileText } from "lucide-react";
 import { Link, useLocation } from "wouter";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { useTranslation } from '@/i18n/useTranslation';
+import { useTranslation } from '@/i18n/TranslationProvider';
 import { BackButton } from "@/components/BackButton";
 import { PaginationControls } from "@/components/PaginationControls";
 
 export default function IssuedItemsList() {
- const { t } = useTranslation();
+ const t = useTranslation();
  const { user } = useAuth();
  const { isRTL, language } = useLanguage();
  const [, navigate] = useLocation();
