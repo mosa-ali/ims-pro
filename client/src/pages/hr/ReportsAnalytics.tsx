@@ -41,7 +41,7 @@ import {
 } from 'lucide-react';
 import { useNavigate } from '@/lib/router-compat';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { useTranslation } from '@/i18n/TranslationProvider';
+import { useTranslation } from '@/i18n/useTranslation';
 import { BackButton } from "@/components/BackButton";
 
 type AnalyticsView = 
@@ -62,7 +62,7 @@ interface AnalyticsCard {
 }
 
 export function ReportsAnalytics() {
- const t = useTranslation();
+ const { t } = useTranslation();
  const { language, isRTL } = useLanguage();
  const navigate = useNavigate();
  const [activeView, setActiveView] = useState<AnalyticsView>('landing');

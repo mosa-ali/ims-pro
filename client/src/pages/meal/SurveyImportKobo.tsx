@@ -30,7 +30,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { useState } from 'react';
 import { Upload, Loader2, FileSpreadsheet, FileText, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { useTranslation } from '@/i18n/TranslationProvider';
+import { useTranslation } from '@/i18n/useTranslation';
 import { BackButton } from "@/components/BackButton";
 
 interface ImportPreview {
@@ -47,7 +47,7 @@ interface ImportPreview {
 }
 
 export function SurveyImportKobo() {
- const t = useTranslation();
+ const { t } = useTranslation();
  const navigate = useNavigate();
  const searchString = useSearch();
  const searchParams = new URLSearchParams(searchString);

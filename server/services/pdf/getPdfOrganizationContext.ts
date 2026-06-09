@@ -183,7 +183,7 @@ export async function getPdfOrganizationContext(
  */
 export function getOrganizationDisplayName(
   context: PdfOrganizationContext,
-  language: 'en' | 'ar'
+  language: 'en' | 'ar' | 'it'
 ): string {
   if (language === 'ar' && context.organizationNameAr) {
     return context.organizationNameAr;
@@ -200,7 +200,7 @@ export function getOrganizationDisplayName(
  */
 export function getOperatingUnitDisplayName(
   context: PdfOrganizationContext,
-  language: 'en' | 'ar'
+  language: 'en' | 'ar' | 'it'
 ): string {
   // Note: Operating units don't have Arabic names in current schema
   // This function is here for consistency and future extensibility
@@ -216,7 +216,7 @@ export function getOperatingUnitDisplayName(
  */
 export function getSystemDisplayName(
   context: PdfOrganizationContext,
-  language: 'en' | 'ar'
+  language: 'en' | 'ar' | 'it'
 ): string {
   if (language === 'ar' && context.brandingSystemNameAr) {
     return context.brandingSystemNameAr;
@@ -233,7 +233,7 @@ export function getSystemDisplayName(
  */
 export function getFooterText(
   context: PdfOrganizationContext,
-  language: 'en' | 'ar'
+  language: 'en' | 'ar' | 'it'
 ): string {
   if (language === 'ar' && context.brandingFooterTextAr) {
     return context.brandingFooterTextAr;

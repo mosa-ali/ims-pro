@@ -55,7 +55,7 @@ import { SanctionsDisciplinaryCard } from './employee-cards/SanctionsDisciplinar
 import { TrainingDevelopmentCard } from './employee-cards/TrainingDevelopmentCard';
 import { ExitOffboardingCard } from './employee-cards/ExitOffboardingCard';
 import { ReferenceVerificationCard } from './employee-cards/ReferenceVerificationCard';
-import { useTranslation } from '@/i18n/TranslationProvider';
+import { useTranslation } from '@/i18n/useTranslation';
 import { BackButton } from "@/components/BackButton";
 
 interface SubCard {
@@ -68,7 +68,7 @@ interface SubCard {
 }
 
 export function EmployeeCard() {
- const t = useTranslation();
+ const { t } = useTranslation();
  const { id } = useParams<{ id: string }>();
  const navigate = useNavigate();
  const { language, isRTL } = useLanguage();

@@ -23,11 +23,11 @@ import { trpc } from '@/lib/trpc';
 import { CheckCircle, XCircle, Clock, Shield, ShieldCheck, ShieldX, Filter, Eye, MessageSquare, Calendar, BarChart3, FileText, User, AlertTriangle, ChevronDown, ChevronUp } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useNavigate } from '@/lib/router-compat';
-import { useTranslation } from '@/i18n/TranslationProvider';
+import { useTranslation } from '@/i18n/useTranslation';
 import { BackButton } from "@/components/BackButton";
 
 export function DataVerification() {
- const t = useTranslation();
+ const { t } = useTranslation();
  const { language, isRTL} = useLanguage();
  
  const navigate = useNavigate();

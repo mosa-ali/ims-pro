@@ -1,7 +1,7 @@
 import React from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Building2 } from 'lucide-react';
-import { useTranslation } from '@/i18n/TranslationProvider';
+import { useTranslation } from '@/i18n/useTranslation';
 
 interface BrandingPanelProps {
   organizationLogo?: string;

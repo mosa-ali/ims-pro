@@ -3,7 +3,7 @@ import { useAuth } from '@/_core/hooks/useAuth';
 import { useOrganization } from "@/contexts/OrganizationContext";
 import { useOperatingUnit } from "@/contexts/OperatingUnitContext";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { useTranslation } from '@/i18n/TranslationProvider';
+import { useTranslation } from "@/i18n/useTranslation";
 import { useLocation } from "wouter";
 import { formatCurrency } from "@/utils/formatters";
 import { Button } from "@/components/ui/button";
@@ -98,7 +98,7 @@ type OrgDashboardTranslations = Record<string, string | undefined>;
 
 export default function OrganizationDashboard() {
   const { user } = useAuth();
-  const t = useTranslation();
+  const { t } = useTranslation();
   const { currentOrganizationId } = useOrganization();
   const { currentOperatingUnitId } = useOperatingUnit();
   const { direction, isRTL } = useLanguage();

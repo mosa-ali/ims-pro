@@ -29,7 +29,7 @@ import { DeleteConfirmationModal } from '@/components/DeleteConfirmationModal';
 import toast, { Toaster } from 'react-hot-toast';
 import { Link } from 'wouter';
 import ExcelJS from 'exceljs';
-import { useTranslation } from '@/i18n/TranslationProvider';
+import { useTranslation } from '@/i18n/useTranslation';
 import { BackButton } from "@/components/BackButton";
 
 
@@ -42,7 +42,7 @@ type ProjectStatus =
   | "cancelled";
 
 export default function ProjectsCRUDPage() {
-  const t = useTranslation();
+  const { t } = useTranslation();
   const { language, direction, isRTL } = useLanguage();
   const { currentOrganizationId } = useOrganization();
   const { currentOperatingUnitId } = useOperatingUnit();

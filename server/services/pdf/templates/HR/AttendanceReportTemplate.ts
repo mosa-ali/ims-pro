@@ -19,7 +19,7 @@ export interface AttendanceReportData {
     overtimeHours: number;
     status: string;
   }>;
-  language: 'en' | 'ar';
+  language: 'en' | 'ar' | 'it';
 }
 
 export function generateAttendanceReportHtml(data: AttendanceReportData): string {

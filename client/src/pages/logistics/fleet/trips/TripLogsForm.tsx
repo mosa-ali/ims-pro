@@ -8,12 +8,12 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Save } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { trpc } from "@/lib/trpc";
-import { useTranslation } from '@/i18n/TranslationProvider';
+import { useTranslation } from '@/i18n/useTranslation';
 import { BackButton } from "@/components/BackButton";
 
 function VehicleDropdown({
  value, onChange, isRTL }: { value: string; onChange: (value: string) => void; isRTL: boolean }) {
-  const t = useTranslation();
+  const { t } = useTranslation();
  const { data: vehicles } = trpc.logistics.vehicles.list.useQuery({ limit: 100, offset: 0 });
  return (
  <Select value={value} onValueChange={onChange}>
@@ -33,7 +33,7 @@ function VehicleDropdown({
 
 function DriverDropdown({
  value, onChange, isRTL }: { value: string; onChange: (value: string) => void; isRTL: boolean }) {
-  const t = useTranslation();
+  const { t } = useTranslation();
  const { data: drivers } = trpc.logistics.drivers.list.useQuery({ limit: 100, offset: 0 });
  return (
  <Select value={value} onValueChange={onChange}>
@@ -52,7 +52,7 @@ function DriverDropdown({
 }
 
 export default function TripLogsForm() {
- const t = useTranslation();
+ const { t } = useTranslation();
  const [, setLocation] = useLocation();
  const [formData, setFormData] = useState({
  vehicleId: "",

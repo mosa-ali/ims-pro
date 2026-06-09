@@ -5,17 +5,73 @@ import { Calendar, ChevronRight } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useLocation } from 'wouter';
 
+const getDeadlineStatus = (deadline: string) => {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  const dueDate = new Date(deadline);
+  dueDate.setHours(0, 0, 0, 0);
+
+  const days = Math.ceil(
+    (dueDate.getTime() - today.getTime()) /
+    (1000 * 60 * 60 * 24)
+  );
+
+  if (days < 0) {
+    return {
+      days,
+      label: `${Math.abs(days)}d overdue`,
+      className: "bg-red-100 text-red-700 border-red-300",
+      severity: "overdue",
+    };
+  }
+
+  if (days === 0) {
+    return {
+      days,
+      label: "Due Today",
+      className: "bg-red-600 text-white border-red-600",
+      severity: "today",
+    };
+  }
+
+  if (days <= 7) {
+    return {
+      days,
+      label: `${days}d left`,
+      className: "bg-orange-100 text-orange-700 border-orange-300",
+      severity: "critical",
+    };
+  }
+
+  if (days <= 30) {
+    return {
+      days,
+      label: `${days}d left`,
+      className: "bg-yellow-100 text-yellow-700 border-yellow-300",
+      severity: "warning",
+    };
+  }
+
+  return {
+    days,
+    label: `${days}d left`,
+    className: "bg-green-100 text-green-700 border-green-300",
+    severity: "normal",
+  };
+};
+
+
 // ─── Interface for compact deadline item ──────────────────────────────────
 
 interface CompactDeadlineItem {
   id: number;
-  projectId: number | null;
-  projectCode: string;
+  projectId: string;
   projectName: string;
   reportType: string;
   reportStatus: string; // ALL statuses: NOT_STARTED, PLANNED, UNDER_PREPARATION, UNDER_REVIEW, SUBMITTED_TO_HQ, SUBMITTED_TO_DONOR
   reportDeadline: string;
-  daysUntilDeadline: number;
+  daysOverdue: number;
   isOverdue: boolean;
   isUrgent: boolean;
   isUpcoming: boolean;
@@ -60,92 +116,117 @@ export function UpcomingReportingDeadlines({
     dLeft: t?.dLeft || 'd left',
   };
 
-  // Status label mapping for all possible report statuses
-  const statusLabels: Record<string, string> = {
-    NOT_STARTED: 'Not Started',
-    PLANNED: 'Planned',
-    UNDER_PREPARATION: 'Under Preparation',
-    UNDER_REVIEW: 'Under Review',
-    SUBMITTED_TO_HQ: 'Submitted to HQ',
-    SUBMITTED_TO_DONOR: 'Submitted to Donor',
-  };
+// ─────────────────────────────────────────────────────────────
+// Dashboard deadline display
+// Status is intentionally ignored to prevent crashes caused by
+// new or unexpected report statuses.
+// UI is driven only by deadline urgency.
+// ─────────────────────────────────────────────────────────────
 
-  // Get status badge color based on report status and deadline urgency
-  const getStatusBadgeVariant = (
-    item: CompactDeadlineItem
-  ): 'destructive' | 'outline' | 'secondary' | 'default' => {
-    // Priority 1: Deadline urgency (overdue/urgent takes precedence)
-    if (item.isOverdue) return 'destructive';
-    if (item.isUrgent) return 'outline';
-    if (item.isUpcoming) return 'secondary';
-    
-    // Priority 2: Report status for future deadlines
-    if (item.reportStatus === 'SUBMITTED_TO_DONOR' || item.reportStatus === 'SUBMITTED_TO_HQ') {
-      return 'secondary';
-    }
-    if (item.reportStatus === 'UNDER_REVIEW') {
-      return 'outline';
-    }
-    
-    // Default for not started, planned, under preparation
-    return 'default';
-  };
+// Get status badge color based ONLY on deadline urgency
+const getStatusBadgeVariant = (
+  item: CompactDeadlineItem
+): 'destructive' | 'outline' | 'secondary' | 'default' => {
+  if (item.isOverdue) {
+    return 'destructive';
+  }
 
-  // Get priority color and border
-  const getPriorityColor = (item: CompactDeadlineItem) => {
-    if (item.isOverdue) return 'border-l-4 border-red-500 bg-red-50';
-    if (item.isUrgent) return 'border-l-4 border-amber-500 bg-amber-50';
-    if (item.isUpcoming) return 'border-l-4 border-blue-400 bg-blue-50';
-    return 'border-l-4 border-gray-300 bg-gray-50';
-  };
+  if (item.isUrgent) {
+    return 'outline';
+  }
 
-  // Get status badge with label
-  const getStatusBadge = (item: CompactDeadlineItem) => {
-    const variant = getStatusBadgeVariant(item);
-    const label = statusLabels[item.reportStatus] || item.reportStatus || 'Unknown';
+  if (item.isUpcoming) {
+    return 'secondary';
+  }
 
-    if (item.isOverdue) {
-      return (
-        <Badge variant={variant} className="text-xs whitespace-nowrap">
-          {labels.overdue}
-        </Badge>
-      );
-    }
-    if (item.isUrgent) {
-      return (
-        <Badge variant={variant} className="text-xs border-amber-500 text-amber-700 whitespace-nowrap">
-          {labels.urgent}
-        </Badge>
-      );
-    }
-    if (item.isUpcoming) {
-      return (
-        <Badge variant={variant} className="text-xs whitespace-nowrap">
-          {labels.upcoming}
-        </Badge>
-      );
-    }
+  return 'default';
+};
 
-    // For future deadlines, show the report status
+// Get priority color and border
+const getPriorityColor = (item: CompactDeadlineItem) => {
+  if (item.isOverdue) {
+    return 'border-l-4 border-red-500 bg-red-50';
+  }
+
+  if (item.isUrgent) {
+    return 'border-l-4 border-amber-500 bg-amber-50';
+  }
+
+  if (item.isUpcoming) {
+    return 'border-l-4 border-blue-400 bg-blue-50';
+  }
+
+  return 'border-l-4 border-gray-300 bg-gray-50';
+};
+
+// Get badge based ONLY on deadline urgency
+const getStatusBadge = (item: CompactDeadlineItem) => {
+  if (item.isOverdue) {
     return (
-      <Badge variant={variant} className="text-xs whitespace-nowrap">
-        {label}
+      <Badge
+        variant="destructive"
+        className="text-xs whitespace-nowrap"
+      >
+        {labels.overdue}
       </Badge>
     );
-  };
+  }
+
+  if (item.isUrgent) {
+    return (
+      <Badge
+        variant="outline"
+        className="text-xs border-amber-500 text-amber-700 whitespace-nowrap"
+      >
+        {labels.urgent}
+      </Badge>
+    );
+  }
+
+  if (item.isUpcoming) {
+    return (
+      <Badge
+        variant="secondary"
+        className="text-xs whitespace-nowrap"
+      >
+        {labels.upcoming}
+      </Badge>
+    );
+  }
+
+  return (
+    <Badge
+      variant="default"
+      className="text-xs whitespace-nowrap"
+    >
+      Active
+    </Badge>
+  );
+};
 
   // Format days display
-  const formatDays = (days: number) => {
-    if (days < 0) {
-      return `${Math.abs(days)}d overdue`;
-    }
+  const formatDaysUntilDeadline = (deadline: string) => {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
 
-    if (days === 0) {
-      return 'Due today';
-    }
+  const dueDate = new Date(deadline);
+  dueDate.setHours(0, 0, 0, 0);
 
-    return `${days}d`;
-  };
+  const days = Math.ceil(
+    (dueDate.getTime() - today.getTime()) /
+    (1000 * 60 * 60 * 24)
+  );
+
+  if (days < 0) {
+    return `${Math.abs(days)}d overdue`;
+  }
+
+  if (days === 0) {
+    return 'Due today';
+  }
+
+  return `${days}d`;
+};
 
   // Handle row click
   const handleRowClick = (item: CompactDeadlineItem) => {
@@ -197,7 +278,7 @@ export function UpcomingReportingDeadlines({
       </Card>
     );
   }
-
+  
   return (
     <Card className="border border-gray-200" dir={isRTL ? 'rtl' : 'ltr'}>
       <CardHeader className="pb-3">
@@ -231,9 +312,6 @@ export function UpcomingReportingDeadlines({
                   <span className="font-medium text-sm truncate">
                     {item.reportType}
                   </span>
-                  <span className="text-xs text-gray-600 truncate">
-                    {item.projectCode}
-                  </span>
                 </div>
                 <p className="text-xs text-gray-600 truncate">
                   {item.projectName}
@@ -251,38 +329,71 @@ export function UpcomingReportingDeadlines({
 
               {/* Right: Days + Status + Action */}
               <div className="flex items-center gap-2 flex-shrink-0">
-                <span className="text-xs font-semibold text-gray-700 whitespace-nowrap">
-                  {formatDays(item.daysUntilDeadline)}
-                </span>
+                {(() => {
+                  const deadlineStatus = getDeadlineStatus(item.reportDeadline);
 
-                {getStatusBadge(item)}
+                  return (
+                    <>
+                      {/* Days Remaining Badge */}
+                      <Badge
+                        variant="outline"
+                        className={`text-xs whitespace-nowrap font-semibold ${deadlineStatus.className}`}
+                      >
+                        {deadlineStatus.label}
+                      </Badge>
 
-                {item.actionRequired && (
-                  <Badge variant="destructive" className="text-xs whitespace-nowrap">
-                    {labels.actionRequired}
-                  </Badge>
-                )}
+                      {/* Action Required */}
+                      {(item.actionRequired || deadlineStatus.days <= 6) && (
+                        <Badge
+                          variant="destructive"
+                          className="text-xs whitespace-nowrap animate-pulse"
+                        >
+                          {labels.actionRequired}
+                        </Badge>
+                      )}
 
-                <ChevronRight className="w-4 h-4 text-gray-400" />
+                      {/* Overdue Warning */}
+                      {deadlineStatus.days < 0 && (
+                        <Badge
+                          variant="destructive"
+                          className="text-xs whitespace-nowrap"
+                        >
+                          Overdue
+                        </Badge>
+                      )}
+
+                      {/* Due Today */}
+                      {deadlineStatus.days === 0 && (
+                        <Badge
+                          className="text-xs whitespace-nowrap bg-red-600 text-white"
+                        >
+                          Due Today
+                        </Badge>
+                      )}
+
+                      <ChevronRight className="w-4 h-4 text-gray-400" />
+                    </>
+                  );
+                })()}
               </div>
-            </div>
-          </div>
-        ))}
+              </div>
+              </div>
+              ))}
 
-        {/* Show indicator if there are more than displayed */}
-        {totalCount > displayDeadlines.length && (
-          <div className="text-xs text-gray-500 text-center py-2">
-            Showing {displayDeadlines.length} of {totalCount} deadlines
-          </div>
-        )}
+              {/* Show indicator if there are more than displayed */}
+              {totalCount > displayDeadlines.length && (
+                <div className="text-xs text-gray-500 text-center py-2">
+                  Showing {displayDeadlines.length} of {totalCount} deadlines
+                </div>
+              )}
 
-        {/* Footer: View All link */}
-        <div className="pt-3 border-t">
-          <button
-            onClick={() => setLocation('/organization/reporting-schedule')}
-            className="text-xs font-medium text-indigo-600 hover:text-indigo-700 hover:underline"
-          >
-            {labels.viewAll} →
+              {/* Footer: View All link */}
+              <div className="pt-3 border-t">
+                <button
+                  onClick={() => setLocation('/organization/reporting-schedule')}
+                  className="text-xs font-medium text-indigo-600 hover:text-indigo-700 hover:underline"
+                >
+                  {labels.viewAll} →
           </button>
         </div>
       </CardContent>

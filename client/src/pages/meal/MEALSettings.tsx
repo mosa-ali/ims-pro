@@ -18,11 +18,11 @@ import {
  ArrowLeft, ArrowRight, Plus, Edit, Trash2, Settings, FileText,
  ClipboardList, History, Download
 } from 'lucide-react';
-import { useTranslation } from '@/i18n/TranslationProvider';
+import { useTranslation } from '@/i18n/useTranslation';
 import { BackButton } from "@/components/BackButton";
 
 export function MEALSettings() {
- const t = useTranslation();
+ const { t } = useTranslation();
  const { language, isRTL} = useLanguage();
  const navigate = useNavigate();
 

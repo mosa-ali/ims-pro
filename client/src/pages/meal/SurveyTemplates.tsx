@@ -26,11 +26,11 @@ import { trpc } from '@/lib/trpc';
 import { useOrganization } from '@/contexts/OrganizationContext';
 import { useOperatingUnit } from '@/contexts/OperatingUnitContext';
 import { Button } from '@/components/ui/button';
-import { useTranslation } from '@/i18n/TranslationProvider';
+import { useTranslation } from '@/i18n/useTranslation';
 import { BackButton } from "@/components/BackButton";
 
 export function SurveyTemplates() {
- const t = useTranslation();
+ const { t } = useTranslation();
  const navigate = useNavigate();
  const { language, isRTL } = useLanguage();
  const searchString = useSearch();

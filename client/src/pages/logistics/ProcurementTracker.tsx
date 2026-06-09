@@ -17,17 +17,17 @@ import { Search, Download, FileText, ShoppingCart, Package, CheckCircle, Clock, 
 import { Link, useLocation } from "wouter";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { format } from "date-fns";
-import { useTranslation } from '@/i18n/TranslationProvider';
+import { useTranslation } from '@/i18n/useTranslation';
 import { BackButton } from "@/components/BackButton";
 
 export default function ProcurementTracker() {
- const t = useTranslation();
+ const { t } = useTranslation();
  const { user } = useAuth();
  const { isRTL } = useLanguage();
  const [, navigate] = useLocation();
  const [search, setSearch] = useState("");
  const { currentOrganization } = useOrganization();
- const organizationId = currentOrganization?.id || 1;
+ const organizationId = currentOrganization?.id || 0;
 
  const { data, isLoading } = trpc.logistics.purchaseRequests.list.useQuery({ organizationId, search: search || undefined, limit: 50, offset: 0 });
 

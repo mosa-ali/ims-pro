@@ -9,7 +9,7 @@ import { AlertTriangle, Plus, Edit, Trash2, Save } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import type { HRAnnualPlan, HRRisk } from '@shared/types/hrAnnualPlanning';
 
-import { useTranslation } from '@/i18n/TranslationProvider';
+import { useTranslation } from '@/i18n/useTranslation';
 
 type RiskImpact = 'High' | 'Medium' | 'Low';
 type RiskLikelihood = 'High' | 'Medium' | 'Low';
@@ -22,7 +22,7 @@ interface RiskMitigationSectionProps {
 
 export function RiskMitigationSection({
  plan, isEditing, onUpdate }: RiskMitigationSectionProps) {
- const t = useTranslation();
+ const { t } = useTranslation();
  const { language, isRTL } = useLanguage();
  
  const [isAddingNew, setIsAddingNew] = useState(false);

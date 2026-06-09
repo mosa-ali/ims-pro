@@ -813,7 +813,7 @@ function ReportForm({
  grants: any[];
  language: string;
 }) {
- const t = useTranslation();
+ const { t } = useTranslation();
  return (
  <div className="space-y-4">
  <div className="grid grid-cols-2 gap-4">

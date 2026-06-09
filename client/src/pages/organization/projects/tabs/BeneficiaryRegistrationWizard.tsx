@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { X } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { useTranslation } from '@/i18n/TranslationProvider';
+import { useTranslation } from '@/i18n/useTranslation';
 
 interface Beneficiary {
  id: string;
@@ -57,7 +57,7 @@ interface BeneficiaryRegistrationWizardProps {
 
 export function BeneficiaryRegistrationWizard({
  isOpen, onClose, onSubmit }: BeneficiaryRegistrationWizardProps) {
- const t = useTranslation();
+ const { t } = useTranslation();
  const { isRTL } = useLanguage();
 const [currentStep, setCurrentStep] = useState(1);
 

@@ -7,7 +7,7 @@ import { useState, useEffect, useCallback } from "react";
 import { useLanguage } from '@/contexts/LanguageContext';
 
 
-export type Language = 'en' | 'ar' | 'it';
+export type Language = 'en' | 'ar' | 'it' | 'it';
 
 
 interface TranslationContext {

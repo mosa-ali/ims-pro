@@ -8,7 +8,7 @@ import React, { useRef } from 'react';
 import { X, Printer } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { BidEvaluationCriteriaPrint } from './BidEvaluationCriteriaPrint';
-import { useTranslation } from '@/i18n/TranslationProvider';
+import { useTranslation } from '@/i18n/useTranslation';
 import type { BidEvaluationCriteria } from '@/types/logistics.types';
 
 interface Props {
@@ -18,7 +18,7 @@ interface Props {
 
 export function BidEvaluationCriteriaPrintModal({
  criteria, onClose }: Props) {
- const t = useTranslation();
+ const { t } = useTranslation();
  const { language } = useLanguage();
  const printAreaRef = useRef<HTMLDivElement>(null);
 

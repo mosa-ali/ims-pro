@@ -9,7 +9,7 @@ interface PasswordRequirement {
 
 interface PasswordStrengthMeterProps {
   password: string;
-  language?: 'en' | 'ar';
+  language?: 'en' | 'ar' | 'it';
   minLength?: number;
   requireUppercase?: boolean;
   requireLowercase?: boolean;

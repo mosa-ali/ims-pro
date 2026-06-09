@@ -24,14 +24,14 @@ import {
  AlertCircle,
 } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { useTranslation } from '@/i18n/TranslationProvider';
+import { useTranslation } from '@/i18n/useTranslation';
 import { BackButton } from "@/components/BackButton";
 import { trpc } from '@/lib/trpc';
 import { useOrganization } from '@/contexts/OrganizationContext';
 import { useOperatingUnit } from '@/contexts/OperatingUnitContext';
 
 export function AttendanceRecordsTable() {
- const t = useTranslation();
+ const { t } = useTranslation();
  const { language, isRTL } = useLanguage();
  const { currentOrganizationId } = useOrganization();
  const { currentOperatingUnitId } = useOperatingUnit();

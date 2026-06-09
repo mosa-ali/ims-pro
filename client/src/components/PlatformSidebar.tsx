@@ -1,7 +1,7 @@
 import { LayoutDashboard, Building2, Settings, ClipboardList, Mail } from "lucide-react";
 import { Link, useLocation } from "wouter";
-import { useTranslation } from "@/i18n/TranslationProvider";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { useTranslation } from "@/i18n/useTranslation";
 import { cn } from "@/lib/utils";
 
 interface NavItem {
@@ -13,7 +13,7 @@ interface NavItem {
 }
 
 export default function PlatformSidebar() {
-  const t = useTranslation();
+  const { t } = useTranslation();
   const { isRTL, language } = useLanguage();
   const [location] = useLocation();
 

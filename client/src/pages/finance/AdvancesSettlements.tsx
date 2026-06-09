@@ -75,7 +75,7 @@ import {
 import { toast } from"sonner";
 import ExcelJS from"exceljs";
 import { VersionHistoryModal } from '@/components/finance/VersionHistoryModal';
-import { useTranslation } from '@/i18n/TranslationProvider';
+import { useTranslation } from '@/i18n/useTranslation';
 import { BackButton } from "@/components/BackButton";
 
 // Types
@@ -112,11 +112,11 @@ interface Settlement {
 }
 
 export default function AdvancesSettlements() {
- const t = useTranslation();
+ const { t } = useTranslation();
  const { language, isRTL } = useLanguage();
  const { currentOrganization } = useOrganization();
  const navigate = useNavigate();
- const organizationId = currentOrganization?.id || 1;
+ const organizationId = currentOrganization?.id || 0;
 
  // State
  const [searchTerm, setSearchTerm] = useState("");
@@ -1349,7 +1349,7 @@ export default function AdvancesSettlements() {
  versions={versionHistoryData || []}
  title={versionHistoryData?.[0]?.advanceNumber || labels.title}
  isLoading={isLoadingVersions}
- language={language as 'en' | 'ar'}
+ language={language as 'en' | 'ar' | 'it'}
  renderVersionDetails={(version) => (
  <div className="grid grid-cols-2 gap-2 text-sm">
  <div>

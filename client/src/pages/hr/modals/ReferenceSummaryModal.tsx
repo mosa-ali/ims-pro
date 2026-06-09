@@ -10,7 +10,7 @@ import { X, Printer } from 'lucide-react';
 import { StaffMember } from '../types/hrTypes';
 import { OfficialDocumentTemplate } from '@/app/components/hr/OfficialDocumentTemplate';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { useTranslation } from '@/i18n/TranslationProvider';
+import { useTranslation } from '@/i18n/useTranslation';
 
 interface Props {
  employee: StaffMember;
@@ -21,7 +21,7 @@ interface Props {
 
 export function ReferenceSummaryModal({
  employee, language, isRTL, onClose }: Props) {
- const t = useTranslation();
+ const { t } = useTranslation();
  const formatDate = (dateString?: string) => {
  if (!dateString) return '-';
  return new Date(dateString).toLocaleDateString(t.hrModals.en, {

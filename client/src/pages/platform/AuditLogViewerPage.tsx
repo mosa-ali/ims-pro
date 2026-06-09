@@ -3,7 +3,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { trpc } from '@/lib/trpc';
 import { Shield, Search, Download, Filter, Calendar, User, FileText, ChevronLeft, ChevronRight, AlertTriangle } from 'lucide-react';
-import { useTranslation } from '@/i18n/TranslationProvider';
+import { useTranslation } from '@/i18n/useTranslation';
 
 const labels = {
  en: {
@@ -121,7 +121,7 @@ interface AuditLog {
 const PAGE_SIZE = 25;
 
 export default function AuditLogViewerPage() {
- const t = useTranslation();
+ const { t } = useTranslation();
  const { language, isRTL } = useLanguage();
  const { user } = useAuth();
  const labels = language === 'ar' ? labels.ar : labels.en;

@@ -5,7 +5,7 @@ import { saveAs } from 'file-saver';
 import { UnifiedExportButton } from '@/components/exports/UnifiedExportButton';
 import { trpc } from '@/lib/trpc';
 import { useAuth } from '@/_core/hooks/useAuth';
-import { useTranslation } from '@/i18n/TranslationProvider';
+import { useTranslation } from '@/i18n/useTranslation';
 import { BackButton } from "@/components/BackButton";
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -36,7 +36,7 @@ interface PipelineOpportunity {
 }
 
 export function PipelineManagement() {
-  const t = useTranslation();
+  const { t } = useTranslation();
   const { isRTL } = useLanguage();
   const { user } = useAuth();
   
@@ -60,7 +60,7 @@ export function PipelineManagement() {
       donorName: record.donorName,
       donorType: record.donorType as PipelineOpportunity['donorType'],
       fundingWindow: record.fundingWindow || '',
-      deadline: record.deadline ? (typeof record.deadline === 'string' ? record.deadline : record.deadline.toISOString().split('T')[0]) : '',
+      deadline: typeof record.deadline === 'string' ? record.deadline : new Date().toISOString(),
       indicativeBudgetMin: parseFloat(record.indicativeBudgetMin?.toString() || '0'),
       indicativeBudgetMax: parseFloat(record.indicativeBudgetMax?.toString() || '0'),
       sectors: Array.isArray(record.sectors) ? record.sectors : [],
@@ -72,8 +72,8 @@ export function PipelineManagement() {
       projectManagerName: record.projectManagerName || undefined,
       projectManagerEmail: record.projectManagerEmail || undefined,
       notes: record.notes || '',
-      createdAt: typeof record.createdAt === 'string' ? record.createdAt : (record.createdAt?.toISOString() || new Date().toISOString()),
-      updatedAt: typeof record.updatedAt === 'string' ? record.updatedAt : (record.updatedAt?.toISOString() || new Date().toISOString()),
+      createdAt: typeof record.createdAt === 'string' ? record.createdAt : new Date().toISOString(),
+      updatedAt: typeof record.updatedAt === 'string' ? record.updatedAt : new Date().toISOString(),
     }));
   }, [pipelineData]);
 

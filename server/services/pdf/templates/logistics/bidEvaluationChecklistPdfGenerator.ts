@@ -68,13 +68,13 @@ export interface BidEvaluationChecklistPDFData {
   scoreMap?: Map<number, Map<number, number>>;
 
   // Language & Direction
-  language: 'en' | 'ar';
+  language: 'en' | 'ar' | 'it';
 }
 
 // ============================================================================
 // TRANSLATIONS
 // ============================================================================
-function getLabels(language: 'en' | 'ar') {
+function getLabels(language: 'en' | 'ar' | 'it') {
   const labels = {
     en: {
       title: 'BID EVALUATION CHECKLIST',

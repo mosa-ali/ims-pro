@@ -19,7 +19,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useLanguage } from '@/contexts/LanguageContext';
-import { useTranslation } from '@/i18n/TranslationProvider';
+import { useTranslation } from '@/i18n/useTranslation';
 
 export interface ImportError {
  row: number;
@@ -54,7 +54,7 @@ export function ImportResultPanel({
  onSendReportToAdmin,
  isRTL = false,
 }: ImportResultPanelProps) {
- const t = useTranslation();
+ const { t } = useTranslation();
  if (!result) return null;
 
  const hasErrors = result.errors.length > 0;

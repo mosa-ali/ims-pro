@@ -24,7 +24,7 @@ import { Badge } from '@/components/ui/badge';
 import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 import { Activity, AlertCircle, CheckCircle, Clock, TrendingUp, Download } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { useTranslation } from '@/i18n/TranslationProvider';
+import { useTranslation } from '@/i18n/useTranslation';
 
 interface WebhookMetrics {
   webhookId: string;
@@ -56,7 +56,7 @@ interface DeliveryTrend {
 
 export default function WebhookAnalyticsDashboard() {
 
-  const t = useTranslation();  const { user, loading } = useAuth();
+  const { t } = useTranslation();  const { user, loading } = useAuth();
   const { language, isRTL } = useLanguage();
   const [selectedWebhook, setSelectedWebhook] = useState<string>('all');
   const [timeRange, setTimeRange] = useState<string>('24h');

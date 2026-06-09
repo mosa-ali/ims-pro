@@ -114,7 +114,7 @@ export default function AssetsManagement() {
  const { t, language } = useTranslation();
   const { isRTL } = useLanguage();
 const { currentOrganization } = useOrganization();
- const organizationId = currentOrganization?.id || 1;
+ const organizationId = currentOrganization?.id || 0;
  const navigate = useNavigate();
 
  // State

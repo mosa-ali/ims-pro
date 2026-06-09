@@ -8,12 +8,12 @@
 /**
  * Format date based on locale (EN/AR)
  * @param date - ISO date string or Date object
- * @param locale - 'en' | 'ar'
+ * @param locale - 'en' | 'ar' | 'it'
  * @param format - 'short' | 'long' | 'date-only' | 'time-only'
  */
 export function formatDate(
  date: string | Date,
- locale: 'en' | 'ar' = 'en',
+ locale: 'en' | 'ar' | 'it' = 'en',
  format: 'short' | 'long' | 'date-only' | 'time-only' = 'short'
 ): string {
  if (!date) return '-';
@@ -61,12 +61,12 @@ export function formatDate(
 /**
  * Format number with locale-aware separators
  * @param value - Number to format
- * @param locale - 'en' | 'ar'
+ * @param locale - 'en' | 'ar' | 'it'
  * @param decimals - Number of decimal places
  */
 export function formatNumber(
  value: number,
- locale: 'en' | 'ar' = 'en',
+ locale: 'en' | 'ar' | 'it' = 'en',
  decimals: number = 0
 ): string {
  if (value === null || value === undefined || isNaN(value)) {
@@ -85,12 +85,12 @@ export function formatNumber(
  * Format currency with proper symbol placement for RTL/LTR
  * @param value - Amount to format
  * @param currency - Currency code (USD, EUR, etc.)
- * @param locale - 'en' | 'ar'
+ * @param locale - 'en' | 'ar' | 'it'
  */
 export function formatCurrency(
  value: number,
  currency: string = 'USD',
- locale: 'en' | 'ar' = 'en'
+ locale: 'en' | 'ar' | 'it' = 'en'
 ): string {
  if (value === null || value === undefined || isNaN(value)) {
  return locale === 'ar' ? '٠ د.أ' : '$0';
@@ -109,12 +109,12 @@ export function formatCurrency(
 /**
  * Format percentage with proper symbol
  * @param value - Decimal value (0.0 to 1.0) or percentage (0 to 100)
- * @param locale - 'en' | 'ar'
+ * @param locale - 'en' | 'ar' | 'it'
  * @param isDecimal - If true, multiply by 100
  */
 export function formatPercentage(
  value: number,
- locale: 'en' | 'ar' = 'en',
+ locale: 'en' | 'ar' | 'it' = 'en',
  isDecimal: boolean = true
 ): string {
  if (value === null || value === undefined || isNaN(value)) {
@@ -130,9 +130,9 @@ export function formatPercentage(
 /**
  * Format file size in human-readable format
  * @param bytes - File size in bytes
- * @param locale - 'en' | 'ar'
+ * @param locale - 'en' | 'ar' | 'it'
  */
-export function formatFileSize(bytes: number, locale: 'en' | 'ar' = 'en'): string {
+export function formatFileSize(bytes: number, locale: 'en' | 'ar' | 'it' = 'en'): string {
  if (bytes === 0) return locale === 'ar' ? '٠ بايت' : '0 Bytes';
 
  const k = 1024;
@@ -149,9 +149,9 @@ export function formatFileSize(bytes: number, locale: 'en' | 'ar' = 'en'): strin
 /**
  * Format duration in human-readable format
  * @param minutes - Duration in minutes
- * @param locale - 'en' | 'ar'
+ * @param locale - 'en' | 'ar' | 'it'
  */
-export function formatDuration(minutes: number, locale: 'en' | 'ar' = 'en'): string {
+export function formatDuration(minutes: number, locale: 'en' | 'ar' | 'it' = 'en'): string {
  if (minutes < 60) {
  return locale === 'ar' 
  ? `${formatNumber(minutes, locale)} دقيقة`
@@ -175,11 +175,11 @@ export function formatDuration(minutes: number, locale: 'en' | 'ar' = 'en'): str
 /**
  * Format relative time (e.g., "2 days ago")
  * @param date - ISO date string or Date object
- * @param locale - 'en' | 'ar'
+ * @param locale - 'en' | 'ar' | 'it'
  */
 export function formatRelativeTime(
  date: string | Date,
- locale: 'en' | 'ar' = 'en'
+ locale: 'en' | 'ar' | 'it' = 'en'
 ): string {
  if (!date) return '-';
 
@@ -214,12 +214,12 @@ export function formatRelativeTime(
  * Format date range
  * @param startDate - Start date
  * @param endDate - End date
- * @param locale - 'en' | 'ar'
+ * @param locale - 'en' | 'ar' | 'it'
  */
 export function formatDateRange(
  startDate: string | Date,
  endDate: string | Date,
- locale: 'en' | 'ar' = 'en'
+ locale: 'en' | 'ar' | 'it' = 'en'
 ): string {
  const start = formatDate(startDate, locale, 'short');
  const end = formatDate(endDate, locale, 'short');
@@ -244,18 +244,18 @@ export function parseNumeral(value: string): number {
 
 /**
  * Get text direction for locale
- * @param locale - 'en' | 'ar'
+ * @param locale - 'en' | 'ar' | 'it'
  */
-export function getTextDirection(locale: 'en' | 'ar'): 'ltr' | 'rtl' {
+export function getTextDirection(locale: 'en' | 'ar' | 'it'): 'ltr' | 'rtl' {
  return locale === 'ar' ? 'rtl' : 'ltr';
 }
 
 /**
  * Format list with proper separators
  * @param items - Array of strings
- * @param locale - 'en' | 'ar'
+ * @param locale - 'en' | 'ar' | 'it'
  */
-export function formatList(items: string[], locale: 'en' | 'ar' = 'en'): string {
+export function formatList(items: string[], locale: 'en' | 'ar' | 'it' = 'en'): string {
  if (items.length === 0) return '';
  if (items.length === 1) return items[0];
 
@@ -276,12 +276,12 @@ export function formatList(items: string[], locale: 'en' | 'ar' = 'en'): string 
  * Truncate text with ellipsis
  * @param text - Text to truncate
  * @param maxLength - Maximum length
- * @param locale - 'en' | 'ar'
+ * @param locale - 'en' | 'ar' | 'it'
  */
 export function truncateText(
  text: string,
  maxLength: number,
- locale: 'en' | 'ar' = 'en'
+ locale: 'en' | 'ar' | 'it' = 'en'
 ): string {
  if (!text || text.length <= maxLength) return text;
 
@@ -292,9 +292,9 @@ export function truncateText(
 /**
  * Format phone number
  * @param phone - Phone number
- * @param locale - 'en' | 'ar'
+ * @param locale - 'en' | 'ar' | 'it'
  */
-export function formatPhoneNumber(phone: string, locale: 'en' | 'ar' = 'en'): string {
+export function formatPhoneNumber(phone: string, locale: 'en' | 'ar' | 'it' = 'en'): string {
  if (!phone) return '-';
 
  // Remove non-numeric characters
@@ -345,9 +345,9 @@ export function calculateAge(dateOfBirth: string | Date): number {
 /**
  * Format age with unit
  * @param age - Age in years
- * @param locale - 'en' | 'ar'
+ * @param locale - 'en' | 'ar' | 'it'
  */
-export function formatAge(age: number, locale: 'en' | 'ar' = 'en'): string {
+export function formatAge(age: number, locale: 'en' | 'ar' | 'it' = 'en'): string {
  if (locale === 'ar') {
  if (age === 1) return 'سنة واحدة';
  if (age === 2) return 'سنتان';

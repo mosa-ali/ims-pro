@@ -7,7 +7,7 @@
 import { useState } from 'react';
 import { X, Save, AlertTriangle, Clock, CheckCircle, Trash2, Loader2 } from 'lucide-react';
 import { ModalOverlay } from '@/app/components/ui/ModalOverlay';
-import { useTranslation } from '@/i18n/TranslationProvider';
+import { useTranslation } from '@/i18n/useTranslation';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { trpc } from '@/lib/trpc';
 import { toast } from 'sonner';
@@ -102,7 +102,7 @@ export function EditSalaryModal({
   onSave,
   userName = 'System'
 }: EditSalaryModalProps) {
-  const t = useTranslation();
+  const { t } = useTranslation();
   const { data: grades = [] } = trpc.hrSalaryGrades.getAll.useQuery();
   
   const [formData, setFormData] = useState({
@@ -351,7 +351,7 @@ export function SalaryHistoryModal({
   isRTL,
   onClose
 }: SalaryHistoryModalProps) {
-  const t = useTranslation();
+  const { t } = useTranslation();
   const { data: history = [], isLoading } = trpc.hrSalaryScale.getHistoryByStaffId.useQuery({ staffId });
 
   const localT = {
@@ -482,7 +482,7 @@ export function AddGradeModal({
   onClose,
   onSave
 }: AddGradeModalProps) {
-  const t = useTranslation();
+  const { t } = useTranslation();
   const [formData, setFormData] = useState({
     gradeCode: '',
     gradeName: '',
@@ -637,7 +637,7 @@ export function ManageGradesModal({
   onClose,
   onSave
 }: ManageGradesModalProps) {
-  const t = useTranslation();
+  const { t } = useTranslation();
   const { data: grades = [], isLoading } = trpc.hrSalaryGrades.getAll.useQuery();
   const deleteMutation = trpc.hrSalaryGrades.delete.useMutation({
     onSuccess: () => {

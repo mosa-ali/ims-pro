@@ -11,10 +11,10 @@ import { staffService } from '@/app/services/hrService';
 import { salaryScaleService } from '@/app/services/salaryScaleService';
 import { ModalOverlay } from '@/app/components/ui/ModalOverlay';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { useTranslation } from '@/i18n/TranslationProvider';
+import { useTranslation } from '@/i18n/useTranslation';
 
 interface AddStaffModalProps {
- language: 'en' | 'ar';
+ language: 'en' | 'ar' | 'it';
  isRTL: boolean;
  onClose: () => void;
  onSave: () => void;
@@ -22,7 +22,7 @@ interface AddStaffModalProps {
 
 export function AddStaffModal({
  language, isRTL, onClose, onSave }: AddStaffModalProps) {
- const t = useTranslation();
+ const { t } = useTranslation();
  const [activeTab, setActiveTab] = useState<number>(0);
  
  // Load grades from salary scale service

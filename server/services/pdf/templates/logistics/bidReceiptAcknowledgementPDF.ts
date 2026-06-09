@@ -56,7 +56,7 @@ export interface BidReceiptAcknowledgementPDFData {
   acknowledgementNote?: string;
 
   // Language & Direction
-  language: 'en' | 'ar';
+  language: 'en' | 'ar' | 'it';
 }
 
 /**
@@ -74,7 +74,7 @@ function formatDate(dateStr: string | undefined, isRTL: boolean = false): string
 /**
  * Get localized labels for Bid Receipt Acknowledgement
  */
-function getLabels(language: 'en' | 'ar') {
+function getLabels(language: 'en' | 'ar' | 'it') {
   const isArabic = language === 'ar';
 
   return {

@@ -50,10 +50,10 @@ import { exportPayrollToExcel } from '@/app/utils/excelExport';
 import { PayrollCalculatorModal } from './PayrollCalculatorModal';
 import { PayrollViewModal } from './PayrollViewModal';
 import { ModalOverlay } from '@/app/components/ui/ModalOverlay';
-import { useTranslation } from '@/i18n/TranslationProvider';
+import { useTranslation } from '@/i18n/useTranslation';
 import { BackButton } from "@/components/BackButton";
 export function PayrollAllowances() {
- const t = useTranslation();
+ const { t } = useTranslation();
  const { language, isRTL } = useLanguage();
  const { currentOrganizationId } = useOrganization();
  const { currentOperatingUnitId } = useOperatingUnit();

@@ -7,10 +7,10 @@ import React, { useState } from 'react';
 import { useAuth } from '@/_core/hooks/useAuth';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { demoAccounts } from '@/services/mockData';
-import { useTranslation } from '@/i18n/TranslationProvider';
+import { useTranslation } from '@/i18n/useTranslation';
 
 export function LoginPage() {
- const t = useTranslation();
+ const { t } = useTranslation();
  const { login } = useAuth();
  const { language } = useLanguage();
  const [email, setEmail] = useState('');

@@ -18,7 +18,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Download, X, ChevronUp, ChevronDown } from 'lucide-react';
-import { useTranslation } from '@/i18n/TranslationProvider';
+import { useTranslation } from '@/i18n/useTranslation';
 import { useLanguage } from '@/contexts/LanguageContext';
 
 interface KPIRecord {
@@ -53,7 +53,7 @@ export function KPIDrillDownModal({
   records,
   isLoading = false,
 }: KPIDrillDownModalProps) {
-  const t = useTranslation();
+  const { t } = useTranslation();
   const { isRTL } = useLanguage();
 
   const [dateFrom, setDateFrom] = useState<string>('');

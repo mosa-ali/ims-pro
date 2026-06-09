@@ -9,7 +9,7 @@ import { trpc } from '@/lib/trpc';
 import { toast } from 'sonner';
 import { useOrganization } from '@/contexts/OrganizationContext';
 import { useOperatingUnit } from '@/contexts/OperatingUnitContext';
-import { useTranslation } from '@/i18n/TranslationProvider';
+import { useTranslation } from '@/i18n/useTranslation';
 import { useAuth } from '@/_core/hooks/useAuth';
 import { BackButton } from "@/components/BackButton";
 import { exportOpportunities } from '@/utils/exportOpportunities';
@@ -35,7 +35,7 @@ interface Opportunity {
 type DeadlineStatus = 'open' | 'closing-soon' | 'urgent' | 'closed';
 
 export default function Opportunities() {
- const t = useTranslation();
+ const { t, language } = useTranslation();
  const { isRTL } = useLanguage();
  const [, setLocation] = useLocation();
  const { currentOrganizationId } = useOrganization();
@@ -45,7 +45,7 @@ export default function Opportunities() {
  // Fetch real opportunities from database
  const { data: opportunitiesData, isLoading, refetch } = trpc.proposals.getAllFundingOpportunities.useQuery(
  {
- organizationId: currentOrganizationId!,
+ organizationId: currentOrganizationId,
  operatingUnitId: currentOperatingUnitId!,
  limit: 100,
  offset: 0,
@@ -117,15 +117,15 @@ export default function Opportunities() {
  sendToPipelineTitle: t.donorCRM.sendToPipeline,
  sendToPipelineDesc: t.donorCRM.aNewPipelineOpportunityWillBe,
  confirm: t.donorCRM.confirm,
- totalOpportunities: t.donorCRM.totalOpportunities || 'Total Opportunities',
- activeOpportunities: t.donorCRM.activeOpportunities || 'Active Opportunities',
+ totalOpportunities: t.proposals.totalOpportunities || 'Total Opportunities',
+ activeOpportunities: t.proposals.activeOpportunities || 'Active Opportunities',
  expiringOpportunities: t.donorCRM.expiringOpportunities || 'Expiring Soon (7 days)',
  opportunityTypes: t.donorCRM.opportunityTypes || 'Opportunity Types',
- search: t.donorCRM.searchOpportunities || 'Search opportunities...',
- allTypes: t.donorCRM.allTypes || 'All Types',
+ search: t.proposals.searchOpportunities || 'Search opportunities...',
+ allTypes: t.donorRegistry.allTypes || 'All Types',
  allStatus: t.donorCRM.allStatus || 'All Status',
  export: t.donorCRM.export || 'Export',
- import: t.donorCRM.import || 'Import',
+ import: t.common.import || 'Import',
  refresh: t.common.refresh,
  noOpportunities: t.donorCRM.noFundingOpportunitiesFound
  };
@@ -148,10 +148,10 @@ export default function Opportunities() {
  // Get status badge
  const getStatusBadge = (status: DeadlineStatus) => {
  const badges = {
- 'open': { label: t.status?.open || 'Open', className: 'bg-green-100 text-green-700' },
- 'closing-soon': { label: t.status?.closingSoon || 'Closing Soon', className: 'bg-yellow-100 text-yellow-700' },
- 'urgent': { label: t.status?.urgent || 'Urgent', className: 'bg-red-100 text-red-700' },
- 'closed': { label: t.status?.closed || 'Closed', className: 'bg-gray-100 text-gray-500' }
+ 'open': { label: labels.status?.open || 'Open', className: 'bg-green-100 text-green-700' },
+ 'closing-soon': { label: labels.status?.closingSoon || 'Closing Soon', className: 'bg-yellow-100 text-yellow-700' },
+ 'urgent': { label: labels.status?.urgent || 'Urgent', className: 'bg-red-100 text-red-700' },
+ 'closed': { label: labels.status?.closed || 'Closed', className: 'bg-gray-100 text-gray-500' }
  };
  return badges[status];
  };
@@ -241,8 +241,6 @@ export default function Opportunities() {
  try {
  await transitionMutation.mutateAsync({
  opportunityId: parseInt(opportunity.id),
- organizationId: user.organizationId,
- operatingUnitId: user.operatingUnitId,
  stage: 'Identified',
  });
  } catch (error) {
@@ -560,6 +558,7 @@ export default function Opportunities() {
  {filteredOpportunities.map((opp) => {
  const status = getDeadlineStatus(opp.applicationDeadline);
  const statusBadge = getStatusBadge(status);
+ const { isRTL } = useLanguage();
  
  return (
  <tr key={opp.id} className="hover:bg-gray-50 transition-colors">
@@ -587,7 +586,7 @@ export default function Opportunities() {
  {new Date(opp.applicationDeadline).toLocaleDateString(isRTL ? 'ar-SA' : 'en-US')}
  </td>
  <td className={`px-6 py-4 text-sm text-gray-900 font-medium ${isRTL ? 'text-right' : 'text-left'}`}>
- {opp.allocatedBudget ? formatCurrency(opp.allocatedBudget, opp.currency, isRTL) : '-'}
+ {opp.allocatedBudget ? formatCurrency(opp.allocatedBudget, opp.currency) : '-'}
  </td>
  <td className={`px-6 py-4 text-sm ${isRTL ? 'text-right' : 'text-left'}`}>
  <span className={`px-2 py-1 rounded text-xs font-medium ${statusBadge.className}`}>

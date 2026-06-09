@@ -2717,6 +2717,7 @@ deletedRecords: {
  typeFullProposal: string;
  country: string;
  governorate: string;
+ proposalDevelopment: string;
  sector: string;
  projectDuration: string;
  totalRequestedBudget: string;
@@ -2809,7 +2810,7 @@ deletedRecords: {
     archive: string;
     areYouSureYouWantTo: string;
     areYouSureYouWantTo9: string;
-    autogenerateFromActivities: string;
+    autoGenerate: string;
     backToDonorCrmDashboard: string;
     backToProposalsList: string;
     baseline: string;
@@ -2923,7 +2924,6 @@ deletedRecords: {
     preconfiguredTemplatesForNationalAndInternational: string;
     probability10: string;
     programStaffCosts: string;
-    projectDurationMonths: string;
     proposalFound: string;
     proposalPipelineManagement: string;
     proposalRequested: string;
@@ -3953,6 +3953,33 @@ riskTitle: string;
     sacCount: string;
     invoiceTitle: string;
     invoiceNotCreated: string;
+    invoiceCreated: string;
+    invoiceApproved: string;
+    approveInvoiceDesc: string;
+  rejectInvoiceDesc: string;
+  invoiceRejected: string;
+  glPostingCreated: string;
+  glPosting: string;
+  glPost: string;
+  glPostingEvents: string;
+  glAccount: string;
+  createInvoiceDesc: string;
+  vendorInvoiceNumber: string;
+  linkToSac: string;
+  selectSac: string;
+  noSac: string;
+  supplierInvoice: string;
+  create: string;
+  recordGlPosting: string;
+  recordGlPostingDesc: string;
+  entityType: string;
+  eventType: string;
+  entityId: string;
+  fiscalPeriod: string;
+  amount: string;
+  description: string;
+  recordGlEvent: string;
+  rejectInvoice: string;
     invoiceRequiresSac: string;
     guardContractNotFound: string;
     guardContractNotApproved: string;
@@ -9160,6 +9187,17 @@ bidOpeningMinutes: {
     clickAnyCellToEdit: string;
     clickToOpenModule: string;
     clickToOpenModule32: string;
+      disposalCreated: string;
+  disposalDeleted: string;
+  fillRequiredFields: string;
+  totalDisposals: string;
+  completed: string;
+  newDisposal: string;
+  assetName: string;
+  disposalDate: string;
+  disposalValue: string;
+  selectAsset: string;
+  saving: string;
     close: string;
     code: string;
     code9: string;
@@ -13979,6 +14017,71 @@ retentionPolicyPage: {
   warningText: string;
   warningTitle: string;
   };
+  reportingSchedulePage: {
+  title: string;
+  subtitle: string;
+  reportingSchedule: string;
+  addReport: string;
+  add: string;
+
+  editReportingSchedule: string;
+  addReportingSchedule: string;
+
+  project: string;
+  selectProject: string;
+
+  reportType: string;
+  selectReportType: string;
+  specifyReportType: string;
+
+  periodFrom: string;
+  periodTo: string;
+
+  reportStatus: string;
+  reportDeadline: string;
+
+  notes: string;
+
+  cancel: string;
+  create: string;
+  update: string;
+
+  noReportingSchedules: string;
+
+  confirmDeletion: string;
+  deleteConfirmation: string;
+  delete: string;
+
+  period: string;
+  deadline: string;
+
+  lockedSubmittedToDonor: string;
+
+  reportCreatedSuccessfully: string;
+  reportUpdatedSuccessfully: string;
+  reportDeletedSuccessfully: string;
+  deleteScheduleConfirmation: string;
+
+  reportTypeRequired: string;
+  projectRequired: string;
+
+  narrativeReport: string;
+  financialReport: string;
+  progressReport: string;
+  finalReport: string;
+  interimReport: string;
+  quarterlyReport: string;
+  annualReport: string;
+  other: string;
+
+  notStarted: string;
+  planned: string;
+  underPreparation: string;
+  underReview: string;
+  submittedToHQ: string;
+  submittedToDonor: string;
+  };
+
   };
 
 // ========== ENGLISH TRANSLATIONS ==========
@@ -16694,6 +16797,7 @@ failed: 'Failed',
  typeFullProposal: 'Full Proposal',
  country: 'Country',
  governorate: 'Governorate',
+ proposalDevelopment: 'Proposal Development',
  sector: 'Sector',
  projectDuration: 'Project Duration (months)',
  totalRequestedBudget: 'Total Requested Budget',
@@ -16786,7 +16890,7 @@ failed: 'Failed',
     archive: 'Archive',
     areYouSureYouWantTo: 'Are you sure you want to delete this opportunity?',
     areYouSureYouWantTo9: 'Are you sure you want to delete this proposal? This action cannot be undone.',
-    autogenerateFromActivities: 'Auto-Generate from Activities',
+    autoGenerate: 'Auto-Generate from Activities',
     backToDonorCrmDashboard: 'Back to Donor CRM Dashboard',
     backToProposalsList: 'Back to proposals list',
     baseline: 'Baseline',
@@ -16900,7 +17004,6 @@ failed: 'Failed',
     preconfiguredTemplatesForNationalAndInternational: 'Pre-configured templates for national and international organizations',
     probability10: 'Probability',
     programStaffCosts: 'Program Staff Costs',
-    projectDurationMonths: 'Project Duration (months)',
     proposalFound: 'proposal found',
     proposalPipelineManagement: 'Proposal & Pipeline Management',
     proposalRequested: 'Proposal Requested',
@@ -17715,6 +17818,33 @@ priorityUrgent: 'Urgent',
  audit: 'Audit Log',
  dept: 'Department',
  totalCost: 'Total Cost',
+ invoiceCreated: 'Invoice created successfully',
+  invoiceApproved: "Invoice Approved",
+  approveInvoiceDesc: 'Confirm approval of this invoice',
+  rejectInvoiceDesc: 'Provide a reason for rejecting this invoice',
+  invoiceRejected: "Invoice Rejected",
+  glPostingCreated: "GL Posting Created",
+  glPosting: "GL Posting",
+  glPost: "Post to GL",
+  glPostingEvents: "GL Posting Events",
+  glAccount: "GL Account",
+  createInvoiceDesc: "Create supplier invoice and link to SAC",
+  vendorInvoiceNumber: "Vendor Invoice Number",
+  linkToSac: "Link to SAC",
+  selectSac: "Select SAC",
+  noSac: "No SAC Available",
+  supplierInvoice: "Supplier Invoice",
+  create: "Create",
+  recordGlPosting: "Record GL Posting",
+  recordGlPostingDesc: "Create accounting entries for this invoice",
+  entityType: "Entity Type",
+  eventType: "Event Type",
+  entityId: "Entity ID",
+  fiscalPeriod: "Fiscal Period",
+  amount: "Amount",
+  description: "Description",
+  recordGlEvent: "Record GL Event",
+  rejectInvoice: "Reject Invoice",
  process: 'Process',
  prNum: 'PR Number',
  reqDate: 'Request Date',
@@ -22923,6 +23053,17 @@ priorityUrgent: 'Urgent',
     categoryCreatedSuccessfully: 'Category created successfully',
     categoryDeletedSuccessfully: 'Category deleted successfully',
     categoryDetails: 'Category Details',
+      disposalCreated: "Asset disposal created successfully",
+  disposalDeleted: "Asset disposal deleted successfully",
+  fillRequiredFields: "Please fill all required fields",
+  totalDisposals: "Total Disposals",
+  completed: "Completed",
+  newDisposal: "New Disposal",
+  assetName: "Asset Name",
+  disposalDate: "Disposal Date",
+  disposalValue: "Disposal Value",
+  selectAsset: "Select Asset",
+  saving: "Saving...",
     categoryUpdatedSuccessfully: 'Category updated successfully',
     clickAnyCellToEdit: 'Click any cell to edit',
     clickToOpenModule: 'Click to open module',
@@ -27866,7 +28007,73 @@ priorityUrgent: 'Urgent',
       security: 'Security',
       projectPlan: 'Project Plan',
     },
-    };
+    
+  reportingSchedulePage: {
+  title: "Projects Reporting Schedule",
+  subtitle: "Manage reporting schedules, deadlines, and submission tracking",
+  reportingSchedule: "Reporting Schedule",
+  addReport: "Add Report",
+  add: "Add",
+  deleteScheduleConfirmation: 'Delete Schedule Confirmation',
+
+  editReportingSchedule: "Edit Reporting Schedule",
+  addReportingSchedule: "Add Reporting Schedule",
+
+  project: "Project",
+  selectProject: "Select Project",
+
+  reportType: "Type of Report",
+  selectReportType: "Select Report Type",
+  specifyReportType: "Specify Report Type",
+
+  periodFrom: "Period From",
+  periodTo: "Period To",
+
+  reportStatus: "Report Status",
+  reportDeadline: "Report Deadline",
+
+  notes: "Notes",
+
+  cancel: "Cancel",
+  create: "Create",
+  update: "Update",
+
+  noReportingSchedules: "No reporting schedules yet",
+
+  confirmDeletion: "Confirm Deletion",
+  deleteConfirmation: "Are you sure you want to delete this schedule?",
+
+  delete: "Delete",
+
+  period: "Period",
+  deadline: "Deadline",
+
+  lockedSubmittedToDonor: "Locked - Submitted to Donor",
+
+  reportCreatedSuccessfully: "Reporting schedule created successfully",
+  reportUpdatedSuccessfully: "Reporting schedule updated successfully",
+  reportDeletedSuccessfully: "Reporting schedule deleted successfully",
+
+  reportTypeRequired: "Type of Report is required",
+  projectRequired: "Project is required",
+
+  narrativeReport: "Narrative Report",
+  financialReport: "Financial Report",
+  progressReport: "Progress Report",
+  finalReport: "Final Report",
+  interimReport: "Interim Report",
+  quarterlyReport: "Quarterly Report",
+  annualReport: "Annual Report",
+  other: "Other",
+
+  notStarted: "Not Started",
+  planned: "Planned",
+  underPreparation: "Under Preparation",
+  underReview: "Under Review",
+  submittedToHQ: "Submitted to HQ",
+  submittedToDonor: "Submitted to Donor",
+    },
+  };
 
 
 // ========== ARABIC TRANSLATIONS ==========
@@ -30530,6 +30737,7 @@ statusReview: 'قيد المراجعة',
  fundingAmount: 'مبلغ التمويل',
  budgetRange: 'نطاق الميزانية',
  probability: 'الاحتمالية',
+ proposalDevelopment: "تطوير المشاريع",
  submissionDeadline: 'الموعد النهائي للتقديم',
  opportunityStatus: 'حالة الفرصة',
  statusIdentified: 'محددة',
@@ -30646,7 +30854,7 @@ statusReview: 'قيد المراجعة',
     archive: 'أرشفة',
     areYouSureYouWantTo: 'هل أنت متأكد من حذف هذه الفرصة؟',
     areYouSureYouWantTo9: 'هل أنت متأكد من حذف هذا المقترح؟ لا يمكن التراجع عن هذا الإجراء.',
-    autogenerateFromActivities: 'إنشاء تلقائي من الأنشطة',
+    autoGenerate: 'إنشاء تلقائي من الأنشطة',
     backToDonorCrmDashboard: 'العودة إلى لوحة إدارة علاقات المانحين',
     backToProposalsList: 'العودة إلى قائمة المقترحات',
     baseline: 'خط الأساس',
@@ -30760,7 +30968,6 @@ statusReview: 'قيد المراجعة',
     preconfiguredTemplatesForNationalAndInternational: 'معدة مسبقاً للمنظمات الوطنية والدولية',
     probability10: 'الاحتمالية',
     programStaffCosts: 'تكاليف موظفي البرنامج',
-    projectDurationMonths: 'مدة المشروع (أشهر)',
     proposalFound: 'مقترح موجود',
     proposalPipelineManagement: 'إدارة مقترحات المشاريع وفرص التمويل',
     proposalRequested: 'مطلوب مقترح',
@@ -31558,6 +31765,33 @@ statusReview: 'قيد المراجعة',
  secDocControl: 'مراقبة المستندات',
  notCreated: 'لم يتم الإنشاء',
  notFound: 'طلب الشراء غير موجود',
+  invoiceCreated: 'تم انشاء الفاتورة',
+  invoiceApproved: "تم اعتماد الفاتورة",
+    approveInvoiceDesc: 'تأكيد الموافقة على هذه الفاتورة',
+  rejectInvoiceDesc: 'تقديم سبب لرفض هذه الفاتورة',
+  invoiceRejected: "تم رفض الفاتورة",
+  glPostingCreated: "تم إنشاء قيد الأستاذ العام",
+  glPosting: "قيد الأستاذ العام",
+  glPost: "ترحيل إلى الأستاذ العام",
+  glPostingEvents: "أحداث الترحيل إلى الأستاذ العام",
+  glAccount: "حساب الأستاذ العام",
+  createInvoiceDesc: "إنشاء فاتورة المورد وربطها بسند الاستلام",
+  vendorInvoiceNumber: "رقم فاتورة المورد",
+  linkToSac: "ربط بسند الاستلام",
+  selectSac: "اختر سند الاستلام",
+  noSac: "لا يوجد سند استلام متاح",
+  supplierInvoice: "فاتورة المورد",
+  create: "إنشاء",
+  recordGlPosting: "تسجيل قيد الأستاذ العام",
+  recordGlPostingDesc: "إنشاء القيود المحاسبية لهذه الفاتورة",
+  entityType: "نوع الكيان",
+  eventType: "نوع الحدث",
+  entityId: "معرف الكيان",
+  fiscalPeriod: "الفترة المالية",
+  amount: "المبلغ",
+  description: "الوصف",
+  recordGlEvent: "تسجيل حدث الأستاذ العام",
+  rejectInvoice: "رفض الفاتورة",
  notFoundDesc: 'طلب الشراء المطلوب غير موجود أو لم تتم الموافقة عليه بعد.',
  backToList: 'العودة إلى القائمة',
  prDetails: 'تفاصيل طلب الشراء',
@@ -36773,6 +37007,17 @@ statusReview: 'قيد المراجعة',
     category: 'الفئة',
     categoryCreatedSuccessfully: 'تم إنشاء الفئة بنجاح',
     categoryDeletedSuccessfully: 'تم حذف الفئة بنجاح',
+      disposalCreated: "تم إنشاء عملية التخلص من الأصل بنجاح",
+  disposalDeleted: "تم حذف عملية التخلص من الأصل بنجاح",
+  fillRequiredFields: "يرجى تعبئة جميع الحقول المطلوبة",
+  totalDisposals: "إجمالي عمليات التخلص",
+  completed: "مكتمل",
+  newDisposal: "عملية تخلص جديدة",
+  assetName: "اسم الأصل",
+  disposalDate: "تاريخ التخلص",
+  disposalValue: "قيمة التخلص",
+  selectAsset: "اختر الأصل",
+  saving: "جاري الحفظ...",
     categoryDetails: 'تفاصيل الفئات',
     categoryUpdatedSuccessfully: 'تم تحديث الفئة بنجاح',
     clickAnyCellToEdit: 'انقر على أي خلية للتعديل',
@@ -41772,6 +42017,72 @@ statusReview: 'قيد المراجعة',
 
   actionsTaken: 'الإجراءات المتخذة',
   },
+
+  reportingSchedulePage: {
+  title: "جدول تقارير المشاريع",
+  subtitle: "إدارة جداول التقارير والمواعيد النهائية وتتبع التقديم",
+  reportingSchedule: "جدول التقارير",
+  addReport: "إضافة تقرير",
+  add: "إضافة",
+  deleteScheduleConfirmation: 'تأكيد حذف الجدول',
+
+  editReportingSchedule: "تعديل جدول التقرير",
+  addReportingSchedule: "إضافة جدول تقرير",
+
+  project: "المشروع",
+  selectProject: "اختر المشروع",
+
+  reportType: "نوع التقرير",
+  selectReportType: "اختر نوع التقرير",
+  specifyReportType: "حدد نوع التقرير",
+
+  periodFrom: "الفترة من",
+  periodTo: "الفترة إلى",
+
+  reportStatus: "حالة التقرير",
+  reportDeadline: "الموعد النهائي للتقرير",
+
+  notes: "ملاحظات",
+
+  cancel: "إلغاء",
+  create: "إنشاء",
+  update: "تحديث",
+
+  noReportingSchedules: "لا توجد جداول تقارير بعد",
+
+  confirmDeletion: "تأكيد الحذف",
+  deleteConfirmation: "هل أنت متأكد من حذف هذا الجدول؟",
+
+  delete: "حذف",
+
+  period: "الفترة",
+  deadline: "الموعد النهائي",
+
+  lockedSubmittedToDonor: "مقفل - تم التقديم للجهة المانحة",
+
+  reportCreatedSuccessfully: "تم إنشاء جدول التقرير بنجاح",
+  reportUpdatedSuccessfully: "تم تحديث جدول التقرير بنجاح",
+  reportDeletedSuccessfully: "تم حذف جدول التقرير بنجاح",
+
+  reportTypeRequired: "نوع التقرير مطلوب",
+  projectRequired: "المشروع مطلوب",
+
+  narrativeReport: "تقرير سردي",
+  financialReport: "تقرير مالي",
+  progressReport: "تقرير التقدم",
+  finalReport: "تقرير نهائي",
+  interimReport: "تقرير مرحلي",
+  quarterlyReport: "تقرير ربع سنوي",
+  annualReport: "تقرير سنوي",
+  other: "أخرى",
+
+  notStarted: "لم يبدأ",
+  planned: "مخطط",
+  underPreparation: "قيد الإعداد",
+  underReview: "قيد المراجعة",
+  submittedToHQ: "مقدم للمقر",
+  submittedToDonor: "مقدم للجهة المانحة",
+},
 };
 
 // ============================================================================
@@ -45577,6 +45888,7 @@ statusMatchedToProposal: "Associata a una Proposta",
 statusNotPursuing: "Non da Perseguire",
 
 stageIdentified: "Identificata",
+proposalDevelopment: 'Proposal Development',
 
 stageUnderReview: "In Revisione",
 
@@ -45831,7 +46143,7 @@ areYouSureYouWantTo:
 areYouSureYouWantTo9:
 "Sei sicuro di voler eliminare questa proposta? Questa azione non può essere annullata.",
 
-autogenerateFromActivities:
+autoGenerate:
 "Genera Automaticamente dalle Attività",
 
 backToDonorCrmDashboard:
@@ -46098,8 +46410,6 @@ preconfiguredTemplatesForNationalAndInternational:
 probability10: "Probabilità",
 
 programStaffCosts: "Costi del Personale di Programma",
-
-projectDurationMonths: "Durata del Progetto (mesi)",
 
 proposalFound: "proposta trovata",
 
@@ -47806,7 +48116,33 @@ noProjectsAvailable:
 procurement: {
 title:
 "Area di Lavoro Approvvigionamenti",
-
+ invoiceCreated: 'Invoice created successfully',
+  invoiceApproved: "Fattura Approvata",
+  invoiceRejected: "Fattura Respinta",
+  glPostingCreated: "Registrazione Contabile Creata",
+  glPosting: "Registrazione Contabile",
+  glPost: "Registra in Contabilità",
+  glPostingEvents: "Eventi di Registrazione Contabile",
+  glAccount: "Conto Contabile",
+  createInvoiceDesc: "Crea fattura fornitore e collegala al SAC",
+  vendorInvoiceNumber: "Numero Fattura Fornitore",
+  linkToSac: "Collega al SAC",
+  selectSac: "Seleziona SAC",
+  noSac: "Nessun SAC Disponibile",
+  supplierInvoice: "Fattura Fornitore",
+  create: "Crea",
+  recordGlPosting: "Registra Scrittura Contabile",
+  recordGlPostingDesc: "Crea le registrazioni contabili per questa fattura",
+  entityType: "Tipo Entità",
+  eventType: "Tipo Evento",
+  entityId: "ID Entità",
+  fiscalPeriod: "Periodo Fiscale",
+  amount: "Importo",
+  description: "Descrizione",
+  recordGlEvent: "Registra Evento Contabile",
+  rejectInvoice: "Respingi Fattura",
+  approveInvoiceDesc: 'Confirm approval of this invoice',
+  rejectInvoiceDesc: 'Provide a reason for rejecting this invoice',
 back:
 "Torna alle Richieste di Acquisto",
 
@@ -55210,6 +55546,17 @@ categories26: "categorie",
 category: "Categoria",
 categoryCreatedSuccessfully: "Categoria creata con successo",
 categoryDeletedSuccessfully: "Categoria eliminata con successo",
+  disposalCreated: "Dismissione del bene creata con successo",
+  disposalDeleted: "Dismissione del bene eliminata con successo",
+  fillRequiredFields: "Compilare tutti i campi obbligatori",
+  totalDisposals: "Totale Dismissioni",
+  completed: "Completato",
+  newDisposal: "Nuova Dismissione",
+  assetName: "Nome del Bene",
+  disposalDate: "Data di Dismissione",
+  disposalValue: "Valore di Dismissione",
+  selectAsset: "Seleziona Bene",
+  saving: "Salvataggio in corso...",
 categoryDetails: "Dettagli Categoria",
 categoryUpdatedSuccessfully: "Categoria aggiornata con successo",
 clickAnyCellToEdit: "Fai clic su una cella per modificarla",
@@ -63595,12 +63942,69 @@ writtenWarning:
   "Ammonizione Scritta",
 },
 
+reportingSchedulePage: {
+  title: "Pianificazione dei Rapporti di Progetto",
+  subtitle: "Gestisci scadenze, rapporti e monitoraggio delle presentazioni",
+  reportingSchedule: "Pianificazione Rapporti",
+  addReport: "Aggiungi Rapporto",
+  add: "Aggiungi",
+  deleteScheduleConfirmation: 'Delete Schedule Confirmation',
+
+  editReportingSchedule: "Modifica Pianificazione Rapporto",
+  addReportingSchedule: "Aggiungi Pianificazione Rapporto",
+
+  project: "Progetto",
+  selectProject: "Seleziona Progetto",
+
+  reportType: "Tipo di Rapporto",
+  selectReportType: "Seleziona Tipo di Rapporto",
+  specifyReportType: "Specifica Tipo di Rapporto",
+
+  periodFrom: "Periodo Dal",
+  periodTo: "Periodo Al",
+
+  reportStatus: "Stato Rapporto",
+  reportDeadline: "Scadenza Rapporto",
+
+  notes: "Note",
+
+  cancel: "Annulla",
+  create: "Crea",
+  update: "Aggiorna",
+
+  noReportingSchedules: "Nessuna pianificazione disponibile",
+
+  confirmDeletion: "Conferma Eliminazione",
+  deleteConfirmation: "Sei sicuro di voler eliminare questa pianificazione?",
+
+  delete: "Elimina",
+
+  period: "Periodo",
+  deadline: "Scadenza",
+
+  lockedSubmittedToDonor: "Bloccato - Inviato al Donatore",
+
+  reportCreatedSuccessfully: "Pianificazione rapporto creata con successo",
+  reportUpdatedSuccessfully: "Pianificazione rapporto aggiornata con successo",
+  reportDeletedSuccessfully: "Pianificazione rapporto eliminata con successo",
+
+  reportTypeRequired: "Il tipo di rapporto è obbligatorio",
+  projectRequired: "Il progetto è obbligatorio",
+
+  narrativeReport: "Rapporto Narrativo",
+  financialReport: "Rapporto Finanziario",
+  progressReport: "Rapporto di Avanzamento",
+  finalReport: "Rapporto Finale",
+  interimReport: "Rapporto Intermedio",
+  quarterlyReport: "Rapporto Trimestrale",
+  annualReport: "Rapporto Annuale",
+  other: "Altro",
+
+  notStarted: "Non Iniziato",
+  planned: "Pianificato",
+  underPreparation: "In Preparazione",
+  underReview: "In Revisione",
+  submittedToHQ: "Inviato alla Sede Centrale",
+  submittedToDonor: "Inviato al Donatore",
+},
 };
-
-export const translations = {
-  en,
-  ar,
-  it,
-} as const;
-
-export type Language = keyof typeof translations;

@@ -1,4 +1,4 @@
-import { useTranslation } from '@/i18n/TranslationProvider';
+import { useTranslation } from '@/i18n/useTranslation';
 import {
  Accordion,
  AccordionContent,
@@ -176,7 +176,7 @@ import { AIChatBox, type Message } from "@/components/AIChatBox";
 import { useLanguage } from '@/contexts/LanguageContext';
 
 export default function ComponentsShowcase() {
-  const t = useTranslation();
+  const { t } = useTranslation();
   const { language, isRTL} = useLanguage();
  const { theme, toggleTheme } = useTheme();
  const [date, setDate] = useState<Date | undefined>(new Date());

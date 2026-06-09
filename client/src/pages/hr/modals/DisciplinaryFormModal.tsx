@@ -10,7 +10,7 @@ import { useLanguage } from '@/app/contexts/LanguageContext';
 import { StaffMember } from '../types/hrTypes';
 import { disciplinaryService, DisciplinaryRecord } from '@/app/services/disciplinaryService';
 import { ModalOverlay } from '@/app/components/ui/ModalOverlay';
-import { useTranslation } from '@/i18n/TranslationProvider';
+import { useTranslation } from '@/i18n/useTranslation';
 
 interface Props {
  employee: StaffMember;
@@ -20,7 +20,7 @@ interface Props {
 
 export function DisciplinaryFormModal({
  employee, onClose, onSave }: Props) {
- const t = useTranslation();
+ const { t } = useTranslation();
  const { language, isRTL } = useLanguage();
  
  const [formData, setFormData] = useState({

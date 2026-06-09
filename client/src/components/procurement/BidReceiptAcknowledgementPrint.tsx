@@ -8,20 +8,20 @@ import { formatDate } from '@/utils/formatters';
 import React from 'react';
 import { getOrganizationSettings } from '@/services/organizationService';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { useTranslation } from '@/i18n/TranslationProvider';
+import { useTranslation } from '@/i18n/useTranslation';
 import type { ProcurementRequest, TenderBidder } from '@/types/logistics.types';
 
 interface Props {
  pr: ProcurementRequest;
  bidder: TenderBidder;
  noticeId?: string;
- language: 'en' | 'ar';
+ language: 'en' | 'ar' | 'it';
  isRTL: boolean;
 }
 
 export function BidReceiptAcknowledgementPrint({
  pr, bidder, noticeId, language, isRTL }: Props) {
- const t = useTranslation();
+ const { t } = useTranslation();
  const orgSettings = getOrganizationSettings();
  const orgName = language === 'ar' && orgSettings.nameAr ? orgSettings.nameAr : orgSettings.name;
 

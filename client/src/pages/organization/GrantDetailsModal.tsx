@@ -3,7 +3,7 @@ import { X, FileText, Calendar, FolderOpen, Building2, DollarSign, Clock, User, 
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/_core/hooks/useAuth';
 import { documentService, DocumentRecord } from '@/services/documentService';
-import { useTranslation } from '@/i18n/TranslationProvider';
+import { useTranslation } from '@/i18n/useTranslation';
 
 interface Grant {
  id: string;
@@ -64,7 +64,7 @@ interface GrantDetailsModalProps {
 
 export function GrantDetailsModal({
  grant, onClose, onDocumentAdded }: GrantDetailsModalProps) {
- const t = useTranslation();
+ const { t } = useTranslation();
  const { isRTL } = useLanguage();
  const { user } = useAuth();
  const [activeTab, setActiveTab] = useState<'overview' | 'timeline' | 'documents'>('overview');

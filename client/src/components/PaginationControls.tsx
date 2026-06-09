@@ -41,7 +41,7 @@ export function PaginationControls({
   pageSizeOptions = [10, 25, 50, 100],
 }: PaginationControlsProps) {
   const { isRTL } = useLanguage();
-  const t = useTranslation();
+  const { t } = useTranslation();
 
   const totalPages = Math.ceil(totalItems / pageSize);
   const startItem = (currentPage - 1) * pageSize + 1;

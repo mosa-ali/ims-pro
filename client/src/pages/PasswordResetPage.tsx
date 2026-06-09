@@ -1,4 +1,4 @@
-import { useTranslation } from '@/i18n/TranslationProvider';
+import { useTranslation } from '@/i18n/useTranslation';
 import { useState, useMemo } from 'react';
 import { useRoute } from 'wouter';
 import { trpc } from '@/lib/trpc';
@@ -24,7 +24,7 @@ function getPasswordStrength(password: string): { score: number; label: string; 
 }
 
 export default function PasswordResetPage() {
-  const t = useTranslation();
+  const { t } = useTranslation();
   const { language, isRTL} = useLanguage();
  const [, params] = useRoute('/reset-password/:token');
  const token = params?.token || '';

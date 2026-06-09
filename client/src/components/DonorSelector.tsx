@@ -42,7 +42,7 @@ export function DonorSelector({
  showIcon = true,
  allowClear = true,
 }: DonorSelectorProps) {
- const t = useTranslation();
+ const { t } = useTranslation();
 const [searchQuery, setSearchQuery] = useState("");
  
  // Fetch donors scoped by organization/operating unit

@@ -8,10 +8,11 @@ import { AlertTriangle, TrendingDown, Clock, FileWarning } from 'lucide-react';
 
 interface AlertItem {
   id: number;
-  title?: string;
-  type: string;
-  dueDate?: string | null;
+  projectName?: string;
   reportType?: string;
+  reportStatus: string;
+  reportDeadline?: string | null;
+  daysOverdue?: number;
 }
 
 interface AlertGroupProps {
@@ -99,7 +100,7 @@ export const ExecutiveAlerts = memo(function ExecutiveAlerts({
             renderItem={(item) => (
               <div key={item.id} className="flex items-center gap-2 bg-white rounded-lg px-3 py-2 border border-red-100 text-xs">
                 <div className="w-1.5 h-1.5 rounded-full bg-red-500 flex-shrink-0" />
-                <span className="text-gray-700 truncate">{item.title || `Project #${item.id}`}</span>
+                <span className="text-gray-700 truncate">{item.projectName || `Project #${item.id}`}</span>
               </div>
             )}
           />
@@ -113,7 +114,7 @@ export const ExecutiveAlerts = memo(function ExecutiveAlerts({
             renderItem={(item) => (
               <div key={item.id} className="flex items-center gap-2 bg-white rounded-lg px-3 py-2 border border-amber-100 text-xs">
                 <div className="w-1.5 h-1.5 rounded-full bg-amber-500 flex-shrink-0" />
-                <span className="text-gray-700 truncate">{item.title || `Project #${item.id}`}</span>
+                <span className="text-gray-700 truncate">{item.projectName || `Project #${item.id}`}</span>
               </div>
             )}
           />
@@ -127,7 +128,7 @@ export const ExecutiveAlerts = memo(function ExecutiveAlerts({
             renderItem={(item) => (
               <div key={item.id} className="flex items-center gap-2 bg-white rounded-lg px-3 py-2 border border-orange-100 text-xs">
                 <div className="w-1.5 h-1.5 rounded-full bg-orange-500 flex-shrink-0" />
-                <span className="text-gray-700 truncate">{item.title || `Project #${item.id}`}</span>
+                <span className="text-gray-700 truncate">{item.projectName || `Project #${item.id}`}</span>
               </div>
             )}
           />
@@ -143,8 +144,8 @@ export const ExecutiveAlerts = memo(function ExecutiveAlerts({
                 <div className="w-1.5 h-1.5 rounded-full bg-purple-500 flex-shrink-0" />
                 <div className="flex-1 min-w-0">
                   <span className="text-gray-700 truncate block">{item.reportType || 'Report'}</span>
-                  {item.dueDate && (
-                    <span className="text-gray-400">Due: {item.dueDate}</span>
+                  {item.reportDeadline && (
+                    <span className="text-gray-400">Due: {item.reportDeadline}</span>
                   )}
                 </div>
               </div>

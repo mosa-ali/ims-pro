@@ -14,7 +14,7 @@ import { toast } from "sonner";
 import { Plus, Trash2, Download, Upload, Clock, AlertCircle, CheckCircle, XCircle, FileText, Layers } from "lucide-react";
 import * as XLSX from 'xlsx';
 import { VersionHistoryModal } from '@/components/finance/VersionHistoryModal';
-import { useTranslation } from '@/i18n/TranslationProvider';
+import { useTranslation } from '@/i18n/useTranslation';
 
 /**
  * Expenditures Tab Component
@@ -33,7 +33,7 @@ import { useTranslation } from '@/i18n/TranslationProvider';
  * File Path: /client/src/components/finance/ExpendituresTab.tsx
  */
 export default function ExpendituresTab() {
- const t = useTranslation();
+ const { t } = useTranslation();
  const { language, isRTL} = useLanguage();
  const { data: expenditures, refetch } = trpc.expenditures.list.useQuery();
  // Projects query requires organizationId and operatingUnitId - using defaults for now
@@ -349,7 +349,7 @@ export default function ExpendituresTab() {
  versions={versionHistoryData || []}
  title={versionHistoryData?.[0]?.expenditureNumber || (t.financeModule.expenditures)}
  isLoading={isLoadingVersions}
- language={language as 'en' | 'ar'}
+ language={language as 'en' | 'ar' | 'it'}
  renderVersionDetails={(version) => (
  <div className="grid grid-cols-2 gap-2 text-sm">
  <div>
@@ -375,7 +375,7 @@ export default function ExpendituresTab() {
 }
 
 function ExpenditureForm({ onSubmit, projects, budgets }: any) {
-  const t = useTranslation();
+  const { t } = useTranslation();
  const { language, isRTL} = useLanguage();
  const [formData, setFormData] = useState({
  projectId: 0,

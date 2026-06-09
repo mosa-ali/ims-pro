@@ -63,7 +63,7 @@ import {
 } from"lucide-react";
 import * as XLSX from 'xlsx';
 import { useNavigate } from"@/lib/router-compat";
-import { useTranslation } from '@/i18n/TranslationProvider';
+import { useTranslation } from '@/i18n/useTranslation';
 import { BackButton } from "@/components/BackButton";
 
 // ============================================
@@ -132,7 +132,7 @@ interface AllocationPeriod {
 // ============================================
 
 export default function CostAllocationManagement() {
- const t = useTranslation();
+ const { t } = useTranslation();
  const { user } = useAuth();
  const { currentOperatingUnit } = useOperatingUnit();
  const { language, isRTL} = useLanguage();

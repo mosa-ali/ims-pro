@@ -9,7 +9,7 @@ import { useNavigate } from"@/lib/router-compat";
 import { Button } from"@/components/ui/button";
 import { Card, CardContent } from"@/components/ui/card";
 import { Clock } from"lucide-react";
-import { useTranslation } from '@/i18n/TranslationProvider';
+import { useTranslation } from '@/i18n/useTranslation';
 import { BackButton } from "@/components/BackButton";
 
 interface FinanceComingSoonProps {
@@ -19,7 +19,7 @@ interface FinanceComingSoonProps {
 
 export default function FinanceComingSoon({
  moduleName, moduleDescription }: FinanceComingSoonProps) {
- const t = useTranslation();
+ const { t } = useTranslation();
  const { language, isRTL } = useLanguage();
  const navigate = useNavigate();
 

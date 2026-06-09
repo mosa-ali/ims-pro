@@ -18,7 +18,7 @@ const COLORS = ["#10b981", "#f59e0b", "#ef4444"];
 export default function InventorySummaryReport() {
   const { language, isRTL} = useLanguage();
  const { currentOrganization } = useOrganization();
- const organizationId = currentOrganization?.id || 1;
+ const organizationId = currentOrganization?.id || 0;
 
  const { data, isLoading } = trpc.logistics.analytics.getInventorySummary.useQuery({
  organizationId,

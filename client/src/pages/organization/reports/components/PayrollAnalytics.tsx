@@ -1,7 +1,7 @@
 import { DollarSign, BarChart3, TrendingUp } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { translateEntityName } from '@/utils/translateEntityName';
-import { useTranslation } from '@/i18n/TranslationProvider';
+import { useTranslation } from '@/i18n/useTranslation';
 
 interface PayrollStats {
  monthlyCosts: { month: string; amount: number }[];
@@ -16,7 +16,7 @@ interface Props {
 
 export function PayrollAnalytics({
  data }: Props) {
- const t = useTranslation();
+ const { t } = useTranslation();
  const { language, isRTL} = useLanguage();
  const localT = {
  payrollAnalytics: t.orgReports.payrollCostAnalytics,
@@ -30,12 +30,12 @@ export function PayrollAnalytics({
  return (
  <div className="space-y-8" dir={isRTL ? 'rtl' : 'ltr'}>
  <h2 className="text-2xl font-black text-gray-900 border-s-4 border-emerald-600 ps-4 mb-8">
- {t.payrollAnalytics}
+ {localT.payrollAnalytics}
  </h2>
 
  {/* Annual Cost Card */}
  <div className="bg-gradient-to-br from-emerald-500 to-teal-600 rounded-[32px] p-12 text-white shadow-2xl">
- <p className="text-[10px] font-black text-emerald-100 uppercase tracking-[3px] mb-4">{t.annualPayroll}</p>
+ <p className="text-[10px] font-black text-emerald-100 uppercase tracking-[3px] mb-4">{localT.annualPayroll}</p>
  <p className="text-6xl font-black mb-2">${data.totalAnnualCost.toLocaleString()}</p>
  <p className="text-sm font-medium text-emerald-100">
  {t.orgReports.totalEstimatedAnnualPayrollCost}
@@ -46,7 +46,7 @@ export function PayrollAnalytics({
  <div className="bg-white border border-gray-200 rounded-[24px] p-10 shadow-sm overflow-hidden">
  <h3 className="font-black text-gray-900 mb-8 flex items-center gap-3 uppercase tracking-wider text-sm">
  <div className="p-2 bg-emerald-50 rounded-lg"><BarChart3 className="w-5 h-5 text-emerald-600" /></div>
- {t.payrollByProject}
+ {localT.payrollByProject}
  </h3>
  <div className="overflow-x-auto -mx-10 px-10">
  <table className="w-full">
@@ -56,10 +56,10 @@ export function PayrollAnalytics({
  {t.orgReports.project}
  </th>
  <th className="px-6 py-5 text-center text-[10px] font-black text-gray-400 uppercase tracking-[2px]">
- {t.count}
+ {localT.count}
  </th>
  <th className="px-6 py-5 text-end text-[10px] font-black text-gray-400 uppercase tracking-[2px]">
- {t.amount}
+ {localT.amount}
  </th>
  </tr>
  </thead>
@@ -83,7 +83,7 @@ export function PayrollAnalytics({
  <div className="bg-white border border-gray-200 rounded-[24px] p-10 shadow-sm">
  <h3 className="font-black text-gray-900 mb-8 flex items-center gap-3 uppercase tracking-wider text-sm">
  <div className="p-2 bg-blue-50 rounded-lg"><TrendingUp className="w-5 h-5 text-blue-600" /></div>
- {t.payrollByMonth}
+ {localT.payrollByMonth}
  </h3>
  <div className="space-y-6">
  {data.monthlyCosts.map((month, i) => (

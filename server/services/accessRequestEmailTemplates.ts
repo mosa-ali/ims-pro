@@ -45,7 +45,7 @@ export function buildAccessRequestSubmittedEmail(input: {
   requestedRole?: string;
   requestId: string;
   reviewUrl: string;
-  language: 'en' | 'ar';
+  language: 'en' | 'ar' | 'it';
 }): { subject: string; html: string } {
   const isArabic = input.language === 'ar';
 
@@ -126,7 +126,7 @@ export function buildAccessApprovedMicrosoftEmail(input: {
   organization: string;
   signInUrl: string;
   supportEmail?: string;
-  language: 'en' | 'ar';
+  language: 'en' | 'ar' | 'it';
 }): { subject: string; html: string } {
   const isArabic = input.language === 'ar';
 
@@ -198,7 +198,7 @@ export function buildAccessApprovedLocalEmail(input: {
   email: string;
   tempPassword: string;
   signInUrl: string;
-  language: 'en' | 'ar';
+  language: 'en' | 'ar' | 'it';
 }): { subject: string; html: string } {
   const isArabic = input.language === 'ar';
 
@@ -291,7 +291,7 @@ export function buildAccessApprovedPlatformLocalEmail(input: {
   email: string;
   tempPassword: string;
   signInUrl: string;
-  language: 'en' | 'ar';
+  language: 'en' | 'ar' | 'it';
 }): { subject: string; html: string } {
   const isArabic = input.language === 'ar';
 
@@ -384,7 +384,7 @@ export function buildAccessApprovedPlatformMicrosoftEmail(input: {
   email: string;
   signInUrl: string;
   supportEmail?: string;
-  language: 'en' | 'ar';
+  language: 'en' | 'ar' | 'it';
 }): { subject: string; html: string } {
   const isArabic = input.language === 'ar';
 
@@ -454,7 +454,7 @@ export function buildPasswordResetEmail(input: {
   userName: string;
   resetUrl: string;
   expiryMinutes?: number;
-  language: 'en' | 'ar';
+  language: 'en' | 'ar' | 'it';
 }): { subject: string; html: string } {
   const isArabic = input.language === 'ar';
 
@@ -534,7 +534,7 @@ export function buildMicrosoftPasswordSupportEmail(input: {
   userName: string;
   userType: 'organization' | 'platform'; // organization user or platform admin
   supportEmail?: string;
-  language: 'en' | 'ar';
+  language: 'en' | 'ar' | 'it';
 }): { subject: string; html: string } {
   const isArabic = input.language === 'ar';
 

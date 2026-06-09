@@ -26,13 +26,13 @@ import {
  Loader2
 } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { useTranslation } from '@/i18n/TranslationProvider';
+import { useTranslation } from '@/i18n/useTranslation';
 import { BackButton } from "@/components/BackButton";
 import { trpc } from '@/lib/trpc';
 import { toast } from 'sonner';
 
 export function HRDocuments() {
- const t = useTranslation();
+ const { t } = useTranslation();
  const { isRTL } = useLanguage();
  const [selectedFolder, setSelectedFolder] = useState<string | null>(null);
  const [searchQuery, setSearchQuery] = useState('');

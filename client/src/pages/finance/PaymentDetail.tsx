@@ -35,7 +35,7 @@ import {
  XCircle, Send, AlertTriangle, Ban, Play, Check, Layers, FolderOpen
 } from "lucide-react";
 import { EvidencePanel } from "@/components/EvidencePanel";
-import { useTranslation } from '@/i18n/TranslationProvider';
+import { useTranslation } from '@/i18n/useTranslation';
 import { BackButton } from "@/components/BackButton";
 
 // ============================================================================
@@ -47,7 +47,7 @@ type ApprovalAction = "submit" | "approve" | "reject" | "cancel" | "complete";
 // MAIN COMPONENT
 // ============================================================================
 export default function PaymentDetail() {
- const t = useTranslation();
+ const { t } = useTranslation();
  const { id } = useParams<{ id: string }>();
  const paymentId = parseInt(id || "0", 10);
  const navigate = useNavigate();

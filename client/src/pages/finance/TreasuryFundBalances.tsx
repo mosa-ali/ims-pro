@@ -48,7 +48,7 @@ import {
   Wallet,
 } from 'lucide-react';
 import * as XLSX from 'xlsx';
-import { useTranslation } from '@/i18n/TranslationProvider';
+import { useTranslation } from '@/i18n/useTranslation';
 
 const fundTypeOptions = [
   { value: 'RESTRICTED', labelEn: 'Restricted', labelAr: 'مقيد' },
@@ -58,10 +58,10 @@ const fundTypeOptions = [
 ];
 
 export default function TreasuryFundBalances() {
-  const t = useTranslation();
+  const { t } = useTranslation();
   const { language, isRTL } = useLanguage();
   const { currentOrganization, currentOperatingUnit } = useOrganization();
-  const organizationId = currentOrganization?.id || 30001;
+  const organizationId = currentOrganization?.id || 0;
   const operatingUnitId = currentOperatingUnit?.id;
   const navigate = useNavigate();
 

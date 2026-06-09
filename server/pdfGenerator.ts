@@ -76,7 +76,7 @@ interface ProjectReportPDFData {
     nextSteps: string;
   };
   organizationName: string;
-  language: 'en' | 'ar';
+  language: 'en' | 'ar' | 'it';
 }
 
 function formatDate(dateStr: string, isRTL: boolean = false): string {
@@ -771,7 +771,7 @@ interface CaseManagementReportPDFData {
   donorName: string;
   dateFrom: string;
   dateTo: string;
-  language: 'en' | 'ar';
+  language: 'en' | 'ar' | 'it';
   executiveSummary: string;
   keyAchievements: string;
   cases: {

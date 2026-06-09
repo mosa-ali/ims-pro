@@ -45,7 +45,7 @@ import { trpc } from '@/lib/trpc';
 import { Button } from '@/app/components/ui/button';
 import { Input } from '@/app/components/ui/input';
 import { Badge } from '@/app/components/ui/badge';
-import { useTranslation } from '@/i18n/TranslationProvider';
+import { useTranslation } from '@/i18n/useTranslation';
 import { ProcurementDocumentWorkspace } from '@/components/ProcurementDocumentWorkspace';
 import { VendorDocumentWorkspace } from '@/components/VendorDocumentWorkspace';
 import { StockDocumentWorkspace } from '@/components/StockDocumentWorkspace';
@@ -69,7 +69,7 @@ const PROJECT_FOLDERS = [
 ];
 
 export function CentralDocumentsFinal() {
- const t = useTranslation();
+ const { t } = useTranslation();
  const { isRTL, language } = useLanguage();
  
  // Navigation State

@@ -68,7 +68,7 @@ async function getStakeholders(organizationId: number, operatingUnitId: number |
 async function sendRiskNotificationEmail(
   recipient: { name: string; email: string },
   notification: RiskNotification,
-  language: 'en' | 'ar' = 'en'
+  language: 'en' | 'ar' | 'it' = 'en'
 ) {
   const isArabic = language === 'ar';
   

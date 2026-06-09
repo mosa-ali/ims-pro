@@ -731,7 +731,7 @@ function DonorForm({
  setFormData: React.Dispatch<React.SetStateAction<DonorFormData>>;
  language: string;
 }) {
- const t = useTranslation();
+ const { t } = useTranslation();
  return (
  <div className="space-y-4">
  <div className="grid grid-cols-2 gap-4">

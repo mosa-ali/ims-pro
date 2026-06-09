@@ -43,7 +43,7 @@ import {
 } from 'lucide-react';
 import { StaffMember } from '../types/hrTypes';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { useTranslation } from '@/i18n/TranslationProvider';
+import { useTranslation } from '@/i18n/useTranslation';
 
 // ============================================================================
 // TYPE DEFINITIONS
@@ -151,7 +151,7 @@ const signedDocumentsService = {
 
 export function SanctionsDisciplinaryCard({
  employee, language, isRTL }: Props) {
- const t = useTranslation();
+ const { t } = useTranslation();
  const [cases, setCases] = useState<DisciplinaryCase[]>([]);
  const [signedDocs, setSignedDocs] = useState<Map<string, SignedDocument>>(new Map());
  const [showPrintModal, setShowPrintModal] = useState(false);
@@ -510,7 +510,7 @@ function OfficialDisciplinaryFormPrintModal({
  isRTL, 
  onClose 
 }: PrintModalProps) {
- const t = useTranslation(); 
+ const { t } = useTranslation(); 
  const contentRef = useRef<HTMLDivElement>(null);
 
  const handlePrint = () => {

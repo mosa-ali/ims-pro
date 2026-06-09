@@ -17,7 +17,7 @@
 import { useLanguage } from '@/contexts/LanguageContext';
 import { FileText, Upload, Check, AlertCircle, Clock, RefreshCw, Download, Eye } from 'lucide-react';
 import { useState, useEffect } from 'react';
-import { useTranslation } from '@/i18n/TranslationProvider';
+import { useTranslation } from '@/i18n/useTranslation';
 
 interface Props {
  survey: any;
@@ -48,7 +48,7 @@ interface FileItem {
 
 export function DataFilesSubTab({
  survey }: Props) {
- const t = useTranslation();
+ const { t } = useTranslation();
  const { language, isRTL } = useLanguage();
  const [submissions, setSubmissions] = useState<Submission[]>([]);
  const [files, setFiles] = useState<FileItem[]>([]);

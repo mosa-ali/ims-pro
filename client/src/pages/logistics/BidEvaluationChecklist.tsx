@@ -33,7 +33,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { toast } from "sonner";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { useTranslation } from '@/i18n/TranslationProvider';
+import { useTranslation } from '@/i18n/useTranslation';
 import { BackButton } from "@/components/BackButton";
 
 /**
@@ -65,7 +65,7 @@ const BADGE_COLORS = [
 ];
 
 export default function BidEvaluationChecklist() {
- const t = useTranslation();
+ const { t } = useTranslation();
  const { id } = useParams<{ id: string }>();
  const [, setLocation] = useLocation();
  const { language, isRTL} = useLanguage();

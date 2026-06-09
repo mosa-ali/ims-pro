@@ -1,4 +1,4 @@
-import { useTranslation } from '@/i18n/TranslationProvider';
+import { useTranslation } from '@/i18n/useTranslation';
 import { useState, useEffect } from "react";
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useCreateIncident, useUpdateIncident } from "@/hooks/useIncidentsData";
@@ -31,7 +31,7 @@ const ALLOWED_FILE_TYPES = [
 
 export function IncidentFormDialog({ open, onOpenChange, incident, mode }: IncidentFormDialogProps) {
  const { language, isRTL} = useLanguage();
-  const t = useTranslation();
+  const { t } = useTranslation();
  const createIncident = useCreateIncident();
  const updateIncident = useUpdateIncident();
  const { risks, isLoading: risksLoading } = useRisksList({});

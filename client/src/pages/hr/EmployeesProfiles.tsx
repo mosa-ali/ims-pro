@@ -31,7 +31,7 @@ import {
 import { useNavigate } from '@/lib/router-compat';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { staffService } from '@/app/services/hrService';
-import { useTranslation } from '@/i18n/TranslationProvider';
+import { useTranslation } from '@/i18n/useTranslation';
 import { BackButton } from "@/components/BackButton";
 interface ModuleCard {
  id: string;
@@ -44,7 +44,7 @@ interface ModuleCard {
 }
 
 export function EmployeesProfiles() {
- const t = useTranslation();
+ const { t } = useTranslation();
  const { language, isRTL } = useLanguage();
  const navigate = useNavigate();
  const [staffCounts, setStaffCounts] = useState({

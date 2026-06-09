@@ -39,7 +39,7 @@ import {
  DollarSign, TrendingUp, PieChart, BarChart3, FolderOpen
 } from "lucide-react";
 import { EvidencePanel } from "@/components/EvidencePanel";
-import { useTranslation } from '@/i18n/TranslationProvider';
+import { useTranslation } from '@/i18n/useTranslation';
 import { BackButton } from "@/components/BackButton";
 
 // ============================================================================
@@ -94,7 +94,7 @@ function renderStatusBadge(status: string, isRTL: boolean) {
 // ============================================================================
 
 export default function BudgetDetail() {
- const t = useTranslation();
+ const { t } = useTranslation();
  const { id } = useParams<{ id: string }>();
  const budgetId = parseInt(id || "0", 10);
  const navigate = useNavigate();
@@ -514,7 +514,7 @@ function AddBudgetLineDialog({
  budgetCategories,
  onSuccess,
 }: AddBudgetLineDialogProps) {
-  const t = useTranslation();
+  const { t } = useTranslation();
  const [formData, setFormData] = useState({
  lineCode: "",
  description: "",
@@ -769,7 +769,7 @@ function MonthlyAllocationGrid({
  onRefresh,
  budget,
 }: MonthlyAllocationGridProps) {
-  const t = useTranslation();
+  const { t } = useTranslation();
  const [editingCell, setEditingCell] = useState<{ lineId: number; month: number } | null>(null);
  const [editValue, setEditValue] = useState<string>("");
 
@@ -1096,7 +1096,7 @@ function VarianceAnalysisTab({
  currency,
  isRTL,
 }: VarianceAnalysisTabProps) {
-  const t = useTranslation();
+  const { t } = useTranslation();
  const [viewMode, setViewMode] = useState<"lines" | "monthly">("lines");
 
  const { data: utilization, isLoading: utilizationLoading } = trpc.budgetExpenditure.getBudgetUtilization.useQuery(
@@ -1376,7 +1376,7 @@ function VarianceAnalysisTab({
 // ============================================================================
 
 function BudgetAnalysisExpensesTab({ budgetId, budget, canEdit }: any) {
-  const t = useTranslation();
+  const { t } = useTranslation();
   const { isRTL, language } = useLanguage();
   
   // Bilingual labels

@@ -10,7 +10,7 @@ import { formatProjectSectors } from '@/utils/projectHelpers';
 import ExcelJS from 'exceljs';
 import { UnifiedExportButton } from '@/components/exports/UnifiedExportButton';
 import { trpc } from '@/lib/trpc';
-import { useTranslation } from '@/i18n/TranslationProvider';
+import { useTranslation } from '@/i18n/useTranslation';
 import { BackButton } from "@/components/BackButton";
 
 // ============================================================================
@@ -235,7 +235,7 @@ interface ActiveGrantsProps {
 // ============================================================================
 export function ActiveGrants({
  projectId, onClose }: ActiveGrantsProps) {
- const t = useTranslation();
+ const { t } = useTranslation();
  const { isRTL } = useLanguage();
 const { user } = useAuth();
  

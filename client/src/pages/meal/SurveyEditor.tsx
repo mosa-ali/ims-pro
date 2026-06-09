@@ -34,7 +34,7 @@ import { FormPreview } from '@/components/FormPreview';
 import { AddQuestionModal } from '@/components/AddQuestionModal';
 import { FormStylePanel } from '@/components/FormStylePanel';
 import { Button } from '@/components/ui/button';
-import { useTranslation } from '@/i18n/TranslationProvider';
+import { useTranslation } from '@/i18n/useTranslation';
 import { BackButton } from "@/components/BackButton";
 import { AlertCircle } from 'lucide-react';
 
@@ -130,7 +130,7 @@ const QUESTION_TYPES: {
 
 // ✅ Icon mapping for each question type
 const getQuestionIcon = (type: QuestionType) => {
- const t = useTranslation();
+ const { t } = useTranslation();
  const iconMap = {
  select_one: ListChecks,
  select_multiple: CheckSquare,
@@ -166,7 +166,7 @@ export function SurveyEditor() {
  const searchString = useSearch();
  const searchParams = new URLSearchParams(searchString);
  const { language, isRTL } = useLanguage();
- const t = useTranslation();
+ const { t } = useTranslation();
  const { currentOrganizationId } = useOrganization();
  const { currentOperatingUnitId } = useOperatingUnit();
  const [questions, setQuestions] = useState<Question[]>([]);

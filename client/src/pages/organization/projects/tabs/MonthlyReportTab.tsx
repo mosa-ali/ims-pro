@@ -18,7 +18,7 @@ import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { ProjectReportPrintView } from "@/components/ProjectReportPrintView";
 import { ReportTabSkeleton } from "@/components/ProjectTabSkeletons";
-import { useTranslation } from '@/i18n/TranslationProvider';
+import { useTranslation } from '@/i18n/useTranslation';
 
 interface MonthlyReportTabProps {
  projectId: string;
@@ -26,7 +26,7 @@ interface MonthlyReportTabProps {
 
 export function MonthlyReportTab({
  projectId }: MonthlyReportTabProps) {
- const t = useTranslation();
+ const { t } = useTranslation();
  // Month selection state
  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
  const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1);
@@ -198,7 +198,7 @@ const [narratives, setNarratives] = useState({
  
  generatePDFMutation.mutate({
  projectId: parseInt(projectId),
- language: language as 'en' | 'ar',
+ language: language as 'en' | 'ar' | 'it',
  reportData: {
  project: {
  name: reportData.project?.titleEn || 'Unnamed Project',
@@ -973,7 +973,7 @@ const [narratives, setNarratives] = useState({
  reportData={reportData}
  riskCalculation={riskCalculation}
  narratives={narratives}
- language={language as 'en' | 'ar'}
+ language={language as 'en' | 'ar' | 'it'}
  organizationName={reportData?.organizationName || 'Organization'}
  reportType="monthly"
  reportPeriodStart={`${selectedYear}-${String(selectedMonth).padStart(2, '0')}-01`}

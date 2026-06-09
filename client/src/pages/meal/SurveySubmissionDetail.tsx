@@ -23,11 +23,11 @@ import { useState, useEffect } from 'react';
 import { Download, Check, X } from 'lucide-react';
 import { surveyService } from '@/services/mealService';
 import { Button } from '@/components/ui/button';
-import { useTranslation } from '@/i18n/TranslationProvider';
+import { useTranslation } from '@/i18n/useTranslation';
 import { BackButton } from "@/components/BackButton";
 
 export function SurveySubmissionDetail() {
- const t = useTranslation();
+ const { t } = useTranslation();
  const navigate = useNavigate();
  const { id: submissionId } = useParams<{ id: string }>();
  const searchString = useSearch();

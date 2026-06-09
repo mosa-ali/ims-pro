@@ -3,7 +3,7 @@ import { X, Save, Download, FileText, CheckCircle, AlertCircle, Upload } from 'l
 import { useLanguage } from '@/contexts/LanguageContext';
 import { BudgetSection, CoFundingSection } from '@/pages/organization/proposals/BudgetSection';
 import { ActivitiesSection, ImplementationPlanSection } from '@/pages/organization/proposals/ActivitiesSection';
-import { useTranslation } from '@/i18n/TranslationProvider';
+import { useTranslation } from '@/i18n/useTranslation';
 import { BackButton } from "@/components/BackButton";
 
 interface ProposalEditorProps {
@@ -41,7 +41,7 @@ const PROPOSAL_SECTIONS: ProposalSection[] = [
 
 export function ProposalEditor({
  proposal, onClose }: ProposalEditorProps) {
- const t = useTranslation();
+ const { t } = useTranslation();
  const { isRTL } = useLanguage();
  const [activeSection, setActiveSection] = useState('context');
  const [hasChanges, setHasChanges] = useState(false);
@@ -107,7 +107,7 @@ export function ProposalEditor({
  enterResult: t.proposals.enterExpectedResult,
  // Cross-cutting
  genderMainstreaming: t.proposals.genderMainstreaming,
- genderPlaceholder: t.proposals.howWillTheProjectAddressGendersEmpowerment,
+ genderPlaceholder: t.proposals.howWillTheProjectAddressGender,
  protectionMainstreaming: t.proposals.protectionMainstreaming,
  protectionPlaceholder: t.proposals.howWillTheProjectEnsureProtection,
  environmentalConsiderations: t.proposals.environmentalConsiderations,
@@ -432,7 +432,7 @@ export function ProposalEditor({
  // Get section index for numbering
  const sectionIndex = PROPOSAL_SECTIONS.findIndex(s => s.key === activeSection);
  const sectionNumber = sectionIndex + 1;
- const translatedTitle = t.sections[section.key as keyof typeof t.sections] || section.title;
+ const translatedTitle = localT.sections[section.key as keyof typeof localT.sections] || section.title;
  const fullTitle = `${sectionNumber}. ${translatedTitle}`;
  switch (activeSection) {
  case 'proposal_summary':
@@ -449,7 +449,7 @@ export function ProposalEditor({
  {section.required && <span className="text-red-600 ms-1">*</span>}
  {section.wordLimit && (
  <span className="text-xs text-gray-500 ms-2">
- ({t.maxWords} {section.wordLimit} {t.words})
+ ({localT.maxWords} {section.wordLimit} {localT.words})
  </span>
  )}
  </label>
@@ -462,17 +462,17 @@ export function ProposalEditor({
  updateSectionData(activeSection, { content, wordCount: count });
  }}
  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50"
- placeholder={t.enterContent}
+ placeholder={localT.enterContent}
  />
  <div className={`mt-2 flex items-center justify-between text-xs text-gray-500`}>
- <span>{t.wordCount}: {sectionData[activeSection]?.wordCount || 0}</span>
+ <span>{localT.wordCount}: {sectionData[activeSection]?.wordCount || 0}</span>
  {section.wordLimit && (
  <span className={
  (sectionData[activeSection]?.wordCount || 0) > section.wordLimit
  ? 'text-red-600 font-medium'
  : 'text-gray-500'
  }>
- {section.wordLimit - (sectionData[activeSection]?.wordCount || 0)} {t.wordsRemaining}
+ {section.wordLimit - (sectionData[activeSection]?.wordCount || 0)} {localT.wordsRemaining}
  </span>
  )}
  </div>
@@ -483,20 +483,20 @@ export function ProposalEditor({
  return (
  <div>
  <label className="block text-sm font-medium text-gray-700 mb-2">
- {t.targetPopulation}
+ {localT.targetPopulation}
  <span className="text-red-600 ms-1">*</span>
  </label>
  <div className="overflow-x-auto">
  <table className="w-full border border-gray-300">
  <thead className="bg-gray-50">
  <tr>
- <th className="px-3 py-2 text-xs font-semibold text-gray-700 border border-gray-300">{t.type}</th>
- <th className="px-3 py-2 text-xs font-semibold text-gray-700 border border-gray-300">{t.female18}</th>
- <th className="px-3 py-2 text-xs font-semibold text-gray-700 border border-gray-300">{t.male18}</th>
- <th className="px-3 py-2 text-xs font-semibold text-gray-700 border border-gray-300">{t.girls}</th>
- <th className="px-3 py-2 text-xs font-semibold text-gray-700 border border-gray-300">{t.boys}</th>
- <th className="px-3 py-2 text-xs font-semibold text-gray-700 border border-gray-300">{t.pwd}</th>
- <th className="px-3 py-2 text-xs font-semibold text-gray-700 border border-gray-300">{t.total}</th>
+ <th className="px-3 py-2 text-xs font-semibold text-gray-700 border border-gray-300">{localT.type}</th>
+ <th className="px-3 py-2 text-xs font-semibold text-gray-700 border border-gray-300">{localT.female18}</th>
+ <th className="px-3 py-2 text-xs font-semibold text-gray-700 border border-gray-300">{localT.male18}</th>
+ <th className="px-3 py-2 text-xs font-semibold text-gray-700 border border-gray-300">{localT.girls}</th>
+ <th className="px-3 py-2 text-xs font-semibold text-gray-700 border border-gray-300">{localT.boys}</th>
+ <th className="px-3 py-2 text-xs font-semibold text-gray-700 border border-gray-300">{localT.pwd}</th>
+ <th className="px-3 py-2 text-xs font-semibold text-gray-700 border border-gray-300">{localT.total}</th>
  </tr>
  </thead>
  <tbody>
@@ -514,8 +514,8 @@ export function ProposalEditor({
  }}
  className="w-full px-2 py-1 border border-gray-300 rounded text-sm"
  >
- <option>{t.direct}</option>
- <option>{t.indirect}</option>
+ <option>{localT.direct}</option>
+ <option>{localT.indirect}</option>
  </select>
  </td>
  <td className="px-3 py-2 border border-gray-300">
@@ -601,7 +601,7 @@ export function ProposalEditor({
  }}
  className="mt-2 text-sm text-primary hover:underline"
  >
- + {t.addRow}
+ + {localT.addRow}
  </button>
  </div>
  );
@@ -610,7 +610,7 @@ export function ProposalEditor({
  return (
  <div>
  <label className="block text-sm font-medium text-gray-700 mb-2">
- {t.specificObjectives}
+ {localT.specificObjectives}
  <span className="text-red-600 ms-1">*</span>
  </label>
  <div className="space-y-3">
@@ -626,7 +626,7 @@ export function ProposalEditor({
  updateSectionData('specific_objectives', { objectives });
  }}
  className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50"
- placeholder={`${t.enterObjective} ${index + 1}...`}
+ placeholder={`${localT.enterObjective} ${index + 1}...`}
  />
  </div>
  ))}
@@ -640,7 +640,7 @@ export function ProposalEditor({
  }}
  className="mt-2 text-sm text-primary hover:underline"
  >
- + {t.addObjective}
+ + {localT.addObjective}
  </button>
  </div>
  );
@@ -649,7 +649,7 @@ export function ProposalEditor({
  return (
  <div>
  <label className="block text-sm font-medium text-gray-700 mb-2">
- {t.expectedResults}
+ {localT.expectedResults}
  <span className="text-red-600 ms-1">*</span>
  </label>
  <div className="space-y-3">
@@ -665,7 +665,7 @@ export function ProposalEditor({
  updateSectionData('expected_results', { results });
  }}
  className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50"
- placeholder={`${t.enterResult} ${index + 1}...`}
+ placeholder={`${localT.enterResult} ${index + 1}...`}
  />
  </div>
  ))}
@@ -679,7 +679,7 @@ export function ProposalEditor({
  }}
  className="mt-2 text-sm text-primary hover:underline"
  >
- + {t.addResult}
+ + {localT.addResult}
  </button>
  </div>
  );
@@ -689,7 +689,7 @@ export function ProposalEditor({
  <div className="space-y-4">
  <div>
  <label className="block text-sm font-medium text-gray-700 mb-2">
- {t.genderMainstreaming}
+ {localT.genderMainstreaming}
  <span className="text-red-600 ms-1">*</span>
  </label>
  <textarea
@@ -700,12 +700,12 @@ export function ProposalEditor({
  gender: e.target.value 
  })}
  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50"
- placeholder={t.genderPlaceholder}
+ placeholder={localT.genderPlaceholder}
  />
  </div>
  <div>
  <label className="block text-sm font-medium text-gray-700 mb-2">
- {t.protectionMainstreaming}
+ {localT.protectionMainstreaming}
  <span className="text-red-600 ms-1">*</span>
  </label>
  <textarea
@@ -716,12 +716,12 @@ export function ProposalEditor({
  protection: e.target.value 
  })}
  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50"
- placeholder={t.protectionPlaceholder}
+ placeholder={localT.protectionPlaceholder}
  />
  </div>
  <div>
  <label className="block text-sm font-medium text-gray-700 mb-2">
- {t.environmentalConsiderations}
+ {localT.environmentalConsiderations}
  </label>
  <textarea
  rows={3}
@@ -731,7 +731,7 @@ export function ProposalEditor({
  environment: e.target.value 
  })}
  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50"
- placeholder={t.environmentPlaceholder}
+ placeholder={localT.environmentPlaceholder}
  />
  </div>
  </div>
@@ -741,17 +741,17 @@ export function ProposalEditor({
  return (
  <div>
  <label className="block text-sm font-medium text-gray-700 mb-2">
- {t.riskAnalysis}
+ {localT.riskAnalysis}
  <span className="text-red-600 ms-1">*</span>
  </label>
  <div className="overflow-x-auto">
  <table className="w-full border border-gray-300 text-sm">
  <thead className="bg-gray-50">
  <tr>
- <th className="px-3 py-2 text-xs font-semibold text-gray-700 border border-gray-300">{t.riskDescription}</th>
- <th className="px-3 py-2 text-xs font-semibold text-gray-700 border border-gray-300">{t.probability}</th>
- <th className="px-3 py-2 text-xs font-semibold text-gray-700 border border-gray-300">{t.impact}</th>
- <th className="px-3 py-2 text-xs font-semibold text-gray-700 border border-gray-300">{t.mitigationMeasures}</th>
+ <th className="px-3 py-2 text-xs font-semibold text-gray-700 border border-gray-300">{localT.riskDescription}</th>
+ <th className="px-3 py-2 text-xs font-semibold text-gray-700 border border-gray-300">{localT.probability}</th>
+ <th className="px-3 py-2 text-xs font-semibold text-gray-700 border border-gray-300">{localT.impact}</th>
+ <th className="px-3 py-2 text-xs font-semibold text-gray-700 border border-gray-300">{localT.mitigationMeasures}</th>
  </tr>
  </thead>
  <tbody>
@@ -767,7 +767,7 @@ export function ProposalEditor({
  updateSectionData('risks', { risks });
  }}
  className="w-full px-2 py-1 border border-gray-300 rounded text-sm"
- placeholder={t.describeRisk}
+ placeholder={localT.describeRisk}
  />
  </td>
  <td className="px-3 py-2 border border-gray-300">
@@ -780,9 +780,9 @@ export function ProposalEditor({
  }}
  className="w-full px-2 py-1 border border-gray-300 rounded text-sm"
  >
- <option>{t.low}</option>
- <option>{t.medium}</option>
- <option>{t.high}</option>
+ <option>{localT.low}</option>
+ <option>{localT.medium}</option>
+ <option>{localT.high}</option>
  </select>
  </td>
  <td className="px-3 py-2 border border-gray-300">
@@ -795,9 +795,9 @@ export function ProposalEditor({
  }}
  className="w-full px-2 py-1 border border-gray-300 rounded text-sm"
  >
- <option>{t.low}</option>
- <option>{t.medium}</option>
- <option>{t.high}</option>
+ <option>{localT.low}</option>
+ <option>{localT.medium}</option>
+ <option>{localT.high}</option>
  </select>
  </td>
  <td className="px-3 py-2 border border-gray-300">
@@ -810,7 +810,7 @@ export function ProposalEditor({
  updateSectionData('risks', { risks });
  }}
  className="w-full px-2 py-1 border border-gray-300 rounded text-sm"
- placeholder={t.mitigationStrategy}
+ placeholder={localT.mitigationStrategy}
  />
  </td>
  </tr>
@@ -827,7 +827,7 @@ export function ProposalEditor({
  }}
  className="mt-2 text-sm text-primary hover:underline"
  >
- + {t.addRisk}
+ + {localT.addRisk}
  </button>
  </div>
  );
@@ -836,18 +836,18 @@ export function ProposalEditor({
  return (
  <div>
  <label className="block text-sm font-medium text-gray-700 mb-2">
- {t.mealFramework}
+ {localT.mealFramework}
  <span className="text-red-600 ms-1">*</span>
  </label>
  <div className="overflow-x-auto">
  <table className="w-full border border-gray-300 text-sm">
  <thead className="bg-gray-50">
  <tr>
- <th className="px-3 py-2 text-xs font-semibold text-gray-700 border border-gray-300">{t.indicator}</th>
- <th className="px-3 py-2 text-xs font-semibold text-gray-700 border border-gray-300">{t.baseline}</th>
- <th className="px-3 py-2 text-xs font-semibold text-gray-700 border border-gray-300">{t.target}</th>
- <th className="px-3 py-2 text-xs font-semibold text-gray-700 border border-gray-300">{t.dataSource}</th>
- <th className="px-3 py-2 text-xs font-semibold text-gray-700 border border-gray-300">{t.frequency}</th>
+ <th className="px-3 py-2 text-xs font-semibold text-gray-700 border border-gray-300">{localT.indicator}</th>
+ <th className="px-3 py-2 text-xs font-semibold text-gray-700 border border-gray-300">{localT.baseline}</th>
+ <th className="px-3 py-2 text-xs font-semibold text-gray-700 border border-gray-300">{localT.target}</th>
+ <th className="px-3 py-2 text-xs font-semibold text-gray-700 border border-gray-300">{localT.dataSource}</th>
+ <th className="px-3 py-2 text-xs font-semibold text-gray-700 border border-gray-300">{localT.frequency}</th>
  </tr>
  </thead>
  <tbody>
@@ -863,7 +863,7 @@ export function ProposalEditor({
  updateSectionData('meal', { indicators });
  }}
  className="w-full px-2 py-1 border border-gray-300 rounded text-sm"
- placeholder={t.indicatorDescription}
+ placeholder={localT.indicatorDescription}
  />
  </td>
  <td className="px-3 py-2 border border-gray-300">
@@ -902,7 +902,7 @@ export function ProposalEditor({
  updateSectionData('meal', { indicators });
  }}
  className="w-full px-2 py-1 border border-gray-300 rounded text-sm"
- placeholder={t.monitoringReports}
+ placeholder={localT.monitoringReports}
  />
  </td>
  <td className="px-3 py-2 border border-gray-300">
@@ -915,10 +915,10 @@ export function ProposalEditor({
  }}
  className="w-full px-2 py-1 border border-gray-300 rounded text-sm"
  >
- <option>{t.monthly}</option>
- <option>{t.quarterly}</option>
- <option>{t.semiAnnually}</option>
- <option>{t.annually}</option>
+ <option>{localT.monthly}</option>
+ <option>{localT.quarterly}</option>
+ <option>{localT.semiAnnually}</option>
+ <option>{localT.annually}</option>
  </select>
  </td>
  </tr>
@@ -935,7 +935,7 @@ export function ProposalEditor({
  }}
  className="mt-2 text-sm text-primary hover:underline"
  >
- + {t.addIndicator}
+ + {localT.addIndicator}
  </button>
  </div>
  );
@@ -1039,10 +1039,10 @@ export function ProposalEditor({
  {/* Sidebar - Section Navigation */}
  <div className="w-64 bg-white border-r border-gray-200 overflow-y-auto">
  <div className="p-4">
- <h3 className="text-xs font-semibold text-gray-500 uppercase mb-2">{t.proposalSections}</h3>
+ <h3 className="text-xs font-semibold text-gray-500 uppercase mb-2">{localT.proposalSections}</h3>
  <nav className="space-y-1">
  {PROPOSAL_SECTIONS.map((section, index) => {
- const translatedTitle = t.sections[section.key as keyof typeof t.sections] || section.title;
+ const translatedTitle = localT.sections[section.key as keyof typeof localT.sections] || section.title;
  const displayTitle = `${index + 1}. ${translatedTitle}`;
  const isComplete = isSectionComplete(section.key);
  
@@ -1080,9 +1080,9 @@ export function ProposalEditor({
  {showExportModal && (
  <div className="fixed inset-0 bg-gray-900/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
  <div className="bg-white rounded-lg max-w-md w-full p-6">
- <h3 className="text-lg font-semibold text-gray-900 mb-4">{t.exportProposal}</h3>
+ <h3 className="text-lg font-semibold text-gray-900 mb-4">{localT.exportProposal}</h3>
  <p className="text-sm text-gray-600 mb-6">
- {t.chooseExportFormat}
+ {localT.chooseExportFormat}
  </p>
  <div className="space-y-3">
  <button
@@ -1090,14 +1090,14 @@ export function ProposalEditor({
  className="w-full px-4 py-3 bg-red-600 text-white rounded-md hover:bg-red-700 flex items-center justify-center gap-2"
  >
  <FileText className="w-5 h-5" />
- {t.exportAsPDF}
+ {localT.exportAsPDF}
  </button>
  <button
  onClick={handleExportWord}
  className="w-full px-4 py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 flex items-center justify-center gap-2"
  >
  <FileText className="w-5 h-5" />
- {t.exportAsWord}
+ {localT.exportAsWord}
  </button>
  </div>
  <div className="mt-4 flex justify-end">
@@ -1105,7 +1105,7 @@ export function ProposalEditor({
  onClick={() => setShowExportModal(false)}
  className="px-4 py-2 text-sm border border-gray-300 rounded-md hover:bg-gray-50"
  >
- {t.cancel}
+ {localT.cancel}
  </button>
  </div>
  </div>

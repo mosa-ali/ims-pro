@@ -14,7 +14,7 @@
  * ============================================================================
  */
 
-import { useTranslation } from '@/i18n/TranslationProvider';
+import { useTranslation } from '@/i18n/useTranslation';
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from '@/lib/router-compat';
 import { 
@@ -35,7 +35,7 @@ import { Vacancy, VacancyCriteria, ApplicationFormData } from './types';
 import { useLanguage } from '@/contexts/LanguageContext';
 
 export function PublicApplicationForm() {
-  const t = useTranslation();
+  const { t } = useTranslation();
   const { language, isRTL } = useLanguage();
  const { vacancyRef } = useParams<{ vacancyRef: string }>();
  const navigate = useNavigate();

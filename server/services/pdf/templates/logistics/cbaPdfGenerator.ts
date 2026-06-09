@@ -80,7 +80,7 @@ export interface CompetitiveBidAnalysisPDFData {
   }>;
 
   // Language & Direction
-  language: 'en' | 'ar';
+  language: 'en' | 'ar' | 'it';
 }
 
 // ============================================================================

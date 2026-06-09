@@ -4,6 +4,7 @@
     <script>
       // CRITICAL: Set direction BEFORE React mounts to prevent LTR lock-in
       // This script runs synchronously before any DOM parsing
+      // Supports: en (English), ar (Arabic - RTL), it (Italian - LTR)
       (function() {
         const lang = localStorage.getItem('pms_language') || 'en';
         const dir = lang === 'ar' ? 'rtl' : 'ltr';
@@ -16,7 +17,7 @@
     <meta
       name="viewport"
       content="width=device-width, initial-scale=1.0, maximum-scale=1" />
-    <title>Integrated Management System</title>
+    <title>Integrated Management System (English | العربية | Italiano)</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />

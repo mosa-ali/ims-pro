@@ -63,7 +63,7 @@ export default function BidAnalysisPrint() {
  const prTotal = parseFloat(String(ba.purchaseRequest?.prTotalUsd || ba.purchaseRequest?.prTotalUSD || "0"));
  const techWeightPct = parseFloat(String(ba.technicalWeight || "50"));
  const finWeightPct = parseFloat(String(ba.financialWeight || "50"));
- const techThreshold = parseFloat(String(ba.technicalThreshold || "70"));
+ const techThreshold = parseFloat(String(ba.technicalBThreshold || "70"));
 
  // Build sections from evaluation criteria (grouped by sectionNumber)
  const sectionMap = new Map<number, Section>();

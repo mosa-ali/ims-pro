@@ -11,7 +11,7 @@ import { useState, useEffect } from 'react';
 import { X, Save, Upload, User } from 'lucide-react';
 import { useLanguage } from '@/app/contexts/LanguageContext';
 import { StaffMember } from '../types/hrTypes';
-import { useTranslation } from '@/i18n/TranslationProvider';
+import { useTranslation } from '@/i18n/useTranslation';
 
 interface Props {
  employee: StaffMember;
@@ -21,7 +21,7 @@ interface Props {
 
 export function EditIdentityProfileModal({
  employee, onClose, onSave }: Props) {
- const t = useTranslation();
+ const { t } = useTranslation();
  const { language, isRTL } = useLanguage();
  
  // ONLY identity & personal fields (NO contract, salary, etc.)

@@ -9,7 +9,7 @@ import { saveAs } from 'file-saver';
 import { toast } from 'sonner';
 import { PreImportPreviewDialog } from '@/components/PreImportPreviewDialog';
 import { casesImportConfig, validateImportRow, parseExcelToRows } from '@/config/caseManagementImportConfig';
-import { useTranslation } from '@/i18n/TranslationProvider';
+import { useTranslation } from '@/i18n/useTranslation';
 import {
  DropdownMenu,
  DropdownMenuContent,
@@ -24,7 +24,7 @@ interface CasesListProps {
 
 export function CasesList({
  projectId, onViewCase }: CasesListProps) {
- const t = useTranslation();
+ const { t } = useTranslation();
  const { isRTL } = useLanguage();
  const { user } = useAuth();
  const utils = trpc.useUtils();

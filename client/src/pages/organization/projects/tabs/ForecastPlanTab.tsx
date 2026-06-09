@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { Save, Download, Upload, AlertCircle, CheckCircle, Info, AlertTriangle, Printer } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { useTranslation } from '@/i18n/TranslationProvider';
+import { useTranslation } from '@/i18n/useTranslation';
 import { formatNumber } from '@/utils/formatters';
 import { trpc } from '@/lib/trpc';
 import { useAuth } from '@/_core/hooks/useAuth';
@@ -33,7 +33,7 @@ interface ForecastPlanTabProps {
 
 export function ForecastPlanTab({
  projectId }: ForecastPlanTabProps) {
- const t = useTranslation();
+ const { t } = useTranslation();
  const { language, isRTL } = useLanguage();
 const { user } = useAuth();
  // Simple toast replacement (alerts)

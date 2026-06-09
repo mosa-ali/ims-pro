@@ -7,7 +7,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Download, FileSpreadsheet, FileText } from "lucide-react";
 import { useLanguage } from '@/contexts/LanguageContext';
-import { useTranslation } from '@/i18n/TranslationProvider';
+import { useTranslation } from '@/i18n/useTranslation';
 
 interface ExportButtonProps {
  onExportWithData: () => void;
@@ -41,7 +41,7 @@ export function ExportButton({
  variant = "outline",
  size = "default",
 }: ExportButtonProps) {
- const t = useTranslation();
+ const { t } = useTranslation();
  const labels = {
  en: {
  export: "Export",

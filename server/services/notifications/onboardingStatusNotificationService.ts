@@ -25,7 +25,7 @@ export interface NotificationPayload {
   errorMessage?: string;
   onboardingLink?: string;
   expiresAt?: Date;
-  language?: 'en' | 'ar';
+  language: 'en' | 'ar' | 'it';
 }
 
 /**

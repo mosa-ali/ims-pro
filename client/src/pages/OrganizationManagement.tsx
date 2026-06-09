@@ -5,7 +5,7 @@ import { trpc } from "@/lib/trpc";
 import { Building2, MapPin, Plus, Settings, Users } from "lucide-react";
 import { Link, useParams } from "wouter";
 import { useLanguage } from '@/contexts/LanguageContext';
-import { useTranslation } from '@/i18n/TranslationProvider';
+import { useTranslation } from '@/i18n/useTranslation';
 import { BackButton } from "@/components/BackButton";
 
 /**
@@ -14,7 +14,7 @@ import { BackButton } from "@/components/BackButton";
  */
 export default function OrganizationManagement() {
   const { language, isRTL} = useLanguage();
-  const t = useTranslation();
+  const { t } = useTranslation();
  const { user } = useAuth();
  const params = useParams();
  const organizationId = params.id ? parseInt(params.id) : undefined;

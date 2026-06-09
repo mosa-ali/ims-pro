@@ -15,10 +15,8 @@ import { ComplianceOverview } from './ComplianceOverview';
 import { BeneficiaryProgress } from './BeneficiaryProgress';
 import { ProjectOverviewTable } from './ProjectOverviewTable';
 import TopGrantsWidget from './TopGrantsWidget';
-import { UpcomingReportingDeadlines } from './UpcomingReportingDeadlines';
 import { ExpiringProjects } from './ExpiringProjects';
-import { useTranslation } from '@/i18n/TranslationProvider';
-
+import { UpcomingReportingDeadlines } from "./UpcomingReportingDeadlines";
 
 // ─── Navigation card ──────────────────────────────────────────────────────────
 
@@ -71,7 +69,7 @@ const NavCard = memo(function NavCard({
 export default function ProgramDashboard() {
   const { language, isRTL } = useLanguage();
   const [, setLocation] = useLocation();
-  const t = dashboardTranslations[language as keyof typeof dashboardTranslations] || dashboardTranslations.en;
+  const t = dashboardTranslations[language as keyof typeof dashboardTranslations] || dashboardTranslations.en || dashboardTranslations.it;
 
   const {
     kpis, alerts, budgetTrend, statusDistribution, snapshot,
@@ -140,7 +138,7 @@ export default function ProgramDashboard() {
         (alerts.atRisk?.length || 0) +
         (alerts.overBudget?.length || 0) +
         (alerts.expiringSoon?.length || 0) +
-        (alerts.overdueReports?.length || 0) > 0
+        (alerts.overdueReports?.length || 0)
       ))) && (
         <ExecutiveAlerts
           alerts={alerts}

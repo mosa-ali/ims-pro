@@ -16,7 +16,7 @@
  * These scores auto-load into Bid Evaluation (Layer 2) as read-only.
  */
 import { useLanguage } from '@/contexts/LanguageContext';
-import { useTranslation } from '@/i18n/TranslationProvider';
+import { useTranslation } from '@/i18n/useTranslation';
 import { trpc } from '@/lib/trpc';
 import { useState, useMemo, useEffect, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
@@ -130,7 +130,7 @@ interface CustomSection {
 
 export default function EvaluationChecklist() {
   const { isRTL } = useLanguage();
-  const t = useTranslation();
+  const { t } = useTranslation();
   const params = useParams<{ vendorId?: string }>();
 
   // Parse mode from URL query string (?mode=view or ?mode=edit)

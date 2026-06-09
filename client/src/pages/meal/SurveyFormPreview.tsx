@@ -25,12 +25,12 @@ import { useState, useEffect } from 'react';
 import { AlertCircle, Loader2 } from 'lucide-react';
 import { FormPreview } from '@/components/FormPreview';
 import { Button } from '@/components/ui/button';
-import { useTranslation } from '@/i18n/TranslationProvider';
+import { useTranslation } from '@/i18n/useTranslation';
 import { BackButton } from "@/components/BackButton";
 import { trpc } from "@/lib/trpc";
 
 export function SurveyFormPreview() {
- const t = useTranslation();
+ const { t } = useTranslation();
  const navigate = useNavigate();
  const searchString = useSearch();
  const searchParams = new URLSearchParams(searchString);

@@ -60,7 +60,7 @@ interface AttendancePeriod {
 
 export function AttendanceDashboard() {
   const navigate = useNavigate();
-  const t = useTranslation();
+  const { t } = useTranslation();
   const { isRTL } = useLanguage();
 
   const { currentOrganizationId } = useOrganization();

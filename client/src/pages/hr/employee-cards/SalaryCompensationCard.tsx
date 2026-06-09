@@ -16,7 +16,7 @@ import { useOrganization } from '@/contexts/OrganizationContext';
 import { useOperatingUnit } from '@/contexts/OperatingUnitContext';
 import { PayrollSlipPrintModal } from '../modals/PayrollSlipPrintModal';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { useTranslation } from '@/i18n/TranslationProvider';
+import { useTranslation } from '@/i18n/useTranslation';
 
 interface Props {
  employee: {
@@ -34,7 +34,7 @@ interface Props {
 
 export function SalaryCompensationCard({
  employee, language, isRTL, onEmployeeUpdate }: Props) {
- const t = useTranslation();
+ const { t } = useTranslation();
  const { currentOrganizationId } = useOrganization();
  const { currentOperatingUnitId } = useOperatingUnit();
  const [showPrintModal, setShowPrintModal] = useState(false);

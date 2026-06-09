@@ -44,10 +44,10 @@ export function DonorCombobox({
  disabled = false,
  className,
 }: DonorComboboxProps) {
- const t = useTranslation();
+ const { t } = useTranslation();
  const [open, setOpen] = useState(false);
 const selectedDonor = donors.find((d) => d.id === value);
- const { t, language } = useTranslation();
+ const { language } = useTranslation();
  const displayValue = selectedDonor 
  ? (language === "en" ? selectedDonor.name : selectedDonor.nameAr || selectedDonor.name)
  : null;

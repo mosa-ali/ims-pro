@@ -37,7 +37,7 @@ import {
  List,
  ArrowLeft, ArrowRight
 } from 'lucide-react';
-import { useTranslation } from '@/i18n/TranslationProvider';
+import { useTranslation } from '@/i18n/useTranslation';
 import { BackButton } from "@/components/BackButton";
 import { trpc } from '@/lib/trpc';
 import { useAuth } from '@/_core/hooks/useAuth';
@@ -52,7 +52,7 @@ interface KPICard {
 }
 
 export function SurveyDashboard() {
- const t = useTranslation();
+ const { t } = useTranslation();
  const navigate = useNavigate();
  const searchString = useSearch();
  const searchParams = new URLSearchParams(searchString);

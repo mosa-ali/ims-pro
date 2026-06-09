@@ -8,7 +8,7 @@ import { useState } from 'react';
 import { X, Save, User, Briefcase, FolderKanban, CreditCard, FileText } from 'lucide-react';
 import { ModalOverlay } from '@/app/components/ui/ModalOverlay';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { useTranslation } from '@/i18n/TranslationProvider';
+import { useTranslation } from '@/i18n/useTranslation';
 import { trpc } from '@/lib/trpc';
 import { toast } from 'sonner';
 import { Loader2 } from 'lucide-react';
@@ -23,7 +23,7 @@ interface EditStaffModalProps {
 
 export function EditStaffModal({
  employee, staffMember, onClose, onSave }: EditStaffModalProps) {
- const t = useTranslation();
+ const { t } = useTranslation();
  const { language, isRTL } = useLanguage();
  const staff = employee || staffMember;
  

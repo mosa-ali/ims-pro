@@ -49,7 +49,7 @@ import { Badge } from "@/components/ui/badge";
 import { Plus, Edit2, Trash2, Search, Loader2, AlertTriangle, Globe } from "lucide-react";
 import { toast } from "sonner";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { useTranslation } from '@/i18n/TranslationProvider';
+import { useTranslation } from '@/i18n/useTranslation';
 import { 
   GLOBAL_UNIT_TYPES, 
   getUnitTypesByCategory, 
@@ -88,7 +88,7 @@ interface UnitType {
 type CategoryType = "goods" | "time_based" | "programmatic" | "all";
 
 export default function UnitTypeManagement() {
-  const t = useTranslation();
+  const { t } = useTranslation();
   const { isRTL, language } = useLanguage();
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<CategoryType>("all");

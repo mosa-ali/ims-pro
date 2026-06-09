@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { DollarSign, TrendingUp, TrendingDown, AlertCircle, Download, Upload, FileSpreadsheet, Plus, Edit2, Trash2, Save, X } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { formatCurrency, formatNumber } from '@/utils/formatters';
-import { useTranslation } from '@/i18n/TranslationProvider';
+import { useTranslation } from '@/i18n/useTranslation';
 import ExcelJS from 'exceljs';
 import { saveAs } from 'file-saver';
 import { UnifiedExportButton } from '@/components/exports/UnifiedExportButton';
@@ -123,7 +123,7 @@ const mockBudgetLines: BudgetLine[] = [
 
 export function FinancialOverviewTab({ projectId }: FinancialOverviewTabProps) {
   const { language, isRTL } = useLanguage();
-  const t = useTranslation();
+  const { t } = useTranslation();
   const [budgetLines, setBudgetLines] = useState<BudgetLine[]>(mockBudgetLines);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editForm, setEditForm] = useState<Partial<BudgetLine>>({});

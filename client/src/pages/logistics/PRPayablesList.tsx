@@ -42,13 +42,13 @@ import {
  FileText,
  AlertTriangle,
 } from "lucide-react";
-import { useTranslation } from '@/i18n/TranslationProvider';
+import { useTranslation } from '@/i18n/useTranslation';
 import { BackButton } from "@/components/BackButton";
 
 interface PRPayablesListProps {}
 
 export default function PRPayablesList() {
- const t = useTranslation();
+ const { t } = useTranslation();
  const { currentOrganizationId } = useOrganization();
  const { language, isRTL} = useLanguage();
  const [location] = useLocation();
@@ -741,7 +741,7 @@ function ResubmitInvoiceDialog({
  onNotesChange: (notes: string) => void;
 }) {
  const { language, isRTL } = useLanguage();
- const t = useTranslation();
+ const { t } = useTranslation();
  const resubmitMutation = trpc.prFinance.resubmitInvoice.useMutation({
  onSuccess: (data) => {
  toast.success(data.message);

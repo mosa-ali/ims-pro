@@ -53,7 +53,7 @@ import {
  AlertDialogHeader,
  AlertDialogTitle,
 } from"@/components/ui/alert-dialog";
-import { useTranslation } from '@/i18n/TranslationProvider';
+import { useTranslation } from '@/i18n/useTranslation';
 import { BackButton } from "@/components/BackButton";
 
 // Budget status configuration
@@ -137,7 +137,7 @@ function formatDate(date: string | Date | null): string {
 
 export default function FinanceBudgets() {
 const { language, isRTL} = useLanguage();
- const t = useTranslation();
+ const { t } = useTranslation();
  const { currentOrganizationId } = useOrganization();
  const { currentOperatingUnitId } = useOperatingUnit();
  const navigate = useNavigate();
@@ -904,7 +904,7 @@ function CreateBudgetDialog({
  pageT,
  onSuccess,
 }: CreateBudgetDialogProps) {
-  const t = useTranslation();
+  const { t } = useTranslation();
  const [formData, setFormData] = useState({
  grantId:"",
  budgetTitle:"",
@@ -1133,7 +1133,7 @@ function BudgetDetailDialog({
  budgetCategories,
  onRefresh,
 }: BudgetDetailDialogProps) {
-  const t = useTranslation();
+  const { t } = useTranslation();
  const [activeTab, setActiveTab] = useState("lines");
  const [showAddLineDialog, setShowAddLineDialog] = useState(false);
 
@@ -1451,7 +1451,7 @@ function AddBudgetLineDialog({
  budgetCategories,
  onSuccess,
 }: AddBudgetLineDialogProps) {
-  const t = useTranslation();
+  const { t } = useTranslation();
  const [formData, setFormData] = useState({
  lineCode:"",
  description:"",
@@ -1727,7 +1727,7 @@ function MonthlyAllocationGrid({
  canEdit,
  onRefresh,
 }: MonthlyAllocationGridProps) {
-  const t = useTranslation();
+  const { t } = useTranslation();
  const [selectedLineId, setSelectedLineId] = useState<number | null>(null);
  const [editingCell, setEditingCell] = useState<{ lineId: number; month: number } | null>(null);
  const [editValue, setEditValue] = useState<string>("");
@@ -2037,7 +2037,7 @@ function DonorExportDialog({
  organizationId,
  isRTL,
 }: DonorExportDialogProps) {
-  const t = useTranslation();
+  const { t } = useTranslation();
  const [selectedBudgetId, setSelectedBudgetId] = useState<number>(budgetId || 0);
  const [selectedFormat, setSelectedFormat] = useState<string>("EU");
  const [includeMonthly, setIncludeMonthly] = useState(false);
@@ -2275,7 +2275,7 @@ function VarianceAnalysisTab({
  currency,
  isRTL,
 }: VarianceAnalysisTabProps) {
-  const t = useTranslation();
+  const { t } = useTranslation();
  const [viewMode, setViewMode] = useState<"lines" |"monthly">("lines");
 
  // Fetch budget utilization summary
@@ -2662,7 +2662,7 @@ function UpdateBudgetDialog({
  pageT,
  onSuccess,
 }: UpdateBudgetDialogProps) {
-  const t = useTranslation();
+  const { t } = useTranslation();
  const [formData, setFormData] = useState({
  grantId: budget?.grantId?.toString() || "",
  budgetTitle: budget?.budgetTitle || "",

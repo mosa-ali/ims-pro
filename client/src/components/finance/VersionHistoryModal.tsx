@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Calendar, User, FileText, ArrowRight } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { useTranslation } from '@/i18n/TranslationProvider';
+import { useTranslation } from '@/i18n/useTranslation';
 
 interface Version {
  id: number;
@@ -23,7 +23,7 @@ interface VersionHistoryModalProps {
  versions: Version[];
  title: string;
  isLoading?: boolean;
- language: 'en' | 'ar';
+ language: 'en' | 'ar' | 'it';
  renderVersionDetails: (version: Version) => React.ReactNode;
 }
 
@@ -36,7 +36,7 @@ export function VersionHistoryModal({
  language,
  renderVersionDetails,
 }: VersionHistoryModalProps) {
- const t = useTranslation();
+ const { t } = useTranslation();
 
  const labels = {
  en: {

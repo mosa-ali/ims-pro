@@ -329,7 +329,7 @@ def replace_in_files(file_translations, ns_name_map):
         
         # Add useTranslation import if not present
         if 'useTranslation' not in content:
-            import_line = "import { useTranslation } from '@/i18n/TranslationProvider';"
+            import_line = "import { useTranslation } from "@/i18n/useTranslation";"
             lines = content.split('\n')
             
             # Find last import line

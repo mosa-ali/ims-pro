@@ -1,4 +1,4 @@
-import { useTranslation } from '@/i18n/TranslationProvider';
+import { useTranslation } from '@/i18n/useTranslation';
 import { useState, useEffect } from 'react';
 import { X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -25,7 +25,7 @@ interface GrantFormModalProps {
 }
 
 export function GrantFormModal({ isOpen, onClose, grant, onSuccess }: GrantFormModalProps) {
-  const t = useTranslation();
+  const { t } = useTranslation();
  const { currentOrganizationId } = useOrganization();
  const { currentOperatingUnitId } = useOperatingUnit();
  const utils = trpc.useUtils();

@@ -1,4 +1,4 @@
-import { useTranslation } from '@/i18n/TranslationProvider';
+import { useTranslation } from '@/i18n/useTranslation';
 import { useState } from "react";
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useParams, useLocation } from "wouter";
@@ -17,7 +17,7 @@ import { BackButton } from "@/components/BackButton";
  */
 export default function OperatingUnitDetailPage() {
  const { language, isRTL} = useLanguage();
-  const t = useTranslation();
+  const { t } = useTranslation();
 const { shortCode, ouSuffix } = useParams<{ shortCode: string; ouSuffix: string }>();
  const [, navigate] = useLocation();
 

@@ -9,7 +9,7 @@
 
 import { useState } from 'react';
 import { useLanguage } from '@/app/contexts/LanguageContext';
-import { useTranslation } from '@/i18n/TranslationProvider';
+import { useTranslation } from '@/i18n/useTranslation';
 import { trpc } from '@/lib/trpc';
 import { Button } from '@/app/components/ui/button';
 import { Input } from '@/app/components/ui/input';
@@ -45,7 +45,7 @@ interface StorageConfig {
 }
 
 export function DocumentStorageConfig() {
-  const t = useTranslation();
+  const { t } = useTranslation();
   const { isRTL, language } = useLanguage();
 
   // State

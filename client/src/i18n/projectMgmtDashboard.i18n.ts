@@ -501,10 +501,54 @@ export const dashboardTranslations = {
     total: 'totale',
 
     // ── Top Grants ──────────────────────────────────────────────────────────
-    topGrants: 'Principali Sovvenzioni',
+    topGrantsTitle: 'Principali Sovvenzioni',
+    topGrantsSubtitle: 'Le maggiori sovvenzioni per valore del portafoglio',
+
+    viewAll: 'Visualizza Tutto',
+
+    utilization: 'Utilizzo',
+
+    statusActive: 'Attivo',
+    statusCompleted: 'Completato',
+    statusPending: 'In Attesa',
+    statusOnHold: 'Sospeso',
+
+    expired: 'Scaduto',
+    dLeft: 'g',
+    dAgo: 'g fa',
+
+    onTrack: 'In Corso',
+    due: 'In Scadenza',
+    overdue: 'Scaduto',
+
+    planned: 'Pianificato',
+    notStarted: 'Non Iniziato',
+    underPreparation: 'In Preparazione',
+    underReview: 'In Revisione',
+    submittedToHQ: 'Inviato alla Sede',
+    submittedToDonor: 'Inviato al Donatore',
+
+    dueToday: 'Scadenza Oggi',
+    showing: 'Mostrando',
+    of: 'di',
+    deadlines: 'scadenze',
 
     // ── Upcoming Reporting Deadlines ─────────────────────────────────────────
-    upcomingReportingDeadlines: 'Prossime Scadenze Reporting',
+    upcomingReportingDeadlines: {
+      title: 'Prossime Scadenze Reporting',
+      noData: 'Nessuna scadenza imminente',
+      viewAll: 'Visualizza tutti i programmi di reporting',
+      actionRequired: 'Azione richiesta',
+      overdue: 'Scaduto',
+      urgent: 'Urgente',
+      upcoming: 'In arrivo',
+      notStarted: 'Non iniziato',
+      planned: 'Pianificato',
+      underPreparation: 'In preparazione',
+      underReview: 'In revisione',
+      submittedToHQ: 'Inviato alla sede centrale',
+      submittedToDonor: 'Inviato al donatore',
+    },
 
     // ── Expiring Projects ────────────────────────────────────────────────────
     expiringProjects: 'Progetti in Scadenza',
@@ -523,7 +567,6 @@ export const dashboardTranslations = {
     noProjects: 'Nessun progetto trovato',
     none: 'Nessuno',
     dOverdue: 'g scaduto',
-    dLeft: 'g',
     burnHealth_critical: 'Critico',
     burnHealth_warning: 'Avviso',
     burnHealth_healthy: 'Salutare',
@@ -542,7 +585,6 @@ export const dashboardTranslations = {
     // ── Portfolio Financial Snapshot ───────────────────────────────────────────────────────────────────
     portfolioFinancialSnapshot: 'Istantanea Finanziaria Portafoglio',
     highUtilization: 'Utilizzo elevato — rivedi i fondi rimanenti',
-    onTrack: 'In corso',
     budgetAvailable: 'bilancio disponibile',
     activeGrantsValue: 'Valore Sovvenzioni Attive',
     avgRemainingPerProject: 'Media rimanente per progetto',

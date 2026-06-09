@@ -43,7 +43,7 @@ export async function initServerI18n() {
  * @param language - 'en' or 'ar'
  * @returns Translation function
  */
-export async function getTranslationFunction(language: 'en' | 'ar') {
+export async function getTranslationFunction(language: 'en' | 'ar' | 'it') {
   await initServerI18n();
   
   // Create a new i18next instance for this language

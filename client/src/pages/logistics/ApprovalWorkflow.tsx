@@ -3,7 +3,7 @@
  * Simplified 2-Stage: Logistics Review → Manager Approval
  * With digital signature capture (canvas-based), timestamps, and verification QR codes
  */
-import { useTranslation } from '@/i18n/TranslationProvider';
+import { useTranslation } from '@/i18n/useTranslation';
 import { useNavigate } from '@/lib/router-compat';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/_core/hooks/useAuth';
@@ -183,7 +183,7 @@ function SignatureCanvas({
 export default function ApprovalWorkflow() {
   const navigate = useNavigate();
   const { isRTL } = useLanguage();
-  const t = useTranslation();
+  const { t } = useTranslation();
   const { user } = useAuth();
   const [currentLoc] = useLocation();
   const isFinanceContext = currentLoc.includes('/finance/');

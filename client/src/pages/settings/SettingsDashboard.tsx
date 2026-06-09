@@ -3,7 +3,7 @@ import { useLocation } from 'wouter';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/_core/hooks/useAuth';
 import { isUserAdmin } from '@/lib/adminCheck';
-import { useTranslation } from '@/i18n/TranslationProvider';
+import { useTranslation } from '@/i18n/useTranslation';
 
 interface SettingCard {
  id: string;
@@ -164,7 +164,7 @@ const settingsCards: SettingCard[] = [
 ];
 
 export function SettingsDashboard() {
- const t = useTranslation();
+ const { t } = useTranslation();
  const [, navigate] = useLocation();
  const { language, isRTL } = useLanguage();
  const { user } = useAuth();

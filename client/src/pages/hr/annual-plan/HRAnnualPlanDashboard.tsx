@@ -53,14 +53,14 @@ import { useAnnualPlans, useDeleteAnnualPlan } from '@/hooks/useAnnualPlanning';
 import { useOrganization } from '@/contexts/OrganizationContext';
 import { useOperatingUnit } from '@/contexts/OperatingUnitContext';
 import { CreateAnnualPlanModal } from './CreateAnnualPlanModal';
-import { useTranslation } from '@/i18n/TranslationProvider';
+import { useTranslation } from '@/i18n/useTranslation';
 import type { HRAnnualPlan } from '@shared/types/hrAnnualPlanning'; 
 
 // Plan status type
 type PlanStatus = 'draft' | 'pending_review' | 'pending_approval' | 'approved' | 'rejected';
 
 export function HRAnnualPlanDashboard() {
- const t = useTranslation();
+ const { t } = useTranslation();
  const { language, isRTL } = useLanguage();
  const navigate = useNavigate();
  const { currentOrganization } = useOrganization();

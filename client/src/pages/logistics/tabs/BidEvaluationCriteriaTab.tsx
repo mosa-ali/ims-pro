@@ -22,7 +22,7 @@ import {
  Shield, AlertTriangle, FileText, ChevronDown, ChevronUp, Wand2, BarChart3,
 } from "lucide-react";
 import { lazy, Suspense } from "react";
-import { useTranslation } from '@/i18n/TranslationProvider';
+import { useTranslation } from '@/i18n/useTranslation';
 
 const BidEvaluationScoringTab = lazy(() => import("./BidEvaluationScoringTab"));
 
@@ -49,7 +49,7 @@ const emptyForm = {
 
 export default function BidEvaluationCriteriaTab({
  purchaseRequestId, prNumber }: BidEvaluationCriteriaTabProps) {
- const t = useTranslation();
+ const { t } = useTranslation();
  const { language, isRTL} = useLanguage();
 
  const [addDialogOpen, setAddDialogOpen] = useState(false);
@@ -264,7 +264,7 @@ export default function BidEvaluationCriteriaTab({
  </div>
  <div>
  <Label>{t.bidEvaluationCriteriaTab.sectionNameAr}</Label>
- <Input value={form.sectionNameAr} onChange={(e) => setForm((p) => ({ ...p, sectionNameAr: e.target.value }))} dir="rtl" placeholder={t.placeholders.مثالالقانونيةوالإدارية} />
+ <Input value={form.sectionNameAr} onChange={(e) => setForm((p) => ({ ...p, sectionNameAr: e.target.value }))} dir="rtl" placeholder={t.placeholders.eGLegalAndAdministrative} />
  </div>
  </div>
  <div>
@@ -273,7 +273,7 @@ export default function BidEvaluationCriteriaTab({
  </div>
  <div>
  <Label>{t.bidEvaluationCriteriaTab.criteriaNameAr}</Label>
- <Textarea value={form.nameAr} onChange={(e) => setForm((p) => ({ ...p, nameAr: e.target.value }))} rows={2} dir="rtl" placeholder={t.placeholders.مثالتسجيلشركةساريالسجلالتجاري} />
+ <Textarea value={form.nameAr} onChange={(e) => setForm((p) => ({ ...p, nameAr: e.target.value }))} rows={2} dir="rtl" placeholder={t.placeholders.eGValidCompanyRegistrationCommercialRegister} />
  </div>
  <div className="grid grid-cols-2 gap-3">
  <div>
@@ -282,7 +282,7 @@ export default function BidEvaluationCriteriaTab({
  </div>
  <div>
  <Label>{t.bidEvaluationCriteriaTab.stageAr}</Label>
- <Input value={form.stageAr} onChange={(e) => setForm((p) => ({ ...p, stageAr: e.target.value }))} dir="rtl" placeholder={t.placeholders.يجبتقديمهمعالعطاء} />
+ <Input value={form.stageAr} onChange={(e) => setForm((p) => ({ ...p, stageAr: e.target.value }))} dir="rtl" placeholder={t.placeholders.mustBeSubmittedWithTheBid} />
  </div>
  </div>
  <div>
@@ -339,7 +339,7 @@ export default function BidEvaluationCriteriaTab({
  className={`px-3 py-1.5 text-sm font-medium flex items-center gap-1.5 transition-colors ${ viewMode === "scoring" ? "bg-primary text-primary-foreground" : "bg-background hover:bg-muted" }`}
  >
  <BarChart3 className="h-3.5 w-3.5" />
- {t.bidEvaluationCriteriaTab.scoring}
+ {t.quotationAnalysisTab.scoring}
  </button>
  </div>
  )}

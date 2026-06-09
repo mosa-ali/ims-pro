@@ -11,7 +11,7 @@ import {
 } from '@/components/ui/select';
 import { Loader2 } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { useTranslation } from '@/i18n/TranslationProvider';
+import { useTranslation } from '@/i18n/useTranslation';
 
 interface VendorCreateFormData {
  vendorCode: string;
@@ -45,7 +45,7 @@ export default function VendorCreateForm({
  isSubmitting,
  generateVendorCode,
 }: VendorCreateFormProps) {
- const t = useTranslation();
+ const { t } = useTranslation();
  const [formData, setFormData] = useState<VendorCreateFormData>({
  vendorCode: '',
  name: '',

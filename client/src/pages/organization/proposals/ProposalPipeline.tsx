@@ -3,32 +3,33 @@ import { Plus, Lightbulb, FileText, TrendingUp, DollarSign, Target, AlertCircle 
 import { useLanguage } from '@/contexts/LanguageContext';
 import { PipelineManagement } from '@/pages/organization/proposals/PipelineManagement';
 import { ProposalDevelopment } from '@/pages/organization/proposals/ProposalDevelopment';
+import { useOrganization } from '@/contexts/OrganizationContext';
+import { useOperatingUnit } from '@/contexts/OperatingUnitContext';
 
 import { useLocation } from 'wouter';
 import { trpc } from '@/lib/trpc';
 import { useAuth } from '@/_core/hooks/useAuth';
-import { useTranslation } from '@/i18n/TranslationProvider';
+import { useTranslation } from '@/i18n/useTranslation';
 import { BackButton } from "@/components/BackButton";
 
 // All data is fetched from the database via tRPC queries
 // No mock data is used - see PipelineManagement and ProposalDevelopment components for data fetching
 
 export function ProposalPipeline() {
- const t = useTranslation();
+ const { t } = useTranslation();
  const { isRTL } = useLanguage();
  const [, setLocation] = useLocation();
  const [activeTab, setActiveTab] = useState<'pipeline' | 'proposals'>('pipeline');
  const { user } = useAuth();
+ const { currentOrganization, currentOperatingUnit} = useOperatingUnit();
+
+  const organizationId = currentOrganization?.id;
+  const operatingUnitId = currentOperatingUnit?.id;
 
  // Fetch real KPIs from database
  const { data: kpis, isLoading } = trpc.proposals.getPipelineKPIs.useQuery(
- {
- organizationId: user?.organizationId || 0,
- operatingUnitId: user?.operatingUnitId,
- },
- {
- enabled: !!user?.organizationId,
- }
+ {},
+ { enabled: organizationId > 0 }
  );
 
  // Use real KPIs from database

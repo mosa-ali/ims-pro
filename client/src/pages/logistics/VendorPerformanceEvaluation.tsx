@@ -11,7 +11,7 @@ import { BackButton } from "@/components/BackButton";
  * - Full bilingual support (Arabic/English) with RTL/LTR
  */
 
-import { useTranslation } from '@/i18n/TranslationProvider';
+import { useTranslation } from '@/i18n/useTranslation';
 import { useState } from 'react';
 import { useNavigate } from '@/lib/router-compat';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -44,7 +44,7 @@ import {
 export default function VendorPerformanceEvaluation() {
  const navigate = useNavigate();
  const { language, isRTL} = useLanguage();
-  const t = useTranslation();
+  const { t } = useTranslation();
  const { selectedOrganization } = useOrganization();
 
  // Form state

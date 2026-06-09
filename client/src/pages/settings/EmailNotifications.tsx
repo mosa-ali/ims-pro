@@ -12,7 +12,7 @@ import { useAuth } from '@/_core/hooks/useAuth';
 import { isUserAdmin } from '@/lib/adminCheck';
 import { trpc } from '@/lib/trpc';
 import { toast } from 'sonner';
-import { useTranslation } from '@/i18n/TranslationProvider';
+import { useTranslation } from '@/i18n/useTranslation';
 import { BackButton } from "@/components/BackButton";
 
 type TabId = 'provider' | 'events' | 'templates' | 'outbox';
@@ -34,7 +34,7 @@ const CATEGORY_LABELS: Record<string, { en: string; ar: string }> = {
 };
 
 export function EmailNotifications() {
- const t = useTranslation();
+ const { t } = useTranslation();
  const [, navigate] = useLocation();
  const { language, isRTL } = useLanguage();
  const { user } = useAuth();
@@ -110,7 +110,7 @@ export function EmailNotifications() {
 // ============================================================================
 
 function EmailProviderTab() {
-  const t = useTranslation();
+  const { t } = useTranslation();
   const { language, isRTL} = useLanguage();
  const providerQuery = trpc.settings.emailProvider.getProvider.useQuery();
  const saveMutation = trpc.settings.emailProvider.saveProvider.useMutation({
@@ -527,7 +527,7 @@ function EmailProviderTab() {
 // ============================================================================
 
 function NotificationEventsTab() {
-  const t = useTranslation();
+  const { t } = useTranslation();
   const { language, isRTL} = useLanguage();
  const eventsQuery = trpc.settings.notificationEvents.list.useQuery();
  const updateMutation = trpc.settings.notificationEvents.update.useMutation({
@@ -731,7 +731,7 @@ function NotificationEventsTab() {
 // ============================================================================
 
 function EmailTemplatesTab() {
-  const t = useTranslation();
+  const { t } = useTranslation();
   const { language, isRTL} = useLanguage();
  const utils = trpc.useUtils();
  const templatesQuery = trpc.settings.emailTemplates.list.useQuery();
@@ -1065,7 +1065,7 @@ function EmailTemplatesTab() {
 // ============================================================================
 
 function OutboxTab() {
-  const t = useTranslation();
+  const { t } = useTranslation();
   const { language, isRTL} = useLanguage();
  const outboxQuery = trpc.settings.notificationOutbox.list.useQuery();
  const statsQuery = trpc.settings.notificationOutbox.stats.useQuery();

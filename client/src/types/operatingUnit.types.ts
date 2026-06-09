@@ -48,7 +48,7 @@ export interface OperatingUnit {
  // Settings
  currency?: string;
  timezone?: string;
- languagePreference?: 'en' | 'ar' | 'both';
+ languagePreference?: 'en' | 'ar' | 'it' | 'both';
  
  // Metadata
  createdAt: string;

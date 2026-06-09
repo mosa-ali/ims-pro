@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Plus, Edit, Trash2, Download, Upload, X } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { formatNumber, formatCurrency } from '@/utils/formatters';
-import { useTranslation } from '@/i18n/TranslationProvider';
+import { useTranslation } from '@/i18n/useTranslation';
 import ExcelJS from 'exceljs';
 import { saveAs } from 'file-saver';
 
@@ -23,7 +23,7 @@ interface Activity {
 
 export function ActivitiesServices({
  projectId }: { projectId: number }) {
- const t = useTranslation();
+ const { t } = useTranslation();
  const { isRTL } = useLanguage();
 const [activities, setActivities] = useState<Activity[]>([
  {

@@ -65,7 +65,7 @@ signatures?: {
 }[];
 
 // Language & Direction
-language: 'en' | 'ar';
+language: 'en' | 'ar' | 'it';
 }
 
 /**
@@ -83,7 +83,7 @@ function formatDate(dateStr: string, isRTL: boolean = false): string {
 /**
  * Get localized labels for BOM
  */
-function getLabels(language: 'en' | 'ar') {
+function getLabels(language: 'en' | 'ar' | 'it') {
   const isArabic = language === 'ar';
   
   return {

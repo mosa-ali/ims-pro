@@ -11,7 +11,7 @@
  * - Bilingual support (EN/AR) with RTL
  */
 
-import { useTranslation } from '@/i18n/TranslationProvider';
+import { useTranslation } from '@/i18n/useTranslation';
 import { useParams, useNavigate } from "@/lib/router-compat";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { trpc } from "@/lib/trpc";
@@ -39,7 +39,7 @@ export default function PRWorkspacePage() {
  const { id } = useParams();
  const navigate = useNavigate();
  const { language, isRTL} = useLanguage();
-  const t = useTranslation();
+  const { t } = useTranslation();
  const [activeTab, setActiveTab] = useState("pr");
  const { user } = useAuth();
 

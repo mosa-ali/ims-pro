@@ -20,7 +20,7 @@ type ExportFormat = 'excel' | 'csv';
 export async function exportOpportunities(
   opportunities: Opportunity[],
   format: ExportFormat = 'excel',
-  language: 'en' | 'ar' = 'en'
+  language: 'en' | 'ar' | 'it' = 'en'
 ) {
   const headers = getHeaders(language);
   
@@ -31,7 +31,7 @@ export async function exportOpportunities(
   }
 }
 
-function getHeaders(language: 'en' | 'ar') {
+function getHeaders(language: 'en' | 'ar' | 'it') {
   const headerMap = {
     en: {
       donorName: 'Donor Name',
@@ -71,7 +71,7 @@ function getHeaders(language: 'en' | 'ar') {
 async function exportToExcel(
   opportunities: Opportunity[],
   headers: Record<string, string>,
-  language: 'en' | 'ar'
+  language: 'en' | 'ar' | 'it'
 ) {
   // Create CSV format (Excel can open CSV files)
   const headerRow = Object.values(headers).join('\t');
@@ -105,7 +105,7 @@ async function exportToExcel(
 function exportToCSV(
   opportunities: Opportunity[],
   headers: Record<string, string>,
-  language: 'en' | 'ar'
+  language: 'en' | 'ar' | 'it'
 ) {
   const headerRow = Object.values(headers).join(',');
   

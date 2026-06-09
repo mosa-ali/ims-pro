@@ -17,7 +17,7 @@
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Download, Trash2, ChevronDown, FileSpreadsheet } from 'lucide-react';
 import { useState, useEffect } from 'react';
-import { useTranslation } from '@/i18n/TranslationProvider';
+import { useTranslation } from '@/i18n/useTranslation';
 
 interface Props {
  survey: any;
@@ -42,7 +42,7 @@ interface ExportRecord {
 
 export function DataDownloadsSubTab({
  survey }: Props) {
- const t = useTranslation();
+ const { t } = useTranslation();
  const { language, isRTL } = useLanguage();
  const [submissions, setSubmissions] = useState<Submission[]>([]);
  const [exportHistory, setExportHistory] = useState<ExportRecord[]>([]);

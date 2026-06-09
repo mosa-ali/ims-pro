@@ -3,11 +3,11 @@ import { FileText, Download, AlertCircle, CheckCircle, Clock, RefreshCw } from '
 import { useLocation, useParams } from 'wouter';
 import { useLanguage, formatDate } from '@/contexts/LanguageContext';
 import { trpc } from '@/lib/trpc';
-import { useTranslation } from '@/i18n/TranslationProvider';
+import { useTranslation } from '@/i18n/useTranslation';
 import { BackButton } from "@/components/BackButton";
 
 export function ImportHistoryDetails() {
- const t = useTranslation();
+ const { t } = useTranslation();
  const params = useParams<{ id: string }>();
  const [, navigate] = useLocation();
  const { language, isRTL } = useLanguage();

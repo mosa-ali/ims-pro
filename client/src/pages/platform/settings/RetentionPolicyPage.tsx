@@ -13,10 +13,10 @@ import {
  SelectTrigger,
  SelectValue,
 } from '@/components/ui/select';
-import { useTranslation } from '@/i18n/TranslationProvider';
+import { useTranslation } from '@/i18n/useTranslation';
 
 export default function RetentionPolicyPage() {
- const t = useTranslation();
+ const { t } = useTranslation();
  const { language, isRTL } = useLanguage();
  // Fetch current retention policy
  const { data: currentPolicy, isLoading, refetch } = trpc.ims.retentionPolicy.get.useQuery();

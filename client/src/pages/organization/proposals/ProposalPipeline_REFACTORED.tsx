@@ -2,7 +2,7 @@ import { useState, useMemo } from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 import { trpc } from '@/lib/trpc';
 import { useAuth } from '@/_core/hooks/useAuth';
-import { useTranslation } from '@/i18n/TranslationProvider';
+import { useTranslation } from '@/i18n/useTranslation';
 import { useLanguage, formatCurrency } from '@/contexts/LanguageContext';
 import { Loader2 } from 'lucide-react';
 import { Card } from '@/components/ui/card';
@@ -21,7 +21,7 @@ interface PipelineOpportunity {
 }
 
 export function ProposalPipeline() {
-  const t = useTranslation();
+  const { t } = useTranslation();
   const { isRTL } = useLanguage();
   const { user } = useAuth();
 
@@ -55,8 +55,8 @@ export function ProposalPipeline() {
       probability: record.probability || 50,
       indicativeBudgetMin: parseFloat(record.indicativeBudgetMin?.toString() || '0'),
       indicativeBudgetMax: parseFloat(record.indicativeBudgetMax?.toString() || '0'),
-      deadline: record.deadline ? (typeof record.deadline === 'string' ? record.deadline : record.deadline.toISOString().split('T')[0]) : '',
-      createdAt: typeof record.createdAt === 'string' ? record.createdAt : (record.createdAt?.toISOString() || new Date().toISOString()),
+      deadline: typeof record.deadline === 'string' ? record.deadline : new Date().toISOString(),
+      createdAt: typeof record.createdAt === 'string' ? record.createdAt : new Date().toISOString(),
     }));
   }, [pipelineData]);
 
@@ -107,15 +107,15 @@ export function ProposalPipeline() {
   }, [opportunities]);
 
   const labels = {
-    title: (t?.proposals?.proposalPipeline as string) || 'Proposal Pipeline',
+    title: (t?.projects?.proposalPipeline as string) || 'Proposal Pipeline',
     subtitle: (t?.proposals?.trackFundingOpportunitiesDevelopProposalsAnd as string) || 'Track funding opportunities and proposal development',
     stageDistribution: 'Opportunities by Stage',
     probabilityDistribution: 'Probability Distribution',
     budgetByStage: 'Average Budget by Stage (USD Thousands)',
     totalOpportunities: (t?.proposals?.totalOpportunities as string) || 'Total Opportunities',
-    averageProbability: (t?.proposals?.averageProbability as string) || 'Average Probability',
-    totalBudget: (t?.proposals?.totalBudget as string) || 'Total Budget',
-    noData: (t?.proposals?.noOpportunitiesFound as string) || 'No opportunities found'
+    averageProbability: (t?.proposals?.probability as string) || 'Average Probability',
+    totalBudget: (t?.proposals?.budget as string) || 'Total Budget',
+    noData: (t?.proposals?.noOpportunities as string) || 'No opportunities found'
   };
 
   const COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899', '#14b8a6', '#f97316', '#06b6d4', '#6366f1'];

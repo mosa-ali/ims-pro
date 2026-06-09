@@ -1,4 +1,4 @@
-import { useTranslation } from '@/i18n/TranslationProvider';
+import { useTranslation } from '@/i18n/useTranslation';
 import { useState } from 'react';
 import { Search, Download, Upload, Trash2, Eye, DollarSign, Calendar, Building2, RefreshCw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -22,7 +22,7 @@ import { BackButton } from "@/components/BackButton";
  * Displays list of grants with filtering, search, and CRUD operations
  */
 export default function ActiveGrantsPage() {
-  const t = useTranslation();
+  const { t } = useTranslation();
  const { isRTL } = useLanguage();
  const { currentOrganizationId } = useOrganization();
  const { currentOperatingUnitId } = useOperatingUnit();
@@ -110,8 +110,8 @@ export default function ActiveGrantsPage() {
  donorReference: grant.donorReference || '',
  currency: grant.currency,
  grantAmount: grant.grantAmount,
- startDate: new Date(grant.startDate).toLocaleDateString(),
- endDate: new Date(grant.endDate).toLocaleDateString(),
+ startDate: typeof grant.startDate === 'string' ? grant.startDate : new Date().toISOString(),
+ endDate: typeof grant.endDate === 'string' ? grant.endDate : new Date().toISOString(),
  status: grant.status,
  sector: grant.sector || '',
  responsible: grant.responsible || '',
@@ -381,7 +381,7 @@ export default function ActiveGrantsPage() {
  <div>
  <p className="text-sm text-gray-600">Period</p>
  <p className="font-semibold">
- {new Date(grant.startDate).toLocaleDateString()} - {new Date(grant.endDate).toLocaleDateString()}
+ {typeof grant.startDate === 'string' ? grant.startDate : new Date().toISOString()} - {typeof grant.startDate === 'string' ? grant.startDate : new Date().toISOString()}
  </p>
  </div>
  </div>

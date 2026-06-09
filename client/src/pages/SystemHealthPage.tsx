@@ -23,7 +23,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { Button } from '@/components/ui/button';
 import { useState } from 'react';
 import { toast } from 'sonner';
-import { useTranslation } from '@/i18n/TranslationProvider';
+import { useTranslation } from '@/i18n/useTranslation';
 
 interface MonitoringModule {
  id: string;
@@ -43,7 +43,7 @@ export default function SystemHealthPage() {
  const [isRunningDiagnostics, setIsRunningDiagnostics] = useState(false);
  const [isRunningAudit, setIsRunningAudit] = useState(false);
 
- const t = useTranslation();
+ const { t } = useTranslation();
  const labels = {
  title: t.common.systemHealthProtection,
  subtitle: t.common.systemHealthSubtitle,

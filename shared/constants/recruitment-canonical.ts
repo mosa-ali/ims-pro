@@ -210,7 +210,7 @@ export const RECRUITMENT_PAGINATION = {
 /**
  * Get translation for a key
  */
-export function getRecruitmentTranslation(key: string, language: 'en' | 'ar' = 'en'): string {
+export function getRecruitmentTranslation(key: string, language: 'en' | 'ar' | 'it' = 'en'): string {
   const translations = RECRUITMENT_TRANSLATIONS[language];
   return (translations as any)[key] || key;
 }

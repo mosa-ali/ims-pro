@@ -15,7 +15,7 @@
 import { useLanguage } from '@/contexts/LanguageContext';
 import { X, Plus, Trash2 } from 'lucide-react';
 import { useState } from 'react';
-import { useTranslation } from '@/i18n/TranslationProvider';
+import { useTranslation } from '@/i18n/useTranslation';
 
 interface Question {
  id: string;
@@ -67,7 +67,7 @@ export function QuestionSettingsPanel({
  onUpdate, 
  onClose 
 }: QuestionSettingsPanelProps) {
- const t = useTranslation(); 
+ const { t } = useTranslation(); 
  const { language, isRTL } = useLanguage();
  const [activeTab, setActiveTab] = useState<'options' | 'skip_logic' | 'validation'>('options');
  const [localQuestion, setLocalQuestion] = useState<Question>(question);

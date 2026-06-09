@@ -16,7 +16,7 @@
 import { Plus, Users, Briefcase, FileText, Calendar, LogOut, Trash2 } from 'lucide-react';
 import { useLanguage } from '@/app/contexts/LanguageContext';
 import { Department, Position, ContractType, LeaveType, ExitReason } from '@/app/services/hrSettingsService';
-import { useTranslation } from '@/i18n/TranslationProvider';
+import { useTranslation } from '@/i18n/useTranslation';
 
 interface MasterDataSectionProps {
  departments: Department[];
@@ -47,7 +47,7 @@ export function MasterDataSection({
  onDeleteDepartment,
  onDeletePosition,
 }: MasterDataSectionProps) {
- const t = useTranslation();
+ const { t } = useTranslation();
  const { language } = useLanguage();
  const labels = {
  masterData: t.hr.masterData,

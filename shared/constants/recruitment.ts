@@ -350,7 +350,7 @@ export const RECRUITMENT_TRANSLATIONS = {
 /**
  * Get vacancy status label in the specified language
  */
-export function getVacancyStatusLabel(status: string, language: 'en' | 'ar' = 'en'): string {
+export function getVacancyStatusLabel(status: string, language: 'en' | 'ar' | 'it' = 'en'): string {
   const statusMap: Record<string, keyof typeof RECRUITMENT_TRANSLATIONS.en> = {
     draft: 'draft',
     open: 'open',
@@ -367,7 +367,7 @@ export function getVacancyStatusLabel(status: string, language: 'en' | 'ar' = 'e
 /**
  * Get candidate status label in the specified language
  */
-export function getCandidateStatusLabel(status: string, language: 'en' | 'ar' = 'en'): string {
+export function getCandidateStatusLabel(status: string, language: 'en' | 'ar' | 'it' = 'en'): string {
   const statusMap: Record<string, keyof typeof RECRUITMENT_TRANSLATIONS.en> = {
     applied: 'applied',
     screening: 'screening',
@@ -439,7 +439,7 @@ export function getCandidateStatusColor(status: string): string {
  */
 export function getRecruitmentTranslation(
   key: keyof typeof RECRUITMENT_TRANSLATIONS.en,
-  language: 'en' | 'ar' = 'en'
+  language: 'en' | 'ar' | 'it' = 'en'
 ): string {
   return RECRUITMENT_TRANSLATIONS[language][key] || '';
 }

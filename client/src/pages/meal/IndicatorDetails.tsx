@@ -15,11 +15,11 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { trpc } from '@/lib/trpc';
 import { Target, TrendingUp, BarChart3, Edit, Calendar, Trash2, CheckCircle, Clock, Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { useTranslation } from '@/i18n/TranslationProvider';
+import { useTranslation } from '@/i18n/useTranslation';
 import { BackButton } from "@/components/BackButton";
 
 export function IndicatorDetails() {
- const t = useTranslation();
+ const { t } = useTranslation();
  const navigate = useNavigate();
  const params = useParams();
  const indicatorId = params?.id ? parseInt(params.id) : null;

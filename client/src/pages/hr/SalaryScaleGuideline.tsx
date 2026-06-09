@@ -8,7 +8,7 @@
 
 import { BookOpen, AlertTriangle, Info, TrendingUp } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { useTranslation } from '@/i18n/TranslationProvider';
+import { useTranslation } from '@/i18n/useTranslation';
 
 interface GuidelineProps {
  language: string;
@@ -17,7 +17,7 @@ interface GuidelineProps {
 
 export function SalaryScaleGuideline({
  language, isRTL }: GuidelineProps) {
- const t = useTranslation();
+ const { t } = useTranslation();
  const localT = {
  title: t.system.salaryScale.salaryScaleTableGuideline,
  subtitle: t.system.salaryScale.salaryScaleGuidelineSubtitle,

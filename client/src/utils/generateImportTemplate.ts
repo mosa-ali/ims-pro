@@ -5,13 +5,13 @@
 
 interface TemplateOptions {
   includeSampleData?: boolean;
-  language?: 'en' | 'ar';
+  language?: 'en' | 'ar' | 'it';
 }
 
 /**
  * Generate CSV template headers
  */
-function getTemplateHeaders(language: 'en' | 'ar' = 'en'): string[] {
+function getTemplateHeaders(language: 'en' | 'ar' | 'it' = 'en'): string[] {
   const headers = {
     en: [
       'Donor Name',
@@ -51,7 +51,7 @@ function getTemplateHeaders(language: 'en' | 'ar' = 'en'): string[] {
 /**
  * Generate sample data rows
  */
-function getSampleData(language: 'en' | 'ar' = 'en'): string[][] {
+function getSampleData(language: 'en' | 'ar' | 'it' = 'en'): string[][] {
   const samples = {
     en: [
       [
@@ -155,7 +155,7 @@ function getSampleData(language: 'en' | 'ar' = 'en'): string[][] {
 /**
  * Generate instructions/guide for the template
  */
-function getInstructions(language: 'en' | 'ar' = 'en'): string {
+function getInstructions(language: 'en' | 'ar' | 'it' = 'en'): string {
   const instructions = {
     en: `# Funding Opportunities Import Template
 
@@ -279,7 +279,7 @@ export function downloadTemplate(options: TemplateOptions = {}): void {
  * Generate template with instructions (for display in modal)
  */
 export function getTemplateWithInstructions(
-  language: 'en' | 'ar' = 'en'
+  language: 'en' | 'ar' | 'it' = 'en'
 ): { instructions: string; template: string } {
   return {
     instructions: getInstructions(language),

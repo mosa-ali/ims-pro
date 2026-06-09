@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Plus, Edit2, Trash2, X, ExternalLink, AlertTriangle, Send, Archive } from 'lucide-react';
 import { useLanguage, formatCurrency } from '@/contexts/LanguageContext';
 import { Button } from '@/components/ui/button';
-import { useTranslation } from '@/i18n/TranslationProvider';
+import { useTranslation } from '@/i18n/useTranslation';
 
 interface Opportunity {
  id: string;
@@ -27,7 +27,7 @@ type DeadlineStatus = 'open' | 'closing-soon' | 'urgent' | 'closed';
 // Initialize with empty array - will be populated from API
 
 export function OpportunitiesCards() {
- const t = useTranslation();
+ const { t } = useTranslation();
  const { isRTL } = useLanguage();
  const [opportunities, setOpportunities] = useState<Opportunity[]>([]);
  const [showAddModal, setShowAddModal] = useState(false);

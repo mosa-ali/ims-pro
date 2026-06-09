@@ -137,7 +137,7 @@ export function calculatePayroll(input: PayrollCalculationInput): PayrollCalcula
 /**
  * Format currency for display
  */
-export function formatCurrency(amount: number, currency: string = 'USD', language: 'en' | 'ar' = 'en'): string {
+export function formatCurrency(amount: number, currency: string = 'USD', language: 'en' | 'ar' | 'it' = 'en'): string {
  return new Intl.NumberFormat(language === 'ar' ? 'ar' : 'en', {
  style: 'currency',
  currency: currency,

@@ -13,7 +13,7 @@ import { useState } from 'react';
 import { Plus, Edit, Trash2, X, Save } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import type { HRAnnualPlan, PlannedPosition } from '@shared/types/hrAnnualPlanning';
-import { useTranslation } from '@/i18n/TranslationProvider';
+import { useTranslation } from '@/i18n/useTranslation';
 
 type ContractType = 'Fixed-Term' | 'Short-Term' | 'Consultancy' | 'Permanent';
 
@@ -25,7 +25,7 @@ interface PlannedStaffingSectionProps {
 
 export function PlannedStaffingSection({
  plan, isEditing, onUpdate }: PlannedStaffingSectionProps) {
- const t = useTranslation();
+ const { t } = useTranslation();
  const { language, isRTL } = useLanguage();
  
  const [isAddingNew, setIsAddingNew] = useState(false);

@@ -19,11 +19,11 @@ import {
  ArrowLeft, ArrowRight, Plus, Edit, Trash2, Eye, ShieldCheck,
  ClipboardCheck, AlertTriangle, CheckCircle, Download
 } from 'lucide-react';
-import { useTranslation } from '@/i18n/TranslationProvider';
+import { useTranslation } from '@/i18n/useTranslation';
 import { BackButton } from "@/components/BackButton";
 
 export function DQAManagement() {
- const t = useTranslation();
+ const { t } = useTranslation();
  const { language, isRTL} = useLanguage();
  const navigate = useNavigate();
  const { currentOrganizationId } = useOrganization();

@@ -9,13 +9,14 @@ import {
  Globe, User, LogOut, Clock, Mail
  } from 'lucide-react';
 import { useAuth } from "@/_core/hooks/useAuth";
-import { useTranslation } from "@/i18n/TranslationProvider";
+import { useTranslation } from "@/i18n/useTranslation";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useOrganization } from "@/contexts/OrganizationContext";
 import { useOperatingUnit } from "@/contexts/OperatingUnitContext";
 import { usePermissions } from "@/hooks/usePermissions";
 import { Building2 as BuildingIcon, ChevronDown as ChevronDownIcon } from 'lucide-react';
 import { useOrganizationBranding } from "@/hooks/useOrganizationBranding";
+import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 
 
 /**
@@ -93,7 +94,7 @@ export function Sidebar() {
  const [showUserMenu, setShowUserMenu] = useState(false);
  const [location] = useLocation();
  const { user, logout } = useAuth();
- const t = useTranslation();
+ const { t } = useTranslation();
  const { language, changeLanguage, isRTL } = useLanguage();
  const { currentOrganization, availableOrganizations, switchOrganization, currentRole } = useOrganization();
  const { currentOperatingUnit, userOperatingUnits, switchOperatingUnit } = useOperatingUnit();
@@ -134,12 +135,6 @@ export function Sidebar() {
  newExpanded.add(itemId);
  }
  setExpandedItems(newExpanded);
- };
-
- // Handle language switch
- const handleLanguageSwitch = () => {
- const newLang = language === 'en' ? 'ar' : 'en';
- changeLanguage(newLang);
  };
 
  // Handle logout
@@ -456,17 +451,15 @@ export function Sidebar() {
  {!collapsed && (
  <div className="border-t border-gray-100 space-y-2" style={{ padding: '0.75rem' }}>
  {/* Language Switcher */}
- <button
- onClick={handleLanguageSwitch}
- className="w-full flex items-center gap-3 py-2 rounded-lg transition-all hover:bg-gray-100"
- style={{ paddingInlineStart: '0.75rem', paddingInlineEnd: '0.75rem' }}
+ <div
+  className="rounded-lg hover:bg-gray-100 transition-all"
+  style={{
+    paddingInlineStart: '0.75rem',
+    paddingInlineEnd: '0.75rem',
+  }}
  >
- <Globe className="w-4 h-4 text-gray-500" />
- <span className="text-sm font-medium text-gray-700 flex-1" style={{ textAlign: 'start' }}>
- {t.sidebar?.languageToggle || "Language"}
- </span>
- </button>
-
+  <LanguageSwitcher />
+ </div>
  {/* User Profile */}
  <div className="relative">
  <button
@@ -517,3 +510,4 @@ export function Sidebar() {
  </div>
  );
 }
+ 

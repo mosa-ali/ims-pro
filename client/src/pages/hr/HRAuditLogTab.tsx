@@ -18,10 +18,10 @@ import { useState, useEffect } from 'react';
 import { Eye, X, Download, Printer, Filter, Calendar, Search } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { hrLogEventsService, HRLogEvent, HRLogFilters, HRModule, ActionType, RecordType } from '@/app/services/hrLogEventsService';
-import { useTranslation } from '@/i18n/TranslationProvider';
+import { useTranslation } from '@/i18n/useTranslation';
 
 export function HRAuditLogTab() {
- const t = useTranslation();
+ const { t } = useTranslation();
  const { language, isRTL } = useLanguage();
  const [events, setEvents] = useState<HRLogEvent[]>([]);
  const [selectedEvent, setSelectedEvent] = useState<HRLogEvent | null>(null);

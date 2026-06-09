@@ -4,7 +4,7 @@ import { useLanguage, formatCurrency } from '@/contexts/LanguageContext';
 import { ProposalEditor } from '@/pages/organization/proposals/ProposalEditor';
 import { trpc } from '@/lib/trpc';
 import { useAuth } from '@/_core/hooks/useAuth';
-import { useTranslation } from '@/i18n/TranslationProvider';
+import { useTranslation } from '@/i18n/useTranslation';
 import { toast } from 'sonner';
 
 interface Proposal {
@@ -33,7 +33,7 @@ interface Proposal {
 // Mock data removed - using real database data via tRPC
 
 export function ProposalDevelopment() {
- const t = useTranslation();
+ const { t } = useTranslation();
  const { isRTL } = useLanguage();
  const { user } = useAuth();
  
@@ -119,7 +119,7 @@ export function ProposalDevelopment() {
  country: t.proposals.country,
  governorate: t.proposals.governorate,
  sector: t.proposals.sector,
- projectDuration: t.proposals.projectDurationMonths,
+ projectDuration: t.proposals.projectDuration,
  totalRequestedBudget: t.proposals.totalRequestedBudget,
  currency: t.proposals.currency,
  submissionDeadline: t.proposals.submissionDeadline,
@@ -251,20 +251,20 @@ export function ProposalDevelopment() {
  };
 
  const resetForm = () => {
- setFormData({
- proposalTitle: '',
- donorName: '',
- callReference: '',
- proposalType: 'Concept Note',
- country: 'Yemen',
- governorate: '',
- sector: [],
- projectDuration: 12,
- totalRequestedBudget: '0',
- currency: 'USD',
- submissionDeadline: ''
- });
- };
+  setFormData({
+    proposalTitle: '',
+    donorName: '',
+    callReference: '',
+    proposalType: 'Concept Note',
+    country: '',
+    governorate: '',
+    sector: [] as string[],
+    projectDuration: 12,
+    totalRequestedBudget: '0',
+    currency: 'USD',
+    submissionDeadline: ''
+  });
+};
 
  // Get status badge
  const getStatusBadge = (status: string) => {

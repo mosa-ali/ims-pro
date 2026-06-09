@@ -6,7 +6,7 @@
 // =============================================================================
 
 // Main Dashboard Component
-export { MainDashboard } from "@/components/dashboard/MainDashboard";
+export { OrganizationDashboard, default } from "./MainDashboard";
 
 // Types
 export type {

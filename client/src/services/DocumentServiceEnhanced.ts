@@ -739,7 +739,7 @@ class DocumentServiceEnhancedClass {
  /**
  * Get folder structure for a language
  */
- getFolderStructure(language: 'en' | 'ar'): FolderDefinition[] {
+ getFolderStructure(language: 'en' | 'ar' | 'it'): FolderDefinition[] {
  return STANDARD_FOLDER_STRUCTURE;
  }
 

@@ -22,7 +22,7 @@ import { AppraisalFormModal } from '../modals/AppraisalFormModal';
 import { PerformanceReviewModal } from '../modals/PerformanceReviewModal';
 import { AppraisalPrintModal } from '../modals/AppraisalPrintModal';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { useTranslation } from '@/i18n/TranslationProvider';
+import { useTranslation } from '@/i18n/useTranslation';
 
 // ============================================================================
 // TYPE DEFINITIONS
@@ -134,7 +134,7 @@ const performanceService = {
 
 export function PerformanceAppraisalCard({
  employee, language, isRTL }: Props) {
- const t = useTranslation();
+ const { t } = useTranslation();
  const [reviews, setReviews] = useState<PerformanceReview[]>([]);
  const [appraisals, setAppraisals] = useState<AppraisalRecord[]>([]);
  const [showAddModal, setShowAddModal] = useState(false);

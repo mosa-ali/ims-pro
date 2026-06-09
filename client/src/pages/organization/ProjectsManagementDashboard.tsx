@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo } from 'react';
 import { useNavigate, Link, useLocation } from 'react-router';
 import { Plus, Search, Download, Upload, FileSpreadsheet, Eye, Trash2, Filter, Calendar, DollarSign, TrendingUp, Target, Edit, Lightbulb, BarChart3 } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { useTranslation } from '@/i18n/TranslationProvider';
+import { useTranslation } from '@/i18n/useTranslation';
 import { useRecordDelete } from '@/hooks/useRecordDelete';
 import { DeleteConfirmationModal } from '@/components/DeleteConfirmationModal';
 import { ProjectSectorType } from '@/types/database.types';
@@ -228,7 +228,7 @@ type ProjectStatus = 'All' | 'Ongoing' | 'Planned' | 'Completed' | 'Not Started'
 
 export function ProjectsManagementDashboard() {
  const { isRTL } = useLanguage();
- const t = useTranslation();
+ const { t } = useTranslation();
 const location = useLocation();
  const [searchTerm, setSearchTerm] = useState('');
  const [statusFilter, setStatusFilter] = useState<ProjectStatus>('All');

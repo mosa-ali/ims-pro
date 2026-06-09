@@ -13,7 +13,7 @@
 import { X, Printer, Award, TrendingUp } from 'lucide-react';
 import { useState } from 'react';
 import { getOrganizationSettings } from '@/services/organizationService';
-import { useTranslation } from '@/i18n/TranslationProvider';
+import { useTranslation } from '@/i18n/useTranslation';
 import { useLanguage } from '@/contexts/LanguageContext';
 interface GrantActivity {
  activity: string;
@@ -71,8 +71,8 @@ export function GrantProgressReportPrintModal({
  currency,
  onClose
 }: Props) {
- const t = useTranslation();
- const [language] = useState<'en' | 'ar'>('en');
+ const { t } = useTranslation();
+ const [language] = useState<'en' | 'ar' | 'it'>('en');
  const [isRTL] = useState(false);
  const orgSettings = getOrganizationSettings();
  const orgName = language === 'ar' && orgSettings.nameAr ? orgSettings.nameAr : orgSettings.name;

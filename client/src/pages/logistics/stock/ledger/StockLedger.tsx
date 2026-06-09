@@ -17,7 +17,7 @@ import { BackButton } from "@/components/BackButton";
 import { PaginationControls } from "@/components/PaginationControls";
 
 export default function StockLedger() {
-  const t = useTranslation();
+  const { t } = useTranslation();
   const { isRTL } = useLanguage();
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);

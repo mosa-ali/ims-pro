@@ -13,7 +13,7 @@
 import { X, Printer, FileText, Target, Users, Calendar } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { getOrganizationSettings } from '@/services/organizationService';
-import { useTranslation } from '@/i18n/TranslationProvider';
+import { useTranslation } from '@/i18n/useTranslation';
 import { useLanguage } from '@/contexts/LanguageContext';
 interface TeamMember {
  name: string;
@@ -77,14 +77,14 @@ export function ProjectCharterPrintModal({
  assumptions,
  onClose
 }: Props) {
- const t = useTranslation();
- const [language, setLanguage] = useState<'en' | 'ar'>('en');
+ const { t } = useTranslation();
+ const [language, setLanguage] = useState<'en' | 'ar' | 'it'>('en');
  const [isRTL, setIsRTL] = useState(false);
  const orgSettings = getOrganizationSettings();
  const orgName = language === 'ar' && orgSettings.nameAr ? orgSettings.nameAr : orgSettings.name;
 
  useEffect(() => {
- const savedLanguage = localStorage.getItem('language')as 'en' | 'ar' | 'it') || 'en';
+ const savedLanguage = localStorage.getItem('language') as 'en' | 'ar' | 'it' || 'en';
  setLanguage(savedLanguage);
  setIsRTL(savedLanguage === 'ar');
  }, []);

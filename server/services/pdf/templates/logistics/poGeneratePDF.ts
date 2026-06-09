@@ -87,7 +87,7 @@ export interface POPDFData {
   };
 
   // Language & Direction
-  language: 'en' | 'ar';
+  language: 'en' | 'ar' | 'it';
 }
 
 /**
@@ -116,7 +116,7 @@ function formatCurrency(value: number, currency: string): string {
 /**
  * Get localized labels for PO
  */
-function getLabels(language: 'en' | 'ar') {
+function getLabels(language: 'en' | 'ar' | 'it') {
   const isArabic = language === 'ar';
 
   return {

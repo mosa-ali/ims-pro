@@ -35,7 +35,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { trpc } from '@/lib/trpc';
 import { useOrganization } from '@/contexts/OrganizationContext';
 import { useOperatingUnit } from '@/contexts/OperatingUnitContext';
-import { useTranslation } from '@/i18n/TranslationProvider';
+import { useTranslation } from '@/i18n/useTranslation';
 import { BackButton } from "@/components/BackButton";
 
 interface ProfileCard {
@@ -50,7 +50,7 @@ interface ProfileCard {
 }
 
 export function EmployeesProfilesLanding() {
- const t = useTranslation();
+ const { t } = useTranslation();
  const { language, isRTL } = useLanguage();
  const navigate = useNavigate();
  const { currentOrganizationId } = useOrganization();
@@ -245,11 +245,11 @@ export function EmployeesProfilesLanding() {
  </div>
  
  <h3 className={`text-lg font-semibold text-gray-900 mt-4 text-start`}>
- {card.name[language as 'en' | 'ar']}
+ {card.name[language as 'en' | 'ar' | 'it']}
  </h3>
  
  <p className={`text-sm text-gray-600 mt-2 text-start`}>
- {card.description[language as 'en' | 'ar']}
+ {card.description[language as 'en' | 'ar' | 'it']}
  </p>
  
  {count !== undefined && (

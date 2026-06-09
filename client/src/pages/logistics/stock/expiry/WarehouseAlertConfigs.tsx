@@ -39,7 +39,7 @@ interface AlertConfig {
 }
 
 export default function WarehouseAlertConfigs() {
-  const t = useTranslation();
+  const { t } = useTranslation();
   const { isRTL } = useLanguage();
   const [showForm, setShowForm] = useState(false);
   const [editingConfig, setEditingConfig] = useState<AlertConfig | null>(null);

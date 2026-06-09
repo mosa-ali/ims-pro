@@ -16,13 +16,13 @@ import { exportPayrollToExcel } from '@/app/utils/excelExport';
 import { getOrganizationSettings } from '@/app/services/organizationService';
 import { ModalOverlay } from '@/app/components/ui/ModalOverlay';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { useTranslation } from '@/i18n/TranslationProvider';
+import { useTranslation } from '@/i18n/useTranslation';
 
 interface Props {
  isOpen: boolean;
  onClose: () => void;
  payroll: PayrollSheet | null;
- language: 'en' | 'ar';
+ language: 'en' | 'ar' | 'it';
  isRTL: boolean;
  formatCurrency: (amount: number, currency?: string) => string;
  onPrint: () => void;
@@ -37,7 +37,7 @@ export function PayrollViewModal({
  formatCurrency,
  onPrint
 }: Props) {
- const t = useTranslation();
+ const { t } = useTranslation();
  if (!isOpen || !payroll) return null;
 
  // Get organization settings for logo and name

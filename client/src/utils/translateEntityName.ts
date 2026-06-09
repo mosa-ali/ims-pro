@@ -12,7 +12,7 @@
  * ============================================================================
  */
 
-type Language = 'en' | 'ar';
+type Language = 'en' | 'ar' | 'it';
 
 /**
  * Translation mapping for common entity names

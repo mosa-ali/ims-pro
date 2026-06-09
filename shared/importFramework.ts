@@ -104,7 +104,7 @@ export interface ImportConfig {
   columns: ColumnDefinition[];   // Column definitions
   allowDuplicates?: boolean;     // Business rule: allow duplicate entries
   context?: ValidationContext;   // Validation context (organization currency, etc.)
-  language?: 'en' | 'ar';        // Language for error messages
+  language: 'en' | 'ar' | 'it';        // Language for error messages
 }
 
 /**

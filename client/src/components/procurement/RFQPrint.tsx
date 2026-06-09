@@ -6,18 +6,18 @@
 import { formatDate } from '@/utils/formatters';
 import { getOrganizationSettings } from '@/services/organizationService';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { useTranslation } from '@/i18n/TranslationProvider';
+import { useTranslation } from '@/i18n/useTranslation';
 import type { RequestForQuotation } from '@/services/rfqService';
 
 interface Props {
  rfq: RequestForQuotation;
- language: 'en' | 'ar';
+ language: 'en' | 'ar' | 'it';
  isRTL: boolean;
 }
 
 export function RFQPrint({
  rfq, language, isRTL }: Props) {
- const t = useTranslation();
+ const { t } = useTranslation();
  const orgSettings = getOrganizationSettings();
  const orgName = language === 'ar' && orgSettings.nameAr ? orgSettings.nameAr : orgSettings.name;
 

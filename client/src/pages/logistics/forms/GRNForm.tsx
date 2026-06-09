@@ -3,7 +3,7 @@
  * Bilingual EN/AR support
  * Delete action moved to GRN list view
  */
-import { useTranslation } from '@/i18n/TranslationProvider';
+import { useTranslation } from '@/i18n/useTranslation';
 import { useLanguage } from "@/contexts/LanguageContext";
 import { trpc } from "@/lib/trpc";
 import { Button } from "@/components/ui/button";
@@ -23,7 +23,7 @@ interface GRNFormProps { grnId: number; onStatusUpdated?: () => void; }
 
 export default function GRNForm({ grnId, onStatusUpdated }: GRNFormProps) {
  const { language, isRTL} = useLanguage();
-  const t = useTranslation();
+  const { t } = useTranslation();
  const navigate = useNavigate();
  const trpcUtils = trpc.useUtils();
 

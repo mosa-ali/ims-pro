@@ -12,7 +12,7 @@ import { FileUploadModal } from '@/app/components/hr/FileUploadModal';
 import { fileStorageService } from '@/app/services/fileStorageService';
 import { EditEmploymentContractModal } from '../modals/EditEmploymentContractModal';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { useTranslation } from '@/i18n/TranslationProvider';
+import { useTranslation } from '@/i18n/useTranslation';
 
 interface Props {
  employee: StaffMember;
@@ -23,7 +23,7 @@ interface Props {
 
 export function EmploymentContractCard({
  employee, language, isRTL, onEmployeeUpdate }: Props) {
- const t = useTranslation();
+ const { t } = useTranslation();
  const [contracts, setContracts] = useState<ContractRecord[]>([]);
  const [showUploadModal, setShowUploadModal] = useState(false);
  const [selectedContractId, setSelectedContractId] = useState<string | null>(null);

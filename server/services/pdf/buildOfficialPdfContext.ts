@@ -56,7 +56,7 @@ import { PdfOrganizationContext, getPdfOrganizationContext } from './getPdfOrgan
  */
 export interface OfficialPdfContext extends PdfOrganizationContext {
   // ========== LANGUAGE & DIRECTION ==========
-  language: 'en' | 'ar';
+  language: 'en' | 'ar' | 'it';
   direction: 'ltr' | 'rtl';
   isArabic: boolean;
   isRTL: boolean;
@@ -120,7 +120,7 @@ export interface BuildOfficialPdfContextConfig {
   organizationId: number;
   operatingUnitId: number;
   userId: number;
-  language: 'en' | 'ar';
+  language: 'en' | 'ar' | 'it';
   documentType: string;
   documentId: number;
   documentModule?: string;
@@ -231,7 +231,7 @@ export async function buildOfficialPdfContext(
 /**
  * Build bilingual labels for PDF
  */
-function buildPdfLabels(language: 'en' | 'ar'): OfficialPdfContext['labels'] {
+function buildPdfLabels(language: 'en' | 'ar' | 'it'): OfficialPdfContext['labels'] {
   if (language === 'ar') {
     return {
       page: 'صفحة',
@@ -264,7 +264,7 @@ function buildPdfLabels(language: 'en' | 'ar'): OfficialPdfContext['labels'] {
  */
 function buildPdfStyling(
   orgContext: PdfOrganizationContext,
-  language: 'en' | 'ar'
+  language: 'en' | 'ar' | 'it'
 ): Partial<OfficialPdfContext> {
   // Default colors
   const defaultPrimary = '#1e40af';
@@ -286,7 +286,7 @@ function buildPdfStyling(
 /**
  * Build utility classes and properties for RTL/LTR
  */
-function buildPdfUtilities(language: 'en' | 'ar'): Partial<OfficialPdfContext> {
+function buildPdfUtilities(language: 'en' | 'ar' | 'it'): Partial<OfficialPdfContext> {
   const isRTL = language === 'ar';
 
   return {
@@ -307,7 +307,7 @@ function buildFooterContext(
   orgContext: PdfOrganizationContext,
   user: any,
   date: Date,
-  language: 'en' | 'ar'
+  language: 'en' | 'ar' | 'it'
 ): Partial<OfficialPdfContext> {
   const footerDate = formatDateForPdf(date, language);
   const generatedByText = user.name || user.email || 'System';
@@ -324,7 +324,7 @@ function buildFooterContext(
 /**
  * Format date for PDF display
  */
-function formatDateForPdf(date: Date, language: 'en' | 'ar'): string {
+function formatDateForPdf(date: Date, language: 'en' | 'ar' | 'it'): string {
   if (language === 'ar') {
     const formatter = new Intl.DateTimeFormat('ar-SA', {
       year: 'numeric',

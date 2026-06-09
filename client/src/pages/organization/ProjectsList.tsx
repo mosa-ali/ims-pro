@@ -1,10 +1,10 @@
 import { Link } from 'wouter';
 import { Plus, Search } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { useTranslation } from '@/i18n/TranslationProvider';
+import { useTranslation } from '@/i18n/useTranslation';
 
 export function ProjectsList() {
- const t = useTranslation();
+ const { t } = useTranslation();
  const { isRTL } = useLanguage();
  
  // Mock projects - would come from API

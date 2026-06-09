@@ -8,7 +8,7 @@ import { X, Loader2, AlertCircle, CheckCircle, Calendar, Users } from 'lucide-re
 import { useLanguage } from '@/contexts/LanguageContext';
 import { trpc } from '@/lib/trpc';
 import { toast } from 'sonner';
-import { useTranslation } from '@/i18n/TranslationProvider';
+import { useTranslation } from '@/i18n/useTranslation';
 
 interface GeneratePayrollModalProps {
  isOpen: boolean;
@@ -27,7 +27,7 @@ export function GeneratePayrollModal({
  selectedMonth,
  onSuccess,
 }: GeneratePayrollModalProps) {
- const t = useTranslation();
+ const { t } = useTranslation();
  const { language, isRTL } = useLanguage();
  const [isGenerating, setIsGenerating] = useState(false);
 

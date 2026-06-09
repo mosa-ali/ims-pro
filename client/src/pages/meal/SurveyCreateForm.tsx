@@ -27,11 +27,11 @@ import { useOrganization } from '@/contexts/OrganizationContext';
 import { useOperatingUnit } from '@/contexts/OperatingUnitContext';
 import { trpc } from '@/lib/trpc';
 import { Button } from '@/components/ui/button';
-import { useTranslation } from '@/i18n/TranslationProvider';
+import { useTranslation } from '@/i18n/useTranslation';
 import { BackButton } from "@/components/BackButton";
 
 export function SurveyCreateForm() {
- const t = useTranslation();
+ const { t } = useTranslation();
  const navigate = useNavigate();
  const searchString = useSearch();
  const searchParams = new URLSearchParams(searchString);

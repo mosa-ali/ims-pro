@@ -27,7 +27,7 @@
 import { useState } from 'react';
 import { Download, FileSpreadsheet, X } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { useTranslation } from '@/i18n/TranslationProvider';
+import { useTranslation } from '@/i18n/useTranslation';
 
 interface UnifiedExportButtonProps {
  hasData: boolean;
@@ -48,7 +48,7 @@ export function UnifiedExportButton({
  disabled = false,
  className = ''
 }: UnifiedExportButtonProps) {
- const t = useTranslation();
+ const { t } = useTranslation();
  const { language, isRTL } = useLanguage();
  const [isModalOpen, setIsModalOpen] = useState(false);
  const [isExporting, setIsExporting] = useState(false);

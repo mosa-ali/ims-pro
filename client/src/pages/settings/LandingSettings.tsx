@@ -6,11 +6,11 @@ import { useAuth } from '@/_core/hooks/useAuth';
 import { isUserAdmin } from '@/lib/adminCheck';
 import { trpc } from '@/lib/trpc';
 import { toast } from 'sonner';
-import { useTranslation } from '@/i18n/TranslationProvider';
+import { useTranslation } from '@/i18n/useTranslation';
 import { BackButton } from "@/components/BackButton";
 
 export function LandingSettings() {
- const t = useTranslation();
+ const { t } = useTranslation();
  const [, navigate] = useLocation();
  const { language, isRTL } = useLanguage();
  const { user } = useAuth();

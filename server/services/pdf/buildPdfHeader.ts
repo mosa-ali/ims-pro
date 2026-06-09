@@ -358,7 +358,7 @@ export function buildOfficialPdfHtmlFromContext(
 /**
  * Format date for PDF display
  */
-export function formatDateForDisplay(date: Date, language: 'en' | 'ar'): string {
+export function formatDateForDisplay(date: Date, language: 'en' | 'ar' | 'it'): string {
   if (language === 'ar') {
     const formatter = new Intl.DateTimeFormat('ar-SA', {
       year: 'numeric',

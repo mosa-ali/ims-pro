@@ -17,7 +17,7 @@ import { useState } from 'react';
 import { AlertTriangle, X, Download, Info, CheckCircle2, XCircle } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { DuplicationScanResult, ModuleName, downloadDuplicationReport, getBusinessKeyConfig } from '@/utils/duplicationDetection';
-import { useTranslation } from '@/i18n/TranslationProvider';
+import { useTranslation } from '@/i18n/useTranslation';
 
 interface DuplicateDetectionModalProps {
  isOpen: boolean;
@@ -38,7 +38,7 @@ export function DuplicateDetectionModal({
  onBlock,
  onCancel
 }: DuplicateDetectionModalProps) {
- const t = useTranslation();
+ const { t } = useTranslation();
  const { language, isRTL } = useLanguage();
  const [selectedAction, setSelectedAction] = useState<'block' | 'allow'>('block');
 

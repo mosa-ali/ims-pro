@@ -24,7 +24,7 @@ import { Plus, Trash2, Save, CheckCircle, XCircle } from "lucide-react";
 import { Link, useLocation, useParams } from "wouter";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { toast } from "sonner";
-import { useTranslation } from '@/i18n/TranslationProvider';
+import { useTranslation } from '@/i18n/useTranslation';
 import { BackButton } from "@/components/BackButton";
 
 type LineItem = {
@@ -40,7 +40,7 @@ type LineItem = {
 };
 
 export default function ReturnsForm() {
- const t = useTranslation();
+ const { t } = useTranslation();
  const { user } = useAuth();
  const { isRTL } = useLanguage();
  const [, navigate] = useLocation();

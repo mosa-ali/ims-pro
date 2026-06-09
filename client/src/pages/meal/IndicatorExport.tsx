@@ -17,11 +17,11 @@ import { Download, FileText, FileSpreadsheet, Calendar, CheckCircle } from 'luci
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import jsPDF from 'jspdf';
-import { useTranslation } from '@/i18n/TranslationProvider';
+import { useTranslation } from '@/i18n/useTranslation';
 import { BackButton } from "@/components/BackButton";
 
 export function IndicatorExportPage() {
- const t = useTranslation();
+ const { t } = useTranslation();
  const navigate = useNavigate();
  const params = useParams();
  const indicatorId = params?.id ? parseInt(params.id) : null;

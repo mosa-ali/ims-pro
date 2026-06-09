@@ -5,7 +5,7 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { useTranslation } from '@/i18n/TranslationProvider';
+import { useTranslation } from '@/i18n/useTranslation';
 import { UnifiedExportButton } from '@/components/exports/UnifiedExportButton';
 import { PreImportPreviewDialog } from '@/components/PreImportPreviewDialog';
 import { validateImportData } from '@/lib/clientSideValidation';
@@ -25,7 +25,7 @@ interface ProcurementPlanTabProps {
 
 export function ProcurementPlanTab({
  projectId }: ProcurementPlanTabProps) {
-  const t = useTranslation();
+  const { t } = useTranslation();
  const { isRTL } = useLanguage();
 // Load project data via tRPC query (like ForecastPlanTab)
  const { data: project, isLoading: projectLoading } = trpc.projects.getById.useQuery({ id: parseInt(projectId) });
@@ -862,7 +862,7 @@ function ProcurementItemModal({
  onSubmit,
  isSubmitting = false
 }: ProcurementItemModalProps) {
- const t = useTranslation(); 
+ const { t } = useTranslation(); 
  return (
  <div className="fixed inset-0 bg-gray-900/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
  <div className="bg-white rounded-lg w-full max-w-4xl max-h-[90vh] overflow-y-auto">
@@ -1116,7 +1116,7 @@ function ProcurementCreateModal({
  onSubmit,
  isSubmitting = false
 }: ProcurementCreateModalProps) {
- const t = useTranslation(); 
+ const { t } = useTranslation(); 
  return (
  <div className="fixed inset-0 bg-gray-900/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
  <div className="bg-white rounded-lg w-full max-w-5xl max-h-[90vh] overflow-y-auto">

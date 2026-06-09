@@ -9,11 +9,11 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Save } from "lucide-react";
 import { trpc } from "@/lib/trpc";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { useTranslation } from '@/i18n/TranslationProvider';
+import { useTranslation } from '@/i18n/useTranslation';
 import { BackButton } from "@/components/BackButton";
 
 export default function MaintenanceForm() {
- const t = useTranslation();
+ const { t } = useTranslation();
  const [, setLocation] = useLocation();
  const { isRTL } = useLanguage();
  const [formData, setFormData] = useState({

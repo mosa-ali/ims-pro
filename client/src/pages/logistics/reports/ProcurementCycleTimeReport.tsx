@@ -19,7 +19,7 @@ import { BackButton } from "@/components/BackButton";
 export default function ProcurementCycleTimeReport() {
   const { language, isRTL} = useLanguage();
  const { currentOrganization } = useOrganization();
- const organizationId = currentOrganization?.id || 1;
+ const organizationId = currentOrganization?.id || 0;
 
  const [dateRange, setDateRange] = useState({
  startDate: new Date(Date.now() - 90 * 24 * 60 * 60 * 1000).toISOString().split("T")[0], // 90 days ago

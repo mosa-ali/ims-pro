@@ -14,7 +14,7 @@
  * ============================================================================
  */
 
-import { useTranslation } from '@/i18n/TranslationProvider';
+import { useTranslation } from '@/i18n/useTranslation';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ShieldAlert, AlertTriangle, CheckCircle2, TrendingUp, PieChart } from 'lucide-react';
 import { useRiskDashboard } from '@/hooks/useRisksData';

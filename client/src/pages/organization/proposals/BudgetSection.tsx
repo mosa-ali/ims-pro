@@ -1,5 +1,5 @@
 import { Download, Upload } from 'lucide-react';
-import { useTranslation } from '@/i18n/TranslationProvider';
+import { useTranslation } from '@/i18n/useTranslation';
 import { useLanguage, formatCurrency } from '@/contexts/LanguageContext';
 
 
@@ -10,7 +10,7 @@ interface BudgetSectionProps {
 
 export function BudgetSection({
  budget, updateBudget }: BudgetSectionProps) {
- const t = useTranslation();
+ const { t } = useTranslation();
  const { isRTL } = useLanguage();
 
 const labels = {
@@ -244,7 +244,7 @@ const labels = {
  updateBudget({ ...budget, activityCosts });
  }}
  className="w-full px-2 py-1 border border-gray-300 rounded text-sm"
- placeholder={t.placeholders.description1}
+ placeholder={t.placeholders.description}
  />
  </td>
  <td className="px-3 py-2 border border-gray-300">
@@ -413,7 +413,7 @@ interface CoFundingProps {
 export function CoFundingSection({
 
  coFunding, updateCoFunding }: CoFundingProps) {
-
+ const { t } = useTranslation();
  const totalCoFunding = (coFunding?.sources || []).reduce((sum: number, source: any) => {
  return sum + source.amount;
  }, 0);

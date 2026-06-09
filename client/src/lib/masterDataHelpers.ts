@@ -103,7 +103,7 @@ export interface DropdownOption {
 export function buildLocalizedOptions(
   data: MasterDataValue[],
   isRTL: boolean = false,
-  language: 'en' | 'ar' = 'en'
+  language: 'en' | 'ar' | 'it' = 'en'
 ): DropdownOption[] {
   return data
     .filter((item) => item.active !== false) // Filter out inactive items
@@ -137,7 +137,7 @@ export function buildLocalizedOptions(
 export function getLocalizedLabel(
   value: string,
   data: MasterDataValue[],
-  language: 'en' | 'ar' = 'en'
+  language: 'en' | 'ar' | 'it' = 'en'
 ): string {
   const item = data.find((d) => d.value === value);
   if (!item) return value;
@@ -154,7 +154,7 @@ export function getLocalizedLabel(
  */
 export function groupOptionsByCategory(
   data: MasterDataValue[],
-  language: 'en' | 'ar' = 'en'
+  language: 'en' | 'ar' | 'it' = 'en'
 ): Record<string, DropdownOption[]> {
   const grouped: Record<string, DropdownOption[]> = {};
 
@@ -188,7 +188,7 @@ export function groupOptionsByCategory(
 export function filterOptionsByCategory(
   data: MasterDataValue[],
   category: string,
-  language: 'en' | 'ar' = 'en'
+  language: 'en' | 'ar' | 'it' = 'en'
 ): DropdownOption[] {
   return buildLocalizedOptions(
     data.filter((item) => item.category === category || item.type === category),
@@ -207,7 +207,7 @@ export function filterOptionsByCategory(
  */
 export function mapToDropdownOptions(
   values: MasterDataValue[],
-  language: 'en' | 'ar' = 'en'
+  language: 'en' | 'ar' | 'it' = 'en'
 ): DropdownOption[] {
   return values
     .filter((v) => v.active !== false)
@@ -302,7 +302,7 @@ export function validateMasterData(data: MasterDataValue[]): boolean {
  */
 export function transformOptionSetToDropdown(
   optionSet: any,
-  language: 'en' | 'ar' = 'en'
+  language: 'en' | 'ar' | 'it' = 'en'
 ): DropdownOption[] {
   if (!optionSet || !optionSet.values || !Array.isArray(optionSet.values)) {
     return [];
@@ -370,7 +370,7 @@ export function createOptionValue(
 export function sortOptions(
   options: MasterDataValue[],
   sortBy: 'label' | 'value' | 'sortOrder' = 'label',
-  language: 'en' | 'ar' = 'en'
+  language: 'en' | 'ar' | 'it' = 'en'
 ): MasterDataValue[] {
   return [...options].sort((a, b) => {
     switch (sortBy) {

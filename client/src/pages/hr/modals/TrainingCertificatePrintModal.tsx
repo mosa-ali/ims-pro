@@ -13,7 +13,7 @@ import { StaffMember } from '../types/hrTypes';
 import { TrainingRecord } from '@/app/services/trainingService';
 import { useState, useEffect } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { useTranslation } from '@/i18n/TranslationProvider';
+import { useTranslation } from '@/i18n/useTranslation';
 
 interface Props {
  training: TrainingRecord;
@@ -22,7 +22,7 @@ interface Props {
 
 export function TrainingCertificatePrintModal({
  training, onClose }: Props) {
- const t = useTranslation();
+ const { t } = useTranslation();
  const { language, isRTL } = useLanguage();
  const [employee, setEmployee] = useState<StaffMember | null>(null);
 

@@ -2,7 +2,7 @@
  * Asset Detail Workspace Page
  * 
  * Full workspace page for viewing a single asset's details.
- * New detail page (no prior modal existed) — consolidates asset info,
+ * New detail page (no prior modal existed) — consolidates asset info, 
  * depreciation, maintenance history, transfers, and disposals.
  * 
  * Route: /organization/finance/assets/:id
@@ -31,7 +31,7 @@ import {
  Calendar, MapPin, User, FileText, Wrench, ArrowRightLeft, XCircle,
  Building, Tag, Clock, AlertTriangle, CheckCircle, Shield
 } from "lucide-react";
-import { useTranslation } from '@/i18n/TranslationProvider';
+import { useTranslation } from '@/i18n/useTranslation';
 import { BackButton } from "@/components/BackButton";
 
 // ============================================================================
@@ -72,6 +72,24 @@ const maintenanceTypes = [
 // ============================================================================
 // TRANSLATIONS
 // ============================================================================
+
+// ============================================================================
+// MAIN COMPONENT
+// ============================================================================
+export default function AssetDetail() {
+ const { t } = useTranslation();
+  const { language, isRTL} = useLanguage();
+ const { id } = useParams<{ id: string }>();
+ const assetId = parseInt(id || "0", 10);
+ const navigate = useNavigate();
+ const { currentOrganization } = useOrganization();
+ const organizationId = currentOrganization?.id || 0;
+ // Fetch asset data
+ const { data: asset, isLoading } = trpc.assets.getAssetById.useQuery(
+ { id: assetId },
+ { enabled: assetId > 0 }
+ );
+ 
 // ============================================================================
 // HELPER
 // ============================================================================
@@ -86,23 +104,6 @@ function InfoField({ label, value, icon: Icon }: { label: string; value: string 
  </div>
  );
 }
-
-// ============================================================================
-// MAIN COMPONENT
-// ============================================================================
-export default function AssetDetail() {
- const t = useTranslation();
- const { id } = useParams<{ id: string }>();
- const assetId = parseInt(id || "0", 10);
- const navigate = useNavigate();
- const { language, isRTL } = useLanguage();
- const { currentOrganization } = useOrganization();
- const organizationId = currentOrganization?.id || 0;
- // Fetch asset data
- const { data: asset, isLoading } = trpc.assets.getAssetById.useQuery(
- { id: assetId },
- { enabled: assetId > 0 }
- );
 
  // Fetch related data
  const { data: maintenanceRecords = [] } = trpc.assets.listMaintenance.useQuery(

@@ -43,13 +43,13 @@ import {
   RefreshCw,
   Eye,
 } from 'lucide-react';
-import { useTranslation } from '@/i18n/TranslationProvider';
+import { useTranslation } from '@/i18n/useTranslation';
 
 export default function TreasuryBankReconciliation() {
-  const t = useTranslation();
+  const { t } = useTranslation();
   const { language, isRTL } = useLanguage();
   const { currentOrganization, currentOperatingUnit } = useOrganization();
-  const organizationId = currentOrganization?.id || 30001;
+  const organizationId = currentOrganization?.id || 0;
   const operatingUnitId = currentOperatingUnit?.id;
   const navigate = useNavigate();
 

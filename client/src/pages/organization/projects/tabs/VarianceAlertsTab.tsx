@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { trpc } from '@/lib/trpc';
 import { Bell, AlertTriangle, AlertCircle, Check, X, Settings } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { useTranslation } from '@/i18n/TranslationProvider';
+import { useTranslation } from '@/i18n/useTranslation';
 import { useLanguage } from '@/contexts/LanguageContext';
 
 interface VarianceAlertsTabProps {
@@ -12,7 +12,7 @@ interface VarianceAlertsTabProps {
 
 export function VarianceAlertsTab({
  projectId, isRTL }: VarianceAlertsTabProps) {
- const t = useTranslation();
+ const { t } = useTranslation();
  const projectIdNum = parseInt(projectId);
  const [showConfigModal, setShowConfigModal] = useState(false);
  const [configData, setConfigData] = useState({

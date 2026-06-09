@@ -27,11 +27,11 @@ import { Save, Send, Printer, Gavel, AlertCircle } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { DisciplinaryDecision, DisciplinaryCase } from './types';
 import { sanctionsService } from './sanctionsService';
-import { useTranslation } from '@/i18n/TranslationProvider';
+import { useTranslation } from '@/i18n/useTranslation';
 import { BackButton } from "@/components/BackButton";
 
 export function Form4_DisciplinaryDecision() {
- const t = useTranslation();
+ const { t } = useTranslation();
  const { language, isRTL } = useLanguage();
  const navigate = useNavigate();
  const { caseRef } = useParams<{ caseRef: string }>();

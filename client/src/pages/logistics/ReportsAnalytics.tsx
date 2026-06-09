@@ -24,16 +24,16 @@ import {
  ArrowRight,
  ArrowLeft,
 } from "lucide-react";
-import { useTranslation } from '@/i18n/TranslationProvider';
+import { useTranslation } from '@/i18n/useTranslation';
 import { BackButton } from "@/components/BackButton";
 export default function ReportsAnalytics() {
- const t = useTranslation();
+ const { t } = useTranslation();
  const { currentOrganization } = useOrganization();
  const { language, isRTL} = useLanguage();
  const direction = 'ltr';
  const ArrowIcon = isRTL ? ArrowLeft : ArrowRight;
 
- const organizationId = currentOrganization?.id || 1;
+ const organizationId = currentOrganization?.id || 0;
 
  // Fetch dashboard overview
  const { data: overview, isLoading } = trpc.logistics.analytics.getDashboardOverview.useQuery({

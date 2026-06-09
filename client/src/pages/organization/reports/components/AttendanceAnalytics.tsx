@@ -1,6 +1,6 @@
 import { Clock, Activity } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { useTranslation } from '@/i18n/TranslationProvider';
+import { useTranslation } from '@/i18n/useTranslation';
 
 interface AttendanceStats {
  overallRate: number;
@@ -15,7 +15,7 @@ interface Props {
 
 export function AttendanceAnalytics({
  data }: Props) {
- const t = useTranslation();
+ const { t } = useTranslation();
  const { language, isRTL} = useLanguage();
  const localT = {
  attendanceAnalytics: t.orgReports.attendanceAnalytics,
@@ -27,17 +27,17 @@ export function AttendanceAnalytics({
  return (
  <div className="space-y-8" dir={isRTL ? 'rtl' : 'ltr'}>
  <h2 className="text-2xl font-black text-gray-900 border-s-4 border-amber-600 ps-4 mb-8">
- {t.attendanceAnalytics}
+ {t.orgReports.attendanceAnalytics}
  </h2>
 
  {/* Summary Cards */}
  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
  <div className="bg-white border border-gray-200 rounded-[20px] p-8 shadow-sm">
- <p className="text-[10px] font-black text-gray-400 uppercase tracking-[2px] mb-2">{t.overallRate}</p>
+ <p className="text-[10px] font-black text-gray-400 uppercase tracking-[2px] mb-2">{localT.overallRate}</p>
  <p className="text-4xl font-black text-emerald-600">{data.overallRate.toFixed(1)}%</p>
  </div>
  <div className="bg-white border border-gray-200 rounded-[20px] p-8 shadow-sm">
- <p className="text-[10px] font-black text-gray-400 uppercase tracking-[2px] mb-2">{t.anomalies}</p>
+ <p className="text-[10px] font-black text-gray-400 uppercase tracking-[2px] mb-2">{localT.anomalies}</p>
  <p className="text-4xl font-black text-rose-600">{data.anomalyCount}</p>
  </div>
  </div>
@@ -46,7 +46,7 @@ export function AttendanceAnalytics({
  <div className="bg-white border border-gray-200 rounded-[24px] p-10 shadow-sm">
  <h3 className="font-black text-gray-900 mb-8 flex items-center gap-3 uppercase tracking-wider text-sm">
  <div className="p-2 bg-amber-50 rounded-lg"><Activity className="w-5 h-5 text-amber-600" /></div>
- {t.attendanceByDept}
+ {localT.attendanceByDept}
  </h3>
  <div className="space-y-6">
  {data.byDepartment.map(dept => (

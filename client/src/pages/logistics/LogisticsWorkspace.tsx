@@ -32,10 +32,10 @@ import {
  GitPullRequestArrow,
 } from "lucide-react";
 import { Link, useLocation } from "wouter";
-import { useTranslation } from '@/i18n/TranslationProvider';
+import { useTranslation } from '@/i18n/useTranslation';
 
 export default function LogisticsWorkspace() {
- const t = useTranslation();
+ const { t } = useTranslation();
  const { user } = useAuth();
  const { currentOrganization } = useOrganization();
 const { language, isRTL} = useLanguage();
@@ -45,7 +45,7 @@ const { language, isRTL} = useLanguage();
  const direction = 'ltr';
  
  // Get organizationId from context (same pattern as Finance and HR modules)
- const organizationId = currentOrganization?.id || 1;
+ const organizationId = currentOrganization?.id || 0;
  
  // Fetch dashboard stats from the database
  const { data: stats, isLoading } = trpc.logistics.dashboard.getStats.useQuery(

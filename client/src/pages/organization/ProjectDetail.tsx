@@ -4,7 +4,7 @@ import { useNavigate } from"@/lib/router-compat";
 import { Edit, Calendar, DollarSign } from 'lucide-react';
 import * as Tabs from '@radix-ui/react-tabs';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { useTranslation } from '@/i18n/TranslationProvider';
+import { useTranslation } from '@/i18n/useTranslation';
 import { shouldShowCaseManagement, formatProjectSectors } from '@/utils/projectHelpers';
 import { useProjectData, calculateDaysRemaining } from '@/hooks/useProjectData';
 
@@ -27,7 +27,7 @@ export function ProjectDetail() {
  const navigate = useNavigate();
  const [activeTab, setActiveTab] = useState('overview');
  const { isRTL } = useLanguage();
- const t = useTranslation();
+ const { t } = useTranslation();
 // ✅ CRITICAL FIX: Dynamically load project data based on URL project ID
  const { project, loading, error } = useProjectData(id);
  

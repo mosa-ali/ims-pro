@@ -57,7 +57,7 @@ function getStatusColor(status: string): string {
   }
 }
 
-function getStatusLabel(status: string, language: 'en' | 'ar' = 'en'): string {
+function getStatusLabel(status: string, language: 'en' | 'ar' | 'it' = 'en'): string {
   switch (status) {
     case 'pending_invoice':
       return language === 'ar' ? 'في انتظار الفاتورة' : 'Pending Invoice';

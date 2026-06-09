@@ -77,7 +77,7 @@ const translations = {
 };
 
 export function PRFinancialStatusWidget({ purchaseRequestId, refreshTrigger }: PRFinancialStatusWidgetProps) { const { language } = useLanguage();
- const t = translations[language as 'en' | 'ar'] || translations.en;
+ const t = translations[language as 'en' | 'ar' | 'it'] || translations.en;
  const { data: financialStatus, isLoading, refetch: refetchFinancial } = trpc.prFinance.getFinancialStatus.useQuery({
   purchaseRequestId,
  });

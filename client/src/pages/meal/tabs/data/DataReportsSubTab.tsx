@@ -18,7 +18,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { AlertCircle, Plus, Edit, Settings, Download } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 import { useState, useEffect } from 'react';
-import { useTranslation } from '@/i18n/TranslationProvider';
+import { useTranslation } from '@/i18n/useTranslation';
 
 interface Props {
  survey: any;
@@ -33,7 +33,7 @@ interface Submission {
 
 export function DataReportsSubTab({
  survey }: Props) {
- const t = useTranslation();
+ const { t } = useTranslation();
  const { language, isRTL } = useLanguage();
  const [submissions, setSubmissions] = useState<Submission[]>([]);
  const [selectedQuestion, setSelectedQuestion] = useState<string>('');

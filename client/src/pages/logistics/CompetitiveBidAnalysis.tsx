@@ -78,7 +78,7 @@ export default function CompetitiveBidAnalysis() {
   const { id } = useParams<{ id: string }>();
   const [, setLocation] = useLocation();
   const { language, isRTL} = useLanguage();
-  const t = useTranslation();
+  const { t } = useTranslation();
   const utils = trpc.useUtils();
 
   // ── Data queries ────────────────────────────────────────────────────

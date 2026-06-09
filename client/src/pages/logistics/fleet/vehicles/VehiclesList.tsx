@@ -23,11 +23,11 @@ import { Plus, Search, Edit, Trash2, Eye, Truck } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useOrganization } from "@/contexts/OrganizationContext";
 import { useOperatingUnit } from "@/contexts/OperatingUnitContext";
-import { useTranslation } from '@/i18n/TranslationProvider';
+import { useTranslation } from '@/i18n/useTranslation';
 import { BackButton } from "@/components/BackButton";
 
 export default function VehiclesList() {
- const t = useTranslation();
+ const { t } = useTranslation();
  const [, setLocation] = useLocation();
  const { language, isRTL } = useLanguage();
  const { currentOrganization } = useOrganization();

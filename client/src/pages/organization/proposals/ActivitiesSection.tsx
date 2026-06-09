@@ -1,16 +1,18 @@
 import { Download, Upload } from 'lucide-react';
-import { useLanguage } from '@/contexts/LanguageContext';
-import { useTranslation } from '@/i18n/TranslationProvider';
+import { trpc } from '@/lib/trpc';
+import { useAuth } from '@/_core/hooks/useAuth';
+import { useTranslation } from '@/i18n/useTranslation';
+import { useLanguage, formatCurrency } from '@/contexts/LanguageContext';
 
-interface ActivitiesSectionProps {
+interface ActivitiesSection {
  activities: any;
  expectedResults: any;
  updateActivities: (data: any) => void;
 }
 
 export function ActivitiesSection({
- activities, expectedResults, updateActivities }: ActivitiesSectionProps) {
- const t = useTranslation();
+ activities, expectedResults, updateActivities }: ActivitiesSection) {
+ const { t } = useTranslation();
  const { isRTL } = useLanguage();
 
  const handleExportExcel = () => {
@@ -44,7 +46,7 @@ export function ActivitiesSection({
  <div className="space-y-6" dir={isRTL ? 'rtl' : 'ltr'}>
  <div className="flex items-center justify-between">
  <label className="block text-sm font-medium text-gray-700">
- {t.title}
+ {localT.title}
  <span className="text-red-600 ms-1">*</span>
  </label>
  <div className="flex gap-2">
@@ -53,28 +55,28 @@ export function ActivitiesSection({
  className="px-3 py-1.5 text-xs border border-gray-300 rounded-md hover:bg-gray-50 flex items-center gap-1"
  >
  <Upload className="w-3.5 h-3.5" />
- {t.import}
+ {localT.import}
  </button>
  <button
  onClick={handleExportExcel}
  className="px-3 py-1.5 text-xs border border-gray-300 rounded-md hover:bg-gray-50 flex items-center gap-1"
  >
  <Download className="w-3.5 h-3.5" />
- {t.export}
+ {localT.export}
  </button>
  </div>
  </div>
 
  {/* Expected Results */}
  <div>
- <h4 className="text-sm font-semibold text-gray-900 mb-3">{t.expectedResults}</h4>
+ <h4 className="text-sm font-semibold text-gray-900 mb-3">{localT.expectedResults}</h4>
  <div className="overflow-x-auto">
  <table className="w-full border border-gray-300 text-sm">
  <thead className="bg-gray-50">
  <tr>
- <th className="px-3 py-2 text-xs font-semibold text-gray-700 border border-gray-300 w-24">{t.resultNumber}</th>
- <th className="px-3 py-2 text-xs font-semibold text-gray-700 border border-gray-300">{t.resultDescription}</th>
- <th className="px-3 py-2 text-xs font-semibold text-gray-700 border border-gray-300 w-40">{t.linkedObjective}</th>
+ <th className="px-3 py-2 text-xs font-semibold text-gray-700 border border-gray-300 w-24">{localT.resultNumber}</th>
+ <th className="px-3 py-2 text-xs font-semibold text-gray-700 border border-gray-300">{localT.resultDescription}</th>
+ <th className="px-3 py-2 text-xs font-semibold text-gray-700 border border-gray-300 w-40">{localT.linkedObjective}</th>
  </tr>
  </thead>
  <tbody>
@@ -128,23 +130,23 @@ export function ActivitiesSection({
  }}
  className="mt-2 text-sm text-primary hover:underline"
  >
- + {t.addResult}
+ + {localT.addResult}
  </button>
  </div>
 
  {/* Activities */}
  <div>
- <h4 className="text-sm font-semibold text-gray-900 mb-3">{t.activities}</h4>
+ <h4 className="text-sm font-semibold text-gray-900 mb-3">{localT.activities}</h4>
  <div className="overflow-x-auto">
  <table className="w-full border border-gray-300 text-sm">
  <thead className="bg-gray-50">
  <tr>
- <th className="px-3 py-2 text-xs font-semibold text-gray-700 border border-gray-300 w-24">{t.activityNumber}</th>
- <th className="px-3 py-2 text-xs font-semibold text-gray-700 border border-gray-300">{t.activityDescription}</th>
- <th className="px-3 py-2 text-xs font-semibold text-gray-700 border border-gray-300 w-32">{t.linkedResult}</th>
- <th className="px-3 py-2 text-xs font-semibold text-gray-700 border border-gray-300 w-28">{t.startMonth}</th>
- <th className="px-3 py-2 text-xs font-semibold text-gray-700 border border-gray-300 w-28">{t.endMonth}</th>
- <th className="px-3 py-2 text-xs font-semibold text-gray-700 border border-gray-300 w-40">{t.responsibleParty}</th>
+ <th className="px-3 py-2 text-xs font-semibold text-gray-700 border border-gray-300 w-24">{localT.activityNumber}</th>
+ <th className="px-3 py-2 text-xs font-semibold text-gray-700 border border-gray-300">{localT.activityDescription}</th>
+ <th className="px-3 py-2 text-xs font-semibold text-gray-700 border border-gray-300 w-32">{localT.linkedResult}</th>
+ <th className="px-3 py-2 text-xs font-semibold text-gray-700 border border-gray-300 w-28">{localT.startMonth}</th>
+ <th className="px-3 py-2 text-xs font-semibold text-gray-700 border border-gray-300 w-28">{localT.endMonth}</th>
+ <th className="px-3 py-2 text-xs font-semibold text-gray-700 border border-gray-300 w-40">{localT.responsibleParty}</th>
  </tr>
  </thead>
  <tbody>
@@ -237,7 +239,7 @@ export function ActivitiesSection({
  }}
  className="mt-2 text-sm text-primary hover:underline"
  >
- + {t.addActivity}
+ + {localT.addActivity}
  </button>
  </div>
  </div>
@@ -255,7 +257,8 @@ interface ImplementationPlanProps {
 export function ImplementationPlanSection({
 
  plan, activities, projectDuration, projectStartDate, updatePlan }: ImplementationPlanProps) {
-
+ const { t } = useTranslation();
+ 
  const handleExportExcel = () => {
  alert('Exporting Implementation Plan to Excel...');
  };
@@ -286,9 +289,9 @@ export function ImplementationPlanSection({
  };
 
  const localT = {
- title: t.proposals.implementationPlan,
+ implementationPlan: t.proposals.implementationPlan,
  subtitle: t.organizationModule.activitiesSectionSubtitle,
- autoGenerate: t.proposals.autogenerateFromActivities,
+ autoGenerate: t.proposals.autoGenerate,
  projectDuration: t.proposals.projectDuration,
  months: t.proposals.months,
  startDate: t.proposals.startDate,
@@ -313,31 +316,31 @@ export function ImplementationPlanSection({
  <div className="flex items-center justify-between">
  <div>
  <label className="block text-sm font-medium text-gray-700">
- {t.title}
+ {localT.implementationPlan}
  <span className="text-red-600 ms-1">*</span>
  </label>
- <p className="text-xs text-gray-600 mt-1">{t.subtitle}</p>
+ <p className="text-xs text-gray-600 mt-1">{localT.subtitle}</p>
  </div>
  <div className="flex gap-2">
  <button
  onClick={handleAutoGeneratePlan}
  className="px-3 py-1.5 text-xs bg-green-600 text-white rounded-md hover:bg-green-700 flex items-center gap-1"
  >
- {t.autoGenerate}
+ {localT.autoGenerate}
  </button>
  <button
  onClick={handleImportExcel}
  className="px-3 py-1.5 text-xs border border-gray-300 rounded-md hover:bg-gray-50 flex items-center gap-1"
  >
  <Upload className="w-3.5 h-3.5" />
- {t.import}
+ {localT.import}
  </button>
  <button
  onClick={handleExportExcel}
  className="px-3 py-1.5 text-xs border border-gray-300 rounded-md hover:bg-gray-50 flex items-center gap-1"
  >
  <Download className="w-3.5 h-3.5" />
- {t.export}
+ {localT.export}
  </button>
  </div>
  </div>
@@ -345,11 +348,11 @@ export function ImplementationPlanSection({
  {/* Project Info */}
  <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 flex items-center gap-4 text-sm">
  <div>
- <span className="font-medium text-gray-700">{t.projectDuration}:</span>
- <span className="ms-2 text-gray-900 font-semibold">{projectDuration} {t.months}</span>
+ <span className="font-medium text-gray-700">{localT.projectDuration}:</span>
+ <span className="ms-2 text-gray-900 font-semibold">{projectDuration} {localT.months}</span>
  </div>
  <div className="border-l border-blue-300 ps-4">
- <span className="font-medium text-gray-700">{t.startDate}:</span>
+ <span className="font-medium text-gray-700">{localT.startDate}:</span>
  <span className="ms-2 text-gray-900">{projectStartDate || 'Not Set'}</span>
  </div>
  </div>
@@ -360,13 +363,13 @@ export function ImplementationPlanSection({
  <table className="w-full border border-gray-300 text-sm">
  <thead className="bg-gray-50">
  <tr>
- <th className="px-3 py-2 text-xs font-semibold text-gray-700 border border-gray-300 w-20">{t.activity}</th>
- <th className="px-3 py-2 text-xs font-semibold text-gray-700 border border-gray-300">{t.activityName}</th>
- <th className="px-3 py-2 text-xs font-semibold text-gray-700 border border-gray-300 w-24">{t.linkedResult}</th>
- <th className="px-3 py-2 text-xs font-semibold text-gray-700 border border-gray-300 w-24">{t.startMonth}</th>
- <th className="px-3 py-2 text-xs font-semibold text-gray-700 border border-gray-300 w-24">{t.endMonth}</th>
- <th className="px-3 py-2 text-xs font-semibold text-gray-700 border border-gray-300 w-32">{t.responsibleParty}</th>
- <th className="px-3 py-2 text-xs font-semibold text-gray-700 border border-gray-300 w-28">{t.status}</th>
+ <th className="px-3 py-2 text-xs font-semibold text-gray-700 border border-gray-300 w-20">{localT.activity}</th>
+ <th className="px-3 py-2 text-xs font-semibold text-gray-700 border border-gray-300">{localT.activityName}</th>
+ <th className="px-3 py-2 text-xs font-semibold text-gray-700 border border-gray-300 w-24">{localT.linkedResult}</th>
+ <th className="px-3 py-2 text-xs font-semibold text-gray-700 border border-gray-300 w-24">{localT.startMonth}</th>
+ <th className="px-3 py-2 text-xs font-semibold text-gray-700 border border-gray-300 w-24">{localT.endMonth}</th>
+ <th className="px-3 py-2 text-xs font-semibold text-gray-700 border border-gray-300 w-32">{localT.responsibleParty}</th>
+ <th className="px-3 py-2 text-xs font-semibold text-gray-700 border border-gray-300 w-28">{localT.status}</th>
  </tr>
  </thead>
  <tbody>
@@ -477,18 +480,18 @@ export function ImplementationPlanSection({
  }}
  className="mt-2 text-sm text-primary hover:underline"
  >
- + {t.addPlanItem}
+ + {localT.addPlanItem}
  </button>
  </div>
 
  {/* Gantt-style Timeline Visualization */}
  <div>
- <h4 className="text-sm font-semibold text-gray-900 mb-3">{t.timeline}</h4>
+ <h4 className="text-sm font-semibold text-gray-900 mb-3">{localT.timeline}</h4>
  <div className="overflow-x-auto">
  <table className="w-full border border-gray-300 text-xs">
  <thead className="bg-gray-50">
  <tr>
- <th className="px-2 py-1 text-xs font-semibold text-gray-700 border border-gray-300 sticky start-0 bg-gray-50 z-10">{t.activity}</th>
+ <th className="px-2 py-1 text-xs font-semibold text-gray-700 border border-gray-300 sticky start-0 bg-gray-50 z-10">{localT.activity}</th>
  {monthHeaders.map((month) => (
  <th key={month} className="px-2 py-1 text-xs font-semibold text-gray-700 border border-gray-300">
  M{month}

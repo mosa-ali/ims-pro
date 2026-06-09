@@ -88,7 +88,7 @@ export interface RFQPDFData {
   };
 
   // Language & Direction
-  language: 'en' | 'ar';
+  language: 'en' | 'ar' | 'it';
 }
 
 /**
@@ -106,7 +106,7 @@ function formatDate(dateStr: string | undefined, isRTL: boolean = false): string
 /**
  * Get localized labels for RFQ
  */
-function getLabels(language: 'en' | 'ar') {
+function getLabels(language: 'en' | 'ar' | 'it') {
   const isArabic = language === 'ar';
 
   return {

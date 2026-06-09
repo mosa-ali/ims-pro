@@ -1,5 +1,5 @@
 import { useAuth } from "@/_core/hooks/useAuth";
-import { useTranslation } from '@/i18n/TranslationProvider';
+import { useTranslation } from "@/i18n/useTranslation";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { trpc } from "@/lib/trpc";
@@ -14,7 +14,7 @@ import { useLanguage } from "@/contexts/LanguageContext";
  */
 export default function PlatformDashboard() {
  const { user } = useAuth();
- const t = useTranslation();
+ const { t } = useTranslation();
  const { direction, isRTL} = useLanguage();
  const { data: organizations = [], isLoading: orgsLoading } = trpc.ims.organizations.list.useQuery();
  const { data: userCounts, isLoading: userCountsLoading } = trpc.ims.dashboard.getUserCounts.useQuery();
@@ -25,8 +25,8 @@ export default function PlatformDashboard() {
  <div className="container py-16" dir={isRTL ? 'rtl' : 'ltr'}>
  <Card>
  <CardHeader>
- <CardTitle>{t.userManagement.accessDenied}</CardTitle>
- <CardDescription>{t.userManagement.noPermission}</CardDescription>
+ <CardTitle>{t.auth.accessDenied}</CardTitle>
+ <CardDescription>{t.auth.noPermission}</CardDescription>
  </CardHeader>
  </Card>
  </div>
@@ -78,7 +78,7 @@ export default function PlatformDashboard() {
  <div className="flex items-center gap-2 mt-3">
  <span className="text-sm font-medium text-green-600">{activeOrgs} {t.common.active}</span>
  <span className="text-gray-300">•</span>
- <span className="text-sm font-medium text-gray-400">{suspendedOrgs} {t.organizationModule.suspended}</span>
+ <span className="text-sm font-medium text-gray-400">{suspendedOrgs} {t.common.suspended}</span>
  </div>
  </CardContent>
  </Card>

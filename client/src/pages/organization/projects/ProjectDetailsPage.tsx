@@ -27,13 +27,13 @@ import { ProcurementPlanTab } from './tabs/ProcurementPlanTab';
 import { ProjectReportTab } from './tabs/ProjectReportTab';
 import { MonthlyReportTab } from './tabs/MonthlyReportTab';
 import { VarianceAlertsTab } from './tabs/VarianceAlertsTab';
-import { useTranslation } from '@/i18n/TranslationProvider';
+import { useTranslation } from '@/i18n/useTranslation';
 
 type TabId = 'overview' | 'financial' | 'activities' | 'indicators' | 'beneficiaries' | 
  'caseManagement' | 'tasks' | 'projectPlan' | 'forecastPlan' | 'procurementPlan' | 'varianceAlerts' | 'report' | 'monthlyReport' | 'evidence';
 
 export default function ProjectDetailsPage() {
- const t = useTranslation();
+ const { t } = useTranslation();
  const { id } = useParams();
  const [, setLocation] = useLocation();
  const { language, direction } = useLanguage();

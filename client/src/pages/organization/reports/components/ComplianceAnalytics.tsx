@@ -1,6 +1,6 @@
 import { Shield, FileText, AlertTriangle, CheckCircle2 } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { useTranslation } from '@/i18n/TranslationProvider';
+import { useTranslation } from '@/i18n/useTranslation';
 
 interface ComplianceStats {
  expiringContracts: number;
@@ -15,7 +15,7 @@ interface Props {
 
 export function ComplianceAnalytics({
  data }: Props) {
- const t = useTranslation();
+ const { t } = useTranslation();
  const { language, isRTL} = useLanguage();
  const localT = {
  complianceAnalytics: t.orgReports.complianceRiskAnalytics,
@@ -27,16 +27,16 @@ export function ComplianceAnalytics({
  };
 
  const items = [
- { label: t.contractsExpiring, val: data.expiringContracts, color: 'text-rose-600', icon: FileText },
- { label: t.missingDocuments, val: data.missingDocuments, color: 'text-amber-600', icon: Shield },
- { label: t.pendingAppraisals, val: data.pendingAppraisals, color: 'text-indigo-600', icon: CheckCircle2 },
- { label: t.disciplinaryCases, val: data.disciplinaryCases, color: 'text-gray-900', icon: AlertTriangle }
+ { label: localT.contractsExpiring, val: data.expiringContracts, color: 'text-rose-600', icon: FileText },
+ { label: localT.missingDocuments, val: data.missingDocuments, color: 'text-amber-600', icon: Shield },
+ { label: localT.pendingAppraisals, val: data.pendingAppraisals, color: 'text-indigo-600', icon: CheckCircle2 },
+ { label: localT.disciplinaryCases, val: data.disciplinaryCases, color: 'text-gray-900', icon: AlertTriangle }
  ];
 
  return (
  <div className="space-y-8" dir={isRTL ? 'rtl' : 'ltr'}>
  <h2 className="text-2xl font-black text-gray-900 border-s-4 border-slate-600 ps-4 mb-8">
- {t.complianceAnalytics}
+ {localT.complianceAnalytics}
  </h2>
 
  {/* Summary Cards */}
@@ -63,7 +63,7 @@ export function ComplianceAnalytics({
  <Shield className="w-64 h-64 text-white" />
  </div>
  <div className="relative z-10">
- <h3 className="text-xl font-black uppercase tracking-[4px] mb-4">{t.complianceShield}</h3>
+ <h3 className="text-xl font-black uppercase tracking-[4px] mb-4">{localT.complianceShield}</h3>
  <p className="text-slate-400 max-w-2xl text-sm font-medium leading-relaxed">
  {'The system currently shows an aggregate compliance score of 92%. Most audit flags are related to document expiries in the Operations department. All high-risk cases have been flagged for executive review.'}
  </p>

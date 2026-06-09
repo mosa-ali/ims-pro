@@ -17,7 +17,7 @@ import { UnifiedExportButton } from '@/components/exports/UnifiedExportButton';
 import { syncExcelToDocuments } from '@/lib/documentSync';
 import { toast } from 'sonner';
 import { FinancialTabSkeleton } from "@/components/ProjectTabSkeletons";
-import { useTranslation } from '@/i18n/TranslationProvider';
+import { useTranslation } from '@/i18n/useTranslation';
 
 interface FinancialOverviewTabProps {
  projectId: string;
@@ -204,7 +204,7 @@ const formatCurrencyCompact = (amount: number, currency: string): string => {
 };
 
 // Helper to get currency name
-const getCurrencyName = (code: string, language: 'en' | 'ar' = 'en'): string => {
+const getCurrencyName = (code: string, language: 'en' | 'ar' | 'it' = 'en'): string => {
   const currency = GLOBAL_CURRENCIES.find(c => c.code === code);
   if (!currency) return code;
   return language === 'ar' ? currency.nameAr : currency.name;
@@ -212,7 +212,7 @@ const getCurrencyName = (code: string, language: 'en' | 'ar' = 'en'): string => 
 
 export function FinancialOverviewTab({ projectId }: FinancialOverviewTabProps) {
  const { language, isRTL} = useLanguage();
- const t = useTranslation();
+ const { t } = useTranslation();
  
  // Convert projectId to number for tRPC query
  const projectIdNum = parseInt(projectId, 10);

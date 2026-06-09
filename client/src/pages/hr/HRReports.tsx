@@ -26,13 +26,13 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { staffService } from '@/app/services/hrService';
 import { leaveRequestService } from './leave/leaveService';
 import { vacancyService, candidateService } from './recruitment/recruitmentService';
-import { useTranslation } from '@/i18n/TranslationProvider';
+import { useTranslation } from '@/i18n/useTranslation';
 import { BackButton } from "@/components/BackButton";
 
 type ReportCategory = 'workforce' | 'payroll' | 'leave' | 'recruitment' | 'compliance';
 
 export function HRReports() {
- const t = useTranslation();
+ const { t } = useTranslation();
  const { language, isRTL } = useLanguage();
  const navigate = useNavigate();
  const [activeCategory, setActiveCategory] = useState<ReportCategory>('workforce');

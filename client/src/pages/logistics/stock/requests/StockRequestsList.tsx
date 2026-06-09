@@ -30,12 +30,12 @@ import {
 } from "@/components/ui/select";
 import { Plus, Search, Download, Eye, Edit, Trash2, ClipboardList } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { useTranslation } from '@/i18n/TranslationProvider';
+import { useTranslation } from '@/i18n/useTranslation';
 import { BackButton } from "@/components/BackButton";
 import { PaginationControls } from "@/components/PaginationControls";
 
 export default function StockRequestsList() {
-  const t = useTranslation();
+  const { t } = useTranslation();
   const [, navigate] = useLocation();
   const { isRTL } = useLanguage();
   const [search, setSearch] = useState("");

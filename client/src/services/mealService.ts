@@ -32,7 +32,7 @@ const uuidv4 = uuidv7;
 // ============================================================================
 
 export type SurveyType = 'baseline' | 'endline' | 'pdm' | 'aap' | 'custom';
-export type SurveyLanguage = 'en' | 'ar' | 'multi';
+export type SurveyLanguage = 'en' | 'ar' | 'it' | 'multi';
 export type SurveyStatus = 'draft' | 'published' | 'archived';
 export type QuestionType = 'text' | 'textarea' | 'number' | 'select' | 'multiselect' | 'radio' | 'checkbox' | 'date' | 'location' | 'photo';
 

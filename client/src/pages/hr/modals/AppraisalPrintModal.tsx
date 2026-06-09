@@ -11,7 +11,7 @@
 import { X, Printer } from 'lucide-react';
 import { AppraisalRecord } from '../types/hrTypes';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { useTranslation } from '@/i18n/TranslationProvider';
+import { useTranslation } from '@/i18n/useTranslation';
 
 interface Props {
  appraisal: AppraisalRecord;
@@ -20,7 +20,7 @@ interface Props {
 
 export function AppraisalPrintModal({
  appraisal, onClose }: Props) {
- const t = useTranslation();
+ const { t } = useTranslation();
  const { language, isRTL } = useLanguage();
 
  const handlePrint = () => {

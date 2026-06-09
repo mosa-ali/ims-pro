@@ -15,7 +15,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Upload, FileText, X, AlertCircle } from "lucide-react";
 import { toast } from "sonner";
-import { useTranslation } from '@/i18n/TranslationProvider';
+import { useTranslation } from '@/i18n/useTranslation';
 
 interface InvoiceUploadDialogProps {
  open: boolean;
@@ -44,7 +44,7 @@ export function InvoiceUploadDialog({
  sourceType = 'goods',
  onSuccess,
 }: InvoiceUploadDialogProps) {
- const t = useTranslation();
+ const { t } = useTranslation();
  const { language, isRTL} = useLanguage();
  const { user } = useAuth();
 

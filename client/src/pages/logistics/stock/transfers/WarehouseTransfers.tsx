@@ -37,7 +37,7 @@ const STATUS_LABELS: Record<string, { en: string; ar: string }> = {
 };
 
 export default function WarehouseTransfers() {
-  const t = useTranslation();
+  const { t } = useTranslation();
   const { isRTL } = useLanguage();
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("");

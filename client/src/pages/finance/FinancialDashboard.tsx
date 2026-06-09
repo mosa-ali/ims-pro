@@ -18,13 +18,13 @@ import {
  Calendar, Filter, RefreshCw, ArrowLeft, ArrowRight
 } from"lucide-react";
 import { useNavigate } from '@/lib/router-compat';
-import { useTranslation } from '@/i18n/TranslationProvider';
+import { useTranslation } from '@/i18n/useTranslation';
 import { BackButton } from "@/components/BackButton";
 
 const COLORS = ["#0088FE","#00C49F","#FFBB28","#FF8042","#8884D8","#82CA9D","#FFC658","#FF6B6B"];
 
 export default function FinancialDashboard() {
- const t = useTranslation();
+ const { t } = useTranslation();
  const navigate = useNavigate();
  const { user } = useAuth();
  const { currentOperatingUnit } = useOperatingUnit();

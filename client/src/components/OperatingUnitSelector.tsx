@@ -1,4 +1,4 @@
-import { useTranslation } from '@/i18n/TranslationProvider';
+import { useTranslation } from '@/i18n/useTranslation';
 import { useOperatingUnit } from "@/contexts/OperatingUnitContext";
 import {
  Select,
@@ -18,7 +18,7 @@ import { Building2 } from "lucide-react";
  * - Auto-selects if user has 1 unit
  */
 export function OperatingUnitSelector() {
-  const t = useTranslation();
+  const { t } = useTranslation();
  const {
  currentOperatingUnitId,
  setCurrentOperatingUnitId,

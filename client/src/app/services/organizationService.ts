@@ -154,7 +154,7 @@ export function getOrganizationLogo(): string | undefined {
 /**
  * Get organization name (with fallback)
  */
-export function getOrganizationName(language: 'en' | 'ar' = 'en'): string {
+export function getOrganizationName(language: 'en' | 'ar' | 'it' = 'en'): string {
  const settings = getOrganizationSettings();
  if (language === 'ar' && settings.nameAr) {
  return settings.nameAr;

@@ -910,7 +910,7 @@ export function getOptionSetValues(systemKey: string): MasterDataValue[] {
 export function getOptionLabel(
   systemKey: string,
   value: string,
-  language: 'en' | 'ar' = 'en'
+  language: 'en' | 'ar' | 'it' = 'en'
 ): string {
   const optionSet = getOptionSetBySystemKey(systemKey);
   if (!optionSet) return value;

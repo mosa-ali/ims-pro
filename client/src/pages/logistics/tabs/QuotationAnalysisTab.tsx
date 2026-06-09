@@ -4,7 +4,7 @@
  * Features: Supplier offer matrix, financial scoring, selection with justification
  * Bilingual EN/AR support with RTL
  */
-import { useTranslation } from '@/i18n/TranslationProvider';
+import { useTranslation } from '@/i18n/useTranslation';
 import { useState, useMemo, useEffect } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { trpc } from "@/lib/trpc";
@@ -29,7 +29,7 @@ interface QuotationAnalysisTabProps {
 
 export default function QuotationAnalysisTab({ purchaseRequestId, prNumber, prStatus, lineItems, currency = "USD" }: QuotationAnalysisTabProps) {
  const { language, isRTL} = useLanguage();
-  const t = useTranslation();
+  const { t } = useTranslation();
  const currencyCode = (currency === "USD" ? "USD" : currency) as any;
 
  const [addSupplierOpen, setAddSupplierOpen] = useState(false);

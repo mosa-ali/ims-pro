@@ -4,7 +4,7 @@
  * Centralized vendor/supplier master database with lifecycle automation
  */
 
-import { useTranslation } from '@/i18n/TranslationProvider';
+import { useTranslation } from '@/i18n/useTranslation';
 import { useState } from 'react';
 import { useNavigate } from '@/lib/router-compat';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -44,7 +44,7 @@ import { BackButton } from "@/components/BackButton";
 export default function VendorManagement() {
  const navigate = useNavigate();
  const { language, isRTL} = useLanguage();
-  const t = useTranslation();
+  const { t } = useTranslation();
  const { currentOrganization } = useOrganization();
 
  const organizationId = currentOrganization?.id || 0;

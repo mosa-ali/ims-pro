@@ -35,12 +35,12 @@ import { formatDate } from '@/utils/formatters';
 import { useEffect, useState } from 'react';
 import { getOrganizationSettings, OrganizationSettings } from '@/services/organizationService';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { useTranslation } from '@/i18n/TranslationProvider';
+import { useTranslation } from '@/i18n/useTranslation';
 
 interface Props {
  title: string;
  titleAr?: string;
- language: 'en' | 'ar';
+ language: 'en' | 'ar' | 'it';
  isRTL: boolean;
  confidential?: boolean;
  generatedBy?: string;
@@ -60,7 +60,7 @@ export function OfficialDocumentTemplate({
  staffId,
  children
 }: Props) {
- const t = useTranslation();
+ const { t } = useTranslation();
  const [orgSettings, setOrgSettings] = useState<OrganizationSettings | null>(null);
 
  useEffect(() => {

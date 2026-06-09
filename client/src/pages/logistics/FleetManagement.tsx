@@ -27,10 +27,10 @@ import { useTranslation } from "@/i18n/useTranslation";
 import { BackButton } from "@/components/BackButton";
 
 export default function FleetManagement() {
-  const t = useTranslation();
+  const { t } = useTranslation();
   const { isRTL } = useLanguage();
   const { currentOrganization } = useOrganization();
-  const organizationId = currentOrganization?.id || 1;
+  const organizationId = currentOrganization?.id || 0;
 
   // ── Core list queries (already existed) ──────────────────────────────────
   const { data: vehicles } = trpc.logistics.fleet.listVehicles.useQuery({

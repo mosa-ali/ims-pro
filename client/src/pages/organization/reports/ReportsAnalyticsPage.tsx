@@ -43,7 +43,7 @@ import { AttendanceAnalytics } from './components/AttendanceAnalytics';
 import { LeaveAnalytics } from './components/LeaveAnalytics';
 import { RecruitmentAnalytics } from './components/RecruitmentAnalytics';
 import { ComplianceAnalytics } from './components/ComplianceAnalytics';
-import { useTranslation } from '@/i18n/TranslationProvider';
+import { useTranslation } from '@/i18n/useTranslation';
 import { BackButton } from "@/components/BackButton";
 
 type AnalyticsView = 
@@ -57,7 +57,7 @@ type AnalyticsView =
  | 'full-report';
 
 export function ReportsAnalyticsPage() {
- const t = useTranslation();
+ const { t } = useTranslation();
  const { language, isRTL } = useLanguage();
  const [, setLocation] = useLocation();
  

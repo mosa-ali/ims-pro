@@ -5,7 +5,7 @@ import {
  Filter, MapPin, Calendar, Users, UserCheck, FileText, CheckCircle, Clock, XCircle
 } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { useTranslation } from '@/i18n/TranslationProvider';
+import { useTranslation } from '@/i18n/useTranslation';
 import ExcelJS from 'exceljs';
 import { saveAs } from 'file-saver';
 import { exportToStandardExcel, exportExcelTemplate, type ExcelColumn } from '@/lib/standardExcelExport';
@@ -177,7 +177,7 @@ interface BeneficiariesTabProps {
 
 export function BeneficiariesTab({
  projectId }: BeneficiariesTabProps) {
- const t = useTranslation();
+ const { t } = useTranslation();
  const { isRTL } = useLanguage();
 // ✅ Load beneficiaries from database via tRPC
  const projectIdNum = parseInt(projectId, 10);
@@ -996,7 +996,7 @@ interface BeneficiaryFormProps {
 
 function BeneficiaryForm({
   formData, onChange, onSubmit, onCancel, isEdit, isLoading, activities, project, currentStep, setCurrentStep }: BeneficiaryFormProps) {
-  const t = useTranslation();
+  const { t } = useTranslation();
 const fileInputRef = useRef<HTMLInputElement>(null);
 
  const steps = [

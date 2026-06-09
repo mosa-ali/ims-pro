@@ -83,7 +83,7 @@ interface DonorProjectLinkingProps {
 }
 
 export function DonorProjectLinking({ donorId, projectId, mode }: DonorProjectLinkingProps) {
- const t = useTranslation();
+ const { t } = useTranslation();
 const utils = trpc.useUtils();
 
  // State

@@ -31,13 +31,13 @@ import { SurveyFormTab } from './tabs/SurveyFormTab';
 import { SurveyDataTab } from './tabs/SurveyDataTab';
 import { SurveySettingsTab } from './tabs/SurveySettingsTab';
 import { Button } from '@/components/ui/button';
-import { useTranslation } from '@/i18n/TranslationProvider';
+import { useTranslation } from '@/i18n/useTranslation';
 import { BackButton } from "@/components/BackButton";
 
 type TabKey = 'summary' | 'form' | 'data' | 'settings';
 
 export function SurveyDetailView() {
- const t = useTranslation();
+ const { t } = useTranslation();
  const navigate = useNavigate();
  const { id: surveyId } = useParams<{ id: string }>();
  const searchString = useSearch();

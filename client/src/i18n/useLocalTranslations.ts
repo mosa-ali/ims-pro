@@ -26,12 +26,10 @@ import { useLanguage } from '@/contexts/LanguageContext';
  * @returns The translation object for the current language
  */
 export function useLocalTranslations<T extends Record<string, string>>(
-  translations: { en: T; ar: T; it?: T }
+ translations: { en: T; ar: T }
 ): T {
-  const { language } = useLanguage();
-  if (language === 'ar') return translations.ar;
-  if (language === 'it' && translations.it) return translations.it;
-  return translations.en;
+ const { language } = useLanguage();
+ return language === 'ar' ? translations.ar : translations.en;
 }
 
 /**
@@ -39,14 +37,12 @@ export function useLocalTranslations<T extends Record<string, string>>(
  * Use this in non-React contexts (helper functions, formatters, etc.)
  *
  * @param translations - Object with `en` and `ar` keys
- * @param language - Current language code ('en' | 'ar')
+ * @param language - Current language code ('en' | 'ar' | 'it')
  * @returns The translation object for the specified language
  */
 export function getLocalTranslations<T extends Record<string, string>>(
-  translations: { en: T; ar: T; it?: T },
-  language: string
+ translations: { en: T; ar: T },
+ language: string
 ): T {
-  if (language === 'ar') return translations.ar;
-  if (language === 'it' && translations.it) return translations.it;
-  return translations.en;
+ return language === 'ar' ? translations.ar : translations.en;
 }

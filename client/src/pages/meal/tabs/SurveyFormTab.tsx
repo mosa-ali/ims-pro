@@ -20,7 +20,7 @@ import { AlertCircle, Copy, Eye, Globe, Edit, MoreVertical, ChevronDown, Info } 
 import { useState, useEffect } from 'react';
 import { surveyService, submissionService } from '@/services/mealService';
 import { useNavigate } from '@/lib/router-compat';
-import { useTranslation } from '@/i18n/TranslationProvider';
+import { useTranslation } from '@/i18n/useTranslation';
 
 interface Props {
  survey: any;
@@ -37,7 +37,7 @@ type CollectionMode =
 
 export function SurveyFormTab({
  survey, projectId, projectName }: Props) {
- const t = useTranslation();
+ const { t } = useTranslation();
  const { language, isRTL } = useLanguage();
  const navigate = useNavigate();
  

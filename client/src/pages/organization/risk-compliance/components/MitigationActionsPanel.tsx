@@ -1,4 +1,4 @@
-import { useTranslation } from '@/i18n/TranslationProvider';
+import { useTranslation } from '@/i18n/useTranslation';
 import { useLanguage } from '@/contexts/LanguageContext';
 /**
  * Mitigation Actions Panel
@@ -26,7 +26,7 @@ interface MitigationActionsPanelProps {
 }
 
 export function MitigationActionsPanel({ riskId, riskTitle }: MitigationActionsPanelProps) {
-  const t = useTranslation();
+  const { t } = useTranslation();
   const { language, isRTL} = useLanguage();
  const [isCreateOpen, setIsCreateOpen] = useState(false);
  const [selectedAction, setSelectedAction] = useState<number | null>(null);
@@ -181,6 +181,7 @@ interface CreateActionFormProps {
 
 function CreateActionForm({ riskId, onSuccess }: CreateActionFormProps) {
  const [title, setTitle] = useState("");
+ const { t } = useTranslation();
  const [description, setDescription] = useState("");
  const [priority, setPriority] = useState<"low" | "medium" | "high" | "critical">("medium");
  const [deadline, setDeadline] = useState("");
@@ -288,6 +289,7 @@ function ActionDetailsDialog({ actionId, onClose, onUpdate }: ActionDetailsDialo
  const { data: action, refetch } = trpc.mitigationActions.getById.useQuery({ id: actionId });
  const addCommentMutation = trpc.mitigationActions.addComment.useMutation();
  const updateMutation = trpc.mitigationActions.update.useMutation();
+ const { t } = useTranslation();
 
  const handleAddComment = async () => {
  if (!comment.trim()) {

@@ -19,11 +19,11 @@ import { useNavigate } from '@/lib/router-compat';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Target, MessageSquare, ClipboardList, FileText, TrendingUp, BarChart3 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { useTranslation } from '@/i18n/TranslationProvider';
+import { useTranslation } from '@/i18n/useTranslation';
 import { BackButton } from "@/components/BackButton";
 
 export function MEALDashboardMain() {
- const t = useTranslation();
+ const { t } = useTranslation();
  const navigate = useNavigate();
  const { language, isRTL } = useLanguage();
  const labels = {

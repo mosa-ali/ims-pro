@@ -15,7 +15,7 @@
 import { useLanguage } from '@/contexts/LanguageContext';
 import { X } from 'lucide-react';
 import { useState } from 'react';
-import { useTranslation } from '@/i18n/TranslationProvider';
+import { useTranslation } from '@/i18n/useTranslation';
 import {
  Type, Hash, ListChecks, CheckSquare, FileText, BarChart3,
  Calendar, Clock, MapPin, Camera, Mic, Video, Upload, Star,
@@ -64,7 +64,7 @@ interface AddQuestionModalProps {
 
 export function AddQuestionModal({
  onSave, onClose }: AddQuestionModalProps) {
- const t = useTranslation();
+ const { t } = useTranslation();
  const { language, isRTL } = useLanguage();
  const [questionLabel, setQuestionLabel] = useState('');
  const [selectedType, setSelectedType] = useState<QuestionType | null>(null);
@@ -155,7 +155,7 @@ export function AddQuestionModal({
  {/* Header */}
  <div className={`px-6 py-4 border-b border-gray-200 flex items-center justify-between`}>
  <h2 className={`text-lg font-bold text-gray-900 text-start`}>
- {localT.title}
+ {t.title}
  </h2>
  <button
  onClick={onClose}
@@ -168,13 +168,13 @@ export function AddQuestionModal({
  {/* Question Label */}
  <div className="p-6">
  <label className={`block text-sm font-medium text-gray-700 text-start`}>
- {localT.questionLabel}
+ {t.questionLabel}
  </label>
  <input
  type="text"
  value={questionLabel}
  onChange={(e) => setQuestionLabel(e.target.value)}
- placeholder={localT.questionLabelPlaceholder}
+ placeholder={t.questionLabelPlaceholder}
  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
  />
  </div>
@@ -221,7 +221,7 @@ export function AddQuestionModal({
  className="form-checkbox h-4 w-4 text-blue-600 transition duration-150 ease-in-out"
  />
  <span className={`ms-2 text-sm font-medium text-gray-700 ms-2`}>
- {localT.required}
+ {t.required}
  </span>
  </label>
  </div>
@@ -233,13 +233,13 @@ export function AddQuestionModal({
  disabled={!selectedType}
  className={`flex-1 px-6 py-2.5 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${ 'me-0' }`}
  >
- <span className="font-semibold text-sm">{localT.save}</span>
+ <span className="font-semibold text-sm">{t.save}</span>
  </button>
  <button
  onClick={onClose}
  className="px-6 py-2.5 rounded-lg bg-white border border-gray-300 hover:bg-gray-50 transition-colors"
  >
- <span className="font-medium text-gray-700 text-sm">{localT.cancel}</span>
+ <span className="font-medium text-gray-700 text-sm">{t.cancel}</span>
  </button>
  </div>
  </div>

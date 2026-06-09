@@ -21,7 +21,7 @@ import { trainingService as newTrainingService, TrainingRecord as NewTrainingRec
 import { TrainingFormModal } from '../modals/TrainingFormModal';
 import { TrainingCertificatePrintModal } from '../modals/TrainingCertificatePrintModal';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { useTranslation } from '@/i18n/TranslationProvider';
+import { useTranslation } from '@/i18n/useTranslation';
 
 // ============================================================================
 // TYPE DEFINITIONS
@@ -121,7 +121,7 @@ const trainingService = {
 
 export function TrainingDevelopmentCard({
  employee, language, isRTL }: Props) {
- const t = useTranslation();
+ const { t } = useTranslation();
  const [trainings, setTrainings] = useState<TrainingRecord[]>([]);
  const [showAddModal, setShowAddModal] = useState(false);
  const [editingRecord, setEditingRecord] = useState<TrainingRecord | null>(null);

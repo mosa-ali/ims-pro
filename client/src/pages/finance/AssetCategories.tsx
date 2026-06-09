@@ -5,7 +5,8 @@
 import { useState } from 'react';
 import { useNavigate } from '@/lib/router-compat';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { useOrganization } from '@/contexts/OrganizationContext';
+import { useOrganization } from "@/contexts/OrganizationContext";
+import { useOperatingUnit } from "@/contexts/OperatingUnitContext";
 import { trpc } from '@/lib/trpc';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -37,15 +38,17 @@ import {
   Download,
   Upload,
 } from 'lucide-react';
-import { useTranslation } from '@/i18n/TranslationProvider';
+import { useTranslation } from '@/i18n/useTranslation';
 import { AssetImportExportDialog, type ImportResult, type TemplateColumn } from '@/components/AssetImportExportDialog';
 
 export default function AssetCategories() {
-  const t = useTranslation();
-  const { language, isRTL } = useLanguage();
-  const { currentOrganization, currentOperatingUnit } = useOrganization();
-  const organizationId = currentOrganization?.id || 30001;
-  const operatingUnitId = currentOperatingUnit?.id;
+  const { t } = useTranslation();
+  const { language } = useLanguage();
+  const isRTL = language === 'ar';
+  const { currentOrganization } = useOrganization();
+   const { currentOperatingUnit } = useOperatingUnit();
+ const organizationId = currentOrganization?.id || 0;
+ const operatingUnitId = currentOperatingUnit?.id;
   const navigate = useNavigate();
 
   const [showCategoryDialog, setShowCategoryDialog] = useState(false);
@@ -64,7 +67,7 @@ export default function AssetCategories() {
 
   const createCategoryMutation = trpc.assets.createCategory.useMutation({
     onSuccess: () => {
-      toast.success(t.financeModule.categoryCreated || 'Category created');
+      toast.success(t.financeModule.categoryCreatedSuccessfully || 'Category created');
       categoriesQuery.refetch();
       setShowCategoryDialog(false);
       resetCategoryForm();
@@ -73,7 +76,7 @@ export default function AssetCategories() {
 
   const updateCategoryMutation = trpc.assets.updateCategory.useMutation({
     onSuccess: () => {
-      toast.success(t.financeModule.categoryUpdated || 'Category updated');
+      toast.success(t.financeModule.categoryUpdatedSuccessfully || 'Category updated');
       categoriesQuery.refetch();
       setShowCategoryDialog(false);
       resetCategoryForm();
@@ -82,7 +85,7 @@ export default function AssetCategories() {
 
   const deleteCategoryMutation = trpc.assets.deleteCategory.useMutation({
     onSuccess: () => {
-      toast.success(t.financeModule.categoryDeleted || 'Category deleted');
+      toast.success(t.financeModule.categoryDeletedSuccessfully || 'Category deleted');
       categoriesQuery.refetch();
     },
   });
@@ -98,7 +101,7 @@ export default function AssetCategories() {
 
   const handleSaveCategory = () => {
     if (!categoryForm.name) {
-      toast.error(t.financeModule.fillRequiredFields || 'Please fill required fields');
+      toast.error(t.financeModule.pleaseFillRequiredFields || 'Please fill required fields');
       return;
     }
 
@@ -290,7 +293,7 @@ export default function AssetCategories() {
         <DialogContent className="max-w-2xl">
           <DialogHeader>
             <DialogTitle>
-              {editingCategory ? t.financeModule.editCategory : t.financeModule.newCategory}
+              {editingCategory ? t.financeChartOfAccounts.editCategory : t.financeModule.newCategory}
             </DialogTitle>
           </DialogHeader>
           <div className="grid grid-cols-1 gap-4 py-4">

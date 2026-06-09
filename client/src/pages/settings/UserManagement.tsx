@@ -6,7 +6,7 @@ import { MicrosoftDirectorySearchField } from '@/components/MicrosoftDirectorySe
 import { useLocation } from 'wouter';
 import { useLanguage, formatDate } from '@/contexts/LanguageContext';
 import { useAuth } from '@/_core/hooks/useAuth';
-import { useTranslation } from '@/i18n/TranslationProvider';
+import { useTranslation } from '@/i18n/useTranslation';
 import { isUserAdmin } from '@/lib/adminCheck';
 import { trpc } from '@/lib/trpc';
 import { toast } from 'sonner';

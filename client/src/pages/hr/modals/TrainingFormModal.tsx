@@ -10,7 +10,7 @@ import { useLanguage } from '@/app/contexts/LanguageContext';
 import { StaffMember } from '../types/hrTypes';
 import { trainingService, TrainingRecord } from '@/app/services/trainingService';
 import { ModalOverlay } from '@/app/components/ui/ModalOverlay';
-import { useTranslation } from '@/i18n/TranslationProvider';
+import { useTranslation } from '@/i18n/useTranslation';
 
 interface Props {
  employee: StaffMember;
@@ -21,7 +21,7 @@ interface Props {
 
 export function TrainingFormModal({
  employee, existingRecord, onClose, onSave }: Props) {
- const t = useTranslation();
+ const { t } = useTranslation();
  const { language, isRTL } = useLanguage();
  const isEdit = !!existingRecord;
  

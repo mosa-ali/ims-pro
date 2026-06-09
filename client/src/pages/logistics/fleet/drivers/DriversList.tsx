@@ -14,11 +14,11 @@ import {
 import { Card, CardContent } from "@/components/ui/card";
 import { Plus, Search, Edit, Trash2, Eye } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { useTranslation } from '@/i18n/TranslationProvider';
+import { useTranslation } from '@/i18n/useTranslation';
 import { BackButton } from "@/components/BackButton";
 
 export default function DriversList() {
- const t = useTranslation();
+ const { t } = useTranslation();
  const [, setLocation] = useLocation();
  const { isRTL } = useLanguage();
  const [searchTerm, setSearchTerm] = useState("");

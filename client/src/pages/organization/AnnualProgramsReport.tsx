@@ -37,11 +37,11 @@ import {
  Legend,
  ResponsiveContainer
 } from 'recharts';
-import { useTranslation } from '@/i18n/TranslationProvider';
+import { useTranslation } from '@/i18n/useTranslation';
 import { BackButton } from "@/components/BackButton";
 
 export default function AnnualProgramsReport() {
- const t = useTranslation();
+ const { t } = useTranslation();
  const { direction, language, isRTL} = useLanguage();
  const [, setLocation] = useLocation();
  const { user } = useAuth();

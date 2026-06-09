@@ -5,7 +5,7 @@ import {
 } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { useTranslation } from '@/i18n/TranslationProvider';
+import { useTranslation } from '@/i18n/useTranslation';
 
 /**
  * Platform Admin Settings Page
@@ -35,7 +35,7 @@ interface SettingCard {
 }
 
 export default function PlatformAdminSettingsPage() {
-  const t = useTranslation();
+  const { t } = useTranslation();
 const { language, direction, isRTL } = useLanguage();
 
  const settingCards: SettingCard[] = [

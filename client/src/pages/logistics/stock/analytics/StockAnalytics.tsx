@@ -29,7 +29,7 @@ const COLORS = [
 ];
 
 export default function StockAnalytics() {
-  const t = useTranslation();
+  const { t } = useTranslation();
   const { isRTL } = useLanguage();
   const [months, setMonths] = useState("6");
   const monthsNum = parseInt(months);

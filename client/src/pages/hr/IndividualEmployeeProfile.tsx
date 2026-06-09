@@ -57,7 +57,7 @@ import { SanctionsDisciplinaryCard } from './employee-cards/SanctionsDisciplinar
 import { TrainingDevelopmentCard } from './employee-cards/TrainingDevelopmentCard';
 import { ExitOffboardingCard } from './employee-cards/ExitOffboardingCard';
 import { ReferenceVerificationCard } from './employee-cards/ReferenceVerificationCard';
-import { useTranslation } from '@/i18n/TranslationProvider';
+import { useTranslation } from '@/i18n/useTranslation';
 import { BackButton } from "@/components/BackButton";
 
 interface SubCard {
@@ -70,7 +70,7 @@ interface SubCard {
 }
 
 export function IndividualEmployeeProfile() {
- const t = useTranslation();
+ const { t } = useTranslation();
  const { language, isRTL } = useLanguage();
  const { currentOrganizationId } = useOrganization();
  const { currentOperatingUnitId } = useOperatingUnit();
@@ -401,10 +401,10 @@ export function IndividualEmployeeProfile() {
  {/* Card Content */}
  <div className="space-y-1">
  <h3 className="text-sm font-semibold text-gray-900">
- {card.label[language as 'en' | 'ar']}
+ {card.label[language as 'en' | 'ar' | 'it']}
  </h3>
  <p className="text-xs text-gray-600 leading-relaxed">
- {card.description[language as 'en' | 'ar']}
+ {card.description[language as 'en' | 'ar' | 'it']}
  </p>
  </div>
 

@@ -8,7 +8,7 @@
  * - Requires manual approval if exceeds tolerance
  */
 
-import { useTranslation } from '@/i18n/TranslationProvider';
+import { useTranslation } from '@/i18n/useTranslation';
 import { useState } from "react";
 import { useLocation, useParams } from "wouter";
 import { trpc } from "@/lib/trpc";
@@ -27,7 +27,7 @@ import { BackButton } from "@/components/BackButton";
 const TOLERANCE_THRESHOLD = 0.05; // 5%
 
 export default function InvoiceMatching() {
-  const t = useTranslation();
+  const { t } = useTranslation();
   const { language, isRTL} = useLanguage();
  const { payableId } = useParams<{ payableId: string }>();
  const [, setLocation] = useLocation();

@@ -29,7 +29,7 @@ import {
 import { trpc } from '@/lib/trpc';
 import { useAuth } from '@/_core/hooks/useAuth';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { useTranslation } from '@/i18n/TranslationProvider';
+import { useTranslation } from '@/i18n/useTranslation';
 import { RecruitmentJob, JOB_STATUS_LABELS, JobStatus } from '@shared/types/recruitment-canonical';
 import { JOB_STATUS_COLORS } from '@shared/constants/recruitment-canonical';
 import { toast } from 'sonner';
@@ -42,7 +42,7 @@ interface Props {
 }
 
 export function VacancyList({ language, isRTL }: Props) {
-  const t = useTranslation();
+  const { t } = useTranslation();
   const { user } = useAuth();
   const { isRTL: contextIsRTL } = useLanguage();
   const dir = isRTL || contextIsRTL ? 'rtl' : 'ltr';

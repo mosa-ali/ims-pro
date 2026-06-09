@@ -447,7 +447,7 @@ export const riskComplianceUtils = {
  /**
  * Get category label (bilingual support)
  */
- getCategoryLabel: (category: Risk['category'] | Incident['category'], language: 'en' | 'ar'): string => {
+ getCategoryLabel: (category: Risk['category'] | Incident['category'], language: 'en' | 'ar' | 'it'): string => {
  const labels: Record<string, { en: string; ar: string }> = {
  operational: { en: 'Operational', ar: 'تشغيلي' },
  financial: { en: 'Financial', ar: 'مالي' },
@@ -469,7 +469,7 @@ export const riskComplianceUtils = {
  /**
  * Get status label (bilingual support)
  */
- getStatusLabel: (status: Risk['status'] | Incident['status'], language: 'en' | 'ar'): string => {
+ getStatusLabel: (status: Risk['status'] | Incident['status'], language: 'en' | 'ar' | 'it'): string => {
  const labels: Record<string, { en: string; ar: string }> = {
  identified: { en: 'Identified', ar: 'محدد' },
  assessed: { en: 'Assessed', ar: 'مقيّم' },
@@ -487,7 +487,7 @@ export const riskComplianceUtils = {
  /**
  * Get level label (bilingual support)
  */
- getLevelLabel: (level: Risk['level'], language: 'en' | 'ar'): string => {
+ getLevelLabel: (level: Risk['level'], language: 'en' | 'ar' | 'it'): string => {
  const labels: Record<Risk['level'], { en: string; ar: string }> = {
  low: { en: 'Low', ar: 'منخفض' },
  medium: { en: 'Medium', ar: 'متوسط' },
@@ -500,7 +500,7 @@ export const riskComplianceUtils = {
  /**
  * Get severity label (bilingual support)
  */
- getSeverityLabel: (severity: Incident['severity'], language: 'en' | 'ar'): string => {
+ getSeverityLabel: (severity: Incident['severity'], language: 'en' | 'ar' | 'it'): string => {
  const labels: Record<Incident['severity'], { en: string; ar: string }> = {
  minor: { en: 'Minor', ar: 'طفيف' },
  moderate: { en: 'Moderate', ar: 'متوسط' },

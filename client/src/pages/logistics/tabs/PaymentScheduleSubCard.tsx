@@ -127,8 +127,7 @@ interface PaymentScheduleSubCardProps {
 
 export default function PaymentScheduleSubCard({ contractId }: PaymentScheduleSubCardProps) {  const { language } = useLanguage();
   const isRTL = language === "ar";
-  const t = translations[language as keyof typeof translations] || translations.en;
-
+  const { t } = useTranslation();
   const [showDialog, setShowDialog] = useState(false);
   const [editingId, setEditingId] = useState<number | null>(null);
   const [form, setForm] = useState({

@@ -52,7 +52,7 @@ interface TemplateFormData {
 }
 
 export default function EmailTemplateManagement() {
-  const t = useTranslation();
+  const { t } = useTranslation();
   const [, setLocation] = useLocation();
   const [organizationId, setOrganizationId] = useState<number | null>(null);
   const [selectedTemplate, setSelectedTemplate] = useState<EmailTemplate | null>(null);
@@ -188,7 +188,7 @@ export default function EmailTemplateManagement() {
   };
 
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
-  const [previewLanguage, setPreviewLanguage] = useState<'en' | 'ar'>('en');
+  const [previewLanguage, setPreviewLanguage] = useState<'en' | 'ar' | 'it'>('en');
 
   const handlePreview = () => {
     if (!formData.bodyHtml && !formData.bodyHtmlAr) {

@@ -148,7 +148,7 @@ export interface OrganizationListItem {
 export interface OrganizationDetails extends OrganizationListItem {
  description?: string;
  timezone: string;
- defaultLanguage: 'en' | 'ar';
+ defaultLanguage: 'en' | 'ar' | 'it';
  
  // Contact
  primaryContact?: string;

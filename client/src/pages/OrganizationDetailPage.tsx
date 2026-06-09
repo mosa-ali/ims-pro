@@ -1,4 +1,4 @@
-import { useTranslation } from '@/i18n/TranslationProvider';
+import { useTranslation } from '@/i18n/useTranslation';
 import { useState } from "react";
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useParams, useLocation } from "wouter";
@@ -21,7 +21,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
  */
 export default function OrganizationDetailPage() {
  const { language, isRTL} = useLanguage();
-  const t = useTranslation();
+  const { t } = useTranslation();
 const { shortCode } = useParams<{ shortCode: string }>();
  const [, navigate] = useLocation();
 

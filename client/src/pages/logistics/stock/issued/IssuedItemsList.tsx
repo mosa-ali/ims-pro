@@ -22,12 +22,12 @@ import {
 import { Plus, Search, Download, Eye, Edit, FileText } from "lucide-react";
 import { Link, useLocation } from "wouter";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { useTranslation } from '@/i18n/TranslationProvider';
+import { useTranslation } from '@/i18n/useTranslation';
 import { BackButton } from "@/components/BackButton";
 import { PaginationControls } from "@/components/PaginationControls";
 
 export default function IssuedItemsList() {
- const t = useTranslation();
+ const { t } = useTranslation();
  const { user } = useAuth();
  const { isRTL, language } = useLanguage();
  const [, navigate] = useLocation();
@@ -36,7 +36,7 @@ export default function IssuedItemsList() {
  const [currentPage, setCurrentPage] = useState(1);
  const [pageSize, setPageSize] = useState(10);
  const { currentOrganization } = useOrganization();
- const organizationId = currentOrganization?.id || 1;
+ const organizationId = currentOrganization?.id || 0;
 
  const { data: issuedItems, isLoading } = trpc.logistics.stockIssued.list.useQuery({
  search: search || undefined,

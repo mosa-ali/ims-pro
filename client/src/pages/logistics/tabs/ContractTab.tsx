@@ -6,7 +6,7 @@
  *           Milestones, approval workflow
  * Bilingual EN/AR support
  */
-import { useTranslation } from '@/i18n/TranslationProvider';
+import { useTranslation } from '@/i18n/useTranslation';
 import { useState, useEffect } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { trpc } from "@/lib/trpc";
@@ -32,7 +32,7 @@ interface ContractTabProps {
 }
 
 export default function ContractTab({ purchaseRequestId }: ContractTabProps) {
-  const t = useTranslation();
+  const { t } = useTranslation();
   const { language } = useLanguage();
   const isRTL = language === 'ar';
 
@@ -390,7 +390,7 @@ export default function ContractTab({ purchaseRequestId }: ContractTabProps) {
                 <Button variant="outline" onClick={() => setShowCreateDialog(false)}>{t.procurement.cancel}</Button>
                 <Button onClick={handleCreate} disabled={createContract.isPending || !winnerData} className="gap-2">
                   {createContract.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
-                  {t.procurement.create}
+                  {t.common.create}
                 </Button>
               </DialogFooter>
             </DialogContent>

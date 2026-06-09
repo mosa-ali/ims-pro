@@ -27,7 +27,7 @@ const statusColors: Record<string, string> = {
 };
 
 export default function PhysicalCountForm() {
-  const t = useTranslation();
+  const { t } = useTranslation();
   const { isRTL } = useLanguage();
   const [, setLocation] = useLocation();
   const params = useParams<{ id: string }>();

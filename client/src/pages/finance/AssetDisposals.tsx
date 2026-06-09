@@ -6,6 +6,7 @@ import { useState } from 'react';
 import { useNavigate } from '@/lib/router-compat';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useOrganization } from '@/contexts/OrganizationContext';
+import { useOperatingUnit } from"@/contexts/OperatingUnitContext";
 import { trpc } from '@/lib/trpc';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -44,7 +45,7 @@ import {
   Download,
   Upload,
 } from 'lucide-react';
-import { useTranslation } from '@/i18n/TranslationProvider';
+import { useTranslation } from '@/i18n/useTranslation';
 import { AssetImportExportDialog, type ImportResult, type TemplateColumn } from '@/components/AssetImportExportDialog';
 
 const disposalTypeOptions = [
@@ -56,11 +57,12 @@ const disposalTypeOptions = [
 ];
 
 export default function AssetDisposals() {
-  const t = useTranslation();
+  const { t } = useTranslation();
   const { language, isRTL } = useLanguage();
-  const { currentOrganization, currentOperatingUnit } = useOrganization();
-  const organizationId = currentOrganization?.id || 30001;
-  const operatingUnitId = currentOperatingUnit?.id;
+  const { currentOrganization } = useOrganization();
+ const { currentOperatingUnit } = useOperatingUnit();
+ const organizationId = currentOrganization?.id || 0;
+ const operatingUnitId = currentOperatingUnit?.id;
   const navigate = useNavigate();
 
   const [showDisposalDialog, setShowDisposalDialog] = useState(false);
@@ -426,7 +428,7 @@ export default function AssetDisposals() {
               {t.financeModule.cancel}
             </Button>
             <Button onClick={handleSaveDisposal} disabled={createDisposalMutation.isPending}>
-              {createDisposalMutation.isPending ? t.financeModule.saving : t.financeModule.save}
+              {createDisposalMutation.isPending ? t.common.saving : t.financeModule.save}
             </Button>
           </DialogFooter>
         </DialogContent>

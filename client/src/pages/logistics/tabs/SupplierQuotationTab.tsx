@@ -75,7 +75,7 @@ export default function SupplierQuotationTab({
   prNumber,
 }: SupplierQuotationTabProps) {
   const { language, isRTL } = useLanguage();
-  const t = useTranslation();
+  const { t } = useTranslation();
   const sq = t.supplierQuotationTab;
 
   // ── Data Queries ──

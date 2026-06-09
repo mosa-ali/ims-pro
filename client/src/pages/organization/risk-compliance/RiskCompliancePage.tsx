@@ -15,7 +15,7 @@
  */
 
 import { useState } from 'react';
-import { useTranslation } from '@/i18n/TranslationProvider';
+import { useTranslation } from '@/i18n/useTranslation';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { LayoutDashboard, ShieldAlert, AlertTriangle } from 'lucide-react';
@@ -28,7 +28,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { BackButton } from "@/components/BackButton";
 
 export default function RiskCompliancePage() {
- const t = useTranslation();
+ const { t } = useTranslation();
  const { isRTL } = useLanguage();
  const [, setLocation] = useLocation();
  const [activeTab, setActiveTab] = useState('dashboard');

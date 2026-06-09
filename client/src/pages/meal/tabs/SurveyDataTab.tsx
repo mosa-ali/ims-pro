@@ -20,7 +20,7 @@ import { DataGallerySubTab } from './data/DataGallerySubTab';
 import { DataFilesSubTab } from './data/DataFilesSubTab';
 import { DataDownloadsSubTab } from './data/DataDownloadsSubTab';
 import { DataMapSubTab } from './data/DataMapSubTab';
-import { useTranslation } from '@/i18n/TranslationProvider';
+import { useTranslation } from '@/i18n/useTranslation';
 
 interface Props {
  survey: any;
@@ -32,7 +32,7 @@ type DataSubTab = 'table' | 'reports' | 'gallery' | 'files' | 'downloads' | 'map
 
 export function SurveyDataTab({
  survey }: Props) {
- const t = useTranslation();
+ const { t } = useTranslation();
  const { language, isRTL } = useLanguage();
  const searchString = useSearch();
  const searchParams = new URLSearchParams(searchString);

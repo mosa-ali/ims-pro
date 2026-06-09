@@ -9,7 +9,7 @@ import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
-import { useTranslation } from '@/i18n/TranslationProvider';
+import { useTranslation } from '@/i18n/useTranslation';
 
 interface HealthIssue {
  id: string;
@@ -32,7 +32,7 @@ interface ReadinessResponse {
 }
 
 export const SystemHealthPanel: React.FC = () => {
- const t = useTranslation();
+ const { t } = useTranslation();
  const [, navigate] = useLocation();
  const { language, isRTL } = useLanguage();
  

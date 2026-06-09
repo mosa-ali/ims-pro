@@ -1,5 +1,5 @@
-import { useTranslation } from '@/i18n/TranslationProvider';
-import { useAuth } from "@/_core/hooks/useAuth";
+import { useTranslation } from '@/i18n/useTranslation';
+import { useAuth } from "@/hooks/useAuth";
 import { useOrganization } from "@/contexts/OrganizationContext";
 import { useOperatingUnit } from "@/contexts/OperatingUnitContext";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -22,7 +22,6 @@ import {
  Loader2
 } from "lucide-react";
 import { trpc } from "@/lib/trpc";
-import { translations } from '@/i18n/translations';
 
 /**
  * Organization Dashboard (Level 2) - Enhanced with Figma Design Elements
@@ -41,15 +40,14 @@ import { translations } from '@/i18n/translations';
  * - Full translation support
  */
 export default function OrganizationDashboard() {
-const { user } = useAuth();
-const { language } = useTranslation();
- const { currentOrganizationId } = useOrganization();
- const t = useTranslation();
+ const { user } = useAuth();
+   const { t, language } = useTranslation();
+ const { currentOrganizationId, userOrganizations } = useOrganization();
  const { currentOperatingUnitId, userOperatingUnits } = useOperatingUnit();
 const { direction, isRTL} = useLanguage();
 
 
- const currentOrg = userOrganization.find((org) => org.organizationId === currentOrganizationId);
+ const currentOrg = userOrganizations.find((org) => org.organizationId === currentOrganizationId);
  const currentUnit = userOperatingUnits.find((unit) => unit.operatingUnitId === currentOperatingUnitId);
 
  // Fetch real dashboard stats from database
@@ -87,7 +85,7 @@ const { direction, isRTL} = useLanguage();
 
  // Format currency
  const formatCurrency = (amount: number) => {
-  const t = useTranslation();
+  const { t } = useTranslation();
  return new Intl.NumberFormat('en-US', {
  style: 'currency',
  currency: 'USD',

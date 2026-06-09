@@ -94,7 +94,7 @@ export interface PurchaseRequestPDFData {
   };
   
   // Language & Direction
-  language: 'en' | 'ar';
+  language: 'en' | 'ar' | 'it';
 }
 
 /**
@@ -128,7 +128,7 @@ function formatCurrency(
 /**
  * Get localized labels for PR
  */
-function getLabels(language: 'en' | 'ar') {
+function getLabels(language: 'en' | 'ar' | 'it') {
   const isArabic = language === 'ar';
   
   return {

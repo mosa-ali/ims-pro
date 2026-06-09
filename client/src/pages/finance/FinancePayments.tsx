@@ -29,7 +29,7 @@ import {
  DropdownMenuSeparator,
  DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { useTranslation } from '@/i18n/TranslationProvider';
+import { useTranslation } from '@/i18n/useTranslation';
 import { BackButton } from "@/components/BackButton";
 
 // Translations
@@ -38,7 +38,7 @@ type PaymentType = 'vendor' | 'staff' | 'advance' | 'refund' | 'other';
 type PaymentMethod = 'bank_transfer' | 'check' | 'cash' | 'wire' | 'mobile_money' | 'other';
 
 export default function FinancePayments() {
- const t = useTranslation();
+ const { t } = useTranslation();
  const { currentOrganization, currentOperatingUnit} = useOperatingUnit();
  const { language, isRTL} = useLanguage();
  // toast is imported from sonner
@@ -1353,7 +1353,7 @@ export default function FinancePayments() {
  versions={versionHistoryData || []}
  title={versionHistoryData?.[0]?.paymentNumber || t.financePayments.payment}
  isLoading={isLoadingVersions}
- language={language as 'en' | 'ar'}
+ language={language as 'en' | 'ar' | 'it'}
  renderVersionDetails={(version) => (
  <div className="grid grid-cols-2 gap-2 text-sm">
  <div>

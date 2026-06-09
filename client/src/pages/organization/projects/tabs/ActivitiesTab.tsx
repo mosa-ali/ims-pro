@@ -5,7 +5,7 @@ import {
  Edit2, Trash2, Calendar, BarChart3, X, Search 
 } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { useTranslation } from '@/i18n/TranslationProvider';
+import { useTranslation } from '@/i18n/useTranslation';
 import { UnifiedExportButton } from '@/components/exports/UnifiedExportButton';
 import { ActivitiesTabSkeleton } from '@/components/ProjectTabSkeletons';
 import ExcelJS from 'exceljs';
@@ -197,7 +197,7 @@ const formatCurrencyCompact = (amount: number, currency: string): string => {
 };
 
 // Helper to get currency name
-const getCurrencyName = (code: string, language: 'en' | 'ar' = 'en'): string => {
+const getCurrencyName = (code: string, language: 'en' | 'ar' | 'it' = 'en'): string => {
   const currency = GLOBAL_CURRENCIES.find(c => c.code === code);
   if (!currency) return code;
   return language === 'ar' ? currency.nameAr : currency.name;
@@ -258,7 +258,7 @@ interface ActivitiesTabProps {
 
 export function ActivitiesTab({
  projectId }: ActivitiesTabProps) {
- const t = useTranslation();
+ const { t } = useTranslation();
  const { isRTL } = useLanguage();
  // ✅ Load activities from database via tRPC
  const projectIdNum = parseInt(projectId, 10);

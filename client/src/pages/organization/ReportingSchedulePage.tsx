@@ -1,4 +1,4 @@
-import { useTranslation } from '@/i18n/TranslationProvider';
+import { useTranslation } from '@/i18n/useTranslation';
 import { useState } from 'react';
 import { Plus, Edit2, Trash2, Calendar, AlertTriangle, X, Clock, FileText, CheckCircle } from 'lucide-react';
 import { useAuth } from '@/_core/hooks/useAuth';
@@ -10,47 +10,102 @@ import { Button } from '@/components/ui/button';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { BackButton } from "@/components/BackButton";
 
-// Report Type Labels
-const REPORT_TYPE_LABELS = {
- NARRATIVE: { en: 'Narrative Report', ar: 'تقرير سردي' },
- FINANCIAL: { en: 'Financial Report', ar: 'تقرير مالي' },
- PROGRESS: { en: 'Progress Report', ar: 'تقرير التقدم' },
- FINAL: { en: 'Final Report', ar: 'تقرير نهائي' },
- INTERIM: { en: 'Interim Report', ar: 'تقرير مرحلي' },
- QUARTERLY: { en: 'Quarterly Report', ar: 'تقرير ربع سنوي' },
- ANNUAL: { en: 'Annual Report', ar: 'تقرير سنوي' },
- OTHER: { en: 'Other', ar: 'أخرى' }
-};
-
-// Report Status Labels
-const REPORT_STATUS_LABELS = {
- NOT_STARTED: { en: 'Not Started', ar: 'لم يبدأ' },
- PLANNED: { en: 'Planned', ar: 'مخطط' },
- UNDER_PREPARATION: { en: 'Under Preparation', ar: 'قيد الإعداد' },
- UNDER_REVIEW: { en: 'Under Review', ar: 'قيد المراجعة' },
- SUBMITTED_TO_HQ: { en: 'Submitted to HQ', ar: 'مقدم للمقر' },
- SUBMITTED_TO_DONOR: { en: 'Submitted to Donor', ar: 'مقدم للجهة المانحة' }
-};
-
-type ReportType = keyof typeof REPORT_TYPE_LABELS;
-type ReportStatus = keyof typeof REPORT_STATUS_LABELS;
-
 interface ReportingScheduleProps {
  projectId?: number;
  embedded?: boolean;
 }
-
 export default function ReportingSchedulePage({ projectId, embedded = false }: ReportingScheduleProps) {
  const { isRTL } = useLanguage();
  const { user } = useAuth();
- const t = useTranslation();
+ const { t } = useTranslation();
  const { currentOrganizationId } = useOrganization();
  const { currentOperatingUnitId } = useOperatingUnit();
  
  const [showAddForm, setShowAddForm] = useState(false);
  const [editingScheduleId, setEditingScheduleId] = useState<number | null>(null);
  const [showDeleteConfirm, setShowDeleteConfirm] = useState<any | null>(null);
+
+const localT = {
+  title: t.reportingSchedulePage.title,
+  subtitle: t.reportingSchedulePage.subtitle,
+  addReport: t.reportingSchedulePage.addReport,
+  reportingSchedule: t.reportingSchedulePage.reportingSchedule,
+  editReportingSchedule: t.reportingSchedulePage.editReportingSchedule,
+  addReportingSchedule: t.reportingSchedulePage.addReportingSchedule,
+  selectProject: t.reportingSchedulePage.selectProject,
+  reportType: t.reportingSchedulePage.reportType,
+  selectReportType: t.reportingSchedulePage.selectReportType,
+  periodFrom: t.reportingSchedulePage.periodFrom,
+  periodTo: t.reportingSchedulePage.periodTo,
+  reportStatus: t.reportingSchedulePage.reportStatus,
+  reportDeadline: t.reportingSchedulePage.reportDeadline,
+  notes: t.reportingSchedulePage.notes,
+  create: t.reportingSchedulePage.create,
+  update: t.reportingSchedulePage.update,
+  cancel: t.reportingSchedulePage.cancel,
+  noReportingSchedules: t.reportingSchedulePage.noReportingSchedules,
+  confirmDeletion: t.reportingSchedulePage.confirmDeletion,
+
+  period: t.reportingSchedulePage.period,
+  deadline: t.reportingSchedulePage.deadline,
+
+  lockedSubmittedToDonor: t.reportingSchedulePage.lockedSubmittedToDonor,
+
+  narrativeReport: t.reportingSchedulePage.narrativeReport,
+  financialReport: t.reportingSchedulePage.financialReport,
+  progressReport: t.reportingSchedulePage.progressReport,
+  finalReport: t.reportingSchedulePage.finalReport,
+  interimReport: t.reportingSchedulePage.interimReport,
+  quarterlyReport: t.reportingSchedulePage.quarterlyReport,
+  annualReport: t.reportingSchedulePage.annualReport,
+  other: t.reportingSchedulePage.other,
+
+  notStarted: t.reportingSchedulePage.notStarted,
+  planned: t.reportingSchedulePage.planned,
+  underPreparation: t.reportingSchedulePage.underPreparation,
+  underReview: t.reportingSchedulePage.underReview,
+  submittedToHQ: t.reportingSchedulePage.submittedToHQ,
+  submittedToDonor: t.reportingSchedulePage.submittedToDonor,
+};
  
+const REPORT_TYPES: ReportType[] = [
+  'NARRATIVE',
+  'FINANCIAL',
+  'PROGRESS',
+  'FINAL',
+  'INTERIM',
+  'QUARTERLY',
+  'ANNUAL',
+  'OTHER',
+];
+
+const REPORT_STATUSES: ReportStatus[] = [
+  'NOT_STARTED',
+  'PLANNED',
+  'UNDER_PREPARATION',
+  'UNDER_REVIEW',
+  'SUBMITTED_TO_HQ',
+  'SUBMITTED_TO_DONOR',
+];
+
+type ReportType =
+  | 'NARRATIVE'
+  | 'FINANCIAL'
+  | 'PROGRESS'
+  | 'FINAL'
+  | 'INTERIM'
+  | 'QUARTERLY'
+  | 'ANNUAL'
+  | 'OTHER';
+
+type ReportStatus =
+  | 'NOT_STARTED'
+  | 'PLANNED'
+  | 'UNDER_PREPARATION'
+  | 'UNDER_REVIEW'
+  | 'SUBMITTED_TO_HQ'
+  | 'SUBMITTED_TO_DONOR';
+
  const [formData, setFormData] = useState<{
  projectId: number;
  reportType: ReportType | '';
@@ -87,7 +142,7 @@ export default function ReportingSchedulePage({ projectId, embedded = false }: R
  onSuccess: () => {
  refetch();
  setShowAddForm(false);
- alert('Reporting schedule created successfully');
+ alert(t.reportingSchedulePage.reportCreatedSuccessfully);
  },
  onError: (error) => {
  alert(error.message);
@@ -98,7 +153,7 @@ export default function ReportingSchedulePage({ projectId, embedded = false }: R
  onSuccess: () => {
  refetch();
  setShowAddForm(false);
- alert('Reporting schedule updated successfully');
+ alert(t.reportingSchedulePage.reportUpdatedSuccessfully);
  },
  onError: (error) => {
  alert(error.message);
@@ -109,7 +164,7 @@ export default function ReportingSchedulePage({ projectId, embedded = false }: R
  onSuccess: () => {
  refetch();
  setShowDeleteConfirm(null);
- alert('Reporting schedule deleted successfully');
+ alert(t.reportingSchedulePage.reportDeletedSuccessfully);
  },
  onError: (error) => {
  alert(error.message);
@@ -154,11 +209,11 @@ export default function ReportingSchedulePage({ projectId, embedded = false }: R
 
  const handleCreate = () => {
  if (!formData.reportType) {
- alert('Type of Report is required');
+ alert(t.reportingSchedulePage.reportTypeRequired);
  return;
  }
  if (!formData.projectId) {
- alert('Project is required');
+ alert(t.reportingSchedulePage.projectRequired);
  return;
  }
 
@@ -214,16 +269,42 @@ export default function ReportingSchedulePage({ projectId, embedded = false }: R
  }
  };
 
- const getReportTypeLabel = (type: ReportType, typeOther?: string) => {
- if (type === 'OTHER' && typeOther) {
- return typeOther;
- }
- return REPORT_TYPE_LABELS[type].en;
- };
+ const getReportTypeLabel = (
+  type: ReportType,
+  typeOther?: string
+) => {
+  if (type === 'OTHER' && typeOther) {
+    return typeOther;
+  }
 
- const getStatusLabel = (status: ReportStatus) => {
- return REPORT_STATUS_LABELS[status].en;
- };
+  const labels = {
+    NARRATIVE: localT.narrativeReport,
+    FINANCIAL: localT.financialReport,
+    PROGRESS: localT.progressReport,
+    FINAL: localT.finalReport,
+    INTERIM: localT.interimReport,
+    QUARTERLY: localT.quarterlyReport,
+    ANNUAL: localT.annualReport,
+    OTHER: localT.other,
+  };
+
+  return labels[type];
+};
+
+ const getStatusLabel = (
+  status: ReportStatus
+) => {
+  const labels = {
+    NOT_STARTED: localT.notStarted,
+    PLANNED: localT.planned,
+    UNDER_PREPARATION: localT.underPreparation,
+    UNDER_REVIEW: localT.underReview,
+    SUBMITTED_TO_HQ: localT.submittedToHQ,
+    SUBMITTED_TO_DONOR: localT.submittedToDonor,
+  };
+
+  return labels[status];
+};
 
  return (
  <div className={embedded ? 'space-y-4' : 'p-6 space-y-6'} dir={isRTL ? 'rtl' : 'ltr'}>
@@ -237,10 +318,10 @@ export default function ReportingSchedulePage({ projectId, embedded = false }: R
  <div className="flex items-center justify-between">
  <div>
  <h1 className="text-3xl font-bold text-gray-900">
- Projects Reporting Schedule
+ {localT.title}
  </h1>
  <p className="text-gray-600 mt-1">
- Manage reporting schedules, deadlines, and submission tracking
+ {localT.subtitle}
  </p>
  </div>
  {canCreate && (
@@ -249,7 +330,7 @@ export default function ReportingSchedulePage({ projectId, embedded = false }: R
  className="flex items-center gap-2"
  >
  <Plus className="w-5 h-5" />
- Add Report
+ {localT.addReport}
  </Button>
  )}
  </div>
@@ -259,7 +340,7 @@ export default function ReportingSchedulePage({ projectId, embedded = false }: R
  {embedded && canCreate && (
  <div className="flex items-center justify-between">
  <h3 className="text-lg font-semibold text-gray-900">
- Reporting Schedule
+  {localT.reportingSchedule}
  </h3>
  <Button
  onClick={handleOpenAddForm}
@@ -267,7 +348,7 @@ export default function ReportingSchedulePage({ projectId, embedded = false }: R
  className="flex items-center gap-2"
  >
  <Plus className="w-4 h-4" />
- Add
+ {t.common.add}
  </Button>
  </div>
  )}
@@ -278,7 +359,9 @@ export default function ReportingSchedulePage({ projectId, embedded = false }: R
  <div className="bg-white rounded-lg shadow-xl w-full max-w-2xl p-6 max-h-[90vh] overflow-y-auto">
  <div className="flex items-center justify-between mb-6">
  <h3 className="text-xl font-semibold text-gray-900">
- {editingScheduleId ? 'Edit Reporting Schedule' : 'Add Reporting Schedule'}
+ {editingScheduleId
+ ? localT.editReportingSchedule
+ : localT.addReportingSchedule}
  </h3>
  <button
  onClick={() => {
@@ -296,7 +379,7 @@ export default function ReportingSchedulePage({ projectId, embedded = false }: R
  {!projectId && (
  <div>
  <label className="block text-sm font-medium text-gray-700 mb-1">
- Project *
+ {localT.selectProject} *
  </label>
  <select
  value={formData.projectId}
@@ -304,7 +387,7 @@ export default function ReportingSchedulePage({ projectId, embedded = false }: R
  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50"
  required
  >
- <option value="">Select Project</option>
+ <option value="">{localT.selectProject}</option>
  {projects.map((project) => (
  <option key={project.id} value={project.id}>
  {project.projectCode} - {project.title}
@@ -317,7 +400,7 @@ export default function ReportingSchedulePage({ projectId, embedded = false }: R
  {/* Report Type */}
  <div>
  <label className="block text-sm font-medium text-gray-700 mb-1">
- Type of Report *
+ {localT.reportType} *
  </label>
  <select
  value={formData.reportType}
@@ -325,12 +408,12 @@ export default function ReportingSchedulePage({ projectId, embedded = false }: R
  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50"
  required
  >
- <option value="">Select Report Type</option>
- {Object.entries(REPORT_TYPE_LABELS).map(([key, label]) => (
- <option key={key} value={key}>
- {label.en}
- </option>
- ))}
+ <option value="">{localT.selectReportType}</option>
+ {REPORT_TYPES.map((type) => (
+  <option key={type} value={type}>
+    {getReportTypeLabel(type)}
+  </option>
+))}
  </select>
  </div>
 
@@ -338,7 +421,7 @@ export default function ReportingSchedulePage({ projectId, embedded = false }: R
  {formData.reportType === 'OTHER' && (
  <div>
  <label className="block text-sm font-medium text-gray-700 mb-1">
- Specify Report Type
+ {t.reportingSchedulePage.specifyReportType}
  </label>
  <input
  type="text"
@@ -353,7 +436,7 @@ export default function ReportingSchedulePage({ projectId, embedded = false }: R
  {/* Period From */}
  <div>
  <label className="block text-sm font-medium text-gray-700 mb-1">
- Period From *
+ {localT.periodFrom} *
  </label>
  <input
  type="date"
@@ -367,7 +450,7 @@ export default function ReportingSchedulePage({ projectId, embedded = false }: R
  {/* Period To */}
  <div>
  <label className="block text-sm font-medium text-gray-700 mb-1">
- Period To *
+ {localT.periodTo} *
  </label>
  <input
  type="date"
@@ -381,7 +464,7 @@ export default function ReportingSchedulePage({ projectId, embedded = false }: R
  {/* Report Status */}
  <div>
  <label className="block text-sm font-medium text-gray-700 mb-1">
- Report Status *
+ {localT.reportStatus} *
  </label>
  <select
  value={formData.reportStatus}
@@ -389,18 +472,18 @@ export default function ReportingSchedulePage({ projectId, embedded = false }: R
  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50"
  required
  >
- {Object.entries(REPORT_STATUS_LABELS).map(([key, label]) => (
- <option key={key} value={key}>
- {label.en}
- </option>
- ))}
+ {REPORT_STATUSES.map((status) => (
+  <option key={status} value={status}>
+    {getStatusLabel(status)}
+  </option>
+))}
  </select>
  </div>
 
  {/* Report Deadline */}
  <div>
  <label className="block text-sm font-medium text-gray-700 mb-1">
- Report Deadline *
+ {localT.reportDeadline} *
  </label>
  <input
  type="date"
@@ -414,7 +497,7 @@ export default function ReportingSchedulePage({ projectId, embedded = false }: R
  {/* Notes */}
  <div>
  <label className="block text-sm font-medium text-gray-700 mb-1">
- Notes
+ {localT.notes}
  </label>
  <textarea
  value={formData.notes}
@@ -434,12 +517,14 @@ export default function ReportingSchedulePage({ projectId, embedded = false }: R
  }}
  variant="outline"
  >
- Cancel
+ {localT.cancel}
  </Button>
  <Button
  onClick={editingScheduleId ? handleUpdate : handleCreate}
  >
- {editingScheduleId ? 'Update' : 'Create'}
+ {editingScheduleId
+ ? localT.update
+ : localT.create}
  </Button>
  </div>
  </div>
@@ -481,13 +566,13 @@ export default function ReportingSchedulePage({ projectId, embedded = false }: R
  <div className="flex items-center gap-2">
  <Calendar className="w-4 h-4 text-gray-400" />
  <span>
- Period: {new Date(schedule.periodFrom).toLocaleDateString()} - {new Date(schedule.periodTo).toLocaleDateString()}
+ {localT.period}: {new Date(schedule.periodFrom).toLocaleDateString()} - {new Date(schedule.periodTo).toLocaleDateString()}
  </span>
  </div>
  <div className="flex items-center gap-2">
  <Clock className="w-4 h-4 text-red-500" />
  <span>
- Deadline: {new Date(schedule.reportDeadline).toLocaleDateString()}
+ {localT.deadline}:: {new Date(schedule.reportDeadline).toLocaleDateString()}
  </span>
  </div>
  </div>
@@ -503,7 +588,7 @@ export default function ReportingSchedulePage({ projectId, embedded = false }: R
  {schedule.isLocked && (
  <div className="flex items-center gap-2 mt-2 text-xs text-orange-700">
  <CheckCircle className="w-4 h-4" />
- <span>Locked - Submitted to Donor</span>
+ <span>{localT.lockedSubmittedToDonor}</span>
  </div>
  )}
  </div>
@@ -539,7 +624,7 @@ export default function ReportingSchedulePage({ projectId, embedded = false }: R
  <div className="bg-gray-50 rounded-lg border-2 border-dashed border-gray-300 p-8 text-center">
  <FileText className="w-12 h-12 text-gray-400 mx-auto mb-3" />
  <p className="text-gray-600">
- No reporting schedules yet
+ {localT.noReportingSchedules}
  </p>
  </div>
  )}
@@ -551,12 +636,12 @@ export default function ReportingSchedulePage({ projectId, embedded = false }: R
  <div className="flex items-center gap-3 mb-4">
  <AlertTriangle className="w-6 h-6 text-red-600" />
  <h3 className="text-lg font-semibold text-gray-900">
- Confirm Deletion
+ {localT.confirmDeletion}
  </h3>
  </div>
 
  <p className="text-gray-700 mb-6">
- Are you sure you want to delete the "{getReportTypeLabel(showDeleteConfirm.reportType, showDeleteConfirm.reportTypeOther)}" schedule?
+ {t.reportingSchedulePage.deleteScheduleConfirmation} "{getReportTypeLabel(showDeleteConfirm.reportType, showDeleteConfirm.reportTypeOther)}" schedule?
  </p>
 
  <div className="flex items-center justify-end gap-3">
@@ -570,7 +655,7 @@ export default function ReportingSchedulePage({ projectId, embedded = false }: R
  onClick={confirmDelete}
  className="bg-red-600 hover:bg-red-700"
  >
- Delete
+ {t.common.delete}
  </Button>
  </div>
  </div>

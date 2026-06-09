@@ -8,7 +8,7 @@ import { Upload, X, FileIcon, AlertCircle, CheckCircle2, Loader2 } from 'lucide-
 import { trpc } from '@/lib/trpc';
 import { toast } from 'sonner';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { useTranslation } from '@/i18n/TranslationProvider';
+import { useTranslation } from '@/i18n/useTranslation';
 
 interface ProcurementDocumentUploadUIProps {
   open: boolean;

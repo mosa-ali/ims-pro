@@ -28,7 +28,7 @@ import { Button } from '@/components/ui/button';
 import { Loader2, TrendingUp, TrendingDown, AlertCircle, Users, Clock, Timer } from 'lucide-react';
 import { trpc } from '@/lib/trpc';
 import { useAuth } from '@/_core/hooks/useAuth';
-import { useTranslation } from '@/i18n/TranslationProvider';
+import { useTranslation } from '@/i18n/useTranslation';
 
 interface KPIMetrics {
   pendingApprovalsCount: number;
@@ -107,7 +107,7 @@ const KPICard = ({
  * Main Dashboard KPI Cards Component
  */
 export const DashboardKPICards = () => {
-  const t = useTranslation();
+  const { t } = useTranslation();
   const { user } = useAuth();
   const [metrics, setMetrics] = useState<KPIMetrics | null>(null);
   const [isLoading, setIsLoading] = useState(true);

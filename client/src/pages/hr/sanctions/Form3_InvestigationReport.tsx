@@ -24,11 +24,11 @@ import { Save, Send, Printer, FileText, Upload } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { InvestigationReport, DisciplinaryCase } from './types';
 import { sanctionsService } from './sanctionsService';
-import { useTranslation } from '@/i18n/TranslationProvider';
+import { useTranslation } from '@/i18n/useTranslation';
 import { BackButton } from "@/components/BackButton";
 
 export function Form3_InvestigationReport() {
- const t = useTranslation();
+ const { t } = useTranslation();
  const { language, isRTL } = useLanguage();
  const navigate = useNavigate();
  const { caseRef } = useParams<{ caseRef: string }>();

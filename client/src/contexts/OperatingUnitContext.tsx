@@ -34,7 +34,7 @@ export interface OperatingUnit {
  staffCount?: number;
  currency?: string;
  timezone?: string;
- languagePreference?: 'en' | 'ar' | 'both';
+ languagePreference?: 'en' | 'ar' | 'it' | 'both';
  createdAt?: string;
  updatedAt?: string;
  createdBy?: string;

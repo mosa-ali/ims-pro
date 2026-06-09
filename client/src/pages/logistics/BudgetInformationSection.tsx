@@ -193,7 +193,7 @@ export function BudgetInformationSection({
   budgetUtilizationPercent,
   isLocked,
 }: BudgetInformationSectionProps) {
-  const t = useTranslation();
+  const { t } = useTranslation();
 
   const [isLoadingRate, setIsLoadingRate] = useState(false);
 

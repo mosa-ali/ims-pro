@@ -5,7 +5,7 @@ import { useLanguage, formatDate } from '@/contexts/LanguageContext';
 import { useAuth } from '@/_core/hooks/useAuth';
 import { isUserAdmin } from '@/lib/adminCheck';
 import { toast } from 'sonner';
-import { useTranslation } from '@/i18n/TranslationProvider';
+import { useTranslation } from '@/i18n/useTranslation';
 import { BackButton } from "@/components/BackButton";
 
 interface SyncJob {
@@ -21,7 +21,7 @@ const mockJobs: SyncJob[] = [
 ];
 
 export function PublishSync() {
- const t = useTranslation();
+ const { t } = useTranslation();
  const [, navigate] = useLocation();
  const { language, isRTL } = useLanguage();
  const { user } = useAuth();

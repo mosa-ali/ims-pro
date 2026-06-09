@@ -170,7 +170,7 @@ export function getPasswordStrengthColor(strength: string): string {
 /**
  * Get password strength label
  */
-export function getPasswordStrengthLabel(strength: string, language: 'en' | 'ar' = 'en'): string {
+export function getPasswordStrengthLabel(strength: string, language: 'en' | 'ar' | 'it' = 'en'): string {
   const labels = {
     en: {
       weak: 'Weak',

@@ -21,7 +21,7 @@ const __dirname = path.dirname(__filename);
 interface PDFGenerateOptions {
   templateName: string;
   data: Record<string, any>;
-  language?: 'en' | 'ar';
+  language: 'en' | 'ar' | 'it';
   format?: 'A4' | 'Letter';
   margin?: {
     top?: string;

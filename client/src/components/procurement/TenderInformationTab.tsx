@@ -22,7 +22,7 @@ import { tenderAnnouncementService } from '@/services/tenderAnnouncementService'
 import { useAuth } from '@/_core/hooks/useAuth';
 import { BidReceiptAcknowledgementPrintModal } from '@/components/procurement/BidReceiptAcknowledgementPrintModal';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { useTranslation } from '@/i18n/TranslationProvider';
+import { useTranslation } from '@/i18n/useTranslation';
 import type { 
  ProcurementRequest, 
  TenderAnnouncement, 
@@ -31,13 +31,13 @@ import type {
 
 interface Props {
  pr: ProcurementRequest;
- language: 'en' | 'ar';
+ language: 'en' | 'ar' | 'it';
  onUpdate?: () => void;
 }
 
 export function TenderInformationTab({
  pr, language, onUpdate }: Props) {
- const t = useTranslation();
+ const { t } = useTranslation();
  const { user } = useAuth();
  const [announcement, setAnnouncement] = useState<TenderAnnouncement | null>(null);
  const [showAddBidder, setShowAddBidder] = useState(false);

@@ -3,7 +3,7 @@
  * Features: Supplier offer matrix, financial scoring + multi-criteria scoring
  * Bilingual EN/AR support with RTL
  */
-import { useTranslation } from '@/i18n/TranslationProvider';
+import { useTranslation } from '@/i18n/useTranslation';
 import { useState, useMemo, useEffect } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { trpc } from "@/lib/trpc";
@@ -43,7 +43,7 @@ export default function QuotationAnalysisExtendedTab({
  currency = "USD",
 }: QuotationAnalysisExtendedTabProps) {
  const { language, isRTL} = useLanguage();
-  const t = useTranslation();
+  const { t } = useTranslation();
  const currencyCode = (currency === "USD" ? "USD" : currency) as any;
 
  const [vendorScores, setVendorScores] = useState<VendorScore[]>([]);
@@ -99,7 +99,7 @@ export default function QuotationAnalysisExtendedTab({
  refetch();
  },
  onError: (error: any) => {
- toast.error(error.message || t.quotationAnalysisExtendedTab.error);
+ toast.error(error.message || t.common.error);
  },
  });
 
@@ -157,7 +157,7 @@ export default function QuotationAnalysisExtendedTab({
  toast.success(t.quotationAnalysisExtendedTab.scoresCalculated);
  },
  onError: (error: any) => {
- toast.error(error.message || t.quotationAnalysisExtendedTab.error);
+ toast.error(error.message || t.common.error);
  },
  });
 
@@ -168,7 +168,7 @@ export default function QuotationAnalysisExtendedTab({
  refetch();
  },
  onError: (error: any) => {
- toast.error(error.message || t.quotationAnalysisExtendedTab.error);
+ toast.error(error.message || t.common.error);
  },
  });
 
@@ -503,7 +503,7 @@ export default function QuotationAnalysisExtendedTab({
  if (!qa?.id) return;
  selectWinnerMutation.mutate({
  quotationAnalysisId: qa.id,
- supplierId: vendor.supplierId,
+ supplierId: Number(vendor.supplierId),
  });
  }}
  className={`border-b border-gray-100 cursor-pointer transition-colors ${ vendor.isWinner ? "bg-green-50" : "hover:bg-gray-50" }`}

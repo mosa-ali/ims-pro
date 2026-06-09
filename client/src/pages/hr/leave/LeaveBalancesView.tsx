@@ -14,7 +14,7 @@ import { staffService, StaffMember } from '@/app/services/hrService';
 import { leaveBalanceService } from './leaveService';
 import { LeaveBalance } from './types';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { useTranslation } from '@/i18n/TranslationProvider';
+import { useTranslation } from '@/i18n/useTranslation';
 
 interface Props {
  language: string;
@@ -24,7 +24,7 @@ interface Props {
 
 export function LeaveBalancesView({
  language, isRTL, onRequestLeave }: Props) {
- const t = useTranslation();
+ const { t } = useTranslation();
  const [balances, setBalances] = useState<(LeaveBalance & { employee: StaffMember })[]>([]);
  const [searchTerm, setSearchTerm] = useState('');
 

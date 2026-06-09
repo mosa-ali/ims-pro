@@ -20,7 +20,7 @@ import { useState, useEffect } from "react";
 import { useParams, useLocation, Link } from "wouter";
 import { toast } from "sonner";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { useTranslation } from '@/i18n/TranslationProvider';
+import { useTranslation } from '@/i18n/useTranslation';
 import { BackButton } from "@/components/BackButton";
 
 /**
@@ -28,7 +28,7 @@ import { BackButton } from "@/components/BackButton";
  * Full-featured management page with CRUD operations and workflow
  */
 export default function PurchaseOrderDetail() {
- const t = useTranslation();
+ const { t } = useTranslation();
  const { id } = useParams<{ id: string }>();
  const [, setLocation] = useLocation();
  const { isRTL } = useLanguage();

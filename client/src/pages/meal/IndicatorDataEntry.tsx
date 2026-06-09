@@ -27,7 +27,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { Save, AlertCircle, CheckCircle, Info } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { trpc } from '@/lib/trpc';
-import { useTranslation } from '@/i18n/TranslationProvider';
+import { useTranslation } from '@/i18n/useTranslation';
 import { BackButton } from "@/components/BackButton";
 
 // Beneficiary-related unit types that require disaggregated data
@@ -64,7 +64,7 @@ function isBeneficiaryUnit(unit: string): boolean {
 }
 
 export function IndicatorDataEntryForm() {
- const t = useTranslation();
+ const { t } = useTranslation();
  const navigate = useNavigate();
  const params = useParams();
  const searchString = useSearch();

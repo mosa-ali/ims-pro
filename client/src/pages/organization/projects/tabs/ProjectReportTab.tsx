@@ -18,7 +18,7 @@ import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { ProjectReportPrintView } from "@/components/ProjectReportPrintView";
 import { ReportTabSkeleton } from "@/components/ProjectTabSkeletons";
-import { useTranslation } from '@/i18n/TranslationProvider';
+import { useTranslation } from '@/i18n/useTranslation';
 
 interface ProjectReportTabProps {
  projectId: string;
@@ -26,7 +26,7 @@ interface ProjectReportTabProps {
 
 export function ProjectReportTab({
  projectId }: ProjectReportTabProps) {
- const t = useTranslation();
+ const { t } = useTranslation();
  const { language, isRTL } = useLanguage();
 const [narratives, setNarratives] = useState({
  progressSummary: "",
@@ -197,7 +197,7 @@ const [narratives, setNarratives] = useState({
  
  generatePDFMutation.mutate({
  projectId: parseInt(projectId),
- language: language as 'en' | 'ar',
+ language: language as 'en' | 'ar' | 'it',
  reportData: {
  project: {
  name: reportData.project?.titleEn || 'Unnamed Project',
@@ -921,7 +921,7 @@ const [narratives, setNarratives] = useState({
  reportData={reportData}
  riskCalculation={riskCalculation}
  narratives={narratives}
- language={language as 'en' | 'ar'}
+ language={language as 'en' | 'ar' | 'it'}
  organizationName={reportData?.organizationName || 'Organization'}
  />
  </div>

@@ -26,7 +26,7 @@ import {
 import { trpc } from '@/lib/trpc';
 import { useAuth } from '@/_core/hooks/useAuth';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { useTranslation } from '@/i18n/TranslationProvider';
+import { useTranslation } from '@/i18n/useTranslation';
 import { RecruitmentCandidate, CandidateStatus, CANDIDATE_STATUS_LABELS } from '@shared/types/recruitment-canonical';
 import { CANDIDATE_STATUS_COLORS } from '@shared/constants/recruitment-canonical';
 
@@ -40,7 +40,7 @@ interface Props {
 }
 
 export function CandidateList({ language, isRTL }: Props) {
-  const t = useTranslation();
+  const { t } = useTranslation();
   const { user } = useAuth();
   const { isRTL: contextIsRTL } = useLanguage();
   const dir = isRTL || contextIsRTL ? 'rtl' : 'ltr';

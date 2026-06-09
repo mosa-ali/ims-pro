@@ -420,7 +420,7 @@ export function getUnitTypeByValue(value: string): MasterDataValue | undefined {
  * @param language - 'en' or 'ar'
  * @returns Localized label or the value itself if not found
  */
-export function getUnitTypeLabel(value: string, language: 'en' | 'ar' = 'en'): string {
+export function getUnitTypeLabel(value: string, language: 'en' | 'ar' | 'it' = 'en'): string {
   const unit = getUnitTypeByValue(value);
   if (!unit) return value;
   return language === 'ar' ? (unit.labelAr || unit.label) : unit.label;
@@ -435,7 +435,7 @@ export function getUnitTypeLabel(value: string, language: 'en' | 'ar' = 'en'): s
  */
 export function getCategoryLabel(
   category: string,
-  language: 'en' | 'ar' = 'en'
+  language: 'en' | 'ar' | 'it' = 'en'
 ): string {
   const labels: Record<string, Record<string, string>> = {
     goods: {

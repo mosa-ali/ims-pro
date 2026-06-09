@@ -8,7 +8,7 @@ import { useState, useRef } from 'react';
 import { X, Upload, File, AlertCircle } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { ModalOverlay } from '@/components/ui/ModalOverlay';
-import { useTranslation } from '@/i18n/TranslationProvider';
+import { useTranslation } from '@/i18n/useTranslation';
 
 interface FileUploadModalProps {
  isOpen: boolean;
@@ -27,7 +27,7 @@ export function FileUploadModal({
  acceptedTypes = '.pdf,.doc,.docx,.jpg,.jpeg,.png',
  maxSizeMB = 10
 }: FileUploadModalProps) {
- const t = useTranslation(); 
+ const { t } = useTranslation(); 
  const { language, isRTL } = useLanguage();
  const [selectedFile, setSelectedFile] = useState<File | null>(null);
  const [notes, setNotes] = useState('');

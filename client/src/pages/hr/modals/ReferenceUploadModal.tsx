@@ -15,7 +15,7 @@ import { useLanguage } from '@/app/contexts/LanguageContext';
 import { StaffMember } from '../types/hrTypes';
 import { referenceUploadService, ReferenceType } from '@/app/services/referenceUploadService';
 import { ModalOverlay } from '@/app/components/ui/ModalOverlay';
-import { useTranslation } from '@/i18n/TranslationProvider';
+import { useTranslation } from '@/i18n/useTranslation';
 
 interface Props {
  employee: StaffMember;
@@ -25,7 +25,7 @@ interface Props {
 
 export function ReferenceUploadModal({
  employee, onClose, onUpload }: Props) {
- const t = useTranslation();
+ const { t } = useTranslation();
  const { language, isRTL } = useLanguage();
  
  const [formData, setFormData] = useState({

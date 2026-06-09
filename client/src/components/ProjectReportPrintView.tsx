@@ -13,7 +13,7 @@ import { forwardRef } from 'react';
 import { ProjectReportData } from '@/hooks/useProjectReportData';
 import { RiskCalculationResult } from '@/utils/riskCalculation';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { useTranslation } from '@/i18n/TranslationProvider';
+import { useTranslation } from '@/i18n/useTranslation';
 
 
 interface ProjectReportPrintViewProps {
@@ -26,7 +26,7 @@ interface ProjectReportPrintViewProps {
  keyAchievements: string;
  nextSteps: string;
  };
- language?: 'en' | 'ar';
+ language?: 'en' | 'ar' | 'it';
  organizationName?: string;
  organizationLogo?: string;
  /** Report type: 'project' for full project report, 'monthly' for monthly report */
@@ -50,7 +50,8 @@ export const ProjectReportPrintView = forwardRef<HTMLDivElement, ProjectReportPr
  reportPeriodEnd,
  generatedAt,
 }, ref) {
- const { t, isRTL } = useTranslation();
+ const { t } = useTranslation();
+ const { isRTL } = useLanguage();
  const { language: contextLanguage } = useLanguage();
  
  // Format helpers

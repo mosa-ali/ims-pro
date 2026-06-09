@@ -3,7 +3,7 @@ import { useLanguage, formatCurrency } from '@/contexts/LanguageContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card } from '@/components/ui/card';
-import { useTranslation } from '@/i18n/TranslationProvider';
+import { useTranslation } from '@/i18n/useTranslation';
 import { trpc } from '@/lib/trpc';
 import { useAuth } from '@/_core/hooks/useAuth';
 import { useState, useMemo } from 'react';
@@ -26,7 +26,7 @@ interface Opportunity {
 }
 
 export function OpportunitiesManagement() {
-  const t = useTranslation();
+  const { t } = useTranslation();
   const { isRTL } = useLanguage();
   const { user } = useAuth();
 
@@ -50,14 +50,14 @@ export function OpportunitiesManagement() {
       cfpLink: record.cfpLink || undefined,
       interestArea: Array.isArray(record.interestArea) ? record.interestArea : [],
       geographicAreas: record.geographicAreas || '',
-      applicationDeadline: record.applicationDeadline ? (typeof record.applicationDeadline === 'string' ? record.applicationDeadline : record.applicationDeadline.toISOString().split('T')[0]) : '',
+      applicationDeadline: typeof record.applicationDeadline === 'string' ? record.applicationDeadline : new Date().toISOString(),
       allocatedBudget: record.allocatedBudget ? parseFloat(record.allocatedBudget.toString()) : undefined,
       currency: record.currency || 'USD',
       isCoFunding: record.isCoFunding || false,
       applicationLink: record.applicationLink || undefined,
       notes: record.notes || undefined,
-      createdAt: typeof record.createdAt === 'string' ? record.createdAt : (record.createdAt?.toISOString() || new Date().toISOString()),
-      updatedAt: typeof record.updatedAt === 'string' ? record.updatedAt : (record.updatedAt?.toISOString() || new Date().toISOString()),
+      createdAt: typeof record.createdAt === 'string' ? record.createdAt : new Date().toISOString(),
+      updatedAt: typeof record.updatedAt === 'string' ? record.updatedAt : new Date().toISOString(),
     }));
   }, [opportunitiesData]);
 

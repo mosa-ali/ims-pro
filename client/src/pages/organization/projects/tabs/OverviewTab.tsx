@@ -8,7 +8,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { exportToExcel, exportToPDF, type ProjectOverviewData } from '@/lib/exportUtils';
 import { OverviewTabSkeleton } from "@/components/ProjectTabSkeletons";
-import { useTranslation } from '@/i18n/TranslationProvider';
+import { useTranslation } from '@/i18n/useTranslation';
 
 interface OverviewTabProps {
  projectId: string;
@@ -18,7 +18,7 @@ interface OverviewTabProps {
 export function OverviewTab({
  projectId, onNavigateToActivities }: OverviewTabProps) {
  const { isRTL } = useLanguage();
- const t = useTranslation();
+ const { t } = useTranslation();
 // Fetch project details from tRPC
  const { data: project, isLoading } = trpc.projects.getById.useQuery(
  { id: Number(projectId) },

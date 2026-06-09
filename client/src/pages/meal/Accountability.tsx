@@ -36,7 +36,7 @@ import { X, Search, Download, Upload, Plus, Eye, Edit, Trash2 } from 'lucide-rea
 import { Button } from '@/components/ui/button';
 import * as XLSX from 'xlsx';
 import { trpc } from '@/lib/trpc';
-import { useTranslation } from '@/i18n/TranslationProvider';
+import { useTranslation } from '@/i18n/useTranslation';
 import { BackButton } from "@/components/BackButton";
 
 interface AccountabilityRecord {
@@ -70,7 +70,7 @@ interface Project {
 }
 
 export function Accountability() {
- const t = useTranslation();
+ const { t } = useTranslation();
  const navigate = useNavigate();
  const { language, isRTL } = useLanguage();
  const [searchQuery, setSearchQuery] = useState('');

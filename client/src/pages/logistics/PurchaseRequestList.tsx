@@ -46,7 +46,7 @@ import { Link, useLocation } from "wouter";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { toast } from "sonner";
 import { format } from "date-fns";
-import { useTranslation } from '@/i18n/TranslationProvider';
+import { useTranslation } from '@/i18n/useTranslation';
 import { BackButton } from "@/components/BackButton";
 
 const statusColors: Record<string, string> = {
@@ -105,7 +105,7 @@ function getCurrentProcurementStage(stages: any[]): string {
 }
 
 export default function PurchaseRequestList() {
- const t = useTranslation();
+ const { t } = useTranslation();
  const { currentOrganization } = useOrganization();
  const { isRTL } = useLanguage();
  const [, navigate] = useLocation();

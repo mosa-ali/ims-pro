@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { useTranslation } from '@/i18n/TranslationProvider';
+import { useTranslation } from '@/i18n/useTranslation';
 
 // Import sub-screens
 import { CasesDashboard } from './case-management/CasesDashboard';
@@ -28,7 +28,7 @@ type CaseManagementScreen =
 
 export function CaseManagementTab({
  projectId }: CaseManagementTabProps) {
- const t = useTranslation();
+ const { t } = useTranslation();
  const [activeScreen, setActiveScreen] = useState<CaseManagementScreen>('dashboard');
  const [selectedCaseId, setSelectedCaseId] = useState<number | null>(null);
  const { isRTL } = useLanguage();
