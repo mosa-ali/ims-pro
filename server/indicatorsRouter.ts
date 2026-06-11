@@ -33,7 +33,7 @@ export const indicatorsRouter = router({
             eq(indicators.projectId, input.projectId),
             eq(indicators.organizationId, organizationId),
             eq(indicators.operatingUnitId, operatingUnitId),
-            eq(indicators.isDeleted, false) // MANDATORY: Filter soft-deleted records
+            eq(indicators.isDeleted, 0) // MANDATORY: Filter soft-deleted records
           )
         )
         .orderBy(desc(indicators.createdAt));
@@ -57,7 +57,7 @@ export const indicatorsRouter = router({
           and(
             eq(indicators.id, input.id),
             eq(indicators.organizationId, organizationId),
-            eq(indicators.isDeleted, false)
+            eq(indicators.isDeleted, 0)
           )
         )
         .limit(1);
@@ -85,7 +85,7 @@ export const indicatorsRouter = router({
             eq(indicators.projectId, input.projectId),
             eq(indicators.organizationId, organizationId),
             eq(indicators.operatingUnitId, operatingUnitId),
-            eq(indicators.isDeleted, false) // MANDATORY: Filter soft-deleted records
+            eq(indicators.isDeleted, 0) // MANDATORY: Filter soft-deleted records
           )
         );
       
@@ -384,8 +384,8 @@ export const indicatorsRouter = router({
       await db
         .update(indicators)
         .set({
-          isDeleted: true,
-          deletedAt: new Date(),
+          isDeleted: 1,
+          deletedAt: new Date().toISOString(),
           deletedBy: ctx.user?.id,
         })
         .where(and(

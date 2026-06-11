@@ -21,7 +21,14 @@ import { getDb } from '../db';
 import { hrAttendanceRecords } from '../../drizzle/schema';
 import { MicrosoftGraphClient, TeamsShift, AzureAdUser } from '../_core/microsoftGraphClient';
 import { eq, and, gte, lte } from 'drizzle-orm';
-import { logger } from '../_core/logger';
+
+// Logger utility - create a simple console-based logger if the module doesn't exist
+const logger = {
+  info: (message: string, data?: any) => console.log(`[INFO] ${message}`, data || ''),
+  debug: (message: string, data?: any) => console.debug(`[DEBUG] ${message}`, data || ''),
+  warn: (message: string, data?: any) => console.warn(`[WARN] ${message}`, data || ''),
+  error: (message: string, data?: any) => console.error(`[ERROR] ${message}`, data || ''),
+};
 
 /**
  * Sync Result with detailed metrics
@@ -72,8 +79,8 @@ interface AttendanceRecord {
   checkIn: string;
   checkOut: string;
   status: string;
-  workHours: number;
-  source: string;
+  workHours: string | null;
+  source: string | null;
   approvalStatus: string;
   notes: string;
   staffName?: string;
@@ -133,7 +140,7 @@ export class TeamsShiftsSyncService {
       logger.info(`Retrieved ${users.length} users from Azure AD`);
 
       if (users.length === 0) {
-        result.status = 'warning';
+        result.status = 'warning' as any;
         result.message = 'No users found in Azure AD';
         return result;
       }
@@ -289,13 +296,14 @@ export class TeamsShiftsSyncService {
     // Step 6: Upsert record
     if (existingRecord) {
       // Update existing record
+      const db = await getDb();
       await db
         .update(hrAttendanceRecords)
         .set({
           checkIn: attendanceRecord.checkIn,
           checkOut: attendanceRecord.checkOut,
           workHours: attendanceRecord.workHours,
-          source: attendanceRecord.source,
+          source: 'microsoft_teams_shifts',
           notes: attendanceRecord.notes,
           updatedAt: new Date().toISOString(),
         })
@@ -305,6 +313,7 @@ export class TeamsShiftsSyncService {
       logger.info(`Updated attendance record for ${user.id} on ${attendanceRecord.date}`);
     } else {
       // Create new record
+      const db = await getDb();
       await db.insert(hrAttendanceRecords).values({
         employeeId: attendanceRecord.employeeId,
         organizationId: attendanceRecord.organizationId,
@@ -354,6 +363,7 @@ export class TeamsShiftsSyncService {
     date: string
   ): Promise<any | null> {
     try {
+      const db = await getDb();
       const records = await db
         .select()
         .from(hrAttendanceRecords)
@@ -397,7 +407,7 @@ export class TeamsShiftsSyncService {
       checkIn: shift.startDateTime,
       checkOut: shift.endDateTime,
       status: 'present',
-      workHours: Math.round(workHours * 100) / 100, // Round to 2 decimals
+      workHours: (Math.round(workHours * 100) / 100).toString(),
       source: 'microsoft_teams_shifts',
       approvalStatus: 'pending',
       notes: `Synced from Teams Shifts: ${shift.displayName}`,

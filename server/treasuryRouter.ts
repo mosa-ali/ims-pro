@@ -27,7 +27,7 @@ export const treasuryRouter = router({
       const results = await db.select().from(financeBankAccounts).where(
         and(
           eq(financeBankAccounts.organizationId, organizationId),
-          eq(financeBankAccounts.isDeleted, false)
+          eq(financeBankAccounts.isDeleted, 0)
         )
       ).orderBy(financeBankAccounts.accountName);
       
@@ -54,7 +54,7 @@ export const treasuryRouter = router({
         and(
           eq(financeBankAccounts.id, input.id),
           eq(financeBankAccounts.organizationId, organizationId),
-          eq(financeBankAccounts.isDeleted, false)
+          eq(financeBankAccounts.isDeleted, 0)
         )
       );
       
@@ -72,7 +72,7 @@ export const treasuryRouter = router({
       const all = await db.select().from(financeBankAccounts).where(
         and(
           eq(financeBankAccounts.organizationId, organizationId),
-          eq(financeBankAccounts.isDeleted, false)
+          eq(financeBankAccounts.isDeleted, 0)
         )
       );
       
@@ -118,7 +118,7 @@ export const treasuryRouter = router({
         and(
           eq(financeBankAccounts.organizationId, organizationId),
           eq(financeBankAccounts.accountNumber, input.accountNumber),
-          eq(financeBankAccounts.isDeleted, false)
+          eq(financeBankAccounts.isDeleted, 0)
         )
       );
       
@@ -144,7 +144,7 @@ export const treasuryRouter = router({
         contactPerson: input.contactPerson || null,
         contactPhone: input.contactPhone || null,
         notes: input.notes || null,
-        isActive: true,
+        isActive: 1,
         createdBy: ctx.user?.id || null,
       });
       
@@ -201,8 +201,8 @@ export const treasuryRouter = router({
       
       await db.update(financeBankAccounts)
         .set({
-          isDeleted: true,
-          deletedAt: new Date(),
+          isDeleted: 1,
+          deletedAt: new Date().toISOString(),
           deletedBy: ctx.user?.id || null,
         })
         .where(and(
@@ -262,7 +262,7 @@ export const treasuryRouter = router({
               and(
                 eq(financeBankAccounts.organizationId, organizationId),
                 eq(financeBankAccounts.accountNumber, account.accountNumber),
-                eq(financeBankAccounts.isDeleted, false)
+                eq(financeBankAccounts.isDeleted, 0)
               )
             );
             
@@ -292,7 +292,7 @@ export const treasuryRouter = router({
             openingBalance: String(balance),
             currentBalance: String(balance),
             bankCode: account.swiftCode || null,
-            isActive: true,
+            isActive: 1,
             createdBy: ctx.user?.id || null,
           });
           
@@ -331,7 +331,7 @@ export const treasuryRouter = router({
       const results = await db.select().from(financeCashTransactions).where(
         and(
           eq(financeCashTransactions.organizationId, organizationId),
-          eq(financeCashTransactions.isDeleted, false)
+          eq(financeCashTransactions.isDeleted, 0)
         )
       ).orderBy(desc(financeCashTransactions.transactionDate));
       
@@ -506,8 +506,8 @@ export const treasuryRouter = router({
       
       await db.update(financeCashTransactions)
         .set({
-          isDeleted: true,
-          deletedAt: new Date(),
+          isDeleted: 1,
+          deletedAt: new Date().toISOString(),
           deletedBy: ctx.user?.id || null,
         })
         .where(eq(financeCashTransactions.id, input.id));
@@ -532,7 +532,7 @@ export const treasuryRouter = router({
       const results = await db.select().from(financeFundBalances).where(
         and(
           eq(financeFundBalances.organizationId, organizationId),
-          eq(financeFundBalances.isDeleted, false)
+          eq(financeFundBalances.isDeleted, 0)
         )
       ).orderBy(financeFundBalances.fundName);
       
@@ -554,7 +554,7 @@ export const treasuryRouter = router({
       const all = await db.select().from(financeFundBalances).where(
         and(
           eq(financeFundBalances.organizationId, organizationId),
-          eq(financeFundBalances.isDeleted, false)
+          eq(financeFundBalances.isDeleted, 0)
         )
       );
       
@@ -600,7 +600,7 @@ export const treasuryRouter = router({
         and(
           eq(financeFundBalances.organizationId, organizationId),
           eq(financeFundBalances.fundCode, input.fundCode),
-          eq(financeFundBalances.isDeleted, false)
+          eq(financeFundBalances.isDeleted, 0)
         )
       );
       
@@ -619,7 +619,7 @@ export const treasuryRouter = router({
         currentBalance: String(input.openingBalance),
         notes: input.description || null,
         startDate: input.expirationDate ? new Date(input.expirationDate) : null,
-        isActive: true,
+        isActive: 1,
         createdBy: ctx.user?.id || null,
       });
       
@@ -719,8 +719,8 @@ export const treasuryRouter = router({
       
       await db.update(financeFundBalances)
         .set({
-          isDeleted: true,
-          deletedAt: new Date(),
+          isDeleted: 1,
+          deletedAt: new Date().toISOString(),
           deletedBy: ctx.user?.id || null,
         })
         .where(and(
@@ -777,7 +777,7 @@ export const treasuryRouter = router({
               and(
                 eq(financeFundBalances.organizationId, organizationId),
                 eq(financeFundBalances.fundCode, fund.fundCode),
-                eq(financeFundBalances.isDeleted, false)
+                eq(financeFundBalances.isDeleted, 0)
               )
             );
             
@@ -805,7 +805,7 @@ export const treasuryRouter = router({
             totalBudget: String(balance),
             currentBalance: String(balance),
             notes: fund.description || null,
-            isActive: true,
+            isActive: 1,
             createdBy: ctx.user?.id || null,
           });
           

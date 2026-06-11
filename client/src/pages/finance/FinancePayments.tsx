@@ -1,6 +1,7 @@
 import { useState, useMemo } from 'react';
 import { useNavigate } from '@/lib/router-compat';
 import { useOperatingUnit } from '@/contexts/OperatingUnitContext';
+import { useOrganization } from "@/contexts/OrganizationContext";
 import { useLanguage } from '@/contexts/LanguageContext';
 import { trpc } from '@/lib/trpc';
 import { Button } from '@/components/ui/button';
@@ -113,7 +114,7 @@ export default function FinancePayments() {
  enabled: organizationId > 0,
  });
 
- const { data: projectsData } = trpc.projects.list.useQuery({organizationId}, {
+ const { data: projectsData } = trpc.projects.list.useQuery({
  enabled: organizationId > 0 && operatingUnitId !== undefined,
  });
 
@@ -1351,7 +1352,7 @@ export default function FinancePayments() {
  if (!open) setVersionHistoryPaymentId(null);
  }}
  versions={versionHistoryData || []}
- title={versionHistoryData?.[0]?.paymentNumber || t.financePayments.payment}
+ title={versionHistoryData?.[0]?.paymentNumber || t.financePayments.payments}
  isLoading={isLoadingVersions}
  language={language as 'en' | 'ar' | 'it'}
  renderVersionDetails={(version) => (

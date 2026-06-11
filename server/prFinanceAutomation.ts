@@ -465,8 +465,8 @@ export async function createInvoiceWith3WayMatching(params: {
       };
     }
 
-    const prAmount = parseFloat(pr.prTotalUSD || "0");
-    const poAmount = parseFloat(po.totalAmountUSD || "0");
+    const prAmount = parseFloat(pr.prTotalUsd || "0");
+    const poAmount = parseFloat(po.totalAmount || "0");
     const grnAmount = parseFloat(grn.totalAmountUSD || "0");
 
     // 2. Perform 3-way matching

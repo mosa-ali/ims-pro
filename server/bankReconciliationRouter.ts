@@ -5,6 +5,8 @@ import { bankTransactions, bankReconciliations, financeBankAccounts } from "../d
 import { eq, and, isNull, like, or, sql, desc, asc, between, gte, lte } from "drizzle-orm";
 import { autoMatchTransactions, validateManualMatch } from "./services/reconciliationMatcher";
 
+const nowSql = new Date().toISOString().slice(0, 19).replace('T', ' ');
+
 // Bank Transactions Router
 export const bankTransactionsRouter = router({
   list: scopedProcedure
@@ -245,7 +247,7 @@ export const bankTransactionsRouter = router({
         .where(and(
           eq(bankTransactions.organizationId, organizationId),
           eq(bankTransactions.bankAccountId, input.bankAccountId),
-          eq(bankTransactions.isReconciled, false)
+          eq(bankTransactions.isReconciled, 0)
         ))
         .orderBy(desc(bankTransactions.transactionDate));
     }),
@@ -430,8 +432,8 @@ export const bankReconciliationsRouter = router({
       // Mark all associated transactions as reconciled
       await db.update(bankTransactions)
         .set({ 
-          isReconciled: true,
-          reconciledAt: new Date(),
+          isReconciled: 1,
+          reconciledAt: nowSql,
           reconciledBy: ctx.user?.id,
           reconciliationId: input.id,
         })
@@ -443,7 +445,7 @@ export const bankReconciliationsRouter = router({
           status: 'completed',
           adjustedBookBalance: input.reconciledBalance,
           difference: (parseFloat(recon[0].statementBalance || '0') - parseFloat(input.reconciledBalance)).toFixed(2),
-          completedAt: new Date(),
+          completedAt: nowSql,
           completedBy: ctx.user?.id,
           updatedBy: ctx.user?.id,
         })
@@ -460,7 +462,7 @@ export const bankReconciliationsRouter = router({
       await db.update(bankReconciliations)
         .set({ 
           status: 'approved',
-          approvedAt: new Date(),
+          approvedAt: nowSql,
           approvedBy: ctx.user?.id,
           updatedBy: ctx.user?.id,
         })
@@ -501,7 +503,7 @@ export const bankReconciliationsRouter = router({
         await db.update(bankTransactions)
           .set({ 
             reconciliationId: null,
-            isReconciled: false,
+            isReconciled: 0,
             reconciledAt: null,
             reconciledBy: null,
           })
@@ -566,7 +568,7 @@ export const bankReconciliationsRouter = router({
       const conditions = [
         eq(bankTransactions.organizationId, organizationId),
         eq(bankTransactions.bankAccountId, input.bankAccountId),
-        eq(bankTransactions.isReconciled, false),
+        eq(bankTransactions.isReconciled, 0),
       ];
       
       if (input.reconciliationId) {
@@ -596,7 +598,7 @@ export const bankReconciliationsRouter = router({
           eq(bankTransactions.organizationId, organizationId),
           eq(bankTransactions.bankAccountId, input.bankAccountId),
           eq(bankTransactions.reconciliationId, input.reconciliationId),
-          eq(bankTransactions.isReconciled, false)
+          eq(bankTransactions.isReconciled, 0)
         ));
       
       // TODO: Get unmatched GL entries (requires GL journal entries table)
@@ -644,8 +646,8 @@ export const bankReconciliationsRouter = router({
       // Mark bank transaction as reconciled
       await db.update(bankTransactions)
         .set({
-          isReconciled: true,
-          reconciledAt: new Date(),
+          isReconciled: 1,
+          reconciledAt: nowSql,
           reconciledBy: ctx.user?.id,
           reconciliationId: input.reconciliationId,
         })
@@ -664,7 +666,7 @@ export const bankReconciliationsRouter = router({
       
       await db.update(bankTransactions)
         .set({
-          isReconciled: false,
+          isReconciled: 0,
           reconciledAt: null,
           reconciledBy: null,
         })

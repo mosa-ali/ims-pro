@@ -27,7 +27,7 @@ export const mealDqaRouter = router({
 
       const conditions: any[] = [
         eq(mealDqaVisits.organizationId, organizationId),
-        eq(mealDqaVisits.isDeleted, false),
+        eq(mealDqaVisits.isDeleted, 0),
       ];
 
       if (input.projectId) conditions.push(eq(mealDqaVisits.projectId, input.projectId));
@@ -56,7 +56,7 @@ export const mealDqaRouter = router({
         .where(and(
           eq(mealDqaVisits.id, input.id),
           eq(mealDqaVisits.organizationId, organizationId),
-          eq(mealDqaVisits.isDeleted, false),
+          eq(mealDqaVisits.isDeleted, 0),
         ));
 
       return visit || null;
@@ -167,7 +167,7 @@ export const mealDqaRouter = router({
         .where(and(
           eq(mealDqaVisits.id, id),
           eq(mealDqaVisits.organizationId, organizationId),
-          eq(mealDqaVisits.isDeleted, false),
+          eq(mealDqaVisits.isDeleted, 0),
         ));
 
       return { success: true };
@@ -182,8 +182,8 @@ export const mealDqaRouter = router({
 
       await db.update(mealDqaVisits)
         .set({
-          isDeleted: true,
-          deletedAt: new Date(),
+          isDeleted: 1,
+          deletedAt: new Date().toISOString(),
           deletedBy: ctx.user?.id || null,
         })
         .where(and(
@@ -207,7 +207,7 @@ export const mealDqaRouter = router({
         .from(mealDqaVisits)
         .where(and(
           eq(mealDqaVisits.organizationId, organizationId),
-          eq(mealDqaVisits.isDeleted, false),
+          eq(mealDqaVisits.isDeleted, 0),
         ));
 
       const totalVisits = visits.length;
@@ -224,7 +224,7 @@ export const mealDqaRouter = router({
         .from(mealDqaFindings)
         .where(and(
           eq(mealDqaFindings.organizationId, organizationId),
-          eq(mealDqaFindings.isDeleted, false),
+          eq(mealDqaFindings.isDeleted, 0),
         ));
 
       const totalFindings = findings.length;
@@ -247,7 +247,7 @@ export const mealDqaRouter = router({
         .where(and(
           eq(mealDqaFindings.dqaVisitId, input.dqaVisitId),
           eq(mealDqaFindings.organizationId, organizationId),
-          eq(mealDqaFindings.isDeleted, false),
+          eq(mealDqaFindings.isDeleted, 0),
         ))
         .orderBy(desc(mealDqaFindings.createdAt));
     }),
@@ -303,7 +303,7 @@ export const mealDqaRouter = router({
         .where(and(
           eq(mealDqaFindings.id, id),
           eq(mealDqaFindings.organizationId, organizationId),
-          eq(mealDqaFindings.isDeleted, false),
+          eq(mealDqaFindings.isDeleted, 0),
         ));
 
       return { success: true };
@@ -318,8 +318,8 @@ export const mealDqaRouter = router({
 
       await db.update(mealDqaFindings)
         .set({
-          isDeleted: true,
-          deletedAt: new Date(),
+          isDeleted: 1,
+          deletedAt: new Date().toISOString(),
           deletedBy: ctx.user?.id || null,
         })
         .where(and(
@@ -344,7 +344,7 @@ export const mealDqaRouter = router({
         .where(and(
           eq(mealDqaActions.dqaFindingId, input.dqaFindingId),
           eq(mealDqaActions.organizationId, organizationId),
-          eq(mealDqaActions.isDeleted, false),
+          eq(mealDqaActions.isDeleted, 0),
         ))
         .orderBy(desc(mealDqaActions.createdAt));
     }),
@@ -398,7 +398,7 @@ export const mealDqaRouter = router({
         .where(and(
           eq(mealDqaActions.id, id),
           eq(mealDqaActions.organizationId, organizationId),
-          eq(mealDqaActions.isDeleted, false),
+          eq(mealDqaActions.isDeleted, 0),
         ));
 
       return { success: true };
@@ -413,8 +413,8 @@ export const mealDqaRouter = router({
 
       await db.update(mealDqaActions)
         .set({
-          isDeleted: true,
-          deletedAt: new Date(),
+          isDeleted: 1,
+          deletedAt: new Date().toISOString(),
           deletedBy: ctx.user?.id || null,
         })
         .where(and(

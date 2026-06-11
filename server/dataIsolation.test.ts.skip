@@ -94,7 +94,7 @@ describe('Data Isolation - Organization & Operating Unit Filtering', () => {
           and(
             eq(projects.organizationId, ORG1_ID),
             eq(projects.operatingUnitId, ORG1_OU1_ID),
-            eq(projects.isDeleted, false)
+            eq(projects.isDeleted, 0)
           )
         );
 
@@ -153,7 +153,7 @@ describe('Data Isolation - Organization & Operating Unit Filtering', () => {
           and(
             eq(proposals.organizationId, ORG1_ID),
             eq(proposals.operatingUnitId, ORG1_OU1_ID),
-            eq(proposals.isDeleted, false)
+            eq(proposals.isDeleted, 0)
           )
         );
 
@@ -230,7 +230,7 @@ describe('Data Isolation - Organization & Operating Unit Filtering', () => {
           and(
             eq(pipelineOpportunities.organizationId, ORG1_ID),
             eq(pipelineOpportunities.operatingUnitId, ORG1_OU1_ID),
-            eq(pipelineOpportunities.isDeleted, false)
+            eq(pipelineOpportunities.isDeleted, 0)
           )
         );
 
@@ -350,7 +350,7 @@ describe('Data Isolation - Organization & Operating Unit Filtering', () => {
           and(
             eq(grants.organizationId, ORG1_ID),
             eq(grants.operatingUnitId, ORG1_OU1_ID),
-            eq(grants.isDeleted, false)
+            eq(grants.isDeleted, 0)
           )
         );
 
@@ -372,7 +372,7 @@ describe('Data Isolation - Organization & Operating Unit Filtering', () => {
           and(
             eq(projects.organizationId, ORG1_ID),
             eq(projects.operatingUnitId, ORG1_OU1_ID),
-            eq(projects.isDeleted, false)
+            eq(projects.isDeleted, 0)
           )
         );
 
@@ -383,7 +383,7 @@ describe('Data Isolation - Organization & Operating Unit Filtering', () => {
           and(
             eq(projects.organizationId, ORG1_ID),
             eq(projects.operatingUnitId, ORG1_OU2_ID),
-            eq(projects.isDeleted, false)
+            eq(projects.isDeleted, 0)
           )
         );
 
@@ -409,7 +409,7 @@ describe('Data Isolation - Organization & Operating Unit Filtering', () => {
           and(
             eq(proposals.organizationId, ORG1_ID),
             eq(proposals.operatingUnitId, ORG1_OU1_ID),
-            eq(proposals.isDeleted, false)
+            eq(proposals.isDeleted, 0)
           )
         );
 
@@ -421,7 +421,7 @@ describe('Data Isolation - Organization & Operating Unit Filtering', () => {
           and(
             eq(proposals.organizationId, ORG1_ID),
             eq(proposals.operatingUnitId, ORG1_OU2_ID),
-            eq(proposals.isDeleted, false)
+            eq(proposals.isDeleted, 0)
           )
         );
 

@@ -19,68 +19,68 @@ export function SalaryScaleGuideline({
  language, isRTL }: GuidelineProps) {
  const { t } = useTranslation();
  const localT = {
- title: t.system.salaryScale.salaryScaleTableGuideline,
- subtitle: t.system.salaryScale.salaryScaleGuidelineSubtitle,
+ title: t.salaryScale.salaryScaleTableGuideline,
+ subtitle: t.salaryScale.salaryScaleGuidelineSubtitle,
 
  // Section A: Grade Definition
- sectionA: t.system.salaryScale.aSalaryGradeDefinition,
- gradeDefinition: t.system.salaryScale.gradeDefinition,
+ sectionA: t.salaryScale.aSalaryGradeDefinition,
+ gradeDefinition: t.salaryScale.gradeDefinition,
  
- gradeExamples: t.system.salaryScale.gradeExamples,
+ gradeExamples: t.salaryScale.gradeExamples,
  grades: [
  {
  grade: 'G1',
- title: t.system.salaryScale.entryLevel,
- description: t.system.salaryScale.entryLevel
+ title: t.salaryScale.entryLevel,
+ description: t.salaryScale.entryLevel
  },
  {
  grade: 'G2',
- title: t.system.salaryScale.juniorLevel,
- description: t.system.salaryScale.juniorLevel
+ title: t.salaryScale.juniorLevel,
+ description: t.salaryScale.juniorLevel
  },
  {
  grade: 'G3',
- title: t.system.salaryScale.midLevel,
- description: t.system.salaryScale.midLevel
+ title: t.salaryScale.midLevel,
+ description: t.salaryScale.midLevel
  },
  {
  grade: 'G4',
- title: t.system.salaryScale.seniorLevel,
- description: t.system.salaryScale.seniorLevel
+ title: t.salaryScale.seniorLevel,
+ description: t.salaryScale.seniorLevel
  },
  {
  grade: 'G5',
- title: t.system.salaryScale.executiveLevel,
- description: t.system.salaryScale.executiveLevel
+ title: t.salaryScale.executiveLevel,
+ description: t.salaryScale.executiveLevel
  }
  ],
 
  // Section B: Position vs Grade
- sectionB: t.system.salaryScale.bPositionVsGradeGuidance,
- positionGuidance: t.system.salaryScale.positionGuidance,
+ sectionB: t.salaryScale.bPositionVsGradeGuidance,
+ positionGuidance: t.salaryScale.positionGuidance,
  
- positionNote: t.system.salaryScale.positionNote,
+ positionNote: t.salaryScale.positionNote,
 
  // Section C: Step Definition
- sectionC: t.system.salaryScale.cStepDefinition,
- stepTitle: t.system.salaryScale.whatIsAStep,
- stepDefinition: t.system.salaryScale.stepDefinition,
+ sectionC: t.salaryScale.cStepDefinition,
+ stepTitle: t.salaryScale.whatIsAStep,
+ stepDefinition: t.salaryScale.stepDefinition,
  
- stepExplanation: t.system.salaryScale.stepExplanation,
+ stepExplanation: t.salaryScale.stepExplanation,
  
- stepProgression: t.system.salaryScale.stepProgression,
- stepRules: t.system.salaryScale.stepRules,
+ stepProgression: t.salaryScale.stepProgression,
+ stepRules: t.salaryScale.stepRules,
 
  // Section D: Payroll Warning
- sectionD: t.system.salaryScale.dPayrollDependencyWarning,
- warningTitle: t.system.salaryScale.criticalWarning,
- warningText: t.system.salaryScale.warningText,
+ sectionD: t.salaryScale.dPayrollDependencyWarning,
+ warningTitle: t.salaryScale.criticalWarning,
+ warningText: t.salaryScale.warningText,
  
- warningRules: t.system.salaryScale.warningRules,
+ warningRules: t.salaryScale.warningRules,
 
  // Additional Notes
- notesTitle: t.system.salaryScale.importantNotes,
- notes: t.system.salaryScale.notes
+ notesTitle: t.salaryScale.importantNotes,
+ notes: t.salaryScale.notes
  };
 
  return (

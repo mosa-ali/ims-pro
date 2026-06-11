@@ -309,7 +309,7 @@ export const journalEntriesRouter = router({
       await db
         .update(journalEntries)
         .set({
-          deletedAt: new Date(),
+          deletedAt: new Date().toISOString(),
           deletedBy: ctx.user?.id,
         })
         .where(eq(journalEntries.id, input.id));

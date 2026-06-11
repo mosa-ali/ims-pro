@@ -48,7 +48,7 @@ export const activitiesRouter = router({
             eq(activities.projectId, input.projectId),
             eq(activities.organizationId, organizationId),
             eq(activities.operatingUnitId, operatingUnitId),
-            eq(activities.isDeleted, false) // MANDATORY: Filter soft-deleted records
+            eq(activities.isDeleted, 0) // MANDATORY: Filter soft-deleted records
           )
         )
         .orderBy(desc(activities.createdAt));
@@ -77,7 +77,7 @@ export const activitiesRouter = router({
             eq(activities.projectId, input.projectId),
             eq(activities.organizationId, organizationId),
             eq(activities.operatingUnitId, operatingUnitId),
-            eq(activities.isDeleted, false) // MANDATORY: Filter soft-deleted records
+            eq(activities.isDeleted, 0) // MANDATORY: Filter soft-deleted records
           )
         );
       
@@ -150,7 +150,7 @@ export const activitiesRouter = router({
             eq(activities.activityCode, input.activityCode),
             eq(activities.organizationId, organizationId),
             eq(activities.operatingUnitId, operatingUnitId),
-            eq(activities.isDeleted, false)
+            eq(activities.isDeleted, 0)
           )
         )
         .limit(1);
@@ -402,8 +402,8 @@ export const activitiesRouter = router({
       await db
         .update(activities)
         .set({
-          isDeleted: true,
-          deletedAt: new Date(),
+          isDeleted: 1,
+          deletedAt: new Date().toISOString().slice(0, 19).replace('T', ' '),
           deletedBy: ctx.user?.id,
         })
         .where(and(
@@ -440,7 +440,7 @@ export const activitiesRouter = router({
             eq(activities.projectId, input.projectId),
             eq(activities.organizationId, organizationId),
             eq(activities.operatingUnitId, operatingUnitId),
-            eq(activities.isDeleted, false)
+            eq(activities.isDeleted, 0)
           )
         )
         .orderBy(activities.activityCode);

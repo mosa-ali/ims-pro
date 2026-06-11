@@ -78,7 +78,7 @@ export function StaffDictionary() {
  // Fetch employees from database using tRPC with organization/OU filtering
  const { data: employees, isLoading, error } = trpc.hrEmployees.getAll.useQuery(
  {},
- { enabled: organizationId > 0 && operatingUnitId > 0 }
+ { enabled: organizationId > 0 }
  );
 
  // Transform database employees to StaffMember format

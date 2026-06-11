@@ -16,9 +16,10 @@
  * ============================================================================
  */
 
-import cron from 'node-cron';
+import * as cron from "node-cron";
 import { getDb } from '../db';
 import { TeamsShiftsSyncService } from '../services/teamsShiftsSyncService';
+import { MicrosoftGraphClient } from '../_core/microsoftGraphClient';
 import { organizations } from '../../drizzle/schema';
 
 /**
@@ -86,18 +87,52 @@ export class TeamsShiftsSyncJob {
 
           console.log(`Syncing Teams Shifts for organization: ${org.id}`);
 
-          // Run sync service
-          await teamsShiftsSyncService.syncShifts(org.id);
+          // Initialize Microsoft Graph Client for this organization
+          // TODO: Get the appropriate credentials for this organization
+          const graphClient = new MicrosoftGraphClient(
+            process.env.MICROSOFT_GRAPH_TOKEN || '',
+            process.env.MS_TENANT_ID || ''
+          );
 
-          successCount++;
+          // Create sync service instance
+          const syncService = new TeamsShiftsSyncService(
+            graphClient,
+            org.id
+          );
+
+          // Calculate date range (last 7 days)
+          const endDate = new Date().toISOString().split('T')[0];
+          const startDate = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
+            .toISOString()
+            .split('T')[0];
+
+          // Run sync
+          const result = await syncService.sync(startDate, endDate);
+
+          if (result.status === 'success' || result.status === 'partial') {
+            successCount++;
+            console.log(`Sync completed for organization ${org.id}:`, {
+              recordsCreated: result.recordsCreated,
+              recordsUpdated: result.recordsUpdated,
+              conflictsDetected: result.conflictsDetected,
+            });
+          } else {
+            errorCount++;
+            console.error(`Sync failed for organization ${org.id}:`, result.message);
+          }
         } catch (error) {
           errorCount++;
-          console.error(`Error syncing Teams Shifts for organization ${org.id}:`, error);
+          console.error(
+            `Error syncing Teams Shifts for organization ${org.id}:`,
+            error
+          );
         }
       }
 
       const duration = Date.now() - startTime;
-      console.log(`Teams Shifts sync completed in ${duration}ms - Success: ${successCount}, Errors: ${errorCount}`);
+      console.log(
+        `Teams Shifts sync completed in ${duration}ms - Success: ${successCount}, Errors: ${errorCount}`
+      );
     } catch (error) {
       console.error('Teams Shifts sync job failed:', error);
     } finally {

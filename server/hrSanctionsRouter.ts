@@ -43,7 +43,7 @@ export const hrSanctionsRouter = router({
       
       const conditions = [
         eq(hrSanctions.organizationId, organizationId),
-        eq(hrSanctions.isDeleted, false),
+        eq(hrSanctions.isDeleted, 0),
       ];
       
       if (input.employeeId) {
@@ -83,7 +83,7 @@ export const hrSanctionsRouter = router({
           and(
             eq(hrSanctions.id, input.id),
             eq(hrSanctions.organizationId, organizationId),
-            eq(hrSanctions.isDeleted, false)
+            eq(hrSanctions.isDeleted, 0)
           )
         )
         .limit(1);
@@ -105,7 +105,7 @@ export const hrSanctionsRouter = router({
         .where(
           and(
             eq(hrSanctions.organizationId, organizationId),
-            eq(hrSanctions.isDeleted, false)
+            eq(hrSanctions.isDeleted, 0)
           )
         );
       
@@ -360,8 +360,8 @@ export const hrSanctionsRouter = router({
       await db
         .update(hrSanctions)
         .set({
-          isDeleted: true,
-          deletedAt: new Date(),
+          isDeleted: 1,
+          deletedAt: new Date().toISOString(),
           deletedBy: ctx.user?.id,
         })
         .where(and(eq(hrSanctions.id, input.id), eq(hrSanctions.organizationId, organizationId)));

@@ -5,7 +5,7 @@
  */
 
 import { z } from "zod";
-import { router, protectedProcedure } from "./_core/trpc";
+import { router, protectedProcedure, scopedProcedure } from "./_core/trpc";
 import { TRPCError } from "@trpc/server";
 
 /**
@@ -101,7 +101,7 @@ export const glPostingEngineRouter = router({
    * Create GL Journal Entry
    * Creates a new journal entry with debit/credit lines
    */
-  createJournalEntry: protectedProcedure
+  createJournalEntry: scopedProcedure
     .input(
       z.object({
         entryDate: z.string(),
@@ -141,8 +141,8 @@ export const glPostingEngineRouter = router({
 
       const journalEntry: GLJournalEntry = {
         id: `entry-${Date.now()}`,
-        organizationId: ctx.user?.organizationId || 0,
-        operatingUnitId: ctx.user?.operatingUnitId || 0,
+        organizationId: ctx.scope.organizationId || 0,
+        operatingUnitId: ctx.scope.operatingUnitId || 0,
         entryNumber,
         entryDate: input.entryDate,
         description: input.description,
@@ -179,7 +179,7 @@ export const glPostingEngineRouter = router({
    * Post GL Journal Entry
    * Posts a draft journal entry to the GL
    */
-  postJournalEntry: protectedProcedure
+  postJournalEntry: scopedProcedure
     .input(
       z.object({
         entryId: z.string(),
@@ -199,7 +199,7 @@ export const glPostingEngineRouter = router({
    * Reverse GL Journal Entry
    * Creates a reversing entry for a posted journal entry
    */
-  reverseJournalEntry: protectedProcedure
+  reverseJournalEntry: scopedProcedure
     .input(
       z.object({
         entryId: z.string(),
@@ -225,7 +225,7 @@ export const glPostingEngineRouter = router({
    * Get GL Journal Entry
    * Retrieves a journal entry by ID
    */
-  getJournalEntry: protectedProcedure
+  getJournalEntry: scopedProcedure
     .input(
       z.object({
         entryId: z.string(),
@@ -247,7 +247,7 @@ export const glPostingEngineRouter = router({
    * Create GL Posting Rule
    * Defines automatic GL posting for a financial event type
    */
-  createPostingRule: protectedProcedure
+  createPostingRule: scopedProcedure
     .input(
       z.object({
         eventType: z.nativeEnum(FinancialEventType),
@@ -262,8 +262,8 @@ export const glPostingEngineRouter = router({
         success: true,
         rule: {
           id: `rule-${Date.now()}`,
-          organizationId: ctx.user?.organizationId || 0,
-          operatingUnitId: ctx.user?.operatingUnitId || 0,
+          organizationId: ctx.scope.organizationId || 0,
+          operatingUnitId: ctx.scope.operatingUnitId || 0,
           eventType: input.eventType,
           debitAccount: input.debitAccount,
           creditAccount: input.creditAccount,
@@ -280,11 +280,11 @@ export const glPostingEngineRouter = router({
    * Get GL Posting Rules
    * Retrieves all posting rules for organization
    */
-  getPostingRules: protectedProcedure.query(async ({ ctx }) => {
+  getPostingRules: scopedProcedure.query(async ({ ctx }) => {
     // In production, this would fetch from database
     return {
-      organizationId: ctx.user?.organizationId || 0,
-      operatingUnitId: ctx.user?.operatingUnitId || 0,
+      organizationId: ctx.scope.organizationId || 0,
+      operatingUnitId: ctx.scope.operatingUnitId || 0,
       rules: [],
       totalRules: 0,
     };
@@ -294,7 +294,7 @@ export const glPostingEngineRouter = router({
    * Post Invoice to GL
    * Creates GL entries when invoice is approved
    */
-  postInvoiceToGL: protectedProcedure
+  postInvoiceToGL: scopedProcedure
     .input(
       z.object({
         invoiceId: z.number(),
@@ -312,8 +312,8 @@ export const glPostingEngineRouter = router({
 
       const journalEntry: GLJournalEntry = {
         id: `entry-${Date.now()}`,
-        organizationId: ctx.user?.organizationId || 0,
-        operatingUnitId: ctx.user?.operatingUnitId || 0,
+        organizationId: ctx.scope.organizationId || 0,
+        operatingUnitId: ctx.scope.operatingUnitId || 0,
         entryNumber: `JE-INV-${input.invoiceNumber}`,
         entryDate: new Date().toISOString().split("T")[0],
         description: `Invoice ${input.invoiceNumber} - ${input.description}`,
@@ -361,7 +361,7 @@ export const glPostingEngineRouter = router({
    * Post Payment to GL
    * Creates GL entries when payment is posted
    */
-  postPaymentToGL: protectedProcedure
+  postPaymentToGL: scopedProcedure
     .input(
       z.object({
         paymentId: z.number(),
@@ -379,8 +379,8 @@ export const glPostingEngineRouter = router({
 
       const journalEntry: GLJournalEntry = {
         id: `entry-${Date.now()}`,
-        organizationId: ctx.user?.organizationId || 0,
-        operatingUnitId: ctx.user?.operatingUnitId || 0,
+        organizationId: ctx.scope.organizationId || 0,
+        operatingUnitId: ctx.scope.operatingUnitId || 0,
         entryNumber: `JE-PAY-${input.paymentNumber}`,
         entryDate: new Date().toISOString().split("T")[0],
         description: `Payment ${input.paymentNumber} via ${input.paymentMethod}`,
@@ -427,7 +427,7 @@ export const glPostingEngineRouter = router({
    * Get GL Trial Balance
    * Retrieves trial balance for reconciliation
    */
-  getTrialBalance: protectedProcedure
+  getTrialBalance: scopedProcedure
     .input(
       z.object({
         asOfDate: z.string(),
@@ -437,8 +437,8 @@ export const glPostingEngineRouter = router({
     .query(async ({ ctx, input }) => {
       // In production, this would calculate from GL entries
       return {
-        organizationId: ctx.user?.organizationId || 0,
-        operatingUnitId: ctx.user?.operatingUnitId || 0,
+        organizationId: ctx.scope.organizationId || 0,
+        operatingUnitId: ctx.scope.operatingUnitId || 0,
         asOfDate: input.asOfDate,
         accounts: [],
         totalDebit: 0,
@@ -451,7 +451,7 @@ export const glPostingEngineRouter = router({
    * Get GL Account Balance
    * Retrieves balance for a specific GL account
    */
-  getAccountBalance: protectedProcedure
+  getAccountBalance: scopedProcedure
     .input(
       z.object({
         accountCode: z.string(),
@@ -475,7 +475,7 @@ export const glPostingEngineRouter = router({
    * Get GL Reconciliation Report
    * Generates GL reconciliation report
    */
-  getReconciliationReport: protectedProcedure
+  getReconciliationReport: scopedProcedure
     .input(
       z.object({
         periodStart: z.string(),
@@ -486,8 +486,8 @@ export const glPostingEngineRouter = router({
     .query(async ({ ctx, input }) => {
       // In production, this would generate from GL entries
       return {
-        organizationId: ctx.user?.organizationId || 0,
-        operatingUnitId: ctx.user?.operatingUnitId || 0,
+        organizationId: ctx.scope.organizationId || 0,
+        operatingUnitId: ctx.scope.operatingUnitId || 0,
         periodStart: input.periodStart,
         periodEnd: input.periodEnd,
         reconciliationStatus: "balanced",

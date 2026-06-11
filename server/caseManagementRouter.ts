@@ -30,6 +30,8 @@ import {
 import { eq, and, desc } from "drizzle-orm";
 import { canAccess, logSensitiveAccess } from "./rbacService";
 
+const nowSql = new Date().toISOString().slice(0, 19).replace('T', ' ');
+
 /**
  * Middleware: Enforce RBAC for Case Management (sensitive workspace).
  * Requires explicit screen-level permission for cases_list.
@@ -73,7 +75,7 @@ export const caseRecordsRouter = router({
       
       const conditions: any[] = [
         eq(caseRecords.projectId, input.projectId),
-        eq(caseRecords.isDeleted, false),
+        eq(caseRecords.isDeleted, 0),
       ];
 
       if (input.filters?.gender) {
@@ -117,7 +119,7 @@ export const caseRecordsRouter = router({
       
       const conditions: any[] = [
         eq(caseRecords.projectId, input.projectId),
-        eq(caseRecords.isDeleted, false),
+        eq(caseRecords.isDeleted, 0),
       ];
 
       if (input.filters?.gender) {
@@ -154,7 +156,7 @@ export const caseRecordsRouter = router({
         .from(caseRecords)
         .where(and(
           eq(caseRecords.id, input.id),
-          eq(caseRecords.isDeleted, false)
+          eq(caseRecords.isDeleted, 0)
         ));
       return caseRecord || null;
     }),
@@ -330,8 +332,8 @@ export const caseRecordsRouter = router({
       await db
         .update(caseRecords)
         .set({
-          isDeleted: true,
-          deletedAt: new Date(),
+          isDeleted: 1,
+          deletedAt: nowSql,
           deletedBy: ctx.user.id,
           updatedBy: ctx.user.id,
         })
@@ -356,7 +358,7 @@ export const caseRecordsRouter = router({
         .from(caseRecords)
         .where(and(
           eq(caseRecords.projectId, input.projectId),
-          eq(caseRecords.isDeleted, false)
+          eq(caseRecords.isDeleted, 0)
         ));
 
       // Get PSS sessions
@@ -365,7 +367,7 @@ export const caseRecordsRouter = router({
         .from(pssSessions)
         .where(and(
           eq(pssSessions.projectId, input.projectId),
-          eq(pssSessions.isDeleted, false)
+          eq(pssSessions.isDeleted, 0)
         ));
 
       // Get referrals
@@ -374,7 +376,7 @@ export const caseRecordsRouter = router({
         .from(caseReferrals)
         .where(and(
           eq(caseReferrals.projectId, input.projectId),
-          eq(caseReferrals.isDeleted, false)
+          eq(caseReferrals.isDeleted, 0)
         ));
 
       // Get CSS locations
@@ -383,7 +385,7 @@ export const caseRecordsRouter = router({
         .from(childSafeSpaces)
         .where(and(
           eq(childSafeSpaces.projectId, input.projectId),
-          eq(childSafeSpaces.isDeleted, false)
+          eq(childSafeSpaces.isDeleted, 0)
         ));
 
       // Get CSS activities
@@ -392,7 +394,7 @@ export const caseRecordsRouter = router({
         .from(cssActivities)
         .where(and(
           eq(cssActivities.projectId, input.projectId),
-          eq(cssActivities.isDeleted, false)
+          eq(cssActivities.isDeleted, 0)
         ));
 
       // Calculate KPIs
@@ -456,7 +458,7 @@ export const pssSessionsRouter = router({
         .leftJoin(caseRecords, eq(pssSessions.caseId, caseRecords.id))
         .where(and(
           eq(pssSessions.projectId, input.projectId),
-          eq(pssSessions.isDeleted, false)
+          eq(pssSessions.isDeleted, 0)
         ))
         .orderBy(desc(pssSessions.sessionDate));
 
@@ -483,7 +485,7 @@ export const pssSessionsRouter = router({
         .leftJoin(caseRecords, eq(pssSessions.caseId, caseRecords.id))
         .where(and(
           eq(pssSessions.projectId, input.projectId),
-          eq(pssSessions.isDeleted, false)
+          eq(pssSessions.isDeleted, 0)
         ))
         .orderBy(desc(pssSessions.sessionDate));
 
@@ -505,7 +507,7 @@ export const pssSessionsRouter = router({
         .from(pssSessions)
         .where(and(
           eq(pssSessions.caseId, input.caseId),
-          eq(pssSessions.isDeleted, false)
+          eq(pssSessions.isDeleted, 0)
         ))
         .orderBy(desc(pssSessions.sessionDate));
 
@@ -591,7 +593,7 @@ export const pssSessionsRouter = router({
       
       await db
         .update(pssSessions)
-        .set({ isDeleted: true })
+        .set({ isDeleted: 1 })
         .where(eq(pssSessions.id, input.id));
 
       return { success: true };
@@ -615,7 +617,7 @@ export const childSafeSpacesRouter = router({
         .from(childSafeSpaces)
         .where(and(
           eq(childSafeSpaces.projectId, input.projectId),
-          eq(childSafeSpaces.isDeleted, false)
+          eq(childSafeSpaces.isDeleted, 0)
         ))
         .orderBy(desc(childSafeSpaces.createdAt));
 
@@ -633,7 +635,7 @@ export const childSafeSpacesRouter = router({
         .from(childSafeSpaces)
         .where(and(
           eq(childSafeSpaces.projectId, input.projectId),
-          eq(childSafeSpaces.isDeleted, false)
+          eq(childSafeSpaces.isDeleted, 0)
         ))
         .orderBy(desc(childSafeSpaces.createdAt));
 
@@ -672,7 +674,7 @@ export const childSafeSpacesRouter = router({
         .values({
           ...input,
           organizationId: project.organizationId,
-          genderSegregation: input.genderSegregation || false,
+          genderSegregation: input.genderSegregation || 0,
           createdBy: ctx.user.id,
         })
         .$returningId();
@@ -715,7 +717,7 @@ export const childSafeSpacesRouter = router({
       
       await db
         .update(childSafeSpaces)
-        .set({ isDeleted: true })
+        .set({ isDeleted: 1 })
         .where(eq(childSafeSpaces.id, input.id));
 
       return { success: true };
@@ -744,7 +746,7 @@ export const cssActivitiesRouter = router({
         .leftJoin(childSafeSpaces, eq(cssActivities.cssId, childSafeSpaces.id))
         .where(and(
           eq(cssActivities.projectId, input.projectId),
-          eq(cssActivities.isDeleted, false)
+          eq(cssActivities.isDeleted, 0)
         ))
         .orderBy(desc(cssActivities.activityDate));
 
@@ -771,7 +773,7 @@ export const cssActivitiesRouter = router({
         .leftJoin(childSafeSpaces, eq(cssActivities.cssId, childSafeSpaces.id))
         .where(and(
           eq(cssActivities.projectId, input.projectId),
-          eq(cssActivities.isDeleted, false)
+          eq(cssActivities.isDeleted, 0)
         ))
         .orderBy(desc(cssActivities.activityDate));
 
@@ -793,7 +795,7 @@ export const cssActivitiesRouter = router({
         .from(cssActivities)
         .where(and(
           eq(cssActivities.cssId, input.cssId),
-          eq(cssActivities.isDeleted, false)
+          eq(cssActivities.isDeleted, 0)
         ))
         .orderBy(desc(cssActivities.activityDate));
 
@@ -879,7 +881,7 @@ export const cssActivitiesRouter = router({
       
       await db
         .update(cssActivities)
-        .set({ isDeleted: true })
+        .set({ isDeleted: 1 })
         .where(eq(cssActivities.id, input.id));
 
       return { success: true };
@@ -908,7 +910,7 @@ export const caseReferralsRouter = router({
         .leftJoin(caseRecords, eq(caseReferrals.caseId, caseRecords.id))
         .where(and(
           eq(caseReferrals.projectId, input.projectId),
-          eq(caseReferrals.isDeleted, false)
+          eq(caseReferrals.isDeleted, 0)
         ))
         .orderBy(desc(caseReferrals.referralDate));
 
@@ -935,7 +937,7 @@ export const caseReferralsRouter = router({
         .leftJoin(caseRecords, eq(caseReferrals.caseId, caseRecords.id))
         .where(and(
           eq(caseReferrals.projectId, input.projectId),
-          eq(caseReferrals.isDeleted, false)
+          eq(caseReferrals.isDeleted, 0)
         ))
         .orderBy(desc(caseReferrals.referralDate));
 
@@ -957,7 +959,7 @@ export const caseReferralsRouter = router({
         .from(caseReferrals)
         .where(and(
           eq(caseReferrals.caseId, input.caseId),
-          eq(caseReferrals.isDeleted, false)
+          eq(caseReferrals.isDeleted, 0)
         ))
         .orderBy(desc(caseReferrals.referralDate));
 
@@ -1049,7 +1051,7 @@ export const caseReferralsRouter = router({
       
       await db
         .update(caseReferrals)
-        .set({ isDeleted: true })
+        .set({ isDeleted: 1 })
         .where(eq(caseReferrals.id, input.id));
 
       return { success: true };
@@ -1078,7 +1080,7 @@ export const caseActivitiesRouter = router({
         .leftJoin(caseRecords, eq(caseActivities.caseId, caseRecords.id))
         .where(and(
           eq(caseActivities.projectId, input.projectId),
-          eq(caseActivities.isDeleted, false)
+          eq(caseActivities.isDeleted, 0)
         ))
         .orderBy(desc(caseActivities.activityDate));
 
@@ -1105,7 +1107,7 @@ export const caseActivitiesRouter = router({
         .leftJoin(caseRecords, eq(caseActivities.caseId, caseRecords.id))
         .where(and(
           eq(caseActivities.projectId, input.projectId),
-          eq(caseActivities.isDeleted, false)
+          eq(caseActivities.isDeleted, 0)
         ))
         .orderBy(desc(caseActivities.activityDate));
 
@@ -1127,7 +1129,7 @@ export const caseActivitiesRouter = router({
         .from(caseActivities)
         .where(and(
           eq(caseActivities.caseId, input.caseId),
-          eq(caseActivities.isDeleted, false)
+          eq(caseActivities.isDeleted, 0)
         ))
         .orderBy(desc(caseActivities.activityDate));
 
@@ -1205,7 +1207,7 @@ export const caseActivitiesRouter = router({
       
       await db
         .update(caseActivities)
-        .set({ isDeleted: true })
+        .set({ isDeleted: 1 })
         .where(eq(caseActivities.id, input.id));
 
       return { success: true };
@@ -1288,7 +1290,7 @@ const pdfRouter = router({
         const base64PDF = pdfBuffer.toString('base64');
         
         return {
-          success: true,
+          success: 1,
           pdf: base64PDF,
           filename: `CaseManagement_Report_${input.reportData.dateFrom}_${input.reportData.dateTo}.pdf`,
         };

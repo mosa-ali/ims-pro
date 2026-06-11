@@ -343,7 +343,7 @@ export const paymentsRouter = router({
       // Soft delete
       await db.update(payments)
         .set({ 
-          deletedAt: new Date(),
+          deletedAt: new Date().toISOString(),
           deletedBy: ctx.user?.id,
         })
         .where(and(
@@ -418,7 +418,7 @@ export const paymentsRouter = router({
       await db.update(payments)
         .set({ 
           status: 'approved',
-          approvedAt,
+          approvedAt: new Date().toISOString(),
           approvedBy: ctx.user?.id,
           approvalNotes: input.approvalNotes,
           updatedBy: ctx.user?.id,
@@ -481,7 +481,7 @@ export const paymentsRouter = router({
       await db.update(payments)
         .set({ 
           status: 'rejected',
-          rejectedAt: new Date(),
+          rejectedAt: new Date().toISOString(),
           rejectedBy: ctx.user?.id,
           rejectionReason: input.rejectionReason,
           updatedBy: ctx.user?.id,
@@ -553,7 +553,7 @@ export const paymentsRouter = router({
       await db.update(payments)
         .set({ 
           status: 'completed',
-          paidAt: input.completedDate || new Date(),
+          paidAt: input.completedDate || new Date().toISOString(),
           transactionReference: input.transactionReference,
           updatedBy: ctx.user?.id,
         })

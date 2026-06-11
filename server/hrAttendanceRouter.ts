@@ -956,7 +956,7 @@ export const hrAttendanceRouter = router({
 
     const pdfResult =
       await generateOfficialPdf({
-        organizationName:
+        organizationId:
           org[0].name,
 
         department:

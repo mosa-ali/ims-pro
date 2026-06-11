@@ -147,7 +147,7 @@ const { language, isRTL} = useLanguage();
  {
  title: t.logisticsWorkspace.addStockItem,
  description: t.logisticsWorkspace.addStockItemDesc,
- href: "/organization/logistics/stock/new",
+ href: "/organization/logistics/stock/items/new",
  icon: Package,
  },
  ];

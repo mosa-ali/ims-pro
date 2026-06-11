@@ -1840,7 +1840,7 @@ export const financeAssetDisposals = mysqlTable("finance_asset_disposals", {
 	rejectionReason: text(),
 	notes: text(),
 	attachments: json(),
-	organizationId: int().notNull().references(() => organizations.id, { onDelete: "cascade" } ),
+	organizationId: int().notNull(),
 	operatingUnitId: int(),
 	isDeleted: tinyint().default(0).notNull(),
 	deletedAt: timestamp({ mode: 'string' }),
@@ -8452,3 +8452,44 @@ export const hrPlanReviews = mysqlTable(
     index("idx_hr_plan_reviews_reviewerRole").on(table.reviewerRole),
   ]
 );
+
+/**
+ * GRN Approvals
+ */
+
+export const grnApprovals = mysqlTable("grn_approvals", {
+  id: int().autoincrement().primaryKey().notNull(),
+  
+  // Reference to the GRN being approved
+  grnId: int().notNull().references(() => goodsReceiptNotes.id, { onDelete: "cascade" }),
+  
+  // User who performed the approval/rejection
+  approvedBy: int().notNull().references(() => users.id, { onDelete: "restrict" }),
+  
+  // Status of this approval action
+  approvalStatus: mysqlEnum(['approved', 'rejected', 'pending', 'returned_for_revision']).default('pending').notNull(),
+  
+  // Remarks/comments from the approver
+  approvalRemarks: text(),
+  
+  // Date of approval action
+  approvalDate: timestamp({ mode: 'string' }).defaultNow().notNull(),
+  
+  // Soft delete support
+  isDeleted: tinyint().default(0).notNull(),
+  deletedAt: timestamp({ mode: 'string' }),
+  deletedBy: int(),
+  
+  // Audit trail
+  createdAt: timestamp({ mode: 'string' }).defaultNow().notNull(),
+  updatedAt: timestamp({ mode: 'string' }).defaultNow().onUpdateNow().notNull(),
+},
+(table) => [
+  // Indexes for common queries
+  index("idx_grn_approvals_grnId").on(table.grnId),
+  index("idx_grn_approvals_approvedBy").on(table.approvedBy),
+  index("idx_grn_approvals_approvalStatus").on(table.approvalStatus),
+  index("idx_grn_approvals_approvalDate").on(table.approvalDate),
+  // Composite index for finding latest approval for a GRN
+  index("idx_grn_approvals_latest").on(table.grnId, table.approvalDate),
+]);

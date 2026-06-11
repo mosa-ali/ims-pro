@@ -114,11 +114,11 @@ export const donorReportsRouter = router({
       }
 
       if (dateFrom) {
-        conditions.push(gte(donorReports.generatedAt, dateFrom));
+        conditions.push(gte(donorReports.generatedAt, new Date(dateFrom).toISOString()));
       }
 
       if (dateTo) {
-        conditions.push(lte(donorReports.generatedAt, dateTo));
+        conditions.push(lte(donorReports.generatedAt, new Date(dateTo).toISOString()));
       }
 
       // Get total count
@@ -624,8 +624,8 @@ export const donorReportsRouter = router({
       if (projectId) conditions.push(eq(donorReports.projectId, projectId));
       if (reportType) conditions.push(eq(donorReports.reportType, reportType));
       if (status) conditions.push(eq(donorReports.status, status));
-      if (dateFrom) conditions.push(gte(donorReports.generatedAt, dateFrom));
-      if (dateTo) conditions.push(lte(donorReports.generatedAt, dateTo));
+      if (dateFrom) conditions.push(gte(donorReports.generatedAt, new Date(dateFrom).toISOString()));
+      if (dateTo) conditions.push(lte(donorReports.generatedAt, new Date(dateTo).toISOString()));
 
       const reportsList = await db
         .select({

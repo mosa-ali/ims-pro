@@ -29,7 +29,7 @@ export const mealLearningRouter = router({
 
       const conditions: any[] = [
         eq(mealLearningItems.organizationId, organizationId),
-        eq(mealLearningItems.isDeleted, false),
+        eq(mealLearningItems.isDeleted, 0),
       ];
 
       if (input.type) conditions.push(eq(mealLearningItems.type, input.type));
@@ -63,7 +63,7 @@ export const mealLearningRouter = router({
         .where(and(
           eq(mealLearningItems.id, input.id),
           eq(mealLearningItems.organizationId, organizationId),
-          eq(mealLearningItems.isDeleted, false),
+          eq(mealLearningItems.isDeleted, 0),
         ));
 
       return item || null;
@@ -167,7 +167,7 @@ export const mealLearningRouter = router({
         .where(and(
           eq(mealLearningItems.id, id),
           eq(mealLearningItems.organizationId, organizationId),
-          eq(mealLearningItems.isDeleted, false),
+          eq(mealLearningItems.isDeleted, 0),
         ));
 
       // Audit log
@@ -195,8 +195,8 @@ export const mealLearningRouter = router({
 
       await db.update(mealLearningItems)
         .set({
-          isDeleted: true,
-          deletedAt: new Date(),
+          isDeleted: 1,
+          deletedAt: new Date().toISOString(),
           deletedBy: ctx.user?.id || null,
         })
         .where(and(
@@ -232,7 +232,7 @@ export const mealLearningRouter = router({
         .from(mealLearningItems)
         .where(and(
           eq(mealLearningItems.organizationId, organizationId),
-          eq(mealLearningItems.isDeleted, false),
+          eq(mealLearningItems.isDeleted, 0),
         ));
 
       const total = items.length;
@@ -259,7 +259,7 @@ export const mealLearningRouter = router({
         .where(and(
           eq(mealLearningActions.learningItemId, input.learningItemId),
           eq(mealLearningActions.organizationId, organizationId),
-          eq(mealLearningActions.isDeleted, false),
+          eq(mealLearningActions.isDeleted, 0),
         ))
         .orderBy(desc(mealLearningActions.createdAt));
     }),
@@ -315,7 +315,7 @@ export const mealLearningRouter = router({
         .where(and(
           eq(mealLearningActions.id, id),
           eq(mealLearningActions.organizationId, organizationId),
-          eq(mealLearningActions.isDeleted, false),
+          eq(mealLearningActions.isDeleted, 0),
         ));
 
       return { success: true };
@@ -330,8 +330,8 @@ export const mealLearningRouter = router({
 
       await db.update(mealLearningActions)
         .set({
-          isDeleted: true,
-          deletedAt: new Date(),
+          isDeleted: 1,
+          deletedAt: new Date().toISOString(),
           deletedBy: ctx.user?.id || null,
         })
         .where(and(

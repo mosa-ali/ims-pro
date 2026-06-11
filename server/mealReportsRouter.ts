@@ -48,7 +48,7 @@ export const mealReportsRouter = router({
       // ========== INDICATORS ==========
       const indicatorConditions: any[] = [
         eq(indicators.organizationId, organizationId),
-        eq(indicators.isDeleted, false),
+        eq(indicators.isDeleted, 0),
       ];
       if (operatingUnitId) {
         indicatorConditions.push(eq(indicators.operatingUnitId, operatingUnitId));
@@ -75,7 +75,7 @@ export const mealReportsRouter = router({
       // ========== SURVEYS ==========
       const surveyConditions: any[] = [
         eq(mealSurveys.organizationId, organizationId),
-        eq(mealSurveys.isDeleted, false),
+        eq(mealSurveys.isDeleted, 0),
       ];
       if (operatingUnitId) {
         surveyConditions.push(eq(mealSurveys.operatingUnitId, operatingUnitId));
@@ -92,7 +92,7 @@ export const mealReportsRouter = router({
       // Submissions count
       const submissionConditions: any[] = [
         eq(mealSurveySubmissions.organizationId, organizationId),
-        eq(mealSurveySubmissions.isDeleted, false),
+        eq(mealSurveySubmissions.isDeleted, 0),
       ];
       if (operatingUnitId) {
         submissionConditions.push(eq(mealSurveySubmissions.operatingUnitId, operatingUnitId));
@@ -107,7 +107,7 @@ export const mealReportsRouter = router({
       // ========== ACCOUNTABILITY ==========
       const accountabilityConditions: any[] = [
         eq(mealAccountabilityRecords.organizationId, organizationId),
-        eq(mealAccountabilityRecords.isDeleted, false),
+        eq(mealAccountabilityRecords.isDeleted, 0),
       ];
       if (operatingUnitId) {
         accountabilityConditions.push(eq(mealAccountabilityRecords.operatingUnitId, operatingUnitId));
@@ -127,7 +127,7 @@ export const mealReportsRouter = router({
       // ========== DATA COMPLETENESS ==========
       const dataEntryConditions: any[] = [
         eq(mealIndicatorDataEntries.organizationId, organizationId),
-        eq(mealIndicatorDataEntries.isDeleted, false),
+        eq(mealIndicatorDataEntries.isDeleted, 0),
       ];
       if (operatingUnitId) {
         dataEntryConditions.push(eq(mealIndicatorDataEntries.operatingUnitId, operatingUnitId));
@@ -146,7 +146,7 @@ export const mealReportsRouter = router({
       // ========== DOCUMENTS ==========
       const docConditions: any[] = [
         eq(mealDocuments.organizationId, organizationId),
-        eq(mealDocuments.isDeleted, false),
+        eq(mealDocuments.isDeleted, 0),
       ];
       if (operatingUnitId) {
         docConditions.push(eq(mealDocuments.operatingUnitId, operatingUnitId));
@@ -202,7 +202,7 @@ export const mealReportsRouter = router({
       
       const conditions: any[] = [
         eq(indicators.organizationId, organizationId),
-        eq(indicators.isDeleted, false),
+        eq(indicators.isDeleted, 0),
       ];
       if (operatingUnitId) {
         conditions.push(eq(indicators.operatingUnitId, operatingUnitId));
@@ -242,7 +242,7 @@ export const mealReportsRouter = router({
       // Get data entries for progress over time
       const dataEntryConditions: any[] = [
         eq(mealIndicatorDataEntries.organizationId, organizationId),
-        eq(mealIndicatorDataEntries.isDeleted, false),
+        eq(mealIndicatorDataEntries.isDeleted, 0),
       ];
       if (operatingUnitId) {
         dataEntryConditions.push(eq(mealIndicatorDataEntries.operatingUnitId, operatingUnitId));
@@ -314,7 +314,7 @@ export const mealReportsRouter = router({
       // Get surveys by type
       const surveyConditions: any[] = [
         eq(mealSurveys.organizationId, organizationId),
-        eq(mealSurveys.isDeleted, false),
+        eq(mealSurveys.isDeleted, 0),
       ];
       if (operatingUnitId) {
         surveyConditions.push(eq(mealSurveys.operatingUnitId, operatingUnitId));
@@ -346,7 +346,7 @@ export const mealReportsRouter = router({
       // Get submissions
       const submissionConditions: any[] = [
         eq(mealSurveySubmissions.organizationId, organizationId),
-        eq(mealSurveySubmissions.isDeleted, false),
+        eq(mealSurveySubmissions.isDeleted, 0),
       ];
       if (operatingUnitId) {
         submissionConditions.push(eq(mealSurveySubmissions.operatingUnitId, operatingUnitId));
@@ -385,7 +385,7 @@ export const mealReportsRouter = router({
       
       const conditions: any[] = [
         eq(mealAccountabilityRecords.organizationId, organizationId),
-        eq(mealAccountabilityRecords.isDeleted, false),
+        eq(mealAccountabilityRecords.isDeleted, 0),
       ];
       if (operatingUnitId) {
         conditions.push(eq(mealAccountabilityRecords.operatingUnitId, operatingUnitId));
@@ -453,7 +453,7 @@ export const mealReportsRouter = router({
       
       const conditions: any[] = [
         eq(projects.organizationId, organizationId),
-        eq(projects.isDeleted, false),
+        eq(projects.isDeleted, 0),
       ];
       if (operatingUnitId) {
         conditions.push(eq(projects.operatingUnitId, operatingUnitId));

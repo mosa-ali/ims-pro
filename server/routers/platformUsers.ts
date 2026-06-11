@@ -228,7 +228,7 @@ export const platformUsersRouter = router({
 
       // 2. Mark user as soft-deleted (system-level)
       await dbInstance.update(users).set({
-        isDeleted: true,
+        isDeleted: 1,
         isActive: false,
         deletedAt: new Date().toISOString().slice(0, 19).replace("T", " "),
         deletedBy: ctx.user.id,

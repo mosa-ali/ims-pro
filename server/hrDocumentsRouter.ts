@@ -28,7 +28,7 @@ export const hrDocumentsRouter = router({
       
       const conditions = [
         eq(hrDocuments.organizationId, organizationId),
-        eq(hrDocuments.isDeleted, false),
+        eq(hrDocuments.isDeleted, 0),
       ];
       
       if (input.employeeId) {
@@ -81,7 +81,7 @@ export const hrDocumentsRouter = router({
           and(
             eq(hrDocuments.id, input.id),
             eq(hrDocuments.organizationId, organizationId),
-            eq(hrDocuments.isDeleted, false)
+            eq(hrDocuments.isDeleted, 0)
           )
         )
         .limit(1);
@@ -106,7 +106,7 @@ export const hrDocumentsRouter = router({
           and(
             eq(hrDocuments.organizationId, organizationId),
             eq(hrDocuments.employeeId, input.employeeId),
-            eq(hrDocuments.isDeleted, false)
+            eq(hrDocuments.isDeleted, 0)
           )
         )
         .orderBy(desc(hrDocuments.createdAt));
@@ -126,7 +126,7 @@ export const hrDocumentsRouter = router({
         .where(
           and(
             eq(hrDocuments.organizationId, organizationId),
-            eq(hrDocuments.isDeleted, false)
+            eq(hrDocuments.isDeleted, 0)
           )
         );
       
@@ -286,8 +286,8 @@ export const hrDocumentsRouter = router({
       await db
         .update(hrDocuments)
         .set({
-          isDeleted: true,
-          deletedAt: new Date(),
+          isDeleted: 1,
+          deletedAt: new Date().toISOString(),
           deletedBy: ctx.user?.id,
         })
         .where(and(

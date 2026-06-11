@@ -24,12 +24,13 @@ export default function StockBatchesList() {
   const [page, setPage] = useState(0);
   const [statusFilter, setStatusFilter] = useState<string>("all");
 
+  // Status configuration using translation keys
   const statusConfig: Record<string, { label: string; color: string }> = {
-    available: { label: isRTL ? "متاح" : "Available", color: "bg-green-100 text-green-800 border-green-200" },
-    reserved: { label: isRTL ? "محجوز" : "Reserved", color: "bg-blue-100 text-blue-800 border-blue-200" },
-    depleted: { label: isRTL ? "مستنفد" : "Depleted", color: "bg-gray-100 text-gray-800 border-gray-200" },
-    expired: { label: isRTL ? "منتهي الصلاحية" : "Expired", color: "bg-red-100 text-red-800 border-red-200" },
-    quarantined: { label: isRTL ? "محجور" : "Quarantined", color: "bg-amber-100 text-amber-800 border-amber-200" },
+    available: { label: t.logistics?.available || "Available", color: "bg-green-100 text-green-800 border-green-200" },
+    reserved: { label: t.logistics?.reserved || "Reserved", color: "bg-blue-100 text-blue-800 border-blue-200" },
+    depleted: { label: t.logistics?.depletedStatus || "Depleted", color: "bg-gray-100 text-gray-800 border-gray-200" },
+    expired: { label: t.logistics?.expired || "Expired", color: "bg-red-100 text-red-800 border-red-200" },
+    quarantined: { label: t.logistics?.quarantinedStatus || "Quarantined", color: "bg-amber-100 text-amber-800 border-amber-200" },
   };
 
   const { data, isLoading } = trpc.logistics.stockMgmt.batches.listAll.useQuery({
@@ -66,19 +67,19 @@ export default function StockBatchesList() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background" dir={isRTL ? "rtl" : "ltr"}>
       {/* Header */}
       <div className="border-b bg-card">
         <div className="container py-6">
-          <BackButton href="/organization/logistics/stock" label={t.logistics?.backToStockManagement || (isRTL ? "إدارة المخزون" : "Back to Stock Management")} />
+          <BackButton href="/organization/logistics/stock" label={t.logistics?.backToStockManagement || "Back to Stock Management"} />
           <div className="flex items-center gap-3 mt-2">
             <div className="p-2 bg-teal-100 rounded-lg">
               <Layers className="h-6 w-6 text-teal-600" />
             </div>
             <div>
-              <h1 className="text-2xl font-bold text-start">{t.logistics?.stockBatches || (isRTL ? "دفعات المخزون" : "Stock Batches")}</h1>
+              <h1 className="text-2xl font-bold text-start">{t.logistics?.stockBatches || "Stock Batches"}</h1>
               <p className="text-muted-foreground text-start">
-                {t.logistics?.stockBatchesDesc || (isRTL ? "عرض جميع الدفعات مع الكميات المتاحة وتواريخ الانتهاء ومواقع المستودعات" : "All batches with available quantity, expiry dates, and warehouse locations")}
+                {t.logistics?.stockBatchesDesc || "All batches with available quantity, expiry dates, and warehouse locations"}
               </p>
             </div>
           </div>
@@ -90,19 +91,19 @@ export default function StockBatchesList() {
         <div className="flex items-center gap-4 mb-6">
           <Select value={statusFilter} onValueChange={(v) => { setStatusFilter(v); setPage(0); }}>
             <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder={isRTL ? "جميع الحالات" : "All Statuses"} />
+              <SelectValue placeholder={t.logistics?.allStatuses || "All Statuses"} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">{isRTL ? "جميع الحالات" : "All Statuses"}</SelectItem>
-              <SelectItem value="available">{isRTL ? "متاح" : "Available"}</SelectItem>
-              <SelectItem value="reserved">{isRTL ? "محجوز" : "Reserved"}</SelectItem>
-              <SelectItem value="depleted">{isRTL ? "مستنفد" : "Depleted"}</SelectItem>
-              <SelectItem value="expired">{isRTL ? "منتهي الصلاحية" : "Expired"}</SelectItem>
-              <SelectItem value="quarantined">{isRTL ? "محجور" : "Quarantined"}</SelectItem>
+              <SelectItem value="all">{t.logistics?.allStatuses || "All Statuses"}</SelectItem>
+              <SelectItem value="available">{t.logistics?.available || "Available"}</SelectItem>
+              <SelectItem value="reserved">{t.logistics?.reserved || "Reserved"}</SelectItem>
+              <SelectItem value="depleted">{t.logistics?.depletedStatus || "Depleted"}</SelectItem>
+              <SelectItem value="expired">{t.logistics?.expired || "Expired"}</SelectItem>
+              <SelectItem value="quarantined">{t.logistics?.quarantinedStatus || "Quarantined"}</SelectItem>
             </SelectContent>
           </Select>
           <span className="text-sm text-muted-foreground">
-            {isRTL ? `${total} إجمالي الدفعات` : `${total} total batches`}
+            {t.common?.total} {total} {t.logistics?.stockBatches || "batches"}
           </span>
         </div>
 
@@ -112,18 +113,18 @@ export default function StockBatchesList() {
             <Table>
               <TableHeader>
                 <TableRow className="bg-muted/50">
-                  <TableHead className="w-[120px]">{isRTL ? "رقم الدفعة" : "Batch #"}</TableHead>
-                  <TableHead>{isRTL ? "الصنف" : "Item"}</TableHead>
-                  <TableHead className="w-[100px]">{isRTL ? "الفئة" : "Category"}</TableHead>
-                  <TableHead className="w-[100px] text-center">{isRTL ? "مقبول" : "Accepted"}</TableHead>
-                  <TableHead className="w-[100px] text-center">{isRTL ? "صادر" : "Issued"}</TableHead>
-                  <TableHead className="w-[100px] text-center font-semibold">{isRTL ? "متاح" : "Available"}</TableHead>
-                  <TableHead className="w-[100px] text-center">{isRTL ? "محجوز" : "Reserved"}</TableHead>
-                  <TableHead className="w-[100px] text-end">{isRTL ? "سعر الوحدة" : "Unit Cost"}</TableHead>
-                  <TableHead className="w-[110px]">{isRTL ? "تاريخ الانتهاء" : "Expiry Date"}</TableHead>
-                  <TableHead className="w-[100px]">{isRTL ? "الحالة" : "Status"}</TableHead>
-                  <TableHead>{t.logistics?.warehouse || (isRTL ? "المستودع" : "Warehouse")}</TableHead>
-                  <TableHead className="w-[100px]">{isRTL ? "تاريخ الاستلام" : "Received"}</TableHead>
+                  <TableHead className="w-[120px]">{t.logistics?.batchNumber || "Batch #"}</TableHead>
+                  <TableHead>{t.logistics?.item || "Item"}</TableHead>
+                  <TableHead className="w-[100px]">{t.logistics?.category || "Category"}</TableHead>
+                  <TableHead className="w-[100px] text-center">{t.logistics?.acceptedQty || "Accepted"}</TableHead>
+                  <TableHead className="w-[100px] text-center">{t.logistics?.issued || "Issued"}</TableHead>
+                  <TableHead className="w-[100px] text-center font-semibold">{t.logistics?.available || "Available"}</TableHead>
+                  <TableHead className="w-[100px] text-center">{t.logistics?.reserved || "Reserved"}</TableHead>
+                  <TableHead className="w-[100px] text-end">{t.logistics?.unitPrice || "Unit Cost"}</TableHead>
+                  <TableHead className="w-[110px]">{t.logistics?.expiryDate || "Expiry Date"}</TableHead>
+                  <TableHead className="w-[100px]">{t.common?.status || "Status"}</TableHead>
+                  <TableHead>{t.logistics?.warehouse || "Warehouse"}</TableHead>
+                  <TableHead className="w-[100px]">{t.logistics?.receiptDate || "Received"}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -136,7 +137,7 @@ export default function StockBatchesList() {
                 ) : items.length === 0 ? (
                   <TableRow>
                     <TableCell colSpan={12} className="text-center py-12 text-muted-foreground">
-                      {isRTL ? "لا توجد دفعات" : "No batches found"}
+                      {t.logistics?.noRecordsFound || "No records found"}
                     </TableCell>
                   </TableRow>
                 ) : (
@@ -188,7 +189,7 @@ export default function StockBatchesList() {
                                 </span>
                               </TooltipTrigger>
                               <TooltipContent>
-                                {exp ? (isRTL ? "منتهي الصلاحية" : "Expired") : nearExp ? (isRTL ? "ينتهي خلال 30 يوم" : "Expires within 30 days") : (isRTL ? "تاريخ الانتهاء" : "Expiry date")}
+                                {exp ? (t.logistics?.expired || "Expired") : nearExp ? (t.logistics?.nearExpiry || "Expires within 30 days") : (t.logistics?.expiryDate || "Expiry date")}
                               </TooltipContent>
                             </Tooltip>
                           </TooltipProvider>
@@ -216,19 +217,19 @@ export default function StockBatchesList() {
           {totalPages > 1 && (
             <div className="flex items-center justify-between px-4 py-3 border-t border-border">
               <span className="text-sm text-muted-foreground">
-                {isRTL ? `صفحة ${page + 1} من ${totalPages} (${total} دفعة)` : `Page ${page + 1} of ${totalPages} (${total} batches)`}
+                {t.tables?.page || "Page"} {page + 1} {t.common?.of || "of"} {totalPages} ({total} {t.logistics?.stockBatches || "batches"})
               </span>
               <div className="flex items-center gap-1">
-                <Button variant="ghost" size="icon" onClick={() => setPage(0)} disabled={page === 0}>
+                <Button variant="ghost" size="icon" onClick={() => setPage(0)} disabled={page === 0} title={t.logistics?.first || "First"}>
                   <ChevronsLeft className="h-4 w-4" />
                 </Button>
-                <Button variant="ghost" size="icon" onClick={() => setPage(p => Math.max(0, p - 1))} disabled={page === 0}>
+                <Button variant="ghost" size="icon" onClick={() => setPage(p => Math.max(0, p - 1))} disabled={page === 0} title={t.common?.previous || "Previous"}>
                   <ChevronLeft className="h-4 w-4" />
                 </Button>
-                <Button variant="ghost" size="icon" onClick={() => setPage(p => Math.min(totalPages - 1, p + 1))} disabled={page >= totalPages - 1}>
+                <Button variant="ghost" size="icon" onClick={() => setPage(p => Math.min(totalPages - 1, p + 1))} disabled={page >= totalPages - 1} title={t.common?.next || "Next"}>
                   <ChevronRight className="h-4 w-4" />
                 </Button>
-                <Button variant="ghost" size="icon" onClick={() => setPage(totalPages - 1)} disabled={page >= totalPages - 1}>
+                <Button variant="ghost" size="icon" onClick={() => setPage(totalPages - 1)} disabled={page >= totalPages - 1} title={t.logistics?.last || "Last"}>
                   <ChevronsRight className="h-4 w-4" />
                 </Button>
               </div>

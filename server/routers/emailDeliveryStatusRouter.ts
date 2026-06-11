@@ -19,7 +19,7 @@ export const emailDeliveryStatusRouter = router({
     .input(z.object({ outboxId: z.number(), organizationId: z.number() }))
     .query(async ({ input, ctx }) => {
       try {
-        if (!ctx.user.organizationIds?.includes(input.organizationId)) {
+        if (!ctx.user.organizationId) {
           throw new TRPCError({
             code: "FORBIDDEN",
             message: "You do not have access to this organization",
@@ -81,7 +81,7 @@ export const emailDeliveryStatusRouter = router({
     .input(z.object({ outboxIds: z.array(z.number()), organizationId: z.number() }))
     .query(async ({ input, ctx }) => {
       try {
-        if (!ctx.user.organizationIds?.includes(input.organizationId)) {
+        if (!ctx.user.organizationId) {
           throw new TRPCError({
             code: "FORBIDDEN",
             message: "You do not have access to this organization",
@@ -119,7 +119,7 @@ export const emailDeliveryStatusRouter = router({
     .input(z.object({ organizationId: z.number() }))
     .query(async ({ input, ctx }) => {
       try {
-        if (!ctx.user.organizationIds?.includes(input.organizationId)) {
+        if (!ctx.user.organizationId) {
           throw new TRPCError({
             code: "FORBIDDEN",
             message: "You do not have access to this organization",
@@ -150,7 +150,7 @@ export const emailDeliveryStatusRouter = router({
     )
     .query(async ({ input, ctx }) => {
       try {
-        if (!ctx.user.organizationIds?.includes(input.organizationId)) {
+        if (!ctx.user.organizationId) {
           throw new TRPCError({
             code: "FORBIDDEN",
             message: "You do not have access to this organization",
@@ -279,7 +279,7 @@ export const emailDeliveryStatusRouter = router({
     )
     .query(async ({ input, ctx }) => {
       try {
-        if (!ctx.user.organizationIds?.includes(input.organizationId)) {
+        if (!ctx.user.organizationId) {
           throw new TRPCError({
             code: "FORBIDDEN",
             message: "You do not have access to this organization",
@@ -324,7 +324,7 @@ export const emailDeliveryStatusRouter = router({
     )
     .query(async ({ input, ctx }) => {
       try {
-        if (!ctx.user.organizationIds?.includes(input.organizationId)) {
+        if (!ctx.user.organizationId) {
           throw new TRPCError({
             code: "FORBIDDEN",
             message: "You do not have access to this organization",
@@ -369,7 +369,7 @@ export const emailDeliveryStatusRouter = router({
     )
     .query(async ({ input, ctx }) => {
       try {
-        if (!ctx.user.organizationIds?.includes(input.organizationId)) {
+        if (!ctx.user.organizationId) {
           throw new TRPCError({
             code: "FORBIDDEN",
             message: "You do not have access to this organization",

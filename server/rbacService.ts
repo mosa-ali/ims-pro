@@ -531,7 +531,7 @@ export async function getUserOverrides(
       and(
         eq(userPermissionOverrides.userId, userId),
         eq(userPermissionOverrides.organizationId, organizationId),
-        eq(userPermissionOverrides.isActive, true),
+        eq(userPermissionOverrides.isActive, 1),
         or(
           isNull(userPermissionOverrides.expiresAt),
           lte(now, userPermissionOverrides.expiresAt!)
@@ -661,7 +661,7 @@ export async function getEffectivePermissions(
     modules,
     screens,
     tabs,
-    isActive: record.isActive ?? true,
+    isActive: record.isActive ?? 1,
     overrides,
   };
 }

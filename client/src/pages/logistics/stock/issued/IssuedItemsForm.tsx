@@ -65,6 +65,7 @@ export default function IssuedItemsForm() {
   const [, navigate] = useLocation();
   const params = useParams();
   const isEdit = !!params.id;
+  const utils = trpc.useUtils();
 
   const [formData, setFormData] = useState({
     issuedTo: "",
@@ -79,6 +80,7 @@ export default function IssuedItemsForm() {
   const [selectedItemId, setSelectedItemId] = useState<string>("");
   const [requestedQty, setRequestedQty] = useState<string>("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+ 
 
   // Fetch stock items for dropdown
   const { data: stockItemsData } = trpc.logistics.stock.listItems.useQuery({
@@ -88,13 +90,13 @@ export default function IssuedItemsForm() {
   const stockItems = stockItemsData?.items || [];
 
   // If editing, fetch existing issue
-  const { data: existingIssue } = trpc.logistics.stockMgmt.issues.getById.useQuery(
+  const { data: existingIssue } = trpc.logistics.stockManagement.issues.getById.useQuery(
     { id: parseInt(params.id || "0") },
     { enabled: isEdit }
   );
 
   // Create mutation
-  const createMutation = trpc.logistics.stockMgmt.issues.create.useMutation();
+  const createMutation = trpc.logistics.stockManagement.issues.create.useMutation();
 
   // Populate form if editing
   useEffect(() => {
@@ -131,17 +133,19 @@ export default function IssuedItemsForm() {
   }, [existingIssue]);
 
   // Add item with FEFO/FIFO suggestion
+  // getSuggested is a query, not a mutation - will be called directly in handleAddItem
+
   const handleAddItem = async () => {
     const itemId = parseInt(selectedItemId);
     const qty = parseFloat(requestedQty);
     if (!itemId || !qty || qty <= 0) {
-      toast.error("Please select an item and enter a valid quantity");
+      toast.error(t.logistics.pleaseFillAllRequiredFields || "Please select an item and enter a valid quantity");
       return;
     }
 
     // Check if item already added
     if (lines.some(l => l.itemId === itemId)) {
-      toast.error("This item is already in the issue list. Remove it first to re-add.");
+      toast.error(t.logistics.itemAlreadyAdded || "This item is already in the issue list. Remove it first to re-add.");
       return;
     }
 
@@ -150,10 +154,12 @@ export default function IssuedItemsForm() {
 
     // Get FEFO/FIFO suggestion from backend
     try {
-      const suggestion = await trpc.logistics.stockMgmt.batches.getSuggested.query({
-        itemId,
-        requestedQty: qty,
-      });
+        // Call getSuggested query directly
+        const suggestion =
+        await utils.logistics.stockManagement.issues.getSuggested.fetch({
+          itemId,
+          requestedQty: qty,
+        });
 
       const newLine: IssueLine = {
         id: nextLineId(),
@@ -172,12 +178,12 @@ export default function IssuedItemsForm() {
       setRequestedQty("");
 
       if (suggestion.shortfall > 0) {
-        toast.warning(`Partial allocation: ${suggestion.totalAllocated} of ${qty} available. Shortfall: ${suggestion.shortfall}`);
+        toast.warning(`${t.logistics.partialAllocation || "Partial allocation"}: ${suggestion.totalAllocated} of ${qty} available. ${t.logistics.shortfall || "Shortfall"}: ${suggestion.shortfall}`);
       } else {
-        toast.success(`${suggestion.allocationMethod} allocation: ${suggestion.allocations.length} batch(es) selected`);
+        toast.success(`${suggestion.allocationMethod} ${t.logistics.allocation || "allocation"}: ${suggestion.allocations.length} batch(es) selected`);
       }
     } catch (err: any) {
-      toast.error(err.message || "Failed to get batch allocation");
+      toast.error(err.message || t.common.errorOccurred);
     }
   };
 
@@ -187,11 +193,11 @@ export default function IssuedItemsForm() {
 
   const handleSubmit = async () => {
     if (!formData.issuedTo.trim()) {
-      toast.error("Please enter who the items are issued to");
+      toast.error(t.logistics.pleaseEnterWhoTheItemsAreIssuedTo || "Please enter who the items are issued to");
       return;
     }
     if (lines.length === 0) {
-      toast.error("Please add at least one item to issue");
+      toast.error(t.logistics.pleaseAddAtLeastOneItemToIssue || "Please add at least one item to issue");
       return;
     }
 
@@ -207,7 +213,7 @@ export default function IssuedItemsForm() {
     );
 
     if (issueLines.length === 0) {
-      toast.error("No batch allocations to issue. Check if stock is available.");
+      toast.error(t.logistics.noBatchAllocationsToIssue || "No batch allocations to issue. Check if stock is available.");
       return;
     }
 
@@ -223,10 +229,10 @@ export default function IssuedItemsForm() {
         lines: issueLines,
       });
 
-      toast.success(`Stock issue ${result.issueNumber} created successfully`);
+      toast.success(`${t.logistics.stockIssue || "Stock issue"} ${result.issueNumber} ${t.common.savedSuccessfully || "created successfully"}`);
       navigate("/organization/logistics/stock/issued");
     } catch (err: any) {
-      toast.error(err.message || "Failed to create stock issue");
+      toast.error(err.message || t.common.errorOccurred);
     } finally {
       setIsSubmitting(false);
     }
@@ -251,12 +257,12 @@ export default function IssuedItemsForm() {
       {/* Header */}
       <div className="border-b bg-card">
         <div className="container py-6">
-          <BackButton href="/organization/logistics/stock/issued" label={isRTL ? "المصروفات" : "Back to Issued Items"} />
+          <BackButton href="/organization/logistics/stock/issued" label={t.logistics.backToIssuedItems} />
           <h1 className="text-2xl font-bold text-start mt-2">
-            {isEdit ? (isRTL ? "تعديل إصدار المخزون" : "Edit Stock Issue") : (isRTL ? "إصدار مخزون جديد" : "New Stock Issue")}
+            {isEdit ? t.logistics.editIssue : t.logistics.newIssue}
           </h1>
           <p className="text-muted-foreground text-start">
-            {isRTL ? "إصدار الأصناف من المخزون باستخدام تخصيص الدفعات FEFO/FIFO" : "Issue items from stock using FEFO/FIFO batch allocation"}
+            {t.logistics.issueItemsFromStockUsingFefoFifoBatchAllocation || "Issue items from stock using FEFO/FIFO batch allocation"}
           </p>
         </div>
       </div>
@@ -265,20 +271,20 @@ export default function IssuedItemsForm() {
         {/* Issue Header Form */}
         <Card>
           <CardHeader>
-            <CardTitle>{isRTL ? "تفاصيل الإصدار" : "Issue Details"}</CardTitle>
+            <CardTitle>{t.logistics.issueDetails}</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               <div>
-                <Label>{isRTL ? "صادر إلى *" : "Issued To *"}</Label>
+                <Label>{t.logistics.issuedTo} *</Label>
                 <Input
                   value={formData.issuedTo}
                   onChange={(e) => setFormData(prev => ({ ...prev, issuedTo: e.target.value }))}
-                  placeholder={isRTL ? "اسم الشخص أو القسم أو المشروع" : "Person, department, or project name"}
+                  placeholder={t.logistics.personDepartmentOrProjectName || "Person, department, or project name"}
                 />
               </div>
               <div>
-                <Label>{isRTL ? "نوع المستلم" : "Recipient Type"}</Label>
+                <Label>{t.logistics.recipientType}</Label>
                 <Select
                   value={formData.issuedToType}
                   onValueChange={(v: any) => setFormData(prev => ({ ...prev, issuedToType: v }))}
@@ -287,35 +293,35 @@ export default function IssuedItemsForm() {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="person">{isRTL ? "شخص" : "Person"}</SelectItem>
-                    <SelectItem value="department">{isRTL ? "قسم" : "Department"}</SelectItem>
-                    <SelectItem value="project">{isRTL ? "مشروع" : "Project"}</SelectItem>
-                    <SelectItem value="activity">{isRTL ? "نشاط" : "Activity"}</SelectItem>
+                    <SelectItem value="person">{t.logistics.person}</SelectItem>
+                    <SelectItem value="department">{t.logistics.department}</SelectItem>
+                    <SelectItem value="project">{t.logistics.project}</SelectItem>
+                    <SelectItem value="activity">{t.logistics.activity}</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
               <div>
-                <Label>{t.logistics?.warehouse || (isRTL ? "المستودع" : "Warehouse")}</Label>
+                <Label>{t.logistics.warehouse}</Label>
                 <Input
                   value={formData.warehouseName}
                   onChange={(e) => setFormData(prev => ({ ...prev, warehouseName: e.target.value }))}
-                  placeholder={isRTL ? "اسم المستودع" : "Warehouse name"}
+                  placeholder={t.logistics.warehouseName || "Warehouse name"}
                 />
               </div>
               <div className="md:col-span-2">
-                <Label>{isRTL ? "الغرض" : "Purpose"}</Label>
+                <Label>{t.logistics.purpose}</Label>
                 <Input
                   value={formData.purpose}
                   onChange={(e) => setFormData(prev => ({ ...prev, purpose: e.target.value }))}
-                  placeholder={isRTL ? "غرض الإصدار" : "Purpose of issuance"}
+                  placeholder={t.logistics.purposeOfIssuance || "Purpose of issuance"}
                 />
               </div>
               <div>
-                <Label>{isRTL ? "ملاحظات" : "Remarks"}</Label>
+                <Label>{t.logistics.remarks}</Label>
                 <Textarea
                   value={formData.remarks}
                   onChange={(e) => setFormData(prev => ({ ...prev, remarks: e.target.value }))}
-                  placeholder={isRTL ? "ملاحظات إضافية" : "Additional notes"}
+                  placeholder={t.placeholders.additionalNotes || "Additional notes"}
                   rows={2}
                 />
               </div>
@@ -329,28 +335,29 @@ export default function IssuedItemsForm() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Sparkles className="h-5 w-5 text-amber-500" />
-                {isRTL ? "إضافة صنف (تخصيص تلقائي FEFO/FIFO)" : "Add Item (FEFO/FIFO Auto-Allocation)"}
+                {t.logistics.addItemFefoFifoAutoAllocation || "Add Item (FEFO/FIFO Auto-Allocation)"}
               </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="flex items-end gap-4">
                 <div className="flex-1">
-                  <Label>{isRTL ? "صنف المخزون" : "Stock Item"}</Label>
+                  <Label>{t.logistics.stockItem}</Label>
                   <Select value={selectedItemId} onValueChange={setSelectedItemId}>
                     <SelectTrigger>
-                      <SelectValue placeholder={isRTL ? "اختر صنفاً..." : "Select an item..."} />
+                      <SelectValue placeholder={t.common.select} />
                     </SelectTrigger>
                     <SelectContent>
-                      {stockItems.map((item: any) => (
-                        <SelectItem key={item.id} value={String(item.id)}>
-                          {item.itemCode} — {item.itemName} (Qty: {item.currentQuantity || 0})
+                      {Array.isArray(stockItems) &&
+                        stockItems.map((stockItem: any) => (
+                        <SelectItem key={stockItem.id} value={String(stockItem.id)}>
+                          {stockItem.itemCode} — {stockItem.itemName} (Qty: {stockItem.currentQuantity || 0})
                         </SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
                 </div>
                 <div className="w-[150px]">
-                  <Label>{isRTL ? "الكمية" : "Quantity"}</Label>
+                  <Label>{t.logistics.quantity}</Label>
                   <Input
                     type="number"
                     min="0.01"
@@ -362,12 +369,11 @@ export default function IssuedItemsForm() {
                 </div>
                 <Button onClick={handleAddItem} className="shrink-0">
                   <Plus className="h-4 w-4 me-2" />
-                  {isRTL ? "إضافة وتخصيص" : "Add & Allocate"}
+                  {t.logistics.addAndAllocate || "Add & Allocate"}
                 </Button>
               </div>
               <p className="text-xs text-muted-foreground mt-2">
-                The system will automatically suggest batches using FEFO (First Expiry, First Out) for items with expiry dates, 
-                or FIFO (First In, First Out) for items without expiry dates.
+                {t.logistics.systemWillAutomaticallySuggestBatches || "The system will automatically suggest batches using FEFO (First Expiry, First Out) for items with expiry dates, or FIFO (First In, First Out) for items without expiry dates."}
               </p>
             </CardContent>
           </Card>
@@ -379,12 +385,12 @@ export default function IssuedItemsForm() {
             <CardHeader>
               <div className="flex items-center justify-between">
                 <CardTitle>
-                  {isRTL ? `بنود الإصدار (${totalItems} أصناف، ${totalQty} وحدات)` : `Issue Lines (${totalItems} items, ${totalQty} units)`}
+                  {t.logistics.issueLines || `Issue Lines`} ({totalItems} {t.logistics.item}, {totalQty} {t.logistics.unit})
                 </CardTitle>
                 {hasShortfall && (
                   <Badge variant="outline" className="bg-amber-100 text-amber-800 border-amber-200">
                     <AlertTriangle className="h-3 w-3 me-1" />
-                    {isRTL ? "تخصيص جزئي" : "Partial Allocation"}
+                    {t.logistics.partialAllocation}
                   </Badge>
                 )}
               </div>
@@ -398,14 +404,14 @@ export default function IssuedItemsForm() {
                       <div className="flex items-center gap-3">
                         <span className="font-semibold text-sm">{line.itemName}</span>
                         <Badge variant="outline" className="text-xs">
-                          {isRTL ? `المطلوب: ${line.requestedQty} ${line.unit}` : `Requested: ${line.requestedQty} ${line.unit}`}
+                          {t.logistics.requested}: {line.requestedQty} {line.unit}
                         </Badge>
                         <Badge variant="outline" className={`text-xs ${line.allocationMethod === "FEFO" ? "bg-amber-50 text-amber-700" : "bg-blue-50 text-blue-700"}`}>
                           {line.allocationMethod}
                         </Badge>
                         {line.shortfall > 0 && (
                           <Badge variant="outline" className="bg-red-50 text-red-700 text-xs">
-                            {isRTL ? `عجز: ${line.shortfall}` : `Shortfall: ${line.shortfall}`}
+                            {t.logistics.shortfall}: {line.shortfall}
                           </Badge>
                         )}
                       </div>
@@ -426,11 +432,11 @@ export default function IssuedItemsForm() {
                       <Table>
                         <TableHeader>
                           <TableRow className="bg-muted/30">
-                            <TableHead className="text-xs">{isRTL ? "رقم الدفعة" : "Batch #"}</TableHead>
-                            <TableHead className="text-xs text-center">{isRTL ? "الكمية للإصدار" : "Qty to Issue"}</TableHead>
-                            <TableHead className="text-xs">{isRTL ? "تاريخ الانتهاء" : "Expiry Date"}</TableHead>
-                            <TableHead className="text-xs text-end">{isRTL ? "سعر الوحدة" : "Unit Cost"}</TableHead>
-                            <TableHead className="text-xs text-end">{isRTL ? "قيمة البند" : "Line Value"}</TableHead>
+                            <TableHead className="text-xs">{t.logistics.batchNumber}</TableHead>
+                            <TableHead className="text-xs text-center">{t.logistics.qtyToIssue}</TableHead>
+                            <TableHead className="text-xs">{t.financeModule.expiryDate}</TableHead>
+                            <TableHead className="text-xs text-end">{t.logistics.unitCost}</TableHead>
+                            <TableHead className="text-xs text-end">{t.logistics.lineValue}</TableHead>
                           </TableRow>
                         </TableHeader>
                         <TableBody>
@@ -443,7 +449,7 @@ export default function IssuedItemsForm() {
                                   {isNearExpiry(alloc.expiryDate) && <Clock className="h-3 w-3" />}
                                   {alloc.expiryDate
                                     ? new Date(alloc.expiryDate).toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" })
-                                    : (isRTL ? "بدون انتهاء" : "No expiry")}
+                                    : t.logistics.noExpiry}
                                 </span>
                               </TableCell>
                               <TableCell className="text-end text-xs">${alloc.unitCost.toFixed(2)}</TableCell>
@@ -456,7 +462,7 @@ export default function IssuedItemsForm() {
                       </Table>
                     ) : (
                       <p className="text-sm text-red-500 py-2">
-                        {isRTL ? "لا توجد دفعات متاحة لهذا الصنف. لا يمكن الإصدار." : "No batches available for this item. Cannot issue."}
+                        {t.logistics.noBatchesAvailableForThisItem || "No batches available for this item. Cannot issue."}
                       </p>
                     )}
                   </div>
@@ -466,13 +472,13 @@ export default function IssuedItemsForm() {
               {/* Summary */}
               <div className="mt-6 pt-4 border-t flex items-center justify-between">
                 <div className="flex items-center gap-6 text-sm">
-                  <span>{isRTL ? "إجمالي الأصناف" : "Total Items"}: <strong>{totalItems}</strong></span>
-                  <span>{isRTL ? "إجمالي الكمية" : "Total Qty"}: <strong>{totalQty}</strong></span>
-                  <span>{isRTL ? "إجمالي القيمة" : "Total Value"}: <strong>${totalValue.toFixed(2)}</strong></span>
+                  <span>{t.logistics.totalItems}: <strong>{totalItems}</strong></span>
+                  <span>{t.logistics.totalQty}: <strong>{totalQty}</strong></span>
+                  <span>{t.logistics.totalValue}: <strong>${totalValue.toFixed(2)}</strong></span>
                 </div>
                 <div className="flex items-center gap-3">
                   <Button variant="outline" asChild>
-                    <Link href="/organization/logistics/stock/issued">{isRTL ? "إلغاء" : "Cancel"}</Link>
+                    <Link href="/organization/logistics/stock/issued">{t.common.cancel}</Link>
                   </Button>
                   <Button
                     onClick={handleSubmit}
@@ -483,7 +489,7 @@ export default function IssuedItemsForm() {
                     ) : (
                       <Save className="h-4 w-4 me-2" />
                     )}
-                    {isEdit ? (isRTL ? "تحديث الإصدار" : "Update Issue") : (isRTL ? "إنشاء الإصدار" : "Create Issue")}
+                    {isEdit ? t.logistics.updateIssue : t.logistics.createIssue}
                   </Button>
                 </div>
               </div>

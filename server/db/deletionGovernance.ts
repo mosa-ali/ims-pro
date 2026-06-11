@@ -127,7 +127,7 @@ async function checkDownstreamDocuments(
           .where(
             and(
               eq(quotationAnalyses.purchaseRequestId, docId),
-              eq(quotationAnalyses.isDeleted, false),
+              eq(quotationAnalyses.isDeleted, 0),
               eq(quotationAnalyses.organizationId, organizationId)
             )
           )
@@ -150,7 +150,7 @@ async function checkDownstreamDocuments(
           .where(
             and(
               eq(purchaseOrders.quotationAnalysisId, docId),
-              eq(purchaseOrders.isDeleted, false),
+              eq(purchaseOrders.isDeleted, 0),
               eq(purchaseOrders.organizationId, organizationId)
             )
           )
@@ -173,7 +173,7 @@ async function checkDownstreamDocuments(
           .where(
             and(
               eq(goodsReceiptNotes.purchaseOrderId, docId),
-              eq(goodsReceiptNotes.isDeleted, false),
+              eq(goodsReceiptNotes.isDeleted, 0),
               eq(goodsReceiptNotes.organizationId, organizationId)
             )
           )
@@ -196,7 +196,7 @@ async function checkDownstreamDocuments(
           .where(
             and(
               eq(deliveryNotes.grnId, docId),
-              eq(deliveryNotes.isDeleted, false),
+              eq(deliveryNotes.isDeleted, 0),
               eq(deliveryNotes.organizationId, organizationId)
             )
           )
@@ -496,7 +496,7 @@ export async function performSoftDelete(
         await db
           .update(purchaseRequests)
           .set({
-            isDeleted: true,
+            isDeleted: 1,
             deletedAt: now,
             deletedBy: deletedBy,
           })
@@ -512,7 +512,7 @@ export async function performSoftDelete(
         await db
           .update(quotationAnalyses)
           .set({
-            isDeleted: true,
+            isDeleted: 1,
             deletedAt: now,
             deletedBy: deletedBy,
           })
@@ -528,7 +528,7 @@ export async function performSoftDelete(
         await db
           .update(purchaseOrders)
           .set({
-            isDeleted: true,
+            isDeleted: 1,
             deletedAt: now,
             deletedBy: deletedBy,
           })
@@ -544,7 +544,7 @@ export async function performSoftDelete(
         await db
           .update(goodsReceiptNotes)
           .set({
-            isDeleted: true,
+            isDeleted: 1,
             deletedAt: now,
             deletedBy: deletedBy,
           })
@@ -560,7 +560,7 @@ export async function performSoftDelete(
         await db
           .update(deliveryNotes)
           .set({
-            isDeleted: true,
+            isDeleted: 1,
             deletedAt: now,
             deletedBy: deletedBy,
           })

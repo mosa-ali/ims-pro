@@ -34,7 +34,7 @@ export const tasksRouter = router({
             eq(tasks.projectId, input.projectId),
             eq(tasks.organizationId, organizationId),
             eq(tasks.operatingUnitId, operatingUnitId),
-            eq(tasks.isDeleted, false)
+            eq(tasks.isDeleted, 0)
           )
         ).orderBy(desc(tasks.createdAt));
     }),
@@ -56,7 +56,7 @@ export const tasksRouter = router({
             eq(tasks.projectId, input.projectId),
             eq(tasks.organizationId, organizationId),
             eq(tasks.operatingUnitId, operatingUnitId),
-            eq(tasks.isDeleted, false)
+            eq(tasks.isDeleted, 0)
           )
         );
       
@@ -282,7 +282,7 @@ This is an automated notification from the IMS system.
         // Send notification for reassignment
         try {
           const [project] = await db.select().from(projects).where(eq(projects.id, existingTask.projectId)).limit(1);
-          const projectName = project?.code || `Project #${existingTask.projectId}`;
+          const projectName = project?.projectCode || `Project #${existingTask.projectId}`;
           
           await notifyOwner({
             title: `Task Reassigned: ${existingTask.taskName}`,
@@ -475,8 +475,8 @@ This is an automated notification from the IMS system.
       }
       
       await db.update(tasks).set({
-          isDeleted: true,
-          deletedAt: new Date(),
+          isDeleted: 1,
+          deletedAt: new Date().toISOString(),
           deletedBy: ctx.user?.id,
         }).where(and(
           eq(tasks.id, input.id),

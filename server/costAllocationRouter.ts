@@ -20,8 +20,12 @@ import {
   budgetReallocationLines,
   budgetItems,
   financeExchangeRates,
+  users,
+  organizations,
 } from "../drizzle/schema";
 import { eq, and, isNull, desc, sql, gte, lte } from "drizzle-orm";
+
+const nowSql = new Date().toISOString().slice(0, 19).replace('T', ' ');
 
 // ============================================
 // COST ALLOCATION ROUTER
@@ -105,6 +109,7 @@ export const costAllocationRouter = router({
     .mutation(async ({ input, ctx }) => {
       const db = await getDb();
       const { id, ...updateData } = input;
+      const { organizationId } = ctx.scope;
       await db
         .update(costPools)
         .set({ ...updateData, updatedBy: ctx.user.id })
@@ -116,10 +121,11 @@ export const costAllocationRouter = router({
     .input(z.object({ id: z.number() }))
     .mutation(async ({ input, ctx }) => {
       const db = await getDb();
+      const { organizationId } = ctx.scope;
       // Soft delete
       await db
         .update(costPools)
-        .set({ deletedAt: new Date(), deletedBy: ctx.user.id })
+        .set({ deletedAt: nowSql, deletedBy: ctx.user.id })
         .where(eq(costPools.id, input.id));
       return { success: true };
     }),
@@ -235,7 +241,7 @@ export const costAllocationRouter = router({
       const result = await db.insert(allocationRules).values({
         organizationId,
         ...input,
-        effectiveFrom: new Date(input.effectiveFrom),
+        effectiveFrom: input.effectiveFrom ? new Date(input.effectiveFrom) : null,
         effectiveTo: input.effectiveTo ? new Date(input.effectiveTo) : null,
         createdBy: ctx.user.id,
       });
@@ -389,10 +395,10 @@ export const costAllocationRouter = router({
         conditions.push(eq(costPoolTransactions.costPoolId, input.costPoolId));
       }
       if (input.startDate) {
-        conditions.push(gte(costPoolTransactions.transactionDate, new Date(input.startDate)));
+        conditions.push(gte(costPoolTransactions.transactionDate, new Date(input.startDate).toISOString()));
       }
       if (input.endDate) {
-        conditions.push(lte(costPoolTransactions.transactionDate, new Date(input.endDate)));
+        conditions.push(lte(costPoolTransactions.transactionDate, new Date(input.endDate).toISOString()));
       }
       
       const result = await db
@@ -424,7 +430,7 @@ export const costAllocationRouter = router({
       const result = await db.insert(costPoolTransactions).values({
         organizationId,
         ...input,
-        transactionDate: new Date(input.transactionDate),
+        transactionDate: typeof input.transactionDate === 'string' ? input.transactionDate : new Date().toISOString(),
         amount: String(input.amount),
         createdBy: ctx.user.id,
       });
@@ -460,7 +466,7 @@ export const costAllocationRouter = router({
         .from(projects)
         .where(and(
           eq(projects.organizationId, organizationId),
-          eq(projects.isDeleted, false)
+          eq(projects.isDeleted, 0)
         ));
       
       // Get all active allocation keys
@@ -469,7 +475,7 @@ export const costAllocationRouter = router({
         .from(allocationKeys)
         .where(and(
           eq(allocationKeys.organizationId, organizationId),
-          eq(allocationKeys.isActive, true)
+          eq(allocationKeys.isActive, 1)
         ));
       
       // Clear existing bases for this period
@@ -581,7 +587,7 @@ export const costAllocationRouter = router({
         .leftJoin(allocationKeys, eq(allocationRules.allocationKeyId, allocationKeys.id))
         .where(and(
           eq(allocationRules.organizationId, organizationId),
-          eq(allocationRules.isActive, true)
+          eq(allocationRules.isActive, 1)
         ));
       
       // Get allocation bases for this period
@@ -783,7 +789,7 @@ export const costAllocationRouter = router({
         .update(allocationPeriods)
         .set({
           status: "completed",
-          executedAt: new Date(),
+          executedAt: new Date().toISOString().slice(0, 19).replace('T', ' '),
           executedBy: ctx.user.id,
         })
         .where(eq(allocationPeriods.id, input.allocationPeriodId));
@@ -870,7 +876,7 @@ export const costAllocationRouter = router({
         .from(allocationRules)
         .where(and(
           eq(allocationRules.organizationId, organizationId),
-          eq(allocationRules.isActive, true)
+          eq(allocationRules.isActive, 1)
         ));
       
       // Count completed periods
@@ -1038,7 +1044,7 @@ export const costAllocationRouter = router({
       await db.insert(allocationReversals).values({
         organizationId,
         allocationPeriodId: input.allocationPeriodId,
-        reversalDate: new Date(),
+        reversalDate: new Date().toISOString().slice(0, 19).replace('T', ' '),
         reversalReason: input.reversalReason,
         reversalReasonAr: input.reversalReasonAr,
         originalJournalEntryIds: JSON.stringify(originalJournalEntryIds),
@@ -1074,7 +1080,7 @@ export const costAllocationRouter = router({
       const conditions = [eq(allocationTemplates.organizationId, organizationId)];
       
       if (input.isActive !== undefined) {
-        conditions.push(eq(allocationTemplates.isActive, input.isActive));
+        conditions.push(eq(allocationTemplates.isActive, Number(input.isActive)));
       }
       
       const templates = await db
@@ -1270,7 +1276,7 @@ export const costAllocationRouter = router({
             allocationKeyId: rule.allocationKeyId,
             effectiveFrom: input.startDate,
             effectiveTo: input.endDate,
-            isActive: true,
+            isActive: 1,
             createdBy: String(ctx.user.id),
           }))
         );
@@ -1368,7 +1374,7 @@ export const costAllocationRouter = router({
             eq(financeExchangeRates.organizationId, organizationId),
             eq(financeExchangeRates.fromCurrencyCode, input.currency),
             eq(financeExchangeRates.toCurrencyCode, "USD"),
-            eq(financeExchangeRates.isDeleted, false)
+            eq(financeExchangeRates.isDeleted, 0)
           ))
           .orderBy(desc(financeExchangeRates.effectiveDate))
           .limit(1);
@@ -1509,7 +1515,7 @@ export const costAllocationRouter = router({
         .update(budgetReallocations)
         .set({
           status: "pending_approval",
-          submittedAt: new Date(),
+          submittedAt: new Date().toISOString().slice(0, 19).replace('T', ' '),
           submittedBy: ctx.user.id,
         })
         .where(eq(budgetReallocations.id, input.id));
@@ -1531,7 +1537,7 @@ export const costAllocationRouter = router({
         .update(budgetReallocations)
         .set({
           status: "approved",
-          approvedAt: new Date(),
+          approvedAt: new Date().toISOString().slice(0, 19).replace('T', ' '),
           approvedBy: ctx.user.id,
         })
         .where(eq(budgetReallocations.id, input.id));
@@ -1557,7 +1563,7 @@ export const costAllocationRouter = router({
         .update(budgetReallocations)
         .set({
           status: "rejected",
-          rejectedAt: new Date(),
+          rejectedAt: new Date().toISOString().slice(0, 19).replace('T', ' '),
           rejectedBy: ctx.user.id,
           rejectionReason: input.rejectionReason,
           rejectionReasonAr: input.rejectionReasonAr,
@@ -1654,7 +1660,7 @@ export const costAllocationRouter = router({
         .update(budgetReallocations)
         .set({
           status: "executed",
-          executedAt: new Date(),
+          executedAt: new Date().toISOString().slice(0, 19).replace('T', ' '),
           executedBy: ctx.user.id,
           journalEntryId,
         })

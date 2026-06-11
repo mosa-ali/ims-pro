@@ -209,26 +209,12 @@ export const teamsIntegrationRouter = router({
         }
 
         // Trigger manual sync
-        const result = await syncJob.triggerManualSync(
-          input.organizationId,
-          input.operatingUnitId
-        );
-
-        console.log('Manual Teams Shifts sync completed', {
-          organizationId: input.organizationId,
-          status: result.status,
-          recordsCreated: result.recordsCreated,
-          recordsUpdated: result.recordsUpdated,
-        });
+        await syncJob.runSync();
 
         return {
           success: true,
-          syncStatus: result.status,
-          recordsCreated: result.recordsCreated,
-          recordsUpdated: result.recordsUpdated,
-          conflictsDetected: result.conflictsDetected,
-          errors: result.errors,
-          message: result.message,
+          message: 'Manual Teams Shifts sync triggered successfully',
+          organizationId: input.organizationId,
         };
       } catch (error) {
         console.error('Failed to trigger manual Teams Shifts sync', {

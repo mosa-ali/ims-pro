@@ -397,10 +397,10 @@ export const budgetItemsRouter = router({
       }
 
       // Calculate new total if numeric fields changed
-      const qty = updates.qty ?? parseFloat(currentItem.qty);
+      const quantity = updates.qty ?? parseFloat(currentItem.quantity);
       const unitCost = updates.unitCost ?? parseFloat(currentItem.unitCost);
       const recurrence = updates.recurrence ?? currentItem.recurrence;
-      const totalBudgetLine = qty * unitCost * recurrence;
+      const totalBudgetLine = quantity * unitCost * recurrence;
 
       // Map frontend field names to database columns
       const dbUpdates: any = {};

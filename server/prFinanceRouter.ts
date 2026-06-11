@@ -1141,7 +1141,7 @@ export const prFinanceRouter = router({
             .from(projects)
             .where(eq(projects.id, bl.projectId))
             .limit(1);
-          projectName = project?.name;
+          projectName = project?.title;
         }
 
         if (bl.donorId) {
@@ -1688,7 +1688,7 @@ export const prFinanceRouter = router({
       await db
         .update(procurementPayables)
         .set({
-          isDeleted: true,
+          isDeleted: 1,
           deletedBy: ctx.user.id,
           deletedAt: new Date().toISOString(),
         })
@@ -1751,7 +1751,7 @@ export const prFinanceRouter = router({
       await db
         .update(procurementPayables)
         .set({
-          isDeleted: true,
+          isDeleted: 1,
           deletedBy: ctx.user.id,
           deletedAt: new Date().toISOString(),
         })

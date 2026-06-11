@@ -40,11 +40,11 @@ export const exchangeRatesRouter = router({
       }
       if (input.effectiveDate) {
         const date = new Date(input.effectiveDate);
-        conditions.push(lte(financeExchangeRates.effectiveDate, date));
+        conditions.push(lte(financeExchangeRates.effectiveDate, new Date(input.effectiveDate).toISOString()));
         conditions.push(
           or(
             isNull(financeExchangeRates.expiryDate),
-            gte(financeExchangeRates.expiryDate, date)
+            gte(financeExchangeRates.expiryDate, new Date(input.expiryDate).toISOString())
           )
         );
       }
@@ -109,10 +109,10 @@ export const exchangeRatesRouter = router({
             eq(financeExchangeRates.organizationId, organizationId),
             eq(financeExchangeRates.fromCurrencyCode, input.fromCurrencyCode),
             eq(financeExchangeRates.toCurrencyCode, input.toCurrencyCode),
-            lte(financeExchangeRates.effectiveDate, date),
+            lte(financeExchangeRates.effectiveDate, new Date().toISOString()),
             or(
               isNull(financeExchangeRates.expiryDate),
-              gte(financeExchangeRates.expiryDate, date)
+              gte(financeExchangeRates.expiryDate, new Date().toISOString())
             ),
             eq(financeExchangeRates.isDeleted, 0)
           )
@@ -166,10 +166,10 @@ export const exchangeRatesRouter = router({
             eq(financeExchangeRates.organizationId, organizationId),
             eq(financeExchangeRates.fromCurrencyCode, input.fromCurrencyCode),
             eq(financeExchangeRates.toCurrencyCode, input.toCurrencyCode),
-            lte(financeExchangeRates.effectiveDate, date),
+            lte(financeExchangeRates.effectiveDate, new Date().toISOString()),
             or(
               isNull(financeExchangeRates.expiryDate),
-              gte(financeExchangeRates.expiryDate, date)
+              gte(financeExchangeRates.expiryDate, new Date().toISOString())
             ),
             eq(financeExchangeRates.isDeleted, 0)
           )
@@ -358,7 +358,7 @@ export const exchangeRatesRouter = router({
                 eq(financeExchangeRates.organizationId, organizationId),
                 eq(financeExchangeRates.fromCurrencyCode, input.baseCurrency),
                 eq(financeExchangeRates.toCurrencyCode, currency.code),
-                eq(financeExchangeRates.effectiveDate, effectiveDate),
+                eq(financeExchangeRates.effectiveDate, new Date(effectiveDate).toISOString()),
                 eq(financeExchangeRates.isDeleted, 0)
               )
             )

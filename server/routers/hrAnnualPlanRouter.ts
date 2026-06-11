@@ -25,7 +25,7 @@ export const hrAnnualPlanRouter = router({
       
       const conditions = [
         eq(hrAnnualPlans.organizationId, organizationId),
-        eq(hrAnnualPlans.isDeleted, false),
+        eq(hrAnnualPlans.isDeleted, 0),
       ];
       
       if (input.planYear) {
@@ -59,7 +59,7 @@ export const hrAnnualPlanRouter = router({
           and(
             eq(hrAnnualPlans.id, input.id),
             eq(hrAnnualPlans.organizationId, organizationId),
-            eq(hrAnnualPlans.isDeleted, false)
+            eq(hrAnnualPlans.isDeleted, 0)
           )
         )
         .limit(1);
@@ -84,7 +84,7 @@ export const hrAnnualPlanRouter = router({
           and(
             eq(hrAnnualPlans.organizationId, organizationId),
             eq(hrAnnualPlans.planYear, input.planYear),
-            eq(hrAnnualPlans.isDeleted, false)
+            eq(hrAnnualPlans.isDeleted, 0)
           )
         )
         .limit(1);
@@ -106,7 +106,7 @@ export const hrAnnualPlanRouter = router({
         .where(
           and(
             eq(hrAnnualPlans.organizationId, organizationId),
-            eq(hrAnnualPlans.isDeleted, false)
+            eq(hrAnnualPlans.isDeleted, 0)
           )
         );
       
@@ -335,8 +335,8 @@ export const hrAnnualPlanRouter = router({
       await db
         .update(hrAnnualPlans)
         .set({
-          isDeleted: true,
-          deletedAt: new Date(),
+          isDeleted: 1,
+          deletedAt: new Date().toISOString(),
           deletedBy: ctx.user?.id,
         })
         .where(and(eq(hrAnnualPlans.id, input.id), eq(hrAnnualPlans.organizationId, organizationId)));

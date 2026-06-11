@@ -7,6 +7,7 @@ import { useState } from 'react';
 import { useNavigate } from '@/lib/router-compat';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useOrganization } from '@/contexts/OrganizationContext';
+import { useOperatingUnit } from "@/contexts/OperatingUnitContext";
 import { trpc } from '@/lib/trpc';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -48,7 +49,7 @@ import { useTranslation } from '@/i18n/useTranslation';
 export default function TreasuryBankReconciliation() {
   const { t } = useTranslation();
   const { language, isRTL } = useLanguage();
-  const { currentOrganization, currentOperatingUnit } = useOrganization();
+  const { currentOrganization } = useOrganization();
   const organizationId = currentOrganization?.id || 0;
   const operatingUnitId = currentOperatingUnit?.id;
   const navigate = useNavigate();
@@ -201,7 +202,7 @@ export default function TreasuryBankReconciliation() {
             <Card>
               <CardHeader className="pb-2">
                 <CardTitle className="text-sm font-medium text-muted-foreground">
-                  {t.treasuryCashManagement.pending || 'Pending'}
+                  {t.financeModule.pending || 'Pending'}
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -376,7 +377,7 @@ export default function TreasuryBankReconciliation() {
               {t.treasuryCashManagement.cancel}
             </Button>
             <Button onClick={handleCreateReconciliation} disabled={createReconciliationMutation.isPending}>
-              {createReconciliationMutation.isPending ? t.treasuryCashManagement.saving : t.treasuryCashManagement.save}
+              {createReconciliationMutation.isPending ? t.financeModule.saving : t.treasuryCashManagement.save}
             </Button>
           </DialogFooter>
         </DialogContent>

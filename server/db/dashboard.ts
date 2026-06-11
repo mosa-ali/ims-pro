@@ -39,7 +39,7 @@ export interface DashboardStats {
 
 /**
  * Get dashboard statistics for a given scope.
- * Replaces inline hardcoded status strings and eq(isDeleted, false) patterns.
+ * Replaces inline hardcoded status strings and eq(isDeleted, 0) patterns.
  */
 export async function getDashboardStats(
   db: DB,

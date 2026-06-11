@@ -43,7 +43,7 @@ export async function getExpiringOpportunities(
     .from(opportunities)
     .where(
       and(
-        eq(opportunities.isDeleted, false),
+        eq(opportunities.isDeleted, 0),
         // Deadline is today or in the future
         gte(opportunities.applicationDeadline, today.toISOString().split('T')[0]),
         // Deadline is within threshold
@@ -95,7 +95,7 @@ export async function getExpiredOpportunities(): Promise<DeadlineAlert[]> {
     .from(opportunities)
     .where(
       and(
-        eq(opportunities.isDeleted, false),
+        eq(opportunities.isDeleted, 0),
         lt(opportunities.applicationDeadline, today)
       )
     );

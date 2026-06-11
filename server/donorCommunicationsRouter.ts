@@ -88,11 +88,11 @@ export const donorCommunicationsRouter = router({
       }
 
       if (dateFrom) {
-        conditions.push(gte(donorCommunications.date, dateFrom));
+        conditions.push(gte(donorCommunications.date, new Date(dateFrom).toISOString()));
       }
 
       if (dateTo) {
-        conditions.push(lte(donorCommunications.date, dateTo));
+        conditions.push(lte(donorCommunications.date, new Date(dateTo).toISOString()));
       }
 
       // Get total count
@@ -450,8 +450,8 @@ export const donorCommunicationsRouter = router({
       if (donorId) conditions.push(eq(donorCommunications.donorId, donorId));
       if (channel) conditions.push(eq(donorCommunications.channel, channel));
       if (status) conditions.push(eq(donorCommunications.status, status));
-      if (dateFrom) conditions.push(gte(donorCommunications.date, dateFrom));
-      if (dateTo) conditions.push(lte(donorCommunications.date, dateTo));
+      if (dateFrom) conditions.push(gte(donorCommunications.date, new Date(dateFrom).toISOString()));
+      if (dateTo) conditions.push(lte(donorCommunications.date, new Date(dateTo).toISOString()));
 
       const communicationsList = await db
         .select({

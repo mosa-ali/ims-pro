@@ -49,14 +49,11 @@ export default function DriversForm() {
  useEffect(() => {
  if (driver) {
  setFormData({
- driverName: driver.fullName || "",
+ fullName: driver.fullName || "",
  licenseNumber: driver.licenseNumber || "",
  licenseExpiry: driver.licenseExpiry || "",
- phoneNumber: driver.phoneNumber || "",
+ phoneNumber: driver.phone || "",
  email: driver.email || "",
- address: driver.address || "",
- emergencyContact: driver.emergencyContact || "",
- emergencyPhone: driver.emergencyPhone || "",
  status: driver.status || "active",
  notes: driver.notes || "",
  });
@@ -87,14 +84,11 @@ export default function DriversForm() {
 
  const labels = {
  title: isEditMode ? (t.logistics.editDriver) : (t.logistics.newDriver),
- driverName: t.logistics.driverName,
+ fullName: t.hrModals.fullName,
  licenseNumber: t.logistics.licenseNumber,
  licenseExpiry: t.logistics.licenseExpiry,
- phoneNumber: t.logistics.phoneNumber,
+ phoneNumber: t.logistics.phone,
  email: t.logistics.email,
- address: t.logistics.address,
- emergencyContact: t.logistics.emergencyContact,
- emergencyPhone: t.logistics.emergencyPhone,
  status: t.logistics.status,
  notes: t.logistics.notes,
  save: t.logistics.save,
@@ -130,7 +124,7 @@ export default function DriversForm() {
  <CardContent className="space-y-4">
  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
  <div className="space-y-2">
- <Label htmlFor="driverName">{labels.driverName} *</Label>
+ <Label htmlFor="driverName">{labels.fullName} *</Label>
  <Input
  id="driverName"
  value={formData.driverName}
@@ -193,37 +187,6 @@ export default function DriversForm() {
  </select>
  </div>
  </div>
-
- <div className="space-y-2">
- <Label htmlFor="address">{labels.address}</Label>
- <Textarea
- id="address"
- value={formData.address}
- onChange={(e) => setFormData({ ...formData, address: e.target.value })}
- rows={2}
- />
- </div>
-
- <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
- <div className="space-y-2">
- <Label htmlFor="emergencyContact">{labels.emergencyContact}</Label>
- <Input
- id="emergencyContact"
- value={formData.emergencyContact}
- onChange={(e) => setFormData({ ...formData, emergencyContact: e.target.value })}
- />
- </div>
- <div className="space-y-2">
- <Label htmlFor="emergencyPhone">{labels.emergencyPhone}</Label>
- <Input
- id="emergencyPhone"
- type="tel"
- value={formData.emergencyPhone}
- onChange={(e) => setFormData({ ...formData, emergencyPhone: e.target.value })}
- />
- </div>
- </div>
-
  <div className="space-y-2">
  <Label htmlFor="notes">{labels.notes}</Label>
  <Textarea

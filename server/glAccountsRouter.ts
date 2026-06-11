@@ -34,7 +34,7 @@ export const glAccountCategoriesRouter = router({
         conditions.push(eq(glAccountCategories.accountType, input.accountType));
       }
       if (input.isActive !== undefined) {
-        conditions.push(eq(glAccountCategories.isActive, input.isActive));
+        conditions.push(eq(glAccountCategories.isActive, Number(input.isActive)));
       }
       
       return db.select().from(glAccountCategories)
@@ -116,7 +116,7 @@ export const glAccountCategoriesRouter = router({
       // Soft delete
       await db.update(glAccountCategories)
         .set({ 
-          deletedAt: new Date(),
+          deletedAt: new Date().toISOString(),
           deletedBy: ctx.user?.id,
         })
         .where(and(
@@ -196,16 +196,16 @@ export const glAccountsRouter = router({
         conditions.push(eq(glAccounts.accountType, input.accountType));
       }
       if (input.isActive !== undefined) {
-        conditions.push(eq(glAccounts.isActive, input.isActive));
+        conditions.push(eq(glAccounts.isActive, Number(input.isActive)));
       }
       if (input.isBankAccount !== undefined) {
-        conditions.push(eq(glAccounts.isBankAccount, input.isBankAccount));
+        conditions.push(eq(glAccounts.isBankAccount, Number(input.isBankAccount)));
       }
       if (input.isCashAccount !== undefined) {
-        conditions.push(eq(glAccounts.isCashAccount, input.isCashAccount));
+        conditions.push(eq(glAccounts.isCashAccount, Number(input.isCashAccount)));
       }
       if (input.isPostable !== undefined) {
-        conditions.push(eq(glAccounts.isPostable, input.isPostable));
+        conditions.push(eq(glAccounts.isPostable, Number(input.isPostable)));
       }
       if (input.search) {
         conditions.push(or(
@@ -328,7 +328,7 @@ export const glAccountsRouter = router({
       // Soft delete
       await db.update(glAccounts)
         .set({ 
-          deletedAt: new Date(),
+          deletedAt: new Date().toISOString(),
           deletedBy: ctx.user?.id,
         })
         .where(and(
@@ -356,8 +356,8 @@ export const glAccountsRouter = router({
         .where(and(
           eq(glAccounts.organizationId, organizationId),
           eq(glAccounts.accountType, input.accountType),
-          eq(glAccounts.isPostable, input.isPostable),
-          eq(glAccounts.isActive, true),
+          eq(glAccounts.isPostable, Number(input.isPostable)),
+          eq(glAccounts.isActive, 1),
           isNull(glAccounts.deletedAt)
         ))
         .orderBy(asc(glAccounts.accountCode));
@@ -371,8 +371,8 @@ export const glAccountsRouter = router({
       const db = await getDb();
       const conditions = [
         eq(glAccounts.organizationId, organizationId),
-        eq(glAccounts.isBankAccount, true),
-        eq(glAccounts.isActive, true),
+        eq(glAccounts.isBankAccount, 1),
+        eq(glAccounts.isActive, 1),
         isNull(glAccounts.deletedAt),
       ];
       
@@ -399,8 +399,8 @@ export const glAccountsRouter = router({
       const db = await getDb();
       const conditions = [
         eq(glAccounts.organizationId, organizationId),
-        eq(glAccounts.isCashAccount, true),
-        eq(glAccounts.isActive, true),
+        eq(glAccounts.isCashAccount, 1),
+        eq(glAccounts.isActive, 1),
         isNull(glAccounts.deletedAt),
       ];
       

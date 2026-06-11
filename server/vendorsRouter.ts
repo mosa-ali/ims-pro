@@ -31,13 +31,13 @@ export const vendorsRouter = router({
         conditions.push(eq(vendors.vendorType, input.vendorType));
       }
       if (input.isActive !== undefined) {
-        conditions.push(eq(vendors.isActive, input.isActive));
+        conditions.push(eq(vendors.isActive, Number(input.isActive)));
       }
       if (input.isPreferred !== undefined) {
-        conditions.push(eq(vendors.isPreferred, input.isPreferred));
+        conditions.push(eq(vendors.isPreferred, Number(input.isPreferred)));
       }
       if (input.isBlacklisted !== undefined) {
-        conditions.push(eq(vendors.isBlacklisted, input.isBlacklisted));
+        conditions.push(eq(vendors.isBlacklisted, Number(input.isBlacklisted)));
       }
       if (input.search) {
         conditions.push(or(
@@ -190,7 +190,7 @@ export const vendorsRouter = router({
       // Soft delete
       await db.update(vendors)
         .set({ 
-          deletedAt: new Date(),
+          deletedAt: new Date().toISOString(),
           deletedBy: ctx.user?.id,
         })
         .where(and(
@@ -212,7 +212,7 @@ export const vendorsRouter = router({
       const db = await getDb();
       await db.update(vendors)
         .set({ 
-          isBlacklisted: input.isBlacklisted,
+          isBlacklisted: Number(input.isBlacklisted),
           blacklistReason: input.isBlacklisted ? input.blacklistReason : null,
           updatedBy: ctx.user?.id,
         })
@@ -234,7 +234,7 @@ export const vendorsRouter = router({
       const db = await getDb();
       await db.update(vendors)
         .set({ 
-          isPreferred: input.isPreferred,
+          isPreferred: Number(input.isPreferred),
           updatedBy: ctx.user?.id,
         })
         .where(and(
@@ -254,8 +254,8 @@ export const vendorsRouter = router({
       const db = await getDb();
       const conditions = [
         eq(vendors.organizationId, organizationId),
-        eq(vendors.isActive, true),
-        eq(vendors.isBlacklisted, false),
+        eq(vendors.isActive, 1),
+        eq(vendors.isBlacklisted, 0),
         isNull(vendors.deletedAt),
       ];
       
@@ -362,10 +362,10 @@ export const vendorsRouter = router({
             organizationId,
             operatingUnitId: operatingUnitId || null,
             ...vendor,
-            currentBalance: '0.00',
-            isActive: true,
-            isPreferred: false,
-            isBlacklisted: false,
+            currentBalance: '',
+            isActive: 1,
+            isPreferred: 0,
+            isBlacklisted: 0,
             createdBy: ctx.user?.id,
             updatedBy: ctx.user?.id,
           });
@@ -439,7 +439,7 @@ export const vendorsRouter = router({
         conditions.push(eq(vendors.vendorType, input.vendorType));
       }
       if (input.isActive !== undefined) {
-        conditions.push(eq(vendors.isActive, input.isActive));
+        conditions.push(eq(vendors.isActive, Number(input.isActive)));
       }
       
       const vendorList = await db.select().from(vendors)
@@ -682,7 +682,7 @@ export const vendorsRouter = router({
           .set({
             ...data,
             version: existing.version + 1,
-            updatedAt: new Date(),
+            updatedAt: new Date().toISOString(),
           })
           .where(eq(vendorQualificationScores.id, existing.id));
         return { id: existing.id, totalScore, qualificationStatus, updated: true };

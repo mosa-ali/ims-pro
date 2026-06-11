@@ -25,7 +25,7 @@ export const mealSettingsRouter = router({
 
       const conditions: any[] = [
         eq(mealIndicatorTemplates.organizationId, organizationId),
-        eq(mealIndicatorTemplates.isDeleted, false),
+        eq(mealIndicatorTemplates.isDeleted, 0),
       ];
 
       if (input.active !== undefined) conditions.push(eq(mealIndicatorTemplates.active, input.active));
@@ -52,7 +52,7 @@ export const mealSettingsRouter = router({
         .where(and(
           eq(mealIndicatorTemplates.id, input.id),
           eq(mealIndicatorTemplates.organizationId, organizationId),
-          eq(mealIndicatorTemplates.isDeleted, false),
+          eq(mealIndicatorTemplates.isDeleted, 0),
         ));
 
       return template || null;
@@ -134,7 +134,7 @@ export const mealSettingsRouter = router({
         .where(and(
           eq(mealIndicatorTemplates.id, id),
           eq(mealIndicatorTemplates.organizationId, organizationId),
-          eq(mealIndicatorTemplates.isDeleted, false),
+          eq(mealIndicatorTemplates.isDeleted, 0),
         ));
 
       return { success: true };
@@ -149,8 +149,8 @@ export const mealSettingsRouter = router({
 
       await db.update(mealIndicatorTemplates)
         .set({
-          isDeleted: true,
-          deletedAt: new Date(),
+          isDeleted: 1,
+          deletedAt: new Date().toISOString(),
           deletedBy: ctx.user?.id || null,
         })
         .where(and(
@@ -177,7 +177,7 @@ export const mealSettingsRouter = router({
         .from(mealSurveyStandards)
         .where(and(
           eq(mealSurveyStandards.organizationId, organizationId),
-          eq(mealSurveyStandards.isDeleted, false),
+          eq(mealSurveyStandards.isDeleted, 0),
         ))
         .orderBy(desc(mealSurveyStandards.createdAt))
         .limit(input.limit)
@@ -197,7 +197,7 @@ export const mealSettingsRouter = router({
         .where(and(
           eq(mealSurveyStandards.id, input.id),
           eq(mealSurveyStandards.organizationId, organizationId),
-          eq(mealSurveyStandards.isDeleted, false),
+          eq(mealSurveyStandards.isDeleted, 0),
         ));
 
       return standard || null;
@@ -267,7 +267,7 @@ export const mealSettingsRouter = router({
         .where(and(
           eq(mealSurveyStandards.id, id),
           eq(mealSurveyStandards.organizationId, organizationId),
-          eq(mealSurveyStandards.isDeleted, false),
+          eq(mealSurveyStandards.isDeleted, 0),
         ));
 
       return { success: true };
@@ -282,8 +282,8 @@ export const mealSettingsRouter = router({
 
       await db.update(mealSurveyStandards)
         .set({
-          isDeleted: true,
-          deletedAt: new Date(),
+          isDeleted: 1,
+          deletedAt: new Date().toISOString(),
           deletedBy: ctx.user?.id || null,
         })
         .where(and(
@@ -336,7 +336,7 @@ export const mealSettingsRouter = router({
         .from(mealIndicatorTemplates)
         .where(and(
           eq(mealIndicatorTemplates.organizationId, organizationId),
-          eq(mealIndicatorTemplates.isDeleted, false),
+          eq(mealIndicatorTemplates.isDeleted, 0),
         ));
 
       const standards = await db
@@ -344,7 +344,7 @@ export const mealSettingsRouter = router({
         .from(mealSurveyStandards)
         .where(and(
           eq(mealSurveyStandards.organizationId, organizationId),
-          eq(mealSurveyStandards.isDeleted, false),
+          eq(mealSurveyStandards.isDeleted, 0),
         ));
 
       const [logCount] = await db

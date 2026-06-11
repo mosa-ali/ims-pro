@@ -298,7 +298,7 @@ export const samlRouter = router({
             .update(samlSessions)
             .set({
               isActive: false,
-              deletedAt: new Date(),
+              deletedAt: new Date().toISOString(),
             })
             .where(eq(samlSessions.id, session[0].id));
 
@@ -344,7 +344,7 @@ export const samlRouter = router({
           .update(samlSessions)
           .set({
             isActive: false,
-            deletedAt: new Date(),
+            deletedAt: new Date().toISOString(),
           })
           .where(
             and(

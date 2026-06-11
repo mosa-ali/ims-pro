@@ -271,7 +271,7 @@ export const paymentBatchRouter = router({
       // Soft delete all draft payments
       await db.update(payments)
         .set({ 
-          deletedAt: new Date(),
+          deletedAt: new Date().toISOString(),
           deletedBy: ctx.user?.id,
         })
         .where(and(

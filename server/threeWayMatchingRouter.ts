@@ -5,7 +5,7 @@
  */
 
 import { z } from "zod";
-import { router, protectedProcedure } from "./_core/trpc";
+import { router, protectedProcedure, scopedProcedure } from "./_core/trpc";
 import { getDb } from "./db";
 import {
   purchaseOrders,
@@ -19,7 +19,7 @@ import { TRPCError } from "@trpc/server";
 import { performThreeWayMatching } from "./threeWayMatching";
 
 export const threeWayMatchingRouter = router({
-  setVarianceThreshold: protectedProcedure
+  setVarianceThreshold: scopedProcedure
     .input(
       z.object({
         quantityVariancePercent: z.number().min(0).max(100),
@@ -34,7 +34,7 @@ export const threeWayMatchingRouter = router({
         message: "Variance threshold configuration updated",
         config: {
           organizationId: ctx.user?.organizationId || 0,
-          operatingUnitId: ctx.user?.operatingUnitId || 0,
+          operatingUnitId: ctx.scope.operatingUnitId || 0,
           quantityVariancePercent: input.quantityVariancePercent,
           amountVariancePercent: input.amountVariancePercent,
           allowNegativeVariance: input.allowNegativeVariance,
@@ -45,10 +45,10 @@ export const threeWayMatchingRouter = router({
       };
     }),
 
-  getVarianceThreshold: protectedProcedure.query(async ({ ctx }) => {
+  getVarianceThreshold: scopedProcedure.query(async ({ ctx }) => {
     return {
       organizationId: ctx.user?.organizationId || 0,
-      operatingUnitId: ctx.user?.operatingUnitId || 0,
+      operatingUnitId: ctx.scope.operatingUnitId || 0,
       quantityVariancePercent: 5,
       amountVariancePercent: 2,
       allowNegativeVariance: false,
@@ -56,7 +56,7 @@ export const threeWayMatchingRouter = router({
     };
   }),
 
-  perform3WayMatching: protectedProcedure
+  perform3WayMatching: scopedProcedure
     .input(
       z.object({
         invoiceId: z.number(),
@@ -77,7 +77,7 @@ export const threeWayMatchingRouter = router({
         const auditEntry = {
           matchingId: `MATCH-${input.purchaseOrderId}-${input.grnId}-${input.invoiceId}-${Date.now()}`,
           organizationId: ctx.user?.organizationId || 0,
-          operatingUnitId: ctx.user?.operatingUnitId || 0,
+          operatingUnitId: ctx.scope.operatingUnitId || 0,
           poId: input.purchaseOrderId,
           grnId: input.grnId,
           invoiceId: input.invoiceId,
@@ -101,7 +101,7 @@ export const threeWayMatchingRouter = router({
       }
     }),
 
-  validatePOGRNMatch: protectedProcedure
+  validatePOGRNMatch: scopedProcedure
     .input(
       z.object({
         poId: z.number(),
@@ -162,7 +162,7 @@ export const threeWayMatchingRouter = router({
       };
     }),
 
-  validateGRNInvoiceMatch: protectedProcedure
+  validateGRNInvoiceMatch: scopedProcedure
     .input(
       z.object({
         grnId: z.number(),
@@ -219,7 +219,7 @@ export const threeWayMatchingRouter = router({
       };
     }),
 
-  calculateVariance: protectedProcedure
+  calculateVariance: scopedProcedure
     .input(
       z.object({
         expectedValue: z.number(),
@@ -240,7 +240,7 @@ export const threeWayMatchingRouter = router({
       };
     }),
 
-  getMatchingHistory: protectedProcedure
+  getMatchingHistory: scopedProcedure
     .input(
       z.object({
         poId: z.number(),
@@ -254,7 +254,7 @@ export const threeWayMatchingRouter = router({
       };
     }),
 
-  getMatchingStatus: protectedProcedure
+  getMatchingStatus: scopedProcedure
     .input(
       z.object({
         invoiceId: z.number(),

@@ -331,7 +331,7 @@ export const reportSharingRouter = router({
         return {
           success: true,
           commentId: input.commentId,
-          deletedAt: new Date(),
+          deletedAt: new Date().toISOString(),
         };
       } catch (error) {
         throw new TRPCError({

@@ -6,7 +6,7 @@
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
 
-type Language = 'en' | 'ar' | 'it' | 'it';
+type Language = 'en' | 'ar' | 'it';
 type Direction = 'ltr' | 'rtl';
 
 interface LanguageContextType {

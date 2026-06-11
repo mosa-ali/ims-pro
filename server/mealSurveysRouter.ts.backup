@@ -49,7 +49,7 @@ export const mealSurveysRouter = router({
       const conditions = [
         eq(mealSurveys.organizationId, organizationId),
         eq(mealSurveys.operatingUnitId, operatingUnitId),
-        eq(mealSurveys.isDeleted, false),
+        eq(mealSurveys.isDeleted, 0),
       ];
       
       if (input.projectId) {
@@ -84,7 +84,7 @@ export const mealSurveysRouter = router({
             eq(mealSurveys.id, input.id),
             eq(mealSurveys.organizationId, organizationId),
             eq(mealSurveys.operatingUnitId, operatingUnitId),
-            eq(mealSurveys.isDeleted, false)
+            eq(mealSurveys.isDeleted, 0)
           )
         )
         .limit(1);
@@ -105,7 +105,7 @@ export const mealSurveysRouter = router({
       const conditions = [
         eq(mealSurveys.organizationId, organizationId),
         eq(mealSurveys.operatingUnitId, operatingUnitId),
-        eq(mealSurveys.isDeleted, false),
+        eq(mealSurveys.isDeleted, 0),
       ];
       
       const allSurveys = await db
@@ -126,7 +126,7 @@ export const mealSurveysRouter = router({
           and(
             eq(mealSurveySubmissions.organizationId, organizationId),
             eq(mealSurveySubmissions.operatingUnitId, operatingUnitId),
-            eq(mealSurveySubmissions.isDeleted, false)
+            eq(mealSurveySubmissions.isDeleted, 0)
           )
         );
       
@@ -274,8 +274,8 @@ export const mealSurveysRouter = router({
       await db
         .update(mealSurveys)
         .set({
-          isDeleted: true,
-          deletedAt: new Date(),
+          isDeleted: 1,
+          deletedAt: new Date().toISOString(),
           deletedBy: ctx.user?.id,
         })
         .where(and(
@@ -304,7 +304,7 @@ export const mealSurveysRouter = router({
           .where(
             and(
               eq(mealSurveyQuestions.surveyId, input.surveyId),
-              eq(mealSurveyQuestions.isDeleted, false)
+              eq(mealSurveyQuestions.isDeleted, 0)
             )
           )
           .orderBy(mealSurveyQuestions.order);
@@ -405,8 +405,8 @@ export const mealSurveysRouter = router({
         await db
           .update(mealSurveyQuestions)
           .set({
-            isDeleted: true,
-            deletedAt: new Date(),
+            isDeleted: 1,
+            deletedAt: new Date().toISOString(),
             deletedBy: ctx.user?.id,
           })
           .where(eq(mealSurveyQuestions.id, input.id));
@@ -459,7 +459,7 @@ export const mealSurveysRouter = router({
           eq(mealSurveySubmissions.surveyId, input.surveyId),
           eq(mealSurveySubmissions.organizationId, organizationId),
           eq(mealSurveySubmissions.operatingUnitId, operatingUnitId),
-          eq(mealSurveySubmissions.isDeleted, false),
+          eq(mealSurveySubmissions.isDeleted, 0),
         ];
         
         if (input.validationStatus) {
@@ -491,7 +491,7 @@ export const mealSurveysRouter = router({
               eq(mealSurveySubmissions.id, input.id),
               eq(mealSurveySubmissions.organizationId, organizationId),
               eq(mealSurveySubmissions.operatingUnitId, operatingUnitId),
-              eq(mealSurveySubmissions.isDeleted, false)
+              eq(mealSurveySubmissions.isDeleted, 0)
             )
           )
           .limit(1);
@@ -614,8 +614,8 @@ export const mealSurveysRouter = router({
         await db
           .update(mealSurveySubmissions)
           .set({
-            isDeleted: true,
-            deletedAt: new Date(),
+            isDeleted: 1,
+            deletedAt: new Date().toISOString(),
             deletedBy: ctx.user?.id,
           })
           .where(and(
@@ -645,7 +645,7 @@ export const mealSurveysRouter = router({
               eq(mealSurveySubmissions.surveyId, input.surveyId),
               eq(mealSurveySubmissions.organizationId, organizationId),
               eq(mealSurveySubmissions.operatingUnitId, operatingUnitId),
-              eq(mealSurveySubmissions.isDeleted, false)
+              eq(mealSurveySubmissions.isDeleted, 0)
             )
           );
         

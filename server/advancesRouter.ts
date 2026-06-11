@@ -5,6 +5,8 @@ import { financeAdvances, financeSettlements } from "../drizzle/schema";
 import { eq, and, desc, sql, gte, lte, like } from "drizzle-orm";
 import { TRPCError } from "@trpc/server";
 
+const nowSql = new Date().toISOString().slice(0, 19).replace('T', ' ');
+
 /**
  * Advances & Settlements Router
  * Provides CRUD operations for staff advance requests and liquidation tracking
@@ -40,7 +42,7 @@ export const advancesRouter = router({
       }
       
       // Mark current version as not latest
-      await db.update(financeAdvances).set({ isLatestVersion: false }).where(eq(financeAdvances.id, input.id));
+      await db.update(financeAdvances).set({ isLatestVersion: 0 }).where(eq(financeAdvances.id, input.id));
       
       // Create new version
       const newVersion = {
@@ -85,7 +87,7 @@ export const advancesRouter = router({
           and(
             sql`(id = ${rootId} OR parent_id = ${rootId})`,
             eq(financeAdvances.organizationId, organizationId),
-            eq(financeAdvances.isDeleted, false)
+            eq(financeAdvances.isDeleted, 0)
           )
         )
         .orderBy(desc(financeAdvances.version));
@@ -114,7 +116,7 @@ export const advancesRouter = router({
       let query = db.select().from(financeAdvances).where(
         and(
           eq(financeAdvances.organizationId, organizationId),
-          eq(financeAdvances.isDeleted, false)
+          eq(financeAdvances.isDeleted, 0)
         )
       );
       
@@ -166,7 +168,7 @@ export const advancesRouter = router({
         and(
           eq(financeAdvances.id, input.id),
           eq(financeAdvances.organizationId, organizationId),
-          eq(financeAdvances.isDeleted, false)
+          eq(financeAdvances.isDeleted, 0)
         )
       );
       
@@ -176,7 +178,7 @@ export const advancesRouter = router({
       const settlements = await db.select().from(financeSettlements).where(
         and(
           eq(financeSettlements.advanceId, input.id),
-          eq(financeSettlements.isDeleted, false)
+          eq(financeSettlements.isDeleted, 0)
         )
       ).orderBy(desc(financeSettlements.settlementDate));
       
@@ -194,7 +196,7 @@ export const advancesRouter = router({
       const all = await db.select().from(financeAdvances).where(
         and(
           eq(financeAdvances.organizationId, organizationId),
-          eq(financeAdvances.isDeleted, false)
+          eq(financeAdvances.isDeleted, 0)
         )
       );
       
@@ -416,7 +418,7 @@ export const advancesRouter = router({
           approvedAmount: String(input.approvedAmount),
           outstandingBalance: String(input.approvedAmount),
           approvedBy: ctx.user?.id || null,
-          approvedAt,
+          approvedAt: nowSql,
           updatedBy: ctx.user?.id || null,
         })
         .where(eq(financeAdvances.id, input.id));
@@ -563,8 +565,8 @@ export const advancesRouter = router({
       
       await db.update(financeAdvances)
         .set({
-          isDeleted: true,
-          deletedAt: new Date(),
+          isDeleted: 1,
+          deletedAt: nowSql,
           deletedBy: ctx.user?.id || null,
         })
         .where(and(
@@ -703,7 +705,7 @@ export const advancesRouter = router({
         and(
           eq(financeSettlements.advanceId, input.advanceId),
           eq(financeSettlements.organizationId, organizationId),
-          eq(financeSettlements.isDeleted, false)
+          eq(financeSettlements.isDeleted, 0)
         )
       ).orderBy(desc(financeSettlements.settlementDate));
     }),
@@ -802,7 +804,7 @@ export const advancesRouter = router({
           settledAmount: String(newSettled),
           outstandingBalance: String(Math.max(0, newOutstanding)),
           status: newStatus,
-          actualSettlementDate: newStatus === 'FULLY_SETTLED' ? new Date() : null,
+          actualSettlementDate: new Date().toISOString().slice(0, 19).split('T')[0],
           updatedBy: ctx.user?.id || null,
         })
         .where(eq(financeAdvances.id, input.advanceId));
@@ -824,7 +826,7 @@ export const advancesRouter = router({
         .set({
           status: 'APPROVED',
           approvedBy: ctx.user?.id || null,
-          approvedAt: new Date(),
+          approvedAt: nowSql,
           updatedBy: ctx.user?.id || null,
         })
         .where(and(
@@ -874,7 +876,7 @@ export const advancesRouter = router({
             .set({
               settledAmount: String(newSettled),
               outstandingBalance: String(newOutstanding),
-              status: newStatus,
+              status: String(newStatus),
               actualSettlementDate: null,
               updatedBy: ctx.user?.id || null,
             })
@@ -931,7 +933,7 @@ export const advancesRouter = router({
             .set({
               settledAmount: String(newSettled),
               outstandingBalance: String(newOutstanding),
-              status: newStatus,
+              status: String(newStatus),
               actualSettlementDate: null,
               updatedBy: ctx.user?.id || null,
             })
@@ -941,8 +943,8 @@ export const advancesRouter = router({
       
       await db.update(financeSettlements)
         .set({
-          isDeleted: true,
-          deletedAt: new Date(),
+          isDeleted: 1,
+          deletedAt: nowSql,
           deletedBy: ctx.user?.id || null,
         })
         .where(eq(financeSettlements.id, input.id));

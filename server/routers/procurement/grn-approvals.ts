@@ -9,7 +9,7 @@ import { getDb } from "../../db";
 // TEMP UNBLOCK PATCH: grnApprovals table missing export from schema.ts
 // Commenting out grnApprovals import as it's not exported from schema.ts
 // import { grnApprovals } from "../../../drizzle/schema"; // MISSING - causes build failure
-import { goodsReceiptNotes, users } from "../../../drizzle/schema";
+import { goodsReceiptNotes, users, grnApprovals } from "../../../drizzle/schema";
 import { eq, and, desc, isNull } from "drizzle-orm";
 import { TRPCError } from "@trpc/server";
 import { createPayableFromGRN } from "../../automation/grnToPayableAutomation";
@@ -123,7 +123,7 @@ export const grnApprovalProcedures = {
           approvalStatus: "approved",
           approvalRemarks: input.approvalRemarks || null,
           approvalDate: new Date(),
-        isDeleted: 0,  // Dual-column synchronization
+          isDeleted: 0,
         });
 
         // 3. Create Payable from GRN (CRITICAL FINANCIAL AUTOMATION)
@@ -209,7 +209,7 @@ export const grnApprovalProcedures = {
         .set({
           status: "rejected",
           updatedBy: ctx.user.id,
-          updatedAt: new Date(),
+          updatedAt: new Date().toISOString(),
         })
         .where(
           and(
@@ -224,7 +224,7 @@ export const grnApprovalProcedures = {
         approvedBy: ctx.user.id,
         approvalStatus: "rejected",
         approvalRemarks: input.rejectionRemarks,
-        approvalDate: new Date(),
+        approvalDate: new Date().toISOString(),
         isDeleted: 0,  // Dual-column synchronization
       });
 

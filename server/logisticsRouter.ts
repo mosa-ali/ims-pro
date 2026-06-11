@@ -3470,6 +3470,7 @@ export const logisticsRouter = router({
 
   // Batch-based Stock Management
   stockMgmt: stockManagementRouter,
+  stockManagement: stockManagementRouter,
 
 });
 

@@ -10,6 +10,8 @@ import { budgetMonthlyAllocations, budgetLines, budgets } from "../drizzle/schem
 import { eq, and, isNull, sql } from "drizzle-orm";
 import { TRPCError } from "@trpc/server";
 
+const nowSql = new Date().toISOString().slice(0, 19).replace('T', ' ');
+
 export const budgetMonthlyAllocationsRouter = router({
   /**
    * List all monthly allocations for a budget line
@@ -29,7 +31,7 @@ export const budgetMonthlyAllocationsRouter = router({
       const results = await db
         .select()
         .from(budgetMonthlyAllocations)
-        .where(and(eq(budgetMonthlyAllocations.budgetLineId, budgetLineId), eq(budgetMonthlyAllocations.isDeleted, false)))
+        .where(and(eq(budgetMonthlyAllocations.budgetLineId, budgetLineId), eq(budgetMonthlyAllocations.isDeleted, 0)))
         .orderBy(budgetMonthlyAllocations.allocationMonth);
 
       return results;
@@ -53,7 +55,7 @@ export const budgetMonthlyAllocationsRouter = router({
       const results = await db
         .select()
         .from(budgetMonthlyAllocations)
-        .where(and(eq(budgetMonthlyAllocations.budgetId, budgetId), eq(budgetMonthlyAllocations.isDeleted, false)))
+        .where(and(eq(budgetMonthlyAllocations.budgetId, budgetId), eq(budgetMonthlyAllocations.isDeleted, 0)))
         .orderBy(budgetMonthlyAllocations.budgetLineId, budgetMonthlyAllocations.allocationMonth);
 
       return results;
@@ -84,7 +86,7 @@ export const budgetMonthlyAllocationsRouter = router({
           totalVariance: sql<string>`SUM(variance)`,
         })
         .from(budgetMonthlyAllocations)
-        .where(and(eq(budgetMonthlyAllocations.budgetId, budgetId), eq(budgetMonthlyAllocations.isDeleted, false)))
+        .where(and(eq(budgetMonthlyAllocations.budgetId, budgetId), eq(budgetMonthlyAllocations.isDeleted, 0)))
         .groupBy(budgetMonthlyAllocations.quarterNumber, budgetMonthlyAllocations.fiscalYear)
         .orderBy(budgetMonthlyAllocations.fiscalYear, budgetMonthlyAllocations.quarterNumber);
 
@@ -138,7 +140,7 @@ export const budgetMonthlyAllocationsRouter = router({
         .where(
           and(
             eq(budgetMonthlyAllocations.budgetLineId, budgetLineId),
-            eq(budgetMonthlyAllocations.allocationMonth, new Date(allocationMonth))
+            eq(budgetMonthlyAllocations.allocationMonth, new Date(allocationMonth).toISOString())
           )
         );
 
@@ -370,7 +372,7 @@ export const budgetMonthlyAllocationsRouter = router({
 
       await db
         .update(budgetMonthlyAllocations)
-        .set({ isDeleted: true, deletedAt: new Date(), deletedBy: ctx.user?.id ?? null })
+        .set({ isDeleted: 1, deletedAt: nowSql, deletedBy: ctx.user?.id ?? null })
         .where(eq(budgetMonthlyAllocations.budgetLineId, budgetLineId));
 
       return { success: true };

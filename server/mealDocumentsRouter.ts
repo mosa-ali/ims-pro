@@ -28,7 +28,7 @@ export const mealDocumentsRouter = router({
       
       const conditions = [
         eq(mealDocuments.organizationId, organizationId),
-        eq(mealDocuments.isDeleted, false),
+        eq(mealDocuments.isDeleted, 0),
       ];
       
       if (operatingUnitId) {
@@ -69,7 +69,7 @@ export const mealDocumentsRouter = router({
           and(
             eq(mealDocuments.id, input.id),
             eq(mealDocuments.organizationId, organizationId),
-            eq(mealDocuments.isDeleted, false)
+            eq(mealDocuments.isDeleted, 0)
           )
         )
         .limit(1);
@@ -87,7 +87,7 @@ export const mealDocumentsRouter = router({
       
       const conditions = [
         eq(mealDocuments.organizationId, organizationId),
-        eq(mealDocuments.isDeleted, false),
+        eq(mealDocuments.isDeleted, 0),
       ];
       
       if (operatingUnitId) {
@@ -233,8 +233,8 @@ export const mealDocumentsRouter = router({
       await db
         .update(mealDocuments)
         .set({
-          isDeleted: true,
-          deletedAt: new Date(),
+          isDeleted: 1,
+          deletedAt: new Date().toISOString(),
           deletedBy: ctx.user?.id,
         })
         .where(and(eq(mealDocuments.id, input.id), eq(mealDocuments.organizationId, organizationId)));
@@ -267,7 +267,7 @@ export const mealDocumentsRouter = router({
           and(
             eq(mealDocuments.documentCode, doc[0].documentCode),
             eq(mealDocuments.organizationId, organizationId),
-            eq(mealDocuments.isDeleted, false)
+            eq(mealDocuments.isDeleted, 0)
           )
         )
         .orderBy(desc(mealDocuments.createdAt));
@@ -294,7 +294,7 @@ export const mealDocumentsRouter = router({
             eq(mealDocuments.sourceModule, input.sourceModule),
             eq(mealDocuments.sourceRecordId, input.sourceRecordId),
             eq(mealDocuments.organizationId, organizationId),
-            eq(mealDocuments.isDeleted, false)
+            eq(mealDocuments.isDeleted, 0)
           )
         )
         .orderBy(desc(mealDocuments.createdAt));

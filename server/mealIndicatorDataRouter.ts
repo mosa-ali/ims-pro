@@ -27,7 +27,7 @@ export const mealIndicatorDataRouter = router({
           and(
             eq(mealIndicatorDataEntries.indicatorId, input.indicatorId),
             eq(mealIndicatorDataEntries.organizationId, organizationId),
-            eq(mealIndicatorDataEntries.isDeleted, false)
+            eq(mealIndicatorDataEntries.isDeleted, 0)
           )
         )
         .orderBy(desc(mealIndicatorDataEntries.periodEndDate));
@@ -46,7 +46,7 @@ export const mealIndicatorDataRouter = router({
       const conditions = [
         eq(mealIndicatorDataEntries.projectId, input.projectId),
         eq(mealIndicatorDataEntries.organizationId, organizationId),
-        eq(mealIndicatorDataEntries.isDeleted, false),
+        eq(mealIndicatorDataEntries.isDeleted, 0),
       ];
       
       if (operatingUnitId) {
@@ -79,7 +79,7 @@ export const mealIndicatorDataRouter = router({
           and(
             eq(mealIndicatorDataEntries.id, input.id),
             eq(mealIndicatorDataEntries.organizationId, organizationId),
-            eq(mealIndicatorDataEntries.isDeleted, false)
+            eq(mealIndicatorDataEntries.isDeleted, 0)
           )
         )
         .limit(1);
@@ -99,7 +99,7 @@ export const mealIndicatorDataRouter = router({
       
       const conditions = [
         eq(mealIndicatorDataEntries.organizationId, organizationId),
-        eq(mealIndicatorDataEntries.isDeleted, false),
+        eq(mealIndicatorDataEntries.isDeleted, 0),
       ];
       
       if (operatingUnitId) {
@@ -225,8 +225,8 @@ export const mealIndicatorDataRouter = router({
       await db
         .update(mealIndicatorDataEntries)
         .set({
-          isDeleted: true,
-          deletedAt: new Date(),
+          isDeleted: 1,
+          deletedAt: new Date().toISOString(),
           deletedBy: ctx.user?.id,
         })
         .where(and(eq(mealIndicatorDataEntries.id, input.id), eq(mealIndicatorDataEntries.organizationId, organizationId)));
@@ -302,7 +302,7 @@ export const mealIndicatorDataRouter = router({
           and(
             eq(mealIndicatorDataEntries.indicatorId, input.indicatorId),
             eq(mealIndicatorDataEntries.organizationId, organizationId),
-            eq(mealIndicatorDataEntries.isDeleted, false),
+            eq(mealIndicatorDataEntries.isDeleted, 0),
             eq(mealIndicatorDataEntries.isVerified, true)
           )
         )
@@ -362,7 +362,7 @@ export const mealIndicatorDataRouter = router({
       const conditions: any[] = [
         eq(indicators.projectId, input.projectId),
         eq(indicators.organizationId, organizationId),
-        eq(indicators.isDeleted, false),
+        eq(indicators.isDeleted, 0),
       ];
       if (operatingUnitId) {
         conditions.push(eq(indicators.operatingUnitId, operatingUnitId));
@@ -411,7 +411,7 @@ export const mealIndicatorDataRouter = router({
           and(
             eq(indicators.projectId, input.projectId),
             eq(indicators.organizationId, organizationId),
-            eq(indicators.isDeleted, false)
+            eq(indicators.isDeleted, 0)
           )
         );
       const validIndicatorIds = new Set(projectIndicators.map(i => i.id));

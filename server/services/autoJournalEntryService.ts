@@ -200,7 +200,7 @@ async function getGLAccountByCode(organizationId: number, accountCode: string): 
     .where(and(
       eq(glAccounts.organizationId, organizationId),
       eq(glAccounts.accountCode, accountCode),
-      eq(glAccounts.isDeleted, false)
+      eq(glAccounts.isDeleted, 0)
     ))
     .limit(1);
 

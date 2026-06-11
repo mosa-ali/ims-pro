@@ -9,12 +9,11 @@
  */
 
 import { getDb } from "./db";
-
-const db = getDb();
 import { documents } from "../drizzle/schema";
 import { storagePut } from "./storage";
 import { nanoid } from "nanoid";
-import { isNull } from "drizzle-orm";
+import { and, eq, inArray, desc, like, isNull } from 'drizzle-orm';
+
 
 /**
  * Evidence Types
@@ -676,6 +675,7 @@ export async function generateEvidenceDocument(
   );
   
   // Check for existing document with same name (versioning)
+  const db = getDb();
   const existing = await db.query.documents.findFirst({
     where: (docs, { and, eq }) =>
       and(
@@ -749,6 +749,7 @@ export async function getEvidenceDocuments(
   const folderKeys = [...new Set(mapEntries.map((e) => e.folderKey))];
   
   // Query documents
+  const db = getDb();
   const evidenceDocs = await db.query.documents.findMany({
     where: (docs, { and, eq, inArray, like, isNull }) =>
       and(

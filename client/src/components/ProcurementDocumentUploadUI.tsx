@@ -201,7 +201,7 @@ export function ProcurementDocumentUploadUI({
             fileSize: file.size,
             mimeType: file.type,
             fileBuffer: new Uint8Array(buffer),
-            documentType: 'purchase_request',
+            documentType: 'purchaseRequest',
             description,
             tags: tags.split(',').map(t => t.trim()).filter(t => t),
           });

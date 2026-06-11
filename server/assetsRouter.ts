@@ -11,6 +11,8 @@ import {
 } from "../drizzle/schema";
 import { eq, and, desc, sql, like, or, isNull } from "drizzle-orm";
 
+const nowSql = new Date().toISOString().slice(0, 19).replace('T', ' ');
+
 /**
  * Assets Management Router
  * Provides CRUD operations for fixed asset registry, categories, maintenance, transfers, and disposals
@@ -32,7 +34,7 @@ export const assetsRouter = router({
       return await db.select().from(financeAssetCategories).where(
         and(
           eq(financeAssetCategories.organizationId, organizationId),
-          eq(financeAssetCategories.isDeleted, false)
+          eq(financeAssetCategories.isDeleted, 0)
         )
       ).orderBy(financeAssetCategories.code);
     }),
@@ -101,8 +103,8 @@ export const assetsRouter = router({
       // SOFT DELETE - set isDeleted flag
       await db.update(financeAssetCategories)
         .set({
-          isDeleted: true,
-          deletedAt: new Date(),
+          isDeleted: 1,
+          deletedAt: nowSql,
           deletedBy: input.deletedBy || (ctx.user?.id ?? null),
         })
         .where(eq(financeAssetCategories.id, input.id));
@@ -129,7 +131,7 @@ export const assetsRouter = router({
       
       let conditions = [
         eq(financeAssets.organizationId, organizationId),
-        eq(financeAssets.isDeleted, false)
+        eq(financeAssets.isDeleted, 0)
       ];
       
       if (input.categoryId) {
@@ -171,7 +173,7 @@ export const assetsRouter = router({
       const result = await db.select().from(financeAssets).where(
         and(
           eq(financeAssets.id, input.id),
-          eq(financeAssets.isDeleted, false)
+          eq(financeAssets.isDeleted, 0)
         )
       );
       
@@ -188,7 +190,7 @@ export const assetsRouter = router({
       const assets = await db.select().from(financeAssets).where(
         and(
           eq(financeAssets.organizationId, organizationId),
-          eq(financeAssets.isDeleted, false)
+          eq(financeAssets.isDeleted, 0)
         )
       );
       
@@ -367,8 +369,8 @@ export const assetsRouter = router({
       // SOFT DELETE - set isDeleted flag
       await db.update(financeAssets)
         .set({
-          isDeleted: true,
-          deletedAt: new Date(),
+          isDeleted: 1,
+          deletedAt: nowSql,
           deletedBy: input.deletedBy || (ctx.user?.id ?? null),
         })
         .where(eq(financeAssets.id, input.id));
@@ -460,7 +462,7 @@ export const assetsRouter = router({
       
       let conditions = [
         eq(financeAssetMaintenance.organizationId, organizationId),
-        eq(financeAssetMaintenance.isDeleted, false)
+        eq(financeAssetMaintenance.isDeleted, 0)
       ];
       
       if (input.assetId) {
@@ -507,8 +509,8 @@ export const assetsRouter = router({
       if (input.performedDate) {
         await db.update(financeAssets)
           .set({
-            lastMaintenanceDate: new Date(input.performedDate),
-            nextMaintenanceDate: input.nextDueDate ? new Date(input.nextDueDate) : null,
+            lastMaintenanceDate: typeof input.performedDate === 'string' ? input.performedDate : new Date().toISOString(),
+            nextMaintenanceDate: typeof input.nextDueDate === 'string' ? input.nextDueDate : new Date().toISOString(),
           })
           .where(eq(financeAssets.id, input.assetId));
       }
@@ -527,8 +529,8 @@ export const assetsRouter = router({
       
       await db.update(financeAssetMaintenance)
         .set({
-          isDeleted: true,
-          deletedAt: new Date(),
+          isDeleted: 1,
+          deletedAt: nowSql,
           deletedBy: input.deletedBy || (ctx.user?.id ?? null),
         })
         .where(eq(financeAssetMaintenance.id, input.id));
@@ -552,7 +554,7 @@ export const assetsRouter = router({
       
       let conditions = [
         eq(financeAssetTransfers.organizationId, organizationId),
-        eq(financeAssetTransfers.isDeleted, false)
+        eq(financeAssetTransfers.isDeleted, 0)
       ];
       
       if (input.assetId) {
@@ -624,7 +626,7 @@ export const assetsRouter = router({
           .set({
             status: "completed",
             approvedBy: ctx.user?.id ?? null,
-            approvalDate: new Date(),
+            approvalDate: nowSql,
           })
           .where(eq(financeAssetTransfers.id, input.id));
         
@@ -641,7 +643,7 @@ export const assetsRouter = router({
           .set({
             status: "rejected",
             approvedBy: ctx.user?.id ?? null,
-            approvalDate: new Date(),
+            approvalDate: nowSql,
             rejectionReason: input.rejectionReason || null,
           })
           .where(eq(financeAssetTransfers.id, input.id));
@@ -669,8 +671,8 @@ export const assetsRouter = router({
       
       await db.update(financeAssetTransfers)
         .set({
-          isDeleted: true,
-          deletedAt: new Date(),
+          isDeleted: 1,
+          deletedAt: nowSql,
           deletedBy: input.deletedBy || (ctx.user?.id ?? null),
         })
         .where(eq(financeAssetTransfers.id, input.id));
@@ -694,7 +696,7 @@ export const assetsRouter = router({
       
       let conditions = [
         eq(financeAssetDisposals.organizationId, organizationId),
-        eq(financeAssetDisposals.isDeleted, false)
+        eq(financeAssetDisposals.isDeleted, 0)
       ];
       
       if (input.assetId) {
@@ -710,6 +712,7 @@ export const assetsRouter = router({
   createDisposal: scopedProcedure
     .input(z.object({
       assetId: z.number(),
+      organizationId: z.number(),
       disposalType: z.enum(['sale', 'donation', 'scrap', 'theft', 'loss', 'transfer_out', 'write_off']).optional(),
       proposedDate: z.string().optional(),
       proposedValue: z.string().optional(),
@@ -778,10 +781,10 @@ export const assetsRouter = router({
         await db.update(financeAssetDisposals)
           .set({
             status: "completed",
-            actualDate: new Date(),
+            actualDate: nowSql,
             actualValue: input.actualValue || disposal[0].proposedValue,
             approvedBy: ctx.user?.id ?? null,
-            approvalDate: new Date(),
+            approvalDate: nowSql,
           })
           .where(eq(financeAssetDisposals.id, input.id));
         
@@ -789,8 +792,8 @@ export const assetsRouter = router({
         await db.update(financeAssets)
           .set({
             status: "disposed",
-            disposalDate: new Date(),
-            disposalMethod: disposal[0].disposalType,
+            disposalDate: nowSql,
+            disposalMethod: disposal[0].disposalType || 'sale',
             disposalValue: input.actualValue || disposal[0].proposedValue,
             disposalReason: disposal[0].reason,
             disposalApprovedBy: ctx.user?.id ?? null,
@@ -802,7 +805,7 @@ export const assetsRouter = router({
           .set({
             status: "rejected",
             approvedBy: ctx.user?.id ?? null,
-            approvalDate: new Date(),
+            approvalDate: nowSql,
             rejectionReason: input.rejectionReason || null,
           })
           .where(eq(financeAssetDisposals.id, input.id));
@@ -827,6 +830,7 @@ export const assetsRouter = router({
   deleteDisposal: scopedProcedure
     .input(z.object({
       id: z.number(),
+      organizationId: z.number(),
       deletedBy: z.number().optional(),
     }))
     .mutation(async ({ input, ctx }) => {
@@ -838,8 +842,8 @@ export const assetsRouter = router({
       
       await db.update(financeAssetDisposals)
         .set({
-          isDeleted: true,
-          deletedAt: new Date(),
+          isDeleted: 1,
+          deletedAt: nowSql,
           deletedBy: input.deletedBy || (ctx.user?.id ?? null),
         })
         .where(eq(financeAssetDisposals.id, input.id));
@@ -888,7 +892,7 @@ export const assetsRouter = router({
             .where(and(
               eq(financeAssetCategories.organizationId, organizationId),
               eq(financeAssetCategories.code, cat.code),
-              eq(financeAssetCategories.isDeleted, false)
+              eq(financeAssetCategories.isDeleted, 0)
             ));
           if (existing.length > 0) {
             errors.push({ row: i + 2, field: 'code', message: `Category code "${cat.code}" already exists`, suggestedFix: 'Use a unique category code or update the existing record' });
@@ -965,7 +969,9 @@ export const assetsRouter = router({
   importDisposals: scopedProcedure
     .input(z.object({
       disposals: z.array(z.object({
-        assetId: z.number(),
+      assetId: z.number(),
+      organizationId: z.number(),
+      operatingUnitId: z.number().optional(),
         disposalType: z.enum(['sale', 'donation', 'scrap', 'theft', 'loss', 'transfer_out', 'write_off']).optional(),
         proposedDate: z.string().optional(),
         proposedValue: z.string().optional(),

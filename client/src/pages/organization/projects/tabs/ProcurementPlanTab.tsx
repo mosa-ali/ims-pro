@@ -382,7 +382,7 @@ export function ProcurementPlanTab({
  { name: t.projectDetail.procurementMethod, key: 'procurementMethod', width: 25, type: 'text' },
  { name: t.projectDetail.plannedStartDate, key: 'plannedProcurementDate', width: 15, type: 'date' },
  { name: t.common.status, key: 'status', width: 15, type: 'text' },
- { name: t.common.notes, key: 'notes', width: 30, type: 'text' },
+ { name: t.projectDetail.notes, key: 'notes', width: 30, type: 'text' },
  ];
 
  // Map items to include activity code and name from activities
@@ -418,7 +418,7 @@ export function ProcurementPlanTab({
  { name: `${t.projectDetail.procurementMethod}*`, key: 'procurementMethod', width: 25, type: 'text' },
  { name: `${t.projectDetail.plannedStartDate}*`, key: 'plannedProcurementDate', width: 15, type: 'date' },
  { name: t.common.status, key: 'status', width: 15, type: 'text' },
- { name: t.common.notes, key: 'notes', width: 30, type: 'text' },
+ { name: t.projectDetail.notes, key: 'notes', width: 30, type: 'text' },
  ];
 
  await exportExcelTemplate({
@@ -531,7 +531,7 @@ export function ProcurementPlanTab({
  case 'NEGOTIABLE_QUOTATION': return t.projectDetail.methodNegotiable;
  case 'TENDER': return t.projectDetail.methodTender;
  case 'DIRECT_PURCHASE': return t.projectDetail.methodDirectProcurement;
- case 'OTHER': return t.common.other;
+ case 'OTHER': return t.projectDetail.other;
  default: return method?.replace(/_/g, ' ') || '-';
  }
  };
@@ -634,7 +634,7 @@ export function ProcurementPlanTab({
  <div className="bg-white border border-gray-200 rounded-lg p-4">
  <div className="flex items-center gap-2 mb-2">
  <Calendar className="w-5 h-5 text-purple-600" />
- <div className="text-sm text-gray-600 text-start">{t.finance.approvedBudget}</div>
+ <div className="text-sm text-gray-600 text-start">{t.projectDetail.approvedBudget}</div>
  </div>
  <div className="ltr-safe text-2xl font-bold text-gray-900">
  {projectCurrency}{totalApprovedBudget.toLocaleString()}
@@ -795,9 +795,9 @@ export function ProcurementPlanTab({
  {showDeleteConfirm && selectedItem && (
  <div className="fixed inset-0 bg-gray-900/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
  <div className="bg-white rounded-lg p-6 max-w-md w-full">
- <h3 className={`text-lg font-semibold mb-4 text-start`}>{t.common.confirmDelete}</h3>
+ <h3 className={`text-lg font-semibold mb-4 text-start`}>{t.projectDetail.confirmDelete}</h3>
  <p className={`text-gray-600 mb-4 text-start`}>
- {t.common.deleteConfirmMessage.replace('{item}', selectedItem.itemName)}
+ {t.deleteConfirmationDialog.deleteConfirmation.replace('{item}', selectedItem.itemName)}
  </p>
  <div className={`flex gap-2`}>
  <button onClick={() => setShowDeleteConfirm(false)} className="px-4 py-2 border rounded">{t.common.cancel}</button>
@@ -1005,7 +1005,7 @@ function ProcurementItemModal({
  </label>
  <input
  type="text"
- value={`${projectCurrency}${(formData.quantity * formData.estimatedUnitCost).toLocaleString()}`}
+ value={`${formData.projectCurrency}${(formData.quantity * formData.estimatedUnitCost).toLocaleString()}`}
  readOnly
  className={`w-full px-3 py-2 border border-gray-200 rounded-md bg-gray-50 text-gray-600 text-start`}
  />
@@ -1045,7 +1045,7 @@ function ProcurementItemModal({
  {/* Row 8: Notes */}
  <div>
  <label className={`block text-sm font-medium text-gray-700 mb-1 text-start`}>
- {t.common.notes}
+ {t.projectDetail.notes}
  </label>
  <textarea
  value={formData.notes}
@@ -1263,7 +1263,7 @@ function ProcurementCreateModal({
  </label>
  <input
  type="text"
- value={`${projectCurrency}${(formData.quantity * formData.estimatedUnitCost).toLocaleString()}`}
+ value={`${formData.projectCurrency}${(formData.quantity * formData.estimatedUnitCost).toLocaleString()}`}
  readOnly
  className={`w-full px-3 py-2 border border-gray-200 rounded-md bg-gray-50 text-gray-600 text-sm text-start`}
  />
@@ -1355,8 +1355,8 @@ function ProcurementCreateModal({
  <td className="px-3 py-2 text-gray-900">{item.itemDescription}</td>
  <td className="px-3 py-2 text-gray-600">{item.category}</td>
  <td className="px-3 py-2 text-gray-600">{item.quantity} {item.unitOfMeasure}</td>
- <td className="px-3 py-2 text-gray-600">{projectCurrency}{item.estimatedUnitCost.toLocaleString()}</td>
- <td className="px-3 py-2 text-gray-900 font-medium">{projectCurrency}{(item.quantity * item.estimatedUnitCost).toLocaleString()}</td>
+ <td className="px-3 py-2 text-gray-600">{formData.projectCurrency}{item.estimatedUnitCost.toLocaleString()}</td>
+ <td className="px-3 py-2 text-gray-900 font-medium">{formData.projectCurrency}{(item.quantity * item.estimatedUnitCost).toLocaleString()}</td>
  <td className="px-3 py-2 text-gray-600">{item.procurementMethod.replace(/_/g, ' ')}</td>
  <td className="px-3 py-2">
  <button
@@ -1377,7 +1377,7 @@ function ProcurementCreateModal({
  {t.projectDetail.totalItems} {itemsList.length}
  </span>
  <span className="text-sm font-semibold text-gray-900">
- {t.projectDetail.grandTotal} {projectCurrency}{itemsList.reduce((sum, item) => sum + (item.quantity * item.estimatedUnitCost), 0).toLocaleString()}
+ {t.projectDetail.grandTotal} {formData.projectCurrency}{itemsList.reduce((sum, item) => sum + (item.quantity * item.estimatedUnitCost), 0).toLocaleString()}
  </span>
  </div>
  </div>
@@ -1389,7 +1389,7 @@ function ProcurementCreateModal({
  {/* Notes */}
  <div>
  <label className={`block text-sm font-medium text-gray-700 mb-1 text-start`}>
- {t.common.notes}
+ {t.projectDetail.notes}
  </label>
  <textarea
  value={formData.notes}

@@ -21,7 +21,7 @@ export const chartOfAccountsRouter = router({
       return await db.select().from(chartOfAccounts).where(
         and(
           eq(chartOfAccounts.organizationId, organizationId),
-          eq(chartOfAccounts.isDeleted, false)
+          eq(chartOfAccounts.isDeleted, 0)
         )
       ).orderBy(chartOfAccounts.accountCode);
     }),
@@ -40,7 +40,7 @@ export const chartOfAccountsRouter = router({
         and(
           eq(chartOfAccounts.id, input.id),
           eq(chartOfAccounts.organizationId, organizationId),
-          eq(chartOfAccounts.isDeleted, false)
+          eq(chartOfAccounts.isDeleted, 0)
         )
       );
       
@@ -58,7 +58,7 @@ export const chartOfAccountsRouter = router({
       const all = await db.select().from(chartOfAccounts).where(
         and(
           eq(chartOfAccounts.organizationId, organizationId),
-          eq(chartOfAccounts.isDeleted, false)
+          eq(chartOfAccounts.isDeleted, 0)
         )
       );
       
@@ -103,7 +103,7 @@ export const chartOfAccountsRouter = router({
         and(
           eq(chartOfAccounts.organizationId, organizationId),
           eq(chartOfAccounts.accountCode, input.accountCode),
-          eq(chartOfAccounts.isDeleted, false)
+          eq(chartOfAccounts.isDeleted, 0)
         )
       );
       
@@ -119,7 +119,7 @@ export const chartOfAccountsRouter = router({
         accountType: input.accountType,
         parentAccountCode: input.parentAccountCode || null,
         description: input.description || null,
-        isActive: input.isActive,
+        isActive: Number(input.isActive),
         createdBy: ctx.user?.id || null,
       });
       
@@ -158,7 +158,7 @@ export const chartOfAccountsRouter = router({
             and(
               eq(chartOfAccounts.organizationId, organizationId),
               eq(chartOfAccounts.accountCode, updateData.accountCode),
-              eq(chartOfAccounts.isDeleted, false)
+              eq(chartOfAccounts.isDeleted, 0)
             )
           );
           
@@ -194,8 +194,8 @@ export const chartOfAccountsRouter = router({
       // Soft delete: set isDeleted = true, record deletion timestamp and user
       await db.update(chartOfAccounts)
         .set({
-          isDeleted: true,
-          deletedAt: new Date(),
+          isDeleted: 1,
+          deletedAt: new Date().toISOString().slice(0, 19).replace('T', ' '),
           deletedBy: ctx.user?.id || null,
         })
         .where(and(
@@ -264,7 +264,7 @@ export const chartOfAccountsRouter = router({
               and(
                 eq(chartOfAccounts.organizationId, organizationId),
                 eq(chartOfAccounts.accountCode, account.accountCode),
-                eq(chartOfAccounts.isDeleted, false)
+                eq(chartOfAccounts.isDeleted, 0)
               )
             );
             
@@ -289,7 +289,7 @@ export const chartOfAccountsRouter = router({
             accountType: account.accountType,
             parentAccountCode: account.parentAccountCode || null,
             description: account.description || null,
-            isActive: true,
+            isActive: 1,
             createdBy: ctx.user?.id || null,
           });
           

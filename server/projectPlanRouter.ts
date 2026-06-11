@@ -29,7 +29,7 @@ export const projectPlanRouter = router({
         .where(and(
           eq(projectPlanObjectives.projectId, input.projectId),
           eq(projectPlanObjectives.organizationId, organizationId),
-          eq(projectPlanObjectives.isDeleted, false)
+          eq(projectPlanObjectives.isDeleted, 0)
         ))
         .orderBy(projectPlanObjectives.code);
       return objectives;
@@ -86,8 +86,8 @@ export const projectPlanRouter = router({
       if (!db) throw new Error("Database not available");
       await db.update(projectPlanObjectives)
         .set({ 
-          isDeleted: true, 
-          deletedAt: new Date(),
+          isDeleted: 1, 
+          deletedAt: new Date().toISOString(),
           deletedBy: ctx.user?.id 
         })
         .where(eq(projectPlanObjectives.id, input.id));
@@ -113,7 +113,7 @@ export const projectPlanRouter = router({
         .where(and(
           eq(projectPlanResults.projectId, input.projectId),
           eq(projectPlanResults.organizationId, organizationId),
-          eq(projectPlanResults.isDeleted, false),
+          eq(projectPlanResults.isDeleted, 0),
           input.objectiveId ? eq(projectPlanResults.objectiveId, input.objectiveId) : undefined
         ))
         .orderBy(projectPlanResults.code);
@@ -173,8 +173,8 @@ export const projectPlanRouter = router({
       if (!db) throw new Error("Database not available");
       await db.update(projectPlanResults)
         .set({ 
-          isDeleted: true, 
-          deletedAt: new Date(),
+          isDeleted: 1, 
+          deletedAt: new Date().toISOString(),
           deletedBy: ctx.user?.id 
         })
         .where(eq(projectPlanResults.id, input.id));
@@ -201,7 +201,7 @@ export const projectPlanRouter = router({
         .where(and(
           eq(projectPlanActivities.projectId, input.projectId),
           eq(projectPlanActivities.organizationId, organizationId),
-          eq(projectPlanActivities.isDeleted, false),
+          eq(projectPlanActivities.isDeleted, 0),
           input.resultId ? eq(projectPlanActivities.resultId, input.resultId) : undefined,
           input.department ? eq(projectPlanActivities.department, input.department as any) : undefined
         ))
@@ -319,8 +319,8 @@ export const projectPlanRouter = router({
       if (!db) throw new Error("Database not available");
       await db.update(projectPlanActivities)
         .set({ 
-          isDeleted: true, 
-          deletedAt: new Date(),
+          isDeleted: 1, 
+          deletedAt: new Date().toISOString(),
           deletedBy: ctx.user?.id 
         })
         .where(eq(projectPlanActivities.id, input.id));
@@ -346,7 +346,7 @@ export const projectPlanRouter = router({
         .where(and(
           eq(projectPlanTasks.projectId, input.projectId),
           eq(projectPlanTasks.organizationId, organizationId),
-          eq(projectPlanTasks.isDeleted, false),
+          eq(projectPlanTasks.isDeleted, 0),
           input.planActivityId ? eq(projectPlanTasks.planActivityId, input.planActivityId) : undefined
         ))
         .orderBy(projectPlanTasks.code);
@@ -412,8 +412,8 @@ export const projectPlanRouter = router({
       if (!db) throw new Error("Database not available");
       await db.update(projectPlanTasks)
         .set({ 
-          isDeleted: true, 
-          deletedAt: new Date(),
+          isDeleted: 1, 
+          deletedAt: new Date().toISOString(),
           deletedBy: ctx.user?.id 
         })
         .where(eq(projectPlanTasks.id, input.id));
@@ -443,7 +443,7 @@ export const projectPlanRouter = router({
         .where(and(
           eq(activities.projectId, input.projectId),
           eq(activities.organizationId, organizationId),
-          eq(activities.isDeleted, false)
+          eq(activities.isDeleted, 0)
         ))
         .orderBy(activities.activityCode);
       return activitiesList;
@@ -467,7 +467,7 @@ export const projectPlanRouter = router({
         .where(and(
           eq(projectPlanActivities.projectId, input.projectId),
           eq(projectPlanActivities.organizationId, organizationId),
-          eq(projectPlanActivities.isDeleted, false)
+          eq(projectPlanActivities.isDeleted, 0)
         ))
         .orderBy(projectPlanActivities.code);
       return planActivitiesList;

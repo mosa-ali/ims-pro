@@ -8,6 +8,7 @@ import { useState, useMemo } from 'react';
 import { useNavigate } from '@/lib/router-compat';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useOrganization } from '@/contexts/OrganizationContext';
+import { useOperatingUnit } from "@/contexts/OperatingUnitContext";
 import { trpc } from '@/lib/trpc';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';

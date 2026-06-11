@@ -325,7 +325,7 @@ export const emailVerificationRouter = router({
         await db
           .update(emailVerificationTokens)
           .set({
-            deletedAt: new Date(),
+            deletedAt: new Date().toISOString(),
           })
           .where(
             and(

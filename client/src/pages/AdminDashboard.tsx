@@ -28,7 +28,7 @@ const { user } = useAuth();
  const kpis = [
  {
  id: 'orgs',
- label: t.adminDashboard.organizations,
+ label: t.system.adminDashboard.organizations,
  value: orgsCount,
  icon: Building2,
  color: 'bg-blue-500',
@@ -36,7 +36,7 @@ const { user } = useAuth();
  },
  {
  id: 'ous',
- label: t.adminDashboard.operatingUnits,
+ label: t.system.adminDashboard.operatingUnits,
  value: ousCount,
  icon: MapPin,
  color: 'bg-green-500',
@@ -44,7 +44,7 @@ const { user } = useAuth();
  },
  {
  id: 'users',
- label: t.adminDashboard.platformUsers,
+ label: t.system.adminDashboard.platformUsers,
  value: usersCount,
  icon: Users,
  color: 'bg-purple-500',
@@ -52,8 +52,8 @@ const { user } = useAuth();
  },
  {
  id: 'health',
- label: t.adminDashboard.systemHealthTitle,
- value: t.adminDashboard.operational,
+ label: t.system.adminDashboard.systemHealthTitle,
+ value: t.system.adminDashboard.operational,
  icon: Activity,
  color: 'bg-emerald-500',
  path: '/platform/system-health'
@@ -63,40 +63,40 @@ const { user } = useAuth();
  const quickActions = [
  {
  id: 'manage-orgs',
- title: t.adminDashboard.manageOrganizations,
- description: t.adminDashboard.manageOrganizationsDesc,
+ title: t.system.adminDashboard.manageOrganizations,
+ description: t.system.adminDashboard.manageOrganizationsDesc,
  icon: Building2,
  path: '/platform/organizations',
  color: 'text-blue-600'
  },
  {
  id: 'manage-ous',
- title: t.adminDashboard.manageOperatingUnits,
- description: t.adminDashboard.manageOperatingUnitsDesc,
+ title: t.system.adminDashboard.manageOperatingUnits,
+ description: t.system.adminDashboard.manageOperatingUnitsDesc,
  icon: MapPin,
  path: '/platform/operating-units',
  color: 'text-green-600'
  },
  {
  id: 'manage-users',
- title: t.adminDashboard.manageUsers,
- description: t.adminDashboard.manageUsersDesc,
+ title: t.system.adminDashboard.manageUsers,
+ description: t.system.adminDashboard.manageUsersDesc,
  icon: Users,
  path: '/platform/users',
  color: 'text-purple-600'
  },
  {
  id: 'view-audit',
- title: t.adminDashboard.viewAuditLogs,
- description: t.adminDashboard.viewAuditLogsDesc,
+ title: t.system.adminDashboard.viewAuditLogs,
+ description: t.system.adminDashboard.viewAuditLogsDesc,
  icon: Shield,
  path: '/platform/audit-logs',
  color: 'text-orange-600'
  },
  {
  id: 'deleted-records',
- title: t.adminDashboard.deletedRecords,
- description: t.adminDashboard.deletedRecordsDesc,
+ title: t.system.adminDashboard.deletedRecords,
+ description: t.system.adminDashboard.deletedRecordsDesc,
  icon: Archive,
  path: '/platform/deleted-records',
  color: 'text-red-600'
@@ -110,9 +110,9 @@ const { user } = useAuth();
  <div className="flex items-start gap-3">
  <Shield className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" />
  <div>
- <h3 className="font-semibold text-amber-900">{t.adminDashboard.developmentFeature}</h3>
+ <h3 className="font-semibold text-amber-900">{t.system.adminDashboard.developmentFeature}</h3>
  <p className="text-sm text-amber-700 mt-1">
- {t.adminDashboard.devNotice}
+ {t.system.adminDashboard.devNotice}
  </p>
  </div>
  </div>
@@ -120,9 +120,9 @@ const { user } = useAuth();
 
  {/* Page Header */}
  <div>
- <h1 className="text-3xl font-bold text-foreground">{t.adminDashboard.adminDashboardTitle}</h1>
+ <h1 className="text-3xl font-bold text-foreground">{t.system.adminDashboard.adminDashboardTitle}</h1>
  <p className="text-muted-foreground mt-2">
- {t.adminDashboard.adminDashboardSubtitle}
+ {t.system.adminDashboard.adminDashboardSubtitle}
  </p>
  </div>
 
@@ -152,7 +152,7 @@ const { user } = useAuth();
 
  {/* Quick Actions */}
  <div>
- <h2 className="text-xl font-semibold text-foreground mb-4">{t.adminDashboard.quickActions}</h2>
+ <h2 className="text-xl font-semibold text-foreground mb-4">{t.system.adminDashboard.quickActions}</h2>
  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
  {quickActions.map((action) => {
  const Icon = action.icon;
@@ -177,23 +177,23 @@ const { user } = useAuth();
 
  {/* System Information */}
  <div className="bg-card border border-border rounded-lg p-6">
- <h2 className="text-xl font-semibold text-foreground mb-4">{t.adminDashboard.systemInformation}</h2>
+ <h2 className="text-xl font-semibold text-foreground mb-4">{t.system.adminDashboard.systemInformation}</h2>
  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
  <div>
- <p className="text-muted-foreground">{t.adminDashboard.currentUser}</p>
+ <p className="text-muted-foreground">{t.system.adminDashboard.currentUser}</p>
  <p className="font-medium text-foreground">{user?.name || 'N/A'}</p>
  </div>
  <div>
- <p className="text-muted-foreground">{t.adminDashboard.userRole}</p>
+ <p className="text-muted-foreground">{t.system.adminDashboard.userRole}</p>
  <p className="font-medium text-foreground">{user?.role || 'N/A'}</p>
  </div>
  <div>
- <p className="text-muted-foreground">{t.adminDashboard.environment}</p>
+ <p className="text-muted-foreground">{t.system.adminDashboard.environment}</p>
  <p className="font-medium text-foreground">{import.meta.env.DEV ? 'Development' : 'Production'}</p>
  </div>
  <div>
- <p className="text-muted-foreground">{t.adminDashboard.systemStatus}</p>
- <p className="font-medium text-emerald-600">{t.adminDashboard.operational}</p>
+ <p className="text-muted-foreground">{t.system.adminDashboard.systemStatus}</p>
+ <p className="font-medium text-emerald-600">{t.system.adminDashboard.operational}</p>
  </div>
  </div>
  </div>

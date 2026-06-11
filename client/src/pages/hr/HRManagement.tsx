@@ -28,34 +28,36 @@
 
 import { Routes, Route } from '@/lib/router-compat';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { HRModuleLauncher } from './hr/HRModuleLauncher';
-import { HRDashboard } from './hr/HRDashboard';
-import { StaffDictionary } from './hr/StaffDictionary';
-import { SalaryScale } from './hr/SalaryScale';
-import { EmployeesProfiles } from './hr/EmployeesProfiles';
-import { EmployeesDirectory } from './hr/EmployeesDirectory';
-import { FilteredEmployeesList } from './hr/FilteredEmployeesList';
-import { ProfilesSummary } from './hr/ProfilesSummary';
-import { EmployeeCard } from './hr/EmployeeCard';
-import { LeaveManagement } from './hr/LeaveManagement';
-import { PayrollAllowances } from './hr/PayrollAllowances';
-import { TrainingManagement } from './hr/TrainingManagement';
-import { SanctionsDisciplinary } from './hr/SanctionsDisciplinary';
-import { Recruitment } from './hr/Recruitment';
-import { HRDocuments } from './hr/HRDocuments';
-import { ReportsAnalytics } from './hr/ReportsAnalytics';
-import { HRSettings } from './hr/HRSettings';
-import { HRAnnualPlanModule } from './hr/HRAnnualPlanModule';
-import { AttendanceDashboard } from './hr/attendance/AttendanceDashboard';
-import { AttendanceRecordsTable } from './hr/attendance/AttendanceRecordsTable';
-import { MyAttendance } from './hr/attendance/MyAttendance';
-import { PeriodManagement } from './hr/attendance/PeriodManagement';
-import { AttendanceCalendar } from './hr/attendance/AttendanceCalendar';
-import { OvertimeManagement } from './hr/attendance/OvertimeManagement';
-import { AttendanceReports } from './hr/attendance/AttendanceReports';
+import { HRModuleLauncher } from './HRModuleLauncher';
+import { HRDashboard } from './HRDashboard';
+import { StaffDictionary } from './StaffDictionary';
+import { SalaryScale } from './SalaryScale';
+import { EmployeesProfiles } from './EmployeesProfiles';
+import { EmployeesDirectory } from './EmployeesDirectory';
+import { FilteredEmployeesList } from './FilteredEmployeesList';
+import { ProfilesSummary } from './ProfilesSummary';
+import { EmployeeCard } from './EmployeeCard';
+import { LeaveManagement } from './LeaveManagement';
+import { PayrollAllowances } from './PayrollAllowances';
+import { TrainingManagement } from './TrainingManagement';
+import { SanctionsDisciplinary } from './SanctionsDisciplinary';
+import { Recruitment } from './Recruitment';
+import { HRDocuments } from './HRDocuments';
+import { ReportsAnalytics } from './ReportsAnalytics';
+import { HRSettings } from './HRSettings';
+import { HRAnnualPlanModule } from './HRAnnualPlanModule';
+import { AttendanceDashboard } from './attendance/AttendanceDashboard';
+import { AttendanceRecordsTable } from './attendance/AttendanceRecordsTable';
+import { MyAttendance } from './attendance/MyAttendance';
+import { PeriodManagement } from './attendance/PeriodManagement';
+import { AttendanceCalendar } from './attendance/AttendanceCalendar';
+import { OvertimeManagement } from './attendance/OvertimeManagement';
+import { AttendanceReports } from './attendance/AttendanceReports';
+import { useTranslation } from '@/i18n/useTranslation';
 
 export function HRManagement() {
   const { language, isRTL } = useLanguage();
+    const { t } = useTranslation();
  
  return (
     <div dir={isRTL ? 'rtl' : 'ltr'}>

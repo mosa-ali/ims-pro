@@ -499,7 +499,7 @@ export const budgetLinesRouter = router({
       await db
         .update(budgetLines)
         .set({
-          deletedAt: new Date(),
+          deletedAt: new Date().toISOString().slice(0, 19).replace('T', ' '),
           deletedBy: ctx.user.id,
         })
         .where(eq(budgetLines.id, lineId));

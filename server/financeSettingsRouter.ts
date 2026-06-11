@@ -59,7 +59,7 @@ export const financeSettingsRouter = router({
         );
       }
       if (input.isActive !== undefined) {
-        filtered = filtered.filter(c => c.isActive === input.isActive);
+        filtered = filtered.filter(c => c.isActive === Number(input.isActive));
       }
       
       return filtered;

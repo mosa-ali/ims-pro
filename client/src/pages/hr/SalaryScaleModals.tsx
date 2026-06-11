@@ -521,7 +521,7 @@ export function AddGradeModal({
 
   const localT = {
     title: t.hr?.addNewGrade || 'Add New Grade',
-    gradeCode: t.hrStaff.gradeCode || 'Grade Code',
+    gradeCode: t.hr.gradeCode || 'Grade Code',
     gradeName: t.hr?.gradeName || 'Grade Name',
     minSalary: t.hr?.minimumSalary || 'Minimum Salary',
     maxSalary: t.hr?.maximumSalary || 'Maximum Salary',
@@ -650,7 +650,7 @@ export function ManageGradesModal({
   });
 
   const handleDelete = (id: number) => {
-    if (confirm(localT.confirmDelete || 'Are you sure?')) {
+    if (confirm(t.hrRecruitment.confirmDelete || 'Are you sure?')) {
       deleteMutation.mutate({ id });
     }
   };

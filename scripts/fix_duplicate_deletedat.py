@@ -1,8 +1,8 @@
 """
 Fix duplicate deletedAt lines in router files.
 Patterns:
-1. deletedAt: new Date(), followed by deletedAt: new Date(), -> keep one as new Date().toISOString()
-2. deletedAt: new Date(), followed by deletedAt: new Date().toISOString(), -> keep only the toISOString one
+1. deletedAt: new Date().toISOString(), followed by deletedAt: new Date().toISOString(), -> keep one as new Date().toISOString()
+2. deletedAt: new Date().toISOString(), followed by deletedAt: new Date().toISOString(), -> keep only the toISOString one
 """
 import os
 import re
@@ -37,7 +37,7 @@ def fix_file(filepath):
                 new_lines.append(' ' * indent + 'deletedAt: new Date().toISOString().slice(0, 19).replace("T", " "),\n')
                 i += 2
                 fixed = True
-        elif 'deletedAt: new Date(),' in line and 'toISOString' not in line:
+        elif 'deletedAt: new Date().toISOString(),' in line and 'toISOString' not in line:
             # Single deletedAt with plain new Date() - convert to string
             indent = len(line) - len(line.lstrip())
             new_lines.append(' ' * indent + 'deletedAt: new Date().toISOString().slice(0, 19).replace("T", " "),\n')

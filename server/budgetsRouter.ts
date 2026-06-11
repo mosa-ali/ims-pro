@@ -10,6 +10,8 @@ import { budgets, budgetLines, budgetMonthlyAllocations, projects, grants } from
 import { eq, and, isNull, desc, sql } from "drizzle-orm";
 import { TRPCError } from "@trpc/server";
 
+const nowSql = new Date().toISOString().slice(0, 19).replace('T', ' ');
+
 export const budgetsRouter = router({
   /**
    * List all budgets for an organization/operating unit
@@ -129,7 +131,7 @@ export const budgetsRouter = router({
   create: scopedProcedure
     .input(
       z.object({
-        projectId: z.number({ required_error: "Project is required for donor compliance" }),
+        projectId: z.number(),
         grantId: z.number().optional(),
         budgetTitle: z.string().optional(),
         budgetTitleAr: z.string().optional(),
@@ -303,7 +305,7 @@ export const budgetsRouter = router({
       await db
         .update(budgets)
         .set({
-          deletedAt: new Date(),
+          deletedAt: nowSql,
           deletedBy: ctx.user.id,
         })
         .where(eq(budgets.id, budgetId));
@@ -366,7 +368,7 @@ export const budgetsRouter = router({
         .update(budgets)
         .set({
           status: "submitted",
-          submittedAt: new Date(),
+          submittedAt: nowSql,
           submittedBy: ctx.user.id,
           updatedBy: ctx.user.id,
         })
@@ -419,7 +421,7 @@ export const budgetsRouter = router({
         .update(budgets)
         .set({
           status: "approved",
-          approvedAt,
+          approvedAt: new Date().toISOString().slice(0, 19).replace('T', ' '),
           approvedBy: ctx.user.id,
           updatedBy: ctx.user.id,
         })
@@ -452,7 +454,7 @@ export const budgetsRouter = router({
             </div>
             <div class="field">
               <div class="label">Budget Name:</div>
-              <div class="value">${existingBudget.budgetName || 'N/A'}</div>
+              <div class="value">${existingBudget.budgetTitle || 'N/A'}</div>
             </div>
             <div class="field">
               <div class="label">Fiscal Year:</div>
@@ -531,7 +533,7 @@ export const budgetsRouter = router({
         .update(budgets)
         .set({
           status: "rejected",
-          rejectedAt: new Date(),
+          rejectedAt: nowSql,
           rejectedBy: ctx.user.id,
           rejectionReason,
           rejectionReasonAr: rejectionReasonAr || null,

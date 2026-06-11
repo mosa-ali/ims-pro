@@ -17,7 +17,7 @@ if "isNull" not in content:
         count=1
     )
 
-# Replace eq(table.isDeleted, false) with isNull(table.deletedAt) for query WHERE clauses
+# Replace eq(table.isDeleted, 0) with isNull(table.deletedAt) for query WHERE clauses
 content = re.sub(
     r'eq\((\w+)\.isDeleted,\s*(?:false|0)\)',
     r'isNull(\1.deletedAt)',

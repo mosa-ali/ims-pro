@@ -28,7 +28,7 @@ export const proposalsRouter = router({
           and(
             eq(opportunities.organizationId, organizationId),
             eq(opportunities.operatingUnitId, operatingUnitId),
-            eq(opportunities.isDeleted, false),
+            eq(opportunities.isDeleted, 0),
             sql`${opportunities.applicationDeadline} >= CURDATE()`
           )
         );
@@ -41,7 +41,7 @@ export const proposalsRouter = router({
           and(
             eq(proposals.organizationId, organizationId),
             eq(proposals.operatingUnitId, operatingUnitId),
-            eq(proposals.isDeleted, false),
+            eq(proposals.isDeleted, 0),
             sql`${proposals.proposalStatus} IN ('Draft', 'Under Internal Review', 'Submitted')`
           )
         );
@@ -69,7 +69,7 @@ export const proposalsRouter = router({
           and(
             eq(pipelineOpportunities.organizationId, organizationId),
             eq(pipelineOpportunities.operatingUnitId, operatingUnitId),
-            eq(pipelineOpportunities.isDeleted, false)
+            eq(pipelineOpportunities.isDeleted, 0)
           )
         );
 
@@ -81,7 +81,7 @@ export const proposalsRouter = router({
           and(
             eq(proposals.organizationId, organizationId),
             eq(proposals.operatingUnitId, operatingUnitId),
-            eq(proposals.isDeleted, false),
+            eq(proposals.isDeleted, 0),
             sql`${proposals.proposalStatus} IN ('Draft', 'Under Internal Review', 'Submitted')`
           )
         );
@@ -96,7 +96,7 @@ export const proposalsRouter = router({
           and(
             eq(pipelineOpportunities.organizationId, organizationId),
             eq(pipelineOpportunities.operatingUnitId, operatingUnitId),
-            eq(pipelineOpportunities.isDeleted, false)
+            eq(pipelineOpportunities.isDeleted, 0)
           )
         );
 
@@ -111,7 +111,7 @@ export const proposalsRouter = router({
           and(
             eq(proposals.organizationId, organizationId),
             eq(proposals.operatingUnitId, operatingUnitId),
-            eq(proposals.isDeleted, false),
+            eq(proposals.isDeleted, 0),
             sql`${proposals.proposalStatus} IN ('Draft', 'Under Internal Review', 'Submitted')`
           )
         );
@@ -145,7 +145,7 @@ export const proposalsRouter = router({
           and(
             eq(opportunities.organizationId, organizationId),
             eq(opportunities.operatingUnitId, operatingUnitId),
-            eq(opportunities.isDeleted, false),
+            eq(opportunities.isDeleted, 0),
             sql`${opportunities.applicationDeadline} >= CURDATE()`
           )
         );
@@ -158,7 +158,7 @@ export const proposalsRouter = router({
           and(
             eq(opportunities.organizationId, organizationId),
             eq(opportunities.operatingUnitId, operatingUnitId),
-            eq(opportunities.isDeleted, false),
+            eq(opportunities.isDeleted, 0),
             sql`${opportunities.applicationDeadline} >= CURDATE() AND ${opportunities.applicationDeadline} <= DATE_ADD(CURDATE(), INTERVAL 14 DAY)`
           )
         );
@@ -171,7 +171,7 @@ export const proposalsRouter = router({
           and(
             eq(opportunities.organizationId, organizationId),
             eq(opportunities.operatingUnitId, operatingUnitId),
-            eq(opportunities.isDeleted, false),
+            eq(opportunities.isDeleted, 0),
             sql`${opportunities.applicationDeadline} < CURDATE()`
           )
         );
@@ -184,7 +184,7 @@ export const proposalsRouter = router({
           and(
             eq(opportunities.organizationId, organizationId),
             eq(opportunities.operatingUnitId, operatingUnitId),
-            eq(opportunities.isDeleted, false),
+            eq(opportunities.isDeleted, 0),
             sql`${opportunities.applicationDeadline} >= CURDATE()`
           )
         );
@@ -214,7 +214,7 @@ export const proposalsRouter = router({
       const conditions = [
         eq(proposals.organizationId, organizationId),
         eq(proposals.operatingUnitId, operatingUnitId),
-        eq(proposals.isDeleted, false),
+        eq(proposals.isDeleted, 0),
       ];
 
       if (input.status) {
@@ -248,7 +248,7 @@ export const proposalsRouter = router({
             eq(proposals.id, input.id),
             eq(proposals.organizationId, organizationId),
             eq(proposals.operatingUnitId, operatingUnitId),
-            eq(proposals.isDeleted, false)
+            eq(proposals.isDeleted, 0)
           )
         )
         .limit(1);
@@ -352,7 +352,7 @@ export const proposalsRouter = router({
             eq(proposals.id, id),
             eq(proposals.organizationId, organizationId),
             eq(proposals.operatingUnitId, operatingUnitId),
-            eq(proposals.isDeleted, false)
+            eq(proposals.isDeleted, 0)
           )
         )
         .limit(1);
@@ -392,7 +392,7 @@ export const proposalsRouter = router({
             eq(proposals.id, input.id),
             eq(proposals.organizationId, organizationId),
             eq(proposals.operatingUnitId, operatingUnitId),
-            eq(proposals.isDeleted, false)
+            eq(proposals.isDeleted, 0)
           )
         )
         .limit(1);
@@ -407,8 +407,8 @@ export const proposalsRouter = router({
       await db
         .update(proposals)
         .set({
-          isDeleted: true,
-          deletedAt: new Date(),
+          isDeleted: 1,
+          deletedAt: new Date().toISOString(),
           deletedBy: ctx.user.id,
         })
         .where(eq(proposals.id, input.id));
@@ -427,7 +427,7 @@ export const proposalsRouter = router({
       const conditions = [
         eq(proposals.organizationId, organizationId),
         eq(proposals.operatingUnitId, operatingUnitId),
-        eq(proposals.isDeleted, false),
+        eq(proposals.isDeleted, 0),
       ];
 
       const stats = await db
@@ -464,7 +464,7 @@ export const proposalsRouter = router({
             eq(proposals.organizationId, organizationId),
             eq(proposals.operatingUnitId, operatingUnitId),
             eq(proposals.proposalStatus, "Approved"),
-            eq(proposals.isDeleted, false)
+            eq(proposals.isDeleted, 0)
           )
         )
         .limit(1);
@@ -553,13 +553,13 @@ export const proposalsRouter = router({
       const opportunityConditions = [
         eq(pipelineOpportunities.organizationId, organizationId),
         eq(pipelineOpportunities.operatingUnitId, operatingUnitId),
-        eq(pipelineOpportunities.isDeleted, false),
+        eq(pipelineOpportunities.isDeleted, 0),
       ];
 
       const proposalConditions = [
         eq(proposals.organizationId, organizationId),
         eq(proposals.operatingUnitId, operatingUnitId),
-        eq(proposals.isDeleted, false),
+        eq(proposals.isDeleted, 0),
       ];
 
       // Count opportunities
@@ -600,7 +600,7 @@ export const proposalsRouter = router({
       const conditions = [
         eq(pipelineOpportunities.organizationId, organizationId),
         eq(pipelineOpportunities.operatingUnitId, operatingUnitId),
-        eq(pipelineOpportunities.isDeleted, false),
+        eq(pipelineOpportunities.isDeleted, 0),
       ];
 
       if (input.stage) {
@@ -692,7 +692,7 @@ export const proposalsRouter = router({
             eq(pipelineOpportunities.id, id),
             eq(pipelineOpportunities.organizationId, organizationId),
             eq(pipelineOpportunities.operatingUnitId, operatingUnitId),
-            eq(pipelineOpportunities.isDeleted, false)
+            eq(pipelineOpportunities.isDeleted, 0)
           )
         )
         .limit(1);
@@ -742,7 +742,7 @@ export const proposalsRouter = router({
             eq(pipelineOpportunities.id, input.id),
             eq(pipelineOpportunities.organizationId, organizationId),
             eq(pipelineOpportunities.operatingUnitId, operatingUnitId),
-            eq(pipelineOpportunities.isDeleted, false)
+            eq(pipelineOpportunities.isDeleted, 0)
           )
         )
         .limit(1);
@@ -757,8 +757,8 @@ export const proposalsRouter = router({
       await db
         .update(pipelineOpportunities)
         .set({
-          isDeleted: true,
-          deletedAt: new Date(),
+          isDeleted: 1,
+          deletedAt: new Date().toISOString(),
           deletedBy: ctx.user.id,
         })
         .where(eq(pipelineOpportunities.id, input.id));
@@ -784,7 +784,7 @@ export const proposalsRouter = router({
       const conditions = [
         eq(opportunities.organizationId, organizationId),
         eq(opportunities.operatingUnitId, operatingUnitId),
-        eq(opportunities.isDeleted, false),
+        eq(opportunities.isDeleted, 0),
       ];
 
       const result = await db
@@ -869,7 +869,7 @@ export const proposalsRouter = router({
             eq(opportunities.id, id),
             eq(opportunities.organizationId, organizationId),
             eq(opportunities.operatingUnitId, operatingUnitId),
-            eq(opportunities.isDeleted, false)
+            eq(opportunities.isDeleted, 0)
           )
         )
         .limit(1);
@@ -914,7 +914,7 @@ export const proposalsRouter = router({
             eq(opportunities.id, input.id),
             eq(opportunities.organizationId, organizationId),
             eq(opportunities.operatingUnitId, operatingUnitId),
-            eq(opportunities.isDeleted, false)
+            eq(opportunities.isDeleted, 0)
           )
         )
         .limit(1);
@@ -929,8 +929,8 @@ export const proposalsRouter = router({
       await db
         .update(opportunities)
         .set({
-          isDeleted: true,
-          deletedAt: new Date(),
+          isDeleted: 1,
+          deletedAt: new Date().toISOString(),
           deletedBy: ctx.user.id,
         })
         .where(eq(opportunities.id, input.id));
@@ -965,7 +965,7 @@ export const proposalsRouter = router({
             eq(opportunities.id, input.opportunityId),
             eq(opportunities.organizationId, organizationId),
             eq(opportunities.operatingUnitId, operatingUnitId),
-            eq(opportunities.isDeleted, false)
+            eq(opportunities.isDeleted, 0)
           )
         )
         .limit(1);

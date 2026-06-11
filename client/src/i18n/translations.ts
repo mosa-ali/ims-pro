@@ -8,6 +8,7 @@ export interface Translations {
  common: {
  loading: string;
  save: string;
+ of: string;
  cancel: string;
  delete: string;
  edit: string;
@@ -6002,6 +6003,8 @@ riskTitle: string;
   };
   logistics: {
     accept: string;
+    first: string;
+    last: string;
     accepted: string;
     acceptedQty: string;
     acknowledged: string;
@@ -6479,6 +6482,72 @@ riskTitle: string;
     view: string;
     works: string;
     year: string;
+    itemAlreadyAdded: string;
+partialAllocation: string;
+shortfall: string;
+allocation: string;
+
+pleaseEnterWhoTheItemsAreIssuedTo: string;
+pleaseAddAtLeastOneItemToIssue: string;
+noBatchAllocationsToIssue: string;
+
+stockIssue: string;
+issueItemsFromStockUsingFefoFifoBatchAllocation: string;
+
+issueDetails: string;
+
+personDepartmentOrProjectName: string;
+
+recipientType: string;
+person: string;
+activity: string;
+
+warehouseName: string;
+purposeOfIssuance: string;
+
+addItemFefoFifoAutoAllocation: string;
+
+addAndAllocate: string;
+
+systemWillAutomaticallySuggestBatches: string;
+
+issueLines: string;
+
+requested: string;
+
+qtyToIssue: string;
+lineValue: string;
+
+noExpiry: string;
+
+noBatchesAvailableForThisItem: string;
+
+totalQty: string;
+totalValue: string;
+
+updateIssue: string;
+createIssue: string;
+
+  totalBatches: string;
+
+  batchNumber: string;
+  available: string;
+  reserved: string;
+
+  expiryDate: string;
+  received: string;
+
+  noBatchesFound: string;
+
+  expiresWithin30Days: string;
+  expiryDateLabel: string;
+
+  availableStatus: string;
+  reservedStatus: string;
+  depletedStatus: string;
+  expiredStatus: string;
+  quarantinedStatus: string;
+
   };
 bidOpeningMinutes: {
   addCommentsAboutApproval: string;
@@ -8764,6 +8833,8 @@ bidOpeningMinutes: {
     generatedOn: string;
     grade: string;
     gradeCode: string;
+    gradeName: string;
+    gradeDeletedSuccessfully: string;
     gradeExamples: string;
     gradeScale: string;
     guideline: string;
@@ -9189,6 +9260,7 @@ bidOpeningMinutes: {
     clickToOpenModule32: string;
       disposalCreated: string;
   disposalDeleted: string;
+  totalValue: string;
   fillRequiredFields: string;
   totalDisposals: string;
   completed: string;
@@ -12089,6 +12161,7 @@ treasuryCashManagement: {
   newTransaction: string;
   noAutoMatchSuggestions: string;
   noData: string;
+  totalReconciliations: string;
   noReconciliations: string;
   notes: string;
   openingBalance: string;
@@ -14089,6 +14162,7 @@ export const en: Translations = {
  common: {
  loading: 'Loading...',
  save: 'Save',
+ of: 'of',
  cancel: 'Cancel',
  delete: 'Delete',
  edit: 'Edit',
@@ -20034,6 +20108,8 @@ priorityUrgent: 'Urgent',
   },
   logistics: {
     accept: 'Accept',
+    first: 'First',
+    last: 'Last',
     accepted: 'Accepted',
     acceptedQty: 'Accepted Qty',
     acknowledged: 'Acknowledged',
@@ -20511,6 +20587,89 @@ priorityUrgent: 'Urgent',
     selectCategory: 'Select Category',
     enterDescription: 'Enter description',
     saving: 'Saving...',
+    itemAlreadyAdded: "Item already added",
+partialAllocation: "Partial Allocation",
+shortfall: "Shortfall",
+allocation: "Allocation",
+
+pleaseEnterWhoTheItemsAreIssuedTo:
+  "Please enter who the items are issued to",
+
+pleaseAddAtLeastOneItemToIssue:
+  "Please add at least one item to issue",
+
+noBatchAllocationsToIssue:
+  "No batch allocations to issue",
+
+stockIssue: "Stock Issue",
+issueItemsFromStockUsingFefoFifoBatchAllocation:
+  "Issue items from stock using FEFO/FIFO batch allocation",
+
+issueDetails: "Issue Details",
+
+personDepartmentOrProjectName:
+  "Person, Department or Project Name",
+
+recipientType: "Recipient Type",
+
+person: "Person",
+
+activity: "Activity",
+
+warehouseName: "Warehouse Name",
+
+purposeOfIssuance: "Purpose of Issuance",
+
+addItemFefoFifoAutoAllocation:
+  "Add Item (FEFO/FIFO Auto Allocation)",
+
+addAndAllocate: "Add & Allocate",
+
+systemWillAutomaticallySuggestBatches:
+  "The system will automatically suggest batches using FEFO (First Expiry First Out) or FIFO (First In First Out)",
+
+issueLines: "Issue Lines",
+
+requested: "Requested",
+
+batchNumber: "Batch Number",
+
+qtyToIssue: "Qty to Issue",
+
+lineValue: "Line Value",
+
+noExpiry: "No Expiry",
+
+noBatchesAvailableForThisItem:
+  "No batches available for this item",
+
+totalQty: "Total Quantity",
+
+totalValue: "Total Value",
+
+updateIssue: "Update Issue",
+
+createIssue: "Create Issue",
+
+totalBatches: "Total Batches",
+
+available: "Available",
+reserved: "Reserved",
+
+expiryDate: "Expiry Date",
+received: "Received",
+
+noBatchesFound: "No batches found",
+
+expiresWithin30Days: "Expires within 30 days",
+expiryDateLabel: "Expiry Date",
+
+availableStatus: "Available",
+reservedStatus: "Reserved",
+depletedStatus: "Depleted",
+expiredStatus: "Expired",
+quarantinedStatus: "Quarantined",
+
   },
   hrStaff: {
     accountNumber: 'Account Number',
@@ -22535,6 +22694,8 @@ priorityUrgent: 'Urgent',
     actionType: 'Action Type',
     actions: 'Actions',
     activate: 'Activate',
+    gradeName: 'Grade Name',
+    gradeDeletedSuccessfully: 'Grade Deleted Successfully',
     recruitmentSubtitle: 'Recruitment Subtitle',
     trainingSubtitle: 'Training Subtitle',
     periodManagementSubtitle: 'Period Management Subtitle',
@@ -22940,6 +23101,7 @@ priorityUrgent: 'Urgent',
     acquisitionCost: 'Acquisition Cost',
     acquisitionDate: 'Acquisition Date',
     actions: 'Actions',
+    totalValue: 'Total Value',
     actions16: 'Actions',
     active: 'Active',
     activeAssets: 'Active Assets',
@@ -25501,6 +25663,7 @@ priorityUrgent: 'Urgent',
       bankNameAr: 'Bank Name (Arabic)',
       fundNameAr: 'Fund Name (Arabic)',
       accountNumber: 'Account Number',
+      totalReconciliations: 'Total Reconciliations',
       accountType: 'Account Type',
       active: 'Active',
       activeAccounts: 'Active Accounts',
@@ -28082,6 +28245,7 @@ export const ar: Translations = {
  loading: 'جاري التحميل...',
  save: 'حفظ',
  cancel: 'إلغاء',
+ of: 'من',
  delete: 'حذف',
  edit: 'تعديل',
  add: 'إضافة',
@@ -33997,6 +34161,8 @@ statusReview: 'قيد المراجعة',
   logistics: {
     accept: 'قبول',
     accepted: 'مقبول',
+    first: 'اولاً',
+    last: 'اخيرا',
     acceptedQty: 'الكمية المقبولة',
     acknowledged: 'مستلم',
     actions: 'الإجراءات',
@@ -34473,7 +34639,95 @@ statusReview: 'قيد المراجعة',
     selectCategory: 'اختر الفئة',
     enterDescription: 'أدخل الوصف',
     saving: 'جاري الحفظ...',
+    itemAlreadyAdded: "الصنف مضاف مسبقاً",
+
+partialAllocation: "تخصيص جزئي",
+
+shortfall: "عجز",
+
+allocation: "تخصيص",
+
+pleaseEnterWhoTheItemsAreIssuedTo:
+  "يرجى إدخال الجهة أو الشخص المستلم",
+
+pleaseAddAtLeastOneItemToIssue:
+  "يرجى إضافة صنف واحد على الأقل",
+
+noBatchAllocationsToIssue:
+  "لا توجد دفعات متاحة للصرف",
+
+stockIssue: "صرف مخزني",
+
+issueItemsFromStockUsingFefoFifoBatchAllocation:
+  "صرف الأصناف باستخدام FEFO/FIFO",
+
+issueDetails: "تفاصيل الصرف",
+
+personDepartmentOrProjectName:
+  "اسم الشخص أو القسم أو المشروع",
+
+recipientType: "نوع المستلم",
+
+person: "شخص",
+
+activity: "نشاط",
+
+warehouseName: "اسم المستودع",
+
+purposeOfIssuance: "غرض الصرف",
+
+addItemFefoFifoAutoAllocation:
+  "إضافة صنف مع تخصيص تلقائي",
+
+addAndAllocate: "إضافة وتخصيص",
+
+systemWillAutomaticallySuggestBatches:
+  "سيقوم النظام تلقائياً باقتراح الدفعات باستخدام FEFO أو FIFO",
+
+issueLines: "بنود الصرف",
+
+requested: "المطلوب",
+
+batchNumber: "رقم الدفعة",
+
+qtyToIssue: "الكمية المصروفة",
+
+lineValue: "قيمة البند",
+
+noExpiry: "بدون تاريخ انتهاء",
+
+noBatchesAvailableForThisItem:
+  "لا توجد دفعات متاحة لهذا الصنف",
+
+totalQty: "إجمالي الكمية",
+
+totalValue: "إجمالي القيمة",
+
+updateIssue: "تحديث الصرف",
+
+createIssue: "إنشاء الصرف",
+
+totalBatches: "إجمالي الدفعات",
+available: "الكمية المتاحة",
+reserved: "الكمية المحجوزة",
+
+expiryDate: "تاريخ الانتهاء",
+received: "تاريخ الاستلام",
+
+noBatchesFound: "لا توجد دفعات مخزون",
+
+expiresWithin30Days: "تنتهي الصلاحية خلال 30 يوماً",
+expiryDateLabel: "تاريخ الانتهاء",
+
+availableStatus: "متاحة",
+reservedStatus: "محجوزة",
+depletedStatus: "مستنفدة",
+expiredStatus: "منتهية الصلاحية",
+quarantinedStatus: "قيد الحجر",
   },
+
+
+
   hrStaff: {
     accountNumber: 'رقم الحساب',
     actions: 'الإجراءات',
@@ -36498,6 +36752,8 @@ statusReview: 'قيد المراجعة',
     activate: 'تفعيل',
     recruitmentSubtitle: 'إدارة التوظيف ومسار المرشحين',
     trainingSubtitle: 'تخطيط التدريب وتطوير قدرات الموظفين',
+    gradeName: 'اسم الدرجة',
+    gradeDeletedSuccessfully: 'تم حذف الدرجة بنجاح',
     periodManagementSubtitle: 'إدارة فترات الرواتب وضوابط الإقفال',
     active: 'نشط',
     activeContracts: 'العقود النشطة',
@@ -36900,6 +37156,7 @@ statusReview: 'قيد المراجعة',
     accumulatedDepreciation: 'الإهلاك المتراكم',
     acquisitionCost: 'تكلفة الاقتناء',
     acquisitionDate: 'تاريخ الاقتناء',
+    totalValue: 'اجمالي القيمة',
     actions: 'الإجراءات',
     actions16: 'إجراءات',
     active: 'نشط',
@@ -39464,6 +39721,7 @@ statusReview: 'قيد المراجعة',
       accountType: 'نوع الحساب',
       active: 'نشط',
       activeAccounts: 'الحسابات النشطة',
+      totalReconciliations: 'إجمالي عمليات المطابقة',
       adjustment: 'تسوية',
       allowDuplicates: 'السماح بالتكرار',
       amount: 'المبلغ',
@@ -42095,6 +42353,7 @@ export const it: Translations = {
  common: {
  loading: "Caricamento...",
  save: "Salva",
+ of: 'of',
  cancel: "Annulla",
  delete: "Elimina",
  edit: "Modifica",
@@ -51930,6 +52189,8 @@ manualDocumentsSubtitle: "Area di lavoro per la gestione manuale dei documenti",
 logistics: {
 accept: "Accetta",
 accepted: "Accettato",
+first: 'first',
+last: 'last',
 acceptedQty: "Quantità Accettata",
 acknowledged: "Confermato",
 actions: "Azioni",
@@ -52407,7 +52668,95 @@ enterItemNameAr: "Inserisci nome articolo in arabo",
 selectCategory: "Seleziona Categoria",
 enterDescription: "Inserisci descrizione",
 saving: "Salvataggio in corso...",
+itemAlreadyAdded: "Articolo già aggiunto",
+
+partialAllocation: "Allocazione Parziale",
+
+shortfall: "Carenza",
+
+allocation: "Allocazione",
+
+pleaseEnterWhoTheItemsAreIssuedTo:
+  "Inserire il destinatario degli articoli",
+
+pleaseAddAtLeastOneItemToIssue:
+  "Aggiungere almeno un articolo da emettere",
+
+noBatchAllocationsToIssue:
+  "Nessuna allocazione lotto disponibile",
+
+stockIssue: "Emissione Magazzino",
+
+issueItemsFromStockUsingFefoFifoBatchAllocation:
+  "Emetti articoli utilizzando allocazione FEFO/FIFO",
+
+issueDetails: "Dettagli Emissione",
+
+personDepartmentOrProjectName:
+  "Nome Persona, Dipartimento o Progetto",
+
+recipientType: "Tipo Destinatario",
+
+person: "Persona",
+
+activity: "Attività",
+
+warehouseName: "Nome Magazzino",
+
+purposeOfIssuance: "Motivo dell'Emissione",
+
+addItemFefoFifoAutoAllocation:
+  "Aggiungi Articolo (Allocazione Automatica FEFO/FIFO)",
+
+addAndAllocate: "Aggiungi e Alloca",
+
+systemWillAutomaticallySuggestBatches:
+  "Il sistema suggerirà automaticamente i lotti usando FEFO o FIFO",
+
+issueLines: "Righe Emissione",
+
+requested: "Richiesto",
+
+batchNumber: "Numero Lotto",
+
+qtyToIssue: "Quantità da Emettere",
+
+lineValue: "Valore Riga",
+
+noExpiry: "Nessuna Scadenza",
+
+noBatchesAvailableForThisItem:
+  "Nessun lotto disponibile per questo articolo",
+
+totalQty: "Quantità Totale",
+
+totalValue: "Valore Totale",
+
+updateIssue: "Aggiorna Emissione",
+
+createIssue: "Crea Emissione",
+
+totalBatches: "Totale Lotti",
+
+available: "Quantità Disponibile",
+reserved: "Quantità Riservata",
+
+expiryDate: "Data di Scadenza",
+received: "Data Ricezione",
+
+noBatchesFound: "Nessun lotto trovato",
+
+expiresWithin30Days: "Scade entro 30 giorni",
+expiryDateLabel: "Data di Scadenza",
+
+availableStatus: "Disponibile",
+reservedStatus: "Riservato",
+depletedStatus: "Esaurito",
+expiredStatus: "Scaduto",
+quarantinedStatus: "In Quarantena",
   },
+
+
 hrStaff: {
 accountNumber: "Numero Conto",
 actions: "Azioni",
@@ -54633,6 +54982,8 @@ aSalaryGradeDefinition: "A. Definizione del Livello Salariale",
 acceptedFormats: "Formati Accettati",
 
 actionType: "Tipo di Azione",
+gradeDeletedSuccessfully: 'Grade Deleted Successfully',
+gradeName: 'Grade Name',
 
 actions: "Azioni",
 
@@ -55439,6 +55790,7 @@ financeModule: {
 accumulatedDepreciation: "Ammortamento Accumulato",
 acquisitionCost: "Costo di Acquisizione",
 acquisitionDate: "Data di Acquisizione",
+totalValue: 'Total Value',
 actions: "Azioni",
 actions16: "Azioni",
 active: "Attivo",
@@ -58718,7 +59070,7 @@ treasuryCashManagement: {
 accountName: "Nome Conto",
 
 accountNumber: "Numero Conto",
-
+totalReconciliations: 'Total Reconciliations',
 accountType: "Tipo Conto",
 accountNameAr: "Nome Conto (Arabo)",
 
@@ -64008,3 +64360,10 @@ reportingSchedulePage: {
   submittedToDonor: "Inviato al Donatore",
 },
 };
+export const translations = {
+  en,
+  ar,
+  it,
+};
+
+export type Language = keyof typeof translations;

@@ -4,7 +4,7 @@
  */
 
 import { z } from "zod";
-import { publicProcedure, protectedProcedure, router } from "./_core/trpc";
+import { publicProcedure, protectedProcedure, scopedProcedure, router } from "./_core/trpc";
 import { getDb } from "./db";
 import { vendors, vendorParticipationHistory, vendorPerformanceEvaluations, vendorDocuments } from "../drizzle/schema";
 import { eq, and, like, or, desc, sql } from "drizzle-orm";
@@ -21,7 +21,7 @@ export const vendorRouter = router({
   /**
    * List all vendors with filtering and pagination
    */
-  list: protectedProcedure
+  list: scopedProcedure
     .input(
       z.object({
         search: z.string().optional(),
@@ -34,7 +34,7 @@ export const vendorRouter = router({
     )
     .query(async ({ input, ctx }) => {
       const db = await getDb();
-      const conditions = [eq(vendors.organizationId, ctx.organizationId)];
+      const conditions = [eq(vendors.organizationId, ctx.scope.organizationId)];
 
       if (input.search) {
         conditions.push(
@@ -89,12 +89,12 @@ export const vendorRouter = router({
   /**
    * Get vendor by ID with full details
    */
-  getById: protectedProcedure.input(z.object({ id: z.number() })).query(async ({ input, ctx }) => {
+  getById: scopedProcedure.input(z.object({ id: z.number() })).query(async ({ input, ctx }) => {
     const db = await getDb();
     const [vendor] = await db
       .select()
       .from(vendors)
-      .where(and(eq(vendors.id, input.id), eq(vendors.organizationId, ctx.organizationId)));
+      .where(and(eq(vendors.id, input.id), eq(vendors.organizationId, ctx.scope.organizationId)));
 
     if (!vendor) {
       throw new Error("Vendor not found");
@@ -134,7 +134,7 @@ export const vendorRouter = router({
   /**
    * Auto-register vendor from procurement workflow
    */
-  autoRegister: protectedProcedure
+  autoRegister: scopedProcedure
     .input(
       z.object({
         legalName: z.string().min(1),
@@ -157,8 +157,8 @@ export const vendorRouter = router({
     )
     .mutation(async ({ input, ctx }) => {
       const result = await autoRegisterVendor({
-        organizationId: ctx.organizationId,
-        operatingUnitId: ctx.operatingUnitId,
+        organizationId: ctx.scope.organizationId,
+        operatingUnitId: ctx.scope.operatingUnitId,
         ...input,
         createdBy: ctx.user.id,
       });
@@ -169,7 +169,7 @@ export const vendorRouter = router({
   /**
    * Check for duplicate vendors
    */
-  checkDuplicate: protectedProcedure
+  checkDuplicate: scopedProcedure
     .input(
       z.object({
         legalName: z.string().optional(),
@@ -182,7 +182,7 @@ export const vendorRouter = router({
     )
     .query(async ({ input, ctx }) => {
       const duplicate = await findDuplicateVendor({
-        organizationId: ctx.organizationId,
+        organizationId: ctx.scope.organizationId,
         ...input,
       });
 
@@ -195,7 +195,7 @@ export const vendorRouter = router({
   /**
    * Record vendor participation in procurement
    */
-  recordParticipation: protectedProcedure
+  recordParticipation: scopedProcedure
     .input(
       z.object({
         vendorId: z.number(),
@@ -218,8 +218,8 @@ export const vendorRouter = router({
     .mutation(async ({ input, ctx }) => {
       await recordVendorParticipation({
         ...input,
-        organizationId: ctx.organizationId,
-        operatingUnitId: ctx.operatingUnitId,
+        organizationId: ctx.scope.organizationId,
+        operatingUnitId: ctx.scope.operatingUnitId,
       });
 
       return { success: true };
@@ -228,7 +228,7 @@ export const vendorRouter = router({
   /**
    * Activate vendor for financial operations
    */
-  activateFinancially: protectedProcedure
+  activateFinancially: scopedProcedure
     .input(
       z.object({
         vendorId: z.number(),
@@ -253,7 +253,7 @@ export const vendorRouter = router({
   /**
    * Update vendor performance rating
    */
-  updatePerformanceRating: protectedProcedure
+  updatePerformanceRating: scopedProcedure
     .input(z.object({ vendorId: z.number() }))
     .mutation(async ({ input }) => {
       const rating = await calculateVendorPerformanceRating(input.vendorId);
@@ -264,7 +264,7 @@ export const vendorRouter = router({
   /**
    * Get vendor statistics dashboard
    */
-  getStatistics: protectedProcedure.query(async ({ ctx }) => {
+  getStatistics: scopedProcedure.query(async ({ ctx }) => {
     const db = await getDb();
     const [stats] = await db
       .select({
@@ -275,7 +275,7 @@ export const vendorRouter = router({
         blacklistedVendors: sql<number>`SUM(CASE WHEN ${vendors.isBlacklisted} = true THEN 1 ELSE 0 END)`,
       })
       .from(vendors)
-      .where(eq(vendors.organizationId, ctx.organizationId));
+      .where(eq(vendors.organizationId, ctx.scope.organizationId));
 
     return stats;
   }),
@@ -283,7 +283,7 @@ export const vendorRouter = router({
   /**
    * Get vendor participation history
    */
-  getParticipationHistory: protectedProcedure
+  getParticipationHistory: scopedProcedure
     .input(z.object({ vendorId: z.number() }))
     .query(async ({ input, ctx }) => {
       const db = await getDb();
@@ -293,7 +293,7 @@ export const vendorRouter = router({
         .where(
           and(
             eq(vendorParticipationHistory.vendorId, input.vendorId),
-            eq(vendorParticipationHistory.organizationId, ctx.organizationId)
+            eq(vendorParticipationHistory.organizationId, ctx.scope.organizationId)
           )
         )
         .orderBy(desc(vendorParticipationHistory.submissionDate));
@@ -304,7 +304,7 @@ export const vendorRouter = router({
   /**
    * Get vendor performance evaluations
    */
-  getPerformanceEvaluations: protectedProcedure
+  getPerformanceEvaluations: scopedProcedure
     .input(z.object({ vendorId: z.number() }))
     .query(async ({ input, ctx }) => {
       const db = await getDb();
@@ -314,7 +314,7 @@ export const vendorRouter = router({
         .where(
           and(
             eq(vendorPerformanceEvaluations.vendorId, input.vendorId),
-            eq(vendorPerformanceEvaluations.organizationId, ctx.organizationId)
+            eq(vendorPerformanceEvaluations.organizationId, ctx.scope.organizationId)
           )
         )
         .orderBy(desc(vendorPerformanceEvaluations.evaluationDate));
@@ -325,7 +325,7 @@ export const vendorRouter = router({
   /**
    * Get vendor documents
    */
-  getDocuments: protectedProcedure
+  getDocuments: scopedProcedure
     .input(z.object({ vendorId: z.number() }))
     .query(async ({ input, ctx }) => {
       const db = await getDb();
@@ -335,7 +335,7 @@ export const vendorRouter = router({
         .where(
           and(
             eq(vendorDocuments.vendorId, input.vendorId),
-            eq(vendorDocuments.organizationId, ctx.organizationId)
+            eq(vendorDocuments.organizationId, ctx.scope.organizationId)
           )
         )
         .orderBy(desc(vendorDocuments.uploadedAt));
@@ -346,7 +346,7 @@ export const vendorRouter = router({
   /**
    * Add performance evaluation
    */
-  addPerformanceEvaluation: protectedProcedure
+  addPerformanceEvaluation: scopedProcedure
     .input(
       z.object({
         vendorId: z.number(),
@@ -373,8 +373,8 @@ export const vendorRouter = router({
       // Insert evaluation
       await db.insert(vendorPerformanceEvaluations).values({
         vendorId: input.vendorId,
-        organizationId: ctx.organizationId,
-        operatingUnitId: ctx.operatingUnitId,
+        organizationId: ctx.scope.organizationId,
+        operatingUnitId: ctx.scope.operatingUnitId,
         evaluationDate: new Date(input.evaluationDate),
         evaluationPeriodStart: input.evaluationPeriodStart ? new Date(input.evaluationPeriodStart) : null,
         evaluationPeriodEnd: input.evaluationPeriodEnd ? new Date(input.evaluationPeriodEnd) : null,
@@ -395,7 +395,7 @@ export const vendorRouter = router({
   /**
    * Create or update vendor
    */
-  upsert: protectedProcedure
+  upsert: scopedProcedure
     .input(
       z.object({
         id: z.number().optional(),
@@ -425,10 +425,10 @@ export const vendorRouter = router({
           .update(vendors)
           .set({
             ...input,
-            updatedAt: new Date(),
+            updatedAt: new Date().toISOString(),
             updatedBy: ctx.user.id,
           })
-          .where(and(eq(vendors.id, input.id), eq(vendors.organizationId, ctx.organizationId)));
+          .where(and(eq(vendors.id, input.id), eq(vendors.organizationId, ctx.scope.organizationId)));
 
         return { id: input.id };
       } else {
@@ -437,8 +437,8 @@ export const vendorRouter = router({
         const [inserted] = await db
           .insert(vendors)
           .values({
-            organizationId: ctx.organizationId,
-            operatingUnitId: ctx.operatingUnitId,
+            organizationId: ctx.scope.organizationId,
+            operatingUnitId: ctx.scope.operatingUnitId,
             vendorCode,
             ...input,
             createdBy: ctx.user.id,

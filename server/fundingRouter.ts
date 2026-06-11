@@ -39,7 +39,7 @@ export const fundingRouter = router({
         eq(pipelineOpportunities.organizationId, organizationId),
         eq(pipelineOpportunities.operatingUnitId, operatingUnitId),
         eq(pipelineOpportunities.type, input.type),
-        eq(pipelineOpportunities.isDeleted, false),
+        eq(pipelineOpportunities.isDeleted, 0),
       ];
 
       if (input.stage) {
@@ -73,7 +73,7 @@ export const fundingRouter = router({
             eq(pipelineOpportunities.id, input.id),
             eq(pipelineOpportunities.organizationId, organizationId),
             eq(pipelineOpportunities.operatingUnitId, operatingUnitId),
-            eq(pipelineOpportunities.isDeleted, false)
+            eq(pipelineOpportunities.isDeleted, 0)
           )
         )
         .limit(1);
@@ -179,7 +179,7 @@ export const fundingRouter = router({
             eq(pipelineOpportunities.id, input.id),
             eq(pipelineOpportunities.organizationId, organizationId),
             eq(pipelineOpportunities.operatingUnitId, operatingUnitId),
-            eq(pipelineOpportunities.isDeleted, false)
+            eq(pipelineOpportunities.isDeleted, 0)
           )
         )
         .limit(1);
@@ -259,7 +259,7 @@ export const fundingRouter = router({
             eq(pipelineOpportunities.organizationId, organizationId),
             eq(pipelineOpportunities.operatingUnitId, operatingUnitId),
             eq(pipelineOpportunities.type, "opportunity"),
-            eq(pipelineOpportunities.isDeleted, false)
+            eq(pipelineOpportunities.isDeleted, 0)
           )
         )
         .limit(1);
@@ -318,7 +318,7 @@ export const fundingRouter = router({
             eq(pipelineOpportunities.id, input.id),
             eq(pipelineOpportunities.organizationId, organizationId),
             eq(pipelineOpportunities.operatingUnitId, operatingUnitId),
-            eq(pipelineOpportunities.isDeleted, false)
+            eq(pipelineOpportunities.isDeleted, 0)
           )
         )
         .limit(1);
@@ -333,8 +333,8 @@ export const fundingRouter = router({
       await db
         .update(pipelineOpportunities)
         .set({
-          isDeleted: true,
-          deletedAt: new Date(),
+          isDeleted: 1,
+          deletedAt: new Date().toISOString(),
           deletedBy: ctx.user.id,
         })
         .where(eq(pipelineOpportunities.id, input.id));
@@ -354,7 +354,7 @@ export const fundingRouter = router({
         eq(pipelineOpportunities.organizationId, organizationId),
         eq(pipelineOpportunities.operatingUnitId, operatingUnitId),
         eq(pipelineOpportunities.type, "pipeline"),
-        eq(pipelineOpportunities.isDeleted, false),
+        eq(pipelineOpportunities.isDeleted, 0),
       ];
 
       // Get all pipeline records
@@ -403,7 +403,7 @@ export const fundingRouter = router({
         eq(pipelineOpportunities.organizationId, organizationId),
         eq(pipelineOpportunities.operatingUnitId, operatingUnitId),
         eq(pipelineOpportunities.type, "opportunity"),
-        eq(pipelineOpportunities.isDeleted, false),
+        eq(pipelineOpportunities.isDeleted, 0),
       ];
 
       // Get all opportunity records
@@ -443,7 +443,7 @@ export const fundingRouter = router({
       const conditions = [
         eq(proposals.organizationId, organizationId),
         eq(proposals.operatingUnitId, operatingUnitId),
-        eq(proposals.isDeleted, false),
+        eq(proposals.isDeleted, 0),
       ];
 
       // Get all proposal records
