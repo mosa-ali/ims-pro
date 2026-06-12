@@ -66,9 +66,9 @@ const BADGE_COLORS = [
 
 export default function BidEvaluationChecklist() {
  const { t } = useTranslation();
+  const { language, isRTL} = useLanguage();
  const { id } = useParams<{ id: string }>();
  const [, setLocation] = useLocation();
- const { language, isRTL} = useLanguage();
  const printRef = useRef<HTMLDivElement>(null);
  const utils = trpc.useUtils();
 

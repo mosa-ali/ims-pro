@@ -20,13 +20,13 @@
  * - Payroll aligned with Finance module
  * - Monthly payroll mandatory & printable
  * - All HR actions are traceable
- * - Full bilingual support (EN/AR with RTL/LTR)
+ * - Full trilingual support (EN/AR/IT with RTL/LTR)
  * - Excel import/export everywhere
  * 
  * ============================================================================
  */
 
-import { Routes, Route } from '@/lib/router-compat';
+import { Route, Switch } from 'wouter';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { HRModuleLauncher } from './HRModuleLauncher';
 import { HRDashboard } from './HRDashboard';
@@ -57,118 +57,184 @@ import { useTranslation } from '@/i18n/useTranslation';
 
 export function HRManagement() {
   const { language, isRTL } = useLanguage();
-    const { t } = useTranslation();
+  const { t } = useTranslation();
+
+  // ========== HELPER FUNCTION TO GET TEXT BY LANGUAGE ==========
+  const getText = (en: string, ar: string, it: string): string => {
+    switch (language) {
+      case "ar":
+        return ar;
+      case "it":
+        return it;
+      case "en":
+      default:
+        return en;
+    }
+  };
  
- return (
+  return (
     <div dir={isRTL ? 'rtl' : 'ltr'}>
-    <Routes>
- {/* Default: Module Launcher */}
- <Route index element={<HRModuleLauncher />} />
- 
- {/* Individual Module Routes */}
- <Route path="overview" element={<HRDashboard />} />
- <Route path="staff-dictionary" element={<StaffDictionary />} />
- <Route path="salary-scale" element={<SalaryScale />} />
- <Route path="payroll" element={<PayrollAllowances />} />
- <Route path="sanctions/*" element={<SanctionsDisciplinary />} />
- <Route path="annual-plan/*" element={<HRAnnualPlanModule />} />
- 
- {/* Employees Profiles - Nested Routes */}
- <Route path="employees-profiles">
- <Route index element={<EmployeesProfiles />} />
- <Route path="directory" element={<EmployeesDirectory />} />
- <Route path="training-management" element={<TrainingManagement />} />
- <Route 
- path="archived" 
- element={
- <FilteredEmployeesList 
- filter="archived"
- title={{ en: 'Archived Employees', ar: 'الموظفون المؤرشفون' }}
- subtitle={{ en: 'Inactive staff (historical records)', ar: 'الموظفون غير النشطين (سجلات تاريخية)' }}
- backPath="/organization/hr/employees-profiles"
- />
- } 
- />
- <Route 
- path="exited" 
- element={
- <FilteredEmployeesList 
- filter="exited"
- title={{ en: 'Exited Staff', ar: 'الموظفون المغادرون' }}
- subtitle={{ en: 'Completed exit process (read-only profiles)', ar: 'أكملوا عملية الخروج (ملفات للقراءة فقط)' }}
- backPath="/organization/hr/employees-profiles"
- />
- } 
- />
- <Route 
- path="new-hires" 
- element={
- <FilteredEmployeesList 
- filter="new-hires"
- title={{ en: 'New Hires', ar: 'التعيينات الجديدة' }}
- subtitle={{ en: 'Recently hired staff (last 90 days)', ar: 'الموظفون المعينون حديثاً (آخر 90 يوماً)' }}
- backPath="/organization/hr/employees-profiles"
- showAddButton={true}
- />
- } 
- />
- <Route 
- path="renewals" 
- element={
- <FilteredEmployeesList 
- filter="renewals"
- title={{ en: 'Contract Renewals', ar: 'تجديدات العقود' }}
- subtitle={{ en: 'Contracts expiring within 60 days', ar: 'عقود تنتهي خلال 60 يوماً' }}
- backPath="/organization/hr/employees-profiles"
- />
- } 
- />
- <Route 
- path="exit-processing" 
- element={
- <FilteredEmployeesList 
- filter="exit-processing"
- title={{ en: 'Exit Processing', ar: 'معالجة الخروج' }}
- subtitle={{ en: 'Staff in offboarding process', ar: 'موظفون في عملية الخروج' }}
- backPath="/organization/hr/employees-profiles"
- />
- } 
- />
- <Route 
- path="reference" 
- element={
- <FilteredEmployeesList 
- filter="reference"
- title={{ en: 'Reference & Verification', ar: 'المراجع والتحقق' }}
- subtitle={{ en: 'Generate employment references for exited staff', ar: 'إنشاء مراجع التوظيف للموظفين المغادرين' }}
- backPath="/organization/hr/employees-profiles"
- />
- } 
- />
- <Route path="summary" element={<ProfilesSummary />} />
- <Route path="view/:id" element={<EmployeeCard />} />
- </Route>
- 
- <Route path="leave" element={<LeaveManagement />} />
- <Route path="recruitment" element={<Recruitment language={language} isRTL={isRTL} />} />
- <Route path="documents" element={<HRDocuments />} />
- <Route path="reports" element={<ReportsAnalytics />} />
- <Route path="settings" element={<HRSettings />} />
- 
- {/* Attendance Module Routes */}
- <Route path="attendance">
- <Route index element={<AttendanceDashboard />} />
- <Route path="records" element={<AttendanceRecordsTable />} />
- <Route path="my-attendance" element={<MyAttendance />} />
- <Route path="periods" element={<PeriodManagement />} />
- <Route path="calendar" element={<AttendanceCalendar />} />
- <Route path="overtime" element={<OvertimeManagement />} />
- <Route path="reports" element={<AttendanceReports />} />
- </Route>
- 
- {/* Fallback for unknown HR routes */}
- <Route path="*" element={<HRModuleLauncher />} />
- </Routes>
- </div>
- );
+      <Switch>
+        {/* Default: Module Launcher */}
+        <Route path="/" component={HRModuleLauncher} />
+        
+        {/* Individual Module Routes */}
+        <Route path="/overview" component={HRDashboard} />
+        <Route path="/staff-dictionary" component={StaffDictionary} />
+        <Route path="/salary-scale" component={SalaryScale} />
+        <Route path="/payroll" component={PayrollAllowances} />
+        <Route path="/sanctions/:rest*" component={SanctionsDisciplinary} />
+        <Route path="/annual-plan/:rest*" component={HRAnnualPlanModule} />
+        
+        {/* Employees Profiles - Nested Routes */}
+        <Route path="/employees-profiles" component={EmployeesProfiles} />
+        <Route path="/employees-profiles/directory" component={EmployeesDirectory} />
+        <Route path="/employees-profiles/training-management" component={TrainingManagement} />
+        
+        {/* Archived Employees */}
+        <Route path="/employees-profiles/archived">
+          {() => (
+            <FilteredEmployeesList 
+              filter="archived"
+              title={{
+                en: 'Archived Employees',
+                ar: 'الموظفون المؤرشفون',
+                it: 'Dipendenti Archiviati'
+              }}
+              subtitle={{
+                en: 'Inactive staff (historical records)',
+                ar: 'الموظفون غير النشطين (سجلات تاريخية)',
+                it: 'Personale inattivo (record storici)'
+              }}
+              backPath="/organization/hr/employees-profiles"
+            />
+          )}
+        </Route>
+
+        {/* Exited Staff */}
+        <Route path="/employees-profiles/exited">
+          {() => (
+            <FilteredEmployeesList 
+              filter="exited"
+              title={{
+                en: 'Exited Staff',
+                ar: 'الموظفون المغادرون',
+                it: 'Personale Uscito'
+              }}
+              subtitle={{
+                en: 'Completed exit process (read-only profiles)',
+                ar: 'أكملوا عملية الخروج (ملفات للقراءة فقط)',
+                it: 'Processo di uscita completato (profili di sola lettura)'
+              }}
+              backPath="/organization/hr/employees-profiles"
+            />
+          )}
+        </Route>
+
+        {/* New Hires */}
+        <Route path="/employees-profiles/new-hires">
+          {() => (
+            <FilteredEmployeesList 
+              filter="new-hires"
+              title={{
+                en: 'New Hires',
+                ar: 'التعيينات الجديدة',
+                it: 'Nuove Assunzioni'
+              }}
+              subtitle={{
+                en: 'Recently hired staff (last 90 days)',
+                ar: 'الموظفون المعينون حديثاً (آخر 90 يوماً)',
+                it: 'Personale assunto di recente (ultimi 90 giorni)'
+              }}
+              backPath="/organization/hr/employees-profiles"
+              showAddButton={true}
+            />
+          )}
+        </Route>
+
+        {/* Contract Renewals */}
+        <Route path="/employees-profiles/renewals">
+          {() => (
+            <FilteredEmployeesList 
+              filter="renewals"
+              title={{
+                en: 'Contract Renewals',
+                ar: 'تجديدات العقود',
+                it: 'Rinnovi di Contratto'
+              }}
+              subtitle={{
+                en: 'Contracts expiring within 60 days',
+                ar: 'عقود تنتهي خلال 60 يوماً',
+                it: 'Contratti in scadenza entro 60 giorni'
+              }}
+              backPath="/organization/hr/employees-profiles"
+            />
+          )}
+        </Route>
+
+        {/* Exit Processing */}
+        <Route path="/employees-profiles/exit-processing">
+          {() => (
+            <FilteredEmployeesList 
+              filter="exit-processing"
+              title={{
+                en: 'Exit Processing',
+                ar: 'معالجة الخروج',
+                it: 'Elaborazione dell\'Uscita'
+              }}
+              subtitle={{
+                en: 'Staff in offboarding process',
+                ar: 'موظفون في عملية الخروج',
+                it: 'Personale in processo di offboarding'
+              }}
+              backPath="/organization/hr/employees-profiles"
+            />
+          )}
+        </Route>
+
+        {/* Reference & Verification */}
+        <Route path="/employees-profiles/reference">
+          {() => (
+            <FilteredEmployeesList 
+              filter="reference"
+              title={{
+                en: 'Reference & Verification',
+                ar: 'المراجع والتحقق',
+                it: 'Riferimento e Verifica'
+              }}
+              subtitle={{
+                en: 'Generate employment references for exited staff',
+                ar: 'إنشاء مراجع التوظيف للموظفين المغادرين',
+                it: 'Genera riferimenti di lavoro per il personale uscito'
+              }}
+              backPath="/organization/hr/employees-profiles"
+            />
+          )}
+        </Route>
+
+        <Route path="/employees-profiles/summary" component={ProfilesSummary} />
+        <Route path="/employees-profiles/view/:id" component={EmployeeCard} />
+        
+        <Route path="/leave" component={LeaveManagement} />
+        <Route path="/recruitment">
+          {() => <Route path="/recruitment" component={Recruitment} />}
+        </Route>
+        <Route path="/documents" component={HRDocuments} />
+        <Route path="/reports" component={ReportsAnalytics} />
+        <Route path="/settings" component={HRSettings} />
+        
+        {/* Attendance Module Routes */}
+        <Route path="/attendance" component={AttendanceDashboard} />
+        <Route path="/attendance/records" component={AttendanceRecordsTable} />
+        <Route path="/attendance/my-attendance" component={MyAttendance} />
+        <Route path="/attendance/periods" component={PeriodManagement} />
+        <Route path="/attendance/calendar" component={AttendanceCalendar} />
+        <Route path="/attendance/overtime" component={OvertimeManagement} />
+        <Route path="/attendance/reports" component={AttendanceReports} />
+        
+        {/* Fallback for unknown HR routes */}
+        <Route path="/:rest*" component={HRModuleLauncher} />
+      </Switch>
+    </div>
+  );
 }

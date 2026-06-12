@@ -39,14 +39,33 @@ import { useTranslation } from '@/i18n/useTranslation';
 import { BackButton } from "@/components/BackButton";
 
 interface ProfileCard {
- id: string;
- name: { en: string; ar: string };
- description: { en: string; ar: string };
- icon: any;
- path: string;
- status: 'active' | 'coming-soon';
- count?: number;
- countKey?: 'active' | 'archived' | 'exited' | 'newHires' | 'contractRenewals' | 'exitProcessing' | 'references';
+  id: string;
+
+  name: {
+    en: string;
+    ar: string;
+    it: string;
+  };
+
+  description: {
+    en: string;
+    ar: string;
+    it: string;
+  };
+
+  icon: any;
+  path: string;
+  status: 'active' | 'coming-soon';
+  count?: number;
+
+  countKey?:
+    | 'active'
+    | 'archived'
+    | 'exited'
+    | 'newHires'
+    | 'contractRenewals'
+    | 'exitProcessing'
+    | 'references';
 }
 
 export function EmployeesProfilesLanding() {
@@ -83,88 +102,160 @@ export function EmployeesProfilesLanding() {
  autoCreationText: 'When a new staff member is added via Staff Dictionary or Excel import, an Employee Profile Card is automatically created. Staff ID is unique and links all HR modules.',
  };
 
- // All 9 cards - ALL ACTIVE per Figma design
- const cards: ProfileCard[] = [
- {
- id: 'directory',
- name: { en: 'Employees Directory', ar: 'دليل الموظفين' },
- description: { en: 'Active employees with full profiles', ar: 'الموظفون النشطون مع الملفات الكاملة' },
- icon: Users,
- path: '/organization/hr/employees-profiles/directory',
- status: 'active',
- countKey: 'active'
- },
- {
- id: 'training',
- name: { en: 'Training Management', ar: 'إدارة التدريب' },
- description: { en: 'Centralized view of all training records for reporting and oversight', ar: 'عرض مركزي لجميع سجلات التدريب للتقارير والإشراف' },
- icon: GraduationCap,
- path: '/organization/hr/employees-profiles/training-management',
- status: 'active'
- },
- {
- id: 'archived',
- name: { en: 'Archived Employees', ar: 'الموظفون المؤرشفون' },
- description: { en: 'Inactive staff (historical records)', ar: 'الموظفون غير النشطين (السجلات التاريخية)' },
- icon: Archive,
- path: '/organization/hr/employees-profiles/archived',
- status: 'active',
- countKey: 'archived'
- },
- {
- id: 'exited',
- name: { en: 'Exited Staff', ar: 'الموظفون المغادرون' },
- description: { en: 'Completed exit process', ar: 'أكملوا عملية المغادرة' },
- icon: DoorOpen,
- path: '/organization/hr/employees-profiles/exited',
- status: 'active',
- countKey: 'exited'
- },
- {
- id: 'new-hires',
- name: { en: 'New Hires', ar: 'التعيينات الجديدة' },
- description: { en: 'Hired within last 90 days', ar: 'تم توظيفهم خلال آخر 90 يوماً' },
- icon: UserPlus,
- path: '/organization/hr/employees-profiles/new-hires',
- status: 'active',
- countKey: 'newHires'
- },
- {
- id: 'contract-renewals',
- name: { en: 'Contract Renewals', ar: 'تجديد العقود' },
- description: { en: 'Contracts expiring within 60 days', ar: 'عقود تنتهي خلال 60 يوماً' },
- icon: FileText,
- path: '/organization/hr/employees-profiles/contract-renewals',
- status: 'active',
- countKey: 'contractRenewals'
- },
- {
- id: 'exit-processing',
- name: { en: 'Exit Processing', ar: 'معالجة المغادرة' },
- description: { en: 'Staff in exit process', ar: 'الموظفون في عملية المغادرة' },
- icon: LogOut,
- path: '/organization/hr/employees-profiles/exit-processing',
- status: 'active',
- countKey: 'exitProcessing'
- },
- {
- id: 'reference',
- name: { en: 'Reference & Verification', ar: 'المرجع والتحقق' },
- description: { en: 'Generate employment references', ar: 'إنشاء مراجع العمل' },
- icon: FileCheck,
- path: '/organization/hr/employees-profiles/reference',
- status: 'active',
- countKey: 'references'
- },
- {
- id: 'summary',
- name: { en: 'Profiles Summary', ar: 'ملخص الملفات' },
- description: { en: 'KPIs and statistics dashboard', ar: 'لوحة المؤشرات والإحصاءات' },
- icon: BarChart3,
- path: '/organization/hr/employees-profiles/summary',
- status: 'active'
- }
- ];
+// All 9 cards - ALL ACTIVE per Figma design
+const cards: ProfileCard[] = [
+  {
+    id: 'directory',
+    name: {
+      en: 'Employees Directory',
+      ar: 'دليل الموظفين',
+      it: 'Elenco Dipendenti',
+    },
+    description: {
+      en: 'Active employees with full profiles',
+      ar: 'الموظفون النشطون مع الملفات الشخصية الكاملة',
+      it: 'Dipendenti attivi con profili completi',
+    },
+    icon: Users,
+    path: '/organization/hr/employees-profiles/directory',
+    status: 'active',
+    countKey: 'active',
+  },
+  {
+    id: 'training',
+    name: {
+      en: 'Training Management',
+      ar: 'إدارة التدريب',
+      it: 'Gestione della Formazione',
+    },
+    description: {
+      en: 'Centralized view of all training records for reporting and oversight',
+      ar: 'عرض مركزي لجميع سجلات التدريب لأغراض التقارير والمتابعة',
+      it: 'Vista centralizzata di tutti i registri di formazione per reporting e supervisione',
+    },
+    icon: GraduationCap,
+    path: '/organization/hr/employees-profiles/training-management',
+    status: 'active',
+  },
+  {
+    id: 'archived',
+    name: {
+      en: 'Archived Employees',
+      ar: 'الموظفون المؤرشفون',
+      it: 'Dipendenti Archiviati',
+    },
+    description: {
+      en: 'Inactive staff (historical records)',
+      ar: 'الموظفون غير النشطين (السجلات التاريخية)',
+      it: 'Personale non attivo (archivio storico)',
+    },
+    icon: Archive,
+    path: '/organization/hr/employees-profiles/archived',
+    status: 'active',
+    countKey: 'archived',
+  },
+  {
+    id: 'exited',
+    name: {
+      en: 'Exited Staff',
+      ar: 'الموظفون المغادرون',
+      it: 'Personale Uscito',
+    },
+    description: {
+      en: 'Completed exit process',
+      ar: 'أكملوا إجراءات المغادرة',
+      it: 'Ha completato il processo di uscita',
+    },
+    icon: DoorOpen,
+    path: '/organization/hr/employees-profiles/exited',
+    status: 'active',
+    countKey: 'exited',
+  },
+  {
+    id: 'new-hires',
+    name: {
+      en: 'New Hires',
+      ar: 'الموظفون الجدد',
+      it: 'Nuove Assunzioni',
+    },
+    description: {
+      en: 'Hired within the last 90 days',
+      ar: 'تم توظيفهم خلال آخر 90 يوماً',
+      it: 'Assunti negli ultimi 90 giorni',
+    },
+    icon: UserPlus,
+    path: '/organization/hr/employees-profiles/new-hires',
+    status: 'active',
+    countKey: 'newHires',
+  },
+  {
+    id: 'contract-renewals',
+    name: {
+      en: 'Contract Renewals',
+      ar: 'تجديد العقود',
+      it: 'Rinnovi Contrattuali',
+    },
+    description: {
+      en: 'Contracts expiring within 60 days',
+      ar: 'العقود التي ستنتهي خلال 60 يوماً',
+      it: 'Contratti in scadenza entro 60 giorni',
+    },
+    icon: FileText,
+    path: '/organization/hr/employees-profiles/contract-renewals',
+    status: 'active',
+    countKey: 'contractRenewals',
+  },
+  {
+    id: 'exit-processing',
+    name: {
+      en: 'Exit Processing',
+      ar: 'إجراءات المغادرة',
+      it: 'Gestione delle Uscite',
+    },
+    description: {
+      en: 'Staff currently in the exit process',
+      ar: 'الموظفون الذين يمرون حالياً بإجراءات المغادرة',
+      it: 'Personale attualmente nel processo di uscita',
+    },
+    icon: LogOut,
+    path: '/organization/hr/employees-profiles/exit-processing',
+    status: 'active',
+    countKey: 'exitProcessing',
+  },
+  {
+    id: 'reference',
+    name: {
+      en: 'Reference & Verification',
+      ar: 'المراجع والتحقق',
+      it: 'Referenze e Verifiche',
+    },
+    description: {
+      en: 'Generate employment references and verification letters',
+      ar: 'إنشاء خطابات المراجع والتحقق الوظيفي',
+      it: 'Genera referenze lavorative e lettere di verifica',
+    },
+    icon: FileCheck,
+    path: '/organization/hr/employees-profiles/reference',
+    status: 'active',
+    countKey: 'references',
+  },
+  {
+    id: 'summary',
+    name: {
+      en: 'Profiles Summary',
+      ar: 'ملخص الملفات الشخصية',
+      it: 'Riepilogo dei Profili',
+    },
+    description: {
+      en: 'Dashboard of KPIs, metrics, and workforce statistics',
+      ar: 'لوحة مؤشرات الأداء والإحصاءات الخاصة بالقوى العاملة',
+      it: 'Dashboard con KPI, metriche e statistiche del personale',
+    },
+    icon: BarChart3,
+    path: '/organization/hr/employees-profiles/summary',
+    status: 'active',
+  },
+];
 
  const handleCardClick = (card: ProfileCard) => {
  if (card.status === 'active') {

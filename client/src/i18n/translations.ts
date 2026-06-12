@@ -14155,6 +14155,168 @@ retentionPolicyPage: {
   submittedToDonor: string;
   };
 
+OrgDashboardTranslations: {
+  // General
+  noOrganization: string;
+  contactAdmin: string;
+  lastUpdated: string;
+  refresh: string;
+
+  // Executive Snapshot
+  executiveSnapshot: string;
+  executiveSnapshotDesc: string;
+
+  totalProjects: string;
+  activeProjects: string;
+  totalBudget: string;
+  budgetUtilization: string;
+  activeGrants: string;
+  hrWorkforce: string;
+  procurementPending: string;
+  inventoryAlerts: string;
+
+  // Work Queue
+  myWorkQueue: string;
+  myWorkQueueDesc: string;
+
+  pending: string;
+  urgent: string;
+
+  pendingPRApprovals: string;
+  leaveRequests: string;
+  pendingPayments: string;
+  pendingContracts: string;
+  stockRequests: string;
+  activeRFQs: string;
+
+  recentPendingApprovals: string;
+  myTasks: string;
+  allClear: string;
+
+  // Approval Types
+  pr: string;
+  leave: string;
+  payment: string;
+
+  // Operational Modules
+  operationalModules: string;
+  operationalModulesDesc: string;
+  findMore: string;
+  showLess: string;
+
+  humanResources: string;
+  financeManagement: string;
+  logisticsModule: string;
+  projectsModule: string;
+  meal: string;
+  riskCompliance: string;
+
+  totalEmployees: string;
+  pendingLeave: string;
+  expiringContracts: string;
+
+  totalSpent: string;
+
+  activeProcurements: string;
+  approved: string;
+
+  expiringSoon: string;
+
+  activeAssessments: string;
+  dqasPending: string;
+  indicatorsOverdue: string;
+
+  openRisks: string;
+  criticalRisks: string;
+  openIncidents: string;
+
+  // Alerts
+  criticalAlerts: string;
+  criticalAlertsBottlenecks: string;
+  criticalAlertsDesc: string;
+
+  issues: string;
+
+  overdueProject: string;
+  stalledPR: string;
+  expiredGrant: string;
+  criticalRisk: string;
+  overduePayment: string;
+
+  endDate: string;
+  complete: string;
+  donor: string;
+  expired: string;
+  category: string;
+  score: string;
+  payee: string;
+
+  critical: string;
+  high: string;
+  medium: string;
+
+  noBottlenecks: string;
+  operationsRunning: string;
+
+  // Activity
+  recentActivity: string;
+  recentActivityDesc: string;
+
+  viewAll: string;
+
+  created: string;
+  updated: string;
+  deleted: string;
+  approvedAction: string;
+  rejected: string;
+  submitted: string;
+
+  purchaseRequest: string;
+  leaveRequest: string;
+  project: string;
+  grant: string;
+  vendor: string;
+  employee: string;
+  contract: string;
+
+  noRecentActivity: string;
+
+  // Deadlines
+  upcomingDeadlines: string;
+  upcomingDeadlinesDesc: string;
+
+  projectReports: string;
+  projectEndDates: string;
+  opportunities: string;
+
+  dueToday: string;
+  overdue: string;
+  dueSoon: string;
+
+  noDeadlines: string;
+
+  // Smart Shortcuts
+  smartShortcuts: string;
+  smartShortcutsDesc: string;
+
+  createProject: string;
+  createGrant: string;
+  createPR: string;
+  createPayment: string;
+  createEmployee: string;
+  createRisk: string;
+
+  // Humanitarian Identity
+  humanitarianIdentity: string;
+  humanitarianIdentityDesc: string;
+
+  sectors: string;
+  governorates: string;
+  beneficiaries: string;
+  partners: string;
+
+  noIdentityData: string;
+  };
   };
 
 // ========== ENGLISH TRANSLATIONS ==========
@@ -28236,7 +28398,161 @@ quarantinedStatus: "Quarantined",
   submittedToHQ: "Submitted to HQ",
   submittedToDonor: "Submitted to Donor",
     },
-  };
+
+OrgDashboardTranslations: {
+  noOrganization: "No organization selected",
+  contactAdmin: "Please contact your administrator",
+
+  lastUpdated: "Last updated",
+  refresh: "Refresh",
+
+  executiveSnapshot: "Executive Snapshot",
+  executiveSnapshotDesc: "Key operational indicators",
+
+  totalProjects: "Total Projects",
+  activeProjects: "Active Projects",
+  totalBudget: "Total Budget",
+  budgetUtilization: "Budget Utilization",
+  activeGrants: "Active Grants",
+  hrWorkforce: "HR Workforce",
+  procurementPending: "Procurement Pending",
+  inventoryAlerts: "Inventory Alerts",
+
+  myWorkQueue: "My Work Queue",
+  myWorkQueueDesc: "Items requiring your attention today",
+
+  pending: "Pending",
+  urgent: "Urgent",
+
+  pendingPRApprovals: "PR Approvals",
+  leaveRequests: "Leave Requests",
+  pendingPayments: "Pending Payments",
+  pendingContracts: "Contracts",
+  stockRequests: "Stock Requests",
+  activeRFQs: "Active RFQs",
+
+  recentPendingApprovals: "Recent Pending Approvals",
+  myTasks: "My Tasks",
+  allClear: "All clear! No pending items",
+
+  pr: "PR",
+  leave: "Leave",
+  payment: "Payment",
+
+  operationalModules: "Operational Modules",
+  operationalModulesDesc: "Live metrics across all modules",
+  findMore: "Find More",
+  showLess: "Show Less",
+
+  humanResources: "Human Resources",
+  financeManagement: "Finance Management",
+  logisticsModule: "Logistics & Procurement",
+  projectsModule: "Projects",
+  meal: "MEAL",
+  riskCompliance: "Risk & Compliance",
+
+  totalEmployees: "Total Employees",
+  pendingLeave: "Pending Leave",
+  expiringContracts: "Expiring Contracts",
+
+  totalSpent: "Total Spent",
+
+  activeProcurements: "Active Procurements",
+  approved: "Approved",
+
+  expiringSoon: "Expiring Soon",
+
+  activeAssessments: "Active Assessments",
+  dqasPending: "DQAs Pending",
+  indicatorsOverdue: "Indicators Overdue",
+
+  openRisks: "Open Risks",
+  criticalRisks: "Critical Risks",
+  openIncidents: "Open Incidents",
+
+  criticalAlerts: "Critical Alerts",
+  criticalAlertsBottlenecks: "Critical Alerts & Bottlenecks",
+  criticalAlertsDesc: "Operational issues requiring attention",
+
+  issues: "Issues",
+
+  overdueProject: "Overdue Project",
+  stalledPR: "Stalled PR",
+  expiredGrant: "Expired Grant",
+  criticalRisk: "Critical Risk",
+  overduePayment: "Overdue Payment",
+
+  endDate: "End Date",
+  complete: "Complete",
+  donor: "Donor",
+  expired: "Expired",
+  category: "Category",
+  score: "Score",
+  payee: "Payee",
+
+  critical: "Critical",
+  high: "High",
+  medium: "Medium",
+
+  noBottlenecks: "No critical bottlenecks detected",
+  operationsRunning: "All operations running smoothly",
+
+  recentActivity: "Recent Activity",
+  recentActivityDesc: "Latest actions across the organization",
+
+  viewAll: "View All",
+
+  created: "created",
+  updated: "updated",
+  deleted: "deleted",
+  approvedAction: "approved",
+  rejected: "rejected",
+  submitted: "submitted",
+
+  purchaseRequest: "Purchase Request",
+  leaveRequest: "Leave Request",
+  project: "Project",
+  grant: "Grant",
+  vendor: "Vendor",
+  employee: "Employee",
+  contract: "Contract",
+
+  noRecentActivity: "No recent activity",
+
+  upcomingDeadlines: "Upcoming Deadlines",
+  upcomingDeadlinesDesc: "Deadlines requiring attention",
+
+  projectReports: "Project Reports",
+  projectEndDates: "Project End Dates",
+  opportunities: "Opportunities",
+
+  dueToday: "Due Today",
+  overdue: "Overdue",
+  dueSoon: "Due Soon",
+
+  noDeadlines: "No upcoming deadlines",
+
+  smartShortcuts: "Smart Shortcuts",
+  smartShortcutsDesc: "Frequently used actions",
+
+  createProject: "Create Project",
+  createGrant: "Create Grant",
+  createPR: "Create PR",
+  createPayment: "Create Payment",
+  createEmployee: "Create Employee",
+  createRisk: "Create Risk",
+
+  humanitarianIdentity: "Humanitarian Identity",
+  humanitarianIdentityDesc: "Operational footprint overview",
+
+  sectors: "Sectors",
+  governorates: "Governorates",
+  beneficiaries: "Beneficiaries",
+  partners: "Partners",
+
+  noIdentityData: "No identity data available"
+},
+};
 
 
 // ========== ARABIC TRANSLATIONS ==========
@@ -42340,6 +42656,160 @@ quarantinedStatus: "قيد الحجر",
   underReview: "قيد المراجعة",
   submittedToHQ: "مقدم للمقر",
   submittedToDonor: "مقدم للجهة المانحة",
+},
+
+OrgDashboardTranslations: {
+  noOrganization: "لم يتم تحديد منظمة",
+  contactAdmin: "يرجى التواصل مع مسؤول النظام",
+
+  lastUpdated: "آخر تحديث",
+  refresh: "تحديث",
+
+  executiveSnapshot: "الملخص التنفيذي",
+  executiveSnapshotDesc: "مؤشرات الأداء التشغيلية الرئيسية",
+
+  totalProjects: "إجمالي المشاريع",
+  activeProjects: "المشاريع النشطة",
+  totalBudget: "إجمالي الميزانية",
+  budgetUtilization: "استخدام الميزانية",
+  activeGrants: "المنح النشطة",
+  hrWorkforce: "القوى العاملة",
+  procurementPending: "مشتريات معلقة",
+  inventoryAlerts: "تنبيهات المخزون",
+
+  myWorkQueue: "مهامي الحالية",
+  myWorkQueueDesc: "العناصر التي تتطلب انتباهك",
+
+  pending: "معلق",
+  urgent: "عاجل",
+
+  pendingPRApprovals: "موافقات طلبات الشراء",
+  leaveRequests: "طلبات الإجازة",
+  pendingPayments: "المدفوعات المعلقة",
+  pendingContracts: "العقود",
+  stockRequests: "طلبات المخزون",
+  activeRFQs: "طلبات عروض الأسعار النشطة",
+
+  recentPendingApprovals: "أحدث الموافقات المعلقة",
+  myTasks: "مهامي",
+  allClear: "لا توجد عناصر معلقة",
+
+  pr: "طلب شراء",
+  leave: "إجازة",
+  payment: "دفعة",
+
+  operationalModules: "الوحدات التشغيلية",
+  operationalModulesDesc: "مؤشرات مباشرة لجميع الوحدات",
+  findMore: "عرض المزيد",
+  showLess: "عرض أقل",
+
+  humanResources: "الموارد البشرية",
+  financeManagement: "الإدارة المالية",
+  logisticsModule: "الخدمات اللوجستية والمشتريات",
+  projectsModule: "إدارة المشاريع",
+  meal: "المتابعة والتقييم والمساءلة والتعلم",
+  riskCompliance: "المخاطر والامتثال",
+
+  totalEmployees: "إجمالي الموظفين",
+  pendingLeave: "إجازات معلقة",
+  expiringContracts: "عقود قاربت الانتهاء",
+
+  totalSpent: "إجمالي المصروف",
+
+  activeProcurements: "عمليات الشراء النشطة",
+  approved: "معتمد",
+
+  expiringSoon: "تنتهي قريباً",
+
+  activeAssessments: "التقييمات النشطة",
+  dqasPending: "مراجعات جودة البيانات المعلقة",
+  indicatorsOverdue: "مؤشرات متأخرة",
+
+  openRisks: "المخاطر المفتوحة",
+  criticalRisks: "المخاطر الحرجة",
+  openIncidents: "الحوادث المفتوحة",
+
+  criticalAlerts: "التنبيهات الحرجة",
+  criticalAlertsBottlenecks: "التنبيهات والاختناقات الحرجة",
+  criticalAlertsDesc: "مشكلات تشغيلية تتطلب تدخلاً فورياً",
+
+  issues: "مشكلات",
+
+  overdueProject: "مشروع متأخر",
+  stalledPR: "طلب شراء متعثر",
+  expiredGrant: "منحة منتهية",
+  criticalRisk: "مخاطر حرجة",
+  overduePayment: "دفعة متأخرة",
+
+  endDate: "تاريخ الانتهاء",
+  complete: "مكتمل",
+  donor: "المانح",
+  expired: "منتهي",
+  category: "الفئة",
+  score: "الدرجة",
+  payee: "المستفيد",
+
+  critical: "حرج",
+  high: "مرتفع",
+  medium: "متوسط",
+
+  noBottlenecks: "لا توجد اختناقات حرجة",
+  operationsRunning: "جميع العمليات تسير بشكل طبيعي",
+
+  recentActivity: "النشاط الأخير",
+  recentActivityDesc: "آخر الأنشطة في المنظمة",
+
+  viewAll: "عرض الكل",
+
+  created: "أنشأ",
+  updated: "حدّث",
+  deleted: "حذف",
+  approvedAction: "اعتمد",
+  rejected: "رفض",
+  submitted: "أرسل",
+
+  purchaseRequest: "طلب شراء",
+  leaveRequest: "طلب إجازة",
+  project: "مشروع",
+  grant: "منحة",
+  vendor: "مورد",
+  employee: "موظف",
+  contract: "عقد",
+
+  noRecentActivity: "لا يوجد نشاط حديث",
+
+  upcomingDeadlines: "المواعيد النهائية القادمة",
+  upcomingDeadlinesDesc: "المواعيد التي تتطلب متابعة",
+
+  projectReports: "تقارير المشاريع",
+  projectEndDates: "تواريخ انتهاء المشاريع",
+  opportunities: "الفرص",
+
+  dueToday: "مستحق اليوم",
+  overdue: "متأخر",
+  dueSoon: "مستحق قريباً",
+
+  noDeadlines: "لا توجد مواعيد قادمة",
+
+  smartShortcuts: "الاختصارات الذكية",
+  smartShortcutsDesc: "الإجراءات الأكثر استخداماً",
+
+  createProject: "إنشاء مشروع",
+  createGrant: "إنشاء منحة",
+  createPR: "إنشاء طلب شراء",
+  createPayment: "إنشاء دفعة",
+  createEmployee: "إضافة موظف",
+  createRisk: "إضافة مخاطر",
+
+  humanitarianIdentity: "الهوية الإنسانية",
+  humanitarianIdentityDesc: "نظرة عامة على نطاق العمل الإنساني",
+
+  sectors: "القطاعات",
+  governorates: "المحافظات",
+  beneficiaries: "المستفيدون",
+  partners: "الشركاء",
+
+  noIdentityData: "لا توجد بيانات متاحة"
 },
 };
 
@@ -64358,6 +64828,160 @@ reportingSchedulePage: {
   underReview: "In Revisione",
   submittedToHQ: "Inviato alla Sede Centrale",
   submittedToDonor: "Inviato al Donatore",
+},
+
+OrgDashboardTranslations: {
+  noOrganization: "Nessuna organizzazione selezionata",
+  contactAdmin: "Contattare l'amministratore di sistema",
+
+  lastUpdated: "Ultimo aggiornamento",
+  refresh: "Aggiorna",
+
+  executiveSnapshot: "Panoramica Esecutiva",
+  executiveSnapshotDesc: "Indicatori operativi principali",
+
+  totalProjects: "Progetti Totali",
+  activeProjects: "Progetti Attivi",
+  totalBudget: "Budget Totale",
+  budgetUtilization: "Utilizzo Budget",
+  activeGrants: "Sovvenzioni Attive",
+  hrWorkforce: "Personale",
+  procurementPending: "Approvvigionamenti Pendenti",
+  inventoryAlerts: "Avvisi Inventario",
+
+  myWorkQueue: "Le Mie Attività",
+  myWorkQueueDesc: "Elementi che richiedono attenzione",
+
+  pending: "In sospeso",
+  urgent: "Urgente",
+
+  pendingPRApprovals: "Approvazioni Richieste Acquisto",
+  leaveRequests: "Richieste di Congedo",
+  pendingPayments: "Pagamenti Pendenti",
+  pendingContracts: "Contratti",
+  stockRequests: "Richieste Magazzino",
+  activeRFQs: "RFQ Attive",
+
+  recentPendingApprovals: "Approvazioni Recenti",
+  myTasks: "Le Mie Attività",
+  allClear: "Nessun elemento in sospeso",
+
+  pr: "RA",
+  leave: "Congedo",
+  payment: "Pagamento",
+
+  operationalModules: "Moduli Operativi",
+  operationalModulesDesc: "Metriche in tempo reale dei moduli",
+  findMore: "Mostra Altro",
+  showLess: "Mostra Meno",
+
+  humanResources: "Risorse Umane",
+  financeManagement: "Gestione Finanziaria",
+  logisticsModule: "Logistica e Approvvigionamento",
+  projectsModule: "Gestione Progetti",
+  meal: "Monitoraggio, Valutazione, Responsabilità e Apprendimento",
+  riskCompliance: "Rischi e Conformità",
+
+  totalEmployees: "Totale Dipendenti",
+  pendingLeave: "Congedi Pendenti",
+  expiringContracts: "Contratti in Scadenza",
+
+  totalSpent: "Totale Speso",
+
+  activeProcurements: "Approvvigionamenti Attivi",
+  approved: "Approvato",
+
+  expiringSoon: "In Scadenza",
+
+  activeAssessments: "Valutazioni Attive",
+  dqasPending: "DQA Pendenti",
+  indicatorsOverdue: "Indicatori Scaduti",
+
+  openRisks: "Rischi Aperti",
+  criticalRisks: "Rischi Critici",
+  openIncidents: "Incidenti Aperti",
+
+  criticalAlerts: "Avvisi Critici",
+  criticalAlertsBottlenecks: "Avvisi Critici e Colli di Bottiglia",
+  criticalAlertsDesc: "Problemi operativi che richiedono attenzione immediata",
+
+  issues: "Problemi",
+
+  overdueProject: "Progetto Scaduto",
+  stalledPR: "Richiesta Acquisto Bloccata",
+  expiredGrant: "Sovvenzione Scaduta",
+  criticalRisk: "Rischio Critico",
+  overduePayment: "Pagamento Scaduto",
+
+  endDate: "Data Fine",
+  complete: "Completato",
+  donor: "Donatore",
+  expired: "Scaduto",
+  category: "Categoria",
+  score: "Punteggio",
+  payee: "Beneficiario",
+
+  critical: "Critico",
+  high: "Alto",
+  medium: "Medio",
+
+  noBottlenecks: "Nessun collo di bottiglia critico rilevato",
+  operationsRunning: "Tutte le operazioni funzionano correttamente",
+
+  recentActivity: "Attività Recenti",
+  recentActivityDesc: "Ultime attività nell'organizzazione",
+
+  viewAll: "Visualizza Tutto",
+
+  created: "ha creato",
+  updated: "ha aggiornato",
+  deleted: "ha eliminato",
+  approvedAction: "ha approvato",
+  rejected: "ha rifiutato",
+  submitted: "ha inviato",
+
+  purchaseRequest: "Richiesta Acquisto",
+  leaveRequest: "Richiesta Congedo",
+  project: "Progetto",
+  grant: "Sovvenzione",
+  vendor: "Fornitore",
+  employee: "Dipendente",
+  contract: "Contratto",
+
+  noRecentActivity: "Nessuna attività recente",
+
+  upcomingDeadlines: "Scadenze Imminenti",
+  upcomingDeadlinesDesc: "Scadenze che richiedono attenzione",
+
+  projectReports: "Rapporti Progetto",
+  projectEndDates: "Date Fine Progetto",
+  opportunities: "Opportunità",
+
+  dueToday: "Scade Oggi",
+  overdue: "Scaduto",
+  dueSoon: "In Scadenza",
+
+  noDeadlines: "Nessuna scadenza imminente",
+
+  smartShortcuts: "Scorciatoie Intelligenti",
+  smartShortcutsDesc: "Azioni utilizzate più frequentemente",
+
+  createProject: "Crea Progetto",
+  createGrant: "Crea Sovvenzione",
+  createPR: "Crea Richiesta Acquisto",
+  createPayment: "Crea Pagamento",
+  createEmployee: "Aggiungi Dipendente",
+  createRisk: "Aggiungi Rischio",
+
+  humanitarianIdentity: "Identità Umanitaria",
+  humanitarianIdentityDesc: "Panoramica dell'impronta operativa umanitaria",
+
+  sectors: "Settori",
+  governorates: "Governatorati",
+  beneficiaries: "Beneficiari",
+  partners: "Partner",
+
+  noIdentityData: "Nessun dato disponibile"
 },
 };
 export const translations = {

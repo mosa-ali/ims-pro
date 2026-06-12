@@ -5,7 +5,7 @@
  *
  * ARCHITECTURE:
  * - All procedures use scopedProcedure for automatic data isolation
- * - organizationId and operatingUnitId injected from ctx.scope (NOT input)
+ * - organizationId and operatingUnitId injected from ctx.scope (NOT input) 
  * - All queries filter isDeleted = 0 (soft delete pattern)
  * - All mutations logged to auditLogs table
  * - Proper error handling and validation via Zod
@@ -23,7 +23,7 @@ import { z } from 'zod';
 import { scopedProcedure, router } from './_core/trpc';
 import { getDb } from './db';
 import { hrEmployees, auditLogs } from '../drizzle/schema';
-import { eq, and, desc, like, or, isNull, count } from 'drizzle-orm';
+import { eq, and, desc, like, or, isNull, count, sql } from 'drizzle-orm';
 import { TRPCError } from '@trpc/server';
 import type { DB, ScopeContext } from './db/_scope';
 import {
@@ -417,6 +417,71 @@ export const hrEmployeesRouter = router({
       return verifyEmployeeScope(db, input.id, ctx.scope);
     }),
 
+/**
+ * Dashboard employee counts
+ */
+getCounts: scopedProcedure
+  .input(z.object({}).optional())
+  .query(async ({ ctx }) => {
+    const db = await getDb();
+    if (!db) throw new Error('Database not available');
+
+    const conditions = scopedAndActive(hrEmployees, ctx.scope);
+
+    const result = await db
+      .select({
+        total: count(),
+
+        active: sql<number>`
+          SUM(CASE WHEN ${hrEmployees.status} = 'active' THEN 1 ELSE 0 END)
+        `,
+
+        onLeave: sql<number>`
+          SUM(CASE WHEN ${hrEmployees.status} = 'on_leave' THEN 1 ELSE 0 END)
+        `,
+
+        suspended: sql<number>`
+          SUM(CASE WHEN ${hrEmployees.status} = 'suspended' THEN 1 ELSE 0 END)
+        `,
+
+        terminated: sql<number>`
+          SUM(CASE WHEN ${hrEmployees.status} = 'terminated' THEN 1 ELSE 0 END)
+        `,
+
+        resigned: sql<number>`
+          SUM(CASE WHEN ${hrEmployees.status} = 'resigned' THEN 1 ELSE 0 END)
+        `,
+      })
+      .from(hrEmployees)
+      .where(and(...conditions));
+
+    const row = result[0];
+
+    const total = Number(row?.total || 0);
+    const active = Number(row?.active || 0);
+    const onLeave = Number(row?.onLeave || 0);
+    const suspended = Number(row?.suspended || 0);
+    const terminated = Number(row?.terminated || 0);
+    const resigned = Number(row?.resigned || 0);
+
+    return {
+      // Existing counts
+      total,
+      active,
+      onLeave,
+      suspended,
+      terminated,
+      resigned,
+
+      // Compatibility fields required by EmployeesProfilesLanding.tsx
+      archived: terminated,
+      exited: terminated + resigned,
+      newHires: 0,
+      contractRenewals: 0,
+      exitProcessing: 0,
+      references: 0,
+    };
+  }),
   /**
    * Soft-delete employee
    */

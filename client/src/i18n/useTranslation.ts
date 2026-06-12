@@ -4,23 +4,56 @@
 // ============================================================================
 
 import { useLanguage } from '@/contexts/LanguageContext';
-import { en, ar, type Translations } from './translations';
+import {
+  translations,
+  Language,
+  Translations,
+} from "./translations";
 
-export function useTranslation() {
- const { language } = useLanguage();
- 
- const t: Translations = language === 'ar' ? ar : en;
- 
- return { t, language };
+export interface TranslationContext {
+  t: Translations;
+  language: Language;
+  setLanguage?: (lang: Language) => void;
+  isRTL: boolean;
+  dir: "ltr" | "rtl";
 }
 
-// Type-safe translation key access
-export type TranslationKey = keyof Translations;
+/**
+ * Main translation hook
+ *
+ * Usage:
+ *
+ * const { t } = useTranslation();
+ *
+ * t.common.loading
+ * t.finance.title
+ * t.logistics.stockItems
+ */
+export function useTranslation(): TranslationContext {
+  const {
+    language,
+    setLanguage,
+    isRTL,
+    direction,
+  } = useLanguage();
 
-// Helper function for nested translations
-export function getNestedTranslation(
- obj: any,
- path: string
-): string {
- return path.split('.').reduce((acc, part) => acc?.[part], obj) || path;
+  const t =
+    translations[language as Language] ??
+    translations.en;
+
+  return {
+    t,
+    language: language as Language,
+    setLanguage,
+    isRTL,
+    dir: direction,
+  };
+}
+
+/**
+ * Optional helper hook
+ * Same data as useTranslation()
+ */
+export function useTranslationTools() {
+  return useTranslation();
 }

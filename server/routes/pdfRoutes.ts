@@ -52,7 +52,7 @@ router.get("/bid-analysis/:id/evaluation-checklist-excel", async (req, res) => {
     }
 
     // ── Parse optional params ─────────────────────────────────────────────
-    const lang  = (req.query.lang  as string) === "ar" ? "ar" : "en";
+    const lang  = (req.query.lang  as string) === "ar" ? "ar" : "en" : "it";
     const mode  = (req.query.mode  as string) === "template" ? "template" : "data";
 
     console.log(

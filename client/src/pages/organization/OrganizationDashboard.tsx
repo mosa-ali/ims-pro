@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, memo } from 'react';
 import { useAuth } from '@/_core/hooks/useAuth';
 import { useOrganization } from "@/contexts/OrganizationContext";
 import { useOperatingUnit } from "@/contexts/OperatingUnitContext";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { useTranslation } from "@/i18n/useTranslation";
 import { useLocation } from "wouter";
 import { formatCurrency } from "@/utils/formatters";
+import { orgDashboardTranslations } from "@/i18n/organizationDashboard-i18n";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import {
@@ -70,9 +70,7 @@ type InventoryAlerts = DashboardOutputs["getInventoryAlerts"];
 type PendingApproval = DashboardOutputs["getPendingApprovals"][number];
 type OperationalHealth = DashboardOutputs["getOperationalHealth"];
 type HumanitarianIdentityData = DashboardOutputs["getHumanitarianIdentity"];
-
-// Translation keys type
-type OrgDashboardTranslations = Record<string, string | undefined>;
+type orgDashboardTranslations = Record<string, string | undefined>;
 
 /**
  * ============================================================
@@ -98,13 +96,99 @@ type OrgDashboardTranslations = Record<string, string | undefined>;
 
 export default function OrganizationDashboard() {
   const { user } = useAuth();
-  const { t } = useTranslation();
+  const { language, isRTL, direction } = useLanguage();
   const { currentOrganizationId } = useOrganization();
   const { currentOperatingUnitId } = useOperatingUnit();
-  const { direction, isRTL } = useLanguage();
   const [, navigate] = useLocation();
+  const t = orgDashboardTranslations[language as keyof typeof orgDashboardTranslations] || orgDashboardTranslations.en || orgDashboardTranslations.it;
+  
 
-  const od = (t as any)?.organizationDashboard ?? {};
+    // ========== TRANSLATION OBJECT ==========
+  const localT = {
+    // Main sections
+    executiveSnapshot: t.executiveSnapshot || "Executive Snapshot",
+    myWorkQueue: t.myWorkQueue || "My Work Queue",
+    operationalModules: t.operationalModules || "Operational Modules",
+    criticalAlerts: t.criticalAlerts || "Critical Alerts & Bottlenecks",
+    recentActivity: t.recentActivity || "Recent Activity",
+    humanitarianIdentity: t.humanitarianIdentity || "Humanitarian Identity",
+
+    // Dashboard actions
+    lastUpdated: t.lastUpdated || "Last updated:",
+    refresh: t.refresh || "Refresh",
+    failedToLoadSection: t.failedToLoadSection || "Failed to load this section. Please try again later.",
+    noOrganization: t.noOrganization || "No organization selected",
+    contactAdmin: t.contactAdmin || "Please contact your administrator",
+
+    // Executive Snapshot KPIs
+    totalBudget: t.totalBudget || "Total Budget",
+    activeProjects: t.activeProjects || "Active Projects",
+    totalEmployees: t.totalEmployees || "Total Employees",
+    activeGrants: t.activeGrants || "Active Grants",
+    fullTimeStaff: t.fullTimeStaff || "Full-Time Staff",
+    acrossAllPrograms: t.acrossAllPrograms || "Across all programs",
+    onTrack: t.onTrack || "On Track",
+    atRisk: t.atRisk || "At Risk",
+    allocatedFunds: t.allocatedFunds || "Allocated Funds",
+
+    // My Work Queue
+    itemsRequiringAttention: t.itemsRequiringAttention || "Items requiring your attention",
+    viewAll: t.viewAll || "View All",
+    inProgress: t.inProgress || "In Progress",
+    mediumPriority: t.mediumPriority || "Medium Priority",
+    highPriority: t.highPriority || "High Priority",
+
+    // Operational Modules
+    coreModules: t.coreModules || "Core Modules",
+    openModule: t.openModule || "Open Module",
+    comingSoon: t.comingSoon || "Coming Soon",
+    financeManagement: t.financeManagement || "Finance Management",
+    financeManagementDesc: t.financeManagementDesc || "Budget tracking and financial reporting",
+    programsGrants: t.programsGrants || "Programs & Grants",
+    programsGrantsDesc: t.programsGrantsDesc || "Program and grant administration",
+    logisticsProcurement: t.logisticsProcurement || "Logistics & Procurement",
+    logisticsProcurementDesc: t.logisticsProcurementDesc || "Supply chain and vendor management",
+    humanResources: t.humanResources || "Human Resources",
+    humanResourcesDesc: t.humanResourcesDesc || "Staff and HR administration",
+    donorCRM: t.donorCRM || "Donor CRM",
+    donorCRMDesc: t.donorCRMDesc || "Donor relationship management",
+    complianceAlerts: t.complianceAlerts || "Compliance Alerts",
+    complianceAlertsDesc: t.complianceAlertsDesc || "Compliance and audit tracking",
+    meal: t.meal || "MEAL",
+    mealDesc: t.mealDesc || "Monitoring, evaluation and learning",
+
+    // Critical Alerts
+    budgetRevisionNeeded: t.budgetRevisionNeeded || "Budget revision needed",
+    budgetVarianceExceeds: t.budgetVarianceExceeds || "Budget variance exceeds threshold",
+    quarterlyReportOverdue: t.quarterlyReportOverdue || "Quarterly report overdue",
+    quarterlyReportPending: t.quarterlyReportPending || "Quarterly report pending",
+    compliance: t.compliance || "Compliance",
+
+    // Status & Timeline
+    daysAgo: t.daysAgo || "days ago",
+    projectPipelineStatus: t.projectPipelineStatus || "Project Pipeline Status",
+    activeProjectProgress: t.activeProjectProgress || "Active Project Progress",
+    phase0Complete: t.phase0Complete || "Phase 0 Complete",
+    phase0CompleteDesc: t.phase0CompleteDesc || "Initial assessment and planning",
+
+    // Organization Context
+    noActiveProjects: t.noActiveProjects || "No active projects",
+    noOperatingUnit: t.noOperatingUnit || "No operating unit selected",
+    operatingUnitContext: t.operatingUnitContext || "Operating Unit Context",
+    budget: t.budget || "Budget",
+    budgetReview: t.budgetReview || "Budget Review",
+
+    // Common actions & states
+    save: t.save || "Save",
+    cancel: t.cancel || "Cancel",
+    delete: t.delete || "Delete",
+    edit: t.edit || "Edit",
+    add: t.add || "Add",
+    submit: t.submit || "Submit",
+    required: t.required || "Required",
+    error: t.error || "Error",
+    loading: t.loading || "Loading",
+  };
 
   const queryEnabled = !!currentOrganizationId;
 
@@ -137,6 +221,7 @@ export default function OrganizationDashboard() {
     trpc.dashboard.getOperationalHealth.useQuery({}, queryOpts);
   const { data: humanitarianIdentity, isLoading: identityLoading, isError: identityError } =
     trpc.dashboard.getHumanitarianIdentity.useQuery({}, queryOpts);
+  
   // Section 6B data now comes directly from getUpcomingDeadlines (single query)
   // reportingSchedules and opportunities are returned alongside projects
 
@@ -147,10 +232,10 @@ export default function OrganizationDashboard() {
         <Card className="border-amber-200 bg-amber-50">
           <CardHeader>
             <CardTitle className="text-amber-900">
-              {od.noOrganization ?? "No organization selected"}
+              {t.noOrganization}
             </CardTitle>
             <CardDescription className="text-amber-700">
-              {od.contactAdmin ?? "Please contact your administrator"}
+              {t.contactAdmin}
             </CardDescription>
           </CardHeader>
         </Card>
@@ -180,7 +265,7 @@ export default function OrganizationDashboard() {
 
         {/* ── SECTION 2: EXECUTIVE SNAPSHOT ── */}
         {statsError ? (
-          <ErrorFallbackCard title={od.executiveSnapshot ?? "Executive Snapshot"} isRTL={isRTL} />
+          <ErrorFallbackCard title={t.executiveSnapshot} isRTL={isRTL} t={orgDashboardTranslations} />
         ) : (
           <ExecutiveSnapshot
             stats={dashboardStats}
@@ -188,13 +273,13 @@ export default function OrganizationDashboard() {
             inventoryAlerts={inventoryAlerts}
             isLoading={statsLoading || queueLoading || inventoryLoading}
             isRTL={isRTL}
-            t={od}
+            t={t}
           />
         )}
 
         {/* ── SECTION 3: MY WORK QUEUE ── */}
         {(queueError || approvalsError || tasksError) ? (
-          <ErrorFallbackCard title={od.myWorkQueue ?? "My Work Queue"} isRTL={isRTL} />
+          <ErrorFallbackCard title={t.myWorkQueue} isRTL={isRTL} t={orgDashboardTranslations} />
         ) : (
           <MyWorkQueue
             workflowQueue={workflowQueue}
@@ -202,34 +287,34 @@ export default function OrganizationDashboard() {
             userTasks={userTasks}
             isLoading={queueLoading || approvalsLoading || tasksLoading}
             isRTL={isRTL}
-            t={od}
+            t={t}
             navigate={navigate}
           />
         )}
 
         {/* ── SECTION 4: OPERATIONAL MODULE SNAPSHOTS ── */}
         {(snapshotsError || inventoryError) ? (
-          <ErrorFallbackCard title={od.operationalModules ?? "Operational Modules"} isRTL={isRTL} />
+          <ErrorFallbackCard title={t.operationalModules} isRTL={isRTL} t={orgDashboardTranslations} />
         ) : (
           <OperationalModuleSnapshots
             snapshots={moduleSnapshots}
             inventoryAlerts={inventoryAlerts}
             isLoading={snapshotsLoading || inventoryLoading}
             isRTL={isRTL}
-            t={od}
+            t={t}
             navigate={navigate}
           />
         )}
 
         {/* ── SECTION 5: CRITICAL ALERTS & BOTTLENECKS ── */}
         {bottlenecksError ? (
-          <ErrorFallbackCard title={od.criticalAlerts ?? "Critical Alerts"} isRTL={isRTL} />
+          <ErrorFallbackCard title={t.criticalAlerts} isRTL={isRTL} t={orgDashboardTranslations} />
         ) : (
           <CriticalAlertsBottlenecks
             bottlenecks={bottlenecks}
             isLoading={bottlenecksLoading}
             isRTL={isRTL}
-            t={od}
+            t={t}
             navigate={navigate}
           />
         )}
@@ -237,13 +322,13 @@ export default function OrganizationDashboard() {
         {/* ── SECTIONS 6 & 6B: ACTIVITY + DEADLINES (2-col on lg) ── */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {activityError ? (
-            <ErrorFallbackCard title={od.recentActivity ?? "Recent Activity"} isRTL={isRTL} />
+            <ErrorFallbackCard title={t.recentActivity} isRTL={isRTL} t={orgDashboardTranslations} />
           ) : (
             <RecentActivitySection
               activity={recentActivity}
               isLoading={activityLoading}
               isRTL={isRTL}
-              t={od}
+              t={t}
             />
           )}
           <UpcomingDeadlinesSection
@@ -254,7 +339,7 @@ export default function OrganizationDashboard() {
             opportunities={(upcomingDeadlines?.opportunities ?? []) as any[]}
             opportunitiesLoading={deadlinesLoading}
             isRTL={isRTL}
-            t={od}
+            t={t}
             navigate={navigate}
           />
         </div>
@@ -262,16 +347,16 @@ export default function OrganizationDashboard() {
         {/* ── SECTIONS 7 & 8: SMART SHORTCUTS + HUMANITARIAN IDENTITY ── */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div className="lg:col-span-2">
-            <MergedSmartShortcuts isRTL={isRTL} t={od} navigate={navigate} />
+            <MergedSmartShortcuts isRTL={isRTL} t={t} navigate={navigate} />
           </div>
           {identityError ? (
-            <ErrorFallbackCard title={od.humanitarianIdentity ?? "Humanitarian Identity"} isRTL={isRTL} />
+            <ErrorFallbackCard title={t.humanitarianIdentity} isRTL={isRTL} t={orgDashboardTranslations} />
           ) : (
             <HumanitarianIdentitySection
               identity={humanitarianIdentity}
               isLoading={identityLoading}
               isRTL={isRTL}
-              t={od}
+              t={t}
             />
           )}
         </div>
@@ -280,11 +365,11 @@ export default function OrganizationDashboard() {
         <footer className="flex items-center justify-between border-t pt-4 text-xs text-muted-foreground">
           <div className="flex items-center gap-2">
             <span suppressHydrationWarning>
-              {isRTL ? "آخر تحديث:" : "Last updated:"} {new Date().toLocaleTimeString(isRTL ? "ar-SA" : "en-US")}
+              {t.lastUpdated} {new Date().toLocaleTimeString(language === 'ar' ? "ar-SA" : "en-US")}
             </span>
             <Button variant="ghost" size="sm" className="h-6 gap-1 text-xs" onClick={() => refetch()}>
               <RefreshCw className="h-3 w-3" />
-              {isRTL ? "تحديث" : "Refresh"}
+              {t.refresh}
             </Button>
           </div>
           <span>IMS Operations Center v2.0</span>
@@ -303,7 +388,7 @@ interface ExecutiveHeaderProps {
   totalDeadlines: number;
   userName: string;
   isRTL: boolean;
-  t: OrgDashboardTranslations;
+  t: orgDashboardTranslations;
 }
 
 interface HeaderPillProps {
@@ -347,7 +432,7 @@ interface ExecutiveSnapshotProps {
   inventoryAlerts: InventoryAlerts | undefined;
   isLoading: boolean;
   isRTL: boolean;
-  t: OrgDashboardTranslations;
+  t: orgDashboardTranslations;
 }
 
 function ExecutiveSnapshot({
@@ -358,7 +443,6 @@ function ExecutiveSnapshot({
   isRTL,
   t,
 }: ExecutiveSnapshotProps) {
-  const lang = isRTL ? "ar" : "en";
   const kpis = [
     {
       label: t.totalProjects ?? "Total Projects",
@@ -368,15 +452,15 @@ function ExecutiveSnapshot({
       bg: "bg-blue-50",
     },
     {
-      label: t.activeProjects ?? "Active Projects",
+      label: t.activeProjects,
       value: stats?.activeProjects ?? 0,
       icon: Activity,
       accent: "text-indigo-600",
       bg: "bg-indigo-50",
     },
     {
-      label: t.totalBudget ?? "Total Budget",
-      value: formatCurrency(stats?.totalBudget ?? 0, "USD", lang),
+      label: t.totalBudget,
+      value: formatCurrency(stats?.totalBudget ?? 0, "USD"),
       icon: DollarSign,
       accent: "text-emerald-600",
       bg: "bg-emerald-50",
@@ -389,7 +473,7 @@ function ExecutiveSnapshot({
       bg: "bg-green-50",
     },
     {
-      label: t.activeGrants ?? "Active Grants",
+      label: t.activeGrants,
       value: stats?.activeGrants ?? 0,
       icon: Target,
       accent: "text-teal-600",
@@ -410,7 +494,7 @@ function ExecutiveSnapshot({
       bg: (workflowQueue?.pendingPRs ?? 0) > 3 ? "bg-red-50" : "bg-amber-50",
       urgent: (workflowQueue?.pendingPRs ?? 0) > 3,
     },
-        {
+    {
       label: t.inventoryAlerts ?? "Inventory Alerts",
       value: inventoryAlerts?.total ?? 0,
       icon: ShieldAlert,
@@ -474,7 +558,7 @@ interface MyWorkQueueProps {
   userTasks: UserTask[] | undefined;
   isLoading: boolean;
   isRTL: boolean;
-  t: OrgDashboardTranslations;
+  t: orgDashboardTranslations;
   navigate: (path: string) => void;
 }
 
@@ -725,7 +809,7 @@ interface OperationalModuleSnapshotsProps {
   inventoryAlerts: InventoryAlerts | undefined;
   isLoading: boolean;
   isRTL: boolean;
-  t: OrgDashboardTranslations;
+  t: orgDashboardTranslations;
   navigate: (path: string) => void;
 }
 
@@ -737,23 +821,24 @@ function OperationalModuleSnapshots({
   t,
   navigate,
 }: OperationalModuleSnapshotsProps) {
-  const lang = isRTL ? "ar" : "en";
+  const { language } = useLanguage();
+  const lang = language; // Use actual language: 'en', 'ar', or 'it'
   const [expanded, setExpanded] = React.useState(false);
 
   const modules = [
     {
-      title: t.humanResources ?? "Human Resources",
+      title: t.humanResources,
       icon: Users,
       color: "indigo",
       route: "/organization/hr",
       metrics: [
-        { label: t.totalEmployees ?? "Total Employees", value: snapshots?.hr?.totalEmployees ?? 0 },
+        { label: t.totalEmployees, value: snapshots?.hr?.totalEmployees ?? 0 },
         { label: t.pendingLeave ?? "Pending Leave", value: snapshots?.hr?.pendingLeave ?? 0, urgent: (snapshots?.hr?.pendingLeave ?? 0) > 0 },
         { label: t.expiringContracts ?? "Expiring Contracts", value: snapshots?.hr?.expiringContracts ?? 0, urgent: (snapshots?.hr?.expiringContracts ?? 0) > 0 },
       ],
     },
     {
-      title: t.financeManagement ?? "Finance Management",
+      title: t.financeManagement,
       icon: DollarSign,
       color: "emerald",
       route: "/organization/finance",
@@ -764,7 +849,7 @@ function OperationalModuleSnapshots({
       ],
     },
     {
-      title: t.logisticsModule ?? "Logistics & Procurement",
+      title: t.logisticsProcurement,
       icon: Truck,
       color: "orange",
       route: "/organization/logistics",
@@ -780,13 +865,13 @@ function OperationalModuleSnapshots({
       color: "teal",
       route: "/organization/projects",
       metrics: [
-        { label: t.activeProjects ?? "Active Projects", value: snapshots?.grants?.active ?? 0 },
+        { label: t.activeProjects, value: snapshots?.grants?.active ?? 0 },
         { label: t.totalProjects ?? "Total Projects", value: snapshots?.grants?.total ?? 0 },
         { label: t.expiringSoon ?? "Expiring Soon", value: snapshots?.grants?.expiringSoon ?? 0, urgent: (snapshots?.grants?.expiringSoon ?? 0) > 0 },
       ],
     },
     {
-      title: t.meal ?? "MEAL",
+      title: t.meal,
       icon: Target,
       color: "pink",
       route: "/organization/meal",
@@ -927,7 +1012,7 @@ interface CriticalAlertsBottlenecksProps {
   bottlenecks: OperationalBottlenecks | undefined;
   isLoading: boolean;
   isRTL: boolean;
-  t: OrgDashboardTranslations;
+  t: orgDashboardTranslations;
   navigate: (path: string) => void;
 }
 
@@ -946,8 +1031,8 @@ function CriticalAlertsBottlenecks({
     severity: "critical" | "high" | "medium";
     route: string;
   };
-
-  const lang = isRTL ? "ar" : "en";
+  const { language } = useLanguage();
+  const lang = language; // Use actual language: 'en', 'ar', or 'it'
   const alerts: AlertItem[] = [];
 
   type OverdueProject = NonNullable<OperationalBottlenecks>["overdueProjects"][number];
@@ -1114,7 +1199,7 @@ interface RecentActivitySectionProps {
   activity: RecentActivityItem[] | undefined;
   isLoading: boolean;
   isRTL: boolean;
-  t: OrgDashboardTranslations;
+  t: orgDashboardTranslations;
 }
 
 function RecentActivitySection({
@@ -1297,7 +1382,7 @@ interface UpcomingDeadlinesSectionProps {
   opportunities: OpportunityItem[];
   opportunitiesLoading: boolean;
   isRTL: boolean;
-  t: OrgDashboardTranslations;
+  t: orgDashboardTranslations;
   navigate: (path: string) => void;
 }
 
@@ -1564,7 +1649,7 @@ function UpcomingDeadlinesSection({
 // ============================================================
 interface MergedSmartShortcutsProps {
   isRTL: boolean;
-  t: OrgDashboardTranslations;
+  t: orgDashboardTranslations;
   navigate: (path: string) => void;
 }
 
@@ -1679,7 +1764,7 @@ interface HumanitarianIdentitySectionProps {
   identity: HumanitarianIdentityData | undefined;
   isLoading: boolean;
   isRTL: boolean;
-  t: OrgDashboardTranslations;
+  t: orgDashboardTranslations;
 }
 
 function HumanitarianIdentitySection({
@@ -1821,22 +1906,24 @@ function HumanitarianIdentitySection({
 // ============================================================
 // ERROR FALLBACK CARD
 // ============================================================
+interface ErrorFallbackCardProps {
+  title: string;
+  isRTL: boolean;
+  t: any;
+}
+
 function ErrorFallbackCard({
   title,
   isRTL,
-}: {
-  title: string;
-  isRTL: boolean;
-}) {
+  t,
+}: ErrorFallbackCardProps) {
   return (
     <Card dir={isRTL ? "rtl" : "ltr"}>
       <CardContent className="flex flex-col items-center justify-center py-6 text-center">
         <AlertCircle className="h-7 w-7 text-amber-500 mb-2" />
         <p className="text-sm font-medium text-gray-700">{title}</p>
         <p className="text-xs text-gray-500 mt-1">
-          {isRTL
-            ? "تعذر تحميل هذا القسم. يرجى المحاولة لاحقاً."
-            : "Failed to load this section. Please try again later."}
+          {t.failedToLoadSection ?? "Failed to load this section. Please try again later."}
         </p>
       </CardContent>
     </Card>

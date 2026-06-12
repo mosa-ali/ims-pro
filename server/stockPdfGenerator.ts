@@ -62,7 +62,7 @@ const translations = {
   },
 };
 
-type Language = "en" | "ar";
+type Language = "en" | "ar" | "it";
 
 interface StockDocumentData {
   documentNumber: string;

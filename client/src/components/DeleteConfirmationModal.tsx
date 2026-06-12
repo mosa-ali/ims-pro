@@ -77,18 +77,18 @@ export function DeleteConfirmationModal({
  </p>
  
  <div className={`p-3 bg-gray-50 rounded-md text-start`}>
- <p className="text-sm text-gray-600">{t.recordType}</p>
+ <p className="text-sm text-gray-600">{labels.recordType}</p>
  </div>
 
  {!isPermanent && (
  <div className={`p-3 bg-blue-50 border border-blue-200 rounded-md text-start`}>
- <p className="text-sm text-blue-800">{t.archiveNote}</p>
+ <p className="text-sm text-blue-800">{labels.archiveNote}</p>
  </div>
  )}
 
  {isPermanent && (
  <div className={`p-3 bg-red-50 border-2 border-red-300 rounded-md text-start`}>
- <p className="text-sm font-semibold text-red-800">{t.warningNote}</p>
+ <p className="text-sm font-semibold text-red-800">{labels.warningNote}</p>
  </div>
  )}
  </div>
@@ -99,7 +99,7 @@ export function DeleteConfirmationModal({
  onClick={onClose}
  className="flex-1 px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-100 transition-colors text-gray-700 font-medium"
  >
- {t.cancel}
+ {labels.cancel}
  </button>
  <button
  onClick={() => {
@@ -108,7 +108,7 @@ export function DeleteConfirmationModal({
  }}
  className={`flex-1 px-4 py-2 rounded-md transition-colors font-medium text-white ${ isPermanent ? 'bg-red-600 hover:bg-red-700' : 'bg-yellow-600 hover:bg-yellow-700' }`}
  >
- {t.confirm}
+ {labels.confirm}
  </button>
  </div>
  </div>

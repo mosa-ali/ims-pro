@@ -25,8 +25,8 @@ export default function PlatformDashboard() {
  <div className="container py-16" dir={isRTL ? 'rtl' : 'ltr'}>
  <Card>
  <CardHeader>
- <CardTitle>{t.auth.accessDenied}</CardTitle>
- <CardDescription>{t.auth.noPermission}</CardDescription>
+ <CardTitle>{t.rolesPermissions.accessDenied}</CardTitle>
+ <CardDescription>{t.approvalPanel.noPermission}</CardDescription>
  </CardHeader>
  </Card>
  </div>
@@ -78,7 +78,7 @@ export default function PlatformDashboard() {
  <div className="flex items-center gap-2 mt-3">
  <span className="text-sm font-medium text-green-600">{activeOrgs} {t.common.active}</span>
  <span className="text-gray-300">•</span>
- <span className="text-sm font-medium text-gray-400">{suspendedOrgs} {t.common.suspended}</span>
+ <span className="text-sm font-medium text-gray-400">{suspendedOrgs} {t.organizationModule.suspended}</span>
  </div>
  </CardContent>
  </Card>

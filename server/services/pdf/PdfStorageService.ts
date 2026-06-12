@@ -53,7 +53,7 @@ export async function uploadPdf(
 export function generatePdfFileName(
   documentType: string,
   documentNumber: string,
-  language: "en" | "ar" = "en"
+  language: "en" | "ar" | "it" = "en"
 ): string {
   const timestamp = Date.now();
   const sanitizedType = documentType.replace(/\s+/g, "-").toLowerCase();
