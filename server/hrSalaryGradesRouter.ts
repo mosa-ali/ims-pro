@@ -11,7 +11,7 @@ import { z } from "zod";
 import { TRPCError } from "@trpc/server";
 import { protectedProcedure, router, scopedProcedure } from "./_core/trpc";
 import { getDb } from "./db";
-import { hrSalaryGrades } from "../drizzle/schema";
+import { hrSalaryGrades, organizations, operatingUnits } from "../drizzle/schema";
 import { eq, and, desc } from "drizzle-orm";
 
 // ============================================================================
@@ -50,7 +50,7 @@ export const hrSalaryGradesRouter = router({
    */
   getAll: scopedProcedure
     .query(async ({ ctx }) => {
-      const { organizationId } = ctx.scope;
+      const { organizationId, operatingUnitId } = ctx.scope;
       const db = await getDb();
       if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Database not available" });
 
@@ -59,6 +59,7 @@ export const hrSalaryGradesRouter = router({
         .from(hrSalaryGrades)
         .where(and(
           eq(hrSalaryGrades.organizationId, organizationId),
+          eq(hrSalaryGrades.operatingUnitId, operatingUnitId),
           eq(hrSalaryGrades.isDeleted, 0)
         ))
         .orderBy(hrSalaryGrades.gradeCode);
@@ -72,7 +73,7 @@ export const hrSalaryGradesRouter = router({
   getById: scopedProcedure
     .input(z.object({ id: z.number() }))
     .query(async ({ ctx, input }) => {
-      const { organizationId } = ctx.scope;
+      const { organizationId, operatingUnitId } = ctx.scope;
       const db = await getDb();
       if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Database not available" });
 
@@ -82,6 +83,7 @@ export const hrSalaryGradesRouter = router({
         .where(and(
           eq(hrSalaryGrades.id, input.id),
           eq(hrSalaryGrades.organizationId, organizationId),
+          eq(hrSalaryGrades.operatingUnitId, operatingUnitId),
           eq(hrSalaryGrades.isDeleted, 0)
         ));
 
@@ -98,7 +100,7 @@ export const hrSalaryGradesRouter = router({
   getByCode: scopedProcedure
     .input(z.object({ code: z.string() }))
     .query(async ({ ctx, input }) => {
-      const { organizationId } = ctx.scope;
+      const { organizationId, operatingUnitId } = ctx.scope;
       const db = await getDb();
       if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Database not available" });
 
@@ -108,6 +110,7 @@ export const hrSalaryGradesRouter = router({
         .where(and(
           eq(hrSalaryGrades.gradeCode, input.code),
           eq(hrSalaryGrades.organizationId, organizationId),
+          eq(hrSalaryGrades.operatingUnitId, operatingUnitId),
           eq(hrSalaryGrades.isDeleted, 0)
         ));
 
@@ -120,7 +123,7 @@ export const hrSalaryGradesRouter = router({
   create: scopedProcedure
     .input(salaryGradeCreateSchema)
     .mutation(async ({ ctx, input }) => {
-      const { organizationId } = ctx.scope;
+      const { organizationId, operatingUnitId } = ctx.scope;
       const db = await getDb();
       if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Database not available" });
 
@@ -131,6 +134,7 @@ export const hrSalaryGradesRouter = router({
         .where(and(
           eq(hrSalaryGrades.gradeCode, input.gradeCode),
           eq(hrSalaryGrades.organizationId, organizationId),
+          eq(hrSalaryGrades.operatingUnitId, operatingUnitId),
           eq(hrSalaryGrades.isDeleted, 0)
         ));
 
@@ -140,6 +144,7 @@ export const hrSalaryGradesRouter = router({
 
       const [result] = await db.insert(hrSalaryGrades).values({
         organizationId,
+        operatingUnitId,
         gradeCode: input.gradeCode,
         gradeName: input.gradeName,
         gradeNameAr: input.gradeNameAr,
@@ -166,7 +171,7 @@ export const hrSalaryGradesRouter = router({
   update: scopedProcedure
     .input(salaryGradeUpdateSchema)
     .mutation(async ({ ctx, input }) => {
-      const { organizationId } = ctx.scope;
+      const { organizationId, operatingUnitId } = ctx.scope;
       const db = await getDb();
       if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Database not available" });
 
@@ -178,6 +183,7 @@ export const hrSalaryGradesRouter = router({
         .where(and(
           eq(hrSalaryGrades.id, id),
           eq(hrSalaryGrades.organizationId, organizationId),
+          eq(hrSalaryGrades.operatingUnitId, operatingUnitId),
           eq(hrSalaryGrades.isDeleted, 0)
         ));
 
@@ -193,6 +199,7 @@ export const hrSalaryGradesRouter = router({
           .where(and(
             eq(hrSalaryGrades.gradeCode, updateData.gradeCode),
             eq(hrSalaryGrades.organizationId, organizationId),
+            eq(hrSalaryGrades.operatingUnitId, operatingUnitId),
             eq(hrSalaryGrades.isDeleted, 0)
           ));
 
@@ -224,7 +231,8 @@ export const hrSalaryGradesRouter = router({
         .set(updateValues)
         .where(and(
           eq(hrSalaryGrades.id, id),
-          eq(hrSalaryGrades.organizationId, organizationId)
+          eq(hrSalaryGrades.organizationId, organizationId),
+          eq(hrSalaryGrades.operatingUnitId, operatingUnitId),
         ));
 
       return { id, success: true };
@@ -236,7 +244,7 @@ export const hrSalaryGradesRouter = router({
   delete: scopedProcedure
     .input(z.object({ id: z.number() }))
     .mutation(async ({ ctx, input }) => {
-      const { organizationId } = ctx.scope;
+      const { organizationId, operatingUnitId } = ctx.scope;
       const db = await getDb();
       if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Database not available" });
 
@@ -246,6 +254,7 @@ export const hrSalaryGradesRouter = router({
         .where(and(
           eq(hrSalaryGrades.id, input.id),
           eq(hrSalaryGrades.organizationId, organizationId),
+          eq(hrSalaryGrades.operatingUnitId, operatingUnitId),
           eq(hrSalaryGrades.isDeleted, 0)
         ));
 

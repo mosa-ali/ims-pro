@@ -97,7 +97,7 @@ export function EmployeesDirectory() {
  const deleteMutation = trpc.hrEmployees.delete.useMutation({
  onSuccess: () => {
  refetch();
- alert(t.deleteSuccess);
+ alert(t.messages.success.deleted);
  },
  onError: (err) => {
  alert(`Delete failed: ${err.message}`);
@@ -108,7 +108,7 @@ export function EmployeesDirectory() {
  const updateMutation = trpc.hrEmployees.update.useMutation({
  onSuccess: () => {
  refetch();
- alert(t.archiveSuccess);
+ alert(t.messages.success.archived);
  },
  onError: (err) => {
  alert(`Archive failed: ${err.message}`);

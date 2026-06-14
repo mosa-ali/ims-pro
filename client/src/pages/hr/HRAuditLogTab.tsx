@@ -139,7 +139,7 @@ export function HRAuditLogTab() {
  {labels.filters}
  </button>
  <span className="text-sm text-gray-600">
- {t.showingResults.replace('{count}', events.length.toString())}
+ {labels.showingResults.replace('{count}', events.length.toString())}
  </span>
  </div>
  

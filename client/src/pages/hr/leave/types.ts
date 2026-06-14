@@ -4,56 +4,102 @@
  * ============================================================================
  */
 
-export type LeaveType = 'Annual Leave' | 'Emergency Leave' | 'Sick Leave' | 'Other Leave';
+export type LeaveType =
+  | 'annual'
+  | 'sick'
+  | 'maternity'
+  | 'paternity'
+  | 'unpaid'
+  | 'compassionate'
+  | 'study'
+  | 'other';
 
-export type LeaveStatus = 'Draft' | 'Submitted' | 'Approved' | 'Rejected';
+export type LeaveStatus =
+  | 'draft'
+  | 'pending'
+  | 'approved'
+  | 'rejected'
+  | 'cancelled';
 
 export interface LeaveRequest {
- id: string;
- staffId: string;
- staffName: string;
- position: string;
- department: string;
- 
- leaveType: LeaveType;
- startDate: string;
- endDate: string;
- totalDays: number; // Auto-calculated, supports decimals
- 
- reason: string; // Always required
- justification?: string; // Required if Emergency > 3 days
- medicalReportFile?: string; // Required if Sick > 3 days (base64)
- medicalReportFileName?: string;
- 
- status: LeaveStatus;
- submittedDate?: string;
- approvedAt?: string;
- rejectedAt?: string;
- approvedBy?: string;
- rejectedBy?: string;
- rejectionReason?: string;
- 
- createdAt: string;
- updatedAt: string;
+  id: string;
+
+  organizationId?: number;
+  operatingUnitId?: number;
+
+  employeeId: number;
+
+  staffId: string;
+  staffName: string;
+
+  position: string;
+  department: string;
+  fullAddress?: string;
+
+  leaveType: LeaveType;
+
+  startDate: string;
+  endDate: string;
+
+  totalDays: number;
+
+  reason: string;
+
+  attachmentUrl?: string;
+
+  status: LeaveStatus;
+
+  submittedAt?: string | null;
+
+  approvedBy?: number | null;
+  approvedAt?: string | null;
+
+  rejectedBy?: number | null;
+  rejectedAt?: string | null;
+
+  rejectionReason?: string | null;
+
+  balanceBefore?: number;
+  balanceAfter?: number;
+
+  notes?: string;
+
+  createdAt: string;
+  updatedAt: string;
+   medicalReportFile?: string; // Required if Sick > 3 days (base64)
+   medicalReportFileName?: string;
 }
 
 export interface LeaveBalance {
- staffId: string;
- contractStartDate: string;
- contractEndDate: string;
- contractDays: number;
- 
- // Annual Leave Balance
- openingBalance: number; // Calculated from contract
- usedLeave: number; // Approved annual leave
- pendingLeave: number; // Submitted but not approved
- remainingBalance: number; // Opening - Used
- availableBalance: number; // Remaining - Pending
- 
- // Non-deductible leave (for reporting only)
- emergencyLeaveTaken: number;
- sickLeaveTaken: number;
- otherLeaveTaken: number;
- 
- lastCalculated: string;
+  employeeId: number;
+
+  staffId: string;
+  staffName: string;
+
+  department: string;
+  position: string;
+
+  contractStartDate?: string;
+  contractEndDate?: string;
+
+  annualEntitlement: number;
+
+  accrued: number;
+  used: number;
+  pending: number;
+  remaining: number;
+  available: number;
+}
+
+export interface LeaveBalanceSummary {
+  totalStaff: number;
+  avgAvailable: number;
+  totalUsed: number;
+  totalPending: number;
+}
+
+export interface LeaveApprovalAction {
+  requestId: number;
+  action: 'approve' | 'reject';
+  rejectionReason?: string;
 }

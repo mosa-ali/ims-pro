@@ -6,19 +6,39 @@
 
 import { useState, useEffect } from 'react';
 import { FileText, Plus, Calendar, Edit, Download, Upload } from 'lucide-react';
-import { StaffMember } from '../types/hrTypes';
 import { contractService, ContractRecord } from '@/app/services/employeeRecordsService';
 import { FileUploadModal } from '@/app/components/hr/FileUploadModal';
 import { fileStorageService } from '@/app/services/fileStorageService';
 import { EditEmploymentContractModal } from '../modals/EditEmploymentContractModal';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useTranslation } from '@/i18n/useTranslation';
+import { StaffMember } from '../types/hrTypes';
+
+interface employee {
+  id: string;
+  organizationId: number;
+  staffId?: string | null;
+  fullName: string;
+  firstName?: string;
+  lastName?: string;
+  gender?: string;
+  nationality?: string;
+  email?: string;
+  phone?: string;
+  address?: string;
+  position: string;
+  department?: string;
+  supervisor?: string;
+  status: string;
+  hireDate?: string;
+  [key: string]: any;
+}
 
 interface Props {
- employee: StaffMember;
- language: string;
- isRTL: boolean;
- onEmployeeUpdate?: () => void;
+  employee: StaffMember;
+  language: 'en' | 'ar' | 'it';
+  isRTL: boolean;
+  onEmployeeUpdate?: () => void;
 }
 
 export function EmploymentContractCard({
@@ -28,8 +48,9 @@ export function EmploymentContractCard({
  const [showUploadModal, setShowUploadModal] = useState(false);
  const [selectedContractId, setSelectedContractId] = useState<string | null>(null);
  const [showEditModal, setShowEditModal] = useState(false);
+ const typedLanguage = language as 'en' | 'ar' | 'it';
 
- const handleEmployeeUpdated = (updated: StaffMember) => {
+ const handleEmployeeUpdated = () => {
  if (onEmployeeUpdate) {
  onEmployeeUpdate();
  }
@@ -92,7 +113,8 @@ export function EmploymentContractCard({
 
  const formatDate = (dateString?: string) => {
  if (!dateString) return '-';
- return new Date(dateString).toLocaleDateString(t.hrEmployeeCards.en, {
+ const locale = typedLanguage === 'ar' ? 'ar-SA' : typedLanguage === 'it' ? 'it-IT' : 'en-US';
+ return new Date(dateString).toLocaleDateString(locale, {
  year: 'numeric',
  month: 'long',
  day: 'numeric'
@@ -100,7 +122,8 @@ export function EmploymentContractCard({
  };
 
  const formatCurrency = (amount: number, currency: string) => {
- return new Intl.NumberFormat(t.hrEmployeeCards.en, {
+ const locale = typedLanguage === 'ar' ? 'ar-SA' : typedLanguage === 'it' ? 'it-IT' : 'en-US';
+ return new Intl.NumberFormat(locale, {
  style: 'currency',
  currency: currency
  }).format(amount);
@@ -248,7 +271,7 @@ export function EmploymentContractCard({
  acceptedTypes=".pdf,.doc,.docx"
  />
 
- {/* Edit Modal */}
+{/* Edit Modal */}
  {showEditModal && (
  <EditEmploymentContractModal
  employee={employee}

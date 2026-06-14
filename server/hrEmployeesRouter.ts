@@ -148,7 +148,6 @@ const verifyEmployeeScope = async (
 // ============================================================================
 // ROUTER PROCEDURES
 // ============================================================================
-
 export const hrEmployeesRouter = router({
   /**
    * Get all employees for current organization/OU
@@ -221,7 +220,9 @@ export const hrEmployeesRouter = router({
    * Validates employee belongs to current organization/OU
    */
   getById: scopedProcedure
-    .input(z.object({ id: z.number().min(1) }))
+    .input(z.object({
+        id: z.number(),
+      }))
     .query(async ({ ctx, input }) => {
       const db = await getDb();
       if (!db) throw new Error('Database not available');
@@ -415,6 +416,63 @@ export const hrEmployeesRouter = router({
 
       // Return updated employee
       return verifyEmployeeScope(db, input.id, ctx.scope);
+    }),
+
+    // Get employee statistics
+// Uses scopedProcedure - organizationId and operatingUnitId come from ctx.scope
+  getStatistics: scopedProcedure
+    .input(z.object({}))
+    .query(async ({ ctx }) => {
+      const db = await getDb();
+      if (!db) throw new Error("Database not available");
+      
+      // Extract scope from context (platform-level isolation)
+      const { organizationId, operatingUnitId } = ctx.scope;
+      
+      const conditions = [
+        eq(hrEmployees.organizationId, organizationId),
+        eq(hrEmployees.operatingUnitId, operatingUnitId),
+        eq(hrEmployees.isDeleted, 0),
+      ];
+      
+      const allEmployees = await db
+        .select()
+        .from(hrEmployees)
+        .where(and(...conditions));
+      
+      const active = allEmployees.filter(e => e.status === 'active').length;
+      const onLeave = allEmployees.filter(e => e.status === 'on_leave').length;
+      const suspended = allEmployees.filter(e => e.status === 'suspended').length;
+      const terminated = allEmployees.filter(e => e.status === 'terminated').length;
+      const resigned = allEmployees.filter(e => e.status === 'resigned').length;
+      
+      // By employment type
+      const fullTime = allEmployees.filter(e => e.employmentType === 'full_time').length;
+      const partTime = allEmployees.filter(e => e.employmentType === 'part_time').length;
+      const contract = allEmployees.filter(e => e.employmentType === 'contract').length;
+      const consultant = allEmployees.filter(e => e.employmentType === 'consultant').length;
+      const intern = allEmployees.filter(e => e.employmentType === 'intern').length;
+      
+      // By staff category
+      const national = allEmployees.filter(e => e.staffCategory === 'national').length;
+      const international = allEmployees.filter(e => e.staffCategory === 'international').length;
+      const expatriate = allEmployees.filter(e => e.staffCategory === 'expatriate').length;
+      
+      // By gender
+      const male = allEmployees.filter(e => e.gender === 'male').length;
+      const female = allEmployees.filter(e => e.gender === 'female').length;
+      
+      // Get unique departments
+      const departments = [...new Set(allEmployees.map(e => e.department).filter(Boolean))];
+      
+      return {
+        total: allEmployees.length,
+        byStatus: { active, onLeave, suspended, terminated, resigned },
+        byEmploymentType: { fullTime, partTime, contract, consultant, intern },
+        byStaffCategory: { national, international, expatriate },
+        byGender: { male, female, other: allEmployees.length - male - female },
+        departments,
+      };
     }),
 
 /**

@@ -42,7 +42,6 @@ import { PayrollAllowances } from './PayrollAllowances';
 import { TrainingManagement } from './TrainingManagement';
 import { SanctionsDisciplinary } from './SanctionsDisciplinary';
 import { Recruitment } from './Recruitment';
-import { HRDocuments } from './HRDocuments';
 import { ReportsAnalytics } from './ReportsAnalytics';
 import { HRSettings } from './HRSettings';
 import { HRAnnualPlanModule } from './HRAnnualPlanModule';
@@ -54,11 +53,17 @@ import { AttendanceCalendar } from './attendance/AttendanceCalendar';
 import { OvertimeManagement } from './attendance/OvertimeManagement';
 import { AttendanceReports } from './attendance/AttendanceReports';
 import { useTranslation } from '@/i18n/useTranslation';
+import { useOrganization } from '@/contexts/OrganizationContext';
+import { useOperatingUnit } from '@/contexts/OperatingUnitContext';
 
 export function HRManagement() {
   const { language, isRTL } = useLanguage();
   const { t } = useTranslation();
-
+  const { currentOrganization } = useOrganization();
+  const { currentOperatingUnit } = useOrganization();
+  const organizationId = currentOrganization?.id || 0;
+  const operatingUnitId = currentOperatingUnit?.id;
+  
   // ========== HELPER FUNCTION TO GET TEXT BY LANGUAGE ==========
   const getText = (en: string, ar: string, it: string): string => {
     switch (language) {
@@ -219,7 +224,6 @@ export function HRManagement() {
         <Route path="/recruitment">
           {() => <Route path="/recruitment" component={Recruitment} />}
         </Route>
-        <Route path="/documents" component={HRDocuments} />
         <Route path="/reports" component={ReportsAnalytics} />
         <Route path="/settings" component={HRSettings} />
         

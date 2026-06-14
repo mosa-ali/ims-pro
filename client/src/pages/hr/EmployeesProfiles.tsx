@@ -30,17 +30,24 @@ import {
 } from 'lucide-react';
 import { useNavigate } from '@/lib/router-compat';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { staffService } from '@/app/services/hrService';
+import { trpc } from '@/lib/trpc';
 import { useTranslation } from '@/i18n/useTranslation';
 import { BackButton } from "@/components/BackButton";
+
+interface LocalizedText {
+  en: string;
+  ar: string;
+  it: string;
+}
+
 interface ModuleCard {
- id: string;
- name: { en: string; ar: string };
- description: { en: string; ar: string };
- icon: any;
- path: string;
- status: 'active' | 'coming-soon';
- count?: number;
+  id: string;
+  name: LocalizedText;
+  description: LocalizedText;
+  icon: any;
+  path: string;
+  status: 'active' | 'coming-soon';
+  count?: number;
 }
 
 export function EmployeesProfiles() {
@@ -57,53 +64,22 @@ export function EmployeesProfiles() {
  exitProcessing: 0
  });
 
+ // Fetch statistics via tRPC
+ const { data: stats } = trpc.hrEmployees.getStatistics.useQuery({});
+
  useEffect(() => {
- // Load real staff counts with proper filters (HR BEST PRACTICE MODEL)
- const allStaff = staffService.getAll();
- const today = new Date();
- 
- // 1. Active employees (✅ CANONICAL - Payroll-eligible)
- const active = allStaff.filter(s => s.status === 'active');
- 
- // 2. Archived employees (✅ CANONICAL - Inactive but not exited)
- const archived = allStaff.filter(s => s.status === 'archived');
- 
- // 3. Exited staff (✅ CANONICAL - Employment ended)
- const exited = allStaff.filter(s => s.status === 'exited');
- 
- // 4. New Hires (✅ DYNAMIC - hired within last 90 days AND active)
- const ninetyDaysAgo = new Date(today);
- ninetyDaysAgo.setDate(today.getDate() - 90);
- const newHires = active.filter(s => {
- if (!s.hireDate) return false;
- const hireDate = new Date(s.hireDate);
- return hireDate >= ninetyDaysAgo;
- });
- 
- // 5. Contract Renewals (✅ DYNAMIC - contracts expiring within 60 days AND active)
- const sixtyDaysFromNow = new Date(today);
- sixtyDaysFromNow.setDate(today.getDate() + 60);
- const renewals = active.filter(s => {
- if (!s.contractEndDate) return false;
- const endDate = new Date(s.contractEndDate);
- return endDate <= sixtyDaysFromNow && endDate >= today;
- });
- 
- // 6. Exit Processing (✅ WORKFLOW-DRIVEN - exit started but not completed)
- const exitProcessing = allStaff.filter(s => 
- s.exitStarted === true && s.status !== 'exited'
- );
- 
- setStaffCounts({
- active: active.length,
- archived: archived.length,
- exited: exited.length,
- total: allStaff.length,
- newHires: newHires.length,
- renewals: renewals.length,
- exitProcessing: exitProcessing.length
- });
- }, []);
+   if (!stats) return;
+   
+   setStaffCounts({
+     active: stats.byStatus.active,
+     archived: 0, // Not in new schema
+     exited: stats.byStatus.terminated + stats.byStatus.resigned,
+     total: stats.total,
+     newHires: 0, // Will need separate query
+     renewals: 0, // Will need separate query
+     exitProcessing: 0 // Will need separate query
+   });
+ }, [stats]);
 
  const labels = {
  title: t.hr.employeesProfiles,
@@ -133,8 +109,16 @@ export function EmployeesProfiles() {
  const cards: ModuleCard[] = [
  {
  id: 'directory',
- name: { en: 'Employees Directory', ar: 'دليل الموظفين' },
- description: { en: 'Active employees with full profiles', ar: 'الموظفون النشطون مع الملفات الكاملة' },
+ name: {
+  en: 'Employees Directory',
+  ar: 'دليل الموظفين',
+  it: 'Elenco Dipendenti'
+},
+description: {
+  en: 'Active employees with full profiles',
+  ar: 'الموظفون النشطون مع الملفات الكاملة',
+  it: 'Dipendenti attivi con profili completi'
+},
  icon: Users,
  path: '/organization/hr/employees-profiles/directory',
  status: 'active',
@@ -142,16 +126,32 @@ export function EmployeesProfiles() {
  },
  {
  id: 'training',
- name: { en: 'Training Management', ar: 'إدارة التدريب' },
- description: { en: 'Centralized view of all training records for reporting and oversight', ar: 'عرض مركزي لجميع سجلات التدريب للتقارير والإشراف' },
+ name: {
+  en: 'Training Management',
+  ar: 'إدارة التدريب',
+  it: 'Gestione della Formazione'
+},
+description: {
+  en: 'Centralized view of all training records for reporting and oversight',
+  ar: 'عرض مركزي لجميع سجلات التدريب للتقارير والإشراف',
+  it: 'Vista centralizzata di tutti i registri di formazione per reporting e supervisione'
+},
  icon: GraduationCap,
  path: '/organization/hr/employees-profiles/training-management',
  status: 'active'
  },
  {
  id: 'archived',
- name: { en: 'Archived Employees', ar: 'الموظفون المؤرشفون' },
- description: { en: 'Inactive staff (historical records)', ar: 'الموظفون غير النشطين (سجلات تاريخية)' },
+name: {
+  en: 'Archived Employees',
+  ar: 'الموظفون المؤرشفون',
+  it: 'Dipendenti Archiviati'
+},
+description: {
+  en: 'Inactive staff (historical records)',
+  ar: 'الموظفون غير النشطين (سجلات تاريخية)',
+  it: 'Personale non attivo (archivio storico)'
+},
  icon: Archive,
  path: '/organization/hr/employees-profiles/archived',
  status: 'active',
@@ -159,8 +159,16 @@ export function EmployeesProfiles() {
  },
  {
  id: 'exited',
- name: { en: 'Exited Staff', ar: 'الموظفون المغادرون' },
- description: { en: 'Completed exit process', ar: 'أكملوا عملية الخروج' },
+ name: {
+  en: 'Exited Staff',
+  ar: 'الموظفون المغادرون',
+  it: 'Personale Uscito'
+},
+description: {
+  en: 'Completed exit process',
+  ar: 'أكملوا عملية الخروج',
+  it: 'Ha completato il processo di uscita'
+},
  icon: FileText,
  path: '/organization/hr/employees-profiles/exited',
  status: 'active',
@@ -168,8 +176,16 @@ export function EmployeesProfiles() {
  },
  {
  id: 'new-hires',
- name: { en: 'New Hires', ar: 'التعيينات الجديدة' },
- description: { en: 'Hired within last 90 days', ar: 'معينون خلال آخر 90 يوماً' },
+name: {
+  en: 'New Hires',
+  ar: 'التعيينات الجديدة',
+  it: 'Nuove Assunzioni'
+},
+description: {
+  en: 'Hired within last 90 days',
+  ar: 'معينون خلال آخر 90 يوماً',
+  it: 'Assunti negli ultimi 90 giorni'
+},
  icon: UserPlus,
  path: '/organization/hr/employees-profiles/new-hires',
  status: 'active',
@@ -177,8 +193,16 @@ export function EmployeesProfiles() {
  },
  {
  id: 'contract-renewals',
- name: { en: 'Contract Renewals', ar: 'تجديدات العقود' },
- description: { en: 'Contracts expiring within 60 days', ar: 'عقود تنتهي خلال 60 يوماً' },
+name: {
+  en: 'Contract Renewals',
+  ar: 'تجديدات العقود',
+  it: 'Rinnovi Contrattuali'
+},
+description: {
+  en: 'Contracts expiring within 60 days',
+  ar: 'عقود تنتهي خلال 60 يوماً',
+  it: 'Contratti in scadenza entro 60 giorni'
+},
  icon: FileText,
  path: '/organization/hr/employees-profiles/renewals',
  status: 'active',
@@ -186,8 +210,16 @@ export function EmployeesProfiles() {
  },
  {
  id: 'exit-processing',
- name: { en: 'Exit Processing', ar: 'معالجة الخروج' },
- description: { en: 'Staff in exit process', ar: 'موظفون في عملية الخروج' },
+name: {
+  en: 'Exit Processing',
+  ar: 'معالجة الخروج',
+  it: 'Gestione delle Uscite'
+},
+description: {
+  en: 'Staff in exit process',
+  ar: 'موظفون في عملية الخروج',
+  it: 'Personale attualmente nel processo di uscita'
+},
  icon: FileText,
  path: '/organization/hr/employees-profiles/exit-processing',
  status: 'active',
@@ -195,8 +227,16 @@ export function EmployeesProfiles() {
  },
  {
  id: 'reference',
- name: { en: 'Reference & Verification', ar: 'المراجع والتحقق' },
- description: { en: 'Generate employment references', ar: 'إنشاء مراجع التوظيف' },
+name: {
+  en: 'Reference & Verification',
+  ar: 'المراجع والتحقق',
+  it: 'Referenze e Verifiche'
+},
+description: {
+  en: 'Generate employment references',
+  ar: 'إنشاء مراجع التوظيف',
+  it: 'Genera referenze lavorative'
+},
  icon: FileText,
  path: '/organization/hr/employees-profiles/reference',
  status: 'active',
@@ -204,8 +244,16 @@ export function EmployeesProfiles() {
  },
  {
  id: 'summary',
- name: { en: 'Profiles Summary', ar: 'ملخص الملفات' },
- description: { en: 'KPIs and statistics dashboard', ar: 'لوحة المؤشرات والإحصاءات' },
+name: {
+  en: 'Profiles Summary',
+  ar: 'ملخص الملفات',
+  it: 'Riepilogo dei Profili'
+},
+description: {
+  en: 'KPIs and statistics dashboard',
+  ar: 'لوحة المؤشرات والإحصاءات',
+  it: 'Dashboard con KPI e statistiche'
+},
  icon: FileText,
  path: '/organization/hr/employees-profiles/summary',
  status: 'active'
@@ -267,10 +315,10 @@ export function EmployeesProfiles() {
  {/* Card Content */}
  <div className="space-y-2">
  <h3 className="text-base font-semibold text-gray-900">
- {card.name[language]}
+ {card.name[language as keyof LocalizedText]}
  </h3>
  <p className="text-sm text-gray-600 leading-relaxed">
- {card.description[language]}
+ {card.description[language as keyof LocalizedText]}
  </p>
  
  {/* Count Badge (if available) */}

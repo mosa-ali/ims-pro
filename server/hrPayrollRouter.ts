@@ -300,6 +300,7 @@ export const hrPayrollRouter = router({
       currency: z.string().optional(),
       paymentMethod: z.enum(["bank_transfer", "cash", "check"]).optional(),
       paymentReference: z.string().optional(),
+      status: z.enum(["submitted", "pending_approval", "approved"]).optional(),
       notes: z.string().optional(),
     }))
     .mutation(async ({ ctx, input }) => {
@@ -547,7 +548,8 @@ export const hrPayrollRouter = router({
   // Get salary grade by grade code
   getByGradeCode: scopedProcedure
     .input(z.object({
-      gradeCode: z.string(),
+      id: z.number(),
+      organizationId: z.number(),
     }))
     .query(async ({ ctx, input }) => {
       const { organizationId } = ctx.scope;
@@ -559,7 +561,6 @@ export const hrPayrollRouter = router({
         .from(hrSalaryGrades)
         .where(
           and(
-            eq(hrSalaryGrades.gradeCode, input.gradeCode),
             eq(hrSalaryGrades.organizationId, organizationId),
             eq(hrSalaryGrades.isDeleted, 0)
           )

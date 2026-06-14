@@ -12,6 +12,7 @@ import { exitService, ClearanceRecord, ClearanceItem } from '@/app/services/exit
 import { ModalOverlay } from '@/app/components/ui/ModalOverlay';
 import { useTranslation } from '@/i18n/useTranslation';
 
+
 interface Props {
  employee: StaffMember;
  onClose: () => void;

@@ -27,6 +27,7 @@ export interface StaffMember {
  nationality: string;
  position: string;
  department: string;
+ project: string[];
  projects: string[]; // Multiple projects allowed
  contractType: 'Fixed-Term' | 'Short-Term' | 'Consultancy' | 'Volunteer' | 'Daily Worker';
  

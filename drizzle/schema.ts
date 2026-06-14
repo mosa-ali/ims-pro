@@ -997,6 +997,7 @@ export const caseActivities = mysqlTable("case_activities", {
 	caseId: int().notNull().references(() => caseRecords.id, { onDelete: "cascade" } ),
 	projectId: int().notNull().references(() => projects.id, { onDelete: "cascade" } ),
 	organizationId: int().notNull().references(() => organizations.id, { onDelete: "cascade" } ),
+	operatingUnitId: int(),
 	activityType: varchar({ length: 50 }).notNull(),
 	// you can use { mode: 'date' }, if you want to have Date as type for this column
 	activityDate: date({ mode: 'string' }).notNull(),
@@ -1016,6 +1017,7 @@ export const caseRecords = mysqlTable("case_records", {
 	id: int().autoincrement().primaryKey().notNull(),
 	projectId: int().notNull().references(() => projects.id, { onDelete: "cascade" } ),
 	organizationId: int().notNull().references(() => organizations.id, { onDelete: "cascade" } ),
+	operatingUnitId: int(),
 	caseCode: varchar({ length: 50 }).notNull(),
 	beneficiaryCode: varchar({ length: 50 }).notNull(),
 	firstName: varchar({ length: 100 }),
@@ -1073,6 +1075,7 @@ export const caseReferrals = mysqlTable("case_referrals", {
 	caseId: int().notNull().references(() => caseRecords.id, { onDelete: "cascade" } ),
 	projectId: int().notNull().references(() => projects.id, { onDelete: "cascade" } ),
 	organizationId: int().notNull().references(() => organizations.id, { onDelete: "cascade" } ),
+	operatingUnitId: int(),
 	// you can use { mode: 'date' }, if you want to have Date as type for this column
 	referralDate: date({ mode: 'string' }).notNull(),
 	referralType: varchar({ length: 20 }).notNull(),
@@ -1139,6 +1142,7 @@ export const childSafeSpaces = mysqlTable("child_safe_spaces", {
 	id: int().autoincrement().primaryKey().notNull(),
 	projectId: int().notNull().references(() => projects.id, { onDelete: "cascade" } ),
 	organizationId: int().notNull().references(() => organizations.id, { onDelete: "cascade" } ),
+	operatingUnitId: int(),
 	cssName: varchar({ length: 255 }).notNull(),
 	cssCode: varchar({ length: 50 }).notNull(),
 	location: varchar({ length: 255 }).notNull(),
@@ -1304,6 +1308,7 @@ export const cssActivities = mysqlTable("css_activities", {
 	cssId: int().notNull().references(() => childSafeSpaces.id, { onDelete: "cascade" } ),
 	projectId: int().notNull().references(() => projects.id, { onDelete: "cascade" } ),
 	organizationId: int().notNull().references(() => organizations.id, { onDelete: "cascade" } ),
+	operatingUnitId: int(),
 	activityType: varchar({ length: 50 }).notNull(),
 	// you can use { mode: 'date' }, if you want to have Date as type for this column
 	activityDate: date({ mode: 'string' }).notNull(),
@@ -1393,6 +1398,7 @@ export const documents = mysqlTable("documents", {
 export const donorBudgetMapping = mysqlTable("donor_budget_mapping", {
 	id: int().autoincrement().primaryKey().notNull(),
 	organizationId: int().notNull().references(() => organizations.id, { onDelete: "set null" } ),
+	operatingUnitId: int(),
 	internalCategoryId: int().notNull().references(() => financeBudgetCategories.id, { onDelete: "set null" } ),
 	internalCategoryCode: varchar({ length: 50 }),
 	internalCategoryName: varchar({ length: 255 }),
@@ -2920,6 +2926,7 @@ export const hrEmployees = mysqlTable("hr_employees", {
 export const hrLeaveBalances = mysqlTable("hr_leave_balances", {
 	id: int().autoincrement().primaryKey().notNull(),
 	organizationId: int().notNull(),
+	operatingUnitId: int(),
 	employeeId: int().notNull(),
 	year: int().notNull(),
 	leaveType: mysqlEnum(['annual','sick','maternity','paternity','unpaid','compassionate','study','other']).notNull(),
@@ -2939,31 +2946,145 @@ export const hrLeaveBalances = mysqlTable("hr_leave_balances", {
 ]);
 
 export const hrLeaveRequests = mysqlTable("hr_leave_requests", {
-	id: int().autoincrement().primaryKey().notNull(),
-	organizationId: int().notNull(),
-	operatingUnitId: int(),
-	employeeId: int().notNull(),
-	leaveType: mysqlEnum(['annual','sick','maternity','paternity','unpaid','compassionate','study','other']).notNull(),
-	// you can use { mode: 'date' }, if you want to have Date as type for this column
-	startDate: date({ mode: 'string' }).notNull(),
-	// you can use { mode: 'date' }, if you want to have Date as type for this column
-	endDate: date({ mode: 'string' }).notNull(),
-	totalDays: decimal({ precision: 5, scale: 1 }).notNull(),
-	reason: text(),
-	attachmentUrl: text(),
-	status: mysqlEnum(['pending','approved','rejected','cancelled']).default('pending').notNull(),
-	approvedBy: int(),
-	approvedAt: timestamp({ mode: 'string' }),
-	rejectionReason: text(),
-	balanceBefore: decimal({ precision: 5, scale: 1 }),
-	balanceAfter: decimal({ precision: 5, scale: 1 }),
-	notes: text(),
-	isDeleted: tinyint().default(0).notNull(),
-	deletedAt: timestamp({ mode: 'string' }),
-	deletedBy: int(),
-	createdAt: timestamp({ mode: 'string' }).defaultNow().notNull(),
-	updatedAt: timestamp({ mode: 'string' }).defaultNow().onUpdateNow().notNull(),
+  id: int().autoincrement().primaryKey().notNull(),
+  organizationId: int().notNull(),
+  operatingUnitId: int(),
+  employeeId: int().notNull(),
+
+  leaveType: mysqlEnum([
+    'annual',
+    'sick',
+    'maternity',
+    'paternity',
+    'unpaid',
+    'compassionate',
+    'study',
+    'other'
+  ]).notNull(),
+
+  startDate: date({ mode: 'string' }).notNull(),
+  endDate: date({ mode: 'string' }).notNull(),
+  totalDays: decimal({ precision: 5, scale: 1 }).notNull(),
+
+  reason: text(),
+  attachmentUrl: text(),
+
+  status: mysqlEnum([
+    'draft',
+    'pending',
+    'approved',
+    'rejected',
+    'cancelled'
+  ]).default('draft').notNull(),
+
+  submittedAt: timestamp({ mode: 'string' }),
+
+  approvedBy: int(),
+  approvedAt: timestamp({ mode: 'string' }),
+
+  rejectedBy: int(),
+  rejectedAt: timestamp({ mode: 'string' }),
+  rejectionReason: text(),
+
+  lastStatusUpdatedAt: timestamp({ mode: 'string' }),
+
+  balanceBefore: decimal({ precision: 5, scale: 1 }),
+  balanceAfter: decimal({ precision: 5, scale: 1 }),
+
+  notes: text(),
+
+  isDeleted: tinyint().default(0).notNull(),
+  deletedAt: timestamp({ mode: 'string' }),
+  deletedBy: int(),
+
+  createdAt: timestamp({ mode: 'string' }).defaultNow().notNull(),
+  updatedAt: timestamp({ mode: 'string' })
+    .defaultNow()
+    .onUpdateNow()
+    .notNull(),
 });
+/**
+ * HR Employee Annual Leave Schema
+ */
+export const hrEmployeeAnnualLeave = mysqlTable(
+  'hr_employee_annual_leave',
+  {
+    id: int('id').primaryKey().autoincrement(),
+
+    organizationId: int('organizationId').notNull(),
+    operatingUnitId: int('operatingUnitId').notNull(),
+
+    employeeId: int('employeeId').notNull(),
+    year: int('year').notNull(),
+
+    annualEntitlement: decimal('annualEntitlement', {
+      precision: 5,
+      scale: 2,
+    }).notNull().default('30.00'),
+
+    monthlyAccrualRate: decimal('monthlyAccrualRate', {
+      precision: 5,
+      scale: 2,
+    }).notNull().default('2.50'),
+
+    carryForwardDays: decimal('carryForwardDays', {
+      precision: 5,
+      scale: 2,
+    }).notNull().default('0'),
+
+    notes: text('notes'),
+
+    createdAt: timestamp({ mode: 'string' })
+      .defaultNow()
+      .notNull(),
+
+    updatedAt: timestamp({ mode: 'string' })
+      .defaultNow()
+      .onUpdateNow()
+      .notNull(),
+
+    isDeleted: tinyint('isDeleted')
+      .notNull()
+      .default(0),
+  },
+  (table) => ({
+    uniqueEmployeeYear: index('uk_employee_annual_leave_year').on(
+      table.employeeId,
+      table.year,
+      table.organizationId,
+      table.operatingUnitId
+    ),
+
+    orgYearIdx: index('idx_organization_year').on(
+      table.organizationId,
+      table.year
+    ),
+
+    employeeYearIdx: index('idx_employee_year').on(
+      table.employeeId,
+      table.year
+    ),
+
+    isDeletedIdx: index('idx_is_deleted').on(
+      table.isDeleted
+    ),
+
+    orgActiveIdx: index(
+      'idx_hr_employee_annual_leave_org_active'
+    ).on(
+      table.organizationId,
+      table.isDeleted
+    ),
+
+    orgOuActiveIdx: index(
+      'idx_hr_employee_annual_leave_org_ou_active'
+    ).on(
+      table.organizationId,
+      table.operatingUnitId,
+      table.isDeleted
+    ),
+  })
+);
 
 export const hrRecruitmentCandidates = mysqlTable("hr_recruitment_candidates", {
 	id: int().autoincrement().primaryKey().notNull(),
@@ -3115,32 +3236,69 @@ export const hrRecruitmentAuditLog = mysqlTable("hr_recruitment_audit_log", {
     operatingUnitId: int(),
 });
 
-export const hrSalaryGrades = mysqlTable("hr_salary_grades", {
-	id: int().autoincrement().primaryKey().notNull(),
-	organizationId: int().notNull(),
-	gradeCode: varchar({ length: 50 }).notNull(),
-	gradeName: varchar({ length: 100 }).notNull(),
-	gradeNameAr: varchar({ length: 100 }),
-	minSalary: decimal({ precision: 15, scale: 2 }).notNull(),
-	maxSalary: decimal({ precision: 15, scale: 2 }).notNull(),
-	midSalary: decimal({ precision: 15, scale: 2 }),
-	currency: varchar({ length: 10 }).default('USD'),
-	steps: text(),
-	housingAllowance: decimal({ precision: 15, scale: 2 }),
-	transportAllowance: decimal({ precision: 15, scale: 2 }),
-	otherAllowances: text(),
-	// you can use { mode: 'date' }, if you want to have Date as type for this column
-	effectiveDate: date({ mode: 'string' }),
-	// you can use { mode: 'date' }, if you want to have Date as type for this column
-	expiryDate: date({ mode: 'string' }),
-	status: mysqlEnum(['active','inactive','draft']).default('active').notNull(),
-	notes: text(),
-	isDeleted: tinyint().default(0).notNull(),
-	deletedAt: timestamp({ mode: 'string' }),
-	deletedBy: int(),
-	createdAt: timestamp({ mode: 'string' }).defaultNow().notNull(),
-	updatedAt: timestamp({ mode: 'string' }).defaultNow().onUpdateNow().notNull(),
-});
+export const hrSalaryGrades = mysqlTable(
+  "hr_salary_grades",
+  {
+    id: int().autoincrement().primaryKey().notNull(),
+    organizationId: int().notNull(),
+    operatingUnitId: int(),
+
+    gradeCode: varchar({ length: 50 }).notNull(),
+    gradeName: varchar({ length: 100 }).notNull(),
+    gradeNameAr: varchar({ length: 100 }),
+
+    minSalary: decimal({ precision: 15, scale: 2 }).notNull(),
+    maxSalary: decimal({ precision: 15, scale: 2 }).notNull(),
+    midSalary: decimal({ precision: 15, scale: 2 }),
+
+    currency: varchar({ length: 10 }).default('USD'),
+
+    steps: text(),
+    housingAllowance: decimal({ precision: 15, scale: 2 }),
+    transportAllowance: decimal({ precision: 15, scale: 2 }),
+    otherAllowances: text(),
+
+    effectiveDate: date({ mode: 'string' }),
+    expiryDate: date({ mode: 'string' }),
+
+    status: mysqlEnum(['active','inactive','draft'])
+      .default('active')
+      .notNull(),
+
+    notes: text(),
+
+    isDeleted: tinyint().default(0).notNull(),
+    deletedAt: timestamp({ mode: 'string' }),
+    deletedBy: int(),
+
+    createdAt: timestamp({ mode: 'string' }).defaultNow().notNull(),
+    updatedAt: timestamp({ mode: 'string' }).defaultNow().onUpdateNow().notNull(),
+  },
+  (table) => ({
+    // Main HR filtering
+    orgOuActiveIdx: index(
+      "idx_hr_salary_grades_org_ou_active"
+    ).on(
+      table.organizationId,
+      table.operatingUnitId,
+      table.isDeleted
+    ),
+
+    // Grade lookup
+    gradeCodeIdx: index(
+      "idx_hr_salary_grades_code"
+    ).on(
+      table.gradeCode
+    ),
+
+    // Active grades
+    statusIdx: index(
+      "idx_hr_salary_grades_status"
+    ).on(
+      table.status
+    ),
+  })
+);
 
 export const hrSalaryScale = mysqlTable("hr_salary_scale", {
   id: int().autoincrement().primaryKey().notNull(),
@@ -4992,6 +5150,7 @@ export const pssSessions = mysqlTable("pss_sessions", {
 	caseId: int().notNull(),
 	projectId: int().notNull(),
 	organizationId: int().notNull(),
+	operatingUnitId: int(),
 	// you can use { mode: 'date' }, if you want to have Date as type for this column
 	sessionDate: date({ mode: 'string' }).notNull(),
 	sessionType: varchar({ length: 20 }).notNull(),
@@ -6463,6 +6622,7 @@ export const vendorDocuments = mysqlTable("vendor_documents", {
 	id: int().autoincrement().primaryKey().notNull(),
 	vendorId: int().notNull().references(() => vendors.id, { onDelete: "set null" } ),
 	organizationId: int().notNull().references(() => organizations.id, { onDelete: "set null" } ),
+	operatingUnitId: int(),
 	documentType: mysqlEnum(['registration_certificate','tax_certificate','bank_statement','insurance_certificate','quality_certification','framework_agreement','contract','compliance_document','other']).notNull(),
 	documentName: varchar({ length: 255 }).notNull(),
 	documentNumber: varchar({ length: 100 }),

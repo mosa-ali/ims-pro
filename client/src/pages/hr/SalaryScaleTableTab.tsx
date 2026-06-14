@@ -591,7 +591,7 @@ export function SalaryScaleTableTab() {
    ? selectedRecord.createdAt
    : selectedRecord.createdAt?.toISOString?.() || new Date().toISOString(),
  createdBy: 'System',
- isLocked: (selectedRecord.isLocked as number) === 1,
+ isLocked: (selectedRecord.isLocked as number) === '',
  usedInPayroll: selectedRecord.usedInPayroll,
  currency: selectedRecord.currency || 'USD',
  }}

@@ -18,16 +18,14 @@ import { Link } from 'wouter';
  * ============================================================================
  */
 
-import { Link } from 'wouter';
 import { useState, useEffect } from 'react';
 import { BarChart3, Users, DollarSign, Calendar, UserCheck, AlertTriangle, Download, FileText, TrendingUp } from 'lucide-react';
 import { useNavigate } from '@/lib/router-compat';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { staffService } from '@/app/services/hrService';
-import { leaveRequestService } from './leave/leaveService';
-import { vacancyService, candidateService } from './recruitment/recruitmentService';
+import { trpc } from '@/lib/trpc';
 import { useTranslation } from '@/i18n/useTranslation';
 import { BackButton } from "@/components/BackButton";
+import { StaffMember } from '@/types/hrTypes';
 
 type ReportCategory = 'workforce' | 'payroll' | 'leave' | 'recruitment' | 'compliance';
 
@@ -37,6 +35,7 @@ export function HRReports() {
  const navigate = useNavigate();
  const [activeCategory, setActiveCategory] = useState<ReportCategory>('workforce');
  const [dateFilter, setDateFilter] = useState<string>('');
+ const { data: allStaff = [] } = trpc.hrEmployees.getAll.useQuery({});
 
  const labels = {
  title: t.hrReports.reportsAnalytics,
@@ -73,7 +72,6 @@ export function HRReports() {
 
  // Calculate workforce statistics
  const getWorkforceStats = () => {
- const allStaff = staffService.getAll();
  const active = allStaff.filter(s => s.status === 'active');
  const archived = allStaff.filter(s => s.status === 'archived');
  const exited = allStaff.filter(s => s.status === 'exited');

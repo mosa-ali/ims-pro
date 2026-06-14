@@ -11,12 +11,32 @@
  */
 
 import { X, Printer, Download } from 'lucide-react';
-import { PayrollSheet } from '@/app/services/hrService';
 import { exportPayrollToExcel } from '@/app/utils/excelExport';
 import { getOrganizationSettings } from '@/app/services/organizationService';
 import { ModalOverlay } from '@/app/components/ui/ModalOverlay';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useTranslation } from '@/i18n/useTranslation';
+
+interface PayrollSheet {
+ id: string;
+ month: string;
+ year: string;
+ monthName: string;
+ records: any[];
+ totalBasicSalary: number;
+ totalGrossSalary: number;
+ totalDeductions: number;
+ totalNetSalary: number;
+ preparedBy: string;
+ preparedByTitle?: string;
+ approvedBy?: string;
+ approvedByTitle?: string;
+ status: 'draft' | 'submitted' | 'approved';
+ createdAt: string;
+ updatedAt: string;
+ createdBy?: string;
+}
+
 
 interface Props {
  isOpen: boolean;
@@ -225,7 +245,7 @@ export function PayrollViewModal({
  <span className="font-semibold">{labels.refNo}:</span> PAY-{payroll.year}-{String(payroll.month).padStart(2, '0')}
  </div>
  <div>
- <span className="font-semibold">{labels.status}:</span> {t[payroll.status as keyof typeof t]}
+ <span className="font-semibold">{labels.status}:</span>
  </div>
  </div>
  </div>
@@ -252,7 +272,6 @@ export function PayrollViewModal({
  <div>
  <span className="text-gray-600">{labels.status}:</span>
  <span className={`ms-2 inline-block px-2 py-1 rounded border text-xs font-medium ${getStatusColor(payroll.status)}`}>
- {t[payroll.status as keyof typeof t]}
  </span>
  </div>
  </div>

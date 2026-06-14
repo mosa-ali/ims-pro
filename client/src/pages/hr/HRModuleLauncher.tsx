@@ -44,14 +44,20 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { useTranslation } from '@/i18n/useTranslation';
 import { BackButton } from "@/components/BackButton";
 
+interface LocalizedText {
+  en: string;
+  ar: string;
+  it: string;
+}
+
 interface HRModule {
- id: string;
- name: { en: string; ar: string };
- description: { en: string; ar: string };
- icon: any;
- path: string;
- status: 'active' | 'not-implemented' | 'restricted';
- badge?: { en: string; ar: string };
+  id: string;
+  name: LocalizedText;
+  description: LocalizedText;
+  icon: any;
+  path: string;
+  status: 'active' | 'not-implemented' | 'restricted';
+  badge?: LocalizedText;
 }
 
 export function HRModuleLauncher() {
@@ -75,112 +81,200 @@ export function HRModuleLauncher() {
  noAccess: t.hr.youDoNotHaveAccessTo,
  };
 
- const modules: HRModule[] = [
- {
- id: 'overview',
- name: { en: 'HR Overview', ar: 'نظرة عامة على الموارد البشرية' },
- description: { en: 'Dashboard with key HR metrics and statistics', ar: 'وحة تحكم مع مؤشرات وإحصاءات الموارد البشرية' },
- icon: BarChart3,
- path: '/organization/hr/overview',
- status: 'active'
- },
- {
- id: 'staff-dictionary',
- name: { en: 'Staff Dictionary', ar: 'سجل الموظفين' },
- description: { en: 'Complete staff registry with profiles and data', ar: 'سجل كامل للموظفين مع الملفات الشخصية والبيانات' },
- icon: Users,
- path: '/organization/hr/staff-dictionary',
- status: 'active'
- },
- {
- id: 'salary-scale',
- name: { en: 'Salary Scale', ar: 'سلم الرواتب' },
- description: { en: 'Grade-based salary structure and approvals', ar: 'هيكل الرواتب القائم على الدرجات والموافقات' },
- icon: DollarSign,
- path: '/organization/hr/salary-scale',
- status: 'active'
- },
- {
- id: 'payroll',
- name: { en: 'Payroll & Allowances', ar: 'الرواتب والبدلات' },
- description: { en: 'Monthly payroll sheets and salary processing', ar: 'كشوف الرواتب الشهرية ومعالجة الأجور' },
- icon: Wallet,
- path: '/organization/hr/payroll',
- status: 'active'
- },
- {
- id: 'contracts',
- name: { en: 'Employees Profiles', ar: 'ملفات الموظفين' },
- description: { en: 'Complete employee lifecycle management from hire to exit', ar: 'إدارة دورة حياة الموظف الكاملة من التوظيف حتى المغادرة' },
- icon: UserCheck,
- path: '/organization/hr/employees-profiles',
- status: 'active'
- },
- {
- id: 'sanctions',
- name: { en: 'Sanctions & Disciplinary', ar: 'العقوبات والإجراءات التأديبية' },
- description: { en: 'Complete disciplinary case management from allegation to closure', ar: 'إدارة القضايا التأديبية الكاملة من الادعاء إلى الإغلاق' },
- icon: AlertTriangle,
- path: '/organization/hr/sanctions',
- status: 'active'
- },
- {
- id: 'leave',
- name: { en: 'Leave Management', ar: 'إدارة الإجازات' },
- description: { en: 'Leave requests, approvals, and balances', ar: 'طلبات الإجازات والموافقات والأرصدة' },
- icon: Calendar,
- path: '/organization/hr/leave',
- status: 'active'
- },
- {
- id: 'attendance',
- name: { en: 'Attendance & Time', ar: 'الحضور والوقت' },
- description: { en: 'Time tracking, attendance, and work hours', ar: 'تتبع الوقت والحضور وساعات العمل' },
- icon: Clock,
- path: '/organization/hr/attendance',
- status: 'active'
- },
- {
- id: 'recruitment',
- name: { en: 'Recruitment', ar: 'التوظيف' },
- description: { en: 'Job postings, applicants, and hiring process', ar: 'إعلانات الوظائف والمتقدمين وعملية التوظيف' },
- icon: UserCheck,
- path: '/organization/hr/recruitment',
- status: 'active'
- },
- {
- id: 'annual-plan',
- name: { en: 'HR Annual Plan', ar: 'الخطة السنوية للموارد البشرية' },
- description: { en: 'Strategic workforce planning, recruitment forecasting, and budget estimation', ar: 'التخطيط الاستراتيجي للقوى العاملة والتنبؤ بالتوظيف وتقدير الميزانية' },
- icon: ClipboardList,
- path: '/organization/hr/annual-plan',
- status: 'active'
- },
- {
- id: 'documents',
- name: { en: 'HR Documents', ar: 'مستندات الموارد البشرية' },
- description: { en: 'Policies, templates, and HR documentation', ar: 'السياسات والنماذج ووثائق الموارد البشرية' },
- icon: FolderOpen,
- path: '/organization/hr/documents',
- status: 'active'
- },
- {
- id: 'reports',
- name: { en: 'Reports & Analytics', ar: 'التقارير والتحليلات' },
- description: { en: 'Management and audit-ready HR insights', ar: 'رؤى الموارد البشرية الإدارية وجاهزة للتدقيق' },
- icon: BarChart3,
- path: '/organization/hr/reports',
- status: 'active'
- },
- {
- id: 'settings',
- name: { en: 'HR Settings', ar: 'إعدادات الموارد البشرية' },
- description: { en: 'Configure HR policies, rules, and preferences', ar: 'تكوين سياسات وقواعد وتفضيلات الموارد البشرية' },
- icon: Settings,
- path: '/organization/hr/settings',
- status: 'active'
- }
- ];
+const modules: HRModule[] = [
+  {
+    id: 'overview',
+    name: {
+      en: 'HR Overview',
+      ar: 'نظرة عامة على الموارد البشرية',
+      it: 'Panoramica HR',
+    },
+    description: {
+      en: 'Dashboard with key HR metrics and statistics',
+      ar: 'لوحة تحكم مع مؤشرات وإحصاءات الموارد البشرية',
+      it: 'Dashboard con metriche e statistiche chiave delle risorse umane',
+    },
+    icon: BarChart3,
+    path: '/organization/hr/overview',
+    status: 'active',
+  },
+  {
+    id: 'staff-dictionary',
+    name: {
+      en: 'Staff Dictionary',
+      ar: 'سجل الموظفين',
+      it: 'Registro del Personale',
+    },
+    description: {
+      en: 'Complete staff registry with profiles and data',
+      ar: 'سجل كامل للموظفين مع الملفات الشخصية والبيانات',
+      it: 'Registro completo del personale con profili e dati',
+    },
+    icon: Users,
+    path: '/organization/hr/staff-dictionary',
+    status: 'active',
+  },
+  {
+    id: 'salary-scale',
+    name: {
+      en: 'Salary Scale',
+      ar: 'سلم الرواتب',
+      it: 'Scala Salariale',
+    },
+    description: {
+      en: 'Grade-based salary structure and approvals',
+      ar: 'هيكل الرواتب القائم على الدرجات والموافقات',
+      it: 'Struttura salariale basata sui livelli e relative approvazioni',
+    },
+    icon: DollarSign,
+    path: '/organization/hr/salary-scale',
+    status: 'active',
+  },
+  {
+    id: 'payroll',
+    name: {
+      en: 'Payroll & Allowances',
+      ar: 'الرواتب والبدلات',
+      it: 'Buste Paga e Indennità',
+    },
+    description: {
+      en: 'Monthly payroll sheets and salary processing',
+      ar: 'كشوف الرواتب الشهرية ومعالجة الأجور',
+      it: 'Elaborazione delle buste paga mensili e degli stipendi',
+    },
+    icon: Wallet,
+    path: '/organization/hr/payroll',
+    status: 'active',
+  },
+  {
+    id: 'contracts',
+    name: {
+      en: 'Employees Profiles',
+      ar: 'ملفات الموظفين',
+      it: 'Profili dei Dipendenti',
+    },
+    description: {
+      en: 'Complete employee lifecycle management from hire to exit',
+      ar: 'إدارة دورة حياة الموظف الكاملة من التوظيف حتى المغادرة',
+      it: 'Gestione completa del ciclo di vita del dipendente dall’assunzione all’uscita',
+    },
+    icon: UserCheck,
+    path: '/organization/hr/employees-profiles',
+    status: 'active',
+  },
+  {
+    id: 'sanctions',
+    name: {
+      en: 'Sanctions & Disciplinary',
+      ar: 'العقوبات والإجراءات التأديبية',
+      it: 'Sanzioni e Procedimenti Disciplinari',
+    },
+    description: {
+      en: 'Complete disciplinary case management from allegation to closure',
+      ar: 'إدارة القضايا التأديبية الكاملة من الادعاء إلى الإغلاق',
+      it: 'Gestione completa dei procedimenti disciplinari dalla segnalazione alla chiusura',
+    },
+    icon: AlertTriangle,
+    path: '/organization/hr/sanctions',
+    status: 'active',
+  },
+  {
+    id: 'leave',
+    name: {
+      en: 'Leave Management',
+      ar: 'إدارة الإجازات',
+      it: 'Gestione dei Congedi',
+    },
+    description: {
+      en: 'Leave requests, approvals, and balances',
+      ar: 'طلبات الإجازات والموافقات والأرصدة',
+      it: 'Richieste di congedo, approvazioni e saldi disponibili',
+    },
+    icon: Calendar,
+    path: '/organization/hr/leave',
+    status: 'active',
+  },
+  {
+    id: 'attendance',
+    name: {
+      en: 'Attendance & Time',
+      ar: 'الحضور والوقت',
+      it: 'Presenze e Orario',
+    },
+    description: {
+      en: 'Time tracking, attendance, and work hours',
+      ar: 'تتبع الوقت والحضور وساعات العمل',
+      it: 'Monitoraggio del tempo, presenze e ore lavorative',
+    },
+    icon: Clock,
+    path: '/organization/hr/attendance',
+    status: 'active',
+  },
+  {
+    id: 'recruitment',
+    name: {
+      en: 'Recruitment',
+      ar: 'التوظيف',
+      it: 'Reclutamento',
+    },
+    description: {
+      en: 'Job postings, applicants, and hiring process',
+      ar: 'إعلانات الوظائف والمتقدمين وعملية التوظيف',
+      it: 'Offerte di lavoro, candidati e processo di assunzione',
+    },
+    icon: UserCheck,
+    path: '/organization/hr/recruitment',
+    status: 'active',
+  },
+  {
+    id: 'annual-plan',
+    name: {
+      en: 'HR Annual Plan',
+      ar: 'الخطة السنوية للموارد البشرية',
+      it: 'Piano Annuale HR',
+    },
+    description: {
+      en: 'Strategic workforce planning, recruitment forecasting, and budget estimation',
+      ar: 'التخطيط الاستراتيجي للقوى العاملة والتنبؤ بالتوظيف وتقدير الميزانية',
+      it: 'Pianificazione strategica della forza lavoro, previsioni di reclutamento e stima del budget',
+    },
+    icon: ClipboardList,
+    path: '/organization/hr/annual-plan',
+    status: 'active',
+  },
+  {
+    id: 'reports',
+    name: {
+      en: 'Reports & Analytics',
+      ar: 'التقارير والتحليلات',
+      it: 'Report e Analisi',
+    },
+    description: {
+      en: 'Management and audit-ready HR insights',
+      ar: 'رؤى الموارد البشرية الإدارية وجاهزة للتدقيق',
+      it: 'Analisi HR per la gestione e pronte per gli audit',
+    },
+    icon: BarChart3,
+    path: '/organization/hr/reports',
+    status: 'active',
+  },
+  {
+    id: 'settings',
+    name: {
+      en: 'HR Settings',
+      ar: 'إعدادات الموارد البشرية',
+      it: 'Impostazioni HR',
+    },
+    description: {
+      en: 'Configure HR policies, rules, and preferences',
+      ar: 'تكوين سياسات وقواعد وتفضيلات الموارد البشرية',
+      it: 'Configura politiche, regole e preferenze delle risorse umane',
+    },
+    icon: Settings,
+    path: '/organization/hr/settings',
+    status: 'active',
+  },
+];
 
  const handleModuleClick = (module: HRModule) => {
  if (module.status === 'active') {

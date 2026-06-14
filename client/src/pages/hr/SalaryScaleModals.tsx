@@ -12,6 +12,9 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { trpc } from '@/lib/trpc';
 import { toast } from 'sonner';
 import { calculateAllowanceValue } from '@/utils/salary';
+import { useOrganization } from '@/contexts/OrganizationContext';
+import { useOperatingUnit } from '@/contexts/OperatingUnitContext';
+
 
 // ============================================================================
 // TYPES
@@ -22,24 +25,24 @@ type SalaryGrade = {
   organizationId: number;
   gradeCode: string;
   gradeName: string;
-  gradeNameAr?: string;
+  gradeNameAr?: string | null;
   minSalary: string | number;
   maxSalary: string | number;
-  midSalary?: string | number;
-  steps?: string;
-  currency: string;
-  housingAllowance?: string | number;
-  transportAllowance?: string | number;
-  otherAllowances?: string;
-  effectiveDate?: string;
-  expiryDate?: string;
+  midSalary?: string | number | null;
+  steps?: string | null;
+  currency?: string | null;
+  housingAllowance?: string | number | null;
+  transportAllowance?: string | number | null;
+  otherAllowances?: string | null;
+  effectiveDate?: string | null;
+  expiryDate?: string | null;
   status: 'active' | 'inactive' | 'draft';
-  notes?: string;
+  notes?: string | null;
   isDeleted: number;
   createdAt?: string;
   updatedAt?: string;
-  deletedAt?: string;
-  deletedBy?: number;
+  deletedAt?: string | null;
+  deletedBy?: number | null;
 };
 
 type SalaryScaleRecord = {
@@ -104,6 +107,8 @@ export function EditSalaryModal({
 }: EditSalaryModalProps) {
   const { t } = useTranslation();
   const { data: grades = [] } = trpc.hrSalaryGrades.getAll.useQuery();
+  const { currentOrganizationId } = useOrganization();
+  const { currentOperatingUnitId } = useOperatingUnit();
   
   const [formData, setFormData] = useState({
     grade: record.grade,
@@ -121,12 +126,12 @@ export function EditSalaryModal({
     effectiveStartDate: record.effectiveStartDate
   });
 
-  const selectedGrade = grades.find((g: SalaryGrade) => g.gradeCode === formData.grade);
+  const selectedGrade = grades.find((g) => (g as SalaryGrade).gradeCode === formData.grade) as SalaryGrade | undefined;
   const minSalary = Number(selectedGrade?.minSalary) || 0;
   const maxSalary = Number(selectedGrade?.maxSalary) || 0;
 
   const handleGradeChange = (newGrade: string) => {
-    const grade = grades.find((g: SalaryGrade) => g.gradeCode === newGrade);
+    const grade = grades.find((g) => (g as SalaryGrade).gradeCode === newGrade) as SalaryGrade | undefined;
     const steps = grade?.steps ? JSON.parse(grade.steps) : [];
     setFormData({
       ...formData,
@@ -221,11 +226,14 @@ export function EditSalaryModal({
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 >
                   {grades.length > 0 ? (
-                    grades.map((g: SalaryGrade) => (
-                      <option key={g.id} value={g.gradeCode}>
-                        {g.gradeCode} - {g.gradeName}
-                      </option>
-                    ))
+                    grades.map((g) => {
+                      const grade = g as SalaryGrade;
+                      return (
+                        <option key={grade.id} value={grade.gradeCode}>
+                          {grade.gradeCode} - {grade.gradeName}
+                        </option>
+                      );
+                    })
                   ) : (
                     <option value="">No grades available</option>
                   )}
@@ -337,7 +345,7 @@ export function EditSalaryModal({
 // ============================================================================
 
 interface SalaryHistoryModalProps {
-  staffId: string;
+  employeeId: number;
   staffName: string;
   language: string;
   isRTL: boolean;
@@ -345,15 +353,17 @@ interface SalaryHistoryModalProps {
 }
 
 export function SalaryHistoryModal({
-  staffId,
+  employeeId,
   staffName,
   language,
   isRTL,
   onClose
 }: SalaryHistoryModalProps) {
   const { t } = useTranslation();
-  const { data: history = [], isLoading } = trpc.hrSalaryScale.getHistoryByStaffId.useQuery({ staffId });
-
+  const { data: history = [], isLoading } = trpc.hrSalaryScale.getHistoryByEmployeeId.useQuery({
+  id: employeeId
+});
+  
   const localT = {
     title: t.hr?.salaryHistory || 'Salary History',
     for: t.hr?.for || 'for',
@@ -394,7 +404,7 @@ export function SalaryHistoryModal({
             </div>
           ) : (
             <div className="space-y-4">
-              {history.map((record: SalaryScaleRecord) => {
+              {history.map((record) => {
                 const salaryAmount = typeof record.approvedGrossSalary === 'string'
                   ? parseFloat(record.approvedGrossSalary)
                   : record.approvedGrossSalary;
@@ -430,7 +440,7 @@ export function SalaryHistoryModal({
                     <div className="grid grid-cols-4 gap-4 text-sm">
                       <div>
                         <span className="text-gray-600">{localT.grade}:</span>
-                        <span className="font-medium ms-2">{record.grade}</span>
+                        <span className="font-medium ms-2">{record.gradeCode}</span>
                       </div>
                       <div>
                         <span className="text-gray-600">{localT.step}:</span>
@@ -494,7 +504,7 @@ export function AddGradeModal({
 
   const createMutation = trpc.hrSalaryGrades.create.useMutation({
     onSuccess: () => {
-      toast.success(t.hr?.gradeAddedSuccessfully || 'Grade added successfully');
+      toast.success(t.hrModals?.gradeAddedSuccessfully || 'Grade added successfully');
       onSave();
       onClose();
     },
@@ -641,7 +651,7 @@ export function ManageGradesModal({
   const { data: grades = [], isLoading } = trpc.hrSalaryGrades.getAll.useQuery();
   const deleteMutation = trpc.hrSalaryGrades.delete.useMutation({
     onSuccess: () => {
-      toast.success(localT.gradeDeletedSuccessfully || 'Grade deleted successfully');
+      toast.success(t.hrModals.gradeDeletedSuccessfully || 'Grade deleted successfully');
       onSave();
     },
     onError: (error: any) => {
@@ -659,7 +669,7 @@ export function ManageGradesModal({
     title: t.hr?.manageGrades || 'Manage Grades',
     noGrades: t.hr?.noGradesFound || 'No grades found',
     gradeCode: t.hr?.gradeCode || 'Grade Code',
-    gradeName: t.hrModals.gradeName || 'Grade Name',
+    gradeName: t.hr?.gradeName || 'Grade Name',
     minSalary: t.hr?.minimumSalary || 'Min Salary',
     maxSalary: t.hr?.maximumSalary || 'Max Salary',
     action: t.hr?.actions || 'Action',

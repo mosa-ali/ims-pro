@@ -124,7 +124,7 @@ export function RecentActivityFeed({
  <div className="flex items-center gap-3 mt-1.5 text-xs text-gray-500">
  <span className="font-medium">{activity.userName}</span>
  <span>•</span>
- <span>{formatDistanceToNow(new Date(activity.timestamp), { addSuffix: true })}</span>
+ <span>{formatDistanceToNow(new Date().toISOString().slice(0, 19).replace('T', ' '), { addSuffix: true })}</span>
  </div>
  </div>
  </div>

@@ -42,10 +42,12 @@ import {
  Eye,
  Printer,
  ArrowLeft,
- ArrowRight
+ ArrowRight,
+ X
 } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useTranslation } from '@/i18n/useTranslation';
+import { hrAnnualLeaveTranslations } from '@/i18n/hrAnnualLeave-i18n';
 import { BackButton } from "@/components/BackButton";
 
 // tRPC hooks
@@ -61,17 +63,21 @@ import {
 } from '@/hooks/useLeave';
 
 // Types
-import { LeaveRequest, LeaveBalance } from './leave/types';
-import type { StaffMember } from '@/app/services/hrService';
+import { LeaveRequest, LeaveBalance, LeaveStatus } from './leave/types';
+import type { StaffMember } from './types/hrTypes';
 
 // Components
 import { LeaveRequestForm } from './leave/LeaveRequestForm';
 import { LeaveBalancesView } from './leave/LeaveBalancesView';
 import { LeaveRequestPrint } from './leave/LeaveRequestPrint';
+import { EmployeeSelector } from './leave/EmployeeSelector';
+import { EmployeesAnnualLeaveView } from './leave/EmployeesAnnualLeaveView';
 import { emailNotificationService } from './leave/emailNotificationService';
+import { useOrganization } from '@/contexts/OrganizationContext';
+import { useOperatingUnit } from '@/contexts/OperatingUnitContext';
 
-// Services
-import { staffService } from '@/app/services/hrService';
+// tRPC
+import { trpc } from '@/lib/trpc';
 
 export function LeaveManagement() {
  const { t } = useTranslation();
@@ -87,12 +93,19 @@ export function LeaveManagement() {
  const [filterType, setFilterType] = useState('');
  const [filterStatus, setFilterStatus] = useState('');
  const [showEmployeeSelector, setShowEmployeeSelector] = useState(false);
-
- // Get current user (mock - in real app would come from auth)
- const currentUser = staffService.getAll().find(s => s.status === 'active') || null;
+ const [showRejectModal, setShowRejectModal] = useState(false);
+ const [rejectingRequest, setRejectingRequest] = useState<LeaveRequest | null>(null);
+ const [rejectionReason, setRejectionReason] = useState('');
+  const { currentOrganization } = useOrganization();
+  const organizationId = currentOrganization?.id || 0;
+  const operatingUnitId = useOperatingUnit();
+ 
+ // Get current user from auth (will be implemented with proper auth context)
+ // For now, we rely on the tRPC context to provide the current user
+ const currentUser = null; // TODO: Get from useAuth() hook
 
  // New state for balances tab
- const [activeMainTab, setActiveMainTab] = useState<'requests' | 'balances'>('balances');
+ const [activeMainTab, setActiveMainTab] = useState<'requests' | 'balances' | 'approved' | 'annualLeave'>('balances');
  const [filteredBalances, setFilteredBalances] = useState<LeaveBalance[]>([]);
  const [balanceSearchTerm, setBalanceSearchTerm] = useState('');
  
@@ -121,9 +134,9 @@ export function LeaveManagement() {
 
  // Tab filter
  if (activeTab === 'pending') {
- filtered = filtered.filter(r => r.status === 'Submitted');
+ filtered = filtered.filter(r => r.status === 'pending');
  } else if (activeTab === 'approved') {
- filtered = filtered.filter(r => r.status === 'Approved');
+ filtered = filtered.filter(r => r.status === 'approved');
  }
 
  // Search filter
@@ -167,53 +180,73 @@ export function LeaveManagement() {
  setShowRequestForm(true);
  };
 
- const handleApprove = (requestId: string) => {
+ const handleApprove = (request: LeaveRequest) => {
  if (confirm(t.hrLeave.areYouSureYouWantTo)) {
  approveRequest(
-   { id: parseInt(requestId) },
+   { id: parseInt(request.id as any) },
    {
      onSuccess: () => {
        refetchRequests();
-       // Send notification
-       const updatedRequest = requests.find(r => r.id === parseInt(requestId));
-       if (updatedRequest) {
-         emailNotificationService.notifyLeaveRequestApproved(updatedRequest);
-       }
+       emailNotificationService.notifyLeaveRequestApproved(request);
      },
    }
  );
  }
  };
 
- const handleReject = (requestId: string) => {
- const reason = prompt(t.hrLeave.pleaseProvideAReasonForRejection);
- if (reason) {
+ const handleRejectClick = (request: LeaveRequest) => {
+ setRejectingRequest(request);
+ setRejectionReason('');
+ setShowRejectModal(true);
+ };
+
+ const handleRejectSubmit = () => {
+ if (!rejectingRequest || !rejectionReason.trim()) {
+ alert(t.hrLeave.pleaseProvideAReasonForRejection);
+ return;
+ }
+
  rejectRequest(
-   { id: parseInt(requestId), rejectionReason: reason },
+   { id: parseInt(rejectingRequest.id as any), rejectionReason: rejectionReason },
    {
      onSuccess: () => {
        refetchRequests();
-       // Send notification
-       const updatedRequest = requests.find(r => r.id === parseInt(requestId));
-       if (updatedRequest) {
-         emailNotificationService.notifyLeaveRequestRejected(updatedRequest);
-       }
+       setShowRejectModal(false);
+       setRejectingRequest(null);
+       setRejectionReason('');
+       emailNotificationService.notifyLeaveRequestRejected(rejectingRequest);
      },
    }
  );
- }
  };
 
  const handleEdit = (request: LeaveRequest) => {
- // Find the employee for this request
- const employee = staffService.getByStaffId(request.staffId);
- if (!employee) {
- alert(t.hrLeave.noActiveEmployeeFound);
- return;
- }
+ // Create a minimal employee object from request data
+ // In production, this would fetch the full employee via tRPC
+ const minimalEmployee: StaffMember = {
+ id: String(request.employeeId),
+ staffId: request.staffId,
+ fullName: request.staffName,
+ jobTitle: request.position,
+ department: request.department,
+ status: 'active',
+ email: '',
+ phone: '',
+ gender: 'other',
+ dateOfBirth: '',
+ nationality: '',
+ contractStartDate: '',
+ contractEndDate: '',
+ employmentType: 'full-time',
+ reportingTo: null,
+ createdAt: new Date().toISOString().slice(0, 19).replace('T', ' '),
+ updatedAt: new Date().toISOString().slice(0, 19).replace('T', ' '),
+ organizationId: 0,
+ operatingUnitId: 0,
+ };
  
  setEditingRequest(request);
- setSelectedEmployee(employee);
+ setSelectedEmployee(minimalEmployee);
  setShowRequestForm(true);
  };
 
@@ -232,22 +265,38 @@ export function LeaveManagement() {
  }
  };
 
- const getStatusColor = (status: string) => {
- switch (status) {
- case 'Draft': return 'bg-gray-100 text-gray-700 border-gray-200';
- case 'Submitted': return 'bg-yellow-100 text-yellow-700 border-yellow-200';
- case 'Approved': return 'bg-green-100 text-green-700 border-green-200';
- case 'Rejected': return 'bg-red-100 text-red-700 border-red-200';
- default: return 'bg-gray-100 text-gray-700 border-gray-200';
- }
- };
+const getStatusColor = (status: LeaveStatus) => {
+  switch (status) {
+    case 'draft':
+      return 'bg-gray-100 text-gray-700';
+
+    case 'pending':
+      return 'bg-yellow-100 text-yellow-700';
+
+    case 'approved':
+      return 'bg-green-100 text-green-700';
+
+    case 'rejected':
+      return 'bg-red-100 text-red-700';
+
+    case 'cancelled':
+      return 'bg-gray-100 text-gray-700';
+
+    default:
+      return 'bg-gray-100 text-gray-700';
+  }
+};
 
  const getLeaveTypeColor = (type: string) => {
  switch (type) {
- case 'Annual Leave': return 'bg-blue-100 text-blue-700 border-blue-200';
- case 'Emergency Leave': return 'bg-orange-100 text-orange-700 border-orange-200';
- case 'Sick Leave': return 'bg-red-100 text-red-700 border-red-200';
- case 'Other Leave': return 'bg-purple-100 text-purple-700 border-purple-200';
+ case 'annual': return 'bg-blue-100 text-blue-700 border-blue-200';
+ case 'sick': return 'bg-red-100 text-red-700 border-red-200';
+ case 'maternity': return 'bg-pink-100 text-pink-700 border-pink-200';
+ case 'paternity': return 'bg-indigo-100 text-indigo-700 border-indigo-200';
+ case 'unpaid': return 'bg-orange-100 text-orange-700 border-orange-200';
+ case 'compassionate': return 'bg-purple-100 text-purple-700 border-purple-200';
+ case 'study': return 'bg-cyan-100 text-cyan-700 border-cyan-200';
+ case 'other': return 'bg-gray-100 text-gray-700 border-gray-200';
  default: return 'bg-gray-100 text-gray-700 border-gray-200';
  }
  };
@@ -301,6 +350,7 @@ export function LeaveManagement() {
  edit: t.hrLeave.edit,
  delete: t.hrLeave.delete,
  view: t.hrLeave.view,
+ print: 'Print',
  
  noRequests: t.hrLeave.noLeaveRequestsFound,
  noRequestsDesc: t.hrLeave.startByCreatingANewLeave,
@@ -316,12 +366,107 @@ export function LeaveManagement() {
  noEmployee: t.hrLeave.noActiveEmployeeFound,
  archivedBlocked: t.hrLeave.archivedOrExitedStaffCannotRequest,
  
- reason: t.hrLeave.reason
+ reason: t.hrLeave.reason,
+ rejectRequest: 'Reject Leave Request',
+ reasonForRejection: 'Reason for Rejection',
+ save: 'Save',
+ cancel: 'Cancel'
  };
 
  return (
  <div className="min-h-screen bg-gray-50 p-6" dir={isRTL ? 'rtl' : 'ltr'}>
  <div className="max-w-7xl mx-auto">
+ 
+ {/* Employee Selector Modal */}
+ {showEmployeeSelector && (
+ <EmployeeSelector
+ onSelect={handleEmployeeSelected}
+ onClose={() => setShowEmployeeSelector(false)}
+ />
+ )}
+
+ {/* Leave Request Form Modal */}
+ {showRequestForm && selectedEmployee && (
+ <LeaveRequestForm
+ employee={selectedEmployee}
+ language={language}
+ isRTL={isRTL}
+ onClose={() => {
+ setShowRequestForm(false);
+ setEditingRequest(null);
+ setSelectedEmployee(null);
+ }}
+ onSave={() => {
+ setShowRequestForm(false);
+ setEditingRequest(null);
+ setSelectedEmployee(null);
+ refetchRequests();
+ }}
+ editingRequest={editingRequest}
+ />
+ )}
+
+ {/* Reject Modal */}
+ {showRejectModal && rejectingRequest && (
+ <div className="fixed inset-0 bg-gray-900/30 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+ <div className="bg-white rounded-lg shadow-xl max-w-md w-full" dir={isRTL ? 'rtl' : 'ltr'}>
+ <div className="border-b border-gray-200 px-6 py-4 flex items-center justify-between">
+ <h2 className="text-lg font-semibold text-gray-900">{labels.rejectRequest}</h2>
+ <button
+ onClick={() => setShowRejectModal(false)}
+ className="text-gray-400 hover:text-gray-600"
+ >
+ <X className="w-5 h-5" />
+ </button>
+ </div>
+
+ <div className="p-6 space-y-4">
+ <div>
+ <p className="text-sm text-gray-600 mb-2">
+ {labels.reasonForRejection} <span className="text-red-600">*</span>
+ </p>
+ <textarea
+ value={rejectionReason}
+ onChange={(e) => setRejectionReason(e.target.value)}
+ rows={4}
+ className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+ placeholder="Enter reason for rejection..."
+ />
+ </div>
+ </div>
+
+ <div className="border-t border-gray-200 px-6 py-4 flex items-center justify-end gap-3">
+ <button
+ onClick={() => setShowRejectModal(false)}
+ className="px-4 py-2 text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-100"
+ >
+ {labels.cancel}
+ </button>
+ <button
+ onClick={handleRejectSubmit}
+ disabled={rejectPending}
+ className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:opacity-50"
+ >
+ {labels.reject}
+ </button>
+ </div>
+ </div>
+ </div>
+ )}
+
+ {/* Print Modal */}
+ {showPrintModal && printRequest && (
+ <LeaveRequestPrint
+ request={printRequest}
+ onClose={() => {
+ setShowPrintModal(false);
+ setPrintRequest(null);
+ }}
+ language={language}
+ isRTL={isRTL}
+ />
+ )}
+
  {/* Header */}
  <div className="mb-6">
  <BackButton href="/organization/hr" label={t.hrLeave.hrDashboard} />
@@ -406,147 +551,211 @@ export function LeaveManagement() {
  {labels.leaveBalances} ({balances.length})
  </button>
  <button
+ onClick={() => setActiveMainTab('annualLeave')}
+ className={`px-6 py-3 text-sm font-medium border-b-2 ${ activeMainTab === 'annualLeave' ? 'border-blue-600 text-blue-600' : 'border-transparent text-gray-600 hover:text-gray-900' }`}
+ >
+ {hrAnnualLeaveTranslations[language].annualLeaveView.title}
+ </button>
+ <button
  onClick={() => setActiveMainTab('requests')}
  className={`px-6 py-3 text-sm font-medium border-b-2 ${ activeMainTab === 'requests' ? 'border-blue-600 text-blue-600' : 'border-transparent text-gray-600 hover:text-gray-900' }`}
  >
- {labels.pendingLeave} ({stats.pending})
- </button>
- <button
- onClick={() => setActiveMainTab('approved')}
- className={`px-6 py-3 text-sm font-medium border-b-2 ${ activeMainTab === 'approved' ? 'border-blue-600 text-blue-600' : 'border-transparent text-gray-600 hover:text-gray-900' }`}
- >
- {labels.approvedLeave} ({stats.approved})
+ {labels.allLeave} ({requests.length})
  </button>
  </div>
  </div>
 
- {/* Content - Conditional based on active tab */}
- {activeMainTab === 'balances' ? (
+ {/* Tab Content */}
+ <div className="p-6">
+ {/* Balances Tab */}
+ {activeMainTab === 'balances' && (
  <LeaveBalancesView
  language={language}
  isRTL={isRTL}
- onRequestLeave={handleEmployeeSelected}
+ onRequestLeave={(employee) => {
+ setSelectedEmployee(employee);
+ setShowRequestForm(true);
+ }}
  />
- ) : (
+ )}
+
+ {/* Annual Leave Tab */}
+ {activeMainTab === 'annualLeave' && (
+ <EmployeesAnnualLeaveView
+ />
+ )}
+
+ {/* Requests Tab */}
+ {activeMainTab === 'requests' && (
  <>
- {/* Filters */}
- <div className="p-4 border-b border-gray-200">
- <div className="grid grid-cols-3 gap-4">
+ {/* Sub-tabs for requests */}
+ <div className="mb-4 border-b border-gray-200">
+ <div className="flex gap-4">
+ <button
+ onClick={() => setActiveTab('all')}
+ className={`pb-2 px-2 font-medium text-sm border-b-2 transition-colors ${
+ activeTab === 'all'
+ ? 'border-blue-600 text-blue-600'
+ : 'border-transparent text-gray-600 hover:text-gray-900'
+ }`}
+ >
+ {labels.allLeave}
+ </button>
+ <button
+ onClick={() => setActiveTab('pending')}
+ className={`pb-2 px-2 font-medium text-sm border-b-2 transition-colors ${
+ activeTab === 'pending'
+ ? 'border-blue-600 text-blue-600'
+ : 'border-transparent text-gray-600 hover:text-gray-900'
+ }`}
+ >
+ {labels.pendingLeave}
+ </button>
+ <button
+ onClick={() => setActiveTab('approved')}
+ className={`pb-2 px-2 font-medium text-sm border-b-2 transition-colors ${
+ activeTab === 'approved'
+ ? 'border-blue-600 text-blue-600'
+ : 'border-transparent text-gray-600 hover:text-gray-900'
+ }`}
+ >
+ {labels.approvedLeave}
+ </button>
+ </div>
+ </div>
+
+ {/* Search and Filters */}
+ <div className="mb-4 space-y-3">
  <input
  type="text"
  value={searchTerm}
  onChange={(e) => setSearchTerm(e.target.value)}
  placeholder={labels.search}
- className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+ className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
  />
+ <div className="grid grid-cols-2 gap-3">
  <select
  value={filterType}
  onChange={(e) => setFilterType(e.target.value)}
  className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
  >
  <option value="">{labels.allTypes}</option>
- <option value="Annual Leave">Annual Leave</option>
- <option value="Emergency Leave">Emergency Leave</option>
- <option value="Sick Leave">Sick Leave</option>
- <option value="Other Leave">Other Leave</option>
- </select>
- <select
- value={filterStatus}
- onChange={(e) => setFilterStatus(e.target.value)}
- className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
- >
- <option value="">{labels.allStatuses}</option>
- <option value="Draft">Draft</option>
- <option value="Submitted">Submitted</option>
- <option value="Approved">Approved</option>
- <option value="Rejected">Rejected</option>
+ <option value="annual">Annual Leave</option>
+ <option value="sick">Sick Leave</option>
+ <option value="maternity">Maternity Leave</option>
+ <option value="paternity">Paternity Leave</option>
+ <option value="unpaid">Unpaid Leave</option>
+ <option value="compassionate">Compassionate Leave</option>
+ <option value="study">Study Leave</option>
+ <option value="other">Other Leave</option>
  </select>
  </div>
  </div>
 
  {/* Table */}
  <div className="overflow-x-auto">
- {filteredRequests.length === 0 ? (
+ {requestsLoading ? (
  <div className="text-center py-12">
- <Calendar className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+ <Clock className="w-8 h-8 text-gray-400 mx-auto mb-4 animate-spin" />
+ <p className="text-gray-600 font-medium">Loading...</p>
+ </div>
+ ) : filteredRequests.length === 0 ? (
+ <div className="text-center py-12">
+ <FileText className="w-16 h-16 text-gray-300 mx-auto mb-4" />
  <p className="text-gray-600 font-medium">{labels.noRequests}</p>
- <p className="text-gray-500 text-sm">{labels.noRequestsDesc}</p>
+ <p className="text-gray-500 text-sm mt-1">{labels.noRequestsDesc}</p>
  </div>
  ) : (
- <table className="w-full text-sm">
+ <table className="w-full">
  <thead className="bg-gray-50 border-b border-gray-200">
  <tr>
- <th className="px-6 py-3 text-left font-semibold text-gray-900">{labels.staffId}</th>
- <th className="px-6 py-3 text-left font-semibold text-gray-900">{labels.name}</th>
- <th className="px-6 py-3 text-left font-semibold text-gray-900">{labels.position}</th>
- <th className="px-6 py-3 text-left font-semibold text-gray-900">{labels.leaveType}</th>
- <th className="px-6 py-3 text-left font-semibold text-gray-900">{labels.dates}</th>
- <th className="px-6 py-3 text-left font-semibold text-gray-900">{labels.days}</th>
- <th className="px-6 py-3 text-left font-semibold text-gray-900">{labels.status}</th>
- <th className="px-6 py-3 text-left font-semibold text-gray-900">{labels.actions}</th>
+ <th className="px-4 py-3 text-xs font-medium text-gray-600 uppercase text-start">{labels.staffId}</th>
+ <th className="px-4 py-3 text-xs font-medium text-gray-600 uppercase text-start">{labels.name}</th>
+ <th className="px-4 py-3 text-xs font-medium text-gray-600 uppercase text-start">{labels.leaveType}</th>
+ <th className="px-4 py-3 text-xs font-medium text-gray-600 uppercase text-start">{labels.dates}</th>
+ <th className="px-4 py-3 text-xs font-medium text-gray-600 uppercase text-center">{labels.days}</th>
+ <th className="px-4 py-3 text-xs font-medium text-gray-600 uppercase text-start">{labels.status}</th>
+ <th className="px-4 py-3 text-xs font-medium text-gray-600 uppercase text-start">{labels.actions}</th>
  </tr>
  </thead>
  <tbody className="divide-y divide-gray-200">
  {filteredRequests.map((request) => (
  <tr key={request.id} className="hover:bg-gray-50">
- <td className="px-6 py-4 text-gray-900 font-mono">{request.staffId}</td>
- <td className="px-6 py-4 text-gray-900">{request.staffName}</td>
- <td className="px-6 py-4 text-gray-600">{request.position}</td>
- <td className="px-6 py-4">
- <span className={`inline-block px-3 py-1 rounded-full text-xs font-semibold border ${getLeaveTypeColor(request.leaveType)}`}>
+ <td className="px-4 py-3 text-sm font-mono text-gray-900">{request.staffId}</td>
+ <td className="px-4 py-3 text-sm text-gray-900">{request.staffName}</td>
+ <td className="px-4 py-3 text-sm">
+ <span className={`inline-block px-2 py-1 rounded text-xs font-semibold border ${getLeaveTypeColor(request.leaveType || '')}`}>
  {request.leaveType}
  </span>
  </td>
- <td className="px-6 py-4 text-gray-600">
- {formatDate(request.startDate)} - {formatDate(request.endDate)}
+ <td className="px-4 py-3 text-sm text-gray-600">
+ {formatDate(request.startDate)} → {formatDate(request.endDate)}
  </td>
- <td className="px-6 py-4 text-gray-900 font-semibold">{request.totalDays}</td>
- <td className="px-6 py-4">
- <span className={`inline-block px-3 py-1 rounded-full text-xs font-semibold border ${getStatusColor(request.status)}`}>
+ <td className="px-4 py-3 text-sm text-center font-semibold text-gray-900">{request.totalDays}</td>
+ <td className="px-4 py-3 text-sm">
+ <span className={`inline-block px-2 py-1 rounded text-xs font-semibold border ${getStatusColor(request.status || '')}`}>
  {request.status}
  </span>
  </td>
- <td className="px-6 py-4">
+ <td className="px-4 py-3 text-sm">
  <div className="flex items-center gap-2">
- {request.status === 'Submitted' && (
- <>
  <button
- onClick={() => handleApprove(request.id.toString())}
- className="p-1 text-green-600 hover:bg-green-50 rounded"
- title={labels.approve}
- disabled={approvePending}
+ onClick={() => {}}
+ title={labels.view}
+ className="p-1 text-blue-600 hover:bg-blue-50 rounded"
  >
- <CheckCircle className="w-5 h-5" />
+ <Eye className="w-4 h-4" />
  </button>
- <button
- onClick={() => handleReject(request.id.toString())}
- className="p-1 text-red-600 hover:bg-red-50 rounded"
- title={labels.reject}
- disabled={rejectPending}
- >
- <XCircle className="w-5 h-5" />
- </button>
- </>
- )}
- {request.status === 'Draft' && (
- <>
+ 
+ {(request.status === 'draft' || request.status === 'pending') && (
  <button
  onClick={() => handleEdit(request)}
- className="p-1 text-blue-600 hover:bg-blue-50 rounded"
  title={labels.edit}
+ className="p-1 text-green-600 hover:bg-green-50 rounded"
  >
- <Edit2 className="w-5 h-5" />
+ <Edit2 className="w-4 h-4" />
+ </button>
+ )}
+ 
+ {request.status === 'draft' && (
+ <button
+ onClick={() => handleDelete(request.id as any)}
+ title={labels.delete}
+ className="p-1 text-red-600 hover:bg-red-50 rounded"
+ >
+ <Trash2 className="w-4 h-4" />
+ </button>
+ )}
+ 
+ {request.status === 'pending' && (
+ <>
+ <button
+ onClick={() => handleApprove(request)}
+ title={labels.approve}
+ className="p-1 text-green-600 hover:bg-green-50 rounded"
+ >
+ <CheckCircle className="w-4 h-4" />
  </button>
  <button
- onClick={() => handleDelete(request.id.toString())}
+ onClick={() => handleRejectClick(request)}
+ title={labels.reject}
  className="p-1 text-red-600 hover:bg-red-50 rounded"
- title={labels.delete}
- disabled={deletePending}
  >
- <Trash2 className="w-5 h-5" />
+ <XCircle className="w-4 h-4" />
  </button>
  </>
  )}
+ 
+ <button
+ onClick={() => {
+ setPrintRequest(request);
+ setShowPrintModal(true);
+ }}
+ title={labels.print}
+ className="p-1 text-purple-600 hover:bg-purple-50 rounded"
+ >
+ <Printer className="w-4 h-4" />
+ </button>
  </div>
  </td>
  </tr>
@@ -558,177 +767,6 @@ export function LeaveManagement() {
  </>
  )}
  </div>
- </div>
-
- {/* Leave Request Form Modal */}
- {showRequestForm && selectedEmployee && (
- <LeaveRequestForm
- employee={selectedEmployee}
- language={language}
- isRTL={isRTL}
- onClose={() => {
- setShowRequestForm(false);
- setSelectedEmployee(null);
- setEditingRequest(null);
- }}
- onSave={() => {
- setShowRequestForm(false);
- setSelectedEmployee(null);
- setEditingRequest(null);
- refetchRequests();
- }}
- editingRequest={editingRequest}
- />
- )}
-
- {/* Employee Selector Modal */}
- {showEmployeeSelector && (
- <EmployeeSelectorModal
- language={language}
- isRTL={isRTL}
- onSelect={handleEmployeeSelected}
- onClose={() => setShowEmployeeSelector(false)}
- t={t}
- />
- )}
-
- {/* Print Modal */}
- {showPrintModal && printRequest && (
- <LeaveRequestPrint
- request={printRequest}
- language={language}
- isRTL={isRTL}
- onClose={() => {
- setShowPrintModal(false);
- setPrintRequest(null);
- }}
- />
- )}
- </div>
- );
-}
-
-// ============================================================================
-// EMPLOYEE SELECTOR MODAL
-// ============================================================================
-
-interface EmployeeSelectorModalProps {
- language: string;
- isRTL: boolean;
- onSelect: (employee: StaffMember) => void;
- onClose: () => void;
- t: any;
-}
-
-function EmployeeSelectorModal({ language, isRTL, onSelect, onClose, t }: EmployeeSelectorModalProps) {
- const [searchTerm, setSearchTerm] = useState('');
- const [employees, setEmployees] = useState<StaffMember[]>([]);
-
- useEffect(() => {
- const allStaff = staffService.getAll();
- // Only show active staff
- const activeStaff = allStaff.filter(s => s.status === 'active');
- setEmployees(activeStaff);
- }, []);
-
- const filteredEmployees = employees.filter(emp => {
- if (!searchTerm) return true;
- const term = searchTerm.toLowerCase();
- return (
- emp.staffId.toLowerCase().includes(term) ||
- emp.fullName.toLowerCase().includes(term) ||
- emp.position.toLowerCase().includes(term) ||
- emp.department.toLowerCase().includes(term)
- );
- });
-
- const labels = {
- title: t.hrLeave.selectEmployee,
- subtitle: t.hrLeave.chooseAnEmployeeToCreateA,
- search: t.hrLeave.searchByStaffIdNamePosition2,
- staffId: t.hrLeave.staffId,
- name: t.hrLeave.name,
- position: t.hrLeave.position,
- department: t.hrLeave.department,
- select: t.hrLeave.select,
- cancel: t.hrLeave.cancel,
- noEmployees: t.hrLeave.noActiveEmployeesFound,
- activeStaff: t.hrLeave.activeStaff
- };
-
- return (
- <div className="fixed inset-0 bg-gray-900/30 backdrop-blur-sm flex items-center justify-center z-50 p-4" dir={isRTL ? 'rtl' : 'ltr'}>
- <div className="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[80vh] overflow-hidden flex flex-col">
- {/* Header */}
- <div className="px-6 py-4 border-b border-gray-200">
- <h2 className="text-lg font-semibold text-gray-900">{labels.title}</h2>
- <p className="text-sm text-gray-600 mt-1">{labels.subtitle}</p>
- </div>
-
- {/* Search */}
- <div className="px-6 py-4 border-b border-gray-200">
- <input
- type="text"
- value={searchTerm}
- onChange={(e) => setSearchTerm(e.target.value)}
- placeholder={labels.search}
- className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
- autoFocus
- />
- </div>
-
- {/* Employee List */}
- <div className="flex-1 overflow-y-auto p-6">
- {filteredEmployees.length === 0 ? (
- <div className="text-center py-12">
- <Users className="w-16 h-16 text-gray-300 mx-auto mb-4" />
- <p className="text-gray-600 font-medium">{labels.noEmployees}</p>
- </div>
- ) : (
- <div className="space-y-2">
- <p className="text-xs font-semibold text-gray-500 uppercase mb-3">
- {labels.activeStaff} ({filteredEmployees.length})
- </p>
- {filteredEmployees.map((employee) => (
- <button
- key={employee.id}
- onClick={() => onSelect(employee)}
- className="w-full text-start p-4 border border-gray-200 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition-all"
- >
- <div className="flex items-center justify-between">
- <div className="flex-1">
- <div className="flex items-center gap-3 mb-2">
- <span className="text-sm font-mono font-semibold text-blue-600">
- {employee.staffId}
- </span>
- <span className="text-base font-semibold text-gray-900">
- {employee.fullName}
- </span>
- </div>
- <div className="flex items-center gap-4 text-sm text-gray-600">
- <span>{employee.position}</span>
- <span>•</span>
- <span>{employee.department}</span>
- </div>
- </div>
- <div className="flex items-center gap-2 px-3 py-1 bg-blue-100 text-blue-700 rounded text-sm font-medium">
- {labels.select} →
- </div>
- </div>
- </button>
- ))}
- </div>
- )}
- </div>
-
- {/* Footer */}
- <div className="px-6 py-4 border-t border-gray-200 flex items-center justify-end">
- <button
- onClick={onClose}
- className="px-4 py-2 text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50"
- >
- {labels.cancel}
- </button>
  </div>
  </div>
  </div>

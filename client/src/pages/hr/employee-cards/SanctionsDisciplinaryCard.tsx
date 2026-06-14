@@ -203,7 +203,7 @@ export function SanctionsDisciplinaryCard({
 
  // Validate file type
  if (file.type !== 'application/pdf') {
- alert(t.pdfOnly);
+ alert(labels.pdfOnly);
  return;
  }
 
@@ -230,7 +230,7 @@ export function SanctionsDisciplinaryCard({
  });
  
  loadData(); // Reload to show uploaded document
- alert(t.hr.uploadSuccess);
+ alert(labels.uploadSuccess);
  }
  
  setUploadingCaseId(null);

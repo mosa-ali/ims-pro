@@ -62,8 +62,8 @@ import { BackButton } from "@/components/BackButton";
 
 interface SubCard {
  id: string;
- label: { en: string; ar: string };
- description: { en: string; ar: string };
+ label: { en: string; ar: string; it: string };
+ description: { en: string; ar: string; it: string };
  icon: any;
  readOnly?: boolean;
  restricted?: boolean;
@@ -142,58 +142,122 @@ export function IndividualEmployeeProfile() {
  backToEmployees: t.hr.backToEmployees
  };
 
- // Sub-cards configuration
- const subCards: SubCard[] = [
- {
- id: 'identity',
- label: { en: 'Identity & Personal', ar: 'الهوية والبيانات الشخصية' },
- description: { en: 'Personal & contact info', ar: 'المعلومات الشخصية والتواصل' },
- icon: User
- },
- {
- id: 'employment',
- label: { en: 'Employment & Contract', ar: 'التوظيف والعقد' },
- description: { en: 'Contracts & assignments', ar: 'العقود والمهام' },
- icon: FileText
- },
- {
- id: 'salary',
- label: { en: 'Salary & Compensation', ar: 'الراتب والتعويضات' },
- description: { en: 'Grade, step, salary history', ar: 'الدرجة والخطوة وسجل الرواتب' },
- icon: DollarSign
- },
- {
- id: 'performance',
- label: { en: 'Performance & Appraisal', ar: 'الأداء والتقييم' },
- description: { en: 'Annual & periodic reviews', ar: 'المراجعات السنوية والدورية' },
- icon: BarChart3
- },
- {
- id: 'sanctions',
- label: { en: 'Sanctions & Disciplinary', ar: 'العقوبات والإجراءات التأديبية' },
- description: { en: 'Disciplinary actions', ar: 'الإجراءات التأديبية' },
- icon: AlertTriangle,
- restricted: true
- },
- {
- id: 'training',
- label: { en: 'Training & Development', ar: 'التدريب والتطوير' },
- description: { en: 'Trainings & certificates', ar: 'التدريبات والشهادات' },
- icon: GraduationCap
- },
- {
- id: 'exit',
- label: { en: 'Exit & Offboarding', ar: 'الخروج والإنهاء' },
- description: { en: 'Exit process & clearance', ar: 'عملية الخروج والمخالصة' },
- icon: DoorOpen
- },
- {
- id: 'reference',
- label: { en: 'Reference & Verification', ar: 'المراجع والتحقق' },
- description: { en: 'Post-exit reference data', ar: 'بيانات المراجع بعد الخروج' },
- icon: FileCheck
- }
- ];
+  // Sub-cards configuration
+  const subCards: SubCard[] = [
+    {
+      id: 'identity',
+      label: {
+        en: 'Identity & Personal',
+        ar: 'الهوية والبيانات الشخصية',
+        it: 'Identità e Dati Personali'
+      },
+      description: {
+        en: 'Personal & contact info',
+        ar: 'المعلومات الشخصية والتواصل',
+        it: 'Informazioni personali e di contatto'
+      },
+      icon: User
+    },
+    {
+      id: 'employment',
+      label: {
+        en: 'Employment & Contract',
+        ar: 'التوظيف والعقد',
+        it: 'Impiego e Contratto'
+      },
+      description: {
+        en: 'Contracts & assignments',
+        ar: 'العقود والمهام',
+        it: 'Contratti e incarichi'
+      },
+      icon: FileText
+    },
+    {
+      id: 'salary',
+      label: {
+        en: 'Salary & Compensation',
+        ar: 'الراتب والتعويضات',
+        it: 'Stipendio e Compensi'
+      },
+      description: {
+        en: 'Grade, step, salary history',
+        ar: 'الدرجة والخطوة وسجل الرواتب',
+        it: 'Livello, scatto e storico salariale'
+      },
+      icon: DollarSign
+    },
+    {
+      id: 'performance',
+      label: {
+        en: 'Performance & Appraisal',
+        ar: 'الأداء والتقييم',
+        it: 'Prestazioni e Valutazione'
+      },
+      description: {
+        en: 'Annual & periodic reviews',
+        ar: 'المراجعات السنوية والدورية',
+        it: 'Valutazioni annuali e periodiche'
+      },
+      icon: BarChart3
+    },
+    {
+      id: 'sanctions',
+      label: {
+        en: 'Sanctions & Disciplinary',
+        ar: 'العقوبات والإجراءات التأديبية',
+        it: 'Sanzioni e Procedimenti Disciplinari'
+      },
+      description: {
+        en: 'Disciplinary actions',
+        ar: 'الإجراءات التأديبية',
+        it: 'Azioni disciplinari'
+      },
+      icon: AlertTriangle,
+      restricted: true
+    },
+    {
+      id: 'training',
+      label: {
+        en: 'Training & Development',
+        ar: 'التدريب والتطوير',
+        it: 'Formazione e Sviluppo'
+      },
+      description: {
+        en: 'Trainings & certificates',
+        ar: 'التدريبات والشهادات',
+        it: 'Formazioni e certificazioni'
+      },
+      icon: GraduationCap
+    },
+    {
+      id: 'exit',
+      label: {
+        en: 'Exit & Offboarding',
+        ar: 'الخروج والإنهاء',
+        it: 'Uscita e Offboarding'
+      },
+      description: {
+        en: 'Exit process & clearance',
+        ar: 'عملية الخروج والمخالصة',
+        it: 'Processo di uscita e liquidazione'
+      },
+      icon: DoorOpen
+    },
+    {
+      id: 'reference',
+      label: {
+        en: 'Reference & Verification',
+        ar: 'المراجع والتحقق',
+        it: 'Referenze e Verifiche'
+      },
+      description: {
+        en: 'Post-exit reference data',
+        ar: 'بيانات المراجع بعد الخروج',
+        it: 'Dati di referenza post-uscita'
+      },
+      icon: FileCheck
+    }
+  ];
 
  // Loading state
  if (employeeLoading) {

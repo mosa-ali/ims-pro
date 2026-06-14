@@ -120,6 +120,8 @@ import { rbacRolesRouter } from "./routers/auth/rbacRolesRouter";
 import { z } from "zod";
 import { bidderAcknowledgementSignatures, serviceAcceptanceCertificates, contracts, vendors, users } from "../drizzle/schema";
 import { mealExportRouter } from "./mealExportRouter";
+import { hrAnnualLeaveRouter } from './hrAnnualLeave';
+
 // import { autoProgramsReportRouter } from './routers/autoProgramsReportRouter'; // File does not exist
 
 
@@ -337,6 +339,7 @@ export const appRouter = router({
   // HR Module (Human Resources Management)
   hrEmployees: hrEmployeesRouter,
   hrLeave: hrLeaveRouter,
+  hrAnnualLeave: hrAnnualLeaveRouter,
   hrAttendance: hrAttendanceRouter,
   hrPayroll: hrPayrollRouter,
   hrSanctions: hrSanctionsRouter,

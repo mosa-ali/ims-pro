@@ -10,14 +10,35 @@
 import { useState } from 'react';
 import { X, Save, Upload, Briefcase } from 'lucide-react';
 import { useLanguage } from '@/app/contexts/LanguageContext';
-import { StaffMember } from '../types/hrTypes';
 import { staffService } from '@/app/services/hrService';
 import { useTranslation } from '@/i18n/useTranslation';
 
+interface EmployeeData {
+  id: string;
+  organizationId: number;
+  staffId?: string | null;
+  fullName: string;
+  firstName?: string;
+  lastName?: string;
+  gender?: string;
+  nationality?: string;
+  email?: string;
+  phone?: string;
+  address?: string;
+  position: string;
+  department?: string;
+  supervisor?: string;
+  status: string;
+  hireDate?: string;
+  [key: string]: any;
+}
+
 interface Props {
- employee: StaffMember;
+ employee: EmployeeData;
+ language: 'en' | 'ar' | 'it';
+ isRTL: boolean;
  onClose: () => void;
- onSave: (updatedEmployee: StaffMember) => void;
+ onSave: () => void;
 }
 
 export function EditEmploymentContractModal({
@@ -114,7 +135,7 @@ export function EditEmploymentContractModal({
  }
  
  // Update ONLY contract & employment fields
- const updatedEmployee: StaffMember = {
+ const updatedEmployee: EmployeeData = {
  ...employee,
  contractType: formData.contractType as 'Fixed-Term' | 'Short-Term' | 'Consultancy' | 'Volunteer' | 'Daily Worker',
  contractStartDate: formData.contractStartDate,

@@ -199,17 +199,39 @@ export const hrLeaveRouter = router({
     }),
 
   // Create new leave request
-  create: scopedProcedure
-    .input(z.object({
-      employeeId: z.number(),
-      leaveType: z.enum(["annual", "sick", "maternity", "paternity", "unpaid", "compassionate", "study", "other"]),
-      startDate: z.string(),
-      endDate: z.string(),
-      totalDays: z.number(),
-      reason: z.string().optional(),
-      attachmentUrl: z.string().optional(),
-      notes: z.string().optional(),
-    }))
+    create: scopedProcedure
+.input(z.object({
+  employeeId: z.number(),
+
+  leaveType: z.enum([
+    'annual',
+    'sick',
+    'maternity',
+    'paternity',
+    'unpaid',
+    'compassionate',
+    'study',
+    'other'
+  ]),
+
+  startDate: z.string(),
+  endDate: z.string(),
+  totalDays: z.number(),
+
+  reason: z.string().optional(),
+  attachmentUrl: z.string().optional(),
+
+  status: z.enum([
+    'draft',
+    'pending',
+    'approved',
+    'rejected',
+    'cancelled'
+  ]).optional(),
+
+  submittedAt: z.string().optional(),
+  lastStatusUpdatedAt: z.string().optional(),
+}))
     .mutation(async ({ ctx, input }) => {
       const { organizationId, operatingUnitId } = ctx.scope;
       const db = await getDb();
@@ -234,17 +256,26 @@ export const hrLeaveRouter = router({
       const balanceBefore = balance ? parseFloat(balance.remaining?.toString() || "0") : 0;
       
       const result = await db.insert(hrLeaveRequests).values({
-        organizationId,
-        operatingUnitId: operatingUnitId || 0,
+        organizationId: ctx.scope.organizationId,
+        operatingUnitId: ctx.scope.operatingUnitId ?? null,
+
         employeeId: input.employeeId,
+
         leaveType: input.leaveType,
-        startDate: new Date(input.startDate),
-        endDate: new Date(input.endDate),
+
+        startDate: input.startDate,
+        endDate: input.endDate,
+
         totalDays: input.totalDays.toString(),
-        reason: input.reason,
-        attachmentUrl: input.attachmentUrl,
-        notes: input.notes,
-        status: "pending",
+
+        reason: input.reason ?? null,
+        attachmentUrl: input.attachmentUrl ?? null,
+
+        status: input.status ?? 'draft',
+
+        submittedAt: input.submittedAt ?? null,
+        lastStatusUpdatedAt: input.lastStatusUpdatedAt ?? null,
+
         balanceBefore: balanceBefore.toString(),
       });
       
@@ -265,13 +296,37 @@ export const hrLeaveRouter = router({
     .input(z.object({
       id: z.number(),
       employeeId: z.number().optional(),
-      leaveType: z.enum(["annual", "sick", "maternity", "paternity", "unpaid", "compassionate", "study", "other"]).optional(),
+      leaveType: z.enum([
+        "annual",
+        "sick",
+        "maternity",
+        "paternity",
+        "unpaid",
+        "compassionate",
+        "study",
+        "other"
+      ]).optional(),
       startDate: z.string().optional(),
       endDate: z.string().optional(),
       totalDays: z.number().optional(),
       reason: z.string().optional(),
       attachmentUrl: z.string().optional(),
       notes: z.string().optional(),
+      // Workflow fields
+      status: z.enum([
+        "draft",
+        "pending",
+        "approved",
+        "rejected",
+        "cancelled"
+      ]).optional(),
+      submittedAt: z.string().optional(),
+      lastStatusUpdatedAt: z.string().optional(),
+      approvedBy: z.number().optional(),
+      approvedAt: z.string().optional(),
+      rejectedBy: z.number().optional(),
+      rejectedAt: z.string().optional(),
+      rejectionReason: z.string().optional(),
     }))
     .mutation(async ({ ctx, input }) => {
       const { organizationId, operatingUnitId } = ctx.scope;
@@ -298,11 +353,32 @@ export const hrLeaveRouter = router({
       }
       
       // Build update payload
-      const updatePayload: Record<string, unknown> = {};
+      const updatePayload: Partial<typeof hrLeaveRequests.$inferInsert> = {};
+      if (input.status !== undefined)
+        updatePayload.status = input.status;
+
+      if (input.submittedAt !== undefined)
+        updatePayload.submittedAt = input.submittedAt;
+
+      if (input.lastStatusUpdatedAt !== undefined)
+        updatePayload.lastStatusUpdatedAt = input.lastStatusUpdatedAt;
+
+      if (input.approvedBy !== undefined)
+        updatePayload.approvedBy = input.approvedBy;
+
+      if (input.approvedAt !== undefined)
+        updatePayload.approvedAt = input.approvedAt;
+
+      if (input.rejectedBy !== undefined)
+        updatePayload.rejectedBy = input.rejectedBy;
+
+      if (input.rejectedAt !== undefined)
+        updatePayload.rejectedAt = input.rejectedAt;
+
+      if (input.rejectionReason !== undefined)
+        updatePayload.rejectionReason = input.rejectionReason;
       
       if (input.leaveType !== undefined) updatePayload.leaveType = input.leaveType;
-      if (input.startDate !== undefined) updatePayload.startDate = new Date(input.startDate);
-      if (input.endDate !== undefined) updatePayload.endDate = new Date(input.endDate);
       if (input.totalDays !== undefined) updatePayload.totalDays = input.totalDays.toString();
       if (input.reason !== undefined) updatePayload.reason = input.reason;
       if (input.attachmentUrl !== undefined) updatePayload.attachmentUrl = input.attachmentUrl;
@@ -338,11 +414,25 @@ export const hrLeaveRouter = router({
         }
       }
       
-      // Update the request
-      await db
-        .update(hrLeaveRequests)
-        .set(updatePayload)
-        .where(eq(hrLeaveRequests.id, input.id));
+        // Update the request
+        await db
+          .update(hrLeaveRequests)
+          .set({
+            ...updatePayload,
+
+            status: input.status,
+
+            submittedAt: input.submittedAt,
+            lastStatusUpdatedAt: input.lastStatusUpdatedAt,
+
+            approvedBy: input.approvedBy,
+            approvedAt: input.approvedAt,
+
+            rejectedBy: input.rejectedBy,
+            rejectedAt: input.rejectedAt,
+            rejectionReason: input.rejectionReason,
+          })
+          .where(eq(hrLeaveRequests.id, input.id));
       
       // Log audit
       try {

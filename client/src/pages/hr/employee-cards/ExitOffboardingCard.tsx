@@ -32,6 +32,12 @@ import { useTranslation } from '@/i18n/useTranslation';
 // TYPE DEFINITIONS
 // ============================================================================
 
+interface LocalizedText {
+  en: string;
+  ar: string;
+  it: string;
+}
+
 export interface ExitProcess {
  id: string;
  staffId: string;
@@ -104,6 +110,17 @@ export function ExitOffboardingCard({
  const [showResignationPrint, setShowResignationPrint] = useState(false);
  const [showClearancePrint, setShowClearancePrint] = useState(false);
  const [showExitInterviewPrint, setShowExitInterviewPrint] = useState(false);
+
+  const getText = (en: string, ar: string, it: string) => {
+  switch (language) {
+    case 'ar':
+      return ar;
+    case 'it':
+      return it;
+    default:
+      return en;
+  }
+};
 
  useEffect(() => {
  loadExitData();

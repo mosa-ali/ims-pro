@@ -18,22 +18,33 @@ import { PayrollSlipPrintModal } from '../modals/PayrollSlipPrintModal';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useTranslation } from '@/i18n/useTranslation';
 
-interface Props {
- employee: {
- id: number;
- staffId: string;
- fullName: string;
- position?: string;
- department?: string;
- organizationId?: number;
- };
- language: string;
- isRTL: boolean;
- onEmployeeUpdate?: () => void;
+interface EmployeeData {
+  employee: {
+  id: number;
+  organizationId: number;
+  staffId?: string | null;
+  fullName: string;
+  firstName?: string;
+  lastName?: string;
+  gender?: string;
+  nationality?: string;
+  email?: string;
+  phone?: string;
+  address?: string;
+  position: string;
+  department?: string;
+  supervisor?: string;
+  status: string;
+  hireDate?: string;
+  [key: string]: any;
+};
+  language: 'en' | 'ar' | 'it';
+  isRTL: boolean;
+  onEmployeeUpdate?: () => void;
 }
 
 export function SalaryCompensationCard({
- employee, language, isRTL, onEmployeeUpdate }: Props) {
+ employee, language, isRTL, onEmployeeUpdate }: EmployeeData) {
  const { t } = useTranslation();
  const { currentOrganizationId } = useOrganization();
  const { currentOperatingUnitId } = useOperatingUnit();
@@ -45,7 +56,7 @@ export function SalaryCompensationCard({
 
  // Fetch salary data from Salary Scale Table via tRPC
  const { data: salaryRecord, isLoading, error } = trpc.hrSalaryScale.getActiveByEmployeeId.useQuery({
- employeeId: employee.id,
+ id: Number(employee.id),
  organizationId,
  }, {
  enabled: !!employee.id && !!organizationId,
@@ -53,7 +64,7 @@ export function SalaryCompensationCard({
 
  // Fetch salary history
  const { data: salaryHistory = [] } = trpc.hrSalaryScale.getHistoryByEmployeeId.useQuery({
- employeeId: employee.id,
+ id: Number(employee.id),
  organizationId,
  }, {
  enabled: !!employee.id && !!organizationId,

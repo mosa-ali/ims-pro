@@ -20,7 +20,7 @@ export interface ResignationRecord {
  staffId: string;
  employeeName: string;
  position: string;
- department: string;
+ department: string | null;
  
  // Resignation details
  resignationDate: string; // Date letter submitted

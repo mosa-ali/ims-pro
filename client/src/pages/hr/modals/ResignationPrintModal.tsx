@@ -13,6 +13,7 @@ import { StaffMember } from '../types/hrTypes';
 import { useState, useEffect } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useTranslation } from '@/i18n/useTranslation';
+import { staffService, PayrollSheet } from '@/app/services/hrService';
 
 interface ResignationData {
  id: string;
@@ -27,6 +28,9 @@ interface ResignationData {
 
 interface Props {
  resignation: ResignationData;
+  employee: StaffMember;
+  language: string;
+  isRTL: boolean;
  onClose: () => void;
 }
 
@@ -115,14 +119,14 @@ export function ResignationPrintModal({
  >
  {/* Header (Print Hidden) */}
  <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between bg-blue-50 print:hidden">
- <h2 className="text-xl font-bold text-gray-900">{t.title}</h2>
+ <h2 className="text-xl font-bold text-gray-900">{localT.title}</h2>
  <div className="flex items-center gap-2">
  <button
  onClick={handlePrint}
  className="flex items-center gap-2 px-3 py-2 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700"
  >
  <Printer className="w-4 h-4" />
- <span>{t.print}</span>
+ <span>{localT.print}</span>
  </button>
  <button onClick={onClose} className="text-gray-400 hover:text-gray-600">
  <X className="w-6 h-6" />
@@ -138,17 +142,17 @@ export function ResignationPrintModal({
  <div className="mb-8">
  <div className="flex justify-between items-start mb-4 text-sm">
  <div>
- <strong>{t.ref}:</strong> RES-{resignation.id}-{new Date(resignation.submissionDate).getFullYear()}
+ <strong>{localT.ref}:</strong> RES-{resignation.id}-{new Date(resignation.submissionDate).getFullYear()}
  </div>
  <div>
- <strong>{t.date}:</strong> {formatDate(new Date().toISOString())}
+ <strong>{localT.date}:</strong> {formatDate(new Date().toISOString())}
  </div>
  </div>
  </div>
 
  {/* Recipient */}
  <div className="mb-8">
- <p className="font-bold text-lg mb-2">{t.to}:</p>
+ <p className="font-bold text-lg mb-2">{localT.to}:</p>
  <p className="text-gray-900 font-medium">{employee.fullName}</p>
  <p className="text-gray-700">{employee.position}</p>
  <p className="text-gray-700">{employee.department}</p>
@@ -157,17 +161,17 @@ export function ResignationPrintModal({
 
  {/* Subject */}
  <div className="mb-8">
- <p className="font-bold text-lg mb-2">{t.subject}:</p>
- <p className="text-gray-900 font-semibold uppercase">{t.title}</p>
+ <p className="font-bold text-lg mb-2">{localT.subject}:</p>
+ <p className="text-gray-900 font-semibold uppercase">{localT.title}</p>
  </div>
 
  {/* Opening Statement */}
  <div className="mb-8">
  <p className="text-sm leading-relaxed text-gray-800">
- {t.opening} <strong>{formatDate(resignation.submissionDate)}</strong>.
+ {localT.opening} <strong>{formatDate(resignation.submissionDate)}</strong>.
  </p>
  <p className="text-sm leading-relaxed text-gray-800 mt-4">
- {t.acceptance} <strong>{formatDate(resignation.effectiveDate)}</strong>.
+ {localT.acceptance} <strong>{formatDate(resignation.effectiveDate)}</strong>.
  </p>
  </div>
 
@@ -175,25 +179,25 @@ export function ResignationPrintModal({
  <div className="mb-8 border border-blue-300 rounded-lg p-4 bg-blue-50">
  <div className="grid grid-cols-3 gap-4 text-sm">
  <div>
- <span className="font-medium text-gray-700">{t.submissionDate}:</span>
+ <span className="font-medium text-gray-700">{localT.submissionDate}:</span>
  <p className="text-gray-900 font-semibold">{formatDate(resignation.submissionDate)}</p>
  </div>
  <div>
- <span className="font-medium text-gray-700">{t.effectiveDate}:</span>
+ <span className="font-medium text-gray-700">{localT.effectiveDate}:</span>
  <p className="text-gray-900 font-semibold">{formatDate(resignation.effectiveDate)}</p>
  </div>
  <div>
- <span className="font-medium text-gray-700">{t.noticePeriod}:</span>
- <p className="text-gray-900 font-semibold">{resignation.noticePeriod} {t.days}</p>
+ <span className="font-medium text-gray-700">{localT.noticePeriod}:</span>
+ <p className="text-gray-900 font-semibold">{resignation.noticePeriod} {localT.days}</p>
  </div>
  </div>
  </div>
 
  {/* Obligations */}
  <div className="mb-8">
- <h3 className="text-lg font-bold text-gray-900 mb-4">{t.obligations}:</h3>
+ <h3 className="text-lg font-bold text-gray-900 mb-4">{localT.obligations}:</h3>
  <ul className="list-disc list-inside space-y-2 text-sm text-gray-800">
- {t.obligationsList.map((item, index) => (
+ {localT.obligationsList.map((item, index) => (
  <li key={index}>{item}</li>
  ))}
  </ul>
@@ -201,38 +205,38 @@ export function ResignationPrintModal({
 
  {/* Clearance */}
  <div className="mb-8 bg-yellow-50 border border-yellow-300 rounded-lg p-4">
- <h4 className="text-sm font-bold text-yellow-900 mb-2">{t.clearance}:</h4>
- <p className="text-sm text-yellow-800">{t.clearanceText}</p>
+ <h4 className="text-sm font-bold text-yellow-900 mb-2">{localT.clearance}:</h4>
+ <p className="text-sm text-yellow-800">{localT.clearanceText}</p>
  </div>
 
  {/* Final Settlement */}
  <div className="mb-8 bg-green-50 border border-green-300 rounded-lg p-4">
- <h4 className="text-sm font-bold text-green-900 mb-2">{t.finalSettlement}:</h4>
- <p className="text-sm text-green-800">{t.settlementText}</p>
+ <h4 className="text-sm font-bold text-green-900 mb-2">{localT.finalSettlement}:</h4>
+ <p className="text-sm text-green-800">{localT.settlementText}</p>
  </div>
 
  {/* Closing Statement */}
  <div className="mb-8">
- <p className="text-sm leading-relaxed text-gray-800">{t.closing}</p>
+ <p className="text-sm leading-relaxed text-gray-800">{localT.closing}</p>
  </div>
 
  {/* Signatures */}
  <div className="mt-12 pt-8 border-t-2 border-gray-300">
- <h3 className="text-sm font-bold text-gray-900 mb-6">{t.signatures}</h3>
+ <h3 className="text-sm font-bold text-gray-900 mb-6">{localT.signatures}</h3>
  <div className="grid grid-cols-2 gap-12">
  <div>
  <div className="h-16 mb-2"></div>
  <div className="border-t-2 border-gray-400 pt-2">
- <p className="text-xs font-semibold text-gray-900">{t.hrManager}</p>
- <p className="text-xs text-gray-500">{t.date}: {formatDate(new Date().toISOString())}</p>
+ <p className="text-xs font-semibold text-gray-900">{localT.hrManager}</p>
+ <p className="text-xs text-gray-500">{localT.date}: {formatDate(new Date().toISOString())}</p>
  </div>
  </div>
  <div>
  <div className="h-16 mb-2"></div>
  <div className="border-t-2 border-gray-400 pt-2">
- <p className="text-xs font-semibold text-gray-900">{t.acknowledgedBy}</p>
+ <p className="text-xs font-semibold text-gray-900">{localT.acknowledgedBy}</p>
  <p className="text-xs text-gray-600 mt-1">{employee.fullName}</p>
- <p className="text-xs text-gray-500">{t.date}: _______________</p>
+ <p className="text-xs text-gray-500">{localT.date}: _______________</p>
  </div>
  </div>
  </div>
@@ -247,13 +251,13 @@ export function ResignationPrintModal({
  className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
  >
  <Printer className="w-5 h-5" />
- <span>{t.print}</span>
+ <span>{localT.print}</span>
  </button>
  <button
  onClick={onClose}
  className="px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
  >
- {t.close}
+ {localT.close}
  </button>
  </div>
  </div>

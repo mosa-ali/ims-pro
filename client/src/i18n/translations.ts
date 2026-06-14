@@ -6638,6 +6638,8 @@ bidOpeningMinutes: {
     actions: string;
     active: string;
     addNewStaffMember: string;
+    dateTime: string;
+    supervisorComments: string;
     addProject: string;
     addStaffMember: string;
     all: string;
@@ -6656,6 +6658,7 @@ bidOpeningMinutes: {
     dailyWorker: string;
     dateOfBirth: string;
     department: string;
+    accrued: string;
     documents: string;
     editStaffMember: string;
     egEchoyem001: string;
@@ -7570,6 +7573,9 @@ bidOpeningMinutes: {
     acknowledgedBy: string;
     acknowledgedBy16: string;
     acknowledgedByEmployee: string;
+    salaryRecordUpdated: string;
+    gradeAddedSuccessfully: string;
+    gradeDeletedSuccessfully: string;
     actionDate: string;
     actionTaken: string;
     active: string;
@@ -7974,6 +7980,10 @@ bidOpeningMinutes: {
     annualEntitlement: string;
     annualLeave: string;
     annualLeaveEntitlementsAndBalancesFor: string;
+    chooseAnEmployeeToCreateALeaveRequest: string;
+    thereAreNoActiveEmployeesInTheSystem: string;
+    searchByNameIdOrPosition: string;
+    errorLoadingEmployees: string;
     approvalDate: string;
     approvalWorkflow: string;
     approve: string;
@@ -8672,6 +8682,7 @@ bidOpeningMinutes: {
     aSalaryGradeDefinition: string;
     acceptedFormats: string;
     actionType: string;
+    staffMemberUpdatedSuccessfully: string;
     actions: string;
     activate: string;
     active: string;
@@ -20838,6 +20849,9 @@ quarantinedStatus: "Quarantined",
     actions: 'Actions',
     active: 'Active',
     addNewStaffMember: 'Add New Staff Member',
+    supervisorComments: 'Direct Supervisor Comments',
+    dateTime: 'Date & Time',
+    accrued: 'Accrued',
     addProject: 'Add Project',
     addStaffMember: 'Add Staff Member',
     all: 'All',
@@ -21750,7 +21764,10 @@ quarantinedStatus: "Quarantined",
     accountNumber: 'Account Number',
     acknowledgedBy: 'Acknowledged By',
     acknowledgedBy16: 'Acknowledged By',
+    salaryRecordUpdated: 'Salary record updated successfully',
     acknowledgedByEmployee: 'Acknowledged By (Employee)',
+    gradeAddedSuccessfully: 'Grade added successfully',
+    gradeDeletedSuccessfully: 'Grade deleted successfully',
     actionDate: 'Action Date',
     actionTaken: 'Action Taken',
     active: 'Active',
@@ -22157,6 +22174,10 @@ quarantinedStatus: "Quarantined",
     annualLeaveEntitlementsAndBalancesFor: 'Annual leave entitlements and balances for all active staff',
     approvalDate: 'Approval Date',
     approvalWorkflow: 'APPROVAL WORKFLOW',
+    chooseAnEmployeeToCreateALeaveRequest: 'Choose An Employee To Create A Leave Request',
+    searchByNameIdOrPosition: 'Search by name, ID, or position',
+    thereAreNoActiveEmployeesInTheSystem: 'There are no active employees in the system',
+    errorLoadingEmployees: 'Error loading employees',
     approve: 'Approve',
     approved: 'Approved',
     approved1: 'Approved',
@@ -22854,6 +22875,7 @@ quarantinedStatus: "Quarantined",
     aSalaryGradeDefinition: 'A. Salary Grade Definition',
     acceptedFormats: 'Accepted formats',
     actionType: 'Action Type',
+    staffMemberUpdatedSuccessfully: 'Staff member updated successfully',
     actions: 'Actions',
     activate: 'Activate',
     gradeName: 'Grade Name',
@@ -35049,8 +35071,11 @@ quarantinedStatus: "قيد الحجر",
     actions: 'الإجراءات',
     active: 'نشط',
     addNewStaffMember: 'إضافة موظف جديد',
+    supervisorComments: 'ملاحظات المشرف المباشر',
     addProject: 'إضافة مشروع',
     addStaffMember: 'إضافة موظف',
+    dateTime: 'التاريخ والوقت',
+    accrued: 'مستحق',
     all: 'الكل',
     archived: 'مؤرشف',
     assignedProjects: 'المشاريع المكلف بها',
@@ -35962,6 +35987,9 @@ quarantinedStatus: "قيد الحجر",
     acknowledgedBy: 'تم الاطلاع عليه من قبل',
     acknowledgedBy16: 'تم الإقرار من قبل',
     acknowledgedByEmployee: 'تم الاطلاع عليه من قبل (الموظف)',
+    salaryRecordUpdated: 'تم تحديث سجل الراتب بنجاح',
+    gradeAddedSuccessfully: 'تمت إضافة الدرجة بنجاح',
+    gradeDeletedSuccessfully: 'تمت حذف الدرجة بنجاح',
     actionDate: 'تاريخ الإجراء',
     actionTaken: 'الإجراء المتخذ',
     active: 'نشط',
@@ -36366,6 +36394,8 @@ quarantinedStatus: "قيد الحجر",
     annualEntitlement: 'الاستحقاق السنوي',
     annualLeave: 'إجازة سنوية',
     annualLeaveEntitlementsAndBalancesFor: 'استحقاقات الإجازات السنوية والأرصدة لجميع الموظفين النشطين',
+    chooseAnEmployeeToCreateALeaveRequest: 'اختر موظفًا لإنشاء طلب إجازة',
+    thereAreNoActiveEmployeesInTheSystem: 'لا يوجد موظفون نشطون في النظام',
     approvalDate: 'تاريخ الموافقة',
     approvalWorkflow: 'سير العمل للموافقة',
     approve: 'موافقة',
@@ -36374,6 +36404,8 @@ quarantinedStatus: "قيد الحجر",
     approvedBy: 'تمت الموافقة بواسطة',
     archivedOrExitedStaffCannotRequest: 'لا يمكن للموظفين المؤرشفين أو المغادرين طلب الإجازة',
     areYouSureYouWantTo: 'هل أنت متأكد من الموافقة على طلب الإجازة هذا؟',
+    searchByNameIdOrPosition: 'البحث بالاسم أو المعرف أو المنصب',
+    errorLoadingEmployees: 'خطأ في تحميل بيانات الموظفين',
     available: 'متاح',
     availableBalance: 'الرصيد المتاح',
     avgAvailableBalance: 'متوسط الرصيد المتاح',
@@ -37064,6 +37096,7 @@ quarantinedStatus: "قيد الحجر",
     aSalaryGradeDefinition: 'أ. تعريف درجات الرواتب',
     acceptedFormats: 'الصيغ المقبولة',
     actionType: 'نوع الإجراء',
+    staffMemberUpdatedSuccessfully: 'تم تحديث بيانات الموظف بنجاح',
     actions: 'الإجراءات',
     activate: 'تفعيل',
     recruitmentSubtitle: 'إدارة التوظيف ومسار المرشحين',
@@ -53232,8 +53265,11 @@ accountNumber: "Numero Conto",
 actions: "Azioni",
 active: "Attivo",
 addNewStaffMember: "Aggiungi Nuovo Dipendente",
+supervisorComments: 'Commenti del supervisore diretto',
 addProject: "Aggiungi Progetto",
 addStaffMember: "Aggiungi Dipendente",
+dateTime: 'data e ora',
+accrued: 'Accumulato',
 all: "Tutti",
 archived: "Archiviato",
 assignedProjects: "Progetti Assegnati",
@@ -54235,7 +54271,10 @@ allTypes: "Tutti i Tipi",
 annualEntitlement: "Diritto Annuale alle Ferie",
 annualLeave: "Ferie Annuali",
 annualLeaveEntitlementsAndBalancesFor: "Diritti e saldi delle ferie annuali per tutto il personale attivo",
-
+chooseAnEmployeeToCreateALeaveRequest: 'Scegli un dipendente per creare una richiesta di ferie',
+searchByNameIdOrPosition: 'Cerca per nome, ID o posizione',
+thereAreNoActiveEmployeesInTheSystem: 'Nel sistema non ci sono dipendenti attivi',
+errorLoadingEmployees: 'Errore durante il caricamento dei dipendenti',
 approvalDate: "Data di Approvazione",
 approvalWorkflow: "FLUSSO DI APPROVAZIONE",
 
@@ -55452,6 +55491,7 @@ aSalaryGradeDefinition: "A. Definizione del Livello Salariale",
 acceptedFormats: "Formati Accettati",
 
 actionType: "Tipo di Azione",
+staffMemberUpdatedSuccessfully: 'Membro dello staff aggiornato con successo',
 gradeDeletedSuccessfully: 'Grade Deleted Successfully',
 gradeName: 'Grade Name',
 
@@ -64033,6 +64073,9 @@ hrModals: {
   acknowledgedBy: "Confermato Da",
   acknowledgedBy16: "Confermato Da",
   acknowledgedByEmployee: "Confermato Da (Dipendente)",
+  gradeAddedSuccessfully: 'Voto aggiunto con successo',
+  gradeDeletedSuccessfully: 'Voto eliminato con successo',
+  salaryRecordUpdated: 'Aggiornamento dei dati salariali effettuato con successo',
   actionDate: "Data Azione",
   actionTaken: "Azione Intrapresa",
   active: "Attivo",

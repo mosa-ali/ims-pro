@@ -11,6 +11,13 @@ import { EditIdentityProfileModal } from '../modals/EditIdentityProfileModal';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useTranslation } from '@/i18n/useTranslation';
 
+interface employee {
+  id: string;
+  staffId?: string;
+  fullName?: string;
+  [key: string]: any;
+}
+
 interface Props {
  employee: StaffMember;
  language: string;
@@ -119,7 +126,7 @@ export function IdentityPersonalCard({
  <div className={`p-4 bg-blue-50 border border-blue-200 rounded-lg text-start`}>
  <p className="text-xs text-blue-700 mb-1">{localT.supervisor}</p>
  <p className="text-sm text-blue-900 font-medium">
- {employee.supervisor || (t.hrEmployeeCards.noSupervisorAssigned)}
+ {employee.reportingTo ? `Supervisor ID: ${employee.reportingTo}` : (t.hrEmployeeCards.noSupervisorAssigned)}
  </p>
  {employee.supervisorEmail && (
  <p className="text-xs text-blue-700 mt-1">{employee.supervisorEmail}</p>

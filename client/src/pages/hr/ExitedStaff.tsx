@@ -5,22 +5,23 @@
  */
 
 import { FilteredEmployeesList } from './FilteredEmployeesList';
-import { useLanguage } from '@/contexts/LanguageContext';
 
 export function ExitedStaff() {
- return (
- <FilteredEmployeesList
- filter="exited"
- title={{
- en: 'Exited Staff',
- ar: 'الموظفون المغادرون'
- }}
- subtitle={{
- en: 'Completed exit process',
- ar: 'أكملوا عملية المغادرة'
- }}
- backPath="/organization/hr/employees-profiles"
- showAddButton={false}
- />
- );
+  return (
+    <FilteredEmployeesList
+      filter="exited"
+      title={{
+        en: 'Exited Staff',
+        ar: 'الموظفون المغادرون',
+        it: 'Personale Uscito'
+      }}
+      subtitle={{
+        en: 'Completed exit process',
+        ar: 'أكملوا عملية المغادرة',
+        it: 'Ha completato il processo di uscita'
+      }}
+      backPath="/organization/hr/employees-profiles"
+      showAddButton={false}
+    />
+  );
 }

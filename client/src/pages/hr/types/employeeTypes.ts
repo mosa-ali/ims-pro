@@ -125,7 +125,7 @@ export interface StaffMember {
  email?: string;
  address?: string;
  supervisor?: string;
- reportingTo?: number | null
+ reportingTo?: string;
  supervisorEmail?: string;
  
  // Exit process fields
@@ -149,7 +149,7 @@ export interface StaffMember {
  */
 export function toStaffMember(dbEmployee: any): StaffMember {
  return {
- id: dbEmployee.employeeId,
+ id: String(dbEmployee.id),
  staffId: dbEmployee.employeeCode || `STF-${String(dbEmployee.id).padStart(3, '0')}`,
  fullName: `${dbEmployee.firstName || ''} ${dbEmployee.lastName || ''}`.trim(),
  firstName: dbEmployee.firstName,
@@ -195,7 +195,7 @@ export function toStaffMember(dbEmployee: any): StaffMember {
  email: dbEmployee.email || undefined,
  address: dbEmployee.address || undefined,
  supervisor: dbEmployee.reportingTo || undefined,
- reportingTo: dbEmployee.reportingTo || undefined,
+ reportingTo: dbEmployee.reportingTo,
  supervisorEmail: dbEmployee.supervisorEmail || undefined,
  
  exitStarted: dbEmployee.exitStarted || false,
@@ -424,18 +424,4 @@ export interface ReferenceRequest {
  
  createdAt: string;
  updatedAt: string;
-}
-
-/**
- * ============================================================================
- * HR TYPES - Updated to match hr_employees database schema
- * ============================================================================
- */
-
-export type Language = 'en' | 'ar' | 'it';
-
-export interface LocalizedText {
-  en: string;
-  ar: string;
-  it: string;
 }

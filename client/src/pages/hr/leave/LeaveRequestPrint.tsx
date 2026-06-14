@@ -85,7 +85,7 @@ export function LeaveRequestPrint({
  lineManager: t.hrLeave.lineManager,
  hrManager: t.hrLeave.hrManager,
  signature: t.hrLeave.signature,
- approvalDate: t.hrLeave.date,
+ approvalAt: t.hrLeave.date,
  status: t.hrLeave.status,
  approvedBy: t.hrLeave.approvedBy,
  approvalDateValue: t.hrLeave.approvalDate,
@@ -105,14 +105,14 @@ export function LeaveRequestPrint({
  <div className="bg-white rounded-lg shadow-xl max-w-5xl w-full max-h-[90vh] overflow-hidden flex flex-col">
  {/* Modal Header - No Print */}
  <div className="no-print flex items-center justify-between px-6 py-4 border-b border-gray-200">
- <h2 className="text-lg font-semibold text-gray-900">{t.title}</h2>
+ <h2 className="text-lg font-semibold text-gray-900">{localT.title}</h2>
  <div className="flex items-center gap-3">
  <button
  onClick={handlePrint}
  className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
  >
  <Printer className="w-4 h-4" />
- <span>{t.printButton}</span>
+ <span>{localT.printButton}</span>
  </button>
  <button
  onClick={onClose}
@@ -284,18 +284,18 @@ export function LeaveRequestPrint({
  margin: 0,
  color: '#111827'
  }}>
- {t.title}
+ {localT.title}
  </h1>
  </div>
  <div style={{ textAlign: t.hrLeave.right }}>
  <div className="print-field">
- <div className="print-label">{t.requestNo}</div>
+ <div className="print-label">{localT.requestNo}</div>
  <div className="print-value" style={{ fontFamily: 'monospace' }}>
  {request.id.toUpperCase()}
  </div>
  </div>
  <div className="print-field">
- <div className="print-label">{t.date}</div>
+ <div className="print-label">{localT.date}</div>
  <div className="print-value">{formatDate(request.createdAt)}</div>
  </div>
  </div>
@@ -304,28 +304,28 @@ export function LeaveRequestPrint({
 
  {/* Employee Information */}
  <div className="print-section">
- <div className="print-section-title">{t.employeeInfo}</div>
+ <div className="print-section-title">{localT.employeeInfo}</div>
  <div className="print-grid">
  <div className="print-field">
- <div className="print-label">{t.staffId}</div>
+ <div className="print-label">{localT.staffId}</div>
  <div className="print-value" style={{ fontFamily: 'monospace' }}>
  {staffService.getStaffId(request.employeeId)}
  </div>
  </div>
  <div className="print-field">
- <div className="print-label">{t.fullName}</div>
+ <div className="print-label">{localT.fullName}</div>
  <div className="print-value">{staffService.getFullName(request.employeeId)}</div>
  </div>
  <div className="print-field">
- <div className="print-label">{t.position}</div>
+ <div className="print-label">{localT.position}</div>
  <div className="print-value">{staffService.getPosition(request.employeeId)}</div>
  </div>
  <div className="print-field">
- <div className="print-label">{t.department}</div>
+ <div className="print-label">{localT.department}</div>
  <div className="print-value">{staffService.getDepartment(request.employeeId)}</div>
  </div>
  <div className="print-field">
- <div className="print-label">{t.contractDate}</div>
+ <div className="print-label">{localT.contractDate}</div>
  <div className="print-value">{formatDate(staffService.getContractStartDate(request.employeeId))}</div>
  </div>
  </div>
@@ -333,14 +333,14 @@ export function LeaveRequestPrint({
 
  {/* Leave Details */}
  <div className="print-section">
- <div className="print-section-title">{t.leaveDetails}</div>
+ <div className="print-section-title">{localT.leaveDetails}</div>
  <div className="print-grid">
  <div className="print-field">
- <div className="print-label">{t.leaveType}</div>
+ <div className="print-label">{localT.leaveType}</div>
  <div className="print-value">{request.leaveType}</div>
  </div>
  <div className="print-field">
- <div className="print-label">{t.status}</div>
+ <div className="print-label">{localT.status}</div>
  <div>
  <span className={`status-badge status-${request.status.toLowerCase()}`}>
  {request.status}
@@ -348,24 +348,24 @@ export function LeaveRequestPrint({
  </div>
  </div>
  <div className="print-field">
- <div className="print-label">{t.startDate}</div>
+ <div className="print-label">{localT.startDate}</div>
  <div className="print-value">{formatDate(request.startDate)}</div>
  </div>
  <div className="print-field">
- <div className="print-label">{t.endDate}</div>
+ <div className="print-label">{localT.endDate}</div>
  <div className="print-value">{formatDate(request.endDate)}</div>
  </div>
  <div className="print-field">
- <div className="print-label">{t.totalDays}</div>
+ <div className="print-label">{localT.totalDays}</div>
  <div className="print-value" style={{ fontSize: '16px', fontWeight: 'bold', color: '#2563eb' }}>
- {request.totalDays} {t.days}
+ {request.totalDays} {localT.days}
  </div>
  </div>
  </div>
  
  {request.reason && (
  <div className="print-field" style={{ marginTop: '15px' }}>
- <div className="print-label">{t.reason}</div>
+ <div className="print-label">{localT.reason}</div>
  <div className="print-value" style={{ 
  background: '#f9fafb', 
  padding: '10px', 
@@ -377,23 +377,9 @@ export function LeaveRequestPrint({
  </div>
  )}
 
- {request.justification && request.leaveType === 'Emergency Leave' && (
+ {request.medicalReportFileName && request.leaveType === 'sick' && (
  <div className="print-field" style={{ marginTop: '15px' }}>
- <div className="print-label">{t.justification}</div>
- <div className="print-value" style={{ 
- background: '#fef3c7', 
- padding: '10px', 
- borderRadius: '4px',
- border: '1px solid #fcd34d'
- }}>
- {request.justification}
- </div>
- </div>
- )}
-
- {request.medicalReportFileName && request.leaveType === 'Sick Leave' && (
- <div className="print-field" style={{ marginTop: '15px' }}>
- <div className="print-label">{t.medicalReport}</div>
+ <div className="print-label">{localT.medicalReport}</div>
  <div className="print-value" style={{ 
  background: '#fee2e2', 
  padding: '10px', 
@@ -408,26 +394,26 @@ export function LeaveRequestPrint({
  </div>
 
  {/* Leave Balance (for Annual Leave only) */}
- {request.leaveType === 'Annual Leave' && request.balance && (
+ {request.leaveType === 'annual' && request.balance && (
  <div className="print-section">
- <div className="print-section-title">{t.balanceInfo}</div>
+ <div className="print-section-title">{localT.balanceInfo}</div>
  <div className="print-grid">
  <div className="print-field">
- <div className="print-label">{t.annualEntitlement}</div>
- <div className="print-value">{request.balance.annualEntitlement} {t.days}</div>
+ <div className="print-label">{localT.annualEntitlement}</div>
+ <div className="print-value">{request.balance.annualEntitlement} {localT.days}</div>
  </div>
  <div className="print-field">
- <div className="print-label">{t.usedDays}</div>
- <div className="print-value">{request.balance.usedDays} {t.days}</div>
+ <div className="print-label">{localT.usedDays}</div>
+ <div className="print-value">{request.balance.usedDays} {localT.days}</div>
  </div>
  <div className="print-field">
- <div className="print-label">{t.remainingBalance}</div>
+ <div className="print-label">{localT.remainingBalance}</div>
  <div className="print-value" style={{ 
  fontSize: '16px', 
  fontWeight: 'bold', 
  color: request.balance.remainingBalance < 5 ? '#dc2626' : '#059669'
  }}>
- {request.balance.remainingBalance} {t.days}
+ {request.balance.remainingBalance} {localT.days}
  </div>
  </div>
  </div>
@@ -436,9 +422,9 @@ export function LeaveRequestPrint({
 
  {/* Approval Section */}
  <div className="print-section">
- <div className="print-section-title">{t.approvalSection}</div>
+ <div className="print-section-title">{localT.approvalSection}</div>
  
- {request.status === 'Approved' && request.approvedBy && (
+ {request.status === 'approved' && request.approvedBy && (
  <div style={{ 
  background: '#d1fae5', 
  border: '2px solid #6ee7b7', 
@@ -448,18 +434,18 @@ export function LeaveRequestPrint({
  }}>
  <div className="print-grid">
  <div className="print-field">
- <div className="print-label">{t.approvedBy}</div>
+ <div className="print-label">{localT.approvedBy}</div>
  <div className="print-value">{request.approvedBy}</div>
  </div>
  <div className="print-field">
- <div className="print-label">{t.approvalDateValue}</div>
+ <div className="print-label">{localT.approvalDateValue}</div>
  <div className="print-value">{formatDate(request.approvedAt)}</div>
  </div>
  </div>
  </div>
  )}
 
- {request.status === 'Rejected' && request.rejectedBy && (
+ {request.status === 'rejected' && request.rejectedBy && (
  <div style={{ 
  background: '#fee2e2', 
  border: '2px solid #fca5a5', 
@@ -487,36 +473,36 @@ export function LeaveRequestPrint({
  )}
 
  {/* Signature blocks for pending/draft */}
- {(request.status === 'Draft' || request.status === 'Submitted') && (
+ {(request.status === 'draft' || request.status === 'pending') && (
  <div className="print-grid">
  <div>
- <div className="print-label">{t.lineManager}</div>
+ <div className="print-label">{localT.lineManager}</div>
  <div className="print-signature-box">
  <div style={{ marginTop: '50px' }}>
  <div style={{ borderTop: '1px solid #000', width: '60%', margin: '0 auto' }}></div>
  <div style={{ textAlign: 'center', marginTop: '5px', fontSize: '10px' }}>
- {t.signature}
+ {localT.signature}
  </div>
  </div>
  </div>
  <div className="print-field" style={{ marginTop: '10px' }}>
- <div className="print-label">{t.approvalDate}</div>
+ <div className="print-label">{localT.approvalAt}</div>
  <div style={{ borderBottom: '1px solid #d1d5db', height: '25px' }}></div>
  </div>
  </div>
  
  <div>
- <div className="print-label">{t.hrManager}</div>
+ <div className="print-label">{localT.hrManager}</div>
  <div className="print-signature-box">
  <div style={{ marginTop: '50px' }}>
  <div style={{ borderTop: '1px solid #000', width: '60%', margin: '0 auto' }}></div>
  <div style={{ textAlign: 'center', marginTop: '5px', fontSize: '10px' }}>
- {t.signature}
+ {localT.signature}
  </div>
  </div>
  </div>
  <div className="print-field" style={{ marginTop: '10px' }}>
- <div className="print-label">{t.approvalDate}</div>
+ <div className="print-label">{localT.approvalAt}</div>
  <div style={{ borderBottom: '1px solid #d1d5db', height: '25px' }}></div>
  </div>
  </div>
@@ -527,10 +513,10 @@ export function LeaveRequestPrint({
  {/* Footer */}
  <div className="print-footer">
  <p style={{ margin: '5px 0' }}>
- {t.systemGenerated}
+ {localT.systemGenerated}
  </p>
  <p style={{ margin: '5px 0' }}>
- {t.printedOn}: {new Date().toLocaleDateString(t.hrLeave.en, {
+ {localT.printedOn}: {new Date().toLocaleDateString(t.hrLeave.en, {
  year: 'numeric',
  month: 'long',
  day: 'numeric',

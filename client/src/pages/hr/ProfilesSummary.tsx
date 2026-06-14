@@ -7,7 +7,7 @@
 import { useNavigate } from '@/lib/router-compat';
 import { Users, Archive, DoorOpen, UserPlus, FileText, TrendingUp, Building2, Globe2 } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { staffService } from '@/app/services/hrService';
+import { trpc } from '@/lib/trpc';
 import { useEffect, useState } from 'react';
 import { useTranslation } from '@/i18n/useTranslation';
 import { BackButton } from "@/components/BackButton";
@@ -16,6 +16,7 @@ export function ProfilesSummary() {
  const { t } = useTranslation();
  const { language, isRTL } = useLanguage();
  const navigate = useNavigate();
+ const { data: allStaff = [] } = trpc.hrEmployees.getAll.useQuery({});
  const [stats, setStats] = useState({
  totalActive: 0,
  totalArchived: 0,
@@ -29,12 +30,14 @@ export function ProfilesSummary() {
  });
 
  useEffect(() => {
- const allStaff = staffService.getAll();
  const today = new Date();
 
  const active = allStaff.filter(s => s.status === 'active');
+ const suspended = allStaff.filter(s => s.status === 'suspended');
+  const terminated = allStaff.filter(s => s.status === 'terminated');
+ const on_leave = allStaff.filter(s => s.status === 'on_leave');
+  const resigned = allStaff.filter(s => s.status === 'resigned');
  const archived = allStaff.filter(s => s.status === 'ended');
- const exited = allStaff.filter(s => s.status === 'exited');
 
  // New hires calculations
  const days30Ago = new Date(today);
@@ -68,9 +71,9 @@ export function ProfilesSummary() {
 
  // By gender
  const byGender = {
- male: active.filter(s => s.gender === 'Male').length,
- female: active.filter(s => s.gender === 'Female').length,
- other: active.filter(s => s.gender === 'Other').length
+ male: active.filter(s => s.gender === 'male').length,
+ female: active.filter(s => s.gender === 'female').length,
+ other: active.filter(s => s.gender === 'other').length
  };
 
  setStats({

@@ -24,7 +24,7 @@
  * ============================================================================
  */
 
-import { LeaveRequest } from './types';
+import { LeaveRequest } from './types/hrTypes';
 import { staffService } from '@/services/hrService';
 
 export interface EmailNotification {

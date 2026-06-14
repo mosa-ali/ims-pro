@@ -147,8 +147,9 @@ export const hrSalaryScaleRouter = router({
    */
   getActiveByEmployeeId: scopedProcedure
     .input(z.object({
-      employeeId: z.number(),
-    }))
+        id: z.number(),
+        organizationId: z.number()
+      }))
     .query(async ({ ctx, input }) => {
       const { organizationId } = ctx.scope;
       const db = await getDb();
@@ -159,7 +160,6 @@ export const hrSalaryScaleRouter = router({
         .select()
         .from(hrSalaryScale)
         .where(and(
-          eq(hrSalaryScale.employeeId, input.employeeId),
           eq(hrSalaryScale.organizationId, organizationId),
           eq(hrSalaryScale.status, "active"),
           eq(hrSalaryScale.isDeleted, 0)
@@ -174,7 +174,6 @@ export const hrSalaryScaleRouter = router({
         .select()
         .from(hrSalaryScale)
         .where(and(
-          eq(hrSalaryScale.employeeId, input.employeeId),
           eq(hrSalaryScale.organizationId, organizationId),
           eq(hrSalaryScale.status, "draft"),
           eq(hrSalaryScale.isDeleted, 0)
@@ -219,8 +218,8 @@ export const hrSalaryScaleRouter = router({
    */
   getHistoryByEmployeeId: scopedProcedure
     .input(z.object({
-      employeeId: z.number(),
-    }))
+        id: z.number(),
+      }))
     .query(async ({ ctx, input }) => {
       const { organizationId } = ctx.scope;
       const db = await getDb();
@@ -230,7 +229,6 @@ export const hrSalaryScaleRouter = router({
         .select()
         .from(hrSalaryScale)
         .where(and(
-          eq(hrSalaryScale.employeeId, input.employeeId),
           eq(hrSalaryScale.organizationId, organizationId),
           eq(hrSalaryScale.isDeleted, 0)
         ))

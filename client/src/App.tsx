@@ -195,7 +195,6 @@ const PayrollAllowances = lazy(() => import("./pages/hr/PayrollAllowances").then
 const SalaryScale = lazy(() => import("./pages/hr/SalaryScale").then(m => ({ default: m.SalaryScale })));
 const Recruitment = lazy(() => import("./pages/hr/Recruitment").then(m => ({ default: m.Recruitment })));
 const TrainingManagement = lazy(() => import("./pages/hr/TrainingManagement").then(m => ({ default: m.TrainingManagement })));
-const HRDocuments = lazy(() => import("./pages/hr/HRDocuments").then(m => ({ default: m.HRDocuments })));
 const HRReports = lazy(() => import("./pages/hr/HRReports").then(m => ({ default: m.HRReports })));
 const HRSettings = lazy(() => import("./pages/hr/HRSettings").then(m => ({ default: m.HRSettings })));
 const SanctionsDisciplinary = lazy(() => import("./pages/hr/SanctionsDisciplinary").then(m => ({ default: m.SanctionsDisciplinary })));
@@ -570,7 +569,6 @@ function Router() {
  <Route path="/organization/hr/recruitment" component={Recruitment} />
  <Route path="/organization/hr/recruitment/*" component={Recruitment} />
  <Route path="/organization/hr/training" component={TrainingManagement} />
- <Route path="/organization/hr/documents" component={HRDocuments} />
  <Route path="/organization/hr/reports" component={HRReports} />
  <Route path="/organization/hr/reports-analytics" component={HRReportsAnalytics} />
  <Route path="/organization/reports-analytics" component={ReportsAnalyticsPage} />

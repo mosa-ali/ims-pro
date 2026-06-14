@@ -5,20 +5,21 @@
  */
 
 import { FilteredEmployeesList } from './FilteredEmployeesList';
-import { useLanguage } from '@/contexts/LanguageContext';
 
 export function ExitProcessing() {
  return (
  <FilteredEmployeesList
  filter="exit-processing"
- title={{
- en: 'Exit Processing',
- ar: 'معالجة المغادرة'
- }}
- subtitle={{
- en: 'Staff in exit process',
- ar: 'الموظفون في عملية المغادرة'
- }}
+title={{
+  en: 'Exit Processing',
+  ar: 'معالجة المغادرة',
+  it: 'Gestione delle Uscite'
+}}
+subtitle={{
+  en: 'Staff in exit process',
+  ar: 'الموظفون في عملية المغادرة',
+  it: 'Personale attualmente nel processo di uscita'
+}}
  backPath="/organization/hr/employees-profiles"
  showAddButton={false}
  />
