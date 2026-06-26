@@ -94,9 +94,9 @@ export default function TreasuryBankAccounts() {
   });
 
   // Fetch data
-  const bankAccountsQuery = trpc.treasury.listBankAccounts.useQuery({ organizationId, operatingUnitId });
+  const bankAccountsQuery = trpc.treasury.listBankAccounts.useQuery({ });
 
-  const bankStatsQuery = trpc.treasury.getBankAccountStatistics.useQuery({ organizationId, operatingUnitId });
+  const bankStatsQuery = trpc.treasury.getBankAccountStatistics.useQuery({ });
 
   const createBankAccountMutation = trpc.treasury.createBankAccount.useMutation({
     onSuccess: () => {
@@ -152,14 +152,14 @@ export default function TreasuryBankAccounts() {
     if (editingBankAccount) {
       updateBankAccountMutation.mutate({
         id: editingBankAccount.id,
-        organizationId,
-        operatingUnitId,
+        
+        
         ...bankAccountForm,
       });
     } else {
       createBankAccountMutation.mutate({
-        organizationId,
-        operatingUnitId,
+        
+        
         ...bankAccountForm,
       });
     }
@@ -175,8 +175,8 @@ export default function TreasuryBankAccounts() {
     if (confirm(t.treasuryCashManagement.confirmDelete || 'Are you sure?')) {
       deleteBankAccountMutation.mutate({
         id,
-        organizationId,
-        operatingUnitId,
+        
+        
       });
     }
   };

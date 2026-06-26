@@ -25,8 +25,17 @@ export interface Organization {
 }
 
 // Organization role type
-export type OrganizationRole = 'owner' | 'admin' | 'manager' | 'member' | 'viewer' | 'platform_admin' | 'organization_admin';
-
+export type OrganizationRole =
+  | "platform_super_admin"
+  | "platform_admin"
+  | "platform_auditor"
+  | "organization_admin"
+  | "admin"
+  | "user"
+  | "manager"
+  | "member"
+  | "viewer";
+  
 interface OrganizationContextType {
  currentOrganization: Organization | null;
  currentOrganizationId: number | null;
@@ -62,8 +71,9 @@ export function OrganizationProvider({ children }: { children: React.ReactNode }
 
  // Load organization when user changes or organizations are fetched
  useEffect(() => {
- if (authLoading) return;
- if (orgsLoading) return;
+if (authLoading || orgsLoading) {
+  return;
+}
  
  if (!isAuthenticated || !user) {
  setCurrentOrganization(null);

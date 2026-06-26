@@ -48,12 +48,24 @@ import {
 import { useTranslation } from '@/i18n/useTranslation';
 import { AssetImportExportDialog, type ImportResult, type TemplateColumn } from '@/components/AssetImportExportDialog';
 
+// Trilingual text helper
+const getTranslatedText = (language: string, en: string, ar: string, it: string): string => {
+  switch (language) {
+    case 'ar':
+      return ar;
+    case 'it':
+      return it;
+    default:
+      return en;
+  }
+};
+
 const disposalTypeOptions = [
-  { value: 'sale', labelEn: 'Sale', labelAr: 'بيع' },
-  { value: 'donation', labelEn: 'Donation', labelAr: 'تبرع' },
-  { value: 'scrap', labelEn: 'Scrap', labelAr: 'خردة' },
-  { value: 'theft', labelEn: 'Theft', labelAr: 'سرقة' },
-  { value: 'loss', labelEn: 'Loss', labelAr: 'فقدان' },
+  { value: 'sale', labelEn: 'Sale', labelAr: 'بيع', labelIt: 'Vendita' },
+  { value: 'donation', labelEn: 'Donation', labelAr: 'تبرع', labelIt: 'Donazione' },
+  { value: 'scrap', labelEn: 'Scrap', labelAr: 'خردة', labelIt: 'Rottame' },
+  { value: 'theft', labelEn: 'Theft', labelAr: 'سرقة', labelIt: 'Furto' },
+  { value: 'loss', labelEn: 'Loss', labelAr: 'فقدان', labelIt: 'Perdita' },
 ];
 
 export default function AssetDisposals() {
@@ -80,9 +92,9 @@ export default function AssetDisposals() {
   });
 
   // Fetch data
-  const disposalsQuery = trpc.assets.listDisposals.useQuery({ organizationId, operatingUnitId });
+  const disposalsQuery = trpc.assets.listDisposals.useQuery({ });
 
-  const assetsQuery = trpc.assets.listAssets.useQuery({ organizationId, operatingUnitId });
+  const assetsQuery = trpc.assets.listAssets.useQuery({ });
 
   const createDisposalMutation = trpc.assets.createDisposal.useMutation({
     onSuccess: () => {
@@ -118,8 +130,8 @@ export default function AssetDisposals() {
     }
 
     createDisposalMutation.mutate({
-      organizationId,
-      operatingUnitId,
+      
+      
       ...disposalForm,
     });
   };
@@ -128,15 +140,15 @@ export default function AssetDisposals() {
     if (confirm(t.financeModule.confirmDelete || 'Are you sure?')) {
       deleteDisposalMutation.mutate({
         id,
-        organizationId,
-        operatingUnitId,
+        
+        
       });
     }
   };
 
   const getDisposalTypeLabel = (type: string) => {
     const option = disposalTypeOptions.find((o) => o.value === type);
-    return language === 'ar' && option?.labelAr ? option.labelAr : option?.labelEn;
+    return getTranslatedText(language, option?.labelEn || '', option?.labelAr || '', option?.labelIt || '');
   };
 
   const formatCurrency = (amount: number | null) => {
@@ -168,7 +180,7 @@ export default function AssetDisposals() {
       buyerInfo: r.buyerInfo ? String(r.buyerInfo) : undefined,
       notes: r.notes ? String(r.notes) : undefined,
     }));
-    return await importDisposalsMutation.mutateAsync({ organizationId, operatingUnitId, disposals });
+    return await importDisposalsMutation.mutateAsync({  disposals });
   };
 
   const exportDisposalsData = (disposalsQuery.data || []).map((d: any) => ({
@@ -181,7 +193,14 @@ export default function AssetDisposals() {
     notes: d.notes,
   }));
 
-  const filteredDisposals = (disposalsQuery.data || []).filter((disposal: any) => {
+  const filteredDisposals = (disposalsQuery.data || []).map((disposal: any) => {
+    const asset = assetsQuery.data?.find((a: any) => a.id === disposal.assetId);
+    return {
+      ...disposal,
+      assetCode: asset?.assetCode || '-',
+      assetName: asset?.name || '-',
+    };
+  }).filter((disposal: any) => {
     if (statusFilter === 'all') return true;
     return disposal.status === statusFilter;
   });
@@ -198,7 +217,7 @@ export default function AssetDisposals() {
               className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors"
             >
               {isRTL ? <ArrowRight className="h-4 w-4" /> : <ArrowLeft className="h-4 w-4" />}
-              <span>{isRTL ? 'العودة إلى إدارة الأصول' : 'Back to Assets'}</span>
+              <span>{getTranslatedText(language, 'Back to Assets', 'العودة إلى إدارة الأصول', 'Torna agli Asset')}</span>
             </button>
           </div>
 
@@ -209,9 +228,7 @@ export default function AssetDisposals() {
               {t.financeModule.disposals || 'Disposals'}
             </h1>
             <p className="text-muted-foreground">
-              {isRTL
-                ? 'إدارة عمليات التخلص من الأصول بما في ذلك البيع والتبرع'
-                : 'Manage asset disposal processes including sales and donations.'}
+              {getTranslatedText(language, 'Manage asset disposal processes including sales and donations.', 'إدارة عمليات التخلص من الأصول بما في ذلك البيع والتبرع', 'Gestisci i processi di dismissione dei beni incluse vendite e donazioni.')}
             </p>
           </div>
 
@@ -265,8 +282,8 @@ export default function AssetDisposals() {
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">{t.financeModule.allStatuses}</SelectItem>
-              <SelectItem value="pending">{isRTL ? 'قيد الانتظار' : 'Pending'}</SelectItem>
-              <SelectItem value="completed">{isRTL ? 'مكتمل' : 'Completed'}</SelectItem>
+              <SelectItem value="pending">{getTranslatedText(language, 'Pending', 'قيد الانتظار', 'In Sospeso')}</SelectItem>
+              <SelectItem value="completed">{getTranslatedText(language, 'Completed', 'مكتمل', 'Completato')}</SelectItem>
             </SelectContent>
           </Select>
           <div className="flex gap-2">
@@ -428,7 +445,7 @@ export default function AssetDisposals() {
               {t.financeModule.cancel}
             </Button>
             <Button onClick={handleSaveDisposal} disabled={createDisposalMutation.isPending}>
-              {createDisposalMutation.isPending ? t.common.saving : t.financeModule.save}
+              {createDisposalMutation.isPending ? t.financeModule.saving : t.financeModule.save}
             </Button>
           </DialogFooter>
         </DialogContent>

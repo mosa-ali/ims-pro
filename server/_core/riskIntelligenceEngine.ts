@@ -323,7 +323,7 @@ const endDate = project.endDate
 
   if (startDate && endDate) {
     const totalDuration = endDate.getTime() - startDate.getTime();
-    const elapsedDuration = now.getTime() - startDate.getTime();
+    const elapsedDuration = new Date().getTime() - startDate.getTime();
     timelineElapsed = totalDuration > 0 ? (elapsedDuration / totalDuration) * 100 : 0;
   }
 

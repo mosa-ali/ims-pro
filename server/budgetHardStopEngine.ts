@@ -164,8 +164,8 @@ export async function validatePaymentAgainstBudget(
 export const budgetHardStopRouter = router({
   getBudgetConfig: scopedProcedure.query(async ({ ctx }) => {
     return await getBudgetConfig(
-      ctx.user.organizationId,
-      ctx.user.operatingUnitId
+      ctx.scope.organizationId,
+      ctx.scope.operatingUnitId
     );
   }),
 
@@ -182,8 +182,8 @@ export const budgetHardStopRouter = router({
       // Placeholder: In production, update budget_config table
       return {
         id: 1,
-        organizationId: ctx.user.organizationId,
-        operatingUnitId: ctx.user.operatingUnitId,
+        organizationId: ctx.scope.organizationId,
+        operatingUnitId: ctx.scope.operatingUnitId,
         ...input,
       };
     }),
@@ -193,7 +193,7 @@ export const budgetHardStopRouter = router({
     .query(async ({ ctx, input }) => {
       return await calculateBudgetStatus(
         input.budgetLineId,
-        ctx.user.organizationId
+        ctx.scope.organizationId
       );
     }),
 
@@ -208,8 +208,8 @@ export const budgetHardStopRouter = router({
       return await validateExpenditureAgainstBudget(
         input.budgetLineId,
         input.expenditureAmount,
-        ctx.user.organizationId,
-        ctx.user.operatingUnitId,
+        ctx.scope.organizationId,
+        ctx.scope.operatingUnitId,
         ctx.user.role || 'USER'
       );
     }),
@@ -225,8 +225,8 @@ export const budgetHardStopRouter = router({
       return await validatePaymentAgainstBudget(
         input.budgetLineId,
         input.paymentAmount,
-        ctx.user.organizationId,
-        ctx.user.operatingUnitId,
+       ctx.scope.organizationId,
+        ctx.scope.operatingUnitId,
         ctx.user.role || 'USER'
       );
     }),

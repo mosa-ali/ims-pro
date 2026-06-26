@@ -7,6 +7,7 @@
 import { useState, useCallback } from"react";
 import { useNavigate } from '@/lib/router-compat';
 import { useLanguage } from"@/contexts/LanguageContext";
+import { useOrganization } from '@/contexts/OrganizationContext';
 import { useOperatingUnit } from"@/contexts/OperatingUnitContext";
 import { trpc } from"@/lib/trpc";
 import { Button } from"@/components/ui/button";
@@ -37,7 +38,10 @@ export default function BankStatementImport() {
  const navigate = useNavigate();
  const { language, direction: dir, isRTL } = useLanguage();
  // Using centralized translations via t.bankStatementImport
- const { currentOrganizationId, currentOperatingUnitId } = useOperatingUnit();
+   const { currentOrganization } = useOrganization();
+   const { currentOperatingUnit } = useOperatingUnit();
+   const organizationId = currentOrganization?.id || 0;
+   const operatingUnitId = currentOperatingUnit?.id;
 
  const [file, setFile] = useState<File | null>(null);
  const [fileData, setFileData] = useState<string>("");
@@ -55,10 +59,10 @@ export default function BankStatementImport() {
  // Fetch bank accounts
  const bankAccountsQuery = trpc.treasury.bankAccounts.list.useQuery(
  {
- organizationId: currentOrganizationId!,
- operatingUnitId: currentOperatingUnitId!,
+ organizationId: currentOrganization?.id || 0,
+ operatingUnitId: currentOperatingUnit?.id,
  },
- { enabled: !!currentOrganizationId && !!currentOperatingUnitId }
+ { enabled: !!currentOrganization?.id && !!currentOperatingUnit?.id }
  );
 
  const previewMutation = trpc.bankStatementImport.preview.useMutation();
@@ -140,8 +144,6 @@ export default function BankStatementImport() {
 
  try {
  const result = await importMutation.mutateAsync({
- organizationId: currentOrganizationId!,
- operatingUnitId: currentOperatingUnitId!,
  bankAccountId: parseInt(selectedBankAccount),
  fileData,
  fileName: file.name,

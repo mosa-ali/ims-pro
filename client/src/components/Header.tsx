@@ -8,6 +8,7 @@ import { useTranslation } from "@/i18n/useTranslation";
 import { useLocation } from "wouter";
 import { useOrganizationBranding } from "@/hooks/useOrganizationBranding";
 import { ROUTES, ROUTE_LABELS } from "@/pages/organization/constants";
+import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 
 /**
  * Header Component - Context-Aware Navigation Header
@@ -31,6 +32,7 @@ export function Header() {
   const { t, language } = useTranslation();
   const [location] = useLocation();
   const { branding } = useOrganizationBranding();
+
 
   const [showOperatingUnitMenu, setShowOperatingUnitMenu] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
@@ -274,6 +276,9 @@ const welcomeLabel =
 
       {/* Right: Controls */}
       <div className="flex items-center gap-3">
+
+        {/* Language Switcher */}
+        <LanguageSwitcher variant="header" />
 
         {/* Operating Unit Switcher (Phase 0 Spec 4) */}
         {/* VISIBILITY RULE: Always visible in organization context to show current office */}

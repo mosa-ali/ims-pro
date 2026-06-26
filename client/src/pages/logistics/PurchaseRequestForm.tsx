@@ -328,14 +328,14 @@ const clipboardItems = await navigator.clipboard.read();
  */
 
 interface LineItem {
- id?: number;
- budgetLine: string;
- description: string;
- specifications: string;
- quantity: string;
- unit: string;
- unitPrice: string;
- recurrence: string;
+    id?: number;
+    budgetLine: string;
+    description: string;
+    specifications: string;
+    quantity: number;
+    unit: string;
+    unitPrice: number;
+    recurrence: number;
 }
 
 export default function PurchaseRequestForm() {
@@ -406,13 +406,13 @@ export default function PurchaseRequestForm() {
  const [pmSignatureOpen, setPMSignatureOpen] = useState(false);
 
  const [lineItems, setLineItems] = useState<LineItem[]>([
- { budgetLine: "", description: "", specifications: "", quantity: "1", unit: "", unitPrice: "0", recurrence: "1" },
+ { budgetLine: "", description: "", specifications: "", quantity: 1, unit: "", unitPrice: 0, recurrence: 1 },
  ]);
 
  // Initialize line items with first unit type once data loads
  useEffect(() => {
  if (unitTypesData && unitTypesData.length > 0 && lineItems[0].unit === "") {
- setLineItems([{ budgetLine: "", description: "", specifications: "", quantity: "1", unit: unitTypesData[0].name, unitPrice: "0", recurrence: "1" }]);
+ setLineItems([{ budgetLine: "", description: "", specifications: "", quantity: 1, unit: unitTypesData[0].name, unitPrice: 0, recurrence: 1 }]);
  }
  }, [unitTypesData]);
 
@@ -463,8 +463,8 @@ export default function PurchaseRequestForm() {
  // Auto-calculate total when totalBudgetLine or exchangeRate changes
  useEffect(() => {
  if (formData.totalBudgetLine && formData.exchangeRate) {
- const totalBudgetLineNum = parseFloat(String(formData.totalBudgetLine)) || 0;
- const exchangeRateNum = parseFloat(String(formData.exchangeRate)) || 1;
+ const totalBudgetLineNum = parseFloat(formData.totalBudgetLine) || 0;
+ const exchangeRateNum = Number(formData.exchangeRate) || 1;
  const calculatedTotal = (totalBudgetLineNum * exchangeRateNum).toFixed(2);
  setFormData(prev => ({
  ...prev,
@@ -488,8 +488,16 @@ export default function PurchaseRequestForm() {
  // Calculate remaining budget for selected budget line
  // Use correct schema field names: totalAmount (allocation), actualSpent (spending), availableBalance (pre-calculated)
  const selectedBudgetLine = budgetLinesData?.find(bl => bl.id === formData.budgetLineId);
- const remainingBudget = selectedBudgetLine ? (selectedBudgetLine.availableBalance || 0) : 0;
- const budgetUtilizationPercent = selectedBudgetLine ? ((selectedBudgetLine.actualSpent || 0) / (selectedBudgetLine.totalAmount || 1)) * 100 : 0;
+ const remainingBudget = selectedBudgetLine
+  ? Number(selectedBudgetLine.availableBalance ?? 0)
+  : 0;
+const actualSpent = Number(selectedBudgetLine?.actualSpent ?? 0);
+const totalBudget = Number(selectedBudgetLine?.totalAmount ?? 1);
+
+const budgetUtilizationPercent =
+    totalBudget > 0
+        ? (actualSpent / totalBudget) * 100
+        : 0;
 
  const { data: existingPR } = trpc.logistics.purchaseRequests.getById.useQuery(
  { id: parseInt(params.id || "0") },
@@ -787,7 +795,7 @@ const canViewPMApproval =
  subBudgetLine: formData.subBudgetLine,
  activityName: formData.activityName,
  totalBudgetLine: formData.totalBudgetLine ? String(parseFloat(formData.totalBudgetLine)) : undefined,
- exchangeRate: formData.exchangeRate ? String(formData.exchangeRate) : undefined,
+ exchangeRate: formData.exchangeRate ? formData.exchangeRate : undefined,
  exchangeTo: formData.exchangeTo,
  total: formData.total ? String(parseFloat(formData.total)) : '0',
  currency: formData.currency,
@@ -899,7 +907,7 @@ const canViewPMApproval =
  let rejectedBy: "logistic" | "finance" | "pm" = "logistic";
  if (formData.status === "validated_by_logistic") rejectedBy = "finance";
  else if (formData.status === "validated_by_finance") rejectedBy = "pm";
- await rejectMutation.mutateAsync({ id: parseInt(params.id!), rejectedBy, reason: rejectionReason });
+ await rejectMutation.mutateAsync({ id: parseInt(params.id!), reason: rejectionReason });
  toast.success(t.logistics.prRejected);
  setShowRejectDialog(false);
  navigate("/organization/logistics/purchase-requests");
@@ -911,7 +919,7 @@ const canViewPMApproval =
  const addLineItem = () => {
  const defaultUnit = unitTypesData && unitTypesData.length > 0 ? unitTypesData[0].name : "";
  if (defaultUnit) {
- setLineItems([...lineItems, { budgetLine: "", description: "", specifications: "", quantity: "1", unit: defaultUnit, unitPrice: "0", recurrence: "1" }]);
+ setLineItems([...lineItems, { budgetLine: "", description: "", specifications: "", quantity: 1, unit: defaultUnit, unitPrice: 0, recurrence: 1 }]);
  } else {
  toast.error(t.logistics.unitTypesNotLoadedYet);
  }
@@ -931,9 +939,9 @@ const canViewPMApproval =
 
  const calculateTotal = () => {
  return lineItems.reduce((sum, item) => {
- const qty = parseFloat(item.quantity) || 0;
- const price = parseFloat(item.unitPrice) || 0;
- const recurrence = parseFloat(item.recurrence) || 1;
+ const qty = item.quantity || 0;
+ const price = item.unitPrice || 0;
+ const recurrence = item.recurrence || 1;
  return sum + qty * price * recurrence;
  }, 0);
  };
@@ -961,7 +969,7 @@ const canViewPMApproval =
  subBudgetLine: formData.subBudgetLine,
  activityName: formData.activityName,
  totalBudgetLine: formData.totalBudgetLine ? String(parseFloat(formData.totalBudgetLine)) : undefined,
- exchangeRate: formData.exchangeRate ? String(formData.exchangeRate) : undefined,
+ exchangeRate: formData.exchangeRate ? formData.exchangeRate : undefined,
  exchangeTo: formData.exchangeTo,
  total: formData.total ? String(parseFloat(formData.total)) : '0',
  currency: formData.currency,
@@ -1323,7 +1331,7 @@ budgetUtilizationPercent={budgetUtilizationPercent}
  </TableCell>
  <TableCell><Input type="number" min="0" step="0.01" value={item.unitPrice} onChange={(e) => updateLineItem(index, "unitPrice", e.target.value)} disabled={isLocked} /></TableCell>
  <TableCell><Input type="number" min="1" max="100" value={item.recurrence} onChange={(e) => updateLineItem(index, "recurrence", e.target.value)} disabled={isLocked} /></TableCell>
- <TableCell className="font-medium">{((parseFloat(item.quantity) || 0) * (parseFloat(item.unitPrice) || 0) * (parseFloat(item.recurrence) || 1)).toFixed(2)}</TableCell>
+ <TableCell className="font-medium">{((item.quantity || 0) * (item.unitPrice || 0) * (item.recurrence || 1)).toFixed(2)}</TableCell>
  <TableCell><Button variant="ghost" size="icon" onClick={() => removeLineItem(index)} disabled={lineItems.length === 1 || isLocked}><Trash2 className="h-4 w-4 text-destructive" /></Button></TableCell>
  </TableRow>
  ))}

@@ -2,10 +2,11 @@
  * Assets - Transfers Section Page
  */
 
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { useNavigate } from '@/lib/router-compat';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useOrganization } from '@/contexts/OrganizationContext';
+import { useOperatingUnit } from "@/contexts/OperatingUnitContext";
 import { trpc } from '@/lib/trpc';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -50,7 +51,8 @@ import { AssetImportExportDialog, type ImportResult, type TemplateColumn } from 
 export default function AssetTransfers() {
   const { t } = useTranslation();
   const { language, isRTL } = useLanguage();
-  const { currentOrganization, currentOperatingUnit } = useOrganization();
+  const { currentOrganization } = useOrganization();
+  const { currentOperatingUnit } = useOperatingUnit();
   const organizationId = currentOrganization?.id || 0;
   const operatingUnitId = currentOperatingUnit?.id;
   const navigate = useNavigate();
@@ -59,6 +61,10 @@ export default function AssetTransfers() {
   const [statusFilter, setStatusFilter] = useState('all');
   const [showImportDialog, setShowImportDialog] = useState(false);
   const [showExportDialog, setShowExportDialog] = useState(false);
+  const [showViewDialog, setShowViewDialog] = useState(false);
+  const [selectedTransfer, setSelectedTransfer] = useState<any>(null);
+  const [signatureData, setSignatureData] = useState<string | null>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
 
   const [transferForm, setTransferForm] = useState({
     assetId: 0,
@@ -69,9 +75,9 @@ export default function AssetTransfers() {
   });
 
   // Fetch data
-  const transfersQuery = trpc.assets.listTransfers.useQuery({ organizationId, operatingUnitId });
+  const transfersQuery = trpc.assets.listTransfers.useQuery({ });
 
-  const assetsQuery = trpc.assets.listAssets.useQuery({ organizationId, operatingUnitId });
+  const assetsQuery = trpc.assets.listAssets.useQuery({ });
 
   const createTransferMutation = trpc.assets.createTransfer.useMutation({
     onSuccess: () => {
@@ -99,8 +105,8 @@ export default function AssetTransfers() {
     }
 
     createTransferMutation.mutate({
-      organizationId,
-      operatingUnitId,
+      
+      
       ...transferForm,
     });
   };
@@ -129,7 +135,7 @@ export default function AssetTransfers() {
       transferDate: r.transferDate ? String(r.transferDate) : undefined,
       reason: r.reason ? String(r.reason) : undefined,
     }));
-    return await importTransfersMutation.mutateAsync({ organizationId, operatingUnitId, transfers });
+    return await importTransfersMutation.mutateAsync({  transfers });
   };
 
   const exportTransfersData = (transfersQuery.data || []).map((t: any) => ({
@@ -142,10 +148,35 @@ export default function AssetTransfers() {
     reason: t.reason,
   }));
 
-  const filteredTransfers = (transfersQuery.data || []).filter((transfer: any) => {
+  const filteredTransfers = (transfersQuery.data || []).map((transfer: any) => {
+    const asset = assetsQuery.data?.find((a: any) => a.id === transfer.assetId);
+    return {
+      ...transfer,
+      assetCode: asset?.assetCode || '-',
+      assetName: asset?.name || '-',
+    };
+  }).filter((transfer: any) => {
     if (statusFilter === 'all') return true;
     return transfer.status === statusFilter;
   });
+
+  const approveTransferMutation = trpc.assets.approveTransfer.useMutation({
+    onSuccess: () => {
+      toast.success(t.financeModule.transferApproved || 'Transfer approved');
+      transfersQuery.refetch();
+      setShowViewDialog(false);
+    },
+    onError: (error) => {
+      toast.error(error.message);
+    },
+  });
+
+  const handleApproveTransfer = (transferId: number, signature: string) => {
+    approveTransferMutation.mutate({
+      transferId,
+      signature,
+    });
+  };
 
   return (
     <div className="min-h-screen bg-background" dir={isRTL ? 'rtl' : 'ltr'}>
@@ -181,7 +212,7 @@ export default function AssetTransfers() {
             <Card>
               <CardHeader className="pb-2">
                 <CardTitle className="text-sm font-medium text-muted-foreground">
-                  {t.financeModule.totalTransfers || 'Total Transfers'}
+                  {t.logistics.totalTransfers || 'Total Transfers'}
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -241,7 +272,7 @@ export default function AssetTransfers() {
             </Button>
             <Button onClick={() => { resetTransferForm(); setShowTransferDialog(true); }}>
               <Plus className="h-4 w-4 me-2" />
-              {t.financeModule.newTransfer}
+              {t.logistics.newTransfer}
             </Button>
           </div>
         </div>
@@ -281,7 +312,14 @@ export default function AssetTransfers() {
                       </Badge>
                     </TableCell>
                     <TableCell>
-                      <Button variant="ghost" size="icon">
+                      <Button 
+                        variant="ghost" 
+                        size="icon"
+                        onClick={() => {
+                          setSelectedTransfer(transfer);
+                          setShowViewDialog(true);
+                        }}
+                      >
                         <Eye className="h-4 w-4" />
                       </Button>
                     </TableCell>
@@ -321,7 +359,7 @@ export default function AssetTransfers() {
       <Dialog open={showTransferDialog} onOpenChange={setShowTransferDialog}>
         <DialogContent className="max-w-2xl">
           <DialogHeader>
-            <DialogTitle>{t.financeModule.newTransfer}</DialogTitle>
+            <DialogTitle>{t.logistics.newTransfer}</DialogTitle>
           </DialogHeader>
           <div className="grid grid-cols-1 gap-4 py-4">
             <div className="space-y-2">
@@ -378,6 +416,56 @@ export default function AssetTransfers() {
             </Button>
             <Button onClick={handleSaveTransfer} disabled={createTransferMutation.isPending}>
               {createTransferMutation.isPending ? t.financeModule.saving : t.financeModule.save}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* View Transfer Details Dialog */}
+      <Dialog open={showViewDialog} onOpenChange={setShowViewDialog}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>{isRTL ? 'تفاصيل التحويل' : 'Transfer Details'}</DialogTitle>
+          </DialogHeader>
+          {selectedTransfer && (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 py-4">
+              <div className="space-y-2">
+                <Label className="text-muted-foreground">{t.financeModule.assetCode}</Label>
+                <p className="font-mono font-semibold">{selectedTransfer.assetCode || '-'}</p>
+              </div>
+              <div className="space-y-2">
+                <Label className="text-muted-foreground">{t.financeModule.assetName}</Label>
+                <p className="font-semibold">{selectedTransfer.assetName || '-'}</p>
+              </div>
+              <div className="space-y-2">
+                <Label className="text-muted-foreground">{t.financeModule.fromLocation}</Label>
+                <p className="font-semibold">{selectedTransfer.fromLocation || '-'}</p>
+              </div>
+              <div className="space-y-2">
+                <Label className="text-muted-foreground">{t.financeModule.toLocation}</Label>
+                <p className="font-semibold">{selectedTransfer.toLocation || '-'}</p>
+              </div>
+              <div className="space-y-2">
+                <Label className="text-muted-foreground">{t.financeModule.transferDate}</Label>
+                <p className="font-semibold">{new Date(selectedTransfer.transferDate).toLocaleDateString()}</p>
+              </div>
+              <div className="space-y-2">
+                <Label className="text-muted-foreground">{t.financeModule.status}</Label>
+                <Badge variant={selectedTransfer.status === 'completed' ? 'default' : 'secondary'}>
+                  {selectedTransfer.status}
+                </Badge>
+              </div>
+              {selectedTransfer.reason && (
+                <div className="space-y-2 md:col-span-2">
+                  <Label className="text-muted-foreground">{t.financeModule.reason}</Label>
+                  <p className="text-sm">{selectedTransfer.reason}</p>
+                </div>
+              )}
+            </div>
+          )}
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowViewDialog(false)}>
+              {t.financeModule.close}
             </Button>
           </DialogFooter>
         </DialogContent>

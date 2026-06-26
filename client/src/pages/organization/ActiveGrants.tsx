@@ -251,9 +251,9 @@ const { user } = useAuth();
  const [currentPage, setCurrentPage] = useState(1);
  const itemsPerPage = 10;
 
- const isAdmin = user?.role === 'Admin' || user?.role === 'Finance';
+ const isAdmin = user?.role === 'organization_admin' || user?.role === 'user';
  const canEdit = isAdmin;
- const canExport = isAdmin || user?.role === 'Manager';
+ const canExport = isAdmin || user?.role === 'user';
 
  // ============================================================================
  // AUTO-SYNC: Automatically sync grants with projects on component mount

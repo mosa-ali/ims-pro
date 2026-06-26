@@ -17,17 +17,20 @@ import {
 import { Link } from 'wouter';
 import { useTranslation } from '@/i18n/useTranslation';
 import { BackButton } from "@/components/BackButton";
+import { useOperatingUnit } from "@/contexts/OperatingUnitContext";
+
 
 export default function AssetsManagementDashboard() {
   const { t } = useTranslation();
   const { language, isRTL } = useLanguage();
-  const { currentOrganization, currentOperatingUnit } = useOrganization();
+  const { currentOrganization } = useOrganization();
+  const { currentOperatingUnit } = useOperatingUnit();
   const organizationId = currentOrganization?.id || 0;
   const operatingUnitId = currentOperatingUnit?.id;
   const navigate = useNavigate();
 
   // Fetch statistics for KPI cards
-  const assetStatsQuery = trpc.assets.getAssetStatistics.useQuery({ organizationId, operatingUnitId });
+  const assetStatsQuery = trpc.assets.getAssetStatistics.useQuery({ });
 
   const formatCurrency = (amount: number | null, currency: string = 'USD') => {
     if (!amount) return `${currency} 0.00`;
@@ -132,7 +135,7 @@ export default function AssetsManagementDashboard() {
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold text-blue-600">
-                  {formatCurrency(assetStatsQuery.data?.totalValue || 0)}
+                  {formatCurrency(assetStatsQuery.data?.totalAcquisitionCost || 0)}
                 </div>
               </CardContent>
             </Card>

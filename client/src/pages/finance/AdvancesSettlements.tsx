@@ -270,22 +270,22 @@ export default function AdvancesSettlements() {
 
  // tRPC queries and mutations
  const { data: advances, isLoading, refetch } = trpc.advances.list.useQuery({
- organizationId,
+ 
  status: statusFilter !=="all" ? statusFilter as any : undefined,
  advanceType: typeFilter !=="all" ? typeFilter as any : undefined,
  employeeName: searchTerm || undefined,
  });
 
  const { data: statistics } = trpc.advances.getStatistics.useQuery({
- organizationId,
+ 
  });
 
  const { data: nextNumber } = trpc.advances.getNextNumber.useQuery({
- organizationId,
+ 
  });
 
  const { data: nextSettlementNumber } = trpc.advances.getNextSettlementNumber.useQuery({
- organizationId,
+ 
  });
 
  // Version history query
@@ -461,7 +461,7 @@ export default function AdvancesSettlements() {
  const handleCreate = () => {
  if (!nextNumber) return;
  createMutation.mutate({
- organizationId,
+ 
  advanceNumber: nextNumber,
  employeeName: formData.employeeName,
  employeeNameAr: formData.employeeNameAr || undefined,
@@ -540,7 +540,7 @@ export default function AdvancesSettlements() {
  const handleAddSettlement = () => {
  if (!selectedAdvance || !nextSettlementNumber) return;
  createSettlementMutation.mutate({
- organizationId,
+ 
  advanceId: selectedAdvance.id,
  settlementNumber: nextSettlementNumber,
  settlementDate: settlementData.settlementDate,
@@ -661,7 +661,7 @@ export default function AdvancesSettlements() {
  if (importPreview.length === 0) return;
 
  bulkImportMutation.mutate({
- organizationId,
+ 
  advances: importPreview.map((item) => ({
  ...item,
  advanceType: item.advanceType as any,
@@ -1008,14 +1008,6 @@ export default function AdvancesSettlements() {
  <Input
  value={formData.employeeName}
  onChange={(e) => setFormData({ ...formData, employeeName: e.target.value })}
- />
- </div>
- <div className="space-y-2">
- <Label>{t.employeeNameAr}</Label>
- <Input
- value={formData.employeeNameAr}
- onChange={(e) => setFormData({ ...formData, employeeNameAr: e.target.value })}
- dir="rtl"
  />
  </div>
  <div className="space-y-2">

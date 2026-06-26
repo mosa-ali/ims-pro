@@ -16,7 +16,6 @@ import { useOperatingUnit } from "@/contexts/OperatingUnitContext";
 import { usePermissions } from "@/hooks/usePermissions";
 import { Building2 as BuildingIcon, ChevronDown as ChevronDownIcon } from 'lucide-react';
 import { useOrganizationBranding } from "@/hooks/useOrganizationBranding";
-import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 
 
 /**
@@ -218,11 +217,9 @@ export function Sidebar() {
  : (isRTL ? ChevronRight : ChevronLeft);
 
  return (
- <div 
- 
- 
- className={`h-full bg-white flex flex-col transition-all duration-300 border-s border-gray-200 ${collapsed ? 'w-20' : 'w-72'}`}
- >
+ <div
+ className={`relative z-50 h-full bg-white flex flex-col transition-all duration-300 border-s border-gray-200 ${collapsed ? 'w-20' : 'w-72'}`}
+>
  {/* Branding Section with Organization Switcher */}
  <div 
  className={`relative flex items-center ${collapsed ? 'justify-center h-16' : 'justify-between h-16'} border-b border-gray-100 shrink-0`}
@@ -447,19 +444,9 @@ export function Sidebar() {
  ))}
  </nav>
 
- {/* Language Switcher & User Profile Section */}
+ {/* User Profile Section */}
  {!collapsed && (
  <div className="border-t border-gray-100 space-y-2" style={{ padding: '0.75rem' }}>
- {/* Language Switcher */}
- <div
-  className="rounded-lg hover:bg-gray-100 transition-all"
-  style={{
-    paddingInlineStart: '0.75rem',
-    paddingInlineEnd: '0.75rem',
-  }}
- >
-  <LanguageSwitcher />
- </div>
  {/* User Profile */}
  <div className="relative">
  <button

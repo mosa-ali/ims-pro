@@ -32,27 +32,14 @@ interface OperatingUnitFormModalProps {
 }
 
 interface FormData {
- name: string;
- type: "hq" | "country" | "regional" | "field";
- country: string;
- organizationId: number | null;
- officeAdminName: string;
- officeAdminEmail: string;
- officeAdminRole: "organization_admin" | "user";
+  name: string;
+  type: "hq" | "country" | "regional" | "field";
+  countryId: number | null;
+  organizationId: number | null;
+  officeAdminName: string;
+  officeAdminEmail: string;
+  officeAdminRole: "organization_admin" | "user";
 }
-
-const COUNTRIES = [
- "Yemen",
- "Jordan",
- "Lebanon",
- "Syria",
- "Palestine",
- "Iraq",
- "Egypt",
- "Sudan",
- "Turkey",
- "Other"
-];
 
 const OU_TYPES = [
  { value: "hq", label: "Headquarters" },
@@ -72,15 +59,15 @@ export function OperatingUnitFormModal({
   const { t } = useTranslation();
 const utils = trpc.useUtils();
 
- const [formData, setFormData] = useState<FormData>({
- name: "",
- type: "field",
- country: "",
- organizationId: null,
- officeAdminName: "",
- officeAdminEmail: "",
- officeAdminRole: "user",
- });
+const [formData, setFormData] = useState<FormData>({
+  name: "",
+  type: "field",
+  countryId: null,
+  organizationId: null,
+  officeAdminName: "",
+  officeAdminEmail: "",
+  officeAdminRole: "user",
+});
 
  const [errors, setErrors] = useState<Partial<Record<keyof FormData, string>>>({});
 
@@ -95,30 +82,36 @@ const utils = trpc.useUtils();
  }
  );
 
+  const { data: countries = [] } =
+  trpc.organization.getCountries.useQuery();
+
  // Initialize form data when modal opens or mode/unit changes
  useEffect(() => {
  if (!open) return;
  
  if (mode === "edit" && operatingUnit) {
  setFormData({
- name: operatingUnit.name,
- type: operatingUnit.type as "hq" | "country" | "regional" | "field",
- country: operatingUnit.country || "",
- organizationId: operatingUnit.organizationId,
- officeAdminName: operatingUnit.officeAdminName || "",
- officeAdminEmail: operatingUnit.officeAdminEmail || "",
- officeAdminRole: "user", // Default for edit mode
- });
- } else if (mode === "create") {
- setFormData({
- name: "",
- type: "field",
- country: "",
- organizationId: preSelectedOrgId || organizations[0]?.id || null,
- officeAdminName: "",
- officeAdminEmail: "",
- officeAdminRole: "user",
- });
+  name: operatingUnit.name,
+  type: operatingUnit.type as
+    | "hq"
+    | "country"
+    | "regional"
+    | "field",
+
+  countryId:
+    operatingUnit.countryId ?? null,
+
+  organizationId:
+    operatingUnit.organizationId,
+
+  officeAdminName:
+    operatingUnit.officeAdminName || "",
+
+  officeAdminEmail:
+    operatingUnit.officeAdminEmail || "",
+
+  officeAdminRole: "user",
+});
  }
  setErrors({});
  }, [mode, operatingUnit, open]); // Removed organizations from deps to prevent infinite re-renders
@@ -130,7 +123,7 @@ const utils = trpc.useUtils();
  onOpenChange(false);
  },
  onError: (error) => {
- toast.error(error.message);
+ toast.error(error?.shape?.message || error.message);
  },
  });
 
@@ -141,7 +134,7 @@ const utils = trpc.useUtils();
  onOpenChange(false);
  },
  onError: (error) => {
- toast.error(error.message);
+ toast.error(error?.shape?.message || error.message);
  },
  });
 
@@ -152,9 +145,13 @@ const utils = trpc.useUtils();
  newErrors.name = "Operating Unit name is required";
  }
 
- if (!formData.country.trim()) {
- newErrors.country = "Country is required";
- }
+ if (
+  formData.type !== "hq" &&
+  !formData.countryId
+) {
+  newErrors.countryId =
+    "Country is required";
+}
 
  if (!formData.organizationId) {
  newErrors.organizationId = "Organization is required";
@@ -181,23 +178,41 @@ const utils = trpc.useUtils();
 
  if (mode === "create") {
  createMutation.mutate({
- name: formData.name.trim(),
- type: formData.type,
- country: formData.country.trim(),
- organizationId: formData.organizationId!,
- officeAdminName: formData.officeAdminName.trim() || undefined,
- officeAdminEmail: formData.officeAdminEmail.trim() || undefined,
- officeAdminRole: formData.officeAdminRole,
- });
+  name: formData.name.trim(),
+
+  type: formData.type,
+
+  country: countries.find(
+    c => c.id === formData.countryId
+  )?.name ?? "",
+
+  organizationId:
+    formData.organizationId!,
+
+  officeAdminName:
+    formData.officeAdminName.trim() ||
+    undefined,
+
+  officeAdminEmail:
+    formData.officeAdminEmail.trim() ||
+    undefined,
+
+  officeAdminRole:
+    formData.officeAdminRole,
+});
  } else if (mode === "edit" && operatingUnitId) {
  updateMutation.mutate({
- id: operatingUnitId,
- name: formData.name.trim(),
- type: formData.type,
- country: formData.country.trim(),
- officeAdminName: formData.officeAdminName.trim() || undefined,
- officeAdminEmail: formData.officeAdminEmail.trim() || undefined,
- });
+  id: operatingUnitId,
+  name: formData.name.trim(),
+  type: formData.type,
+  countryId: formData.countryId ?? undefined,
+  officeAdminName:
+    formData.officeAdminName.trim() ||
+    undefined,
+  officeAdminEmail:
+    formData.officeAdminEmail.trim() ||
+    undefined,
+});
  }
  };
 
@@ -255,146 +270,241 @@ const utils = trpc.useUtils();
  <SelectValue placeholder={t.placeholders.selectOrganization} />
  </SelectTrigger>
  <SelectContent>
- {organizations.map((org) => (
- <SelectItem key={org.id} value={org.id.toString()}>
- {org.name}
- </SelectItem>
- ))}
- </SelectContent>
- </Select>
- {errors.organizationId && (
- <p className="text-sm text-red-500">{errors.organizationId}</p>
- )}
- </div>
+  {countries.map((country) => (
+    <SelectItem
+      key={country.id}
+      value={country.name}
+    >
+      {language === "ar"
+        ? country.arabicName
+        : country.name}
+    </SelectItem>
+  ))}
+</SelectContent>
+</Select>
 
- {/* Type */}
- <div className="grid gap-2">
- <Label htmlFor="type">
- {t.operatingUnitFormModal.unitType}
- </Label>
- <Select
- value={formData.type}
- onValueChange={(value: "hq" | "country" | "regional" | "field") =>
- setFormData({ ...formData, type: value })
- }
- >
- <SelectTrigger>
- <SelectValue />
- </SelectTrigger>
- <SelectContent>
- {OU_TYPES.map((type) => (
- <SelectItem key={type.value} value={type.value}>
- {type.label}
- </SelectItem>
- ))}
- </SelectContent>
- </Select>
- </div>
+{errors.organizationId && (
+  <p className="text-sm text-red-500">
+    {errors.organizationId}
+  </p>
+)}
+</div>
 
- {/* Country */}
- <div className="grid gap-2">
- <Label htmlFor="country">
- {t.operatingUnitFormModal.unitCountry} *
- </Label>
- <Select
- value={formData.country}
- onValueChange={(value) =>
- setFormData({ ...formData, country: value })
- }
- >
- <SelectTrigger className={errors.country ? "border-red-500" : ""}>
- <SelectValue placeholder={t.placeholders.selectCountry} />
- </SelectTrigger>
- <SelectContent>
- {COUNTRIES.map((country) => (
- <SelectItem key={country} value={country}>
- {country}
- </SelectItem>
- ))}
- </SelectContent>
- </Select>
- {errors.country && (
- <p className="text-sm text-red-500">{errors.country}</p>
- )}
- </div>
+{/* Type */}
+<div className="grid gap-2">
+  <Label htmlFor="type">
+    {t.operatingUnitFormModal.unitType}
+  </Label>
 
- {/* Office Admin Name */}
- <div className="grid gap-2">
- <Label htmlFor="officeAdminName">
- {t.operatingUnitFormModal.officeAdminName}
- </Label>
- <Input
- id="officeAdminName"
- type="text"
- value={formData.officeAdminName}
- onChange={(e) =>
- setFormData({ ...formData, officeAdminName: e.target.value })
- }
- placeholder={t.operatingUnitFormModal.officeAdminNamePlaceholder}
- />
- </div>
+  <Select
+    value={formData.type}
+    onValueChange={(
+      value:
+        | "hq"
+        | "country"
+        | "regional"
+        | "field"
+    ) =>
+      setFormData({
+        ...formData,
+        type: value,
+      })
+    }
+  >
+    <SelectTrigger>
+      <SelectValue />
+    </SelectTrigger>
 
- {/* Office Admin Email */}
- <div className="grid gap-2">
- <Label htmlFor="officeAdminEmail">
- {t.operatingUnitFormModal.officeAdminEmail}
- </Label>
- <Input
- id="officeAdminEmail"
- type="email"
- value={formData.officeAdminEmail}
- onChange={(e) =>
- setFormData({ ...formData, officeAdminEmail: e.target.value })
- }
- placeholder={t.operatingUnitFormModal.officeAdminEmailPlaceholder}
- className={errors.officeAdminEmail ? "border-red-500" : ""}
- />
- {errors.officeAdminEmail && (
- <p className="text-sm text-red-500">{errors.officeAdminEmail}</p>
- )}
- </div>
+    <SelectContent>
+      {OU_TYPES.map((type) => (
+        <SelectItem
+          key={type.value}
+          value={type.value}
+        >
+          {type.label}
+        </SelectItem>
+      ))}
+    </SelectContent>
+  </Select>
+</div>
 
- {/* Office Admin Role */}
- <div className="grid gap-2">
- <Label htmlFor="officeAdminRole">
- Office Admin Role
- </Label>
- <Select
- value={formData.officeAdminRole}
- onValueChange={(value: "organization_admin" | "user") =>
- setFormData({ ...formData, officeAdminRole: value })
- }
- >
- <SelectTrigger>
- <SelectValue />
- </SelectTrigger>
- <SelectContent>
- <SelectItem value="user">User</SelectItem>
- <SelectItem value="organization_admin">Organization Admin</SelectItem>
- </SelectContent>
- </Select>
- <p className="text-xs text-muted-foreground">
- Organization Admins can manage users and settings for this operating unit
- </p>
- </div>
- </div>
+{/* Country */}
+{formData.type !== "hq" && (
+  <div className="grid gap-2">
+    <Label htmlFor="countryId">
+      {t.operatingUnitFormModal.unitCountry} *
+    </Label>
 
- <DialogFooter>
- <Button
- type="button"
- variant="outline"
- onClick={() => onOpenChange(false)}
- disabled={isLoading}
- >
- {t.operatingUnitFormModal.cancel}
- </Button>
- <Button type="submit" disabled={isLoading}>
- {isLoading && <Loader2 className="me-2 h-4 w-4 animate-spin" />}
- {mode === "create" ? t.operatingUnitFormModal.create : t.operatingUnitFormModal.update}
- </Button>
- </DialogFooter>
- </form>
- </DialogContent>
- </Dialog>
- );
+    <Select
+      value={
+        formData.countryId?.toString() || ""
+      }
+      onValueChange={(value) =>
+        setFormData({
+          ...formData,
+          countryId: Number(value),
+        })
+      }
+    >
+      <SelectTrigger
+        className={
+          errors.countryId
+            ? "border-red-500"
+            : ""
+        }
+      >
+        <SelectValue
+          placeholder={
+            t.placeholders.selectCountry
+          }
+        />
+      </SelectTrigger>
+
+      <SelectContent>
+        {countries.map((country) => (
+          <SelectItem
+            key={country.id}
+            value={country.id.toString()}
+          >
+            {language === "ar"
+              ? country.arabicName
+              : country.name}
+          </SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
+
+    {errors.countryId && (
+      <p className="text-sm text-red-500">
+        {errors.countryId}
+      </p>
+    )}
+  </div>
+)}
+
+{/* Office Admin Name */}
+<div className="grid gap-2">
+  <Label htmlFor="officeAdminName">
+    {t.operatingUnitFormModal.officeAdminName}
+  </Label>
+
+  <Input
+    id="officeAdminName"
+    type="text"
+    value={formData.officeAdminName}
+    onChange={(e) =>
+      setFormData({
+        ...formData,
+        officeAdminName: e.target.value,
+      })
+    }
+    placeholder={
+      t.operatingUnitFormModal
+        .officeAdminNamePlaceholder
+    }
+  />
+</div>
+
+{/* Office Admin Email */}
+<div className="grid gap-2">
+  <Label htmlFor="officeAdminEmail">
+    {t.operatingUnitFormModal.officeAdminEmail}
+  </Label>
+
+  <Input
+    id="officeAdminEmail"
+    type="email"
+    value={formData.officeAdminEmail}
+    onChange={(e) =>
+      setFormData({
+        ...formData,
+        officeAdminEmail: e.target.value,
+      })
+    }
+    placeholder={
+      t.operatingUnitFormModal
+        .officeAdminEmailPlaceholder
+    }
+    className={
+      errors.officeAdminEmail
+        ? "border-red-500"
+        : ""
+    }
+  />
+
+  {errors.officeAdminEmail && (
+    <p className="text-sm text-red-500">
+      {errors.officeAdminEmail}
+    </p>
+  )}
+</div>
+
+{/* Office Admin Role */}
+<div className="grid gap-2">
+  <Label htmlFor="officeAdminRole">
+    Office Admin Role
+  </Label>
+
+  <Select
+    value={formData.officeAdminRole}
+    onValueChange={(
+      value:
+        | "organization_admin"
+        | "user"
+    ) =>
+      setFormData({
+        ...formData,
+        officeAdminRole: value,
+      })
+    }
+  >
+    <SelectTrigger>
+      <SelectValue />
+    </SelectTrigger>
+
+    <SelectContent>
+      <SelectItem value="user">
+        User
+      </SelectItem>
+
+      <SelectItem value="organization_admin">
+        Organization Admin
+      </SelectItem>
+    </SelectContent>
+  </Select>
+
+  <p className="text-xs text-muted-foreground">
+    Organization Admins can manage users and
+    settings for this operating unit.
+  </p>
+</div>
+</div>
+
+<DialogFooter>
+  <Button
+    type="button"
+    variant="outline"
+    onClick={() => onOpenChange(false)}
+    disabled={isLoading}
+  >
+    {t.operatingUnitFormModal.cancel}
+  </Button>
+
+  <Button
+    type="submit"
+    disabled={isLoading}
+  >
+    {isLoading && (
+      <Loader2 className="me-2 h-4 w-4 animate-spin" />
+    )}
+
+    {mode === "create"
+      ? t.operatingUnitFormModal.create
+      : t.operatingUnitFormModal.update}
+  </Button>
+</DialogFooter>
+</form>
+</DialogContent>
+</Dialog>
+);
 }

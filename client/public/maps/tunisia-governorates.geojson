@@ -1,0 +1,365 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Ariana",
+        "NAME_1": "Ariana",
+        "country": "Tunisia"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          10.1647,
+          36.8665
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "B\u00e9ja",
+        "NAME_1": "B\u00e9ja",
+        "country": "Tunisia"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          9.1817,
+          36.7256
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Ben Arous",
+        "NAME_1": "Ben Arous",
+        "country": "Tunisia"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          10.2189,
+          36.7531
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Bizerte",
+        "NAME_1": "Bizerte",
+        "country": "Tunisia"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          9.8739,
+          37.2744
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Gab\u00e8s",
+        "NAME_1": "Gab\u00e8s",
+        "country": "Tunisia"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          10.0982,
+          33.8815
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Gafsa",
+        "NAME_1": "Gafsa",
+        "country": "Tunisia"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          8.7842,
+          34.425
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Jendouba",
+        "NAME_1": "Jendouba",
+        "country": "Tunisia"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          8.78,
+          36.5
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Kairouan",
+        "NAME_1": "Kairouan",
+        "country": "Tunisia"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          10.0963,
+          35.6781
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Kasserine",
+        "NAME_1": "Kasserine",
+        "country": "Tunisia"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          8.8333,
+          35.1667
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "K\u00e9bili",
+        "NAME_1": "K\u00e9bili",
+        "country": "Tunisia"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          8.969,
+          33.7044
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Le Kef",
+        "NAME_1": "Le Kef",
+        "country": "Tunisia"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          8.7049,
+          36.1742
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Mahdia",
+        "NAME_1": "Mahdia",
+        "country": "Tunisia"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          11.0622,
+          35.5047
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Manouba",
+        "NAME_1": "Manouba",
+        "country": "Tunisia"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          10.0956,
+          36.8092
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Medenine",
+        "NAME_1": "Medenine",
+        "country": "Tunisia"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          10.5055,
+          33.3547
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Monastir",
+        "NAME_1": "Monastir",
+        "country": "Tunisia"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          10.8262,
+          35.777
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Nabeul",
+        "NAME_1": "Nabeul",
+        "country": "Tunisia"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          10.7376,
+          36.4561
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Sfax",
+        "NAME_1": "Sfax",
+        "country": "Tunisia"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          10.76,
+          34.7398
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Sidi Bouzid",
+        "NAME_1": "Sidi Bouzid",
+        "country": "Tunisia"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          9.4858,
+          35.0382
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Siliana",
+        "NAME_1": "Siliana",
+        "country": "Tunisia"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          9.3708,
+          36.0849
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Sousse",
+        "NAME_1": "Sousse",
+        "country": "Tunisia"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          10.6084,
+          35.8256
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Tataouine",
+        "NAME_1": "Tataouine",
+        "country": "Tunisia"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          10.4518,
+          32.9297
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Tozeur",
+        "NAME_1": "Tozeur",
+        "country": "Tunisia"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          8.1335,
+          33.9197
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Tunis",
+        "NAME_1": "Tunis",
+        "country": "Tunisia"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          10.1815,
+          36.8065
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Zaghouan",
+        "NAME_1": "Zaghouan",
+        "country": "Tunisia"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          10.1429,
+          36.4029
+        ]
+      }
+    }
+  ]
+}

@@ -17,6 +17,8 @@ import { OperatingUnitProvider } from "@/contexts/OperatingUnitContext";
 import { DeletedRecordsProvider } from "@/contexts/DeletedRecordsContext";
 import { HealthGate } from "@/components/HealthGate";
 import "./index.css";
+import 'leaflet/dist/leaflet.css';
+
 
 const queryClient = new QueryClient({
  defaultOptions: {

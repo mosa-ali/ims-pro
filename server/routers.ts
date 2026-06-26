@@ -8,6 +8,8 @@ import { userOrganizations, userOperatingUnits } from "../drizzle/schema";
 import { eq } from "drizzle-orm";
 // import { budgetAnalysisExpensesRouter } from "./budgetAnalysisExpensesRouter"; // File does not exist
 import { projectsRouter } from "./projectsRouter";
+import { locationsRouter } from "./routers/locationsRouter";
+import { projectHealthRouter } from "./routers/projectHealthRouter";
 import { grantsRouter } from "./grantsRouter";
 import { reportingSchedulesRouter } from "./reportingSchedulesRouter";
 import { proposalsRouter } from "./proposalsRouter";
@@ -56,7 +58,7 @@ import { financeSettingsRouter } from "./financeSettingsRouter";
 import { logisticsRouter } from "./logisticsRouter";
 import { emailVerificationRouter } from "./routers/emailVerificationRouter";
 import { financeRouter } from "./routers/finance";
-import { dashboardRouter } from "./dashboardRouter";
+import { organizationDashboardRouter } from "./routers/organizationDashboardRouter";
 import { budgetsRouter } from "./budgetsRouter";
 import { budgetLinesRouter } from "./budgetLinesRouter";
 import { budgetMonthlyAllocationsRouter } from "./budgetMonthlyAllocationsRouter";
@@ -121,6 +123,10 @@ import { z } from "zod";
 import { bidderAcknowledgementSignatures, serviceAcceptanceCertificates, contracts, vendors, users } from "../drizzle/schema";
 import { mealExportRouter } from "./mealExportRouter";
 import { hrAnnualLeaveRouter } from './hrAnnualLeave';
+import { executiveDashboardRouter } from "./routers/executiveDashboardRouter";
+import { projectIntelligenceRouter } from "./services/executive/projectIntelligenceRouter";
+import { procurementAnalyticsRouter } from "./routers/procurementAnalyticsRouter";
+import { budgetSyncRouterDirect as budgetSyncRouter } from './routers/budgetSyncRouter';
 
 // import { autoProgramsReportRouter } from './routers/autoProgramsReportRouter'; // File does not exist
 
@@ -289,6 +295,8 @@ export const appRouter = router({
 
   // Projects Management
   projects: projectsRouter,
+  locations: locationsRouter,
+  projectHealth: projectHealthRouter,
 
   // Grants Management
   grants: grantsRouter,
@@ -366,9 +374,12 @@ export const appRouter = router({
   // Logistics & Procurement Module
   logistics: logisticsRouter,
   procurementPhaseA: procurementPhaseARouter,
+  procurementAnalytics: procurementAnalyticsRouter,
 
   // Dashboard
-  dashboard: dashboardRouter,
+  organizationDashboard: organizationDashboardRouter,
+  executiveDashboard: executiveDashboardRouter,
+  projectIntelligence: projectIntelligenceRouter,
 
   // Donor-Compliant Budget System (NEW)
   budgets: budgetsRouter,
@@ -485,6 +496,7 @@ export const appRouter = router({
   // Email Verification
   emailVerification: emailVerificationRouter,
   // generateAutoReport: autoProgramsReportRouter, // File does not exist
+  budgetSync: budgetSyncRouter,
 });
 
 export type AppRouter = typeof appRouter;

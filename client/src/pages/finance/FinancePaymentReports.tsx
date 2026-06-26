@@ -49,8 +49,8 @@ export default function FinancePaymentReports() {
 
  // Queries
  const { data: agingData, isLoading: agingLoading, refetch: refetchAging } = trpc.paymentReports.agingReport.useQuery({
- organizationId,
- operatingUnitId,
+ 
+ 
  asOfDate: new Date(asOfDate),
  vendorId: selectedVendor !== 'all' ? Number(selectedVendor) : undefined,
  projectId: selectedProject !== 'all' ? Number(selectedProject) : undefined,
@@ -59,8 +59,8 @@ export default function FinancePaymentReports() {
  });
 
  const { data: vendorHistoryData, isLoading: vendorHistoryLoading, refetch: refetchVendorHistory } = trpc.paymentReports.vendorHistory.useQuery({
- organizationId,
- operatingUnitId,
+ 
+ 
  vendorId: selectedVendor !== 'all' ? Number(selectedVendor) : undefined,
  startDate: new Date(startDate),
  endDate: new Date(endDate),
@@ -69,8 +69,8 @@ export default function FinancePaymentReports() {
  });
 
  const { data: cashFlowData, isLoading: cashFlowLoading, refetch: refetchCashFlow } = trpc.paymentReports.cashFlowForecast.useQuery({
- organizationId,
- operatingUnitId,
+ 
+ 
  startDate: new Date(startDate),
  endDate: new Date(endDate),
  bankAccountId: selectedBankAccount !== 'all' ? Number(selectedBankAccount) : undefined,
@@ -79,8 +79,8 @@ export default function FinancePaymentReports() {
  });
 
  const { data: statusSummaryData, isLoading: statusLoading, refetch: refetchStatus } = trpc.paymentReports.statusSummary.useQuery({
- organizationId,
- operatingUnitId,
+ 
+ 
  startDate: new Date(startDate),
  endDate: new Date(endDate),
  }, {
@@ -88,8 +88,8 @@ export default function FinancePaymentReports() {
  });
 
  const { data: vendorsData } = trpc.vendors.getForDropdown.useQuery({
- organizationId,
- operatingUnitId,
+ 
+ 
  }, {
  enabled: organizationId > 0,
  });
@@ -99,8 +99,8 @@ export default function FinancePaymentReports() {
  });
 
  const { data: bankAccountsData } = trpc.treasury.bankAccounts.list.useQuery({
- organizationId,
- operatingUnitId,
+ 
+ 
  }, {
  enabled: organizationId > 0,
  });

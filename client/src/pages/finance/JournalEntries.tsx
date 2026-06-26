@@ -74,7 +74,7 @@ const statusOptions = [
 export default function JournalEntriesPage() {
  const { t } = useTranslation();
  const { language, isRTL} = useLanguage();
- const { organizationId, operatingUnitId } = useOrganization();
+ const { } = useOrganization();
 
  const [activeTab, setActiveTab] = useState('journal-entries');
  const [searchTerm, setSearchTerm] = useState('');
@@ -102,7 +102,7 @@ export default function JournalEntriesPage() {
  const entriesQuery = trpc.journalEntries.list.useQuery(
  {
  organizationId: organizationId || 0,
- operatingUnitId,
+ 
  status: statusFilter as any,
  entryType: entryTypeFilter as any,
  limit: 100,
@@ -116,7 +116,7 @@ export default function JournalEntriesPage() {
  );
 
  const trialBalanceQuery = trpc.journalEntries.getTrialBalance.useQuery(
- { organizationId: organizationId || 0, operatingUnitId },
+ { organizationId: organizationId || 0 },
  { enabled: !!organizationId && activeTab === 'trial-balance' }
  );
 
@@ -209,7 +209,7 @@ export default function JournalEntriesPage() {
 
  createMutation.mutate({
  organizationId: organizationId || 0,
- operatingUnitId,
+ 
  entryDate: entryForm.entryDate,
  entryType: entryForm.entryType,
  description: entryForm.description,

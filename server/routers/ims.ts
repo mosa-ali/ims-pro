@@ -4,7 +4,7 @@ import { eq, and, sql, isNull, desc } from "drizzle-orm";
 import { router, publicProcedure, protectedProcedure, adminProcedure, scopedProcedure, platformScopedProcedure } from "../_core/trpc";
 import * as db from "../db";
 import { getDb } from "../db";
-import { users, auditLogs } from "../../drizzle/schema";
+import { users, auditLogs, countries, organizations } from "../../drizzle/schema";
 import { platformUsersRouter } from "./platformUsers";
 import { globalSettingsRouter } from "./globalSettings";
 import { auditLogsRouter } from "./auditLogs";
@@ -15,6 +15,7 @@ import { passwordManagementRouter } from "./passwordManagement";
 import { reportsAnalyticsRouter } from "./reportsAnalyticsRouter";
 import { platformEmailRouter } from "./platformEmailRouter";
 import { sendEmail } from "../_core/email";
+import { ENV } from "../_core/env";
 
 /**
  * IMS Hierarchy Management Routers
@@ -63,11 +64,11 @@ export const organizationsRouter = router({
       z.object({
         name: z.string().min(1),
         domain: z.string().optional(),
-        country: z.string().optional(),
+        countryId: z.number().optional(),
         timezone: z.string().default("UTC"),
         currency: z.string().default("USD"),
         status: z.enum(["active", "suspended", "inactive"]).default("active"),
-        organizationCode: z.string().optional(),
+        shortCode: z.string().optional(),
         tenantId: z.string().optional(),
         primaryAdminId: z.number().optional(),
         secondaryAdminId: z.number().optional(),
@@ -82,12 +83,12 @@ export const organizationsRouter = router({
           z.object({
             name: z.string().min(1),
             type: z.enum(["hq", "regional", "field"]),
-            country: z.string().min(1),
+            countryId: z.number().min(1),
           })
         ).optional(),
       })
     )
-    .mutation(async ({ input }) => {
+    .mutation(async ({ input, ctx }) => {
       const { adminName, adminEmail, secondaryAdminName, secondaryAdminEmail, operatingUnits, primaryAdminId, secondaryAdminId, ...orgData } = input;
       
       let adminUserId: number | undefined = primaryAdminId;
@@ -161,7 +162,7 @@ export const organizationsRouter = router({
       
       // Send onboarding email to primary admin (non-blocking)
       if (adminEmail) {
-        const connectLink = `${process.env.VITE_APP_URL || 'http://localhost:3000'}/organizations/${id}/connect-microsoft-365`;
+      const connectLink = `${ENV.APP_BASE_URL}/organizations/${id}/connect-microsoft-365`;
         const emailContent = `
           <h2>Welcome to IMS!</h2>
           <p>Hello ${adminName || 'Administrator'},</p>
@@ -196,12 +197,12 @@ export const organizationsRouter = router({
       const ipAddress = (ctx.req.headers['x-forwarded-for'] as string)?.split(',')[0] || ctx.req.socket?.remoteAddress || 'unknown';
       const userAgent = (ctx.req.headers['user-agent'] as string) || 'unknown';
       await db.createAuditLog({
-        userId: ctx.user.id,
+        userId: ctx.user?.id,
         organizationId: id,
         action: "create_organization",
         entityType: "organization",
         entityId: id,
-        details: JSON.stringify({ name: orgData.name, domain: orgData.domain, country: orgData.country }),
+        details: JSON.stringify({ name: orgData.name, domain: orgData.domain, country: orgData.countryId }),
         ipAddress,
         userAgent,
       });
@@ -216,11 +217,11 @@ export const organizationsRouter = router({
         id: z.number(),
         name: z.string().min(1).optional(),
         domain: z.string().optional(),
-        country: z.string().optional(),
+        countryId: z.number().optional(),
         timezone: z.string().optional(),
         currency: z.string().optional(),
         status: z.enum(["active", "suspended", "inactive"]).optional(),
-        organizationCode: z.string().optional(),
+        shortCode: z.string().optional(),
         tenantId: z.string().optional(),
         primaryAdminId: z.number().optional(),
         secondaryAdminId: z.number().optional(),
@@ -235,7 +236,7 @@ export const organizationsRouter = router({
             id: z.number().optional(), // Existing OU ID
             name: z.string().min(1),
             type: z.enum(["hq", "regional", "field"]),
-            country: z.string().min(1),
+            countryId: z.number().optional(),
           })
         ).optional(),
       })
@@ -243,14 +244,17 @@ export const organizationsRouter = router({
     .mutation(async ({ input, ctx }) => {
       const { id, operatingUnits, adminName, adminEmail, secondaryAdminName, secondaryAdminEmail, ...updates } = input;
       
-      // Check if user has permission to manage this organization
-      const canManage = await db.canUserManageOrganization(ctx.user.id, id);
-      if (!canManage) {
-        throw new TRPCError({
-          code: "FORBIDDEN",
-          message: "You do not have permission to edit this organization",
-        });
-      }
+      const allowedRoles = [
+          "platform_super_admin",
+          "platform_admin",
+        ];
+
+        if (!ctx.user || !allowedRoles.includes(ctx.user.role)) {
+          throw new TRPCError({
+            code: "FORBIDDEN",
+            message: "Only Platform Administrators can perform this action",
+          });
+        }
       
       // Handle primary admin changes if provided
       if (adminName && adminEmail) {
@@ -319,14 +323,14 @@ export const organizationsRouter = router({
             await db.updateOperatingUnit(ou.id, {
               name: ou.name,
               type: ou.type,
-              country: ou.country,
+              countryId: ou.countryId,
             });
           } else {
             // Create new OU
             await db.createOperatingUnit({
               name: ou.name,
               type: ou.type,
-              country: ou.country,
+              countryId: ou.countryId,
               organizationId: id,
             });
           }
@@ -350,38 +354,100 @@ export const organizationsRouter = router({
       return { success: true };
     }),
 
-  // Soft delete organization (platform admin or organization's primary admin)
-  softDelete: platformScopedProcedure
-    .input(z.object({ id: z.number(), reason: z.string().min(3, "Deletion reason is required and must be at least 3 characters") }))
-    .mutation(async ({ input, ctx }) => {
-      // Check if user has permission to manage this organization
-      const canManage = await db.canUserManageOrganization(ctx.user.id, input.id);
-      if (!canManage) {
-        throw new TRPCError({
-          code: "FORBIDDEN",
-          message: "You do not have permission to delete this organization",
-        });
-      }
-      
-      await db.softDeleteOrganization(input.id, ctx.user.id);
-      return { success: true };
-    }),
+    // Soft delete organization (Platform Admin only)
+    softDelete: platformScopedProcedure
+      .input(
+        z.object({
+          id: z.number(),
+          reason: z.string().min(
+            3,
+            "Deletion reason is required and must be at least 3 characters"
+          ),
+        })
+      )
+      .mutation(async ({ input, ctx }) => {
+
+        if (!ctx.user) {
+          throw new TRPCError({
+            code: "UNAUTHORIZED",
+            message: "Authentication required",
+          });
+        }
+
+        const role = ctx.user.role;
+
+        if (
+          role !== "platform_super_admin" &&
+          role !== "platform_admin"
+        ) {
+          throw new TRPCError({
+            code: "FORBIDDEN",
+            message:
+              "Only Platform Administrators can delete organizations",
+          });
+        }
+
+        await db.softDeleteOrganization(
+          input.id,
+          ctx.user.id
+        );
+
+        return {
+          success: true,
+        };
+      }),
 
   // Restore organization
-  restore: platformScopedProcedure
-    .input(z.object({ id: z.number() }))
-    .mutation(async ({ input, ctx }) => {
-      await db.restoreOrganization(input.id, ctx.user.id);
-      return { success: true };
-    }),
+      restore: platformScopedProcedure
+      .input(
+        z.object({
+          id: z.number(),
+        })
+      )
+      .mutation(async ({ input, ctx }) => {
+
+        if (!ctx.user) {
+          throw new TRPCError({
+            code: "UNAUTHORIZED",
+            message: "Authentication required",
+          });
+        }
+
+        await db.restoreOrganization(
+          input.id,
+          ctx.user.id
+        );
+
+        return {
+          success: true,
+        };
+      }),
 
   // Hard delete organization (permanent)
-  hardDelete: platformScopedProcedure
-    .input(z.object({ id: z.number() }))
-    .mutation(async ({ input, ctx }) => {
-      await db.hardDeleteOrganization(input.id, ctx.user.id);
-      return { success: true };
-    }),
+      hardDelete: platformScopedProcedure
+      .input(
+        z.object({
+          id: z.number(),
+        })
+      )
+      .mutation(async ({ input, ctx }) => {
+
+        if (!ctx.user) {
+          throw new TRPCError({
+            code: "UNAUTHORIZED",
+            message: "Authentication required",
+          });
+        }
+
+        await db.hardDeleteOrganization(
+          input.id,
+          ctx.user.id
+        );
+
+        return {
+          success: true,
+        };
+      }),
 
   // Bulk soft delete organizations (platform admin only)
   bulkSoftDelete: adminProcedure
@@ -402,7 +468,7 @@ export const organizationsRouter = router({
   // Resend onboarding email to organization admin
   resendOnboardingEmail: platformScopedProcedure
     .input(z.object({ organizationId: z.number() }))
-    .mutation(async ({ input }) => {
+    .mutation(async ({ input, ctx }) => {
       const org = await db.getOrganizationById(input.organizationId);
       
       if (!org) {
@@ -429,8 +495,7 @@ export const organizationsRouter = router({
       }
       
       // Generate onboarding link
-      const connectLink = `${process.env.VITE_APP_URL || 'http://localhost:3000'}/organizations/${org.id}/connect-microsoft-365`;
-      
+      const connectLink = `${ENV.APP_BASE_URL}/organizations/${org.id}/connect-microsoft-365`;
       const emailContent = `
         <h2>Welcome to IMS!</h2>
         <p>Hello ${adminName || 'Administrator'},</p>
@@ -475,7 +540,7 @@ export const organizationsRouter = router({
         });
       }
       
-      const connectLink = `${process.env.VITE_APP_URL || 'http://localhost:3000'}/organizations/${org.id}/connect-microsoft-365`;
+      const connectLink = `${ENV.APP_BASE_URL}/organizations/${org.id}/connect-microsoft-365`;
       
       return { link: connectLink, organizationName: org.name };
     }),
@@ -497,28 +562,44 @@ export const operatingUnitsRouter = router({
   }),
 
   // List operating units for an organization
-  listByOrganization: protectedProcedure
+  listByOrganization: scopedProcedure
     .input(z.object({ organizationId: z.number() }))
     .query(async ({ input }) => {
       return await db.getOperatingUnitsByOrganization(input.organizationId);
     }),
 
+  getCountries: scopedProcedure.query(
+      async () => {
+        const db = await getDb();
+    
+        return db
+          .select({
+            id: countries.id,
+            code: countries.code,
+            name: countries.name,
+            arabicName: countries.arabicName,
+          })
+          .from(countries)
+          .orderBy(countries.name);
+      }
+    ),
+
   // Get operating unit by ID
-  getById: protectedProcedure
+  getById: scopedProcedure
     .input(z.object({ id: z.number() }))
     .query(async ({ input }) => {
       return await db.getOperatingUnitById(input.id);
     }),
 
   // Get operating unit by code (for human-readable URLs)
-  getByCode: protectedProcedure
+  getByCode: scopedProcedure
     .input(z.object({ code: z.string() }))
     .query(async ({ input }) => {
       return await db.getOperatingUnitByCode(input.code);
     }),
 
   // Create new operating unit (organization admin or platform admin)
-  create: protectedProcedure
+  create: scopedProcedure
     .input(
       z.object({
         organizationId: z.number(),
@@ -593,12 +674,13 @@ export const operatingUnitsRouter = router({
     }),
 
   // Update operating unit
-  update: protectedProcedure
+  update: scopedProcedure
     .input(
       z.object({
         id: z.number(),
         name: z.string().min(1).optional(),
         type: z.enum(["hq", "country", "regional", "field"]).optional(),
+        countryId: z.number().optional(),
         country: z.string().optional(),
         city: z.string().optional(),
         currency: z.string().optional(),
@@ -608,14 +690,14 @@ export const operatingUnitsRouter = router({
         officeAdminEmail: z.string().email().optional(),
       })
     )
-    .mutation(async ({ input }) => {
+    .mutation(async ({ input, ctx }) => {
       const { id, ...updates } = input;
       await db.updateOperatingUnit(id, updates);
       return { success: true };
     }),
 
   // Soft delete operating unit
-  softDelete: protectedProcedure
+  softDelete: scopedProcedure
     .input(z.object({ id: z.number(), reason: z.string().min(3, "Deletion reason is required and must be at least 3 characters") }))
     .mutation(async ({ input, ctx }) => {
       await db.softDeleteOperatingUnit(input.id, ctx.user.id);
@@ -623,7 +705,7 @@ export const operatingUnitsRouter = router({
     }),
 
   // Restore operating unit
-  restore: protectedProcedure
+  restore: scopedProcedure
     .input(z.object({ id: z.number() }))
     .mutation(async ({ input, ctx }) => {
       await db.restoreOperatingUnit(input.id, ctx.user.id);
@@ -639,7 +721,7 @@ export const operatingUnitsRouter = router({
     }),
 
   // Bulk soft delete operating units
-  bulkSoftDelete: protectedProcedure
+  bulkSoftDelete: scopedProcedure
     .input(z.object({ ids: z.array(z.number()), reason: z.string().min(3, "Deletion reason is required and must be at least 3 characters") }))
     .mutation(async ({ input, ctx }) => {
       for (const id of input.ids) {
@@ -649,24 +731,41 @@ export const operatingUnitsRouter = router({
     }),
 
   // Bulk hard delete operating units (permanent)
-  bulkHardDelete: adminProcedure
-    .input(z.object({ ids: z.array(z.number()) }))
-    .mutation(async ({ input, ctx }) => {
-      for (const id of input.ids) {
-        await db.hardDeleteOperatingUnit(input.ids, ctx.user.id);
-      }
-      return { success: true, deletedCount: input.ids.length };
-    }),
+      bulkHardDelete: adminProcedure
+        .input(
+          z.object({
+            ids: z.array(z.number()),
+          })
+        )
+        .mutation(async ({ input, ctx }) => {
+          const userId = ctx.user?.id;
+
+          if (!userId) {
+            throw new TRPCError({
+              code: "UNAUTHORIZED",
+              message: "Authentication required",
+            });
+          }
+
+          for (const id of input.ids) {
+            await db.hardDeleteOperatingUnit(id, userId);
+          }
+
+          return {
+            success: true,
+            deletedCount: input.ids.length,
+          };
+        }),
 
   // Get operating unit statistics (active projects, employees, budget)
-  getStatistics: protectedProcedure
+  getStatistics: scopedProcedure
     .input(z.object({ operatingUnitId: z.number() }))
     .query(async ({ input }) => {
       return await db.getOperatingUnitStatistics(input.operatingUnitId);
     }),
 
   // Get compliance alerts for operating unit
-  getComplianceAlerts: protectedProcedure
+  getComplianceAlerts: scopedProcedure
     .input(z.object({ operatingUnitId: z.number() }))
     .query(async ({ input }) => {
       return await db.getOperatingUnitComplianceAlerts(input.operatingUnitId);
@@ -728,13 +827,13 @@ export const userAssignmentsRouter = router({
         role: z.enum(["organization_admin", "user"]).default("user"),
       })
     )
-    .mutation(async ({ input }) => {
+    .mutation(async ({ input, ctx }) => {
       await db.assignUserToOrganization(input.userId, input.organizationId, input.role);
       return { success: true };
     }),
 
   // Assign user to operating unit (organization admin or platform admin)
-  assignToOperatingUnit: protectedProcedure
+  assignToOperatingUnit: scopedProcedure
     .input(
       z.object({
         userId: z.number(),
@@ -742,7 +841,7 @@ export const userAssignmentsRouter = router({
         role: z.enum(["organization_admin", "user"]).default("user"),
       })
     )
-    .mutation(async ({ input }) => {
+    .mutation(async ({ input, ctx }) => {
       // TODO: Add authorization check
       await db.assignUserToOperatingUnit(input.userId, input.operatingUnitId, input.role);
       return { success: true };
@@ -756,20 +855,20 @@ export const userAssignmentsRouter = router({
         organizationId: z.number(),
       })
     )
-    .mutation(async ({ input }) => {
+    .mutation(async ({ input, ctx }) => {
       await db.removeUserFromOrganization(input.userId, input.organizationId);
       return { success: true };
     }),
 
   // Remove user from operating unit
-  removeFromOperatingUnit: protectedProcedure
+  removeFromOperatingUnit: scopedProcedure
     .input(
       z.object({
         userId: z.number(),
         operatingUnitId: z.number(),
       })
     )
-    .mutation(async ({ input }) => {
+    .mutation(async ({ input, ctx }) => {
       // TODO: Add authorization check
       await db.removeUserFromOperatingUnit(input.userId, input.operatingUnitId);
       return { success: true };
@@ -922,14 +1021,14 @@ export const userAssignmentsRouter = router({
 
 export const microsoftIntegrationRouter = router({
   // Get integration status for an organization
-  getByOrganization: protectedProcedure
+  getByOrganization: scopedProcedure
     .input(z.object({ organizationId: z.number() }))
     .query(async ({ input }) => {
       return await db.getMicrosoftIntegration(input.organizationId);
     }),
 
   // Update integration settings (organization admin or platform admin)
-  update: protectedProcedure
+  update: scopedProcedure
     .input(
       z.object({
         organizationId: z.number(),
@@ -943,9 +1042,56 @@ export const microsoftIntegrationRouter = router({
         powerBiEnabled: z.boolean().optional(),
       })
     )
-    .mutation(async ({ input }) => {
+    .mutation(async ({ input, ctx }) => {
       // TODO: Add authorization check
-      await db.upsertMicrosoftIntegration(input);
+      await db.upsertMicrosoftIntegration({
+        organizationId: input.organizationId,
+
+        entraIdEnabled:
+          input.entraIdEnabled === undefined
+            ? undefined
+            : input.entraIdEnabled
+              ? 1
+              : 0,
+
+        sharepointEnabled:
+          input.sharepointEnabled === undefined
+            ? undefined
+            : input.sharepointEnabled
+              ? 1
+              : 0,
+
+        oneDriveEnabled:
+          input.oneDriveEnabled === undefined
+            ? undefined
+            : input.oneDriveEnabled
+              ? 1
+              : 0,
+
+        outlookEnabled:
+          input.outlookEnabled === undefined
+            ? undefined
+            : input.outlookEnabled
+              ? 1
+              : 0,
+
+        teamsEnabled:
+          input.teamsEnabled === undefined
+            ? undefined
+            : input.teamsEnabled
+              ? 1
+              : 0,
+
+        powerBiEnabled:
+          input.powerBiEnabled === undefined
+            ? undefined
+            : input.powerBiEnabled
+              ? 1
+              : 0,
+
+        entraIdTenantId: input.entraIdTenantId,
+        sharepointSiteUrl: input.sharepointSiteUrl,
+      });
       return { success: true };
     }),
 });
@@ -961,7 +1107,7 @@ const legacyDeletedRecordsRouter = router({
   }),
 
   // List deleted records for organization (organization admin)
-  list: protectedProcedure
+  list: scopedProcedure
     .input(z.object({ organizationId: z.number() }))
     .query(async ({ input, ctx }) => {
       // Verify user belongs to the requested organization
@@ -979,7 +1125,7 @@ const legacyDeletedRecordsRouter = router({
     }),
 
   // Restore a soft-deleted record
-  restore: protectedProcedure
+  restore: scopedProcedure
     .input(
       z.object({
         recordType: z.string(),
@@ -1003,7 +1149,7 @@ const legacyDeletedRecordsRouter = router({
     }),
 
   // Permanently delete a record (hard delete)
-  permanentDelete: protectedProcedure
+  permanentDelete: scopedProcedure
     .input(
       z.object({
         recordType: z.string(),
@@ -1033,7 +1179,7 @@ const legacyDeletedRecordsRouter = router({
 
 export const usersRouter = router({
   // Get user by ID
-  getById: protectedProcedure
+  getById: scopedProcedure
     .input(z.object({ id: z.number() }))
     .query(async ({ input }) => {
       return await db.getUserById(input.id);
@@ -1046,7 +1192,7 @@ export const usersRouter = router({
 
 export const invitationsRouter = router({
   // Create invitation (platform admin or org admin)
-  create: protectedProcedure
+  create: scopedProcedure
     .input(z.object({
       email: z.string().email(),
       organizationId: z.number(),
@@ -1072,7 +1218,7 @@ export const invitationsRouter = router({
     }),
 
   // List invitations for an organization
-  list: protectedProcedure
+  list: scopedProcedure
     .input(z.object({ organizationId: z.number() }))
     .query(async ({ input, ctx }) => {
       const canManage = await db.canUserManageOrganization(ctx.user.id, input.organizationId);
@@ -1083,14 +1229,14 @@ export const invitationsRouter = router({
     }),
 
   // Get invitation by token (public - for accepting)
-  getByToken: protectedProcedure
+  getByToken: scopedProcedure
     .input(z.object({ token: z.string() }))
     .query(async ({ input }) => {
       return await db.getInvitationByToken(input.token);
     }),
 
   // Accept invitation
-  accept: protectedProcedure
+  accept: scopedProcedure
     .input(z.object({ token: z.string() }))
     .mutation(async ({ input, ctx }) => {
       const success = await db.acceptInvitation(input.token, ctx.user.id);
@@ -1101,7 +1247,7 @@ export const invitationsRouter = router({
     }),
 
   // Revoke invitation
-  revoke: protectedProcedure
+  revoke: scopedProcedure
     .input(z.object({ invitationId: z.number(), organizationId: z.number() }))
     .mutation(async ({ input, ctx }) => {
       const canManage = await db.canUserManageOrganization(ctx.user.id, input.organizationId);

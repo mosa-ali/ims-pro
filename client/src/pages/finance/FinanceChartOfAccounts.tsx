@@ -131,18 +131,18 @@ export default function FinanceChartOfAccounts() {
 
  // tRPC queries
  const categoriesQuery = trpc.glAccountCategories.getTree.useQuery({
- organizationId,
- operatingUnitId,
+ 
+ 
  });
 
  const flatCategoriesQuery = trpc.glAccountCategories.list.useQuery({
- organizationId,
- operatingUnitId,
+ 
+ 
  });
 
  const accountsQuery = trpc.glAccounts.list.useQuery({
- organizationId,
- operatingUnitId,
+ 
+ 
  search: searchTerm || undefined,
  limit: 500,
  });
@@ -315,8 +315,8 @@ export default function FinanceChartOfAccounts() {
  });
  } else {
  createCategoryMutation.mutate({
- organizationId,
- operatingUnitId,
+ 
+ 
  ...categoryForm,
  });
  }
@@ -330,8 +330,8 @@ export default function FinanceChartOfAccounts() {
  });
  } else {
  createAccountMutation.mutate({
- organizationId,
- operatingUnitId,
+ 
+ 
  ...accountForm,
  });
  }

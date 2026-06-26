@@ -741,38 +741,153 @@ export const bomApprovalSignatures = mysqlTable("bom_approval_signatures", {
 ]);
 
 export const budgetItems = mysqlTable("budget_items", {
-	id: int().autoincrement().primaryKey().notNull(),
-	projectId: int().notNull().references(() => projects.id, { onDelete: "cascade" } ),
-	organizationId: int().notNull().references(() => organizations.id, { onDelete: "cascade" } ),
-	operatingUnitId: int(),
-	activityId: int().references(() => activities.id, { onDelete: "set null" } ),
-	fiscalYear: varchar({ length: 20 }),
-	budgetCode: varchar({ length: 100 }).notNull(),
-	subBl: varchar({ length: 100 }),
-	subBudgetLine: varchar({ length: 100 }),
-	activityName: text(),
-	budgetItem: text().notNull(),
-	category: varchar({ length: 255 }),
-	quantity: decimal({ precision: 15, scale: 2 }).notNull(),
-	unitType: varchar({ length: 100 }),
-	unitCost: decimal({ precision: 15, scale: 2 }).notNull(),
-	recurrence: int().default(1).notNull(),
-	totalBudgetLine: decimal({ precision: 15, scale: 2 }).notNull(),
-	currency: varchar({ length: 10 }).default('USD').notNull(),
-	actualSpent: decimal({ precision: 15, scale: 2 }).default('0.00').notNull(),
-	// you can use { mode: 'date' }, if you want to have Date as type for this column
-	startDate: date({ mode: 'string' }).notNull(),
-	// you can use { mode: 'date' }, if you want to have Date as type for this column
-	endDate: date({ mode: 'string' }).notNull(),
-	notes: text(),
-	createdAt: timestamp({ mode: 'string' }).defaultNow().notNull(),
-	updatedAt: timestamp({ mode: 'string' }).defaultNow().onUpdateNow().notNull(),
-	createdBy: int(),
-	updatedBy: int(),
-	isDeleted: tinyint().default(0).notNull(),
-	deletedAt: timestamp({ mode: 'string' }),
-	deletedBy: int(),
-});
+  id: int().autoincrement().primaryKey().notNull(),
+
+  organizationId: int()
+    .notNull()
+    .references(() => organizations.id, { onDelete: "cascade" }),
+
+  operatingUnitId: int(),
+
+  projectId: int()
+    .notNull()
+    .references(() => projects.id, { onDelete: "cascade" }),
+
+  // NEW: Link to Finance Budget
+  budgetId: int()
+    .references(() => budgets.id, { onDelete: "cascade" }),
+
+  // NEW: Link to Budget Line
+  budgetLineId: int()
+    .references(() => budgetLines.id, { onDelete: "cascade" }),
+
+  activityId: int()
+    .references(() => activities.id, { onDelete: "set null" }),
+
+  fiscalYear: varchar({ length: 20 }),
+
+  budgetCode: varchar({ length: 100 }).notNull(),
+
+  // NEW
+  lineNumber: varchar({ length: 50 }),
+
+  subBl: varchar({ length: 100 }),
+
+  subBudgetLine: varchar({ length: 100 }),
+
+  activityName: text(),
+
+  budgetItem: text().notNull(),
+
+  category: varchar({ length: 255 }),
+
+  quantity: decimal({
+    precision: 15,
+    scale: 2,
+  }).notNull(),
+
+  unitType: varchar({ length: 100 }),
+
+  unitCost: decimal({
+    precision: 15,
+    scale: 2,
+  }).notNull(),
+
+  recurrence: int()
+    .default(1)
+    .notNull(),
+
+  totalBudgetLine: decimal({
+    precision: 15,
+    scale: 2,
+  }).notNull(),
+
+  currency: varchar({ length: 10 })
+    .default("USD")
+    .notNull(),
+
+  // Updated automatically from expenses
+  actualSpent: decimal({
+    precision: 15,
+    scale: 2,
+  })
+    .default("0.00")
+    .notNull(),
+
+  // NEW
+  budgetVersion: int()
+    .default(1)
+    .notNull(),
+
+  // NEW
+  generatedFromBudget: tinyint()
+    .default(1)
+    .notNull(),
+
+  // NEW
+  syncStatus: mysqlEnum([
+    "pending",
+    "synced",
+    "modified",
+  ])
+    .default("pending")
+    .notNull(),
+
+  // NEW
+  lastSyncedAt: timestamp({
+    mode: "string",
+  }),
+
+  startDate: date({
+    mode: "string",
+  }).notNull(),
+
+  endDate: date({
+    mode: "string",
+  }).notNull(),
+
+  notes: text(),
+
+  createdAt: timestamp({
+    mode: "string",
+  })
+    .defaultNow()
+    .notNull(),
+
+  updatedAt: timestamp({
+    mode: "string",
+  })
+    .defaultNow()
+    .onUpdateNow()
+    .notNull(),
+
+  createdBy: int(),
+
+  updatedBy: int(),
+
+  isDeleted: tinyint()
+    .default(0)
+    .notNull(),
+
+  deletedAt: timestamp({
+    mode: "string",
+  }),
+
+  deletedBy: int(),
+},
+(table) => ({
+  projectIdx: index("idx_budget_items_project")
+    .on(table.projectId),
+
+  budgetIdx: index("idx_budget_items_budget")
+    .on(table.budgetId),
+
+  budgetLineIdx: index("idx_budget_items_budget_line")
+    .on(table.budgetLineId),
+
+  syncIdx: index("idx_budget_items_sync_status")
+    .on(table.syncStatus),
+}));
 
 export const budgetLines = mysqlTable("budget_lines", {
 	id: int().autoincrement().primaryKey().notNull(),
@@ -947,49 +1062,210 @@ export const budgetReallocations = mysqlTable("budget_reallocations", {
 
 export const budgets = mysqlTable("budgets", {
 	id: int().autoincrement().primaryKey().notNull(),
-	projectId: int().notNull().references(() => projects.id, { onDelete: "cascade" } ),
+
+	projectId: int()
+		.notNull()
+		.references(() => projects.id, { onDelete: "cascade" }),
+
 	grantId: int(),
-	organizationId: int().notNull().references(() => organizations.id, { onDelete: "cascade" } ),
+
+	organizationId: int()
+		.notNull()
+		.references(() => organizations.id, { onDelete: "cascade" }),
+
 	operatingUnitId: int().notNull(),
+
 	budgetCode: varchar({ length: 100 }),
+
 	budgetTitle: varchar({ length: 500 }),
+
 	budgetTitleAr: varchar({ length: 500 }),
+
 	fiscalYear: varchar({ length: 20 }).notNull(),
-	currency: varchar({ length: 10 }).default('USD').notNull(),
-	baseCurrency: varchar({ length: 10 }).default('USD').notNull(),
-	exchangeRate: decimal({ precision: 15, scale: 6 }).default('1.000000'),
-	totalApprovedAmount: decimal({ precision: 15, scale: 2 }).default('0.00').notNull(),
-	totalForecastAmount: decimal({ precision: 15, scale: 2 }).default('0.00').notNull(),
-	totalActualAmount: decimal({ precision: 15, scale: 2 }).default('0.00').notNull(),
-	versionNumber: int().default(1).notNull(),
+
+	currency: varchar({ length: 10 })
+		.default("USD")
+		.notNull(),
+
+	baseCurrency: varchar({ length: 10 })
+		.default("USD")
+		.notNull(),
+
+	exchangeRate: decimal({
+		precision: 15,
+		scale: 6,
+	}).default("1.000000"),
+
+	// Approved donor budget
+	totalApprovedAmount: decimal({
+		precision: 15,
+		scale: 2,
+	})
+		.default("0.00")
+		.notNull(),
+
+	// Forecasted spending
+	totalForecastAmount: decimal({
+		precision: 15,
+		scale: 2,
+	})
+		.default("0.00")
+		.notNull(),
+
+	// Cached actual spent
+	totalActualAmount: decimal({
+		precision: 15,
+		scale: 2,
+	})
+		.default("0.00")
+		.notNull(),
+
+	// NEW
+	totalCommittedAmount: decimal({
+		precision: 15,
+		scale: 2,
+	})
+		.default("0.00")
+		.notNull(),
+
+	// NEW
+	totalRemainingAmount: decimal({
+		precision: 15,
+		scale: 2,
+	})
+		.default("0.00")
+		.notNull(),
+
+	// NEW
+	totalBudgetItems: int()
+		.default(0)
+		.notNull(),
+
+	versionNumber: int()
+		.default(1)
+		.notNull(),
+
 	parentBudgetId: int(),
+
 	revisionNotes: text(),
+
 	revisionNotesAr: text(),
-	status: mysqlEnum(['draft','submitted','approved','revised','closed','rejected']).default('draft').notNull(),
-	submittedAt: timestamp({ mode: 'string' }),
+
+	status: mysqlEnum([
+		"draft",
+		"submitted",
+		"approved",
+		"revised",
+		"closed",
+		"rejected",
+	])
+		.default("draft")
+		.notNull(),
+
+	// NEW
+	generatedProjectBudget: tinyint()
+		.default(0)
+		.notNull(),
+
+	// NEW
+	syncStatus: mysqlEnum([
+		"pending",
+		"synced",
+		"failed",
+	])
+		.default("pending")
+		.notNull(),
+
+	// NEW
+	budgetIntegrityStatus: mysqlEnum([
+		"valid",
+		"warning",
+		"error",
+	])
+		.default("valid")
+		.notNull(),
+
+	submittedAt: timestamp({
+		mode: "string",
+	}),
+
 	submittedBy: int(),
-	approvedAt: timestamp({ mode: 'string' }),
+
+	approvedAt: timestamp({
+		mode: "string",
+	}),
+
 	approvedBy: int(),
-	rejectedAt: timestamp({ mode: 'string' }),
+
+	rejectedAt: timestamp({
+		mode: "string",
+	}),
+
 	rejectedBy: int(),
+
 	rejectionReason: text(),
+
 	rejectionReasonAr: text(),
-	// you can use { mode: 'date' }, if you want to have Date as type for this column
-	periodStart: date({ mode: 'string' }).notNull(),
-	// you can use { mode: 'date' }, if you want to have Date as type for this column
-	periodEnd: date({ mode: 'string' }).notNull(),
+
+	periodStart: date({
+		mode: "string",
+	}).notNull(),
+
+	periodEnd: date({
+		mode: "string",
+	}).notNull(),
+
 	notes: text(),
+
 	notesAr: text(),
-	isDeleted: tinyint().default(0).notNull(),
-	deletedAt: timestamp({ mode: 'string' }),
+
+	// NEW
+	lastSyncAt: timestamp({
+		mode: "string",
+	}),
+
+	// NEW
+	lastValidationAt: timestamp({
+		mode: "string",
+	}),
+
+	isDeleted: tinyint()
+		.default(0)
+		.notNull(),
+
+	deletedAt: timestamp({
+		mode: "string",
+	}),
+
 	deletedBy: int(),
-	createdAt: timestamp({ mode: 'string' }).defaultNow().notNull(),
-	updatedAt: timestamp({ mode: 'string' }).defaultNow().onUpdateNow().notNull(),
+
+	createdAt: timestamp({
+		mode: "string",
+	})
+		.defaultNow()
+		.notNull(),
+
+	updatedAt: timestamp({
+		mode: "string",
+	})
+		.defaultNow()
+		.onUpdateNow()
+		.notNull(),
+
 	createdBy: int(),
+
 	updatedBy: int(),
 },
 (table) => [
-	index("budgetCode").on(table.budgetCode),
+	index("idx_budget_code").on(table.budgetCode),
+
+	index("idx_budget_project").on(table.projectId),
+
+	index("idx_budget_status").on(table.status),
+
+	index("idx_budget_sync_status").on(table.syncStatus),
+
+	index("idx_budget_fiscal_year").on(table.fiscalYear),
 ]);
 
 export const caseActivities = mysqlTable("case_activities", {
@@ -1802,27 +2078,92 @@ export const financeApprovalThresholds = mysqlTable("finance_approval_thresholds
 	effectiveTo: date({ mode: 'string' }),
 });
 
-export const financeAssetCategories = mysqlTable("finance_asset_categories", {
-	id: int().autoincrement().primaryKey().notNull(),
-	code: varchar({ length: 50 }).notNull(),
-	name: varchar({ length: 255 }).notNull(),
-	nameAr: varchar({ length: 255 }),
-	description: text(),
-	parentId: int(),
-	depreciationRate: decimal({ precision: 5, scale: 2 }).default('0.00'),
-	defaultUsefulLife: int().default(5),
-	organizationId: int().notNull().references(() => organizations.id, { onDelete: "cascade" } ),
-	operatingUnitId: int(),
-	isDeleted: tinyint().default(0).notNull(),
-	deletedAt: timestamp({ mode: 'string' }),
+export const financeAssetCategories = mysqlTable(
+  "finance_asset_categories",
+  {
+    id: int().autoincrement().primaryKey().notNull(),
+
+    code: varchar({ length: 50 }).notNull(),
+
+    name: varchar({ length: 255 }).notNull(),
+    nameAr: varchar({ length: 255 }),
+
+    description: text(),
+
+    assetClass: mysqlEnum([
+      'land',
+      'building',
+      'vehicle',
+      'equipment',
+      'furniture',
+      'it_equipment',
+      'medical_equipment',
+      'infrastructure',
+      'intangible'
+    ]),
+
+    parentId: int(),
+
+    usefulLifeYears: int().default(5),
+
+    depreciationRate: decimal({
+      precision: 5,
+      scale: 2
+    }).default('0.00'),
+
+    residualValuePercentage: decimal({
+      precision: 5,
+      scale: 2
+    }).default('0.00'),
+
+    capitalizationThreshold: decimal({
+      precision: 15,
+      scale: 2
+    }).default('500'),
+
+    defaultDepreciationMethod: mysqlEnum([
+      'straight_line',
+      'declining_balance',
+      'units_of_production'
+    ]).default('straight_line'),
+	ownershipType: mysqlEnum([
+	"organization",
+	"donor",
+	"government",
+	"shared"
+	]).default("organization"),
+
+    trackSerialNumber: tinyint().default(1),
+
+    requiresCustodian: tinyint().default(1),
+
+    requiresLocation: tinyint().default(1),
+
+    requiresInsurance: tinyint().default(0),
+
+    isDonorReportable: tinyint().default(1),
+
+    assetAccountId: int(),
+    accumulatedDepAccountId: int(),
+    depreciationExpenseAccountId: int(),
+
+    organizationId: int().notNull(),
+    operatingUnitId: int(),
+
+    isActive: tinyint().default(1),
+
+    deletedAt: timestamp({ mode: 'string' }),
 	deletedBy: int().references(() => users.id, { onDelete: "set null" } ),
-	createdAt: timestamp({ mode: 'string' }).defaultNow().notNull(),
-	updatedAt: timestamp({ mode: 'string' }).defaultNow().onUpdateNow().notNull(),
-	assetAccountId: int(),
-	accumulatedDepAccountId: int(),
-	depreciationExpenseAccountId: int(),
-	defaultDepreciationMethod: mysqlEnum(['straight_line','declining_balance','units_of_production']).default('straight_line'),
-});
+    createdBy: int().references(() => users.id, { onDelete: "set null" } ),
+    createdAt: timestamp({ mode: "string" })
+      .defaultNow()
+      .notNull(),
+    updatedAt: timestamp({ mode: "string" })
+      .defaultNow()
+      .onUpdateNow()
+      .notNull(),
+  }
+);
 
 export const financeAssetDisposals = mysqlTable("finance_asset_disposals", {
 	id: int().autoincrement().primaryKey().notNull(),
@@ -1933,6 +2274,15 @@ export const financeAssets = mysqlTable("finance_assets", {
 	// you can use { mode: 'date' }, if you want to have Date as type for this column
 	acquisitionDate: date({ mode: 'string' }),
 	acquisitionCost: decimal({ precision: 15, scale: 2 }).default('0.00'),
+	quantity: decimal({
+	  precision: 15,
+		scale: 2
+		}).default('1.00'),
+
+	unitType: varchar({
+		length: 50
+		}).default('Unit'),
+	unitCost: decimal({ precision: 15, scale: 2 }).default('0.00'),
 	currency: varchar({ length: 10 }).default('USD'),
 	depreciationMethod: mysqlEnum(['straight_line','declining_balance','units_of_production','none']).default('straight_line'),
 	usefulLifeYears: int().default(5),
@@ -4436,6 +4786,8 @@ export const operatingUnits = mysqlTable("operating_units", {
 	organizationId: int().notNull().references(() => organizations.id, { onDelete: "cascade" } ),
 	name: varchar({ length: 255 }).notNull(),
 	type: mysqlEnum(['hq','country','regional','field']).notNull(),
+	countryId: int()
+    .references(() => countries.id),
 	country: varchar({ length: 100 }),
 	city: varchar({ length: 100 }),
 	currency: varchar({ length: 10 }).default('USD'),
@@ -4540,6 +4892,8 @@ export const organizations = mysqlTable("organizations", {
 	name: varchar({ length: 255 }).notNull(),
 	domain: varchar({ length: 255 }),
 	status: mysqlEnum(['active','suspended','inactive']).default('active').notNull(),
+	countryId: int()
+    .references(() => countries.id),
 	country: varchar({ length: 100 }),
 	timezone: varchar({ length: 100 }).default('UTC'),
 	currency: varchar({ length: 10 }).default('USD'),
@@ -5071,6 +5425,8 @@ export const projects = mysqlTable("projects", {
 	id: int().autoincrement().primaryKey().notNull(),
 	organizationId: int().notNull(),
 	operatingUnitId: int().notNull(),
+    countryId: int().notNull(),
+    governorateId: int().notNull(),
 	grantId: int(),
 	projectCode: varchar({ length: 100 }),
 	title: text(),
@@ -5090,6 +5446,8 @@ export const projects = mysqlTable("projects", {
 	sectors: json(),
 	donor: varchar({ length: 255 }),
 	implementingPartner: varchar({ length: 255 }),
+	country: varchar({ length: 255 }),
+	governorate: varchar({ length: 255 }),
 	location: varchar({ length: 255 }),
 	locationAr: varchar({ length: 255 }),
 	beneficiaryCount: int(),
@@ -8653,3 +9011,98 @@ export const grnApprovals = mysqlTable("grn_approvals", {
   // Composite index for finding latest approval for a GRN
   index("idx_grn_approvals_latest").on(table.grnId, table.approvalDate),
 ]);
+
+export const countries = mysqlTable("countries", {
+  id: int().autoincrement().primaryKey().notNull(),
+
+  code: varchar("code", { length: 2 }).notNull(),
+  code3: varchar("code3", { length: 3 }),
+
+  name: varchar("name", { length: 150 }).notNull(),
+  arabicName: varchar("arabicName", { length: 150 }),
+
+  region: varchar("region", { length: 100 }),
+  subRegion: varchar("subRegion", { length: 100 }),
+
+  latitude: decimal("latitude", {
+    precision: 10,
+    scale: 7
+  }),
+
+  longitude: decimal("longitude", {
+    precision: 10,
+    scale: 7
+  }),
+});
+
+export const governorates = mysqlTable("governorates", {
+  id: int().autoincrement().primaryKey().notNull(),
+
+  countryId: int("countryId").notNull(),
+
+  name: varchar("name", { length: 150 }).notNull(),
+
+  arabicName: varchar("arabicName", {
+    length: 150
+  }),
+
+  latitude: decimal("latitude", {
+    precision: 10,
+    scale: 7
+  }),
+
+  longitude: decimal("longitude", {
+    precision: 10,
+    scale: 7
+  }),
+});
+
+export const districts = mysqlTable("districts", {
+  id: int().autoincrement().primaryKey().notNull(),
+
+  // Relationship
+  governorateId: int("governorateId").notNull(),
+
+  // Basic info
+  name: varchar("name", { length: 150 }).notNull(),
+
+  // Optional code (useful for humanitarian datasets like OCHA codes)
+  code: varchar("code", { length: 50 }),
+
+  // Geographic coordinates (for maps / executive intelligence center)
+  latitude: decimal("latitude", {
+    precision: 10,
+    scale: 7
+  }),
+
+  longitude: decimal("longitude", {
+    precision: 10,
+    scale: 7
+  }),
+
+  // Metadata
+  createdAt: timestamp("createdAt").defaultNow(),
+  updatedAt: timestamp("updatedAt").defaultNow()
+});
+
+export const projectGovernorates = mysqlTable(
+  "project_governorates",
+  {
+    id: int("id")
+      .autoincrement()
+      .primaryKey()
+      .notNull(),
+
+    projectId: int("projectId")
+      .notNull(),
+
+    governorateId: int("governorateId")
+      .notNull(),
+
+    createdAt: timestamp("createdAt", {
+      mode: "string"
+    })
+      .defaultNow()
+      .notNull(),
+  }
+);

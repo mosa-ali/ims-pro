@@ -83,7 +83,7 @@ export function EditEmployeeModal({
  
  // Basic validation
  if (!formData.fullName || !formData.email || !formData.position) {
- setError(t.required);
+ setError(localT.required);
  return;
  }
 
@@ -109,7 +109,7 @@ export function EditEmployeeModal({
  <div className="bg-white rounded-lg w-full max-w-4xl max-h-[90vh] overflow-hidden">
  {/* Header */}
  <div className={`flex items-center justify-between px-6 py-4 border-b border-gray-200`}>
- <h2 className="text-lg font-semibold text-gray-900">{t.title}</h2>
+ <h2 className="text-lg font-semibold text-gray-900">{localT.title}</h2>
  <button onClick={onClose} className="text-gray-400 hover:text-gray-600">
  <X className="w-5 h-5" />
  </button>
@@ -126,7 +126,7 @@ export function EditEmployeeModal({
  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
  <div>
  <label className={`block text-sm font-medium text-gray-700 mb-2 text-start`}>
- {t.fullName} *
+ {localT.fullName} *
  </label>
  <input
  type="text"
@@ -139,21 +139,21 @@ export function EditEmployeeModal({
 
  <div>
  <label className={`block text-sm font-medium text-gray-700 mb-2 text-start`}>
- {t.gender}
+ {localT.gender}
  </label>
  <select
  value={formData.gender || ''}
  onChange={(e) => handleChange('gender', e.target.value)}
  className={`w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-start`}
  >
- <option value="Male">{t.male}</option>
- <option value="Female">{t.female}</option>
+ <option value="Male">{localT.male}</option>
+ <option value="Female">{localT.female}</option>
  </select>
  </div>
 
  <div>
  <label className={`block text-sm font-medium text-gray-700 mb-2 text-start`}>
- {t.nationality}
+ {localT.nationality}
  </label>
  <input
  type="text"
@@ -165,7 +165,7 @@ export function EditEmployeeModal({
 
  <div>
  <label className={`block text-sm font-medium text-gray-700 mb-2 text-start`}>
- {t.phone}
+ {localT.phone}
  </label>
  <input
  type="tel"
@@ -177,7 +177,7 @@ export function EditEmployeeModal({
 
  <div className="md:col-span-2">
  <label className={`block text-sm font-medium text-gray-700 mb-2 text-start`}>
- {t.email} *
+ {localT.email} *
  </label>
  <input
  type="email"
@@ -190,7 +190,7 @@ export function EditEmployeeModal({
 
  <div className="md:col-span-2">
  <label className={`block text-sm font-medium text-gray-700 mb-2 text-start`}>
- {t.fullAddress}
+ {localT.fullAddress}
  </label>
  <textarea
  value={formData.fullAddress || ''}
@@ -210,7 +210,7 @@ export function EditEmployeeModal({
  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
  <div>
  <label className={`block text-sm font-medium text-gray-700 mb-2 text-start`}>
- {t.position} *
+ {localT.position} *
  </label>
  <input
  type="text"
@@ -223,7 +223,7 @@ export function EditEmployeeModal({
 
  <div>
  <label className={`block text-sm font-medium text-gray-700 mb-2 text-start`}>
- {t.department}
+ {localT.department}
  </label>
  <input
  type="text"
@@ -235,7 +235,7 @@ export function EditEmployeeModal({
 
  <div>
  <label className={`block text-sm font-medium text-gray-700 mb-2 text-start`}>
- {t.supervisor}
+ {localT.supervisor}
  </label>
  <input
  type="text"
@@ -247,7 +247,7 @@ export function EditEmployeeModal({
 
  <div>
  <label className={`block text-sm font-medium text-gray-700 mb-2 text-start`}>
- {t.hireDate}
+ {localT.hireDate}
  </label>
  <input
  type="date"
@@ -259,22 +259,22 @@ export function EditEmployeeModal({
 
  <div>
  <label className={`block text-sm font-medium text-gray-700 mb-2 text-start`}>
- {t.contractType}
+ {localT.contractType}
  </label>
  <select
  value={formData.contractType || ''}
  onChange={(e) => handleChange('contractType', e.target.value)}
  className={`w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-start`}
  >
- <option value="Full-time">{t.fullTime}</option>
- <option value="Part-time">{t.partTime}</option>
- <option value="Consultant">{t.consultant}</option>
+ <option value="Full-time">{localT.fullTime}</option>
+ <option value="Part-time">{localT.partTime}</option>
+ <option value="Consultant">{localT.consultant}</option>
  </select>
  </div>
 
  <div>
  <label className={`block text-sm font-medium text-gray-700 mb-2 text-start`}>
- {t.contractEndDate}
+ {localT.contractEndDate}
  </label>
  <input
  type="date"
@@ -303,7 +303,7 @@ export function EditEmployeeModal({
  disabled={saving}
  className="px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors disabled:opacity-50"
  >
- {t.cancel}
+ {localT.cancel}
  </button>
  <button
  type="submit"
@@ -311,7 +311,7 @@ export function EditEmployeeModal({
  className={`flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50`}
  >
  <Save className="w-4 h-4" />
- <span>{saving ? t.saving : t.save}</span>
+ <span>{saving ? localT.saving : localT.save}</span>
  </button>
  </div>
  </form>

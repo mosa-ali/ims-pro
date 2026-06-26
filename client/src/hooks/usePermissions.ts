@@ -50,7 +50,7 @@ export function usePermissions() {
  const loading = authLoading || permQuery.isLoading;
 
  // Platform admin and organization admin always have full access
- const isPlatformAdmin = user?.role === 'platform_admin' || user?.platformRole === 'platform_admin' || user?.platformRole === 'organization_admin';
+ const isPlatformAdmin = user?.role === 'platform_admin' || user?.role === 'platform_super_admin' || user?.role === 'organization_admin';
 
  const isAdmin = isPlatformAdmin || (permissions?.isAdmin ?? false);
 
@@ -191,3 +191,4 @@ export function useRoleDisplayName(): string {
  if (permissions.isAdmin) return 'Administrator';
  return 'User';
 }
+

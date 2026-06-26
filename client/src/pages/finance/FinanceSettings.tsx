@@ -90,10 +90,10 @@ export default function FinanceSettings() {
  
  // Queries
  const { data: statistics, refetch: refetchStats } = trpc.financeSettings.getSettingsStatistics.useQuery({ organizationId });
- const { data: currencies = [], refetch: refetchCurrencies } = trpc.financeSettings.listCurrencies.useQuery({ organizationId, search: searchTerm });
+ const { data: currencies = [], refetch: refetchCurrencies } = trpc.financeSettings.listCurrencies.useQuery({  search: searchTerm });
  const { data: fiscalYears = [], refetch: refetchFiscalYears } = trpc.financeSettings.listFiscalYears.useQuery({ organizationId });
  const { data: thresholds = [], refetch: refetchThresholds } = trpc.financeSettings.listApprovalThresholds.useQuery({ organizationId });
- const { data: categories = [], refetch: refetchCategories } = trpc.financeSettings.listBudgetCategories.useQuery({ organizationId, search: searchTerm });
+ const { data: categories = [], refetch: refetchCategories } = trpc.financeSettings.listBudgetCategories.useQuery({  search: searchTerm });
  const { data: roles = [], refetch: refetchRoles } = trpc.financeSettings.listFinanceRoles.useQuery({ organizationId });
  const { data: permissions = [], refetch: refetchPermissions } = trpc.financeSettings.listFinancePermissions.useQuery({ organizationId });
  
@@ -231,9 +231,9 @@ export default function FinanceSettings() {
  });
  
  if (type ==="currencies") {
- bulkImportCurrencies.mutate({ organizationId, currencies: items });
+ bulkImportCurrencies.mutate({  currencies: items });
  } else if (type ==="categories") {
- bulkImportCategories.mutate({ organizationId, categories: items });
+ bulkImportCategories.mutate({  categories: items });
  }
  };
  input.click();
@@ -327,7 +327,7 @@ export default function FinanceSettings() {
  
  const handleSubmit = () => {
  if (currencyDialog.mode ==="create") {
- createCurrency.mutate({ ...form, organizationId });
+ createCurrency.mutate({ ...form });
  } else {
  updateCurrency.mutate({ id: currencyDialog.data.id, ...form });
  }
@@ -392,7 +392,7 @@ export default function FinanceSettings() {
  
  const handleSubmit = () => {
  if (fiscalYearDialog.mode ==="create") {
- createFiscalYear.mutate({ ...form, organizationId });
+ createFiscalYear.mutate({ ...form });
  } else {
  updateFiscalYear.mutate({ id: fiscalYearDialog.data.id, ...form });
  }
@@ -467,7 +467,7 @@ export default function FinanceSettings() {
  
  const handleSubmit = () => {
  if (thresholdDialog.mode ==="create") {
- createThreshold.mutate({ ...form, organizationId });
+ createThreshold.mutate({ ...form });
  } else {
  updateThreshold.mutate({ id: thresholdDialog.data.id, ...form });
  }
@@ -552,7 +552,7 @@ export default function FinanceSettings() {
  
  const handleSubmit = () => {
  if (categoryDialog.mode ==="create") {
- createCategory.mutate({ ...form, organizationId });
+ createCategory.mutate({ ...form });
  } else {
  updateCategory.mutate({ id: categoryDialog.data.id, ...form });
  }
@@ -624,7 +624,7 @@ export default function FinanceSettings() {
  
  const handleSubmit = () => {
  if (roleDialog.mode ==="create") {
- createRole.mutate({ ...form, organizationId });
+ createRole.mutate({ ...form });
  } else {
  updateRole.mutate({ id: roleDialog.data.id, ...form });
  }
@@ -677,7 +677,7 @@ export default function FinanceSettings() {
  });
  
  const handleSubmit = () => {
- createPermission.mutate({ ...form, organizationId });
+ createPermission.mutate({ ...form });
  };
  
  return (

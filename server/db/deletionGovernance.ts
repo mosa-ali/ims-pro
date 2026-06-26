@@ -13,7 +13,7 @@
 
 import { TRPCError } from "@trpc/server";
 import { and, eq, gt } from "drizzle-orm";
-import type { Database } from "../_core/db";
+import type { Database } from "../db";
 import {
   purchaseRequests,
   quotationAnalyses,

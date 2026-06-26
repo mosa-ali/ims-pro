@@ -225,13 +225,20 @@ export const risksRouter = router({
       const { organizationId, operatingUnitId } = ctx.scope;
       const userId = ctx.user.id;
 
+      if (!organizationId) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "Organization context missing",
+        });
+      }
+
       // Calculate risk score and level
       const { score, level } = calculateRiskScoreAndLevel(input.likelihood, input.impact);
 
       // Insert risk
       const [newRisk] = await db.insert(risks).values({
-        organizationId: ctx.scope.organizationId,
-        operatingUnitId: ctx.scope.operatingUnitId,
+        organizationId,
+        operatingUnitId,
         riskCode: input.riskCode,
         title: input.title,
         titleAr: input.titleAr,
@@ -988,15 +995,15 @@ export const riskComplianceDashboardRouter = router({
    * Evaluate project for risk triggers and auto-generate risks
    * Calls Risk Intelligence Engine to detect financial, operational, and MEAL risks
    */
-  evaluateProject: scopedProcedure
-    .input(
-      z.object({
-        projectId: z.number(),
-        organizationId: z.number(),
-        operatingUnitId: z.number().nullable(),
-      })
-    )
-    .mutation(async ({ input, ctx }) => {
+    evaluateProject: scopedProcedure
+      .input(
+        z.object({
+          projectId: z.number(),
+          organizationId: z.number(),
+          operatingUnitId: z.number().nullable(),
+        })
+      )
+      .mutation(async ({ input, ctx }) => {
       const { evaluateProjectRisks } = await import('../_core/riskIntelligenceEngine');
       
       try {
@@ -1022,15 +1029,16 @@ export const riskComplianceDashboardRouter = router({
       }
     }),
 
-  /**
+/**
    * Evaluate all active projects for risk triggers
    * Runs risk detection across all active projects in the organization
+   * FIXED: Corrected scoping bug (was comparing organizationId to operatingUnitId)
    */
   evaluateAllProjects: scopedProcedure
-    .mutation(async ({ input, ctx }) => {
-      const { evaluateProjectRisks } = await import('../_core/riskIntelligenceEngine');
-      
+    .mutation(async ({ ctx }) => {
       try {
+        const { evaluateProjectRisks } = await import("../_core/riskIntelligenceEngine");
+        
         // Fetch all active projects in the organization/OU
         const db = await getDb();
         const activeProjects = await db
@@ -1039,8 +1047,9 @@ export const riskComplianceDashboardRouter = router({
           .where(
             and(
               eq(projects.organizationId, ctx.scope.organizationId),
+              // FIXED: Was comparing organizationId to operatingUnitId - now correct
               ctx.scope.operatingUnitId
-                ? eq(projects.organizationId, ctx.scope.operatingUnitId)
+                ? eq(projects.operatingUnitId, ctx.scope.operatingUnitId)
                 : sql`1=1`,
               eq(projects.status, 'active')
             )
@@ -1049,6 +1058,7 @@ export const riskComplianceDashboardRouter = router({
         let totalRisksGenerated = 0;
         let totalRisksUpdated = 0;
         let projectsEvaluated = 0;
+        let projectsFailed = 0;
 
         // Evaluate each project
         for (const project of activeProjects) {
@@ -1064,6 +1074,7 @@ export const riskComplianceDashboardRouter = router({
             projectsEvaluated++;
           } catch (error) {
             console.error(`[Risk Intelligence] Failed to evaluate project ${project.id}:`, error);
+            projectsFailed++;
             // Continue with next project even if one fails
           }
         }
@@ -1071,20 +1082,21 @@ export const riskComplianceDashboardRouter = router({
         return {
           success: true,
           projectsEvaluated,
+          projectsFailed,
           totalRisksGenerated,
           totalRisksUpdated,
-          message: `Evaluated ${projectsEvaluated} projects: ${totalRisksGenerated} risks generated, ${totalRisksUpdated} risks updated`,
+          message: `Evaluated ${projectsEvaluated} projects: ${totalRisksGenerated} risks created, ${totalRisksUpdated} risks updated`,
         };
       } catch (error) {
         console.error('[Risk Intelligence] Bulk evaluation failed:', error);
         throw new TRPCError({
           code: 'INTERNAL_SERVER_ERROR',
           message: 'Failed to evaluate all projects',
+          cause: error,
         });
       }
     }),
 });
-
 // ============================================================================
 // MAIN RISK & COMPLIANCE ROUTER
 // ============================================================================
@@ -1093,4 +1105,41 @@ export const riskComplianceRouter = router({
   risks: risksRouter,
   incidents: incidentsRouter,
   dashboard: riskComplianceDashboardRouter,
+  
+  // ✅ ADD THIS PROCEDURE:
+evaluateProject: scopedProcedure
+  .input(
+    z.object({
+      projectId: z.number(),
+      organizationId: z.number(),
+    })
+  )
+  .mutation(async ({ input, ctx }) => {
+    const { evaluateProjectRisks } = await import(
+      "../_core/riskIntelligenceEngine"
+    );
+
+    try {
+      const result = await evaluateProjectRisks(
+        input.projectId,
+        ctx.scope.organizationId,
+        ctx.scope.operatingUnitId ?? null,
+        ctx.user.id
+      );
+
+      return {
+        success: true,
+        risksCreated: result.risksCreated,
+        risksUpdated: result.risksUpdated,
+        message: `Evaluation complete: ${result.risksCreated} risks created, ${result.risksUpdated} risks updated`,
+      };
+    } catch (error) {
+      console.error("[Risk Intelligence] Evaluation failed:", error);
+
+      throw new TRPCError({
+        code: "INTERNAL_SERVER_ERROR",
+        message: "Failed to evaluate project risks",
+      });
+    }
+  }),
 });

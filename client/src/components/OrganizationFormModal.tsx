@@ -34,7 +34,7 @@ interface OrganizationFormModalProps {
 interface FormData {
  // Step 1: Organization Information
  name: string;
- country: string;
+ countryId: number | null;
  domain: string;
  status: "active" | "inactive" | "suspended";
  shortCode: string;
@@ -49,25 +49,15 @@ interface FormData {
 }
 
 interface OperatingUnitForm {
- id?: number; // For editing existing OUs
- tempId?: string; // For new OUs before creation
- name: string;
- type: "hq" | "regional" | "field";
- country: string;
+  id?: number;
+  tempId?: string;
+  name: string;
+  type:
+    | "hq"
+    | "regional"
+    | "field";
+  countryId: number | null;
 }
-
-const COUNTRIES = [
- "Yemen",
- "Jordan",
- "Lebanon",
- "Syria",
- "Palestine",
- "Iraq",
- "Egypt",
- "Sudan",
- "Turkey",
- "Other"
-];
 
 // OU Types for dropdown
 const OU_TYPES = [
@@ -88,7 +78,7 @@ const utils = trpc.useUtils();
 
  const [formData, setFormData] = useState<FormData>({
  name: "",
- country: "",
+ countryId: null,
  domain: "",
  status: "active",
  shortCode: "",
@@ -107,9 +97,12 @@ const utils = trpc.useUtils();
  const [newOU, setNewOU] = useState<OperatingUnitForm>({
  name: "",
  type: "field",
- country: "",
+ countryId: null,
  });
  const [editingOUIndex, setEditingOUIndex] = useState<number | null>(null);
+
+   const { data: countries = [] } =
+   trpc.organization.getCountries.useQuery();
 
  // Fetch organization data for edit mode
  const { data: organizations } = trpc.ims.organizations.list.useQuery(undefined, {
@@ -139,32 +132,52 @@ const utils = trpc.useUtils();
  useEffect(() => {
  if (mode === "edit" && organization) {
  setFormData({
- name: organization.name,
- country: organization.country || "",
- domain: organization.domain || "",
- status: organization.status as "active" | "inactive" | "suspended",
- shortCode: organization.shortCode || "",
- tenantId: organization.tenantId || "",
- primaryAdminId: organization.primaryAdminId || null,
- adminName: adminUser?.name || "",
- adminEmail: adminUser?.email || "",
- secondaryAdminId: organization.secondaryAdminId || null,
- secondaryAdminName: secondaryAdminUser?.name || "",
- secondaryAdminEmail: secondaryAdminUser?.email || "",
- });
+  name: organization.name,
+  countryId:
+    organization.countryId ?? null,
+  domain: organization.domain || "",
+  status:
+    organization.status as
+      | "active"
+      | "inactive"
+      | "suspended",
+  shortCode:
+    organization.shortCode || "",
+  tenantId:
+    organization.tenantId || "",
+  primaryAdminId:
+    organization.primaryAdminId ||
+    null,
+  adminName:
+    adminUser?.name || "",
+  adminEmail:
+    adminUser?.email || "",
+  secondaryAdminId:
+    organization.secondaryAdminId ||
+    null,
+  secondaryAdminName:
+    secondaryAdminUser?.name || "",
+  secondaryAdminEmail:
+    secondaryAdminUser?.email || "",
+});
  }
  }, [mode, organization, adminUser, secondaryAdminUser]);
 
  useEffect(() => {
  if (mode === "edit" && existingOUs) {
  setOperatingUnits(
- existingOUs.map((ou) => ({
- id: ou.id,
- name: ou.name,
- type: ou.type as "hq" | "regional" | "field",
- country: ou.country || "",
- }))
- );
+  existingOUs.map((ou) => ({
+  id: ou.id,
+  name: ou.name,
+  type:
+    ou.type as
+      | "hq"
+      | "regional"
+      | "field",
+  countryId:
+    ou.countryId ?? null,
+}))
+);
  }
  }, [mode, existingOUs]);
 
@@ -172,20 +185,23 @@ const utils = trpc.useUtils();
  useEffect(() => {
  if (!open) {
  setFormData({
- name: "",
- country: "",
- domain: "",
- status: "active",
- shortCode: "",
- tenantId: "",
- primaryAdminId: null,
- adminName: "",
- adminEmail: "",
- });
+  name: "",
+  countryId: null,
+  domain: "",
+  status: "active",
+  shortCode: "",
+  tenantId: "",
+  primaryAdminId: null,
+  adminName: "",
+  adminEmail: "",
+  secondaryAdminId: null,
+  secondaryAdminName: "",
+  secondaryAdminEmail: "",
+});
  setErrors({});
  setCurrentStep(1);
  setOperatingUnits([]);
- setNewOU({ name: "", type: "field", country: "" });
+ setNewOU({ name: "", type: "field", countryId: null });
  setEditingOUIndex(null);
  }
  }, [open]);
@@ -219,8 +235,8 @@ const utils = trpc.useUtils();
  newErrors.name = t.organizationFormModal.nameRequired;
  }
 
- if (!formData.country.trim()) {
- newErrors.country = t.organizationFormModal.countryRequired;
+ if (!formData.countryId) {
+ newErrors.countryId = t.organizationFormModal.countryRequired;
  }
 
  if (formData.domain && !/^[a-z0-9.-]+$/.test(formData.domain)) {
@@ -283,10 +299,13 @@ const utils = trpc.useUtils();
  toast.error(t.organizationFormModal.ouNameRequired);
  return;
  }
- if (!newOU.country.trim()) {
- toast.error(t.organizationFormModal.ouCountryRequired);
- return;
- }
+ if (!newOU.countryId) {
+  toast.error(
+    t.organizationFormModal
+      .ouCountryRequired
+  );
+  return;
+}
 
  if (editingOUIndex !== null) {
  // Update existing OU
@@ -303,7 +322,7 @@ const utils = trpc.useUtils();
  }
 
  // Reset form
- setNewOU({ name: "", type: "field", country: "" });
+ setNewOU({ name: "", type: "field", countryId: null, });
  };
 
  const handleEditOU = (index: number) => {
@@ -317,7 +336,7 @@ const utils = trpc.useUtils();
  };
 
  const handleCancelEdit = () => {
- setNewOU({ name: "", type: "field", country: "" });
+ setNewOU({ name: "", type: "field", countryId: null, });
  setEditingOUIndex(null);
  };
 
@@ -333,7 +352,7 @@ const utils = trpc.useUtils();
  if (mode === "create") {
  createMutation.mutate({
  name: formData.name.trim(),
- country: formData.country.trim(),
+ countryId: formData.countryId!,
  domain: formData.domain.trim() || undefined,
  status: formData.status,
  shortCode: formData.shortCode.trim() || undefined,
@@ -345,24 +364,26 @@ const utils = trpc.useUtils();
  secondaryAdminName: formData.secondaryAdminName.trim() || undefined,
  secondaryAdminEmail: formData.secondaryAdminEmail.trim() || undefined,
  // Send operating units array
- operatingUnits: operatingUnits.map(ou => ({
- name: ou.name,
- type: ou.type,
- country: ou.country,
- })),
+ operatingUnits: operatingUnits.map(
+  (ou) => ({
+    name: ou.name,
+    type: ou.type,
+    countryId: ou.countryId as number,
+  })
+),
  });
  } else if (mode === "edit" && organizationId) {
- const ousToSend = operatingUnits.map(ou => ({
- id: ou.id, // Will be undefined for new OUs
- name: ou.name,
- type: ou.type,
- country: ou.country,
- }));
+ const ousToSend = operatingUnits.map((ou) => ({
+  id: ou.id,
+  name: ou.name,
+  type: ou.type,
+  countryId: ou.countryId!,
+}));
  console.log('[UPDATE] Sending OUs:', ousToSend);
  updateMutation.mutate({
  id: organizationId,
  name: formData.name.trim(),
- country: formData.country.trim(),
+ countryId: formData.countryId ?? undefined,
  domain: formData.domain.trim() || undefined,
  status: formData.status,
  shortCode: formData.shortCode.trim() || undefined,
@@ -424,24 +445,47 @@ const utils = trpc.useUtils();
  <div className="grid gap-2">
  <Label htmlFor="country">{t.organizationFormModal.countryLabel} *</Label>
  <Select
- value={formData.country}
- onValueChange={(value) =>
- setFormData({ ...formData, country: value })
- }
- >
- <SelectTrigger className={errors.country ? "border-red-500" : ""}>
- <SelectValue placeholder={t.organizationFormModal.countryPlaceholder} />
- </SelectTrigger>
- <SelectContent>
- {COUNTRIES.map((country) => (
- <SelectItem key={country} value={country}>
- {country}
- </SelectItem>
- ))}
- </SelectContent>
- </Select>
- {errors.country && (
- <p className="text-sm text-red-500">{errors.country}</p>
+  value={
+    formData.countryId?.toString() ??
+    ""
+  }
+  onValueChange={(value) =>
+    setFormData({
+      ...formData,
+      countryId: Number(value),
+    })
+  }
+>
+  <SelectTrigger
+    className={
+      errors.countryId
+        ? "border-red-500"
+        : ""
+    }
+  >
+    <SelectValue
+      placeholder={
+        t.organizationFormModal
+          .countryPlaceholder
+      }
+    />
+  </SelectTrigger>
+
+  <SelectContent>
+    {countries.map((country) => (
+      <SelectItem
+        key={country.id}
+        value={country.id.toString()}
+      >
+        {language === "ar"
+          ? country.arabicName
+          : country.name}
+      </SelectItem>
+    ))}
+  </SelectContent>
+</Select>
+ {errors.countryId && (
+ <p className="text-sm text-red-500">{errors.countryId}</p>
  )}
  </div>
 
@@ -686,22 +730,39 @@ const utils = trpc.useUtils();
  <div className="grid gap-2">
  <Label htmlFor="ouCountry">{t.organizationFormModal.ouCountryLabel} *</Label>
  <Select
- value={newOU.country}
- onValueChange={(value) =>
- setNewOU({ ...newOU, country: value })
- }
- >
- <SelectTrigger>
- <SelectValue placeholder={t.organizationFormModal.ouCountryPlaceholder} />
- </SelectTrigger>
- <SelectContent>
- {COUNTRIES.map((country) => (
- <SelectItem key={country} value={country}>
- {country}
- </SelectItem>
- ))}
- </SelectContent>
- </Select>
+  value={
+    newOU.countryId?.toString() ??
+    ""
+  }
+  onValueChange={(value) =>
+    setNewOU({
+      ...newOU,
+      countryId: Number(value),
+    })
+  }
+>
+  <SelectTrigger>
+    <SelectValue
+      placeholder={
+        t.organizationFormModal
+          .ouCountryPlaceholder
+      }
+    />
+  </SelectTrigger>
+
+  <SelectContent>
+    {countries.map((country) => (
+      <SelectItem
+        key={country.id}
+        value={country.id.toString()}
+      >
+        {language === "ar"
+          ? country.arabicName
+          : country.name}
+      </SelectItem>
+    ))}
+  </SelectContent>
+</Select>
  </div>
 
  <div className="flex gap-2">
@@ -747,7 +808,17 @@ const utils = trpc.useUtils();
  <div>
  <p className="font-medium">{ou.name}</p>
  <p className="text-sm text-muted-foreground">
- {OU_TYPES.find((t) => t.value === ou.type)?.label} • {ou.country}
+ {
+  language === "ar"
+    ? countries.find(
+        (c) =>
+          c.id === ou.countryId
+      )?.arabicName
+    : countries.find(
+        (c) =>
+          c.id === ou.countryId
+      )?.name
+}
  </p>
  </div>
  <div className="flex gap-2">

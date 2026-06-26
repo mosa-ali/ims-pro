@@ -118,7 +118,7 @@ export const emailVerificationRouter = router({
         }
 
         const database = await getDb();
-        const { users } = await import('@/drizzle/schema');
+        const { users } = await import('drizzle/schema');
         const { eq } = await import('drizzle-orm');
 
         const [user] = await database.select().from(users)

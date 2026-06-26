@@ -164,7 +164,7 @@ export default function TreasuryCashManagement() {
  const bankAccountsQuery = trpc.treasury.listBankAccounts.useQuery({ organizationId });
  const bankStatsQuery = trpc.treasury.getBankAccountStatistics.useQuery({ organizationId });
  const transactionsQuery = trpc.treasury.listCashTransactions.useQuery({ 
- organizationId,
+ 
  bankAccountId: selectedBankAccountId || undefined,
  });
  const fundBalancesQuery = trpc.treasury.listFundBalances.useQuery({ organizationId });
@@ -360,7 +360,7 @@ export default function TreasuryCashManagement() {
  });
  } else {
  createBankAccountMutation.mutate({
- organizationId,
+ 
  ...bankAccountForm,
  });
  }
@@ -396,7 +396,7 @@ export default function TreasuryCashManagement() {
  });
  } else {
  createFundMutation.mutate({
- organizationId,
+ 
  ...fundForm,
  });
  }
@@ -414,7 +414,7 @@ export default function TreasuryCashManagement() {
  return;
  }
  createTransactionMutation.mutate({
- organizationId,
+ 
  bankAccountId: transactionForm.bankAccountId,
  transactionNumber: nextTxnNumberQuery.data || `TXN-${Date.now()}`,
  transactionDate: transactionForm.transactionDate,
@@ -492,7 +492,7 @@ export default function TreasuryCashManagement() {
  }));
 
  bulkImportBankAccountsMutation.mutate({
- organizationId,
+ 
  accounts,
  allowDuplicates: bankImportAllowDuplicates,
  });
@@ -526,7 +526,7 @@ export default function TreasuryCashManagement() {
  }));
 
  bulkImportFundsMutation.mutate({
- organizationId,
+ 
  funds,
  allowDuplicates: fundImportAllowDuplicates,
  });
@@ -1522,8 +1522,8 @@ interface BankReconciliationTabProps {
 }
 
 function BankReconciliationTab({ 
- organizationId, 
- operatingUnitId, 
+  
+  
  bankAccounts, 
  language, 
  isRTL, 
@@ -1546,8 +1546,8 @@ function BankReconciliationTab({
  // Queries
  const reconciliationsQuery = trpc.bankReconciliations.list.useQuery(
  {
- organizationId,
- operatingUnitId,
+ 
+ 
  bankAccountId: selectedBankAccountId || undefined,
  limit: 50,
  },
@@ -1561,7 +1561,7 @@ function BankReconciliationTab({
 
  const unreconciledTransactionsQuery = trpc.bankTransactions.getUnreconciled.useQuery(
  {
- organizationId,
+ 
  bankAccountId: selectedBankAccountId || 0,
  },
  { enabled: !!selectedBankAccountId }
@@ -1632,8 +1632,8 @@ function BankReconciliationTab({
  return;
  }
  createReconciliationMutation.mutate({
- organizationId,
- operatingUnitId,
+ 
+ 
  bankAccountId: selectedBankAccountId,
  reconciliationDate: reconciliationForm.reconciliationDate,
  periodStart: reconciliationForm.periodStart,

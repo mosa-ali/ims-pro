@@ -1,0 +1,1 @@
+{"type":"FeatureCollection","name":"Singapore","features":[{"type":"Feature","properties":{"name":"Singapore","type":"country_center","lat":1.3521,"lng":103.8198},"geometry":{"type":"Point","coordinates":[103.8198,1.3521]}}]}

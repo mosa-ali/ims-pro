@@ -17,6 +17,8 @@ interface EditingEmployee {
   monthlyAccrualRate: number;
   carryForwardDays: number;
   notes?: string;
+  contractStartDate?: Date;
+  contractEndDate?: Date;
 }
 
 export function EmployeesAnnualLeaveView() {
@@ -28,6 +30,9 @@ export function EmployeesAnnualLeaveView() {
   const [editingEmployee, setEditingEmployee] = useState<EditingEmployee | null>(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
+  // Get tRPC utilities at component top level (required for hooks)
+  const utils = trpc.useUtils();
+
   // Fetch employees annual leave data
   const { data: employees = [], isLoading, error } = trpc.hrAnnualLeave.getEmployeesAnnualLeave.useQuery({
     year: selectedYear,
@@ -38,6 +43,11 @@ export function EmployeesAnnualLeaveView() {
     onSuccess: () => {
       setIsEditModalOpen(false);
       setEditingEmployee(null);
+      // Invalidate query to refresh data
+      utils.hrAnnualLeave.getEmployeesAnnualLeave.invalidate({ year: selectedYear });
+    },
+    onError: (error) => {
+      console.error('Error updating annual leave record:', error);
     },
   });
 
@@ -62,6 +72,26 @@ export function EmployeesAnnualLeaveView() {
     totalEntitlements: filteredEmployees.reduce((sum, emp) => sum + (emp.annualEntitlement ? Number(emp.annualEntitlement) : 0), 0),
   };
 
+  // Calculate pro-rata entitlement based on contract duration
+  const calculateProRataEntitlement = (monthlyRate: number, contractStart?: Date, contractEnd?: Date): number => {
+    if (!contractStart || !contractEnd) {
+      // If no contract dates, assume full year (12 months)
+      return monthlyRate * 12;
+    }
+
+    // Calculate months between contract start and end
+    const startDate = new Date(contractStart);
+    const endDate = new Date(contractEnd);
+    
+    const monthsDiff = (endDate.getFullYear() - startDate.getFullYear()) * 12 + 
+                       (endDate.getMonth() - startDate.getMonth());
+    
+    // Add 1 to include both start and end months
+    const totalMonths = Math.max(1, monthsDiff + 1);
+    
+    return Number((monthlyRate * totalMonths).toFixed(2));
+  };
+
   const handleEditClick = (employee: any) => {
     setEditingEmployee({
       id: employee.id,
@@ -72,8 +102,26 @@ export function EmployeesAnnualLeaveView() {
       monthlyAccrualRate: Number(employee.monthlyAccrualRate),
       carryForwardDays: Number(employee.carryForwardDays),
       notes: employee.notes,
+      contractStartDate: employee.contractStartDate ? new Date(employee.contractStartDate) : undefined,
+      contractEndDate: employee.contractEndDate ? new Date(employee.contractEndDate) : undefined,
     });
     setIsEditModalOpen(true);
+  };
+
+  const handleMonthlyRateChange = (newRate: number) => {
+    if (!editingEmployee) return;
+    
+    const proRataEntitlement = calculateProRataEntitlement(
+      newRate,
+      editingEmployee.contractStartDate,
+      editingEmployee.contractEndDate
+    );
+    
+    setEditingEmployee({
+      ...editingEmployee,
+      monthlyAccrualRate: newRate,
+      annualEntitlement: proRataEntitlement,
+    });
   };
 
   const handleSaveChanges = async () => {
@@ -92,6 +140,11 @@ export function EmployeesAnnualLeaveView() {
       console.error('Error updating annual leave record:', err);
     }
   };
+
+  // Handle errors from mutation
+  if (updateMutation.isError) {
+    console.error('Mutation error:', updateMutation.error);
+  }
 
   return (
     <div className={`space-y-6 ${isRTL ? 'rtl' : 'ltr'}`} dir={isRTL ? 'rtl' : 'ltr'}>
@@ -254,7 +307,7 @@ export function EmployeesAnnualLeaveView() {
 
       {/* Edit Modal */}
       <Dialog open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
-        <DialogContent className={`${isRTL ? 'rtl' : 'ltr'}`} dir={isRTL ? 'rtl' : 'ltr'}>
+        <DialogContent className={`${isRTL ? 'rtl' : 'ltr'} max-w-md`} dir={isRTL ? 'rtl' : 'ltr'}>
           <DialogHeader>
             <DialogTitle>{t.employeesAnnualLeaveView.editModal.title}</DialogTitle>
             <DialogDescription>
@@ -264,38 +317,45 @@ export function EmployeesAnnualLeaveView() {
 
           {editingEmployee && (
             <div className="space-y-4">
-              <div>
-                <label className="text-sm font-medium">{t.employeesAnnualLeaveView.editModal.annualEntitlement}</label>
-                <Input
-                  type="number"
-                  value={editingEmployee.annualEntitlement}
-                  onChange={(e) =>
-                    setEditingEmployee({
-                      ...editingEmployee,
-                      annualEntitlement: parseFloat(e.target.value),
-                    })
-                  }
-                  min="0"
-                  step="0.5"
-                />
-              </div>
+              {/* Contract Period Display */}
+              {editingEmployee.contractStartDate && editingEmployee.contractEndDate && (
+                <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                  <p className="text-xs font-medium text-blue-900 mb-1">{t.employeeInfo.contractPeriod}</p>
+                  <p className="text-sm text-blue-800">
+                    {new Date(editingEmployee.contractStartDate).toLocaleDateString()} - {new Date(editingEmployee.contractEndDate).toLocaleDateString()}
+                  </p>
+                </div>
+              )}
 
+              {/* Monthly Accrual Rate Input */}
               <div>
                 <label className="text-sm font-medium">{t.employeesAnnualLeaveView.editModal.monthlyAccrualRate}</label>
-                <Input
-                  type="number"
-                  value={editingEmployee.monthlyAccrualRate}
-                  onChange={(e) =>
-                    setEditingEmployee({
-                      ...editingEmployee,
-                      monthlyAccrualRate: parseFloat(e.target.value),
-                    })
-                  }
-                  min="0"
-                  step="0.1"
-                />
+                <div className="flex gap-2 mt-1">
+                  <Input
+                    type="number"
+                    value={editingEmployee.monthlyAccrualRate}
+                    onChange={(e) => handleMonthlyRateChange(parseFloat(e.target.value) || 0)}
+                    min="0"
+                    step="0.1"
+                    className="flex-1"
+                  />
+                  <span className="flex items-center text-sm text-muted-foreground">{t.units.days}/{t.units.month}</span>
+                </div>
+                <p className="text-xs text-muted-foreground mt-1">{t.employeesAnnualLeaveView.editModal.monthlyAccrualRate}</p>
               </div>
 
+              {/* Annual Entitlement Display (Auto-calculated) */}
+              <div>
+                <label className="text-sm font-medium">{t.employeesAnnualLeaveView.editModal.annualEntitlement}</label>
+                <div className="mt-1 p-3 bg-muted rounded-md">
+                  <p className="text-lg font-semibold text-foreground">
+                    {editingEmployee.annualEntitlement.toFixed(2)} {t.units.days}
+                  </p>
+                  <p className="text-xs text-muted-foreground mt-1">{t.statistics.totalAccrual}</p>
+                </div>
+              </div>
+
+              {/* Carry Forward Days Input */}
               <div>
                 <label className="text-sm font-medium">{t.employeesAnnualLeaveView.editModal.carryForwardDays}</label>
                 <Input
@@ -304,14 +364,16 @@ export function EmployeesAnnualLeaveView() {
                   onChange={(e) =>
                     setEditingEmployee({
                       ...editingEmployee,
-                      carryForwardDays: parseFloat(e.target.value),
+                      carryForwardDays: parseFloat(e.target.value) || 0,
                     })
                   }
                   min="0"
                   step="0.5"
+                  className="mt-1"
                 />
               </div>
 
+              {/* Notes Input */}
               <div>
                 <label className="text-sm font-medium">{t.employeesAnnualLeaveView.editModal.notes}</label>
                 <textarea
@@ -322,12 +384,14 @@ export function EmployeesAnnualLeaveView() {
                       notes: e.target.value,
                     })
                   }
-                  className="w-full px-3 py-2 border border-input rounded-md bg-background text-foreground"
+                  className="w-full px-3 py-2 border border-input rounded-md bg-background text-foreground mt-1"
                   rows={3}
+
                 />
               </div>
 
-              <div className="flex gap-2 justify-end">
+              {/* Action Buttons */}
+              <div className="flex gap-2 justify-end pt-4">
                 <Button
                   variant="outline"
                   onClick={() => setIsEditModalOpen(false)}

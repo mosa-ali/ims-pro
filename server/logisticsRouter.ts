@@ -262,7 +262,7 @@ const purchaseRequestsRouter = router({
       activityName: z.string().optional(),
       totalBudgetLine: z.union([z.string(), z.number()]).optional(),
       currency: z.string().optional(),
-      exchangeRate: z.string().optional(),
+      exchangeRate: z.number().optional(),
       exchangeTo: z.string().optional(),
       total: z.string().optional(),
       department: z.string().optional(),
@@ -280,13 +280,10 @@ const purchaseRequestsRouter = router({
         budgetLine: z.string().optional(),
         description: z.string(),
         specifications: z.string().optional(),
-        quantity: z.string(),
+        quantity: z.number().optional(),
         unit: z.string().optional(),
-        unitPrice: z.string().optional(),
-        recurrence: z.union([
-        z.string(),
-        z.number()
-      ]).optional(),
+        unitPrice: z.number().optional(),
+        recurrence: z.number().optional(),
       })),
     }))
     .mutation(async ({ input, ctx }) => {
@@ -379,7 +376,7 @@ const purchaseRequestsRouter = router({
       activityName: z.string().optional(),
       totalBudgetLine: z.union([z.string(), z.number()]).optional(),
       currency: z.string().optional(),
-      exchangeRate: z.string().optional(),
+      exchangeRate: z.number().optional(),
       exchangeTo: z.string().optional(),
       total: z.string().optional(),
       department: z.string().optional(),
@@ -1611,7 +1608,7 @@ const purchaseOrdersRouter = router({
       projectTitle: z.string().optional(),
       projectTitleAr: z.string().optional(),
       currency: z.string().optional(),
-      exchangeRate: z.string().optional(),
+      exchangeRate: z.number().optional(),
       paymentTerms: z.string().optional(),
       deliveryTerms: z.string().optional(),
       deliveryAddress: z.string().optional(),

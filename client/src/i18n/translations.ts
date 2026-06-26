@@ -369,6 +369,10 @@ organization: {
  createNew: string;
  editProject: string;
  backToProjectsDashboard: string;
+ activeRegions: string;
+ geographicIntelligence: string;
+ totalInvestment: string;
+ telemetryLegend: string;
  deleteProject: string;
  deleteConfirm: string;
  projectDetails: string;
@@ -3079,8 +3083,27 @@ deletedRecords: {
  subtitle: string;
  registry: string;
 incidents: string;
+dashboardModule: string;
+dashboardModuleDesc: string;
+riskRegistryModule: string;
+riskRegistryModuleDesc: string;
+incidentLogModule: string;
+incidentLogModuleDesc: string;
 reportIncident: string;
+  topProjectsByRisk: string;
+  showing: string;
+  of: string;
+  projects: string;
 
+  accepted: string;
+  transferred: string;
+
+  riskStatus: string;
+  projectExposure: string;
+  compliancePosture: string;
+  healthStandard: string;
+  lastUpdated: string;
+  viewRiskDashboard: string;
 mitigationPlan: string;
 owner: string;
 incidentTitle: string;
@@ -6005,6 +6028,17 @@ riskTitle: string;
     accept: string;
     first: string;
     last: string;
+    serviceType: string;
+  training: string;
+  cleaning: string;
+  security: string;
+  transportation: string;
+  catering: string;
+  itServices: string;
+  audit: string;
+  legal: string;
+  other: string;
+  serviceTypeOther: string;
     accepted: string;
     acceptedQty: string;
     acknowledged: string;
@@ -6425,6 +6459,7 @@ riskTitle: string;
     expiryAlertsDesc: string;
     newAdjustment: string;
     newTransfer: string;
+    totalTransfers: string;
     nearExpiry: string;
     inTransit: string;
     expired: string;
@@ -9155,7 +9190,9 @@ bidOpeningMinutes: {
   };
   financeModule: {
     accumulatedDepreciation: string;
+    editAsset: string;
     acquisitionCost: string;
+    transferCreated: string;
     acquisitionDate: string;
     actions: string;
     actions16: string;
@@ -10829,6 +10866,8 @@ rFQManagementPage: {
   budgetsTab: {
   account: string;
   actions: string;
+  plannedBudget: string;
+  actualSpend: string;
   approve: string;
   approved: string;
   budgetCreated: string;
@@ -11030,6 +11069,7 @@ reportsTab: {
   vendor: string;
 };
 organizationDashboard: {
+  executiveDashboard: string;
   acrossAllPrograms: string;
   activeGrants: string;
   activeProjectProgress: string;
@@ -14328,6 +14368,53 @@ OrgDashboardTranslations: {
 
   noIdentityData: string;
   };
+
+NewDashboardTranslations: {
+   aiStrategicInsights: string;
+   noInsightsAvailable: string;
+  applyRecommendation: string;
+    humanitarianFootprint: string;
+  projectsByLocationDesc: string;
+  viewLess: string;
+  viewMore: string;
+  totalBudgetAllocation: string;
+  budgetUtilizationRate: string;
+  activeGrantsCount: string;
+  totalWorkforce: string;
+  beneficiariesReached: string;
+
+  projectedExhaustion: string;
+  avgMonthlyBurn: string;
+  unallocatedLiquidity: string;
+  strategicAlerts: string;
+
+  critical: string;
+  warning: string;
+  info: string;
+  operationalFlags: string;
+
+  topDonorsByValue: string;
+  activeGrants: string;
+  totalValue: string;
+  donorRetentionRate: string;
+  strategicEngagement: string;
+  openGrantTracker: string;
+
+  portfolioPerformance: string;
+  viewDetailedReport: string;
+  physicalProgress: string;
+
+
+  portfolioUtilization: string;
+  utilized: string;
+  onTrackForPeriod: string;
+  monthlyExpenditure: string;
+
+  topRisksByScore: string;
+  ownedBy: string;
+  compliancePosture: string;
+  openIncidents: string;
+};
   };
 
 // ========== ENGLISH TRANSLATIONS ==========
@@ -14705,6 +14792,10 @@ organization: {
  subtitle: 'Manage all projects',
  createNew: 'Create New Project',
  backToProjectsDashboard: 'Back To Projects Dashboard',
+ activeRegions: 'Active Regions',
+ geographicIntelligence: 'Geographic Intelligence',
+ totalInvestment: 'Total Portfolio Reach',
+ telemetryLegend: 'Reach Intensity',
  editProject: 'Edit Project',
  deleteProject: 'Delete Project',
  deleteConfirm: 'Are you sure you want to delete this project?',
@@ -17404,9 +17495,30 @@ failed: 'Failed',
  // Page Title & Description
  title: 'Risk & Compliance Management',
  subtitle: 'Identify, assess, and mitigate organizational risks and track incidents',
+ // Modules
+ dashboardModule: 'Risk & Compliance Dashboard',
+ dashboardModuleDesc: 'Monitor organizational risks, compliance metrics, and incident trends in real-time',
+ riskRegistryModule: 'Risk Registry',
+ riskRegistryModuleDesc: 'Identify, assess, and manage organizational risks with mitigation plans',
+ incidentLogModule: 'Incident Log',
+ incidentLogModuleDesc: 'Track, report, and manage security incidents and compliance violations',
  registry: 'Risk Registry',
-incidents: 'Incidents',
+ incidents: 'Incidents',
 reportIncident: 'Report Incident',
+  topProjectsByRisk: "Top Projects by Risk",
+  showing: "Showing",
+  of: "of",
+  projects: "projects",
+
+  accepted: "Accepted",
+  transferred: "Transferred",
+
+  riskStatus: "Risk Status",
+  projectExposure: "Project Exposure",
+  compliancePosture: "Compliance Posture",
+  healthStandard: "Health Standard",
+  lastUpdated: "Last Updated",
+  viewRiskDashboard: "View Risk Dashboard",
 
 mitigationPlan: 'Mitigation Plan',
 owner: 'Owner',
@@ -20284,8 +20396,20 @@ priorityUrgent: 'Urgent',
     first: 'First',
     last: 'Last',
     accepted: 'Accepted',
+    serviceType: "Service Type",
+  training: "Training",
+  cleaning: "Cleaning",
+  security: "Security",
+  transportation: "Transportation",
+  catering: "Catering",
+  itServices: "IT Services",
+  audit: "Audit",
+  legal: "Legal",
+  other: "Other",
+  serviceTypeOther: "Other Service Type",
     acceptedQty: 'Accepted Qty',
     acknowledged: 'Acknowledged',
+    totalTransfers: 'Total Transfers',
     actions: 'Actions',
     active: 'Active',
     activeTrips: 'Active Trips',
@@ -23282,7 +23406,9 @@ quarantinedStatus: "Quarantined",
   },
   financeModule: {
     accumulatedDepreciation: 'Accumulated Depreciation',
+    editAsset: 'Edit Asset',
     acquisitionCost: 'Acquisition Cost',
+    transferCreated: 'Transfer Created',
     acquisitionDate: 'Acquisition Date',
     actions: 'Actions',
     totalValue: 'Total Value',
@@ -24266,6 +24392,8 @@ quarantinedStatus: "Quarantined",
     },
     budgetsTab: {
       account: 'Account',
+      plannedBudget: 'Planned Budget',
+      actualSpend: 'Actual Spend',
       actions: 'Actions',
       approve: 'Approve',
       approved: 'Approved',
@@ -24513,6 +24641,7 @@ quarantinedStatus: "Quarantined",
       status: 'Status',
     },
     organizationDashboard: {
+      executiveDashboard: 'Executive Dashboard',
       acrossAllPrograms: 'Across all programs',
       activeGrants: 'Active Grants',
       activeProjectProgress: 'Active project progress',
@@ -28574,6 +28703,52 @@ OrgDashboardTranslations: {
 
   noIdentityData: "No identity data available"
 },
+
+NewDashboardTranslations: {
+  aiStrategicInsights: "AI Strategic Insights",
+  noInsightsAvailable: 'Analyzing portfolio data...',
+  applyRecommendation: "Apply Recommendation",
+  humanitarianFootprint: "Humanitarian Footprint",
+projectsByLocationDesc: "Projects distribution by geographic location",
+viewLess: 'View Less',
+viewMore: 'View More',
+
+totalBudgetAllocation: "Total Budget Allocation",
+budgetUtilizationRate: "Budget Utilization Rate",
+activeGrantsCount: "Active Grants",
+totalWorkforce: "Total Workforce",
+beneficiariesReached: "Beneficiaries Reached",
+
+projectedExhaustion: "Projected Budget Exhaustion",
+avgMonthlyBurn: "Average Monthly Burn",
+unallocatedLiquidity: "Unallocated Liquidity",
+strategicAlerts: "Strategic Alerts",
+
+  critical: "Critical",
+  warning: "Warning",
+  info: "Information",
+  operationalFlags: "Operational Flags",
+
+  topDonorsByValue: "Top Donors by Value",
+  activeGrants: "Active Grants",
+  totalValue: "Total Value",
+  donorRetentionRate: "Donor Retention Rate",
+  strategicEngagement: "Strategic Engagement",
+  openGrantTracker: "Open Grant Tracker",
+
+  portfolioPerformance: "Portfolio Performance",
+  viewDetailedReport: "View Detailed Report",
+  physicalProgress: "Physical Progress",
+  portfolioUtilization: "Portfolio Utilization",
+  utilized: "Utilized",
+  onTrackForPeriod: "On Track for Period",
+  monthlyExpenditure: "Monthly Expenditure",
+
+  topRisksByScore: "Top Risks by Score",
+  ownedBy: "Owned By",
+  compliancePosture: "Compliance Posture",
+  openIncidents: "Open Incidents",
+},
 };
 
 
@@ -28953,7 +29128,11 @@ fillProjectDetails: 'أدخل تفاصيل المشروع',
  createNew: 'إنشاء مشروع جديد',
  editProject: 'تعديل المشروع',
  backToProjectsDashboard: 'العودة الى لوحة معلومات المشاريع',
+ geographicIntelligence: 'النطاق الجغرافي',
+ totalInvestment: 'نطاق المحفظة الكاملة',
+ telemetryLegend: 'الوصول إلى النطاق',
  deleteProject: 'حذف المشروع',
+ activeRegions: 'المناطق النشطة',
  deleteConfirm: 'هل أنت متأكد من حذف هذا المشروع؟',
  projectDetails: 'تفاصيل المشروع',
  projectInfo: 'معلومات المشروع',
@@ -31623,11 +31802,32 @@ statusReview: 'قيد المراجعة',
  // Page Title & Description
  title: 'إدارة المخاطر والامتثال',
  subtitle: 'تحديد وتقييم وتخفيف المخاطر التنظيمية وتتبع الحوادث',
+ // Modules
+ dashboardModule: 'لوحة معلومات المخاطر والامتثال',
+ dashboardModuleDesc: 'مراقبة المخاطر التنظيمية ومقاييس الامتثال واتجاهات الحوادث في الوقت الفعلي',
+ riskRegistryModule: 'سجل المخاطر',
+ riskRegistryModuleDesc: 'تحديد وتقييم وإدارة المخاطر التنظيمية مع خطط التخفيف',
+ incidentLogModule: 'سجل الحوادث',
+ incidentLogModuleDesc: 'تتبع والإبلاغ عن حوادث الأمان وانتهاكات الامتثال وإدارتها',
  
  // Tabs
  dashboard: 'لوحة المعلومات',
  riskRegistry: 'سجل المخاطر',
  incidentLog: 'سجل الحوادث',
+   topProjectsByRisk: "أعلى المشاريع حسب مستوى المخاطر",
+  showing: "عرض",
+  of: "من",
+  projects: "مشاريع",
+
+  accepted: "مقبول",
+  transferred: "محول",
+
+  riskStatus: "حالة المخاطر",
+  projectExposure: "تعرض المشروع للمخاطر",
+  compliancePosture: "وضع الامتثال",
+  healthStandard: "معيار الصحة",
+  lastUpdated: "آخر تحديث",
+  viewRiskDashboard: "عرض لوحة المخاطر",
  
  // Dashboard KPIs
  totalRisks: 'إجمالي المخاطر',
@@ -34501,7 +34701,19 @@ statusReview: 'قيد المراجعة',
     accepted: 'مقبول',
     first: 'اولاً',
     last: 'اخيرا',
+    serviceType: "نوع الخدمة",
+  training: "تدريب",
+  cleaning: "تنظيف",
+  security: "أمن",
+  transportation: "نقل",
+  catering: "تموين",
+  itServices: "خدمات تقنية المعلومات",
+  audit: "تدقيق",
+  legal: "خدمات قانونية",
+  other: "أخرى",
+  serviceTypeOther: "نوع خدمة آخر",
     acceptedQty: 'الكمية المقبولة',
+    totalTransfers: 'إجمالي تحويلات الأصول',
     acknowledged: 'مستلم',
     actions: 'الإجراءات',
     active: 'نشط',
@@ -37505,6 +37717,8 @@ quarantinedStatus: "قيد الحجر",
     accumulatedDepreciation: 'الإهلاك المتراكم',
     acquisitionCost: 'تكلفة الاقتناء',
     acquisitionDate: 'تاريخ الاقتناء',
+    transferCreated: 'تم إنشاء عملية النقل',
+    editAsset: 'تعديل الأصل',
     totalValue: 'اجمالي القيمة',
     actions: 'الإجراءات',
     actions16: 'إجراءات',
@@ -38487,6 +38701,8 @@ quarantinedStatus: "قيد الحجر",
     },
     budgetsTab: {
       account: 'حساب',
+      plannedBudget: 'الميزانية المخططة',
+      actualSpend: 'الإنفاق الفعلي',
       actions: 'الإجراءات',
       approve: 'موافقة',
       approved: 'معتمد',
@@ -38735,6 +38951,7 @@ quarantinedStatus: "قيد الحجر",
       status: 'الحالة',
     },
     organizationDashboard: {
+      executiveDashboard: 'لوحة معلومات الرئيسية',
       acrossAllPrograms: 'عبر جميع البرامج',
       activeGrants: 'المنح النشطة',
       activeProjectProgress: 'تقدم المشاريع النشطة',
@@ -42844,6 +43061,51 @@ OrgDashboardTranslations: {
 
   noIdentityData: "لا توجد بيانات متاحة"
 },
+
+NewDashboardTranslations: {
+  aiStrategicInsights: "الرؤى الاستراتيجية المدعومة بالذكاء الاصطناعي",
+  noInsightsAvailable: 'تحليل بيانات المحفظة الاستثمارية...',
+  applyRecommendation: "تطبيق التوصية",
+  humanitarianFootprint: "البصمة الإنسانية",
+projectsByLocationDesc: "توزيع المشاريع حسب الموقع الجغرافي",
+viewLess: 'عرض أقل',
+viewMore: 'عرض المزيد',
+totalBudgetAllocation: "إجمالي الموازنة المخصصة",
+budgetUtilizationRate: "معدل استخدام الموازنة",
+activeGrantsCount: "المنح النشطة",
+totalWorkforce: "إجمالي القوى العاملة",
+beneficiariesReached: "المستفيدون الذين تم الوصول إليهم",
+
+projectedExhaustion: "النفاد المتوقع للموازنة",
+avgMonthlyBurn: "متوسط الإنفاق الشهري",
+unallocatedLiquidity: "السيولة غير المخصصة",
+strategicAlerts: "التنبيهات الاستراتيجية",
+
+  critical: "حرج",
+  warning: "تحذير",
+  info: "معلومات",
+  operationalFlags: "التنبيهات التشغيلية",
+
+  topDonorsByValue: "أكبر المانحين حسب القيمة",
+  activeGrants: "المنح النشطة",
+  totalValue: "إجمالي القيمة",
+  donorRetentionRate: "معدل الاحتفاظ بالمانحين",
+  strategicEngagement: "المشاركة الاستراتيجية",
+  openGrantTracker: "فتح متتبع المنح",
+
+  portfolioPerformance: "أداء المحفظة",
+  viewDetailedReport: "عرض التقرير التفصيلي",
+  physicalProgress: "التقدم المادي",
+  portfolioUtilization: "استخدام المحفظة",
+  utilized: "المستخدم",
+  onTrackForPeriod: "ضمن المسار للفترة",
+  monthlyExpenditure: "الإنفاق الشهري",
+
+  topRisksByScore: "أعلى المخاطر حسب الدرجة",
+  ownedBy: "المسؤول",
+  compliancePosture: "وضع الامتثال",
+  openIncidents: "الحوادث المفتوحة",
+},
 };
 
 // ============================================================================
@@ -43226,6 +43488,10 @@ organization: {
  subtitle: "Gestisci Tutti i Progetti",
  createNew: "Crea Nuovo Progetto",
  backToProjectsDashboard: "Torna al Cruscotto Progetti",
+ activeRegions: 'Regioni attive',
+ geographicIntelligence: 'Informazioni geografiche',
+ totalInvestment: 'Portata totale del portfolio',
+ telemetryLegend: "Raggiungere l'intensità",
  editProject: "Modifica Progetto",
  deleteProject: "Elimina Progetto",
  deleteConfirm: "Sei Sicuro di Voler Eliminare questo Progetto?",
@@ -47474,11 +47740,32 @@ riskCompliance: {
   // Page Title & Description
   title: 'Gestione dei Rischi e della Conformità',
   subtitle: 'Identifica, valuta e mitiga i rischi organizzativi e monitora gli incidenti',
+  // Modules
+  dashboardModule: 'Cruscotto Rischi e Conformità',
+  dashboardModuleDesc: 'Monitora i rischi organizzativi, le metriche di conformità e i trend degli incidenti in tempo reale',
+  riskRegistryModule: 'Registro dei Rischi',
+  riskRegistryModuleDesc: 'Identifica, valuta e gestisci i rischi organizzativi con piani di mitigazione',
+  incidentLogModule: 'Registro degli Incidenti',
+  incidentLogModuleDesc: 'Traccia, segnala e gestisci gli incidenti di sicurezza e le violazioni di conformità',
 
   // Additional Keys
   registry: 'Registro dei Rischi',
   incidents: 'Incidenti',
   reportIncident: 'Segnala Incidente',
+    topProjectsByRisk: "Principali Progetti per Rischio",
+  showing: "Visualizzazione",
+  of: "di",
+  projects: "progetti",
+
+  accepted: "Accettato",
+  transferred: "Trasferito",
+
+  riskStatus: "Stato del Rischio",
+  projectExposure: "Esposizione del Progetto",
+  compliancePosture: "Stato di Conformità",
+  healthStandard: "Standard di Salute",
+  lastUpdated: "Ultimo Aggiornamento",
+  viewRiskDashboard: "Visualizza Dashboard dei Rischi",
 
   mitigationPlan: 'Piano di Mitigazione',
   owner: 'Responsabile',
@@ -52693,8 +52980,20 @@ logistics: {
 accept: "Accetta",
 accepted: "Accettato",
 first: 'first',
-last: 'last',
+last: 'last',  
+serviceType: "Tipo di Servizio",
+  training: "Formazione",
+  cleaning: "Pulizia",
+  security: "Sicurezza",
+  transportation: "Trasporto",
+  catering: "Catering",
+  itServices: "Servizi IT",
+  audit: "Revisione",
+  legal: "Servizi Legali",
+  other: "Altro",
+  serviceTypeOther: "Altro Tipo di Servizio",
 acceptedQty: "Quantità Accettata",
+totalTransfers: 'trasferimenti totali di attività',
 acknowledged: "Confermato",
 actions: "Azioni",
 active: "Attivo",
@@ -56300,6 +56599,8 @@ financeModule: {
 accumulatedDepreciation: "Ammortamento Accumulato",
 acquisitionCost: "Costo di Acquisizione",
 acquisitionDate: "Data di Acquisizione",
+editAsset: 'modifica risorsa',
+transferCreated: 'trasferimento creato',
 totalValue: 'Total Value',
 actions: "Azioni",
 actions16: "Azioni",
@@ -57289,6 +57590,8 @@ projectFormModal: {
 budgetsTab: {
 account: "Conto",
 actions: "Azioni",
+plannedBudget: 'Budget previsto',
+actualSpend: 'Spesa effettiva',
 approve: "Approva",
 approved: "Approvato",
 budgetCreated: "Budget Creato",
@@ -57506,6 +57809,7 @@ operatingUnits: "Unità Operative",
 status: "Stato",
 },
 organizationDashboard: {
+executiveDashboard: 'Dashboard Esecutivo',
 acrossAllPrograms: "In Tutti i Programmi",
 activeGrants: "Sovvenzioni Attive",
 activeProjectProgress: "Avanzamento dei progetti attivi",
@@ -65025,6 +65329,51 @@ OrgDashboardTranslations: {
   partners: "Partner",
 
   noIdentityData: "Nessun dato disponibile"
+},
+
+NewDashboardTranslations: {
+  aiStrategicInsights: "Analisi Strategiche Basate sull'IA",
+  noInsightsAvailable: 'Analisi dei dati di portafoglio...',
+  applyRecommendation: "Applica Raccomandazione",
+  humanitarianFootprint: "Impronta Umanitaria",
+projectsByLocationDesc: "Distribuzione dei progetti per area geografica",
+viewLess: 'Mostra meno',
+viewMore: 'Mostra di più',
+totalBudgetAllocation: "Allocazione Totale del Budget",
+budgetUtilizationRate: "Tasso di Utilizzo del Budget",
+activeGrantsCount: "Sovvenzioni Attive",
+totalWorkforce: "Forza Lavoro Totale",
+beneficiariesReached: "Beneficiari Raggiunti",
+
+projectedExhaustion: "Esaurimento Previsto del Budget",
+avgMonthlyBurn: "Spesa Media Mensile",
+unallocatedLiquidity: "Liquidità Non Allocata",
+strategicAlerts: "Avvisi Strategici",
+
+  critical: "Critico",
+  warning: "Avviso",
+  info: "Informazione",
+  operationalFlags: "Segnalazioni Operative",
+
+  topDonorsByValue: "Principali Donatori per Valore",
+  activeGrants: "Sovvenzioni Attive",
+  totalValue: "Valore Totale",
+  donorRetentionRate: "Tasso di Fidelizzazione dei Donatori",
+  strategicEngagement: "Coinvolgimento Strategico",
+  openGrantTracker: "Apri Monitoraggio Sovvenzioni",
+
+  portfolioPerformance: "Prestazioni del Portafoglio",
+  viewDetailedReport: "Visualizza Rapporto Dettagliato",
+  physicalProgress: "Progresso Fisico",
+  portfolioUtilization: "Utilizzo del Portafoglio",
+  utilized: "Utilizzato",
+  onTrackForPeriod: "In Linea per il Periodo",
+  monthlyExpenditure: "Spesa Mensile",
+
+  topRisksByScore: "Principali Rischi per Punteggio",
+  ownedBy: "Responsabile",
+  compliancePosture: "Stato di Conformità",
+  openIncidents: "Incidenti Aperti",
 },
 };
 export const translations = {

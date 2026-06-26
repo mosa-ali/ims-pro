@@ -99,11 +99,13 @@ export default function BudgetDetail() {
  const budgetId = parseInt(id || "0", 10);
  const navigate = useNavigate();
  const { language, isRTL} = useLanguage();
- const { currentOrganizationId } = useOrganization();
- const { currentOperatingUnitId } = useOperatingUnit();
+   const { currentOrganization } = useOrganization();
+   const { currentOperatingUnit } = useOperatingUnit();
+   const organizationId = currentOrganization?.id || 0;
+   const operatingUnitId = currentOperatingUnit?.id;
 
- const orgId = extractNumericId(currentOrganizationId) || 0;
- const opUnitId = extractNumericId(currentOperatingUnitId);
+ const orgId = extractNumericId(currentOrganization?.id) || 0;
+ const opUnitId = extractNumericId(currentOperatingUnit?.id);
 
  const [activeTab, setActiveTab] = useState("lines");
  const [showAddLineDialog, setShowAddLineDialog] = useState(false);

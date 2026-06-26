@@ -219,6 +219,7 @@ activeProjectProgress: "Active Project Progress",
 
 phase0Complete: "Phase 0 Complete",
 phase0CompleteDesc: "Initial assessment and planning",
+totalBeneficiaries: 'Total Beneficiaries',
 
 noActiveProjects: "No active projects",
 
@@ -229,6 +230,155 @@ operatingUnitContext: "Operating Unit Context",
 budget: "Budget",
 
 budgetReview: "Budget Review",
+
+    // Executive Intelligence Dashboard - Row 1: Executive KPI Header
+    executiveIntelligenceDashboard: "Executive Intelligence Dashboard",
+    totalBudgetAllocation: "Total Budget Allocation",
+    budgetUtilizationRate: "Budget Utilization Rate",
+    activeGrantsCount: "Active Grants",
+    staffUtilization: "Staff Utilization",
+    procurementOnTrack: "Procurement On Track",
+    projectCompletionRate: "Project Completion Rate",
+    
+    // Row 2: Portfolio Performance
+    portfolioPerformance: "Portfolio Performance",
+    budgetVsExpenditure: "Budget vs Expenditure",
+    donorDistribution: "Donor Distribution",
+    programStatus: "Program Status",
+    
+    // Row 3: Program Portfolio Analytics
+    programPortfolioAnalytics: "Program Portfolio Analytics",
+    programBySector: "Programs by Sector",
+    sectorAnalysis: "Sector Analysis",
+    
+    // Row 4: Operational Action Center
+    operationalActionCenter: "Operational Action Center",
+    finance: "Finance",
+    logistics: "Logistics",
+    riskManagement: "Risk Management",
+    staffOnLeave: "Staff on Leave",
+    pendingInvoices: "Pending Invoices",
+    activeShipments: "Active Shipments",
+    openRiskItems: "Open Risk Items",
+    
+    // Row 5: Approval Pipelines
+    approvalPipelines: "Approval Pipelines",
+    approvalStatus: "Approval Status",
+    bottleneckAnalysis: "Bottleneck Analysis",
+    
+    // Row 6: HR Analytics
+    hrAnalytics: "HR Analytics",
+    trainingCompletion: "Training Completion",
+    staffTurnover: "Staff Turnover",
+    
+    // Row 7: Financial Analytics
+    financialAnalytics: "Financial Analytics",
+    revenueVsExpenses: "Revenue vs Expenses",
+    cashFlow: "Cash Flow",
+    
+    // Row 8: Procurement Analytics
+    procurementAnalytics: "Procurement Analytics",
+    vendorPerformance: "Vendor Performance",
+    contractStatus: "Contract Status",
+    
+    // Row 9: M&E Analytics
+    mealAnalytics: "M&E Analytics",
+    monitoringMetrics: "Monitoring Metrics",
+    evaluationProgress: "Evaluation Progress",
+    
+    // Row 10: Risk & Compliance
+    riskMatrix: "Risk Matrix",
+    complianceStatus: "Compliance Status",
+    
+    // Common Dashboard Terms
+    trend: "Trend",
+    comparison: "Comparison",
+    performance: "Performance",
+    status: "Status",
+    metrics: "Metrics",
+    analytics: "Analytics",
+    dataNotAvailable: "Data not available",
+    loadingData: "Loading data...",
+    errorLoadingData: "Error loading data",
+    retryLoad: "Retry",
+    refreshData: "Refresh Data",
+
+    approvalTitle: "Approval Pipelines",
+
+procurementFunnelTitle: "Procurement Funnel",
+procurementFunnelDesc: "PR approval workflow stages",
+
+hrFunnelTitle: "HR Workflow Funnel",
+hrFunnelDesc: "Leave request approval stages",
+
+hrAnalyticsTitle: "Human Resources Analytics",
+
+departmentTitle: "Employees by Department",
+departmentDesc: "Staff distribution across departments",
+
+contractTitle: "Contract Types",
+contractDesc: "Employment contract breakdown",
+
+genderTitle: "Gender Distribution",
+genderDesc: "Male and female staff ratio",
+
+      financialTitle: "Financial Intelligence",
+      budgetUtilTitle: "Budget Utilization by Grant",
+      budgetUtilDesc: "Spending progress against approved budgets",
+      expenditureTitle: "Monthly Expenditure",
+      expenditureDesc: "Cash outflow trends",
+      costPoolTitle: "Cost Pool Distribution",
+      costPoolDesc: "Budget allocation by cost category",
+      procurementTitle: "Procurement Analytics",
+      prStatusTitle: "PR Status Distribution",
+      prStatusDesc: "Purchase requests by approval stage",
+      categoriesTitle: "Procurement Categories",
+      categoriesDesc: "Spending by procurement type",
+      cycleTimeTitle: "Procurement Cycle Time",
+      cycleTimeDesc: "Average approval duration",
+      spent: "Spent",
+      remaining: "Remaining",
+      utilization: "Utilization",
+      amount: "Amount",
+      month: "Month",
+            meTitle: "Monitoring & Evaluation",
+      indicatorsTitle: "Indicators Progress",
+      indicatorsDesc: "Target achievement tracking",
+      beneficiariesTitle: "Beneficiaries by Sector",
+      beneficiariesDesc: "Demographic breakdown of beneficiaries",
+      activityTitle: "Activity Completion",
+      activityDesc: "Planned vs completed activities",
+      riskTitle: "Risk & Compliance",
+      riskHeatmapTitle: "Risk Heatmap",
+      riskHeatmapDesc: "Likelihood vs Impact matrix",
+      findingsTitle: "Open Findings",
+      findingsDesc: "Audit and compliance findings",
+      target: "Target",
+      achieved: "Achieved",
+      planned: "Planned",
+      completed: "Completed",
+      male: "Male",
+      female: "Female",
+
+        totalActiveProjects: "Total Active Projects",
+        totalGrantValue: "Total Grant Value",
+        activeDonors: "Active Donors",
+        beneficiariesReached: "Beneficiaries Reached",
+        projectsByGovernorate: 'Projects By Governorate',
+        operationalRisk: 'Operational Risk',
+        staff: 'Staff',
+        risk: 'Risk',
+        quarterlyProgression: 'Quarterly progression',
+        projectDeliveryTrend: 'Project Delivery Trend',
+        recentChanges: 'Recent changes',
+        latestChanges: 'Latest system changes',
+        nextDue: 'Next due dates',
+        noData: 'No data available',
+        totalWorkforce: 'Total Workforce',
+        pendingProcurements: 'Pending Procurements',
+        dueDate: 'Due Date',
+        executiveIntelligence: 'Executive Intelligence Dashboard',
+
   },
 
   ar: {
@@ -250,6 +400,7 @@ budgetReview: "Budget Review",
     // Executive Snapshot
     executiveSnapshot: 'الملخص التنفيذي',
     executiveSnapshotDesc: 'مؤشرات الأداء التشغيلية الرئيسية',
+    projectsByGovernorate: 'مشاريع حسب المحافظة',
 
     totalProjects: 'إجمالي المشاريع',
     activeProjects: 'المشاريع النشطة',
@@ -321,7 +472,7 @@ budgetReview: "Budget Review",
 
     issues: 'مشكلات',
 
-    overdueProject: 'مشروع متأخر',
+    overdueProject: 'مشروع متأخ����',
     stalledPR: 'طلب شراء متعثر',
     expiredGrant: 'منحة منتهية',
     criticalRisk: 'مخاطر حرجة',
@@ -461,6 +612,176 @@ operatingUnitContext: "سياق الوحدة التشغيلية",
 budget: "الميزانية",
 
 budgetReview: "مراجعة الميزانية",
+
+    // Executive Intelligence Dashboard - Row 1: Executive KPI Header
+    executiveIntelligenceDashboard: "لوحة ذكاء الأعمال التنفيذية",
+    totalBudgetAllocation: "إجمالي تخصيص الميزانية",
+    budgetUtilizationRate: "معدل استخدام الميزانية",
+    activeGrantsCount: "المنح النشطة",
+    staffUtilization: "استخدام الموارد البشرية",
+    procurementOnTrack: "الشراء في الموعد المحدد",
+    projectCompletionRate: "معدل إكمال المشروع",
+    
+    // Row 2: Portfolio Performance
+    portfolioPerformance: "أداء المحفظة",
+    budgetVsExpenditure: "الميزانية مقابل النفقات",
+    donorDistribution: "توزيع المانحين",
+    programStatus: "حالة البرنامج",
+    
+    // Row 3: Program Portfolio Analytics
+    programPortfolioAnalytics: "تحليلات محفظة البرامج",
+    programBySector: "البرامج حسب القطاع",
+    sectorAnalysis: "تحليل القطاع",
+    
+    // Row 4: Operational Action Center
+    operationalActionCenter: "مركز العمل التشغيلي",
+    finance: "المالية",
+    logistics: "اللوجستيات",
+    riskManagement: "إدارة المخاطر",
+    staffOnLeave: "الموظفون في إجازة",
+    pendingInvoices: "الفواتير المعلقة",
+    activeShipments: "الشحنات النشطة",
+    openRiskItems: "عناصر المخاطر المفتوحة",
+    
+    // Row 5: Approval Pipelines
+    approvalPipelines: "خطوط الموافقة",
+    approvalStatus: "حالة الموافقة",
+    bottleneckAnalysis: "تحليل الاختناقات",
+    
+    // Row 6: HR Analytics
+    hrAnalytics: "تحليلات الموارد البشرية",
+    trainingCompletion: "إكمال التدريب",
+    staffTurnover: "دوران الموظفين",
+    
+    // Row 7: Financial Analytics
+    financialAnalytics: "التحليلات المالية",
+    revenueVsExpenses: "الإيرادات مقابل النفقات",
+    cashFlow: "تدفق النقد",
+    
+    // Row 8: Procurement Analytics
+    procurementAnalytics: "تحليلات الشراء",
+    vendorPerformance: "أداء المورد",
+    contractStatus: "حالة العقد",
+    
+    // Row 9: M&E Analytics
+    mealAnalytics: "تحليلات الرصد والتقييم",
+    monitoringMetrics: "مقاييس الرصد",
+    evaluationProgress: "تقدم التقييم",
+    
+    // Row 10: Risk & Compliance
+    riskMatrix: "مصفوفة المخاطر",
+    complianceStatus: "حالة الامتثال",
+    
+    // Common Dashboard Terms
+    trend: "الاتجاه",
+    comparison: "المقارنة",
+    performance: "الأداء",
+    status: "الحالة",
+    metrics: "المقاييس",
+    analytics: "التحليلات",
+    dataNotAvailable: "البيانات غير متاحة",
+    loadingData: "جارٍ تحميل البيانات...",
+    errorLoadingData: "خطأ في تحميل البيانات",
+    retryLoad: "إعادة المحاولة",
+    refreshData: "تحديث البيانات",
+    approvalTitle: "مسارات الموافقات",
+
+procurementFunnelTitle: "مراحل موافقات المشتريات",
+procurementFunnelDesc: "مراحل اعتماد طلبات الشراء",
+
+hrFunnelTitle: "مراحل سير عمل الموارد البشرية",
+hrFunnelDesc: "مراحل اعتماد طلبات الإجازات",
+
+hrAnalyticsTitle: "تحليلات الموارد البشرية",
+
+departmentTitle: "الموظفون حسب الأقسام",
+departmentDesc: "توزيع الموظفين على الأقسام المختلفة",
+
+contractTitle: "أنواع العقود",
+contractDesc: "توزيع الموظفين حسب نوع العقد",
+
+genderTitle: "التوزيع حسب الجنس",
+genderDesc: "نسبة الموظفين والموظفات",
+      financialTitle: "الذكاء المالي",
+      budgetUtilTitle: "استخدام الميزانية حسب المنحة",
+      budgetUtilDesc: "تقدم الإنفاق مقابل الميزانيات الموافق عليها",
+      expenditureTitle: "الإنفاق الشهري",
+      expenditureDesc: "اتجاهات التدفق النقدي",
+      costPoolTitle: "توزيع مجموعة التكاليف",
+      costPoolDesc: "تخصيص الميزانية حسب فئة التكلفة",
+      procurementTitle: "تحليلات المشتريات",
+      prStatusTitle: "توزيع حالة طلب الشراء",
+      prStatusDesc: "طلبات الشراء حسب مرحلة الموافقة",
+      categoriesTitle: "فئات المشتريات",
+      categoriesDesc: "الإنفاق حسب نوع المشتريات",
+      cycleTimeTitle: "وقت دورة المشتريات",
+      cycleTimeDesc: "متوسط مدة الموافقة",
+      spent: "المصروف",
+      remaining: "المتبقي",
+      utilization: "الاستخدام",
+      amount: "المبلغ",
+      month: "الشهر",
+
+            meTitle: "المتابعة والتقييم",
+      indicatorsTitle: "تقدم المؤشرات",
+      indicatorsDesc: "تتبع تحقيق الأهداف",
+      beneficiariesTitle: "المستفيدون حسب القطاع",
+      beneficiariesDesc: "التفصيل الديموغرافي للمستفيدين",
+      activityTitle: "إكمال الأنشطة",
+      activityDesc: "الأنشطة المخطط لها مقابل المكتملة",
+      riskTitle: "المخاطر والامتثال",
+      riskHeatmapTitle: "مصفوفة المخاطر",
+      riskHeatmapDesc: "مصفوفة الاحتمالية مقابل التأثير",
+      findingsTitle: "النتائج المفتوحة",
+      findingsDesc: "نتائج التدقيق والامتثال",
+      target: "الهدف",
+      achieved: "المحقق",
+      planned: "المخطط",
+      completed: "المكتمل",
+      male: "ذكر",
+      female: "أنثى",
+
+        totalActiveProjects: "إجمالي المشاريع النشطة",
+  totalGrantValue: "إجمالي قيمة المنح",
+  activeDonors: "المانحون النشطون",
+  beneficiariesReached: "المستفيدون الذين تم الوصول إليهم",
+
+  // Power BI Executive Dashboard Additional Keys - Arabic
+  executiveIntelligence: "لوحة التحكم الذكاء التنفيذي",
+  projectsBySector: "المشاريع حسب القطاع",
+  projectDistributionBySector: "التوزيع عبر القطاعات",
+  projectsByLocationDesc: "أعلى المحافظات حسب المشاريع",
+  budgetByDonor: "الميزانية حسب المانح",
+  budgetDistributionByDonor: "توزيع الأموال",
+  budgetBurnTrend: "اتجاه استهلاك الميزانية",
+  monthlyBudgetExecution: "تنفيذ الميزانية الشهرية",
+  budgeted: "المخصص",
+  quarterlyProgression: "التطور الفصلي",
+  projectDeliveryTrend: "اتجاه تسليم المشروع",
+  latestChanges: "أحدث التغييرات",
+  humanitarianFootprint: "الآثار الإنسانية",
+  operationalScope: "نطاق العمليات التنفيذي",
+  operatingCountries: "الدول",
+  operationsStatus: "حالة العمليات",
+  requiresImmediateAction: "يتطلب إجراء فوري",
+  monitoringSituation: "مراقبة الوضع",
+  overdueProjects: "المشاريع المتأخرة",
+  procurementDelays: "تأخيرات المشتريات",
+  pendingApprovals: "الموافقات المعلقة",
+  nextDue: "التواريخ المقبلة",
+  dueDate: "تاريخ الاستحقاق",
+  latestSystemChanges: "أحدث تغييرات النظام",
+  projectDistribution: "توزيع المشروع",
+  projects: "مشاريع",
+  operationalRisk: "المخاطر التشغيلية",
+  staff: "الموظفون",
+  risk: "المخاطر",
+  recentChanges: "التغييرات الأخيرة",
+  noData: "لا توجد بيانات",
+  totalWorkforce: "إجمالي القوى العاملة",
+  pendingProcurements: "المشتريات المعلقة",
+  totalBeneficiaries: 'اجمالي المستفيدين',
+
   },
 
   it: {
@@ -491,6 +812,7 @@ budgetReview: "مراجعة الميزانية",
     hrWorkforce: 'Personale',
     procurementPending: 'Approvvigionamenti Pendenti',
     inventoryAlerts: 'Avvisi Inventario',
+    totalBeneficiaries: 'beneficiari totali',
 
     // Work Queue
     myWorkQueue: 'Le Mie Attività',
@@ -558,6 +880,7 @@ budgetReview: "مراجعة الميزانية",
     expiredGrant: 'Sovvenzione Scaduta',
     criticalRisk: 'Rischio Critico',
     overduePayment: 'Pagamento Scaduto',
+    projectsByGovernorate: 'Progetti per governatorato',
 
     endDate: 'Data Fine',
     complete: 'Completato',
@@ -629,7 +952,7 @@ budgetReview: "مراجعة الميزانية",
     sectors: 'Settori',
     governorates: 'Governatorati',
     beneficiaries: 'Beneficiari',
-    partners: 'Partner',
+    partners: 'Partners',
 
     noIdentityData: 'Nessun dato disponibile',
 
@@ -693,5 +1016,181 @@ operatingUnitContext: "Contesto dell'Unità Operativa",
 budget: "Budget",
 
 budgetReview: "Revisione del Budget",
+
+    // Executive Intelligence Dashboard - Row 1: Executive KPI Header
+    executiveIntelligenceDashboard: "Cruscotto di Intelligenza Esecutiva",
+    totalBudgetAllocation: "Allocazione Budget Totale",
+    budgetUtilizationRate: "Tasso di Utilizzo Budget",
+    activeGrantsCount: "Sovvenzioni Attive",
+    staffUtilization: "Utilizzo del Personale",
+    procurementOnTrack: "Approvvigionamento in Linea",
+    projectCompletionRate: "Tasso di Completamento Progetto",
+    
+    // Row 2: Portfolio Performance
+    portfolioPerformance: "Prestazioni del Portfolio",
+    budgetVsExpenditure: "Budget vs Spese",
+    donorDistribution: "Distribuzione Donatori",
+    programStatus: "Stato del Programma",
+    
+    // Row 3: Program Portfolio Analytics
+    programPortfolioAnalytics: "Analisi Portfolio Programmi",
+    programBySector: "Programmi per Settore",
+    sectorAnalysis: "Analisi Settoriale",
+    
+    // Row 4: Operational Action Center
+    operationalActionCenter: "Centro Azioni Operativi",
+    finance: "Finanza",
+    logistics: "Logistica",
+    riskManagement: "Gestione dei Rischi",
+    staffOnLeave: "Personale in Congedo",
+    pendingInvoices: "Fatture in Sospeso",
+    activeShipments: "Spedizioni Attive",
+    openRiskItems: "Elementi di Rischio Aperti",
+    
+    // Row 5: Approval Pipelines
+    approvalPipelines: "Pipeline di Approvazione",
+    approvalStatus: "Stato Approvazione",
+    bottleneckAnalysis: "Analisi dei Colli di Bottiglia",
+    
+    // Row 6: HR Analytics
+    hrAnalytics: "Analisi HR",
+    trainingCompletion: "Completamento Formazione",
+    staffTurnover: "Rotazione Personale",
+    
+    // Row 7: Financial Analytics
+    financialAnalytics: "Analisi Finanziaria",
+    revenueVsExpenses: "Ricavi vs Spese",
+    cashFlow: "Flusso di Cassa",
+    
+    // Row 8: Procurement Analytics
+    procurementAnalytics: "Analisi Approvvigionamento",
+    vendorPerformance: "Prestazioni Fornitore",
+    contractStatus: "Stato Contratto",
+    
+    // Row 9: M&E Analytics
+    mealAnalytics: "Analisi M&E",
+    monitoringMetrics: "Metriche di Monitoraggio",
+    evaluationProgress: "Progresso Valutazione",
+    
+    // Row 10: Risk & Compliance
+    riskMatrix: "Matrice dei Rischi",
+    complianceStatus: "Stato Conformità",
+    
+    // Common Dashboard Terms
+    trend: "Tendenza",
+    comparison: "Confronto",
+    performance: "Prestazioni",
+    status: "Stato",
+    metrics: "Metriche",
+    analytics: "Analisi",
+    dataNotAvailable: "Dati non disponibili",
+    loadingData: "Caricamento dati...",
+    errorLoadingData: "Errore nel caricamento dei dati",
+    retryLoad: "Riprova",
+    refreshData: "Aggiorna Dati",
+    approvalTitle: "Flussi di Approvazione",
+
+procurementFunnelTitle: "Imbuto Approvazioni Acquisti",
+procurementFunnelDesc: "Fasi di approvazione delle richieste di acquisto",
+
+hrFunnelTitle: "Flusso di Lavoro Risorse Umane",
+hrFunnelDesc: "Fasi di approvazione delle richieste di congedo",
+
+hrAnalyticsTitle: "Analisi delle Risorse Umane",
+
+departmentTitle: "Dipendenti per Dipartimento",
+departmentDesc: "Distribuzione del personale tra i dipartimenti",
+
+contractTitle: "Tipologie di Contratto",
+contractDesc: "Ripartizione dei contratti di lavoro",
+
+genderTitle: "Distribuzione di Genere",
+genderDesc: "Rapporto tra personale maschile e femminile",
+
+  financialTitle: "Intelligence Finanziaria",
+
+  budgetUtilTitle: "Utilizzo del Budget per Sovvenzione",
+  budgetUtilDesc: "Avanzamento della spesa rispetto ai budget approvati",
+
+  expenditureTitle: "Spesa Mensile",
+  expenditureDesc: "Andamento dei flussi di cassa in uscita",
+
+  costPoolTitle: "Distribuzione dei Centri di Costo",
+  costPoolDesc: "Allocazione del budget per categoria di costo",
+
+  procurementTitle: "Analisi degli Approvvigionamenti",
+
+  prStatusTitle: "Distribuzione dello Stato delle Richieste di Acquisto",
+  prStatusDesc: "Richieste di acquisto per fase di approvazione",
+
+  categoriesTitle: "Categorie di Approvvigionamento",
+  categoriesDesc: "Spesa per tipologia di approvvigionamento",
+
+  cycleTimeTitle: "Tempo del Ciclo di Approvvigionamento",
+  cycleTimeDesc: "Durata media dell'approvazione",
+
+  spent: "Speso",
+  remaining: "Rimanente",
+  utilization: "Utilizzo",
+  amount: "Importo",
+  month: "Mese",
+
+  meTitle: "Monitoraggio e Valutazione",
+indicatorsTitle: "Progresso degli Indicatori",
+indicatorsDesc: "Monitoraggio del raggiungimento degli obiettivi",
+beneficiariesTitle: "Beneficiari per Settore",
+beneficiariesDesc: "Suddivisione demografica dei beneficiari",
+activityTitle: "Completamento delle Attività",
+activityDesc: "Confronto tra attività pianificate e completate",
+riskTitle: "Rischi e Conformità",
+riskHeatmapTitle: "Mappa di Calore dei Rischi",
+riskHeatmapDesc: "Matrice Probabilità vs Impatto",
+findingsTitle: "Osservazioni Aperte",
+findingsDesc: "Risultati di audit e verifiche di conformità",
+target: "Obiettivo",
+achieved: "Raggiunto",
+planned: "Pianificato",
+completed: "Completato",
+male: "Maschi",
+female: "Femmine",
+  totalActiveProjects: "Totale Progetti Attivi",
+  totalGrantValue: "Valore Totale delle Sovvenzioni",
+  activeDonors: "Donatori Attivi",
+  beneficiariesReached: "Beneficiari Raggiunti",
+
+  // Power BI Executive Dashboard Additional Keys - Italian
+  executiveIntelligence: "Dashboard di Business Intelligence Esecutiva",
+  projectsBySector: "Progetti per Settore",
+  projectDistributionBySector: "Distribuzione tra settori",
+  projectsByLocationDesc: "Principali governatorati per progetti",
+  budgetByDonor: "Budget per Donatore",
+  budgetDistributionByDonor: "Distribuzione dei fondi",
+  budgetBurnTrend: "Andamento del Consumo del Budget",
+  monthlyBudgetExecution: "Esecuzione mensile del budget",
+  budgeted: "Preventivato",
+  quarterlyProgression: "Progressione trimestrale",
+  projectDeliveryTrend: "Andamento della Consegna del Progetto",
+  latestChanges: "Ultimi cambiamenti del sistema",
+  humanitarianFootprint: "Impronta Umanitaria",
+  operationalScope: "Portata operativa a livello esecutivo",
+  operatingCountries: "Paesi",
+  operationsStatus: "Stato delle Operazioni",
+  requiresImmediateAction: "Richiede un'azione immediata",
+  monitoringSituation: "Monitoraggio della situazione",
+  overdueProjects: "Progetti Scaduti",
+  procurementDelays: "Ritardi negli Approvvigionamenti",
+  pendingApprovals: "Approvazioni in Sospeso",
+  nextDue: "Prossime scadenze",
+  dueDate: "Scadenza",
+  latestSystemChanges: "Ultimi cambiamenti del sistema",
+  projectDistribution: "Distribuzione del Progetto",
+  projects: "progetti",
+  operationalRisk: "Rischio Operativo",
+  staff: "Personale",
+  risk: "Rischio",
+  recentChanges: "Cambiamenti recenti",
+  noData: "Nessun dato disponibile",
+  totalWorkforce: "Forza Lavoro Totale",
+  pendingProcurements: "Appalti in Sospeso",
   },
 };

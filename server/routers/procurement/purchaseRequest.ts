@@ -184,7 +184,7 @@ export const purchaseRequestRouter = router({
           }, 0);
 
           // Apply currency conversion ONLY when currencies differ
-          const exchangeRate = parseFloat(pr.exchangeRate?.toString() || "1");
+          const exchangeRate = parseFloat(pr.exchangeRate || "1");
           const isSameCurrency = pr.currency === pr.exchangeTo;
           const finalAmount = isSameCurrency
             ? prTotalWithRecurrence
@@ -291,7 +291,7 @@ export const purchaseRequestRouter = router({
         .limit(1);
 
       // Apply currency conversion in getById
-      const exchangeRate = parseFloat(pr.exchangeRate?.toString() || "1");
+      const exchangeRate = parseFloat(pr.exchangeRate || "1");
       const isSameCurrency = pr.currency === pr.exchangeTo;
 
       const finalAmount = isSameCurrency
@@ -509,7 +509,7 @@ export const purchaseRequestRouter = router({
       }
 
       // Calculate new totals if line items provided
-      let prTotal = Number(existingPR.prTotal || 0);
+      let prTotal = Number(existingPR.prTotalUsd || 0);
       let prTotalUsd = Number(existingPR.prTotalUsd || 0);
 
       if (input.lineItems) {
@@ -517,7 +517,7 @@ export const purchaseRequestRouter = router({
           const recurrence = item.recurrence || 1;
           return sum + (item.totalPrice * recurrence);  // ✅ Include recurrence
         }, 0);
-        prTotalUsd = prTotal * (input.exchangeRate || parseFloat(existingPR.exchangeRate?.toString() || "1"));
+        prTotalUsd = prTotal * (input.exchangeRate || parseFloat(existingPR.exchangeRate || "1"));
       }
 
       const updateData: any = {

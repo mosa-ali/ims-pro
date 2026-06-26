@@ -265,7 +265,7 @@ export function RiskIntelligenceCardsGrid({
  variant="outline"
  size="sm"
  className="w-full"
- onClick={() => navigate(`/organization/risk-compliance/risks/${risk.id}`)}
+ onClick={() => navigate(`/organization/risk-compliance/${risk.id}`)}
  >
  {labels.viewDetails}
  {isRTL ? <ChevronRight className="h-4 w-4 me-2" /> : <ChevronRight className="h-4 w-4 ms-2" />}

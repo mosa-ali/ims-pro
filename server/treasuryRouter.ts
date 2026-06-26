@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { publicProcedure, protectedProcedure, router, scopedProcedure } from "./_core/trpc";
 import { getDb } from "./db";
-import { financeBankAccounts, financeCashTransactions, financeFundBalances } from "../drizzle/schema";
+import { financeBankAccounts, financeCashTransactions, financeFundBalances, bankReconciliations } from "../drizzle/schema";
 import { eq, and, desc, sql, gte, lte, like } from "drizzle-orm";
 
 /**
@@ -20,13 +20,14 @@ export const treasuryRouter = router({
       accountType: z.enum(['CHECKING', 'SAVINGS', 'MONEY_MARKET', 'PETTY_CASH', 'SAFE']).optional(),
     }))
     .query(async ({ ctx, input }) => {
-      const { organizationId } = ctx.scope;
+      const { organizationId, operatingUnitId } = ctx.scope;
       const db = await getDb();
       if (!db) throw new Error("Database not available");
       
       const results = await db.select().from(financeBankAccounts).where(
         and(
           eq(financeBankAccounts.organizationId, organizationId),
+          eq(financeBankAccounts.operatingUnitId, operatingUnitId),
           eq(financeBankAccounts.isDeleted, 0)
         )
       ).orderBy(financeBankAccounts.accountName);
@@ -46,7 +47,7 @@ export const treasuryRouter = router({
       id: z.number(),
     }))
     .query(async ({ ctx, input }) => {
-      const { organizationId } = ctx.scope;
+      const { organizationId, operatingUnitId } = ctx.scope;
       const db = await getDb();
       if (!db) throw new Error("Database not available");
       
@@ -54,6 +55,7 @@ export const treasuryRouter = router({
         and(
           eq(financeBankAccounts.id, input.id),
           eq(financeBankAccounts.organizationId, organizationId),
+          eq(financeBankAccounts.operatingUnitId, operatingUnitId),
           eq(financeBankAccounts.isDeleted, 0)
         )
       );
@@ -65,13 +67,14 @@ export const treasuryRouter = router({
   getBankAccountStatistics: scopedProcedure
     .input(z.object({}).optional())
     .query(async ({ ctx }) => {
-      const { organizationId } = ctx.scope;
+      const { organizationId, operatingUnitId } = ctx.scope;
       const db = await getDb();
       if (!db) throw new Error("Database not available");
       
       const all = await db.select().from(financeBankAccounts).where(
         and(
           eq(financeBankAccounts.organizationId, organizationId),
+          eq(financeBankAccounts.operatingUnitId, operatingUnitId),
           eq(financeBankAccounts.isDeleted, 0)
         )
       );
@@ -109,7 +112,7 @@ export const treasuryRouter = router({
       notes: z.string().optional(),
     }))
     .mutation(async ({ ctx, input }) => {
-      const { organizationId } = ctx.scope;
+      const { organizationId, operatingUnitId } = ctx.scope;
       const db = await getDb();
       if (!db) throw new Error("Database not available");
       
@@ -117,6 +120,7 @@ export const treasuryRouter = router({
       const existing = await db.select().from(financeBankAccounts).where(
         and(
           eq(financeBankAccounts.organizationId, organizationId),
+          eq(financeBankAccounts.operatingUnitId, operatingUnitId),
           eq(financeBankAccounts.accountNumber, input.accountNumber),
           eq(financeBankAccounts.isDeleted, 0)
         )
@@ -170,7 +174,7 @@ export const treasuryRouter = router({
       isActive: z.boolean().optional(),
     }))
     .mutation(async ({ ctx, input }) => {
-      const { organizationId } = ctx.scope;
+      const { organizationId, operatingUnitId } = ctx.scope;
       const db = await getDb();
       if (!db) throw new Error("Database not available");
       
@@ -183,7 +187,8 @@ export const treasuryRouter = router({
         })
         .where(and(
           eq(financeBankAccounts.id, id),
-          eq(financeBankAccounts.organizationId, organizationId)
+          eq(financeBankAccounts.organizationId, organizationId),
+          eq(financeBankAccounts.operatingUnitId, operatingUnitId),
         ));
       
       return { success: true };
@@ -195,7 +200,7 @@ export const treasuryRouter = router({
       id: z.number(),
     }))
     .mutation(async ({ ctx, input }) => {
-      const { organizationId } = ctx.scope;
+      const { organizationId, operatingUnitId } = ctx.scope;
       const db = await getDb();
       if (!db) throw new Error("Database not available");
       
@@ -207,7 +212,8 @@ export const treasuryRouter = router({
         })
         .where(and(
           eq(financeBankAccounts.id, input.id),
-          eq(financeBankAccounts.organizationId, organizationId)
+          eq(financeBankAccounts.organizationId, organizationId),
+          eq(financeBankAccounts.operatingUnitId, operatingUnitId),
         ));
       
       return { success: true };
@@ -231,7 +237,7 @@ export const treasuryRouter = router({
       allowDuplicates: z.boolean().default(false),
     }))
     .mutation(async ({ ctx, input }) => {
-      const { organizationId } = ctx.scope;
+      const { organizationId, operatingUnitId } = ctx.scope;
       const db = await getDb();
       if (!db) throw new Error("Database not available");
       
@@ -261,6 +267,7 @@ export const treasuryRouter = router({
             const existing = await db.select().from(financeBankAccounts).where(
               and(
                 eq(financeBankAccounts.organizationId, organizationId),
+                eq(financeBankAccounts.operatingUnitId, operatingUnitId),
                 eq(financeBankAccounts.accountNumber, account.accountNumber),
                 eq(financeBankAccounts.isDeleted, 0)
               )

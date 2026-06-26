@@ -4,7 +4,7 @@
 // ============================================================================
 
 import { useMemo } from 'react';
-import { useAuth } from '@/_core/hooks/useAuth';
+import { useAuth } from '@/src/_core/hooks/useAuth';
 import { useOrganization } from '@/contexts/OrganizationContext';
 import { OrganizationRole } from '@/types/schema.types';
 import { getRolePermissions, canUserPerformAction } from '@/services/mockData';

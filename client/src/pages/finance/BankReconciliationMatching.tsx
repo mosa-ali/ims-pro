@@ -6,7 +6,8 @@
 
 import { useState } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { useOperatingUnit } from "@/contexts/OperatingUnitContext";
+import { useOperatingUnit } from '@/contexts/OperatingUnitContext';
+import { useOrganization } from "@/contexts/OrganizationContext";
 import { trpc } from "@/lib/trpc";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -23,7 +24,9 @@ import { BackButton } from "@/components/BackButton";
 export default function BankReconciliationMatching() {
   const { t } = useTranslation();
   const { isRTL } = useLanguage();
-  const { currentOrganizationId, currentOperatingUnitId } = useOperatingUnit();
+  const { currentOperatingUnitId } = useOperatingUnit();
+   const { currentOrganizationId } = useOrganization();
+   const organizationId = currentOrganizationId;
   const tc = (t as any).treasuryCashManagement ?? {};
 
   const [selectedBankAccount, setSelectedBankAccount] = useState<string>("");

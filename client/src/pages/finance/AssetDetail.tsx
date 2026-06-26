@@ -252,7 +252,7 @@ function InfoField({ label, value, icon: Icon }: { label: string; value: string 
  <div>
  <p className="text-xs text-muted-foreground">{t.assetDetail.currentValue}</p>
  <p className="text-xl font-bold text-green-600">
- {formatCurrency(asset.currentValue, asset.currency || "USD")}
+ {formatCurrency(asset.totalAcquisitionCost, asset.currency || "USD")}
  </p>
  </div>
  </div>

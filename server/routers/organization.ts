@@ -6,7 +6,7 @@
 import { z } from "zod";
 import { router, protectedProcedure, scopedProcedure } from "../_core/trpc";
 import { getDb } from "../db";
-import { users, userOrganizations, operatingUnits, projects } from "../../drizzle/schema";
+import { users, userOrganizations, operatingUnits, projects, countries } from "../../drizzle/schema";
 import { eq, and, asc, desc, sql } from "drizzle-orm";
 import { TRPCError } from "@trpc/server";
 
@@ -348,6 +348,22 @@ export const organizationRouter = router({
     };
   }),
 
+    getCountries: scopedProcedure.query(
+        async () => {
+          const db = await getDb();
+      
+          return db
+            .select({
+              id: countries.id,
+              code: countries.code,
+              name: countries.name,
+              arabicName: countries.arabicName,
+            })
+            .from(countries)
+            .orderBy(countries.name);
+        }
+      ),
+  
   /**
    * Dashboard: List Operating Units
    * Get list of all operating units in organization

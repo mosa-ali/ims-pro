@@ -33,7 +33,7 @@ export default function OrganizationLayout({ children }: OrganizationLayoutProps
 
  // Block Platform Admins from Organization routes (strict isolation)
  useEffect(() => {
- if (!loading && user && isPlatformAdmin(user.role)) {
+ if (!loading && user && isPlatformAdmin(user.platformRole)) {
  // Redirect Platform Admins to their dashboard
  setLocation("/platform");
  }

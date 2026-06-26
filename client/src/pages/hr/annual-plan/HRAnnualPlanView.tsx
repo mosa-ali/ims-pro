@@ -57,11 +57,18 @@ import { BackButton } from "@/components/BackButton";
 import { useAnnualPlan, useUpdateAnnualPlan, useSubmitAnnualPlanForReview, useCompleteAnnualPlanReview } from '@/hooks/useAnnualPlanning';
 import type { HRAnnualPlan } from '@shared/types/hrAnnualPlanning';
 
-export function HRAnnualPlanView() {
+interface HRAnnualPlanViewProps {
+  id?: string;
+}
+
+export function HRAnnualPlanView({ id: propId }: HRAnnualPlanViewProps = {}) {
  const { t } = useTranslation();
- const { id } = useParams<{ id: string }>();
+ const urlParams = useParams<{ id: string }>();
  const navigate = useNavigate();
  const { language, isRTL } = useLanguage();
+ 
+ // Use prop id first, then URL param, then 0
+ const id = propId || urlParams.id;
  
  // tRPC hooks - REPLACED SERVICE CALLS
  const planId = id ? parseInt(id) : 0;

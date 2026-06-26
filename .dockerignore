@@ -5,6 +5,9 @@ node_modules
 
 # Build outputs
 dist
+notes
+references
+.vs
 build
 .next
 out
@@ -43,7 +46,6 @@ yarn-error.log*
 !.env.frontend
 
 # Uploads / temp files
-uploads
 tmp
 temp
 

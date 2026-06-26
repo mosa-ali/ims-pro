@@ -50,6 +50,7 @@ export default function TreasuryBankReconciliation() {
   const { t } = useTranslation();
   const { language, isRTL } = useLanguage();
   const { currentOrganization } = useOrganization();
+  const { currentOperatingUnit } = useOperatingUnit();
   const organizationId = currentOrganization?.id || 0;
   const operatingUnitId = currentOperatingUnit?.id;
   const navigate = useNavigate();
@@ -69,11 +70,11 @@ export default function TreasuryBankReconciliation() {
   });
 
   // Fetch data
-  const bankAccountsQuery = trpc.treasury.listBankAccounts.useQuery({ organizationId, operatingUnitId });
+  const bankAccountsQuery = trpc.treasury.listBankAccounts.useQuery({ });
 
   const reconciliationsQuery = trpc.bankReconciliations.list.useQuery({
-    organizationId,
-    operatingUnitId,
+    
+    
     bankAccountId: selectedBankAccountId || undefined,
     limit: 50,
   });
@@ -127,8 +128,8 @@ export default function TreasuryBankReconciliation() {
       return;
     }
     createReconciliationMutation.mutate({
-      organizationId,
-      operatingUnitId,
+      
+      
       bankAccountId: selectedBankAccountId!,
       reconciliationDate: reconciliationForm.reconciliationDate,
       periodStart: reconciliationForm.periodStart,

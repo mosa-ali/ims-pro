@@ -55,30 +55,30 @@ export default function FinancialDashboard() {
 
   // Queries
   const { data: keyMetrics, refetch: refetchMetrics } = trpc.financialAnalytics.getKeyMetrics.useQuery({
-    organizationId,
+    
     ...filters,
   });
 
   const { data: budgetVsActual = [] } = trpc.financialAnalytics.getBudgetVsActual.useQuery({
-    organizationId,
+    
     ...filters,
     groupBy: "category",
   });
 
   const { data: cashFlowTrends = [] } = trpc.financialAnalytics.getCashFlowTrends.useQuery({
-    organizationId,
+    
     startDate: filters.startDate,
     endDate: filters.endDate,
     interval: cashFlowInterval,
   });
 
   const { data: expenseBreakdown = [] } = trpc.financialAnalytics.getExpenseBreakdown.useQuery({
-    organizationId,
+    
     ...filters,
   });
 
   const { data: topExpenses = [] } = trpc.financialAnalytics.getTopExpenses.useQuery({
-    organizationId,
+    
     ...filters,
     limit: 5,
   });

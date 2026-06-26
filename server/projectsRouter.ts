@@ -6,7 +6,7 @@
 import { z } from "zod";
 import { protectedProcedure, scopedProcedure, router } from "./_core/trpc";
 import { getDb } from "./db";
-import { projects, grants, budgets, reportingSchedules as reportingSchedulesTable, expenses, organizations } from "../drizzle/schema";
+import { projects, budgetItems, projectGovernorates, countries, governorates, grants, budgets, reportingSchedules as reportingSchedulesTable, expenses, organizations } from "../drizzle/schema";
 import { eq, and, desc, or, like, sql, inArray, isNull } from "drizzle-orm";
 import { TRPCError } from "@trpc/server";
 import { ensureISOString, formatDateForInput } from "@shared/dateUtils";
@@ -51,6 +51,10 @@ const currencyEnum = z.enum(CURRENCY_CODE_TUPLE);
 
 const createProjectSchema = z.object({
   projectCode: z.string().min(1, "Project code is required"),
+  countryId: z.number().optional(),
+  governorateId: z.number().optional(),
+  districtId: z.number().optional(),
+  governorateIds: z.array(z.number()).optional(),
   title: z.string().min(1, "Project title is required"),
   titleAr: z.string().optional(),
   description: z.string().optional(),
@@ -335,6 +339,12 @@ export const projectsRouter = router({
           organizationId: organizationId,
           operatingUnitId: operatingUnitId || null,
           projectCode: projectData.projectCode,
+          countryId: projectData.countryId ?? null,
+          governorateId:
+            projectData.governorateIds?.[0] ??
+            projectData.governorateId ??
+            null,
+          districtId: projectData.districtId ?? null,
           title: projectData.title,
           titleEn: projectData.title,
           titleAr: projectData.titleAr || null,
@@ -357,6 +367,19 @@ export const projectsRouter = router({
         });
 
         const projectId = Number(newProject.insertId);
+        if (
+            projectData.governorateIds &&
+            projectData.governorateIds.length > 0
+          ) {
+            await db.insert(projectGovernorates).values(
+              projectData.governorateIds.map(
+                (governorateId) => ({
+                  projectId,
+                  governorateId,
+                })
+              )
+            );
+          }
 
         // Automatically create a corresponding grant for this project
         try {
@@ -504,6 +527,22 @@ export const projectsRouter = router({
       // Prepare updates for database - dates are already strings from the schema
       const dbUpdates: any = { ...updates };
       
+      if (updates.countryId !== undefined) {
+          dbUpdates.countryId = updates.countryId;
+        }
+
+        if (updates.districtId !== undefined) {
+          dbUpdates.districtId = updates.districtId;
+        }
+
+        if (
+          updates.governorateIds &&
+          updates.governorateIds.length > 0
+        ) {
+          dbUpdates.governorateId =
+            updates.governorateIds[0];
+        }
+
       // Convert date strings to Date objects for Drizzle timestamp columns
       if (dbUpdates.startDate && typeof dbUpdates.startDate === 'string') {
         dbUpdates.startDate = new Date(dbUpdates.startDate);
@@ -541,8 +580,31 @@ export const projectsRouter = router({
             updatedBy: ctx.user.id,
           })
           .where(eq(projects.id, id));
+
+        // Update project governorate mappings
+        if (updates.governorateIds !== undefined) {
+
+          // Remove old mappings
+          await db
+            .delete(projectGovernorates)
+            .where(eq(projectGovernorates.projectId, id));
+
+          // Insert new mappings
+          if (updates.governorateIds.length > 0) {
+            await db
+              .insert(projectGovernorates)
+              .values(
+                updates.governorateIds.map((govId) => ({
+                  projectId: id,
+                  governorateId: govId,
+                }))
+              );
+          }
+        }
+
       } catch (error: any) {
         console.error('[projects.update] === UPDATE ERROR ===');
+        console.error(error);
         console.error('[projects.update] Error name:', error.name);
         console.error('[projects.update] Error message:', error.message);
         console.error('[projects.update] Error code:', error.code);

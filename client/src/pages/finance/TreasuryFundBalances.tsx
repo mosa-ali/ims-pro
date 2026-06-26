@@ -81,9 +81,9 @@ export default function TreasuryFundBalances() {
   });
 
   // Fetch data
-  const fundBalancesQuery = trpc.treasury.listFundBalances.useQuery({ organizationId, operatingUnitId });
+  const fundBalancesQuery = trpc.treasury.listFundBalances.useQuery({ });
 
-  const fundStatsQuery = trpc.treasury.getFundBalanceStatistics.useQuery({ organizationId, operatingUnitId });
+  const fundStatsQuery = trpc.treasury.getFundBalanceStatistics.useQuery({ });
 
   const createFundMutation = trpc.treasury.createFundBalance.useMutation({
     onSuccess: () => {
@@ -132,14 +132,14 @@ export default function TreasuryFundBalances() {
     if (editingFund) {
       updateFundMutation.mutate({
         id: editingFund.id,
-        organizationId,
-        operatingUnitId,
+        
+        
         ...fundForm,
       });
     } else {
       createFundMutation.mutate({
-        organizationId,
-        operatingUnitId,
+        
+        
         ...fundForm,
       });
     }
@@ -155,8 +155,8 @@ export default function TreasuryFundBalances() {
     if (confirm(t.treasuryCashManagement.confirmDelete || 'Are you sure?')) {
       deleteFundMutation.mutate({
         id,
-        organizationId,
-        operatingUnitId,
+        
+        
       });
     }
   };

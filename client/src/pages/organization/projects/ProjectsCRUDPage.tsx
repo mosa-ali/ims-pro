@@ -146,9 +146,7 @@ const localT = {
   },
   {
     enabled:
-      !!currentOrganizationId &&
-      !!currentOperatingUnitId,
-  }
+      !!currentOrganizationId,  }
 );
 
  const createMutation = trpc.projects.create.useMutation({

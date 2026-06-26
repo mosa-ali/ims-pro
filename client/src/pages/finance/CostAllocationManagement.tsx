@@ -261,7 +261,7 @@ export default function CostAllocationManagement() {
  );
 
  const { data: costPools = [], refetch: refetchCostPools } = trpc.costAllocation.listCostPools.useQuery(
- { organizationId, operatingUnitId },
+ { },
  { enabled: !!organizationId }
  );
 
@@ -301,7 +301,7 @@ export default function CostAllocationManagement() {
  );
 
  const { data: projectsList = [] } = trpc.projects.list.useQuery(
- {organizationId, operatingUnitId},
+ { operatingUnitId},
  { enabled: !!organizationId }
  );
 
@@ -727,8 +727,8 @@ export default function CostAllocationManagement() {
  });
  } else {
  createCostPoolMutation.mutate({
- organizationId,
- operatingUnitId,
+ 
+ 
  ...costPoolForm,
  });
  }
@@ -742,7 +742,7 @@ export default function CostAllocationManagement() {
  });
  } else {
  createAllocationKeyMutation.mutate({
- organizationId,
+ 
  ...allocationKeyForm,
  });
  }
@@ -756,7 +756,7 @@ export default function CostAllocationManagement() {
  });
  } else {
  createRuleMutation.mutate({
- organizationId,
+ 
  ...ruleForm,
  });
  }
@@ -770,7 +770,7 @@ export default function CostAllocationManagement() {
  });
  } else {
  createPeriodMutation.mutate({
- organizationId,
+ 
  ...periodForm,
  });
  }
@@ -778,7 +778,7 @@ export default function CostAllocationManagement() {
 
  const handleTransactionSubmit = () => {
  createTransactionMutation.mutate({
- organizationId,
+ 
  ...transactionForm,
  amount: parseFloat(transactionForm.amount),
  });
@@ -2262,7 +2262,7 @@ export default function CostAllocationManagement() {
  <Button
  onClick={() => {
  calculateBasesMutation.mutate({
- organizationId,
+ 
  allocationPeriodId: executionPeriodId,
  });
  }}
@@ -2288,7 +2288,7 @@ export default function CostAllocationManagement() {
  <Button
  onClick={() => {
  executeAllocationMutation.mutate({
- organizationId,
+ 
  allocationPeriodId: executionPeriodId,
  });
  }}
@@ -2526,7 +2526,7 @@ export default function CostAllocationManagement() {
  });
  } else {
  createTemplateMutation.mutate({
- organizationId,
+ 
  ...templateForm,
  });
  }
@@ -2750,7 +2750,7 @@ export default function CostAllocationManagement() {
  .filter(l => l.lineType ==="source")
  .reduce((sum, l) => sum + parseFloat(l.amount ||"0"), 0);
  createReallocationMutation.mutate({
- organizationId,
+ 
  ...reallocationForm,
  totalAmount,
  lines: reallocationForm.lines.map(l => ({

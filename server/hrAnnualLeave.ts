@@ -4,6 +4,37 @@ import { getDb } from "./db";
 import { hrEmployeeAnnualLeave, hrEmployees, hrLeaveRequests, organizations, operatingUnits } from "../drizzle/schema";
 import { eq, and, sql } from "drizzle-orm";
 
+/**
+ * Calculate pro-rata annual leave entitlement based on contract duration
+ * @param monthlyRate - Monthly accrual rate (e.g., 2.5 days/month)
+ * @param contractStartDate - Contract start date
+ * @param contractEndDate - Contract end date
+ * @returns Pro-rata entitlement for the contract period
+ */
+const calculateProRataEntitlement = (
+  monthlyRate: number,
+  contractStartDate: Date | string | null | undefined,
+  contractEndDate: Date | string | null | undefined
+): number => {
+  // If no contract dates provided, assume full year (12 months)
+  if (!contractStartDate || !contractEndDate) {
+    return monthlyRate * 12;
+  }
+
+  const startDate = new Date(contractStartDate);
+  const endDate = new Date(contractEndDate);
+
+  // Calculate months between contract start and end
+  const monthsDiff = (endDate.getFullYear() - startDate.getFullYear()) * 12 +
+                     (endDate.getMonth() - startDate.getMonth());
+
+  // Add 1 to include both start and end months
+  const totalMonths = Math.max(1, monthsDiff + 1);
+
+  // Return pro-rata entitlement
+  return Number((monthlyRate * totalMonths).toFixed(2));
+};
+
 export const hrAnnualLeaveRouter = router({
   /**
    * Get all employees with their annual leave records for a specific year
@@ -42,14 +73,22 @@ export const hrAnnualLeaveRouter = router({
           .limit(1);
 
         if (existing.length === 0) {
-          // Create default record
+          // Calculate pro-rata entitlement based on contract duration
+          const defaultMonthlyRate = 2.5;
+          const proRataEntitlement = calculateProRataEntitlement(
+            defaultMonthlyRate,
+            emp.contractStartDate,
+            emp.contractEndDate
+          );
+
+          // Create default record with pro-rata calculation
           await db.insert(hrEmployeeAnnualLeave).values({
             employeeId: emp.id,
             organizationId: ctx.scope.organizationId,
             operatingUnitId: ctx.scope.operatingUnitId,
             year: input.year,
-            annualEntitlement: '30.00',
-            monthlyAccrualRate: '2.50',
+            annualEntitlement: proRataEntitlement.toString(),
+            monthlyAccrualRate: defaultMonthlyRate.toString(),
             carryForwardDays: '0.00',
             isDeleted: 0,
           });
@@ -176,6 +215,7 @@ export const hrAnnualLeaveRouter = router({
 
   /**
    * Create or update annual leave record
+   * Automatically calculates pro-rata entitlement based on contract duration and monthly rate
    */
   updateAnnualLeaveRecord: scopedProcedure
     .input(z.object({
@@ -189,6 +229,19 @@ export const hrAnnualLeaveRouter = router({
     .mutation(async ({ ctx, input }) => {
       const db = await getDb();
 
+      // Get employee to access contract dates
+      const employee = await db
+        .select()
+        .from(hrEmployees)
+        .where(eq(hrEmployees.id, input.employeeId))
+        .limit(1);
+
+      if (!employee || employee.length === 0) {
+        throw new Error(`Employee with ID ${input.employeeId} not found`);
+      }
+
+      const emp = employee[0];
+
       // Check if record exists
       const existing = await db
         .select()
@@ -201,12 +254,22 @@ export const hrAnnualLeaveRouter = router({
         ))
         .limit(1);
 
+      // Calculate pro-rata entitlement if monthly rate is provided
+      let finalAnnualEntitlement = input.annualEntitlement;
+      if (input.monthlyAccrualRate !== undefined) {
+        finalAnnualEntitlement = calculateProRataEntitlement(
+          input.monthlyAccrualRate,
+          emp.contractStartDate,
+          emp.contractEndDate
+        );
+      }
+
       if (existing.length > 0) {
         // Update existing record
         await db
           .update(hrEmployeeAnnualLeave)
           .set({
-            annualEntitlement: input.annualEntitlement ? String(input.annualEntitlement) : existing[0].annualEntitlement,
+            annualEntitlement: finalAnnualEntitlement !== undefined ? String(finalAnnualEntitlement) : existing[0].annualEntitlement,
             monthlyAccrualRate: input.monthlyAccrualRate ? String(input.monthlyAccrualRate) : existing[0].monthlyAccrualRate,
             carryForwardDays: input.carryForwardDays ? String(input.carryForwardDays) : existing[0].carryForwardDays,
             notes: input.notes ?? existing[0].notes,
@@ -216,14 +279,21 @@ export const hrAnnualLeaveRouter = router({
 
         return existing[0];
       } else {
-        // Create new record
+        // Create new record with pro-rata calculation
+        const defaultMonthlyRate = input.monthlyAccrualRate ?? 2.5;
+        const proRataEntitlement = finalAnnualEntitlement ?? calculateProRataEntitlement(
+          defaultMonthlyRate,
+          emp.contractStartDate,
+          emp.contractEndDate
+        );
+
         await db.insert(hrEmployeeAnnualLeave).values({
           employeeId: input.employeeId,
           organizationId: ctx.scope.organizationId,
           operatingUnitId: ctx.scope.operatingUnitId,
           year: input.year,
-          annualEntitlement: String(input.annualEntitlement ?? 30),
-          monthlyAccrualRate: String(input.monthlyAccrualRate ?? 2.5),
+          annualEntitlement: String(proRataEntitlement),
+          monthlyAccrualRate: String(defaultMonthlyRate),
           carryForwardDays: String(input.carryForwardDays ?? 0),
           notes: input.notes || undefined,
           isDeleted: 0,

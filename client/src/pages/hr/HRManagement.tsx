@@ -59,10 +59,8 @@ import { useOperatingUnit } from '@/contexts/OperatingUnitContext';
 export function HRManagement() {
   const { language, isRTL } = useLanguage();
   const { t } = useTranslation();
-  const { currentOrganization } = useOrganization();
-  const { currentOperatingUnit } = useOrganization();
-  const organizationId = currentOrganization?.id || 0;
-  const operatingUnitId = currentOperatingUnit?.id;
+ const { currentOrganization } = useOrganization();
+ const organizationId = currentOrganization?.id || 0;
   
   // ========== HELPER FUNCTION TO GET TEXT BY LANGUAGE ==========
   const getText = (en: string, ar: string, it: string): string => {

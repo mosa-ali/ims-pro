@@ -10,6 +10,7 @@ import { toInputDate } from '@/lib/safeDateUtils';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { trpc } from "@/lib/trpc";
 import {
  Dialog,
  DialogContent,
@@ -38,7 +39,10 @@ interface Project {
  sectors: string[];
  donor?: string;
  implementingPartner?: string;
- location?: string;
+ countryId?: number;
+  governorateIds?: number[];
+  district?: string;
+  location?: string;
 }
 
 interface ProjectFormModalProps {
@@ -62,6 +66,16 @@ const SECTORS = [
  'Camp Management',
 ];
 
+interface Country {
+  id: number;
+  name: string;
+}
+
+interface Governorate {
+  id: number;
+  name: string;
+}
+
 export function ProjectFormModal({
  open,
  onClose,
@@ -84,7 +98,21 @@ const [formData, setFormData] = useState<Omit<Project, 'id'>>({
  donor: '',
  implementingPartner: '',
  location: '',
+  district:  '',
  });
+
+ const { data: countries } =
+  trpc.locations.getCountries.useQuery();
+
+const { data: governorates } =
+  trpc.locations.getGovernoratesByCountry.useQuery(
+    {
+      countryId: formData.countryId ?? 0,
+    },
+    {
+      enabled: !!formData.countryId,
+    }
+  );
 
  const [errors, setErrors] = useState<Record<string, string>>({});
 
@@ -380,16 +408,115 @@ const [formData, setFormData] = useState<Omit<Project, 'id'>>({
  </div>
  </div>
 
- {/* Location */}
- <div>
- <Label htmlFor="location">{t.projectFormModal.location}</Label>
- <Input
- id="location"
- value={formData.location}
- onChange={(e) => setFormData({ ...formData, location: e.target.value })}
- placeholder={t.projectFormModal.locationPlaceholder}
- />
- </div>
+{/* Geographic Information */}
+<div className="grid grid-cols-2 gap-4">
+  {/* Country */}
+  <div>
+    <Label htmlFor="country">
+      Country <span className="text-red-500">*</span>
+    </Label>
+
+    <Select
+      value={formData.countryId?.toString()}
+      onValueChange={(value) => {
+        setFormData((prev) => ({
+          ...prev,
+          countryId: Number(value),
+          governorateIds: [], // reset safely
+        }));
+      }}
+    >
+      <SelectTrigger>
+        <SelectValue placeholder="Select Country" />
+      </SelectTrigger>
+
+      <SelectContent>
+        {countries?.map((country: Country) => (
+          <SelectItem
+            key={country.id}
+            value={country.id.toString()}
+          >
+            {country.name}
+          </SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
+  </div>
+
+  {/* Governorates (Multi-select SAFE VERSION) */}
+  <div>
+    <Label>
+      Governorates <span className="text-red-500">*</span>
+    </Label>
+
+    <div className="border rounded-md p-3 max-h-40 overflow-y-auto space-y-2">
+      {(governorates ?? []).map((gov: Governorate) => {
+        const selectedIds = formData.governorateIds ?? [];
+        const isSelected = selectedIds.includes(gov.id);
+
+        return (
+          <label
+            key={gov.id}
+            className="flex items-center gap-2 cursor-pointer"
+          >
+            <input
+              type="checkbox"
+              checked={isSelected}
+              onChange={() => {
+                setFormData((prev) => {
+                  const current = prev.governorateIds ?? [];
+                  const exists = current.includes(gov.id);
+
+                  return {
+                    ...prev,
+                    governorateIds: exists
+                      ? current.filter((id) => id !== gov.id)
+                      : [...current, gov.id],
+                  };
+                });
+              }}
+            />
+
+            <span className="text-sm">{gov.name}</span>
+          </label>
+        );
+      })}
+    </div>
+  </div>
+</div>
+
+{/* District & Location */}
+<div className="grid grid-cols-2 gap-4">
+  <div>
+    <Label htmlFor="district">District</Label>
+    <Input
+      id="district"
+      value={formData.district ?? ""}
+      onChange={(e) =>
+        setFormData({
+          ...formData,
+          district: e.target.value,
+        })
+      }
+      placeholder="District"
+    />
+  </div>
+
+  <div>
+    <Label htmlFor="location">Village / Location</Label>
+    <Input
+      id="location"
+      value={formData.location ?? ""}
+      onChange={(e) =>
+        setFormData({
+          ...formData,
+          location: e.target.value,
+        })
+      }
+      placeholder="Village, Community, Site"
+    />
+  </div>
+</div>
 
  {/* Description */}
  <div>

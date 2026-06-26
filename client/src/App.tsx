@@ -53,7 +53,9 @@ const PasswordResetPage = lazy(() => import("./pages/PasswordResetPage"));
 const OrganizationDetailPage = lazy(() => import("./pages/OrganizationDetailPage"));
 const OperatingUnitDetailPage = lazy(() => import("./pages/OperatingUnitDetailPage"));
 // --- Organization Pages ---
-const OrganizationDashboard = lazy(() => import("./pages/organization/OrganizationDashboard"));
+const OrganizationDashboard = lazy(
+  () => import("./pages/organization/OrganizationDashboardPage")
+);
 const ProjectManagementDashboard = lazy(() => import("./pages/organization/projects/ProjectManagementDashboard"));
 const ProjectsCRUDPage = lazy(() => import("./pages/organization/projects/ProjectsCRUDPage"));
 const ProjectDetailsPage = lazy(() => import("./pages/organization/projects/ProjectDetailsPage"));
@@ -399,7 +401,7 @@ function Router() {
  <Route path="/platform/retention-policy" component={RetentionPolicyPage} />
  <Route path="/platform/settings/email" component={PlatformEmailSettingsPage} />
 
- <Route path="/reset-password/:token" component={PasswordResetPage} />
+ <Route path="/reset-password/:token" component={PasswordResetPage} /> 
  
  {/* Organization Routes */}
  <Route path="/organization" component={OrganizationDashboard} />

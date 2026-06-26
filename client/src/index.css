@@ -562,3 +562,31 @@ label, th, td, p, span, div, h1, h2, h3, h4, h5, h6, li, a {
     size: A4 landscape;
   }
 }
+
+/* Leaflet z-index fix — prevents popups hiding behind shadcn dialogs/sheets */
+.leaflet-pane         { z-index: 400; }
+.leaflet-tile         { z-index: 200; }
+.leaflet-overlay-pane { z-index: 400; }
+.leaflet-shadow-pane  { z-index: 500; }
+.leaflet-marker-pane  { z-index: 600; }
+.leaflet-tooltip-pane { z-index: 650; }
+.leaflet-popup-pane   { z-index: 700; }
+.leaflet-map-pane svg { z-index: 200; }
+.leaflet-top,
+.leaflet-bottom       { z-index: 1000; }
+
+/* Popup styling — matches IMS design system */
+.ims-popup .leaflet-popup-content-wrapper {
+  padding: 0;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+  border: 1px solid #e2e8f0;
+}
+.ims-popup .leaflet-popup-content {
+  margin: 0;
+  width: auto !important;
+}
+.ims-popup .leaflet-popup-tip {
+  background: white;
+}

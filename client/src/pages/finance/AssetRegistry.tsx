@@ -6,6 +6,7 @@ import { useState } from 'react';
 import { useNavigate } from '@/lib/router-compat';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useOrganization } from '@/contexts/OrganizationContext';
+import { useOperatingUnit } from "@/contexts/OperatingUnitContext";
 import { trpc } from '@/lib/trpc';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -52,9 +53,10 @@ import { AssetImportExportDialog, type ImportResult, type TemplateColumn } from 
 export default function AssetRegistry() {
   const { t } = useTranslation();
   const { language, isRTL } = useLanguage();
-  const { currentOrganization, currentOperatingUnit } = useOrganization();
-  const organizationId = currentOrganization?.id || 0;
-  const operatingUnitId = currentOperatingUnit?.id;
+  const { currentOrganization } = useOrganization();
+   const { currentOperatingUnit } = useOperatingUnit();
+ const organizationId = currentOrganization?.id || 0;
+ const operatingUnitId = currentOperatingUnit?.id;
   const navigate = useNavigate();
 
   const [searchTerm, setSearchTerm] = useState('');
@@ -67,22 +69,39 @@ export default function AssetRegistry() {
   const [assetForm, setAssetForm] = useState({
     assetCode: '',
     name: '',
-    category: '',
-    acquisitionCost: 0,
+    categoryId: undefined as number | undefined,
+    acquisitionCost: '0.00',
     acquisitionDate: new Date().toISOString().split('T')[0],
     location: '',
-    donor: '',
+    projectId: undefined as number | undefined,
+    donorName: '',
     status: 'active',
+    quantity: '1.00',
+    unitType: 'Unit',
+    unitCost: '0.00',
   });
 
-  // Fetch data
-  const assetsQuery = trpc.assets.listAssets.useQuery({ organizationId, operatingUnitId });
+   const projectsQuery = trpc.projects.list.useQuery(
+    {
+      status: "active",
+      limit: 1000,
+    },
+    {
+      enabled: !!organizationId,
+    }
+  );
+   
+   // Fetch projects and categories
+  const categoriesQuery = trpc.assets.listCategories.useQuery({});
 
-  const assetStatsQuery = trpc.assets.getAssetStatistics.useQuery({ organizationId, operatingUnitId });
+  // Fetch data
+  const assetsQuery = trpc.assets.listAssets.useQuery({ });
+
+  const assetStatsQuery = trpc.assets.getAssetStatistics.useQuery({ });
 
   const createAssetMutation = trpc.assets.createAsset.useMutation({
     onSuccess: () => {
-      toast.success(t.financeModule.assetCreated || 'Asset created');
+      toast.success(t.financeModule.assetCreatedSuccessfully || 'Asset created Successfully');
       assetsQuery.refetch();
       setShowAssetDialog(false);
       resetAssetForm();
@@ -91,7 +110,7 @@ export default function AssetRegistry() {
 
   const updateAssetMutation = trpc.assets.updateAsset.useMutation({
     onSuccess: () => {
-      toast.success(t.financeModule.assetUpdated || 'Asset updated');
+      toast.success(t.financeModule.assetUpdatedSuccessfully || 'Asset updated Successfully');
       assetsQuery.refetch();
       setShowAssetDialog(false);
       resetAssetForm();
@@ -100,7 +119,7 @@ export default function AssetRegistry() {
 
   const deleteAssetMutation = trpc.assets.deleteAsset.useMutation({
     onSuccess: () => {
-      toast.success(t.financeModule.assetDeleted || 'Asset deleted');
+      toast.success(t.financeModule.assetDeletedSuccessfully || 'Asset deleted Successfully');
       assetsQuery.refetch();
     },
   });
@@ -109,14 +128,28 @@ export default function AssetRegistry() {
     setAssetForm({
       assetCode: '',
       name: '',
-      category: '',
-      acquisitionCost: 0,
+      categoryId: undefined,
+      acquisitionCost: '0.00',
       acquisitionDate: new Date().toISOString().split('T')[0],
       location: '',
-      donor: '',
+      projectId: undefined,
+      donorName: '',
       status: 'active',
+      quantity: '1.00',
+      unitType: 'Unit',
+      unitCost: '0.00',
     });
     setEditingAsset(null);
+  };
+
+  // Auto-populate donor when project is selected
+  const handleProjectChange = (projectId: string) => {
+    const project = projectsQuery.data?.find(p => p.id === parseInt(projectId));
+    setAssetForm({
+      ...assetForm,
+      projectId: parseInt(projectId),
+      donorName: project?.donor || '',
+    });
   };
 
   const handleSaveAsset = () => {
@@ -128,15 +161,33 @@ export default function AssetRegistry() {
     if (editingAsset) {
       updateAssetMutation.mutate({
         id: editingAsset.id,
-        organizationId,
-        operatingUnitId,
-        ...assetForm,
+        assetCode: assetForm.assetCode,
+        name: assetForm.name,
+        categoryId: assetForm.categoryId,
+        acquisitionCost: assetForm.acquisitionCost,
+        acquisitionDate: assetForm.acquisitionDate,
+        location: assetForm.location,
+        projectId: assetForm.projectId,
+        donorName: assetForm.donorName,
+        status: assetForm.status as any,
+        quantity: assetForm.quantity,
+        unitType: assetForm.unitType,
+        unitCost: assetForm.unitCost,
       });
     } else {
       createAssetMutation.mutate({
-        organizationId,
-        operatingUnitId,
-        ...assetForm,
+        assetCode: assetForm.assetCode,
+        name: assetForm.name,
+        categoryId: assetForm.categoryId,
+        acquisitionCost: assetForm.acquisitionCost,
+        acquisitionDate: assetForm.acquisitionDate,
+        location: assetForm.location,
+        projectId: assetForm.projectId,
+        donorName: assetForm.donorName,
+        status: assetForm.status as any,
+        quantity: assetForm.quantity,
+        unitType: assetForm.unitType,
+        unitCost: assetForm.unitCost,
       });
     }
   };
@@ -151,8 +202,8 @@ export default function AssetRegistry() {
     if (confirm(t.financeModule.confirmDelete || 'Are you sure?')) {
       deleteAssetMutation.mutate({
         id,
-        organizationId,
-        operatingUnitId,
+        
+        
       });
     }
   };
@@ -169,6 +220,9 @@ export default function AssetRegistry() {
   const registryTemplateColumns: TemplateColumn[] = [
     { key: 'assetCode', header: 'Asset Code', required: true, example: 'AST-2024-0001', description: 'Unique asset identifier code' },
     { key: 'name', header: 'Asset Name', required: true, example: 'Laptop Dell XPS 15', description: 'Full descriptive name of the asset' },
+    { key: 'quantity', header: 'Quantity', required: false, example: 5, description: 'Number of items (e.g., 5 chairs)' },
+    { key: 'unitType', header: 'Unit Type', required: false, example: 'chairs', description: 'Type of unit (e.g., chairs, tables, units)' },
+    { key: 'unitCost', header: 'Unit Cost', required: false, example: 25.00, description: 'Cost per unit in USD' },
     { key: 'acquisitionCost', header: 'Acquisition Cost', required: false, example: 1500.00, description: 'Purchase cost in USD' },
     { key: 'acquisitionDate', header: 'Acquisition Date', required: false, example: '2024-01-15', description: 'Date of purchase (YYYY-MM-DD)' },
     { key: 'location', header: 'Location', required: false, example: 'Sana\'a Office', description: 'Physical location of the asset' },
@@ -180,18 +234,24 @@ export default function AssetRegistry() {
     const assets = rows.map((r) => ({
       assetCode: String(r.assetCode || ''),
       name: String(r.name || ''),
+      quantity: r.quantity ? String(r.quantity) : undefined,
+      unitType: r.unitType ? String(r.unitType) : undefined,
+      unitCost: r.unitCost ? String(r.unitCost) : undefined,
       acquisitionCost: r.acquisitionCost ? String(r.acquisitionCost) : undefined,
       acquisitionDate: r.acquisitionDate ? String(r.acquisitionDate) : undefined,
       location: r.location ? String(r.location) : undefined,
       donorName: r.donorName ? String(r.donorName) : undefined,
       status: r.status as any,
     }));
-    return await importAssetsMutation.mutateAsync({ organizationId, operatingUnitId, assets });
+    return await importAssetsMutation.mutateAsync({  assets });
   };
 
   const exportData = (assetsQuery.data || []).map((a: any) => ({
     assetCode: a.assetCode,
     name: a.name,
+    quantity: a.quantity,
+    unitType: a.unitType,
+    unitCost: a.unitCost,
     acquisitionCost: a.acquisitionCost,
     acquisitionDate: a.acquisitionDate ? new Date(a.acquisitionDate).toISOString().split('T')[0] : '',
     location: a.location,
@@ -265,7 +325,7 @@ export default function AssetRegistry() {
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold text-blue-600">
-                  {formatCurrency(assetStatsQuery.data?.totalValue || 0)}
+                  {formatCurrency(assetStatsQuery.data?.totalAcquisitionCost || 0)}
                 </div>
               </CardContent>
             </Card>
@@ -427,11 +487,51 @@ export default function AssetRegistry() {
               />
             </div>
             <div className="space-y-2">
+              <Label>{isRTL ? 'الكمية' : 'Quantity'}</Label>
+              <Input
+                type="number"
+                step="0.01"
+                min="1"
+                value={assetForm.quantity}
+                onChange={(e) => setAssetForm({ ...assetForm, quantity: e.target.value })}
+                placeholder="1.00"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label>{isRTL ? 'نوع الوحدة' : 'Unit Type'}</Label>
+              <Input
+                value={assetForm.unitType}
+                onChange={(e) => setAssetForm({ ...assetForm, unitType: e.target.value })}
+                placeholder={isRTL ? 'مثال: كراسي' : 'e.g., chairs, tables'}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label>{isRTL ? 'تكلفة الوحدة' : 'Unit Cost'}</Label>
+              <Input
+                type="number"
+                step="0.01"
+                value={assetForm.unitCost}
+                onChange={(e) => setAssetForm({ ...assetForm, unitCost: e.target.value })}
+                placeholder="0.00"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label>{isRTL ? 'إجمالي التكلفة' : 'Total Cost'}</Label>
+              <Input
+                type="number"
+                step="0.01"
+                value={(parseFloat(assetForm.quantity || '0') * parseFloat(assetForm.unitCost || '0')).toFixed(2)}
+                disabled
+                className="bg-muted"
+              />
+            </div>
+            <div className="space-y-2">
               <Label>{t.financeModule.acquisitionCost}</Label>
               <Input
                 type="number"
+                step="0.01"
                 value={assetForm.acquisitionCost}
-                onChange={(e) => setAssetForm({ ...assetForm, acquisitionCost: parseFloat(e.target.value) })}
+                onChange={(e) => setAssetForm({ ...assetForm, acquisitionCost: e.target.value })}
                 placeholder="0.00"
               />
             </div>
@@ -444,6 +544,41 @@ export default function AssetRegistry() {
               />
             </div>
             <div className="space-y-2">
+              <Label>{t.financeModule.project} *</Label>
+              <Select value={assetForm.projectId?.toString() || ''} onValueChange={handleProjectChange}>
+                <SelectTrigger>
+                  <SelectValue placeholder={t.financeModule.selectProject || 'Select Project'} />
+                </SelectTrigger>
+                <SelectContent>
+                  {projectsQuery.data?.map((project) => (
+                    <SelectItem
+                      key={project.id}
+                      value={String(project.id)}
+                    >
+                      {project.projectCode
+                        ? `${project.projectCode} - ${project.name}`
+                        : project.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-2">
+              <Label>{t.financeModule.category}</Label>
+              <Select value={assetForm.categoryId?.toString() || ''} onValueChange={(val) => setAssetForm({ ...assetForm, categoryId: parseInt(val) })}>
+                <SelectTrigger>
+                  <SelectValue placeholder={t.financeModule.selectCategory || 'Select Category'} />
+                </SelectTrigger>
+                <SelectContent>
+                  {categoriesQuery.data?.map((category) => (
+                    <SelectItem key={category.id} value={category.id.toString()}>
+                      {category.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-2">
               <Label>{t.financeModule.location}</Label>
               <Input
                 value={assetForm.location}
@@ -454,9 +589,10 @@ export default function AssetRegistry() {
             <div className="space-y-2">
               <Label>{t.financeModule.donor}</Label>
               <Input
-                value={assetForm.donor}
-                onChange={(e) => setAssetForm({ ...assetForm, donor: e.target.value })}
+                value={assetForm.donorName}
+                onChange={(e) => setAssetForm({ ...assetForm, donorName: e.target.value })}
                 placeholder={t.financeModule.donor}
+                disabled
               />
             </div>
           </div>

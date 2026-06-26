@@ -27,10 +27,10 @@ export default function TreasuryCashManagementDashboard() {
   const navigate = useNavigate();
 
   // Fetch statistics for KPI cards
-  const bankStatsQuery = trpc.treasury.getBankAccountStatistics.useQuery({ organizationId, operatingUnitId });
-  const cashTransactionsQuery = trpc.treasury.listCashTransactions.useQuery({ organizationId, operatingUnitId });
-  const fundStatsQuery = trpc.treasury.getFundBalanceStatistics.useQuery({ organizationId, operatingUnitId });
-  const reconciliationStatsQuery = trpc.bankReconciliations.list.useQuery({ organizationId, operatingUnitId, limit: 50 });
+  const bankStatsQuery = trpc.treasury.getBankAccountStatistics.useQuery({ });
+  const cashTransactionsQuery = trpc.treasury.listCashTransactions.useQuery({ });
+  const fundStatsQuery = trpc.treasury.getFundBalanceStatistics.useQuery({ });
+  const reconciliationStatsQuery = trpc.bankReconciliations.list.useQuery({  limit: 50 });
 
   // Derive cash stats from transactions
   const cashStatsQuery = { data: {

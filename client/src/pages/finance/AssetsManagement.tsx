@@ -143,6 +143,9 @@ const { currentOrganization } = useOrganization();
  subcategory:"",
  acquisitionDate:"",
  acquisitionCost:"",
+ quantity:"1.00",
+ unitType:"Unit",
+ unitCost:"0.00",
  currency:"USD",
  depreciationMethod:"straight_line",
  usefulLifeYears: 5,
@@ -200,33 +203,34 @@ const { currentOrganization } = useOrganization();
  notes:"",
  });
 
+ 
  // Queries
  const { data: assets = [], refetch: refetchAssets } = trpc.assets.listAssets.useQuery({
- organizationId,
+ 
  categoryId: categoryFilter !=="all" ? parseInt(categoryFilter) : undefined,
  status: statusFilter !=="all" ? statusFilter : undefined,
  search: searchQuery || undefined,
  });
 
  const { data: categories = [], refetch: refetchCategories } = trpc.assets.listCategories.useQuery({
- organizationId,
+ 
  });
 
  const { data: statistics } = trpc.assets.getAssetStatistics.useQuery({
- organizationId,
+ 
  });
 
  const { data: maintenanceRecords = [] } = trpc.assets.listMaintenance.useQuery({
- organizationId,
+ 
  assetId: selectedAssetId || undefined,
  });
 
  const { data: transfers = [] } = trpc.assets.listTransfers.useQuery({
- organizationId,
+ 
  });
 
  const { data: disposals = [] } = trpc.assets.listDisposals.useQuery({
- organizationId,
+ 
  });
 
  // Mutations
@@ -358,6 +362,9 @@ const { currentOrganization } = useOrganization();
  subcategory:"",
  acquisitionDate:"",
  acquisitionCost:"",
+ quantity:"1.00",
+ unitType:"Unit",
+ unitCost:"0.00",
  currency:"USD",
  depreciationMethod:"straight_line",
  usefulLifeYears: 5,
@@ -432,7 +439,7 @@ const { currentOrganization } = useOrganization();
  }
 
  createAssetMutation.mutate({
- organizationId,
+ 
  ...assetForm,
  categoryId: assetForm.categoryId ? parseInt(assetForm.categoryId) : undefined,
  usefulLifeYears: assetForm.usefulLifeYears,
@@ -471,6 +478,9 @@ const { currentOrganization } = useOrganization();
  subcategory: asset.subcategory ||"",
  acquisitionDate: asset.acquisitionDate ? new Date(asset.acquisitionDate).toISOString().split("T")[0] :"",
  acquisitionCost: asset.acquisitionCost?.toString() ||"",
+ quantity: asset.quantity?.toString() || "1.00",
+ unitType: asset.unitType || "Unit",
+ unitCost: asset.unitCost?.toString() || "0.00",
  currency: asset.currency ||"USD",
  depreciationMethod: asset.depreciationMethod ||"straight_line",
  usefulLifeYears: asset.usefulLifeYears || 5,
@@ -498,7 +508,7 @@ const { currentOrganization } = useOrganization();
  }
 
  createCategoryMutation.mutate({
- organizationId,
+ 
  ...categoryForm,
  defaultUsefulLife: categoryForm.defaultUsefulLife,
  });
@@ -538,7 +548,7 @@ const { currentOrganization } = useOrganization();
  }
 
  createMaintenanceMutation.mutate({
- organizationId,
+ 
  assetId: selectedAssetId,
  ...maintenanceForm,
  maintenanceType: maintenanceForm.maintenanceType as any,
@@ -552,7 +562,7 @@ const { currentOrganization } = useOrganization();
  }
 
  createTransferMutation.mutate({
- organizationId,
+ 
  assetId: selectedAssetId,
  ...transferForm,
  });
@@ -565,7 +575,7 @@ const { currentOrganization } = useOrganization();
  }
 
  createDisposalMutation.mutate({
- organizationId,
+ 
  assetId: selectedAssetId,
  ...disposalForm,
  disposalType: disposalForm.disposalType as any,
@@ -577,6 +587,9 @@ const { currentOrganization } = useOrganization();
  const headers = [
 "Asset Code",
 "Name",
+"Quantity",
+"Unit Type",
+"Unit Cost",
 "Category",
 "Acquisition Date",
 "Acquisition Cost",
@@ -596,11 +609,14 @@ const { currentOrganization } = useOrganization();
  const rows = assets.map((asset: any) => [
  asset.assetCode,
  asset.name,
+ asset.quantity || "1.00",
+ asset.unitType || "Unit",
+ asset.unitCost || "0.00",
  categories.find((c: any) => c.id === asset.categoryId)?.name ||"",
  asset.acquisitionDate ? new Date(asset.acquisitionDate).toISOString().split("T")[0] :"",
  asset.acquisitionCost ||"",
  asset.currency ||"USD",
- asset.currentValue ||"",
+ asset.totalAcquisitionCost ||"",
  asset.status,
  asset.condition,
  asset.location ||"",
@@ -693,6 +709,21 @@ const { currentOrganization } = useOrganization();
  </div>
  </CardContent>
  </Card>
+  <Card>
+  <CardContent className="p-4">
+    <div className="flex items-center gap-2">
+      <DollarSign className="h-5 w-5 text-green-600" />
+      <div>
+        <p className="text-xs text-muted-foreground">
+          {t.financeModule.totalValue}
+        </p>
+        <p className="text-lg font-bold">
+          {formatCurrency(statistics?.totalAcquisitionCost || 0)}
+        </p>
+      </div>
+    </div>
+  </CardContent>
+</Card>
  <Card>
  <CardContent className="p-4">
  <div className="flex items-center gap-2">
@@ -884,9 +915,12 @@ const { currentOrganization } = useOrganization();
  <TableRow>
  <TableHead>{t.financeModule.assetCode}</TableHead>
  <TableHead>{t.financeModule.name}</TableHead>
+ <TableHead>{isRTL ? 'الكمية' : 'Quantity'}</TableHead>
+ <TableHead>{isRTL ? 'نوع الوحدة' : 'Unit Type'}</TableHead>
+ <TableHead>{isRTL ? 'تكلفة الوحدة' : 'Unit Cost'}</TableHead>
  <TableHead>{t.financeModule.category}</TableHead>
  <TableHead>{t.financeModule.acquisitionCost}</TableHead>
- <TableHead>{t.financeModule.currentValue}</TableHead>
+ <TableHead>{t.financeModule.totalValue}</TableHead>
  <TableHead>{t.financeModule.location}</TableHead>
  <TableHead>{t.financeModule.donor}</TableHead>
  <TableHead>{t.financeModule.status}</TableHead>
@@ -912,11 +946,14 @@ const { currentOrganization } = useOrganization();
  )}
  </div>
  </TableCell>
+ <TableCell className="font-mono">{asset.quantity || '1.00'}</TableCell>
+ <TableCell>{asset.unitType || 'Unit'}</TableCell>
+ <TableCell className="font-mono">{formatCurrency(asset.unitCost, asset.currency)}</TableCell>
  <TableCell>
  {categories.find((c: any) => c.id === asset.categoryId)?.name ||"-"}
  </TableCell>
  <TableCell>{formatCurrency(asset.acquisitionCost, asset.currency)}</TableCell>
- <TableCell>{formatCurrency(asset.currentValue, asset.currency)}</TableCell>
+ <TableCell>{formatCurrency(asset.totalAcquisitionCost, asset.currency)}</TableCell>
  <TableCell>{asset.location ||"-"}</TableCell>
  <TableCell>{asset.donorName ||"-"}</TableCell>
  <TableCell>{getStatusBadge(asset.status)}</TableCell>
@@ -1269,6 +1306,45 @@ const { currentOrganization } = useOrganization();
  type="date"
  value={assetForm.acquisitionDate}
  onChange={(e) => setAssetForm({ ...assetForm, acquisitionDate: e.target.value })}
+ />
+ </div>
+ <div className="space-y-2">
+ <Label>{isRTL ? 'الكمية' : 'Quantity'}</Label>
+ <Input
+ type="number"
+ step="0.01"
+ min="1"
+ value={assetForm.quantity}
+ onChange={(e) => setAssetForm({ ...assetForm, quantity: e.target.value })}
+ placeholder="1.00"
+ />
+ </div>
+ <div className="space-y-2">
+ <Label>{isRTL ? 'نوع الوحدة' : 'Unit Type'}</Label>
+ <Input
+ value={assetForm.unitType}
+ onChange={(e) => setAssetForm({ ...assetForm, unitType: e.target.value })}
+ placeholder={isRTL ? 'مثال: كراسي' : 'e.g., chairs, tables'}
+ />
+ </div>
+ <div className="space-y-2">
+ <Label>{isRTL ? 'تكلفة الوحدة' : 'Unit Cost'}</Label>
+ <Input
+ type="number"
+ step="0.01"
+ value={assetForm.unitCost}
+ onChange={(e) => setAssetForm({ ...assetForm, unitCost: e.target.value })}
+ placeholder="0.00"
+ />
+ </div>
+ <div className="space-y-2">
+ <Label>{isRTL ? 'إجمالي التكلفة' : 'Total Cost'}</Label>
+ <Input
+ type="number"
+ step="0.01"
+ value={(parseFloat(assetForm.quantity || '0') * parseFloat(assetForm.unitCost || '0')).toFixed(2)}
+ disabled
+ className="bg-muted"
  />
  </div>
  <div className="space-y-2">

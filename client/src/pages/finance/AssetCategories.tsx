@@ -11,6 +11,14 @@ import { trpc } from '@/lib/trpc';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Checkbox } from '@/components/ui/checkbox';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import {
   Dialog,
   DialogContent,
@@ -26,7 +34,10 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Separator } from '@/components/ui/separator';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import { toast } from 'sonner';
 import {
   ArrowLeft,
@@ -56,14 +67,46 @@ export default function AssetCategories() {
   const [showImportDialog, setShowImportDialog] = useState(false);
   const [showExportDialog, setShowExportDialog] = useState(false);
 
-  const [categoryForm, setCategoryForm] = useState({
+  const [categoryForm, setCategoryForm] = useState<{
+    code: string;
+    name: string;
+    description: string;
+    assetClass: string;
+    parentId: number | undefined;
+    usefulLifeYears: number;
+    depreciationRate: string;
+    residualValuePercentage: string;
+    capitalizationThreshold: string;
+    defaultDepreciationMethod: string;
+    ownershipType: string;
+    trackSerialNumber: number;
+    requiresCustodian: number;
+    requiresLocation: number;
+    requiresInsurance: number;
+    isDonorReportable: number;
+    isActive: number;
+  }>({
+    code: '',
     name: '',
     description: '',
-    depreciationRate: 0,
+    assetClass: '',
+    parentId: undefined,
+    usefulLifeYears: 5,
+    depreciationRate: '0.00',
+    residualValuePercentage: '0.00',
+    capitalizationThreshold: '500',
+    defaultDepreciationMethod: 'straight_line',
+    ownershipType: 'organization',
+    trackSerialNumber: 1,
+    requiresCustodian: 1,
+    requiresLocation: 1,
+    requiresInsurance: 0,
+    isDonorReportable: 1,
+    isActive: 1,
   });
 
   // Fetch data
-  const categoriesQuery = trpc.assets.listCategories.useQuery({ organizationId, operatingUnitId });
+  const categoriesQuery = trpc.assets.listCategories.useQuery({});
 
   const createCategoryMutation = trpc.assets.createCategory.useMutation({
     onSuccess: () => {
@@ -92,37 +135,80 @@ export default function AssetCategories() {
 
   const resetCategoryForm = () => {
     setCategoryForm({
+      code: '',
       name: '',
       description: '',
-      depreciationRate: 0,
+      assetClass: '',
+      parentId: undefined,
+      usefulLifeYears: 5,
+      depreciationRate: '0.00',
+      residualValuePercentage: '0.00',
+      capitalizationThreshold: '500',
+      defaultDepreciationMethod: 'straight_line',
+      ownershipType: 'organization',
+      trackSerialNumber: 1,
+      requiresCustodian: 1,
+      requiresLocation: 1,
+      requiresInsurance: 0,
+      isDonorReportable: 1,
+      isActive: 1,
     });
     setEditingCategory(null);
   };
 
   const handleSaveCategory = () => {
-    if (!categoryForm.name) {
-      toast.error(t.financeModule.pleaseFillRequiredFields || 'Please fill required fields');
+    if (!categoryForm.code || !categoryForm.name) {
+      toast.error(isRTL ? 'يرجى ملء جميع الحقول المطلوبة' : 'Please fill all required fields');
       return;
     }
 
+    const payload = {
+      code: categoryForm.code,
+      name: categoryForm.name,
+      description: categoryForm.description || undefined,
+      assetClass: (categoryForm.assetClass as any) || undefined,
+      parentId: categoryForm.parentId || undefined,
+      usefulLifeYears: categoryForm.usefulLifeYears,
+      depreciationRate: categoryForm.depreciationRate,
+      residualValuePercentage: categoryForm.residualValuePercentage,
+      capitalizationThreshold: categoryForm.capitalizationThreshold,
+      defaultDepreciationMethod: categoryForm.defaultDepreciationMethod as any,
+      ownershipType: categoryForm.ownershipType as any,
+      trackSerialNumber: categoryForm.trackSerialNumber,
+      requiresCustodian: categoryForm.requiresCustodian,
+      requiresLocation: categoryForm.requiresLocation,
+      requiresInsurance: categoryForm.requiresInsurance,
+      isDonorReportable: categoryForm.isDonorReportable,
+      isActive: categoryForm.isActive,
+    };
+
     if (editingCategory) {
-      updateCategoryMutation.mutate({
-        id: editingCategory.id,
-        organizationId,
-        operatingUnitId,
-        ...categoryForm,
-      });
+      updateCategoryMutation.mutate({ id: editingCategory.id, ...payload });
     } else {
-      createCategoryMutation.mutate({
-        organizationId,
-        operatingUnitId,
-        ...categoryForm,
-      });
+      createCategoryMutation.mutate(payload);
     }
   };
 
   const handleEditCategory = (category: any) => {
-    setCategoryForm(category);
+    setCategoryForm({
+      code: category.code || '',
+      name: category.name || '',
+      description: category.description || '',
+      assetClass: category.assetClass || '',
+      parentId: category.parentId || undefined,
+      usefulLifeYears: category.usefulLifeYears || 5,
+      depreciationRate: category.depreciationRate || '0.00',
+      residualValuePercentage: category.residualValuePercentage || '0.00',
+      capitalizationThreshold: category.capitalizationThreshold || '500',
+      defaultDepreciationMethod: category.defaultDepreciationMethod || 'straight_line',
+      ownershipType: category.ownershipType || 'organization',
+      trackSerialNumber: category.trackSerialNumber ?? 1,
+      requiresCustodian: category.requiresCustodian ?? 1,
+      requiresLocation: category.requiresLocation ?? 1,
+      requiresInsurance: category.requiresInsurance ?? 0,
+      isDonorReportable: category.isDonorReportable ?? 1,
+      isActive: category.isActive ?? 1,
+    });
     setEditingCategory(category);
     setShowCategoryDialog(true);
   };
@@ -149,7 +235,7 @@ export default function AssetCategories() {
       depreciationRate: r['Depreciation Rate (%)'] ? String(r['Depreciation Rate (%)']) : (r.depreciationRate ? String(r.depreciationRate) : undefined),
       defaultUsefulLife: r['Useful Life (Years)'] ? Number(r['Useful Life (Years)']) : (r.defaultUsefulLife ? Number(r.defaultUsefulLife) : undefined),
     }));
-    return await importCategoriesMutation.mutateAsync({ organizationId, operatingUnitId, categories });
+    return await importCategoriesMutation.mutateAsync({ categories });
   };
 
   const exportCategoriesData = (categoriesQuery.data || []).map((c: any) => ({
@@ -165,8 +251,6 @@ export default function AssetCategories() {
     if (confirm(t.financeModule.confirmDelete || 'Are you sure?')) {
       deleteCategoryMutation.mutate({
         id,
-        organizationId,
-        operatingUnitId,
       });
     }
   };
@@ -227,9 +311,13 @@ export default function AssetCategories() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>{t.financeModule.name}</TableHead>
-                <TableHead>{t.financeModule.description}</TableHead>
-                <TableHead>{t.financeModule.depreciationRate}</TableHead>
+                <TableHead>{isRTL ? 'الرمز' : 'Code'}</TableHead>
+                <TableHead>{isRTL ? 'الاسم' : 'Name'}</TableHead>
+                <TableHead>{isRTL ? 'فئة الأصل' : 'Asset Class'}</TableHead>
+                <TableHead>{isRTL ? 'نوع الملكية' : 'Ownership'}</TableHead>
+                <TableHead>{isRTL ? 'العمر (سنوات)' : 'Life (Yrs)'}</TableHead>
+                <TableHead>{isRTL ? 'معدل الاستهلاك' : 'Depr. Rate'}</TableHead>
+                <TableHead>{isRTL ? 'الحالة' : 'Status'}</TableHead>
                 <TableHead className="w-[100px]"></TableHead>
               </TableRow>
             </TableHeader>
@@ -243,9 +331,17 @@ export default function AssetCategories() {
               ) : (
                 categoriesQuery.data.map((category: any) => (
                   <TableRow key={category.id}>
+                    <TableCell className="font-mono text-xs">{category.code}</TableCell>
                     <TableCell className="font-medium">{category.name}</TableCell>
-                    <TableCell>{category.description}</TableCell>
-                    <TableCell>{category.depreciationRate}%</TableCell>
+                    <TableCell className="capitalize">{category.assetClass?.replace('_', ' ') || '—'}</TableCell>
+                    <TableCell className="capitalize">{category.ownershipType || '—'}</TableCell>
+                    <TableCell>{category.usefulLifeYears ?? 5}</TableCell>
+                    <TableCell>{category.depreciationRate ?? '0.00'}%</TableCell>
+                    <TableCell>
+                      <Badge variant={category.isActive ? 'default' : 'secondary'}>
+                        {category.isActive ? (isRTL ? 'نشط' : 'Active') : (isRTL ? 'غير نشط' : 'Inactive')}
+                      </Badge>
+                    </TableCell>
                     <TableCell>
                       <div className="flex items-center gap-1">
                         <Button variant="ghost" size="icon" onClick={() => handleEditCategory(category)}>
@@ -290,45 +386,235 @@ export default function AssetCategories() {
 
       {/* Category Dialog */}
       <Dialog open={showCategoryDialog} onOpenChange={setShowCategoryDialog}>
-        <DialogContent className="max-w-2xl">
+        <DialogContent className="max-w-3xl max-h-[90vh]">
           <DialogHeader>
             <DialogTitle>
-              {editingCategory ? t.financeChartOfAccounts.editCategory : t.financeModule.newCategory}
+              {editingCategory
+                ? (isRTL ? 'تعديل الفئة' : 'Edit Category')
+                : (isRTL ? 'فئة جديدة' : 'New Category')}
             </DialogTitle>
           </DialogHeader>
-          <div className="grid grid-cols-1 gap-4 py-4">
-            <div className="space-y-2">
-              <Label>{t.financeModule.name} *</Label>
-              <Input
-                value={categoryForm.name}
-                onChange={(e) => setCategoryForm({ ...categoryForm, name: e.target.value })}
-                placeholder={t.financeModule.name}
-              />
+          <ScrollArea className="max-h-[70vh] pr-4">
+            <div className="grid grid-cols-2 gap-4 py-4" dir={isRTL ? 'rtl' : 'ltr'}>
+
+              {/* Code */}
+              <div className="space-y-2">
+                <Label>{isRTL ? 'الرمز' : 'Code'} *</Label>
+                <Input
+                  value={categoryForm.code}
+                  onChange={(e) => setCategoryForm({ ...categoryForm, code: e.target.value })}
+                  placeholder={isRTL ? 'مثال: IT-EQUIP' : 'e.g. IT-EQUIP'}
+                />
+              </div>
+
+              {/* Name */}
+              <div className="space-y-2">
+                <Label>{isRTL ? 'الاسم' : 'Name'} *</Label>
+                <Input
+                  value={categoryForm.name}
+                  onChange={(e) => setCategoryForm({ ...categoryForm, name: e.target.value })}
+                  placeholder={isRTL ? 'اسم الفئة' : 'Category name'}
+                />
+              </div>
+
+              {/* Description - full width */}
+              <div className="space-y-2 col-span-2">
+                <Label>{isRTL ? 'الوصف' : 'Description'}</Label>
+                <Input
+                  value={categoryForm.description}
+                  onChange={(e) => setCategoryForm({ ...categoryForm, description: e.target.value })}
+                  placeholder={isRTL ? 'وصف مختصر' : 'Brief description'}
+                />
+              </div>
+
+              {/* Asset Class */}
+              <div className="space-y-2">
+                <Label>{isRTL ? 'فئة الأصل' : 'Asset Class'}</Label>
+                <Select
+                  value={categoryForm.assetClass || ''}
+                  onValueChange={(v) => setCategoryForm({ ...categoryForm, assetClass: v })}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder={isRTL ? 'اختر الفئة' : 'Select class'} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="land">{isRTL ? 'أراضي' : 'Land'}</SelectItem>
+                    <SelectItem value="building">{isRTL ? 'مبانٍ' : 'Building'}</SelectItem>
+                    <SelectItem value="vehicle">{isRTL ? 'مركبات' : 'Vehicle'}</SelectItem>
+                    <SelectItem value="equipment">{isRTL ? 'معدات' : 'Equipment'}</SelectItem>
+                    <SelectItem value="furniture">{isRTL ? 'أثاث' : 'Furniture'}</SelectItem>
+                    <SelectItem value="it_equipment">{isRTL ? 'معدات تقنية المعلومات' : 'IT Equipment'}</SelectItem>
+                    <SelectItem value="medical_equipment">{isRTL ? 'معدات طبية' : 'Medical Equipment'}</SelectItem>
+                    <SelectItem value="infrastructure">{isRTL ? 'بنية تحتية' : 'Infrastructure'}</SelectItem>
+                    <SelectItem value="intangible">{isRTL ? 'غير ملموس' : 'Intangible'}</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* Ownership Type */}
+              <div className="space-y-2">
+                <Label>{isRTL ? 'نوع الملكية' : 'Ownership Type'}</Label>
+                <Select
+                  value={categoryForm.ownershipType}
+                  onValueChange={(v) => setCategoryForm({ ...categoryForm, ownershipType: v })}
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="organization">{isRTL ? 'المنظمة' : 'Organization'}</SelectItem>
+                    <SelectItem value="donor">{isRTL ? 'المانح' : 'Donor'}</SelectItem>
+                    <SelectItem value="government">{isRTL ? 'الحكومة' : 'Government'}</SelectItem>
+                    <SelectItem value="shared">{isRTL ? 'مشترك' : 'Shared'}</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* Useful Life */}
+              <div className="space-y-2">
+                <Label>{isRTL ? 'العمر الافتراضي (سنوات)' : 'Useful Life (Years)'}</Label>
+                <Input
+                  type="number"
+                  min={1}
+                  value={categoryForm.usefulLifeYears}
+                  onChange={(e) => setCategoryForm({ ...categoryForm, usefulLifeYears: parseInt(e.target.value) || 5 })}
+                />
+              </div>
+
+              {/* Depreciation Rate */}
+              <div className="space-y-2">
+                <Label>{isRTL ? 'معدل الاستهلاك (%)' : 'Depreciation Rate (%)'}</Label>
+                <Input
+                  type="number"
+                  step="0.01"
+                  min={0}
+                  max={100}
+                  value={categoryForm.depreciationRate}
+                  onChange={(e) => setCategoryForm({ ...categoryForm, depreciationRate: e.target.value })}
+                />
+              </div>
+
+              {/* Depreciation Method */}
+              <div className="space-y-2">
+                <Label>{isRTL ? 'طريقة الاستهلاك' : 'Depreciation Method'}</Label>
+                <Select
+                  value={categoryForm.defaultDepreciationMethod}
+                  onValueChange={(v) => setCategoryForm({ ...categoryForm, defaultDepreciationMethod: v })}
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="straight_line">{isRTL ? 'القسط الثابت' : 'Straight Line'}</SelectItem>
+                    <SelectItem value="declining_balance">{isRTL ? 'القسط المتناقص' : 'Declining Balance'}</SelectItem>
+                    <SelectItem value="units_of_production">{isRTL ? 'وحدات الإنتاج' : 'Units of Production'}</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* Residual Value % */}
+              <div className="space-y-2">
+                <Label>{isRTL ? 'نسبة القيمة المتبقية (%)' : 'Residual Value (%)'}</Label>
+                <Input
+                  type="number"
+                  step="0.01"
+                  min={0}
+                  max={100}
+                  value={categoryForm.residualValuePercentage}
+                  onChange={(e) => setCategoryForm({ ...categoryForm, residualValuePercentage: e.target.value })}
+                />
+              </div>
+
+              {/* Capitalization Threshold */}
+              <div className="space-y-2">
+                <Label>{isRTL ? 'حد الرسملة' : 'Capitalization Threshold'}</Label>
+                <Input
+                  type="number"
+                  step="0.01"
+                  min={0}
+                  value={categoryForm.capitalizationThreshold}
+                  onChange={(e) => setCategoryForm({ ...categoryForm, capitalizationThreshold: e.target.value })}
+                />
+              </div>
+
+              {/* Checkboxes - full width */}
+              <div className="col-span-2">
+                <Separator className="my-2" />
+                <p className="text-sm font-medium mb-3">{isRTL ? 'الإعدادات' : 'Settings'}</p>
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="flex items-center gap-2">
+                    <Checkbox
+                      id="trackSerial"
+                      checked={categoryForm.trackSerialNumber === 1}
+                      onCheckedChange={(v) => setCategoryForm({ ...categoryForm, trackSerialNumber: v ? 1 : 0 })}
+                    />
+                    <Label htmlFor="trackSerial" className="cursor-pointer">
+                      {isRTL ? 'تتبع الرقم التسلسلي' : 'Track Serial Number'}
+                    </Label>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Checkbox
+                      id="requiresCustodian"
+                      checked={categoryForm.requiresCustodian === 1}
+                      onCheckedChange={(v) => setCategoryForm({ ...categoryForm, requiresCustodian: v ? 1 : 0 })}
+                    />
+                    <Label htmlFor="requiresCustodian" className="cursor-pointer">
+                      {isRTL ? 'يتطلب حارساً' : 'Requires Custodian'}
+                    </Label>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Checkbox
+                      id="requiresLocation"
+                      checked={categoryForm.requiresLocation === 1}
+                      onCheckedChange={(v) => setCategoryForm({ ...categoryForm, requiresLocation: v ? 1 : 0 })}
+                    />
+                    <Label htmlFor="requiresLocation" className="cursor-pointer">
+                      {isRTL ? 'يتطلب موقعاً' : 'Requires Location'}
+                    </Label>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Checkbox
+                      id="requiresInsurance"
+                      checked={categoryForm.requiresInsurance === 1}
+                      onCheckedChange={(v) => setCategoryForm({ ...categoryForm, requiresInsurance: v ? 1 : 0 })}
+                    />
+                    <Label htmlFor="requiresInsurance" className="cursor-pointer">
+                      {isRTL ? 'يتطلب تأميناً' : 'Requires Insurance'}
+                    </Label>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Checkbox
+                      id="isDonorReportable"
+                      checked={categoryForm.isDonorReportable === 1}
+                      onCheckedChange={(v) => setCategoryForm({ ...categoryForm, isDonorReportable: v ? 1 : 0 })}
+                    />
+                    <Label htmlFor="isDonorReportable" className="cursor-pointer">
+                      {isRTL ? 'قابل للإبلاغ للمانح' : 'Donor Reportable'}
+                    </Label>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Checkbox
+                      id="isActive"
+                      checked={categoryForm.isActive === 1}
+                      onCheckedChange={(v) => setCategoryForm({ ...categoryForm, isActive: v ? 1 : 0 })}
+                    />
+                    <Label htmlFor="isActive" className="cursor-pointer">
+                      {isRTL ? 'نشط' : 'Active'}
+                    </Label>
+                  </div>
+                </div>
+              </div>
+
             </div>
-            <div className="space-y-2">
-              <Label>{t.financeModule.description}</Label>
-              <Input
-                value={categoryForm.description}
-                onChange={(e) => setCategoryForm({ ...categoryForm, description: e.target.value })}
-                placeholder={t.financeModule.description}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label>{t.financeModule.depreciationRate} (%)</Label>
-              <Input
-                type="number"
-                value={categoryForm.depreciationRate}
-                onChange={(e) => setCategoryForm({ ...categoryForm, depreciationRate: parseFloat(e.target.value) })}
-                placeholder="0"
-              />
-            </div>
-          </div>
+          </ScrollArea>
           <DialogFooter>
             <Button variant="outline" onClick={() => { setShowCategoryDialog(false); resetCategoryForm(); }}>
-              {t.financeModule.cancel}
+              {isRTL ? 'إلغاء' : 'Cancel'}
             </Button>
             <Button onClick={handleSaveCategory} disabled={createCategoryMutation.isPending || updateCategoryMutation.isPending}>
-              {createCategoryMutation.isPending || updateCategoryMutation.isPending ? t.financeModule.saving : t.financeModule.save}
+              {createCategoryMutation.isPending || updateCategoryMutation.isPending
+                ? (isRTL ? 'جارٍ الحفظ...' : 'Saving...')
+                : (isRTL ? 'حفظ' : 'Save')}
             </Button>
           </DialogFooter>
         </DialogContent>

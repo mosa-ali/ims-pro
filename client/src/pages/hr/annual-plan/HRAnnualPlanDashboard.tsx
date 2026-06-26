@@ -54,6 +54,7 @@ import { useOrganization } from '@/contexts/OrganizationContext';
 import { useOperatingUnit } from '@/contexts/OperatingUnitContext';
 import { CreateAnnualPlanModal } from './CreateAnnualPlanModal';
 import { useTranslation } from '@/i18n/useTranslation';
+import { trpc } from '@/lib/trpc';
 import type { HRAnnualPlan } from '@shared/types/hrAnnualPlanning'; 
 
 // Plan status type
@@ -63,8 +64,10 @@ export function HRAnnualPlanDashboard() {
  const { t } = useTranslation();
  const { language, isRTL } = useLanguage();
  const navigate = useNavigate();
- const { currentOrganization } = useOrganization();
- const { currentOperatingUnit } = useOperatingUnit();
+  const { currentOrganization } = useOrganization();
+   const { currentOperatingUnit } = useOperatingUnit();
+ const organizationId = currentOrganization?.id || 0;
+ const operatingUnitId = currentOperatingUnit?.id;
  
  // tRPC hooks - REPLACED SERVICE CALLS
  const { data: plans = [], isLoading } = useAnnualPlans({
@@ -72,6 +75,12 @@ export function HRAnnualPlanDashboard() {
    operatingUnitId: currentOperatingUnit?.id,
  });
  const deleteMutation = useDeleteAnnualPlan();
+ 
+ // Fetch real projects from database
+ const { data: projectsList = [] } = trpc.projects.list.useQuery(
+   { status: 'all', limit: 1000 },
+   { enabled: !!currentOrganization?.id && !!currentOperatingUnit?.id }
+ );
  
  const [selectedYear, setSelectedYear] = useState(2026);
  const [selectedDepartment, setSelectedDepartment] = useState('all');
@@ -151,17 +160,55 @@ export function HRAnnualPlanDashboard() {
  strategicPlanningDesc: 'HR Annual Plans are strategic documents that guide recruitment, budgeting, and capacity building. Once approved, plans become read-only and serve as references for operational modules.'
  };
 
- // Get current active plan (approved or locked)
- const currentPlan = plans.find(p => p.planYear === selectedYear && (p.status === 'approved' || p.status === 'rejected'));
+ // Get all plans for selected year (including draft)
+ const plansForYear = plans.filter(p => p.planYear === selectedYear);
 
- // KPI data from current plan
- const kpiData = currentPlan ? {
- totalPlannedPositions: currentPlan.plannedStaffing ? JSON.parse(currentPlan.plannedStaffing).length : 0,
- existingStaff: currentPlan.existingWorkforce ? JSON.parse(currentPlan.existingWorkforce).length : 0,
- newPositionsRequired: (currentPlan.plannedStaffing ? JSON.parse(currentPlan.plannedStaffing).length : 0) - (currentPlan.existingWorkforce ? JSON.parse(currentPlan.existingWorkforce).length : 0),
- estimatedCost: currentPlan.budgetEstimate ? JSON.parse(currentPlan.budgetEstimate).total || 0 : 0,
- recruitmentActions: currentPlan.recruitmentPlan ? JSON.parse(currentPlan.recruitmentPlan).length : 0,
- trainingActions: currentPlan.trainingPlan ? JSON.parse(currentPlan.trainingPlan).length : 0
+ // KPI data aggregated from all plans for the year
+ const kpiData = plansForYear.length > 0 ? {
+ totalPlannedPositions: plansForYear.reduce((sum, plan) => {
+ try {
+ return sum + (plan.plannedStaffing ? JSON.parse(plan.plannedStaffing).length : 0);
+ } catch {
+ return sum;
+ }
+ }, 0),
+ existingStaff: plansForYear.reduce((sum, plan) => {
+ try {
+ return sum + (plan.existingWorkforce ? JSON.parse(plan.existingWorkforce).length : 0);
+ } catch {
+ return sum;
+ }
+ }, 0),
+ newPositionsRequired: plansForYear.reduce((sum, plan) => {
+ try {
+ const planned = plan.plannedStaffing ? JSON.parse(plan.plannedStaffing).length : 0;
+ const existing = plan.existingWorkforce ? JSON.parse(plan.existingWorkforce).length : 0;
+ return sum + (planned - existing);
+ } catch {
+ return sum;
+ }
+ }, 0),
+ estimatedCost: plansForYear.reduce((sum, plan) => {
+ try {
+ return sum + (plan.budgetEstimate ? JSON.parse(plan.budgetEstimate).total || 0 : 0);
+ } catch {
+ return sum;
+ }
+ }, 0),
+ recruitmentActions: plansForYear.reduce((sum, plan) => {
+ try {
+ return sum + (plan.recruitmentPlan ? JSON.parse(plan.recruitmentPlan).length : 0);
+ } catch {
+ return sum;
+ }
+ }, 0),
+ trainingActions: plansForYear.reduce((sum, plan) => {
+ try {
+ return sum + (plan.trainingPlan ? JSON.parse(plan.trainingPlan).length : 0);
+ } catch {
+ return sum;
+ }
+ }, 0)
  } : {
  totalPlannedPositions: 0,
  existingStaff: 0,
@@ -240,23 +287,21 @@ export function HRAnnualPlanDashboard() {
  </select>
  </div>
 
- {/* Department Filter */}
+ {/* Department Filter - PLACEHOLDER */}
  <div className={`flex items-center gap-2`}>
  <Building2 className="w-5 h-5 text-gray-500" />
  <select
  value={selectedDepartment}
  onChange={(e) => setSelectedDepartment(e.target.value)}
  className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500"
+ disabled
+ title="Department filtering coming soon"
  >
  <option value="all">{labels.allDepartments}</option>
- <option value="programs">Programs</option>
- <option value="operations">Operations</option>
- <option value="finance">Finance</option>
- <option value="hr">Human Resources</option>
  </select>
  </div>
 
- {/* Project Filter */}
+ {/* Project Filter - Dynamic from Database */}
  <div className={`flex items-center gap-2`}>
  <FolderOpen className="w-5 h-5 text-gray-500" />
  <select
@@ -265,9 +310,11 @@ export function HRAnnualPlanDashboard() {
  className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500"
  >
  <option value="all">{labels.allProjects}</option>
- <option value="echo">ECHO-YEM-001</option>
- <option value="unhcr">UNHCR-SYR-002</option>
- <option value="sc">SC-MENA-003</option>
+ {projectsList.map((project) => (
+ <option key={project.id} value={String(project.id)}>
+ {project.projectCode} - {project.title}
+ </option>
+ ))}
  </select>
  </div>
  </div>
@@ -418,34 +465,34 @@ export function HRAnnualPlanDashboard() {
  {plan.budgetEstimate ? formatCurrency(JSON.parse(plan.budgetEstimate).total || 0) : '-'}
  </td>
  <td className="px-6 py-4 text-center">
- <div className={`flex items-center justify-center gap-2`}>
+ <div className={`flex items-center justify-center gap-3`}>
  <button
  onClick={() => navigate(`/organization/hr/annual-plan/view/${plan.id}`)}
- className="inline-flex items-center gap-1 px-3 py-1 text-indigo-600 hover:text-indigo-700 hover:bg-indigo-50 rounded transition-colors"
+ className="inline-flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-indigo-600 bg-indigo-50 hover:bg-indigo-100 rounded-md transition-colors cursor-pointer"
  title={labels.view}
  >
  <Eye className="w-4 h-4" />
- <span className="text-xs">{labels.view}</span>
+ <span>{labels.view}</span>
  </button>
  {plan.status === 'draft' && (
  <button
  onClick={() => navigate(`/organization/hr/annual-plan/view/${plan.id}`)}
- className="inline-flex items-center gap-1 px-3 py-1 text-blue-600 hover:text-blue-700 hover:bg-blue-50 rounded transition-colors"
+ className="inline-flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-blue-600 bg-blue-50 hover:bg-blue-100 rounded-md transition-colors cursor-pointer"
  title={labels.edit}
  >
  <Edit className="w-4 h-4" />
- <span className="text-xs">{labels.edit}</span>
+ <span>{labels.edit}</span>
  </button>
  )}
  {plan.status === 'draft' && (
  <button
  onClick={() => handleDeletePlan(plan.id)}
  disabled={deleteMutation.isPending}
- className="inline-flex items-center gap-1 px-3 py-1 text-red-600 hover:text-red-700 hover:bg-red-50 rounded transition-colors disabled:opacity-50"
+ className="inline-flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-red-600 bg-red-50 hover:bg-red-100 rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
  title={t.hrAnnualPlan.delete}
  >
  <Trash2 className="w-4 h-4" />
- <span className="text-xs">{t.hrAnnualPlan.delete}</span>
+ <span>{t.hrAnnualPlan.delete}</span>
  </button>
  )}
  </div>

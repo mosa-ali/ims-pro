@@ -1,19 +1,19 @@
 import { z } from "zod";
 import { TRPCError } from "@trpc/server";
-import { router, protectedProcedure } from "../_core/trpc";
+import { router, protectedProcedure, scopedProcedure } from "../_core/trpc";
 import { getDb } from "../db";
-import { emailTemplateVersion, emailTemplateABTest, emailTemplates } from "../../drizzle/schema";
+import { emailTemplateVersion, emailTemplateABTest, emailTemplates, organizations, operatingUnits } from "../../drizzle/schema";
 import { eq, and, desc, gt } from "drizzle-orm";
 
 export const emailTemplateVersionRouter = router({
   /**
    * Get all versions of a template
    */
-  getVersions: protectedProcedure
+  getVersions: scopedProcedure
     .input(z.object({ templateId: z.number(), organizationId: z.number() }))
     .query(async ({ input, ctx }) => {
       try {
-        if (!ctx.user.organizationIds?.includes(input.organizationId)) {
+        if (!ctx.scope.organizationId) {
           throw new TRPCError({
             code: "FORBIDDEN",
             message: "You do not have access to this organization",
@@ -61,11 +61,11 @@ export const emailTemplateVersionRouter = router({
   /**
    * Get a specific version
    */
-  getVersion: protectedProcedure
+  getVersion: scopedProcedure
     .input(z.object({ versionId: z.number(), organizationId: z.number() }))
     .query(async ({ input, ctx }) => {
       try {
-        if (!ctx.user.organizationIds?.includes(input.organizationId)) {
+        if (!ctx.scope.organizationId) {
           throw new TRPCError({
             code: "FORBIDDEN",
             message: "You do not have access to this organization",
@@ -106,7 +106,7 @@ export const emailTemplateVersionRouter = router({
   /**
    * Create a new template version
    */
-  createVersion: protectedProcedure
+  createVersion: scopedProcedure
     .input(
       z.object({
         templateId: z.number(),
@@ -123,7 +123,7 @@ export const emailTemplateVersionRouter = router({
     )
     .mutation(async ({ input, ctx }) => {
       try {
-        if (!ctx.user.organizationIds?.includes(input.organizationId)) {
+        if (!ctx.scope.organizationId) {
           throw new TRPCError({
             code: "FORBIDDEN",
             message: "You do not have access to this organization",
@@ -198,11 +198,11 @@ export const emailTemplateVersionRouter = router({
   /**
    * Publish a template version (make it active)
    */
-  publishVersion: protectedProcedure
+  publishVersion: scopedProcedure
     .input(z.object({ versionId: z.number(), organizationId: z.number() }))
     .mutation(async ({ input, ctx }) => {
       try {
-        if (!ctx.user.organizationIds?.includes(input.organizationId)) {
+        if (!ctx.scope.organizationId) {
           throw new TRPCError({
             code: "FORBIDDEN",
             message: "You do not have access to this organization",
@@ -241,7 +241,7 @@ export const emailTemplateVersionRouter = router({
           .update(emailTemplateVersion)
           .set({
             isPublished: 1,
-            publishedAt: new Date(),
+            publishedAt: new Date().toISOString(),
             publishedBy: ctx.user.id,
           })
           .where(eq(emailTemplateVersion.id, input.versionId));
@@ -262,11 +262,11 @@ export const emailTemplateVersionRouter = router({
   /**
    * Rollback to a previous version
    */
-  rollback: protectedProcedure
+  rollback: scopedProcedure
     .input(z.object({ versionId: z.number(), organizationId: z.number() }))
     .mutation(async ({ input, ctx }) => {
       try {
-        if (!ctx.user.organizationIds?.includes(input.organizationId)) {
+        if (!ctx.scope.organizationId) {
           throw new TRPCError({
             code: "FORBIDDEN",
             message: "You do not have access to this organization",
@@ -306,7 +306,7 @@ export const emailTemplateVersionRouter = router({
 
         // Create a new version with the rolled-back content
         const result = await dbInstance.insert(emailTemplateVersion).values({
-          organizationId: versionToRollback.organizationId,
+          organizationId: ctx.scope.organizationId,
           templateId: versionToRollback.templateId,
           versionNumber: nextVersionNumber,
           templateKey: versionToRollback.templateKey,
@@ -316,8 +316,8 @@ export const emailTemplateVersionRouter = router({
           subjectAr: versionToRollback.subjectAr,
           bodyHtml: versionToRollback.bodyHtml,
           bodyHtmlAr: versionToRollback.bodyHtmlAr,
-          changeDescription: `Rolled back from version ${versionToRollback.versionNumber}`,
-          changeDescriptionAr: `تم الرجوع من الإصدار ${versionToRollback.versionNumber}`,
+          changeDescription: versionToRollback.versionNumber,
+          changeDescriptionAr: versionToRollback.versionNumber,
           isPublished: 1,
           publishedAt: new Date(),
           publishedBy: ctx.user.id,
@@ -344,11 +344,11 @@ export const emailTemplateVersionRouter = router({
   /**
    * Delete a template version
    */
-  deleteVersion: protectedProcedure
+  deleteVersion: scopedProcedure
     .input(z.object({ versionId: z.number(), organizationId: z.number() }))
     .mutation(async ({ input, ctx }) => {
       try {
-        if (!ctx.user.organizationIds?.includes(input.organizationId)) {
+        if (!ctx.scope.organizationId) {
           throw new TRPCError({
             code: "FORBIDDEN",
             message: "You do not have access to this organization",
@@ -401,7 +401,7 @@ export const emailTemplateVersionRouter = router({
   /**
    * Create A/B test
    */
-  createABTest: protectedProcedure
+  createABTest: scopedProcedure
     .input(
       z.object({
         templateId: z.number(),
@@ -417,7 +417,7 @@ export const emailTemplateVersionRouter = router({
     )
     .mutation(async ({ input, ctx }) => {
       try {
-        if (!ctx.user.organizationIds?.includes(input.organizationId)) {
+        if (!ctx.scope.organizationId) {
           throw new TRPCError({
             code: "FORBIDDEN",
             message: "You do not have access to this organization",
@@ -489,11 +489,11 @@ export const emailTemplateVersionRouter = router({
   /**
    * Get A/B tests for a template
    */
-  getABTests: protectedProcedure
+  getABTests: scopedProcedure
     .input(z.object({ templateId: z.number(), organizationId: z.number() }))
     .query(async ({ input, ctx }) => {
       try {
-        if (!ctx.user.organizationIds?.includes(input.organizationId)) {
+        if (!ctx.scope.organizationId) {
           throw new TRPCError({
             code: "FORBIDDEN",
             message: "You do not have access to this organization",
@@ -526,11 +526,11 @@ export const emailTemplateVersionRouter = router({
   /**
    * Start an A/B test
    */
-  startABTest: protectedProcedure
+  startABTest: scopedProcedure
     .input(z.object({ testId: z.number(), organizationId: z.number() }))
     .mutation(async ({ input, ctx }) => {
       try {
-        if (!ctx.user.organizationIds?.includes(input.organizationId)) {
+        if (!ctx.scope.organizationId) {
           throw new TRPCError({
             code: "FORBIDDEN",
             message: "You do not have access to this organization",
@@ -569,7 +569,7 @@ export const emailTemplateVersionRouter = router({
           .update(emailTemplateABTest)
           .set({
             status: "running",
-            startedAt: new Date(),
+            startedAt: new Date().toISOString(),
             updatedBy: ctx.user.id,
           })
           .where(eq(emailTemplateABTest.id, input.testId));
@@ -590,7 +590,7 @@ export const emailTemplateVersionRouter = router({
   /**
    * End an A/B test and declare winner
    */
-  endABTest: protectedProcedure
+  endABTest: scopedProcedure
     .input(
       z.object({
         testId: z.number(),
@@ -603,7 +603,7 @@ export const emailTemplateVersionRouter = router({
     )
     .mutation(async ({ input, ctx }) => {
       try {
-        if (!ctx.user.organizationIds?.includes(input.organizationId)) {
+        if (!ctx.scope.organizationId) {
           throw new TRPCError({
             code: "FORBIDDEN",
             message: "You do not have access to this organization",
@@ -643,7 +643,7 @@ export const emailTemplateVersionRouter = router({
           .update(emailTemplateABTest)
           .set({
             status: "completed",
-            endedAt: new Date(),
+            endedAt: new Date().toISOString(),
             winnerId: input.winnerId,
             winnerMetric: input.winnerMetric,
             confidenceLevel: input.confidenceLevel || null,
@@ -662,7 +662,7 @@ export const emailTemplateVersionRouter = router({
           .update(emailTemplateVersion)
           .set({
             isPublished: 1,
-            publishedAt: new Date(),
+            publishedAt: new Date().toISOString(),
             publishedBy: ctx.user.id,
           })
           .where(eq(emailTemplateVersion.id, input.winnerId));

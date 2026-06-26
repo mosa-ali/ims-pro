@@ -89,8 +89,8 @@ export default function FinancePayments() {
 
  // Queries
  const { data: paymentsData, isLoading, refetch } = trpc.payments.list.useQuery({
- organizationId,
- operatingUnitId,
+ 
+ 
  status: statusFilter !== 'all' ? statusFilter as PaymentStatus : undefined,
  paymentType: typeFilter !== 'all' ? typeFilter as PaymentType : undefined,
  paymentMethod: methodFilter !== 'all' ? methodFilter as PaymentMethod : undefined,
@@ -101,15 +101,15 @@ export default function FinancePayments() {
  });
 
  const { data: vendorsData } = trpc.vendors.getForDropdown.useQuery({
- organizationId,
- operatingUnitId,
+ 
+ 
  }, {
  enabled: organizationId > 0,
  });
 
  const { data: bankAccountsData } = trpc.treasury.bankAccounts.list.useQuery({
- organizationId,
- operatingUnitId,
+ 
+ 
  }, {
  enabled: organizationId > 0,
  });
@@ -320,8 +320,8 @@ export default function FinancePayments() {
  }
 
  createMutation.mutate({
- organizationId,
- operatingUnitId,
+ 
+ 
  vendorId: formData.vendorId ? Number(formData.vendorId) : undefined,
  projectId: formData.projectId ? Number(formData.projectId) : undefined,
  grantId: formData.grantId ? Number(formData.grantId) : undefined,

@@ -10,6 +10,7 @@ import {
   financeAssetDisposals 
 } from "../drizzle/schema";
 import { eq, and, desc, sql, like, or, isNull } from "drizzle-orm";
+import type { ResultSetHeader } from "mysql2";
 
 const nowSql = new Date().toISOString().slice(0, 19).replace('T', ' ');
 
@@ -34,7 +35,7 @@ export const assetsRouter = router({
       return await db.select().from(financeAssetCategories).where(
         and(
           eq(financeAssetCategories.organizationId, organizationId),
-          eq(financeAssetCategories.isDeleted, 0)
+          isNull(financeAssetCategories.deletedAt)
         )
       ).orderBy(financeAssetCategories.code);
     }),
@@ -43,11 +44,24 @@ export const assetsRouter = router({
     .input(z.object({
       code: z.string().min(1),
       name: z.string().min(1),
-      nameAr: z.string().optional(),
       description: z.string().optional(),
+      assetClass: z.enum(['land','building','vehicle','equipment','furniture','it_equipment','medical_equipment','infrastructure','intangible']).optional(),
       parentId: z.number().optional(),
+      usefulLifeYears: z.number().optional(),
       depreciationRate: z.string().optional(),
-      defaultUsefulLife: z.number().optional(),
+      residualValuePercentage: z.string().optional(),
+      capitalizationThreshold: z.string().optional(),
+      defaultDepreciationMethod: z.enum(['straight_line','declining_balance','units_of_production']).optional(),
+      ownershipType: z.enum(['organization','donor','government','shared']).optional(),
+      trackSerialNumber: z.number().optional(),
+      requiresCustodian: z.number().optional(),
+      requiresLocation: z.number().optional(),
+      requiresInsurance: z.number().optional(),
+      isDonorReportable: z.number().optional(),
+      assetAccountId: z.number().optional(),
+      accumulatedDepAccountId: z.number().optional(),
+      depreciationExpenseAccountId: z.number().optional(),
+      isActive: z.number().optional(),
     }))
     .mutation(async ({ ctx, input }) => {
       const { organizationId } = ctx.scope;
@@ -58,14 +72,28 @@ export const assetsRouter = router({
         organizationId,
         code: input.code,
         name: input.name,
-        nameAr: input.nameAr || null,
         description: input.description || null,
+        assetClass: input.assetClass || null,
         parentId: input.parentId || null,
+        usefulLifeYears: input.usefulLifeYears || 5,
         depreciationRate: input.depreciationRate || "0.00",
-        defaultUsefulLife: input.defaultUsefulLife || 5,
+        residualValuePercentage: input.residualValuePercentage || "0.00",
+        capitalizationThreshold: input.capitalizationThreshold || "500",
+        defaultDepreciationMethod: input.defaultDepreciationMethod || 'straight_line',
+        ownershipType: input.ownershipType || 'organization',
+        trackSerialNumber: input.trackSerialNumber ?? 1,
+        requiresCustodian: input.requiresCustodian ?? 1,
+        requiresLocation: input.requiresLocation ?? 1,
+        requiresInsurance: input.requiresInsurance ?? 0,
+        isDonorReportable: input.isDonorReportable ?? 1,
+        assetAccountId: input.assetAccountId || null,
+        accumulatedDepAccountId: input.accumulatedDepAccountId || null,
+        depreciationExpenseAccountId: input.depreciationExpenseAccountId || null,
+        isActive: input.isActive ?? 1,
+        createdBy: ctx.user?.id ?? null,
       });
       
-      return { id: Number(result.insertId), success: true };
+      return { id: Number(result[0]?.insertId ?? 0), success: true };
     }),
 
   updateCategory: scopedProcedure
@@ -73,11 +101,24 @@ export const assetsRouter = router({
       id: z.number(),
       code: z.string().optional(),
       name: z.string().optional(),
-      nameAr: z.string().optional(),
       description: z.string().optional(),
+      assetClass: z.enum(['land','building','vehicle','equipment','furniture','it_equipment','medical_equipment','infrastructure','intangible']).nullable().optional(),
       parentId: z.number().nullable().optional(),
+      usefulLifeYears: z.number().optional(),
       depreciationRate: z.string().optional(),
-      defaultUsefulLife: z.number().optional(),
+      residualValuePercentage: z.string().optional(),
+      capitalizationThreshold: z.string().optional(),
+      defaultDepreciationMethod: z.enum(['straight_line','declining_balance','units_of_production']).optional(),
+      ownershipType: z.enum(['organization','donor','government','shared']).optional(),
+      trackSerialNumber: z.number().optional(),
+      requiresCustodian: z.number().optional(),
+      requiresLocation: z.number().optional(),
+      requiresInsurance: z.number().optional(),
+      isDonorReportable: z.number().optional(),
+      assetAccountId: z.number().nullable().optional(),
+      accumulatedDepAccountId: z.number().nullable().optional(),
+      depreciationExpenseAccountId: z.number().nullable().optional(),
+      isActive: z.number().optional(),
     }))
     .mutation(async ({ input }) => {
       const db = await getDb();
@@ -100,10 +141,9 @@ export const assetsRouter = router({
       const db = await getDb();
       if (!db) throw new Error("Database not available");
       
-      // SOFT DELETE - set isDeleted flag
+      // SOFT DELETE - set deletedAt timestamp
       await db.update(financeAssetCategories)
         .set({
-          isDeleted: 1,
           deletedAt: nowSql,
           deletedBy: input.deletedBy || (ctx.user?.id ?? null),
         })
@@ -131,7 +171,7 @@ export const assetsRouter = router({
       
       let conditions = [
         eq(financeAssets.organizationId, organizationId),
-        eq(financeAssets.isDeleted, 0)
+        isNull(financeAssets.deletedAt)
       ];
       
       if (input.categoryId) {
@@ -173,7 +213,7 @@ export const assetsRouter = router({
       const result = await db.select().from(financeAssets).where(
         and(
           eq(financeAssets.id, input.id),
-          eq(financeAssets.isDeleted, 0)
+          isNull(financeAssets.deletedAt)
         )
       );
       
@@ -190,7 +230,7 @@ export const assetsRouter = router({
       const assets = await db.select().from(financeAssets).where(
         and(
           eq(financeAssets.organizationId, organizationId),
-          eq(financeAssets.isDeleted, 0)
+          isNull(financeAssets.deletedAt)
         )
       );
       
@@ -259,6 +299,9 @@ export const assetsRouter = router({
       warrantyExpiry: z.string().optional(),
       insurancePolicy: z.string().optional(),
       insuranceExpiry: z.string().optional(),
+      quantity: z.string().optional(),
+      unitType: z.string().optional(),
+      unitCost: z.string().optional(),
     }))
     .mutation(async ({ ctx, input }) => {
       const { organizationId } = ctx.scope;
@@ -276,8 +319,11 @@ export const assetsRouter = router({
         description: input.description || null,
         categoryId: input.categoryId || null,
         subcategory: input.subcategory || null,
-        acquisitionDate: input.acquisitionDate ? new Date(input.acquisitionDate) : null,
+        acquisitionDate: input.acquisitionDate || null,
         acquisitionCost: input.acquisitionCost || "0.00",
+        quantity: input.quantity || "1.00",
+        unitType: input.unitType || "Unit",
+        unitCost: input.unitCost || "0.00",
         currency: input.currency || "USD",
         depreciationMethod: input.depreciationMethod || "straight_line",
         usefulLifeYears: input.usefulLifeYears || 5,
@@ -294,13 +340,13 @@ export const assetsRouter = router({
         serialNumber: input.serialNumber || null,
         manufacturer: input.manufacturer || null,
         model: input.model || null,
-        warrantyExpiry: input.warrantyExpiry ? new Date(input.warrantyExpiry) : null,
+        warrantyExpiry: input.warrantyExpiry || null,
         insurancePolicy: input.insurancePolicy || null,
-        insuranceExpiry: input.insuranceExpiry ? new Date(input.insuranceExpiry) : null,
+        insuranceExpiry: input.insuranceExpiry || null,
         createdBy: ctx.user?.id ?? null,
       });
       
-      return { id: Number(result.insertId), success: true };
+      return { id: Number(result[0]?.insertId ?? 0), success: true };
     }),
 
   updateAsset: scopedProcedure
@@ -332,6 +378,9 @@ export const assetsRouter = router({
       warrantyExpiry: z.string().nullable().optional(),
       insurancePolicy: z.string().optional(),
       insuranceExpiry: z.string().nullable().optional(),
+      quantity: z.string().optional(),
+      unitType: z.string().optional(),
+      unitCost: z.string().optional(),
     }))
     .mutation(async ({ input, ctx }) => {
       const db = await getDb();
@@ -341,13 +390,13 @@ export const assetsRouter = router({
       
       const updateData: any = { ...rest };
       if (acquisitionDate !== undefined) {
-        updateData.acquisitionDate = acquisitionDate ? new Date(acquisitionDate) : null;
+        updateData.acquisitionDate = acquisitionDate || null;
       }
       if (warrantyExpiry !== undefined) {
-        updateData.warrantyExpiry = warrantyExpiry ? new Date(warrantyExpiry) : null;
+        updateData.warrantyExpiry = warrantyExpiry || null;
       }
       if (insuranceExpiry !== undefined) {
-        updateData.insuranceExpiry = insuranceExpiry ? new Date(insuranceExpiry) : null;
+        updateData.insuranceExpiry = insuranceExpiry || null;
       }
       
       await db.update(financeAssets)
@@ -366,10 +415,9 @@ export const assetsRouter = router({
       const db = await getDb();
       if (!db) throw new Error("Database not available");
       
-      // SOFT DELETE - set isDeleted flag
+      // SOFT DELETE - set deletedAt timestamp
       await db.update(financeAssets)
         .set({
-          isDeleted: 1,
           deletedAt: nowSql,
           deletedBy: input.deletedBy || (ctx.user?.id ?? null),
         })
@@ -388,6 +436,84 @@ export const assetsRouter = router({
         categoryId: z.number().optional(),
         acquisitionDate: z.string().optional(),
         acquisitionCost: z.string().optional(),
+        currency: z.string().optional(),
+        status: z.string().optional(),
+        condition: z.string().optional(),
+        location: z.string().optional(),
+        assignedTo: z.string().optional(),
+        donorName: z.string().optional(),
+        grantCode: z.string().optional(),
+        serialNumber: z.string().optional(),
+        manufacturer: z.string().optional(),
+        model: z.string().optional(),
+        quantity: z.string().optional(),
+        unitType: z.string().optional(),
+        unitCost: z.string().optional(),
+      })),
+    }))
+    .mutation(async ({ ctx, input }) => {
+      const { organizationId } = ctx.scope;
+      const db = await getDb();
+      if (!db) throw new Error("Database not available");
+      
+      let imported = 0;
+      const errors: { row: number; field: string; message: string; suggestedFix: string }[] = [];
+      
+      for (let i = 0; i < input.assets.length; i++) {
+        const asset = input.assets[i];
+        try {
+          await db.insert(financeAssets).values({
+            organizationId,
+            assetCode: asset.assetCode,
+            name: asset.name,
+            nameAr: asset.nameAr || null,
+            description: asset.description || null,
+            categoryId: asset.categoryId || null,
+            acquisitionDate: asset.acquisitionDate || null,
+            acquisitionCost: asset.acquisitionCost || "0.00",
+            quantity: asset.quantity || "1.00",
+            unitType: asset.unitType || "Unit",
+            unitCost: asset.unitCost || "0.00",
+            currency: asset.currency || "USD",
+            currentValue: asset.acquisitionCost || "0.00",
+            status: (asset.status as any) || "active",
+            condition: (asset.condition as any) || "good",
+            location: asset.location || null,
+            assignedTo: asset.assignedTo || null,
+            donorName: asset.donorName || null,
+            grantCode: asset.grantCode || null,
+            serialNumber: asset.serialNumber || null,
+            manufacturer: asset.manufacturer || null,
+            model: asset.model || null,
+            createdBy: ctx.user?.id ?? null,
+          });
+          imported++;
+        } catch (error: any) {
+          errors.push({
+            row: i + 2,
+            field: 'general',
+            message: error.message || 'Unknown error',
+            suggestedFix: 'Check data format and required fields',
+          });
+        }
+      }
+      
+      return { imported, skipped: 0, errors };
+    }),
+
+  bulkImportAssets: scopedProcedure
+    .input(z.object({
+      assets: z.array(z.object({
+        assetCode: z.string(),
+        name: z.string(),
+        nameAr: z.string().optional(),
+        description: z.string().optional(),
+        categoryId: z.number().optional(),
+        acquisitionDate: z.string().optional(),
+        acquisitionCost: z.string().optional(),
+        quantity: z.string().optional(),
+        unitType: z.string().optional(),
+        unitCost: z.string().optional(),
         currency: z.string().optional(),
         status: z.string().optional(),
         condition: z.string().optional(),
@@ -418,8 +544,11 @@ export const assetsRouter = router({
             nameAr: asset.nameAr || null,
             description: asset.description || null,
             categoryId: asset.categoryId || null,
-            acquisitionDate: asset.acquisitionDate ? new Date(asset.acquisitionDate) : null,
+            acquisitionDate: asset.acquisitionDate || null,
             acquisitionCost: asset.acquisitionCost || "0.00",
+            quantity: asset.quantity || "1.00",
+            unitType: asset.unitType || "Unit",
+            unitCost: asset.unitCost || "0.00",
             currency: asset.currency || "USD",
             currentValue: asset.acquisitionCost || "0.00",
             status: (asset.status as any) || "active",
@@ -515,7 +644,7 @@ export const assetsRouter = router({
           .where(eq(financeAssets.id, input.assetId));
       }
       
-      return { id: Number(result.insertId), success: true };
+      return { id: Number(result[0]?.insertId ?? 0), success: true };
     }),
 
   deleteMaintenance: scopedProcedure
@@ -598,13 +727,13 @@ export const assetsRouter = router({
         toLocation: input.toLocation || null,
         fromAssignee: input.fromAssignee || null,
         toAssignee: input.toAssignee || null,
-        transferDate: input.transferDate ? new Date(input.transferDate) : null,
+        transferDate: input.transferDate || null,
         reason: input.reason || null,
         status: "pending",
         createdBy: ctx.user?.id ?? null,
       });
       
-      return { id: Number(result.insertId), transferCode, success: true };
+      return { id: Number(result[0]?.insertId ?? 0), transferCode, success: true };
     }),
 
   approveTransfer: scopedProcedure
@@ -671,7 +800,6 @@ export const assetsRouter = router({
       
       await db.update(financeAssetTransfers)
         .set({
-          isDeleted: 1,
           deletedAt: nowSql,
           deletedBy: input.deletedBy || (ctx.user?.id ?? null),
         })
@@ -696,7 +824,7 @@ export const assetsRouter = router({
       
       let conditions = [
         eq(financeAssetDisposals.organizationId, organizationId),
-        eq(financeAssetDisposals.isDeleted, 0)
+        isNull(financeAssetDisposals.deletedAt)
       ];
       
       if (input.assetId) {
@@ -712,7 +840,6 @@ export const assetsRouter = router({
   createDisposal: scopedProcedure
     .input(z.object({
       assetId: z.number(),
-      organizationId: z.number(),
       disposalType: z.enum(['sale', 'donation', 'scrap', 'theft', 'loss', 'transfer_out', 'write_off']).optional(),
       proposedDate: z.string().optional(),
       proposedValue: z.string().optional(),
@@ -743,7 +870,7 @@ export const assetsRouter = router({
         disposalCode,
         assetId: input.assetId,
         disposalType: input.disposalType || "sale",
-        proposedDate: input.proposedDate ? new Date(input.proposedDate) : null,
+        proposedDate: input.proposedDate || null,
         bookValue: bookValue,
         proposedValue: input.proposedValue || "0.00",
         reason: input.reason || null,
@@ -759,7 +886,7 @@ export const assetsRouter = router({
         .set({ status: "pending_disposal" })
         .where(eq(financeAssets.id, input.assetId));
       
-      return { id: Number(result.insertId), disposalCode, success: true };
+      return { id: Number(result[0]?.insertId ?? 0), disposalCode, success: true };
     }),
 
   approveDisposal: scopedProcedure
@@ -789,11 +916,25 @@ export const assetsRouter = router({
           .where(eq(financeAssetDisposals.id, input.id));
         
         // Update asset status to disposed
+        const disposalMethodMap = {
+            sale: "sale",
+            donation: "donation",
+            scrap: "scrap",
+            theft: "theft",
+            loss: "loss",
+            transfer_out: "transfer",
+            write_off: "loss",
+            } as const;
+        const mappedMethod =
+            disposalMethodMap[
+                (disposal[0].disposalType ??
+                "sale") as keyof typeof disposalMethodMap
+            ];
         await db.update(financeAssets)
           .set({
             status: "disposed",
             disposalDate: nowSql,
-            disposalMethod: disposal[0].disposalType || 'sale',
+            disposalMethod: mappedMethod,
             disposalValue: input.actualValue || disposal[0].proposedValue,
             disposalReason: disposal[0].reason,
             disposalApprovedBy: ctx.user?.id ?? null,
@@ -830,7 +971,6 @@ export const assetsRouter = router({
   deleteDisposal: scopedProcedure
     .input(z.object({
       id: z.number(),
-      organizationId: z.number(),
       deletedBy: z.number().optional(),
     }))
     .mutation(async ({ input, ctx }) => {
@@ -842,7 +982,6 @@ export const assetsRouter = router({
       
       await db.update(financeAssetDisposals)
         .set({
-          isDeleted: 1,
           deletedAt: nowSql,
           deletedBy: input.deletedBy || (ctx.user?.id ?? null),
         })
@@ -873,7 +1012,7 @@ export const assetsRouter = router({
         nameAr: z.string().optional(),
         description: z.string().optional(),
         depreciationRate: z.string().optional(),
-        defaultUsefulLife: z.number().optional(),
+        usefulLifeYears: z.number().optional(),
       })),
     }))
     .mutation(async ({ ctx, input }) => {
@@ -892,7 +1031,7 @@ export const assetsRouter = router({
             .where(and(
               eq(financeAssetCategories.organizationId, organizationId),
               eq(financeAssetCategories.code, cat.code),
-              eq(financeAssetCategories.isDeleted, 0)
+              isNull(financeAssetCategories.deletedAt)
             ));
           if (existing.length > 0) {
             errors.push({ row: i + 2, field: 'code', message: `Category code "${cat.code}" already exists`, suggestedFix: 'Use a unique category code or update the existing record' });
@@ -905,7 +1044,7 @@ export const assetsRouter = router({
             nameAr: cat.nameAr || null,
             description: cat.description || null,
             depreciationRate: cat.depreciationRate || '0.00',
-            defaultUsefulLife: cat.defaultUsefulLife || 5,
+            usefulLifeYears: cat.usefulLifeYears || 5,
           });
           imported++;
         } catch (error: any) {
@@ -952,7 +1091,7 @@ export const assetsRouter = router({
             toLocation: t.toLocation || null,
             fromAssignee: t.fromAssignee || null,
             toAssignee: t.toAssignee || null,
-            transferDate: t.transferDate ? new Date(t.transferDate) : null,
+            transferDate: t.transferDate || null,
             reason: t.reason || null,
             status: 'pending',
             createdBy: ctx.user?.id ?? null,
@@ -970,8 +1109,6 @@ export const assetsRouter = router({
     .input(z.object({
       disposals: z.array(z.object({
       assetId: z.number(),
-      organizationId: z.number(),
-      operatingUnitId: z.number().optional(),
         disposalType: z.enum(['sale', 'donation', 'scrap', 'theft', 'loss', 'transfer_out', 'write_off']).optional(),
         proposedDate: z.string().optional(),
         proposedValue: z.string().optional(),
@@ -1005,7 +1142,7 @@ export const assetsRouter = router({
             disposalCode,
             assetId: d.assetId,
             disposalType: d.disposalType || 'sale',
-            proposedDate: d.proposedDate ? new Date(d.proposedDate) : null,
+            proposedDate: d.proposedDate || null,
             bookValue,
             proposedValue: d.proposedValue || '0.00',
             reason: d.reason || null,

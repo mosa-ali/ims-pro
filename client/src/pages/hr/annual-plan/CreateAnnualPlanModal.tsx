@@ -1,6 +1,6 @@
 /**
  * ============================================================================
- * CREATE ANNUAL PLAN MODAL - tRPC VERSION
+ * CREATE ANNUAL PLAN MODAL - FIXED VERSION
  * ============================================================================
  * 
  * Professional initialization modal for creating a new HR Annual Plan
@@ -8,7 +8,7 @@
  * 
  * Features:
  * - Target Year selection
- * - Organization Branch/Office selection
+ * - Organization/Operating Unit auto-populated from context (NO SELECTION)
  * - Base Plan selection (optional - for deep-cloning)
  * - Full bilingual support (EN/AR) with RTL mirroring
  * - tRPC integration for backend operations
@@ -16,13 +16,14 @@
  * ============================================================================
  */
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { X, Calendar, Building2, Copy, FileText, AlertCircle } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useTranslation } from '@/i18n/useTranslation';
 import { useCreateAnnualPlan, useAnnualPlans } from '@/hooks/useAnnualPlanning';
 import { useOrganization } from '@/contexts/OrganizationContext';
 import { useOperatingUnit } from '@/contexts/OperatingUnitContext';
+import { useAuth } from '@/_core/hooks/useAuth';
 import type { HRAnnualPlan } from '@shared/types/hrAnnualPlanning';
 
 interface CreateAnnualPlanModalProps {
@@ -43,6 +44,7 @@ export function CreateAnnualPlanModal({
  const { t } = useTranslation();
  const { currentOrganization } = useOrganization();
  const { currentOperatingUnit } = useOperatingUnit();
+ const { user } = useAuth();
  
  // tRPC hooks
  const { data: existingPlans = [] } = useAnnualPlans({
@@ -55,20 +57,21 @@ export function CreateAnnualPlanModal({
  
  // Form state
  const [targetYear, setTargetYear] = useState(currentYear + 1);
- const [organization, setOrganization] = useState('');
  const [basePlanId, setBasePlanId] = useState<string>('');
  const [preparedBy, setPreparedBy] = useState('');
  const [isSubmitting, setIsSubmitting] = useState(false);
  const [error, setError] = useState<string | null>(null);
 
+ // Auto-populate preparedBy with current user's name
+ useEffect(() => {
+   if (user?.name && !preparedBy) {
+     setPreparedBy(user.name);
+   }
+ }, [user?.name]);
+
  // Clear error when form fields change
  const handleYearChange = (year: number) => {
  setTargetYear(year);
- setError(null);
- };
-
- const handleOrganizationChange = (org: string) => {
- setOrganization(org);
  setError(null);
  };
 
@@ -78,16 +81,6 @@ export function CreateAnnualPlanModal({
  // Filter out years that already have plans
  const existingYears = existingPlans.map(p => p.planYear);
  const availableYearsFiltered = availableYears.filter(y => !existingYears.includes(y));
-
- // Organization branches - memoized to prevent re-creation on every render
- const organizationBranches = useMemo(() => [
- { id: 'hq', nameEn: 'Headquarters', nameAr: 'المقر الرئيسي' },
- { id: 'yemen', nameEn: 'Yemen Country Office', nameAr: 'مكتب اليمن' },
- { id: 'syria', nameEn: 'Syria Country Office', nameAr: 'مكتب سوريا' },
- { id: 'jordan', nameEn: 'Jordan Country Office', nameAr: 'مكتب الأردن' },
- { id: 'lebanon', nameEn: 'Lebanon Country Office', nameAr: 'مكتب لبنان' },
- { id: 'iraq', nameEn: 'Iraq Country Office', nameAr: 'مكتب العراق' },
- ], []);
 
  // Translations
  const localT = useMemo(() => ({
@@ -99,15 +92,14 @@ export function CreateAnnualPlanModal({
  targetYearDesc: 'Select the fiscal year for this plan',
  
  organization: t.hrAnnualPlan.organizationBranchoffice,
- organizationDesc: 'Select the branch or office this plan covers',
- selectOrganization: t.hrAnnualPlan.selectOrganization,
+ organizationDesc: 'Plan will be created for your current organization and operating unit',
  
  basePlan: t.hrAnnualPlan.copyFromBasePlanOptional,
  basePlanDesc: 'Clone workforce snapshot, training categories, and risks from a previous plan',
  selectBasePlan: t.hrAnnualPlan.startFreshNoBasePlan,
  
  preparedBy: t.hrAnnualPlan.preparedBy,
- preparedByDesc: 'Name of the person preparing this plan',
+ preparedByDesc: 'Auto-populated with your name. Edit if needed.',
  preparedByPlaceholder: t.hrAnnualPlan.enterYourName,
  
  // Actions
@@ -123,14 +115,26 @@ export function CreateAnnualPlanModal({
  
  // Errors
  yearRequired: t.hrAnnualPlan.pleaseSelectATargetYear,
- organizationRequired: t.hrAnnualPlan.pleaseSelectAnOrganization,
+ noOrganization: 'No organization or operating unit selected. Please select from the main menu.',
  yearExists: 'A plan for this year already exists',
  noAvailableYears: 'All available years already have plans'
  }), [language]);
 
  // Get organization display name
- const getOrgDisplayName = (branch: typeof organizationBranches[0]) => {
- return language === 'en' ? branch.nameEn : branch.nameAr;
+ const getOrgDisplayName = () => {
+ if (!currentOrganization || !currentOperatingUnit) {
+   return language === 'en' ? 'Not selected' : 'لم يتم التحديد';
+ }
+ 
+ const orgName = language === 'en' 
+   ? currentOrganization.name 
+   : currentOrganization.nameAr || currentOrganization.name;
+ 
+ const ouName = language === 'en'
+   ? currentOperatingUnit.name
+   : currentOperatingUnit.nameAr || currentOperatingUnit.name;
+ 
+ return `${orgName} - ${ouName}`;
  };
 
  const handleSubmit = async () => {
@@ -141,10 +145,12 @@ export function CreateAnnualPlanModal({
  setError(localT.yearRequired);
  return;
  }
- if (!organization) {
- setError(localT.organizationRequired);
+ 
+ if (!currentOrganization || !currentOperatingUnit) {
+ setError(localT.noOrganization);
  return;
  }
+ 
  if (existingYears.includes(targetYear)) {
  setError(localT.yearExists);
  return;
@@ -153,16 +159,21 @@ export function CreateAnnualPlanModal({
  setIsSubmitting(true);
 
  try {
- // Get the display name for the selected organization
- const selectedBranch = organizationBranches.find(b => b.id === organization);
- const orgDisplayName = selectedBranch 
- ? (language === 'en' ? selectedBranch.nameEn : selectedBranch.nameAr)
- : organization;
+ // Create plan name using organization/OU + year
+ const orgName = language === 'en' 
+   ? currentOrganization.name 
+   : currentOrganization.nameAr || currentOrganization.name;
+ 
+ const ouName = language === 'en'
+   ? currentOperatingUnit.name
+   : currentOperatingUnit.nameAr || currentOperatingUnit.name;
+ 
+ const planName = `${orgName} - ${ouName} - ${targetYear}`;
 
  // Create the plan using tRPC mutation
  const newPlan = await createMutation.mutateAsync({
    planYear: targetYear,
-   planName: `${orgDisplayName} - ${targetYear}`,
+   planName,
    preparedBy: preparedBy || undefined,
    basePlanId: basePlanId ? parseInt(basePlanId) : undefined,
  });
@@ -244,25 +255,21 @@ export function CreateAnnualPlanModal({
  </select>
  </div>
 
- {/* Organization Selection */}
+ {/* Organization Display (Read-Only) */}
  <div>
  <label className="block text-sm font-medium text-gray-900 mb-2">
  <Building2 className="w-4 h-4 inline mr-2" />
  {localT.organization}
  </label>
  <p className="text-xs text-gray-500 mb-3">{localT.organizationDesc}</p>
- <select
- value={organization}
- onChange={(e) => handleOrganizationChange(e.target.value)}
- className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
- >
- <option value="">{localT.selectOrganization}</option>
- {organizationBranches.map(branch => (
- <option key={branch.id} value={branch.id}>
- {getOrgDisplayName(branch)}
- </option>
- ))}
- </select>
+ <div className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-700 flex items-center">
+ <span className="text-sm font-medium">{getOrgDisplayName()}</span>
+ </div>
+ <p className="text-xs text-gray-400 mt-2">
+ {language === 'en' 
+   ? 'To change organization or operating unit, use the main menu selector' 
+   : 'لتغيير المنظمة أو وحدة التشغيل، استخدم محدد القائمة الرئيسية'}
+ </p>
  </div>
 
  {/* Base Plan Selection */}
@@ -297,7 +304,7 @@ export function CreateAnnualPlanModal({
  value={preparedBy}
  onChange={(e) => setPreparedBy(e.target.value)}
  placeholder={localT.preparedByPlaceholder}
- className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+ className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-gray-50"
  />
  </div>
 
@@ -328,7 +335,7 @@ export function CreateAnnualPlanModal({
  </button>
  <button
  onClick={handleSubmit}
- disabled={isSubmitting || availableYearsFiltered.length === 0}
+ disabled={isSubmitting || availableYearsFiltered.length === 0 || !currentOrganization || !currentOperatingUnit}
  className="px-6 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium"
  >
  {isSubmitting ? localT.creating : localT.create}
