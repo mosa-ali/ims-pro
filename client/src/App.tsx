@@ -53,9 +53,7 @@ const PasswordResetPage = lazy(() => import("./pages/PasswordResetPage"));
 const OrganizationDetailPage = lazy(() => import("./pages/OrganizationDetailPage"));
 const OperatingUnitDetailPage = lazy(() => import("./pages/OperatingUnitDetailPage"));
 // --- Organization Pages ---
-const OrganizationDashboard = lazy(
-  () => import("./pages/organization/OrganizationDashboardPage")
-);
+const OrganizationDashboard = lazy(() => import("./pages/organization/OrganizationDashboardPage"));
 const ProjectManagementDashboard = lazy(() => import("./pages/organization/projects/ProjectManagementDashboard"));
 const ProjectsCRUDPage = lazy(() => import("./pages/organization/projects/ProjectsCRUDPage"));
 const ProjectDetailsPage = lazy(() => import("./pages/organization/projects/ProjectDetailsPage"));
@@ -154,7 +152,7 @@ const AssetDetail = lazy(() => import("./pages/finance/AssetDetail"));
 const AdvanceDetail = lazy(() => import("./pages/finance/AdvanceDetail"));
 const ReconciliationDetail = lazy(() => import("./pages/finance/ReconciliationDetail"));
 const FinanceExpenditures = lazy(() => import("./pages/finance/FinanceExpenditures"));
-const FinanceReports = lazy(() => import("./pages/finance/FinanceReports"));
+const FinanceReports = lazy(() => import("./pages/finance/FinanceReports").then(m => ({ default: m.FinanceReportingCenter })));
 const FinanceComingSoon = lazy(() => import("./pages/finance/FinanceComingSoon"));
 const AdvancesSettlements = lazy(() => import("./pages/finance/AdvancesSettlements"));
 const TreasuryCashManagement = lazy(() => import("./pages/finance/TreasuryCashManagement"));
@@ -181,7 +179,15 @@ const BankReconciliationMatching = lazy(() => import("./pages/finance/BankReconc
 const JournalEntries = lazy(() => import("./pages/finance/JournalEntries"));
 const ExchangeRatesManagement = lazy(() => import("@/pages/finance/ExchangeRatesManagement"));
 const CostAllocationManagement = lazy(() => import("@/pages/finance/CostAllocationManagement"));
-const FinancialDashboard = lazy(() => import("./pages/finance/FinancialDashboard"));
+const ExecutiveFinanceDashboard = lazy(() =>
+  import("./pages/finance/dashboard/ExecutiveFinanceDashboard").then(m => ({ default: m.ExecutiveFinanceDashboard })));
+const FinancialRiskCenter = lazy(() =>
+  import("./pages/finance/dashboard/FinancialRiskCenter").then(m => ({ default: m.FinancialRiskCenter })));
+const FinancialComplianceCenter = lazy(() =>
+  import("./pages/finance/dashboard/FinancialComplianceCenter").then(m => ({ default: m.FinancialComplianceCenter })));
+const FinancialRiskRegister = lazy(() => import("./pages/finance/FinancialRiskRegister").then(m => ({ default: m.FinancialRiskRegister })));
+const FinancialComplianceFindings = lazy(() => import("./pages/finance/FinancialComplianceFindings").then(m => ({ default: m.FinancialComplianceFindings })));
+
 
 // --- HR Module Pages (named exports need wrapper) ---
 const HRModuleLauncher = lazy(() => import("./pages/hr/HRModuleLauncher").then(m => ({ default: m.HRModuleLauncher })));
@@ -401,7 +407,7 @@ function Router() {
  <Route path="/platform/retention-policy" component={RetentionPolicyPage} />
  <Route path="/platform/settings/email" component={PlatformEmailSettingsPage} />
 
- <Route path="/reset-password/:token" component={PasswordResetPage} /> 
+ <Route path="/reset-password/:token" component={PasswordResetPage} />
  
  {/* Organization Routes */}
  <Route path="/organization" component={OrganizationDashboard} />
@@ -541,7 +547,12 @@ function Router() {
               <Route path="/organization/finance/vendors/evaluation" component={FinanceEvaluationHub} />
               <Route path="/organization/finance/vendors/:id" component={FinanceVendorDetail} />
               <Route path="/organization/finance/vendors" component={FinanceVendors} />
- <Route path="/organization/finance/dashboard" component={FinancialDashboard} />
+              <Route path="/organization/finance/dashboard" component={ExecutiveFinanceDashboard} />
+              <Route path="/organization/finance/risk" component={FinancialRiskCenter} />
+              <Route path="/organization/finance/compliance" component={FinancialComplianceCenter} />
+              <Route path="/organization/finance/risk/register" component={FinancialRiskRegister} />
+              <Route path="/organization/finance/compliance/findings" component={FinancialComplianceFindings} />
+
  
  {/* Organization HR Routes */}
  <Route path="/organization/hr" component={HRModuleLauncher} />

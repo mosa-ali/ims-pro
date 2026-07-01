@@ -397,46 +397,61 @@ export const advancesRouter = router({
       const { organizationId } = ctx.scope;
       const db = await getDb();
       if (!db) throw new Error("Database not available");
-      
-      // Get advance details
+
+      // Pre-flight load
       const [advance] = await db.select().from(financeAdvances)
         .where(and(
           eq(financeAdvances.id, input.id),
           eq(financeAdvances.organizationId, organizationId)
         ))
         .limit(1);
-      
-      if (!advance) {
-        throw new Error('Advance not found');
+
+      if (!advance) throw new TRPCError({ code: 'NOT_FOUND', message: 'Advance not found' });
+      if (advance.status === 'APPROVED') {
+        throw new TRPCError({ code: 'BAD_REQUEST', message: 'Advance is already approved' });
       }
-      
-      // Update advance status
+
       const approvedAt = new Date();
-      await db.update(financeAdvances)
-        .set({
-          status: 'APPROVED',
-          approvedAmount: String(input.approvedAmount),
-          outstandingBalance: String(input.approvedAmount),
-          approvedBy: ctx.user?.id || null,
-          approvedAt: nowSql,
-          updatedBy: ctx.user?.id || null,
-        })
-        .where(eq(financeAdvances.id, input.id));
-      
-      // Generate automated journal entry
-      try {
-        const { generateAdvanceJournalEntry } = await import('./services/autoJournalEntryService');
-        const advanceWithAmount = { ...advance, advanceAmount: String(input.approvedAmount) };
-        const journalEntryId = await generateAdvanceJournalEntry(advanceWithAmount, ctx.user?.id || 'system');
-        
-        // Link journal entry to advance
-        await db.update(financeAdvances)
+      let journalEntryId: number | null = null;
+
+      // ── Fix 6a: all writes + GL post in one atomic transaction ───────────
+      await db.transaction(async (tx) => {
+        // Step 1: Update advance status
+        await (tx as any).update(financeAdvances)
+          .set({
+            status: 'APPROVED',
+            approvedAmount: String(input.approvedAmount),
+            outstandingBalance: String(input.approvedAmount),
+            approvedBy: ctx.user?.id || null,
+            approvedAt: nowSql,
+            updatedBy: ctx.user?.id || null,
+          })
+          .where(eq(financeAdvances.id, input.id));
+
+        // Step 2: Post to GL — mandatory, inside transaction
+        const { postAdvanceToGL } = await import('./services/journalPostingService');
+        journalEntryId = await postAdvanceToGL(
+          tx as any,
+          {
+            id: advance.id,
+            organizationId: advance.organizationId,
+            operatingUnitId: advance.operatingUnitId,
+            advanceNumber: advance.advanceNumber,
+            requestDate: advance.requestDate,
+            approvedAmount: String(input.approvedAmount),
+            currency: advance.currency,
+            projectId: advance.projectId,
+            grantId: advance.grantId,
+            employeeName: advance.employeeName,
+          },
+          ctx.user?.id || 0
+        );
+
+        // Step 3: Link journal entry
+        await (tx as any).update(financeAdvances)
           .set({ journalEntryId })
           .where(eq(financeAdvances.id, input.id));
-      } catch (error) {
-        // Log error but don't fail the approval
-        console.error('Failed to generate journal entry for advance:', error);
-      }
+      }); // rolls back entirely if GL post fails
       
       // Generate evidence document
       try {
@@ -755,61 +770,62 @@ export const advancesRouter = router({
       const { organizationId } = ctx.scope;
       const db = await getDb();
       if (!db) throw new Error("Database not available");
-      
-      // Get the advance
-      const advance = await db.select().from(financeAdvances).where(
+
+      // Pre-flight load
+      const [advance] = await db.select().from(financeAdvances).where(
         and(
           eq(financeAdvances.id, input.advanceId),
           eq(financeAdvances.organizationId, organizationId)
         )
       );
-      
-      if (!advance[0]) {
-        throw new Error("Advance not found");
+      if (!advance) throw new TRPCError({ code: "NOT_FOUND", message: "Advance not found" });
+      if (!["APPROVED", "PARTIALLY_SETTLED"].includes(advance.status)) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: `Cannot settle advance with status: ${advance.status}`,
+        });
       }
-      
-      // Create settlement
-      const result = await db.insert(financeSettlements).values({
-        organizationId,
-        advanceId: input.advanceId,
-        settlementNumber: input.settlementNumber,
-        settlementDate: new Date(input.settlementDate),
-        settledAmount: String(input.settledAmount),
-        currency: input.currency,
-        receiptNumber: input.receiptNumber || null,
-        description: input.description || null,
-        descriptionAr: input.descriptionAr || null,
-        expenseCategory: input.expenseCategory || null,
-        accountCode: input.accountCode || null,
-        refundAmount: input.refundAmount ? String(input.refundAmount) : "0",
-        status: 'PENDING',
-        createdBy: ctx.user?.id || null,
+
+      const currentSettled = parseFloat(advance.settledAmount  || "0");
+      const approvedAmount  = parseFloat(advance.approvedAmount || advance.requestedAmount || "0");
+      const newSettled      = currentSettled + input.settledAmount;
+      const newOutstanding  = Math.max(0, approvedAmount - newSettled);
+      const newStatus       = newOutstanding <= 0 ? "FULLY_SETTLED" : "PARTIALLY_SETTLED";
+
+      let insertId: number | null = null;
+
+      // Fix 6b: settlement insert + advance balance update in one transaction
+      await db.transaction(async (tx) => {
+        const result = await (tx as any).insert(financeSettlements).values({
+          organizationId,
+          advanceId:        input.advanceId,
+          settlementNumber: input.settlementNumber,
+          settlementDate:   new Date(input.settlementDate),
+          settledAmount:    String(input.settledAmount),
+          currency:         input.currency,
+          receiptNumber:    input.receiptNumber  || null,
+          description:      input.description    || null,
+          descriptionAr:    input.descriptionAr  || null,
+          expenseCategory:  input.expenseCategory || null,
+          accountCode:      input.accountCode     || null,
+          refundAmount:     input.refundAmount ? String(input.refundAmount) : "0",
+          status:           "PENDING",
+          createdBy:        ctx.user?.id || null,
+        });
+        insertId = result[0]?.insertId ?? null;
+
+        await (tx as any).update(financeAdvances)
+          .set({
+            settledAmount:        String(newSettled),
+            outstandingBalance:   String(newOutstanding),
+            status:               newStatus,
+            actualSettlementDate: new Date().toISOString().slice(0, 10),
+            updatedBy:            ctx.user?.id || null,
+          })
+          .where(eq(financeAdvances.id, input.advanceId));
       });
-      
-      // Update advance totals
-      const currentSettled = parseFloat(advance[0].settledAmount || "0");
-      const newSettled = currentSettled + input.settledAmount;
-      const approvedAmount = parseFloat(advance[0].approvedAmount || advance[0].requestedAmount || "0");
-      const newOutstanding = approvedAmount - newSettled;
-      
-      let newStatus = advance[0].status;
-      if (newOutstanding <= 0) {
-        newStatus = 'FULLY_SETTLED';
-      } else if (newSettled > 0) {
-        newStatus = 'PARTIALLY_SETTLED';
-      }
-      
-      await db.update(financeAdvances)
-        .set({
-          settledAmount: String(newSettled),
-          outstandingBalance: String(Math.max(0, newOutstanding)),
-          status: newStatus,
-          actualSettlementDate: new Date().toISOString().slice(0, 19).split('T')[0],
-          updatedBy: ctx.user?.id || null,
-        })
-        .where(eq(financeAdvances.id, input.advanceId));
-      
-      return { success: true, insertId: result[0].insertId };
+
+      return { success: true, insertId };
     }),
 
   // Approve settlement
@@ -821,19 +837,42 @@ export const advancesRouter = router({
       const { organizationId } = ctx.scope;
       const db = await getDb();
       if (!db) throw new Error("Database not available");
-      
-      await db.update(financeSettlements)
+
+      // Pre-flight: verify settlement exists and is in PENDING status
+      const [settlement] = await db
+        .select()
+        .from(financeSettlements)
+        .where(and(
+          eq(financeSettlements.id, input.id),
+          eq(financeSettlements.organizationId, organizationId),
+        ))
+        .limit(1);
+
+      if (!settlement) {
+        throw new TRPCError({ code: "NOT_FOUND", message: "Settlement not found" });
+      }
+      if (settlement.status !== "PENDING") {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: `Cannot approve settlement with status: ${settlement.status}`,
+        });
+      }
+
+      // Single atomic update — status guard ensures idempotency
+      await db
+        .update(financeSettlements)
         .set({
-          status: 'APPROVED',
+          status:     "APPROVED",
           approvedBy: ctx.user?.id || null,
           approvedAt: nowSql,
-          updatedBy: ctx.user?.id || null,
+          updatedBy:  ctx.user?.id || null,
         })
         .where(and(
           eq(financeSettlements.id, input.id),
-          eq(financeSettlements.organizationId, organizationId)
+          eq(financeSettlements.organizationId, organizationId),
+          eq(financeSettlements.status, "PENDING"), // optimistic lock
         ));
-      
+
       return { success: true };
     }),
 
@@ -846,54 +885,76 @@ export const advancesRouter = router({
       const { organizationId } = ctx.scope;
       const db = await getDb();
       if (!db) throw new Error("Database not available");
-      
-      // Get settlement to reverse the advance totals
-      const settlement = await db.select().from(financeSettlements).where(
-        and(
+
+      // Pre-flight: load settlement and its advance
+      const [settlement] = await db
+        .select()
+        .from(financeSettlements)
+        .where(and(
           eq(financeSettlements.id, input.id),
-          eq(financeSettlements.organizationId, organizationId)
-        )
-      );
-      
-      if (settlement[0]) {
-        const advance = await db.select().from(financeAdvances).where(
-          eq(financeAdvances.id, settlement[0].advanceId)
-        );
-        
-        if (advance[0]) {
-          const currentSettled = parseFloat(advance[0].settledAmount || "0");
-          const settlementAmount = parseFloat(settlement[0].settledAmount || "0");
-          const newSettled = Math.max(0, currentSettled - settlementAmount);
-          const approvedAmount = parseFloat(advance[0].approvedAmount || advance[0].requestedAmount || "0");
-          const newOutstanding = approvedAmount - newSettled;
-          
-          let newStatus = 'APPROVED';
-          if (newSettled > 0) {
-            newStatus = 'PARTIALLY_SETTLED';
-          }
-          
-          await db.update(financeAdvances)
-            .set({
-              settledAmount: String(newSettled),
-              outstandingBalance: String(newOutstanding),
-              status: String(newStatus),
-              actualSettlementDate: null,
-              updatedBy: ctx.user?.id || null,
-            })
-            .where(eq(financeAdvances.id, settlement[0].advanceId));
-        }
+          eq(financeSettlements.organizationId, organizationId),
+        ))
+        .limit(1);
+
+      if (!settlement) {
+        throw new TRPCError({ code: "NOT_FOUND", message: "Settlement not found" });
       }
-      
-      await db.update(financeSettlements)
-        .set({
-          status: 'REJECTED',
-          updatedBy: ctx.user?.id || null,
-        })
-        .where(eq(financeSettlements.id, input.id));
-      
+      if (settlement.status !== "PENDING") {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: `Cannot reject settlement with status: ${settlement.status}`,
+        });
+      }
+
+      const settlementAmount = parseFloat(settlement.settledAmount || "0");
+
+      // Fix 6c: both writes in one transaction — previously two separate awaits
+      // could leave settlement REJECTED while advance balance was not restored.
+      await db.transaction(async (tx) => {
+        // Step 1: Mark settlement rejected
+        await (tx as any)
+          .update(financeSettlements)
+          .set({
+            status:    "REJECTED",
+            updatedBy: ctx.user?.id || null,
+          })
+          .where(and(
+            eq(financeSettlements.id, input.id),
+            eq(financeSettlements.status, "PENDING"), // optimistic lock
+          ));
+
+        // Step 2: Restore advance running totals (reverse the settlement amount)
+        if (settlementAmount > 0) {
+          const [advance] = await (tx as any)
+            .select()
+            .from(financeAdvances)
+            .where(eq(financeAdvances.id, settlement.advanceId))
+            .limit(1);
+
+          if (advance) {
+            const currentSettled = parseFloat(advance.settledAmount || "0");
+            const approvedAmount  = parseFloat(advance.approvedAmount || advance.requestedAmount || "0");
+            const newSettled      = Math.max(0, currentSettled - settlementAmount);
+            const newOutstanding  = Math.min(approvedAmount, approvedAmount - newSettled);
+            const newStatus       = newSettled > 0 ? "PARTIALLY_SETTLED" : "APPROVED";
+
+            await (tx as any)
+              .update(financeAdvances)
+              .set({
+                settledAmount:      String(newSettled),
+                outstandingBalance: String(Math.max(0, newOutstanding)),
+                status:             newStatus,
+                // Clear actualSettlementDate only if no settlements remain
+                actualSettlementDate: newSettled <= 0 ? null : advance.actualSettlementDate,
+                updatedBy:          ctx.user?.id || null,
+              })
+              .where(eq(financeAdvances.id, settlement.advanceId));
+          }
+        }
+      });
+
       return { success: true };
     }),
-
   // Delete settlement (soft delete)
   deleteSettlement: scopedProcedure
     .input(z.object({
@@ -903,52 +964,72 @@ export const advancesRouter = router({
       const { organizationId } = ctx.scope;
       const db = await getDb();
       if (!db) throw new Error("Database not available");
-      
-      // Get settlement to reverse the advance totals
-      const settlement = await db.select().from(financeSettlements).where(
-        and(
+
+      // Pre-flight: load settlement — only PENDING settlements can be deleted
+      const [settlement] = await db
+        .select()
+        .from(financeSettlements)
+        .where(and(
           eq(financeSettlements.id, input.id),
-          eq(financeSettlements.organizationId, organizationId)
-        )
-      );
-      
-      if (settlement[0] && settlement[0].status === 'APPROVED') {
-        const advance = await db.select().from(financeAdvances).where(
-          eq(financeAdvances.id, settlement[0].advanceId)
-        );
-        
-        if (advance[0]) {
-          const currentSettled = parseFloat(advance[0].settledAmount || "0");
-          const settlementAmount = parseFloat(settlement[0].settledAmount || "0");
-          const newSettled = Math.max(0, currentSettled - settlementAmount);
-          const approvedAmount = parseFloat(advance[0].approvedAmount || advance[0].requestedAmount || "0");
-          const newOutstanding = approvedAmount - newSettled;
-          
-          let newStatus = 'APPROVED';
-          if (newSettled > 0) {
-            newStatus = 'PARTIALLY_SETTLED';
-          }
-          
-          await db.update(financeAdvances)
-            .set({
-              settledAmount: String(newSettled),
-              outstandingBalance: String(newOutstanding),
-              status: String(newStatus),
-              actualSettlementDate: null,
-              updatedBy: ctx.user?.id || null,
-            })
-            .where(eq(financeAdvances.id, settlement[0].advanceId));
-        }
+          eq(financeSettlements.organizationId, organizationId),
+        ))
+        .limit(1);
+
+      if (!settlement) {
+        throw new TRPCError({ code: "NOT_FOUND", message: "Settlement not found" });
       }
-      
-      await db.update(financeSettlements)
-        .set({
-          isDeleted: 1,
-          deletedAt: nowSql,
-          deletedBy: ctx.user?.id || null,
-        })
-        .where(eq(financeSettlements.id, input.id));
-      
+      if (!["PENDING", "REJECTED"].includes(settlement.status)) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: `Only PENDING or REJECTED settlements can be deleted. Current status: ${settlement.status}`,
+        });
+      }
+
+      const settlementAmount = parseFloat(settlement.settledAmount || "0");
+
+      // Fix 6d: both writes in one transaction — previously two separate awaits
+      // could soft-delete the settlement while leaving the advance balance wrong.
+      await db.transaction(async (tx) => {
+        // Step 1: Soft-delete settlement
+        await (tx as any)
+          .update(financeSettlements)
+          .set({
+            isDeleted: 1,
+            deletedAt: nowSql,
+            deletedBy: ctx.user?.id || null,
+          })
+          .where(eq(financeSettlements.id, input.id));
+
+        // Step 2: Reverse advance balance only if settlement had been counted
+        // (PENDING settlements were already added to settledAmount in createSettlement)
+        if (settlementAmount > 0 && settlement.status === "PENDING") {
+          const [advance] = await (tx as any)
+            .select()
+            .from(financeAdvances)
+            .where(eq(financeAdvances.id, settlement.advanceId))
+            .limit(1);
+
+          if (advance) {
+            const currentSettled = parseFloat(advance.settledAmount || "0");
+            const approvedAmount  = parseFloat(advance.approvedAmount || advance.requestedAmount || "0");
+            const newSettled      = Math.max(0, currentSettled - settlementAmount);
+            const newOutstanding  = Math.max(0, approvedAmount - newSettled);
+            const newStatus       = newSettled > 0 ? "PARTIALLY_SETTLED" : "APPROVED";
+
+            await (tx as any)
+              .update(financeAdvances)
+              .set({
+                settledAmount:       String(newSettled),
+                outstandingBalance:  String(newOutstanding),
+                status:              newStatus,
+                actualSettlementDate: newSettled <= 0 ? null : advance.actualSettlementDate,
+                updatedBy:           ctx.user?.id || null,
+              })
+              .where(eq(financeAdvances.id, settlement.advanceId));
+          }
+        }
+      });
+
       return { success: true };
-    }),
+    })
 });

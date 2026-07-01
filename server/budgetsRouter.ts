@@ -12,6 +12,34 @@ import { TRPCError } from "@trpc/server";
 
 const nowSql = new Date().toISOString().slice(0, 19).replace('T', ' ');
 
+/**
+ * Recompute budget header totals from budget_lines.
+ * Called after any line create / update / delete so the header never drifts.
+ * Must be called with a transaction (tx) so it's atomic with the line change.
+ */
+async function recomputeBudgetTotals(
+  tx: Awaited<ReturnType<typeof import('./db').getDb>>,
+  budgetId: number
+): Promise<void> {
+  await tx!.execute(
+    sql`UPDATE budgets b
+        SET
+          b.totalApprovedAmount = COALESCE(
+            (SELECT SUM(CAST(totalAmount AS DECIMAL(18,4)))
+             FROM budget_lines
+             WHERE budgetId = ${budgetId} AND deletedAt IS NULL),
+            0
+          ),
+          b.totalActualAmount = COALESCE(
+            (SELECT SUM(CAST(actualAmount AS DECIMAL(18,4)))
+             FROM budget_lines
+             WHERE budgetId = ${budgetId} AND deletedAt IS NULL),
+            0
+          )
+        WHERE b.id = ${budgetId}`
+  );
+}
+
 export const budgetsRouter = router({
   /**
    * List all budgets for an organization/operating unit
@@ -415,17 +443,25 @@ export const budgetsRouter = router({
         });
       }
 
-      // Update status to approved
+      // Update status to approved and recompute totals atomically
+      const db2 = await getDb();
+      if (!db2) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Database not available" });
       const approvedAt = new Date();
-      await db
-        .update(budgets)
-        .set({
-          status: "approved",
-          approvedAt: new Date().toISOString().slice(0, 19).replace('T', ' '),
-          approvedBy: ctx.user.id,
-          updatedBy: ctx.user.id,
-        })
-        .where(eq(budgets.id, budgetId));
+
+      await db2.transaction(async (tx) => {
+        await tx
+          .update(budgets)
+          .set({
+            status: "approved",
+            approvedAt: new Date().toISOString().slice(0, 19).replace('T', ' '),
+            approvedBy: ctx.user.id,
+            updatedBy: ctx.user.id,
+          })
+          .where(eq(budgets.id, budgetId));
+
+        // Recompute totals so totalApprovedAmount reflects live budget lines
+        await recomputeBudgetTotals(tx as any, budgetId);
+      });
 
       // Generate evidence document
       try {
@@ -664,6 +700,32 @@ export const budgetsRouter = router({
       }
 
       return { budgetId: (newBudget as any).insertId, versionNumber: existingBudget.versionNumber + 1 };
+    }),
+
+  /**
+   * Recompute budget header totals from live budget lines.
+   * Call this after any budget line create / update / delete.
+   * Also called by BudgetSyncService.syncExpenses() after actuals update.
+   */
+  recomputeTotals: scopedProcedure
+    .input(z.object({ budgetId: z.number() }))
+    .mutation(async ({ input, ctx }) => {
+      const { organizationId } = ctx.scope;
+      const db = await getDb();
+      if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Database not available" });
+
+      // Scope check — ensure budget belongs to this org
+      const [existing] = await db
+        .select({ id: budgets.id })
+        .from(budgets)
+        .where(and(eq(budgets.id, input.budgetId), eq(budgets.organizationId, organizationId), isNull(budgets.deletedAt)));
+
+      if (!existing) {
+        throw new TRPCError({ code: "NOT_FOUND", message: "Budget not found" });
+      }
+
+      await recomputeBudgetTotals(db as any, input.budgetId);
+      return { success: true };
     }),
 
   /**

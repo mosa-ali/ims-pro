@@ -273,43 +273,63 @@ export const expendituresRouter = router({
       const { generatePDFEvidence } = await import('./evidenceGeneration');
       const { organizationId } = ctx.scope;
       const db = getDb();
-      
-      // Get expenditure details
+
+      // ── Pre-flight load (read-only, outside transaction) ────────────────────
       const result = await db.execute(
         sql`SELECT * FROM expenditures WHERE id = ${input.id} AND organizationId = ${organizationId} AND isDeleted = FALSE LIMIT 1`
       );
-      
+
       if (result.rows.length === 0) {
         throw new TRPCError({ code: "NOT_FOUND", message: "Expenditure not found" });
       }
-      
-      const expenditure = result.rows[0];
-      
-      // Check if already approved
+
+      const expenditure = result.rows[0] as any;
+
       if (expenditure.status === 'APPROVED') {
         throw new TRPCError({ code: "BAD_REQUEST", message: "Expenditure is already approved" });
       }
-      
-      // Update expenditure status
-      await db.execute(
-        sql`UPDATE expenditures 
-            SET status = 'APPROVED', approvedBy = ${ctx.user.id}, approvedAt = NOW() 
-            WHERE id = ${input.id} AND organizationId = ${organizationId} AND isDeleted = FALSE`
-      );
-      
-      // Generate automated journal entry
-      try {
-        const { generateExpenseJournalEntry } = await import('./services/autoJournalEntryService');
-        const journalEntryId = await generateExpenseJournalEntry(expenditure, ctx.user.id);
-        
-        // Link journal entry to expenditure
-        await db.execute(
+
+      // ── Fix 5: all writes + GL posting in one atomic transaction ────────────
+      // Previously: status update succeeded, then journal posting was in a
+      // try/catch that silently swallowed errors — approved expenditures
+      // could exist with no GL entry.
+      // Now: both writes succeed together or both roll back.
+      let journalEntryId: number | null = null;
+
+      await db.transaction(async (tx: any) => {
+        // Step 1: Mark approved
+        await tx.execute(
+          sql`UPDATE expenditures
+              SET status = 'APPROVED', approvedBy = ${ctx.user.id}, approvedAt = NOW()
+              WHERE id = ${input.id} AND organizationId = ${organizationId} AND isDeleted = FALSE`
+        );
+
+        // Step 2: Post to GL — inside transaction, not optional
+        const { postExpenditureToGL } = await import('./services/journalPostingService');
+        journalEntryId = await postExpenditureToGL(
+          tx,
+          {
+            id: expenditure.id,
+            organizationId: expenditure.organizationId,
+            operatingUnitId: expenditure.operatingUnitId,
+            expenditureNumber: expenditure.expenditureNumber,
+            expenditureDate: expenditure.expenditureDate,
+            amount: expenditure.amount,
+            vendorId: expenditure.vendorId,
+            projectId: expenditure.projectId,
+            grantId: expenditure.grantId,
+            budgetLineId: expenditure.budgetLineId,
+            glAccountId: expenditure.glAccountId,
+            description: expenditure.description,
+          },
+          ctx.user.id
+        );
+
+        // Step 3: Link journal entry back to expenditure
+        await tx.execute(
           sql`UPDATE expenditures SET journalEntryId = ${journalEntryId} WHERE id = ${input.id}`
         );
-      } catch (error) {
-        // Log error but don't fail the approval
-        console.error('Failed to generate journal entry for expenditure:', error);
-      }
+      }); // ── end transaction ── if any step throws, everything rolls back
       
       // Generate evidence document
       try {

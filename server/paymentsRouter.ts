@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { router, protectedProcedure, scopedProcedure } from "./_core/trpc";
 import { getDb } from "./db";
-import { payments, paymentLines, vendors, financeBankAccounts, procurementPayables, financeEncumbrances } from "../drizzle/schema";
+import { payments, paymentLines, vendors, financeBankAccounts, procurementPayables, financeEncumbrances, budgetLines } from "../drizzle/schema";
 import { eq, and, isNull, like, or, sql, desc, asc, inArray } from "drizzle-orm";
 import { TRPCError } from "@trpc/server";
 
@@ -193,6 +193,7 @@ export const paymentsRouter = router({
       projectId: z.number().optional(),
       grantId: z.number().optional(),
       vendorId: z.number().optional(),
+      payableId: z.number().optional(), // Direct FK to procurement_payables — enables safe cycle closure
       payeeName: z.string().min(1).max(255),
       payeeNameAr: z.string().max(255).optional(),
       paymentType: z.enum(['vendor', 'staff', 'advance', 'refund', 'other']).default('vendor'),
@@ -226,14 +227,9 @@ export const paymentsRouter = router({
       const { organizationId, operatingUnitId } = ctx.scope;
       const db = await getDb();
       
-      // Generate payment number
-      const year = new Date().getFullYear();
-      const countResult = await db.select({ 
-        count: sql<number>`count(*)` 
-      }).from(payments)
-        .where(eq(payments.organizationId, organizationId));
-      const nextNum = (countResult[0]?.count || 0) + 1;
-      const paymentNumber = `PAY-${year}-${nextNum.toString().padStart(6, '0')}`;
+      // Generate payment number using atomic sequence (prevents duplicates under concurrency)
+      const { getNextFinanceSequence } = await import('./services/sequenceService');
+      const paymentNumber = await getNextFinanceSequence(organizationId, 'PAY');
       
       const { lines, ...paymentData } = input;
       
@@ -242,6 +238,7 @@ export const paymentsRouter = router({
         organizationId,
         operatingUnitId: operatingUnitId || null,
         paymentNumber,
+        payableId: paymentData.payableId ?? null, // Stored at creation — used by complete() to close the right payable
         status: 'draft',
         createdBy: ctx.user?.id,
         updatedBy: ctx.user?.id,
@@ -533,89 +530,164 @@ export const paymentsRouter = router({
     .mutation(async ({ ctx, input }) => {
       const { organizationId } = ctx.scope;
       const db = await getDb();
-      
-      const existing = await db.select().from(payments)
+      const completedAt = input.completedDate
+        ? input.completedDate.toISOString().slice(0, 19).replace('T', ' ')
+        : new Date().toISOString().slice(0, 19).replace('T', ' ');
+
+      // ── Pre-flight: load payment outside transaction (read-only) ──────────────
+      const existing = await db
+        .select()
+        .from(payments)
         .where(and(
           eq(payments.id, input.id),
-          eq(payments.organizationId, organizationId)
+          eq(payments.organizationId, organizationId),
         ))
         .limit(1);
-      
+
       if (!existing[0]) {
-        throw new Error('Payment not found');
-      }
-      
-      if (existing[0].status !== 'approved' && existing[0].status !== 'processing') {
-        throw new Error('Only approved or processing payments can be completed');
-      }
-      
-      // Update payment status
-      await db.update(payments)
-        .set({ 
-          status: 'completed',
-          paidAt: input.completedDate || new Date().toISOString(),
-          transactionReference: input.transactionReference,
-          updatedBy: ctx.user?.id,
-        })
-        .where(eq(payments.id, input.id));
-      
-      // Generate automated journal entry
-      try {
-        const { generatePaymentJournalEntry } = await import('./services/autoJournalEntryService');
-        const journalEntryId = await generatePaymentJournalEntry(existing[0], ctx.user?.id || 'system');
-        
-        // Link journal entry to payment
-        await db.update(payments)
-          .set({ journalEntryId })
-          .where(eq(payments.id, input.id));
-      } catch (error) {
-        // Log error but don't fail the completion
-        console.error('Failed to generate journal entry for payment:', error);
-        // In production, you might want to queue this for retry or alert finance team
+        throw new TRPCError({ code: 'NOT_FOUND', message: 'Payment not found' });
       }
 
-      // ============================================================================
-      // PR-FINANCE INTEGRATION: Close Financial Cycle on Payment Completion
-      // ============================================================================
+      const payment = existing[0];
 
-      // Find procurement payable linked to this payment
-      const [payable] = await db
-        .select()
-        .from(procurementPayables)
-        .where(
-          and(
-            eq(procurementPayables.vendorId, existing[0].vendorId || 0),
-            eq(procurementPayables.status, "approved")
-          )
-        )
-        .limit(1);
+      if (payment.status !== 'approved' && payment.status !== 'processing') {
+        throw new TRPCError({
+          code: 'BAD_REQUEST',
+          message: `Cannot complete payment with status: ${payment.status}`,
+        });
+      }
 
-      if (payable) {
-        // Update payable to paid
-        await db
-          .update(procurementPayables)
+      // ── Fix 1: Resolve payable via direct FK (payableId), not vendor match ───
+      // payableId is stored on the payment record at creation time (from prFinanceRouter.recordPayment
+      // or from paymentsRouter.create when called with payableId).
+      // Falling back to vendor+status match is intentionally removed — it was unsafe
+      // because a vendor can have multiple open payables and the wrong one would be closed.
+      let payable: typeof procurementPayables.$inferSelect | undefined;
+
+      if (payment.payableId) {
+        // Primary path: direct FK lookup — always correct
+        const [found] = await db
+          .select()
+          .from(procurementPayables)
+          .where(and(
+            eq(procurementPayables.id, payment.payableId),
+            eq(procurementPayables.organizationId, organizationId),
+          ))
+          .limit(1);
+        payable = found;
+      }
+      // No fallback to vendor match — if payableId is not set this payment
+      // is a standalone payment (staff advance, refund, etc.) with no payable lifecycle.
+
+      // ── Fix 2: Execute all writes inside a single atomic transaction ──────────
+      // Previously: payment was marked complete, then journal entry was attempted in a
+      // separate try/catch that silently swallowed failures, leaving payments with no GL entry.
+      // Now: all writes (payment status, payable closure, encumbrance liquidation,
+      // budget line actuals, journal entry) either all succeed or all roll back.
+      let financialCycleClosed = false;
+
+      await db.transaction(async (tx) => {
+
+        // Step 1: Mark payment completed
+        await tx
+          .update(payments)
           .set({
-            status: "paid",
-            paidAmount: existing[0].amount,
+            status: 'completed',
+            paidAt: completedAt,
+            transactionReference: input.transactionReference ?? null,
+            updatedBy: ctx.user?.id,
           })
-          .where(eq(procurementPayables.id, payable.id));
+          .where(eq(payments.id, input.id));
 
-        // Liquidate encumbrance
-        if (payable.encumbranceId) {
-          await db
-            .update(financeEncumbrances)
+        // Step 2: Close payable and liquidate encumbrance (procurement cycle)
+        if (payable) {
+          const paidAmount = payment.totalAmount ?? payment.amount ?? '0';
+
+          // 2a. Mark payable paid
+          await tx
+            .update(procurementPayables)
             .set({
-              status: "liquidated",
-              liquidatedAmount: existing[0].amount,
-              liquidatedDate: input.completedDate || new Date().toISOString(),
+              status: 'paid',
+              paidAmount,
+              remainingAmount: '0',
             })
-            .where(eq(financeEncumbrances.id, payable.encumbranceId));
+            .where(eq(procurementPayables.id, payable.id));
+
+          // 2b. Liquidate linked encumbrance (if present)
+          if (payable.encumbranceId) {
+            const [encumbrance] = await tx
+              .select()
+              .from(financeEncumbrances)
+              .where(eq(financeEncumbrances.id, payable.encumbranceId))
+              .limit(1);
+
+            if (encumbrance) {
+              await tx
+                .update(financeEncumbrances)
+                .set({
+                  status: 'liquidated',
+                  liquidatedAmount: paidAmount,
+                  remainingAmount: '0',
+                  liquidatedDate: completedAt,
+                })
+                .where(eq(financeEncumbrances.id, payable.encumbranceId));
+
+              // 2c. Update budget line: move committed → actual
+              // This is the authoritative actuals update for the procurement chain.
+              if (encumbrance.budgetLineId) {
+                await tx.execute(
+                  sql`UPDATE budget_lines
+                      SET
+                        actualAmount    = actualAmount    + ${parseFloat(paidAmount)},
+                        committedAmount = GREATEST(0, committedAmount - ${parseFloat(paidAmount)}),
+                        remainingAmount = totalAmount
+                                         - actualAmount    - ${parseFloat(paidAmount)}
+                                         - GREATEST(0, committedAmount - ${parseFloat(paidAmount)})
+                      WHERE id = ${encumbrance.budgetLineId}`
+                );
+              }
+            }
+          }
+
+          financialCycleClosed = true;
         }
-      }
-      
+
+        // Step 3: Post GL journal entry (mandatory — inside transaction)
+        // If autoJournalEntryService is not yet implemented, this block throws and
+        // rolls back the entire transaction, preventing silent GL gaps.
+        try {
+          const { generatePaymentJournalEntry } = await import('./services/autoJournalEntryService');
+          const journalEntryId = await generatePaymentJournalEntry(
+            { ...payment, status: 'completed' },
+            ctx.user?.id ?? 0,
+            tx,  // Pass transaction context so the journal entry is part of this transaction
+          );
+
+          // Link journal entry back to the payment record
+          await tx
+            .update(payments)
+            .set({ journalEntryId })
+            .where(eq(payments.id, input.id));
+
+        } catch (journalError) {
+          // Re-throw so the transaction rolls back.
+          // A completed payment with no GL entry is a data integrity violation.
+          // Check that autoJournalEntryService exists and is correctly implemented.
+          throw new TRPCError({
+            code: 'INTERNAL_SERVER_ERROR',
+            message: `Payment GL posting failed — transaction rolled back. ` +
+                     `Payment ${payment.paymentNumber} has NOT been marked complete. ` +
+                     `Error: ${journalError instanceof Error ? journalError.message : String(journalError)}`,
+          });
+        }
+
+      }); // end db.transaction — all steps committed atomically
+
       return {
         success: true,
-        message: payable ? "Payment completed - PR financial cycle closed" : "Payment completed",
+        message: financialCycleClosed
+          ? 'Payment completed — PR financial cycle closed'
+          : 'Payment completed',
       };
     }),
 
@@ -692,20 +764,22 @@ export const paymentsRouter = router({
       return stats;
     }),
 
-  // Generate next payment number
+  // Generate next payment number (preview — does NOT consume the sequence)
   generateNumber: scopedProcedure
     .input(z.object({}).optional())
     .query(async ({ ctx }) => {
       const { organizationId } = ctx.scope;
       const db = await getDb();
       const year = new Date().getFullYear();
-      const result = await db.select({ 
-        count: sql<number>`count(*)` 
-      }).from(payments)
-        .where(eq(payments.organizationId, organizationId));
-      
-      const nextNum = (result[0]?.count || 0) + 1;
-      return `PAY-${year}-${nextNum.toString().padStart(6, '0')}`;
+      // Read current sequence value for preview only — does not increment
+      const [row] = await db
+        .select({ currentValue: sql<number>`COALESCE(currentValue, 0)` })
+        .from(sql`procurement_number_sequences`)
+        .where(sql`organizationId = ${organizationId} AND sequenceType = 'PAY' AND fiscalYear = ${year}`)
+        .limit(1)
+        .catch(() => [{ currentValue: 0 }]);
+      const next = (row?.currentValue ?? 0) + 1;
+      return `PAY-${year}-${String(next).padStart(4, '0')}`;
     }),
 });
 

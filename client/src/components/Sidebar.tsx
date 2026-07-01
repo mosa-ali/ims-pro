@@ -1,13 +1,50 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'wouter';
-import { 
- LayoutDashboard, Building2, DollarSign, Briefcase, Wallet, Target, 
- ClipboardList, Users, FileText, Settings, 
- ChevronLeft, ChevronRight, BarChart3, Package, Activity, 
- HeartHandshake, MapPin, Shield, ShieldCheck, FileSearch, Archive, ChevronDown, ChevronUp,
- UserCircle, Lightbulb, TrendingUp, DollarSign as DollarIcon, MessageSquare, FileBarChart,
- Globe, User, LogOut, Clock, Mail
- } from 'lucide-react';
+import {
+ LayoutDashboard,
+ Building2,
+ DollarSign,
+ Briefcase,
+ Wallet,
+ Target,
+ ClipboardList,
+ Users,
+ FileText,
+ Settings,
+ ChevronLeft,
+ ChevronRight,
+ BarChart3,
+ Package,
+ Activity,
+ HeartHandshake,
+ MapPin,
+ Shield,
+ ShieldCheck,
+ FileSearch,
+ Archive,
+ ChevronDown,
+ ChevronUp,
+ UserCircle,
+ Lightbulb,
+ TrendingUp,
+ DollarSign as DollarIcon,
+ MessageSquare,
+ FileBarChart,
+ Globe,
+ User,
+ LogOut,
+ Clock,
+ Mail,
+ BookOpen,
+ Calculator,
+ Receipt,
+ Landmark,
+ Layers,
+ ShoppingCart,
+ GitBranch,
+ Award,
+ Truck,
+} from "lucide-react";
 import { useAuth } from "@/_core/hooks/useAuth";
 import { useTranslation } from "@/i18n/useTranslation";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -31,43 +68,66 @@ import { useOrganizationBranding } from "@/hooks/useOrganizationBranding";
  */
 
 // Icon mapping for all modules
-const iconMap: Record<string, any> = {
- Dashboard: LayoutDashboard,
- Organizations: Building2,
- OperatingUnits: MapPin,
- PlatformUsers: Users,
- SystemHealth: Activity,
- AuditLogs: FileSearch,
- DeletedRecords: Archive,
- PlatformSettings: Settings,
- Mail: Mail,
- Projects: Briefcase,
- Grants: HeartHandshake,
- HR: Users,
- Finance: Wallet,
- Logistics: Package,
- MEAL: ClipboardList,
- CRM: HeartHandshake,
- Risk: Shield,
- RegressionProtection: ShieldCheck,
- Assets: Package,
- Documents: FileText,
- Reports: BarChart3,
- SystemStatus: Activity,
- Settings: Settings,
- // Donor CRM sub-items
- DonorRegistry: UserCircle,
- Opportunities: Lightbulb,
- ProposalPipeline: TrendingUp,
- GrantsManagement: DollarIcon,
- DonorCommunications: MessageSquare,
- DonorReports: FileBarChart,
- RetentionPolicy: Clock,
+import { LucideIcon } from "lucide-react";
 
- // Direct icon references for menu items
- FileText: FileText,
- ClipboardList: ClipboardList,
- TrendingUp: TrendingUp,
+const iconMap: Record<string, LucideIcon> = {
+ Dashboard: LayoutDashboard,
+
+ Organizations: Building2,
+
+ OperatingUnits: MapPin,
+
+ PlatformUsers: Users,
+
+ SystemHealth: Activity,
+
+ AuditLogs: FileSearch,
+
+ DeletedRecords: Archive,
+
+ PlatformSettings: Settings,
+
+ Mail,
+
+ Projects: Briefcase,
+
+ Grants: HeartHandshake,
+
+ HR: Users,
+
+ Finance: Wallet,
+
+ Logistics: Package,
+
+ MEAL: ClipboardList,
+
+ CRM: HeartHandshake,
+
+ Risk: Shield,
+
+ RegressionProtection: ShieldCheck,
+
+ Assets: Package,
+
+ Documents: FileText,
+
+ Reports: BarChart3,
+
+ Settings,
+
+ BookOpen,
+ Calculator,
+ Receipt,
+ Landmark,
+ Layers,
+ ShoppingCart,
+ GitBranch,
+ Award,
+ Truck,
+
+ FileText,
+ ClipboardList,
+ TrendingUp,
 };
 
 interface NavItem {
@@ -177,8 +237,227 @@ export function Sidebar() {
  groupIt: 'OPERAZIONI',
  items: [
  { id: 'hr', label: 'Human Resources', labelAr: 'الموارد البشرية', labelIt: 'Risorse Umane', path: '/organization/hr', icon: 'HR' },
- { id: 'finance', label: 'Financial Management', labelAr: 'الإدارة المالية', labelIt: 'Gestione Finanziaria', path: '/organization/finance', icon: 'Finance' },
- { id: 'logistics', label: 'Logistics & Procurement', labelAr: 'الخدمات اللوجستية والمشتريات', labelIt: 'Logistica e Approvvigionamento', path: '/organization/logistics', icon: 'Logistics' },
+ {
+  id: "finance",
+  label: "Financial Management",
+  labelAr: "الإدارة المالية",
+  labelIt: "Gestione Finanziaria",
+  path: "/organization/finance",
+  icon: "Finance",
+  subItems: [
+    {
+      id: "finance-dashboard",
+      label: "Dashboard",
+      labelAr: "لوحة المعلومات",
+      labelIt: "Cruscotto",
+      path: "/organization/finance/dashboard",
+      icon: "Dashboard",
+    },
+        {
+          id: "risk-center",
+          label: "Risk Center",
+          labelAr: "مركز المخاطر",
+          labelIt: "Centro Rischi",
+          path: "/organization/finance/risk",
+          icon: "Shield",
+        },
+        {
+          id: "compliance-center",
+          label: "Compliance Center",
+          labelAr: "مركز الامتثال",
+          labelIt: "Centro Conformità",
+          path: "/organization/finance/compliance",
+          icon: "ShieldCheck",
+        },
+    {
+      id: "financial-overview",
+      label: "Financial Overview",
+      labelAr: "نظرة عامة مالية",
+      labelIt: "Panoramica Finanziaria",
+      path: "/organization/finance/overview",
+      icon: "BarChart3",
+    },
+    {
+      id: "chart-of-accounts",
+      label: "Chart of Accounts",
+      labelAr: "دليل الحسابات",
+      labelIt: "Piano dei Conti",
+      path: "/organization/finance/chart-of-accounts",
+      icon: "BookOpen",
+    },
+    {
+      id: "budgets",
+      label: "Budgets",
+      labelAr: "الميزانيات",
+      labelIt: "Budget",
+      path: "/organization/finance/budgets",
+      icon: "Calculator",
+    },
+    {
+      id: "expenditures",
+      label: "Expenditures",
+      labelAr: "النفقات",
+      labelIt: "Spese",
+      path: "/organization/finance/expenditures",
+      icon: "Receipt",
+    },
+    {
+      id: "payments",
+      label: "Payments",
+      labelAr: "المدفوعات",
+      labelIt: "Pagamenti",
+      path: "/organization/finance/payments",
+      icon: "Receipt",
+    },
+    {
+      id: "treasury",
+      label: "Treasury & Cash Management",
+      labelAr: "الخزينة وإدارة النقد",
+      labelIt: "Tesoreria e Gestione della Liquidità",
+      path: "/organization/finance/treasury",
+      icon: "Landmark",
+    },
+    {
+      id: "advances",
+      label: "Advances & Settlements",
+      labelAr: "السلف والتسويات",
+      labelIt: "Anticipi e Regolamenti",
+      path: "/organization/finance/advances",
+      icon: "Wallet",
+    },
+    {
+      id: "assets",
+      label: "Assets Management",
+      labelAr: "إدارة الأصول",
+      labelIt: "Gestione dei Beni",
+      path: "/organization/finance/assets",
+      icon: "Package",
+    },
+    {
+      id: "vendors",
+      label: "Vendor Management",
+      labelAr: "إدارة الموردين",
+      labelIt: "Gestione dei Fornitori",
+      path: "/organization/finance/vendors",
+      icon: "Users",
+    },
+    {
+      id: "cost-allocation",
+      label: "Cost Allocation",
+      labelAr: "توزيع التكاليف",
+      labelIt: "Allocazione dei Costi",
+      path: "/organization/finance/cost-allocation",
+      icon: "Layers",
+    },
+    {
+      id: "financial-reports",
+      label: "Financial Reports",
+      labelAr: "التقارير المالية",
+      labelIt: "Rapporti Finanziari",
+      path: "/organization/finance/reports",
+      icon: "FileText",
+    },
+    {
+      id: "financial-settings",
+      label: "Financial Settings",
+      labelAr: "الإعدادات المالية",
+      labelIt: "Impostazioni Finanziarie",
+      path: "/organization/finance/settings",
+      icon: "Settings",
+    },
+  ],
+},
+ {
+  id: "logistics",
+  label: "Logistics & Procurement",
+  labelAr: "الخدمات اللوجستية والمشتريات",
+  labelIt: "Logistica e Approvvigionamento",
+  path: "/organization/logistics",
+  icon: "Logistics",
+
+  subItems: [
+    {
+      id: "logistics-dashboard",
+      label: "Dashboard",
+      labelAr: "لوحة المعلومات",
+      labelIt: "Cruscotto",
+      path: "/organization/logistics",
+      icon: "Dashboard",
+    },
+
+    {
+      id: "my-prs",
+      label: "My Purchase Requests",
+      labelAr: "طلبات الشراء الخاصة بي",
+      labelIt: "Le Mie Richieste di Acquisto",
+      path: "/organization/logistics/my-prs",
+      icon: "ClipboardList",
+    },
+
+    {
+      id: "purchase-requests",
+      label: "Procurement Workspace",
+      labelAr: "مساحة عمل المشتريات",
+      labelIt: "Area di Lavoro Approvvigionamenti",
+      path: "/organization/logistics/purchase-requests",
+      icon: "ShoppingCart",
+    },
+
+    {
+      id: "procurement-tracker",
+      label: "Procurement Tracker",
+      labelAr: "متابعة المشتريات",
+      labelIt: "Monitoraggio Approvvigionamenti",
+      path: "/organization/logistics/tracker",
+      icon: "GitBranch",
+    },
+
+    {
+      id: "vendors",
+      label: "Vendor Management",
+      labelAr: "إدارة الموردين",
+      labelIt: "Gestione Fornitori",
+      path: "/organization/logistics/vendors",
+      icon: "Users",
+    },
+
+    {
+      id: "vendor-performance",
+      label: "Vendor Performance",
+      labelAr: "تقييم أداء الموردين",
+      labelIt: "Valutazione Prestazioni Fornitori",
+      path: "/organization/logistics/evaluation-performance",
+      icon: "Award",
+    },
+
+    {
+      id: "stock",
+      label: "Stock Management",
+      labelAr: "إدارة المخزون",
+      labelIt: "Gestione Magazzino",
+      path: "/organization/logistics/stock",
+      icon: "Package",
+    },
+
+    {
+      id: "fleet",
+      label: "Fleet Management",
+      labelAr: "إدارة الأسطول",
+      labelIt: "Gestione della Flotta",
+      path: "/organization/logistics/fleet",
+      icon: "Truck",
+    },
+
+    {
+      id: "reports",
+      label: "Reports & Analytics",
+      labelAr: "التقارير والتحليلات",
+      labelIt: "Report e Analisi",
+      path: "/organization/logistics/reports",
+      icon: "BarChart3",
+    },
+  ],
+},
  { id: 'meal', label: 'MEAL', labelAr: 'المتابعة والتقييم والمساءلة (MEAL)', labelIt: 'Monitoraggio, Valutazione e Responsabilità (MEAL)', path: '/organization/meal', icon: 'MEAL' },
  { id: 'crm', label: 'Donor CRM', labelAr: 'علاقات المانحين', labelIt: 'CRM Donatori', path: '/organization/donor-crm', icon: 'CRM' },
  { id: 'risk', label: 'Risk & Compliance', labelAr: 'المخاطر والامتثال', labelIt: 'Rischi e Conformità', path: '/organization/risk-compliance', icon: 'Risk' },
@@ -215,6 +494,24 @@ export function Sidebar() {
  const ToggleIcon = collapsed 
  ? (isRTL ? ChevronLeft : ChevronRight)
  : (isRTL ? ChevronRight : ChevronLeft);
+
+ useEffect(() => {
+  const expanded = new Set<string>();
+
+  activeMenu.forEach(group => {
+    group.items.forEach(item => {
+      if (
+        item.subItems?.some(sub =>
+          location.startsWith(sub.path)
+        )
+      ) {
+        expanded.add(item.id);
+      }
+    });
+  });
+
+  setExpandedItems(expanded);
+}, [location]);
 
  return (
  <div
@@ -340,7 +637,7 @@ export function Sidebar() {
  )}
  <div className="space-y-0.5">
  {group.items.map((item) => {
- const Icon = iconMap[item.icon];
+ const Icon = iconMap[item.icon] || FileText;
  const isActive = location === item.path || (item.subItems && item.subItems.some(sub => location === sub.path));
  const isExpanded = expandedItems.has(item.id);
  const label = language === 'ar' ? item.labelAr : (language === 'it' ? item.labelIt : item.label);
@@ -379,7 +676,7 @@ export function Sidebar() {
  {!collapsed && isExpanded && (
  <div className="mt-1 space-y-0.5" style={{ paddingInlineStart: '1rem' }}>
  {item.subItems.map((subItem) => {
- const SubIcon = iconMap[subItem.icon];
+const SubIcon = iconMap[subItem.icon] || FileText;
  const isSubActive = location === subItem.path;
  const subLabel = language === 'ar' ? subItem.labelAr : subItem.label;
  

@@ -872,8 +872,12 @@ export const budgetItems = mysqlTable("budget_items", {
   deletedAt: timestamp({
     mode: "string",
   }),
-
   deletedBy: int(),
+  expenseCategoryId: int(),
+	glAccountId: int(),
+	donorBudgetCode: varchar({ length:100 }),
+	fundingSource: varchar({ length:100 }),
+	costCenterId: int(),
 },
 (table) => ({
   projectIdx: index("idx_budget_items_project")
@@ -2332,6 +2336,18 @@ export const financeAssets = mysqlTable("finance_assets", {
 	assetGlAccountCode: varchar({ length: 50 }),
 	depreciationExpenseGlAccountCode: varchar({ length: 50 }),
 	accumulatedDepreciationGlAccountCode: varchar({ length: 50 }),
+	assetCategoryCode: varchar({ length:50 }),
+	barcode: varchar({ length:100 }),
+	qrCode: varchar({ length:255 }),
+	countryId: int(),
+	governorateId: int(),
+	warehouseId: int(),
+	roomNumber: varchar({ length:100 }),
+	depreciationStartDate: date(),
+	lastDepreciationRun: date(),
+	lastInventoryVerificationDate: date(),
+	inventoryVerifiedBy: int(),
+	disposalId: int(),
 });
 
 export const financeBankAccounts = mysqlTable("finance_bank_accounts", {
@@ -2995,35 +3011,47 @@ export const globalSettings = mysqlTable("globalSettings", {
 });
 
 export const goodsReceiptNotes = mysqlTable("goods_receipt_notes", {
-	id: int().autoincrement().primaryKey().notNull(),
-	organizationId: int().notNull(),
-	operatingUnitId: int().notNull(),
-	purchaseOrderId: int(),
-	supplierId: int(),
-	grnNumber: varchar({ length: 50 }).notNull(),
-	grnDate: timestamp({ mode: 'string' }).defaultNow().notNull(),
-	deliveryNoteNumber: varchar({ length: 100 }),
-	invoiceNumber: varchar({ length: 100 }),
-	warehouse: varchar({ length: 255 }),
-	warehouseAr: varchar({ length: 255 }),
-	receivedBy: varchar({ length: 255 }),
-	inspectedBy: varchar({ length: 255 }),
-	totalReceived: int().default(0),
-	totalAccepted: int().default(0),
-	totalRejected: int().default(0),
-	remarks: text(),
-	remarksAr: text(),
-	status: mysqlEnum(['pending_inspection','inspected','accepted','partially_accepted','rejected']).default('pending_inspection').notNull(),
-	approvedBy: int(),
-	approvedAt: timestamp({ mode: 'string' }),
-	stockPosted: tinyint().default(0).notNull(),
-	isDeleted: tinyint().default(0).notNull(),
-	deletedAt: timestamp({ mode: 'string' }),
-	deletedBy: int(),
-	createdAt: timestamp({ mode: 'string' }).defaultNow().notNull(),
-	updatedAt: timestamp({ mode: 'string' }).defaultNow().onUpdateNow().notNull(),
-	createdBy: int(),
-	updatedBy: int(),
+    id: int().autoincrement().primaryKey().notNull(),
+    organizationId: int().notNull(),
+    operatingUnitId: int().notNull(),
+    purchaseOrderId: int(),
+    supplierId: int(),
+    grnNumber: varchar({ length: 50 }).notNull(),
+    grnDate: timestamp({ mode: "string" }).defaultNow().notNull(),
+    deliveryNoteNumber: varchar({ length: 100 }),
+    invoiceNumber: varchar({ length: 100 }),
+    warehouse: varchar({ length: 255 }),
+    warehouseAr: varchar({ length: 255 }),
+    receivedBy: varchar({ length: 255 }),
+    inspectedBy: varchar({ length: 255 }),
+    totalReceived: int().default(0),
+    totalAccepted: int().default(0),
+    totalRejected: int().default(0),
+    subtotalAmount: decimal({ precision: 18, scale: 2 }).default("0.00").notNull(),
+    taxAmount: decimal({ precision: 18, scale: 2 }).default("0.00").notNull(),
+    discountAmount: decimal({ precision: 18, scale: 2 }).default("0.00").notNull(),
+    totalAmount: decimal({ precision: 18, scale: 2 }).default("0.00").notNull(),
+    currency: varchar({ length: 10 }).default("USD").notNull(),
+    exchangeRate: decimal({ precision: 18, scale: 6 }).default("1.000000").notNull(),
+    remarks: text(),
+    remarksAr: text(),
+    status: mysqlEnum([
+        "pending_inspection",
+        "inspected",
+        "accepted",
+        "partially_accepted",
+        "rejected"
+    ]).default("pending_inspection").notNull(),
+    approvedBy: int(),
+    approvedAt: timestamp({ mode: "string" }),
+    stockPosted: tinyint().default(0).notNull(),
+    isDeleted: tinyint().default(0).notNull(),
+    deletedAt: timestamp({ mode: "string" }),
+    deletedBy: int(),
+    createdAt: timestamp({ mode: "string" }).defaultNow().notNull(),
+    updatedAt: timestamp({ mode: "string" }).defaultNow().onUpdateNow().notNull(),
+    createdBy: int(),
+    updatedBy: int(),
 });
 
 export const grantDocuments = mysqlTable("grant_documents", {
@@ -3089,20 +3117,25 @@ export const grants = mysqlTable("grants", {
 });
 
 export const grnLineItems = mysqlTable("grn_line_items", {
-	id: int().autoincrement().primaryKey().notNull(),
-	grnId: int().notNull(),
-	poLineItemId: int(),
-	lineNumber: int().notNull(),
-	description: text().notNull(),
-	unit: varchar({ length: 50 }).default('Piece'),
-	orderedQty: decimal({ precision: 10, scale: 2 }).default('0'),
-	receivedQty: decimal({ precision: 10, scale: 2 }).default('0'),
-	acceptedQty: decimal({ precision: 10, scale: 2 }).default('0'),
-	rejectedQty: decimal({ precision: 10, scale: 2 }).default('0'),
-	rejectionReason: text(),
-	remarks: text(),
-	createdAt: timestamp({ mode: 'string' }).defaultNow().notNull(),
-	updatedAt: timestamp({ mode: 'string' }).defaultNow().onUpdateNow().notNull(),
+    id: int().autoincrement().primaryKey().notNull(),
+    grnId: int().notNull(),
+    poLineItemId: int(),
+    itemId: int(),
+    lineNumber: int().notNull(),
+    description: text().notNull(),
+    unit: varchar({ length: 50 }).default("Piece"),
+    orderedQty: decimal({ precision: 10, scale: 2 }).default("0"),
+    receivedQty: decimal({ precision: 10, scale: 2 }).default("0"),
+    acceptedQty: decimal({ precision: 10, scale: 2 }).default("0"),
+    rejectedQty: decimal({ precision: 10, scale: 2 }).default("0"),
+    unitPrice: decimal({ precision: 18, scale: 2 }).default("0.00").notNull(),
+    lineDiscount: decimal({ precision: 18, scale: 2 }).default("0.00").notNull(),
+    taxRate: decimal({ precision: 5, scale: 2 }).default("0.00").notNull(),
+    lineTotal: decimal({ precision: 18, scale: 2 }).default("0.00").notNull(),
+    rejectionReason: text(),
+    remarks: text(),
+    createdAt: timestamp({ mode: "string" }).defaultNow().notNull(),
+    updatedAt: timestamp({ mode: "string" }).defaultNow().onUpdateNow().notNull(),
 });
 
 export const hrAnnualPlans = mysqlTable("hr_annual_plans", {
@@ -4055,6 +4088,19 @@ export const journalEntries = mysqlTable("journal_entries", {
 	updatedBy: int(),
 	deletedAt: timestamp({ mode: 'string' }),
 	deletedBy: int(),
+	approvedBy: int(),
+	approvedAt: timestamp(),
+	approvalStatus: mysqlEnum([
+	'draft',
+	'pending',
+	'approved',
+	'rejected',
+	'posted'
+	]),
+	postingBatchId: int(),
+	sourceReference: varchar({ length:100 }),
+	isSystemGenerated: tinyint()
+	.default(0),
 },
 (table) => [
 	index("uk_org_entry").on(table.organizationId, table.entryNumber),
@@ -5015,6 +5061,24 @@ export const payments = mysqlTable("payments", {
 	parentId: int(),
 	revisionReason: text(),
 	isLatestVersion: tinyint().default(1).notNull(),
+	payableId: int()
+    .references(() => procurementPayables.id, {
+        onDelete: "set null",
+    }),
+	bankTransactionId: int(),
+	treasuryTransactionId: int(),
+	paymentBatchId: int(),
+	approvalWorkflowId: int(),
+	postedJournalId: int(),
+	paymentReference: varchar({ length: 100 }),
+	paymentStatus: mysqlEnum([
+		"draft",
+		"submitted",
+		"approved",
+		"paid",
+		"cancelled",
+		"failed"
+	]).default("draft"),
 },
 (table) => [
 		index("uk_org_number").on(table.organizationId, table.paymentNumber),
@@ -5210,7 +5274,7 @@ export const procurementPayables = mysqlTable("procurement_payables", {
 	paymentTerms: varchar({ length: 255 }),
 	// you can use { mode: 'date' }, if you want to have Date as type for this column
 	dueDate: date({ mode: 'string' }),
-	status: mysqlEnum(['draft','pending_grn','pending_invoice','pending_approval','pending_payment','partially_paid','fully_paid','cancelled']).default('pending_invoice'),
+	status: mysqlEnum(['draft','pending_grn','pending_invoice','pending_approval','approved', 'pending_payment','partially_paid','fully_paid','cancelled']).default('pending_invoice'),
 	paidAmount: decimal({ precision: 15, scale: 2 }).default('0'),
 	remainingAmount: decimal({ precision: 15, scale: 2 }),
 	createdBy: int(),
@@ -5220,6 +5284,16 @@ export const procurementPayables = mysqlTable("procurement_payables", {
 	matchingStatus: mysqlEnum('matching_status', ['pending','matched','variance_detected']).default('pending'),
 	deletedAt: timestamp({ mode: 'string' }),
 	deletedBy: int(),
+	invoiceNumber: varchar({ length: 100 }),
+	invoiceDate: date({ mode: "string" }),
+	vendorInvoiceAmount: decimal({
+		precision:15,
+		scale:2,
+	}),
+	paymentScheduleId: int(),
+	fullyMatchedAt: timestamp(),
+	closedAt: timestamp(),
+	closedBy: int(),
 },
 (table) => [
 	index("idx_pr_payable").on(table.purchaseRequestId),
@@ -6765,6 +6839,19 @@ export const users = mysqlTable("users", {
   // Account lockout fields for failed login attempts
   failedLoginAttempts: int().default(0).notNull(),
   lockedUntil: timestamp({ mode: 'string' }),
+
+// User Profile Photo
+profilePhotoUrl: varchar({ length: 1000 }),
+profilePhotoFileName: varchar({ length: 255 }),
+profilePhotoMimeType: mysqlEnum([
+  "image/jpeg",
+  "image/png",
+  "image/webp",
+]),
+profilePhotoSize: int(),          // Stored file size in bytes
+profilePhotoWidth: int(),
+profilePhotoHeight: int(),
+profilePhotoUploadedAt: timestamp({ mode: "string" }),
 },
 (table) => [
   // ✅ UNIQUE constraints (CRITICAL)
@@ -9104,5 +9191,207 @@ export const projectGovernorates = mysqlTable(
     })
       .defaultNow()
       .notNull(),
-  }
+  });
+
+// ============================================================================
+// Finance Financial Risks Table
+// ============================================================================
+
+export const financeFinancialRisks = mysqlTable(
+  "finance_financial_risks",
+  {
+    id: int().autoincrement().primaryKey().notNull(),
+    organizationId: int().notNull(),
+    operatingUnitId: int(),
+    projectId: int(),
+    donorId: int(),
+    grantId: int(),
+    budgetLineId: int(),
+    title: varchar({ length: 255 }).notNull(),
+    description: text(),
+    category: mysqlEnum([
+      "budget",
+      "cashflow",
+      "compliance",
+      "procurement",
+      "treasury",
+      "reporting",
+      "audit",
+      "donor",
+      "currency",
+      "operational"
+    ]),
+    likelihood: mysqlEnum([
+      "low",
+      "medium",
+      "high",
+      "critical"
+    ]),
+    impact: mysqlEnum([
+      "low",
+      "medium",
+      "high",
+      "critical"
+    ]),
+    overallRiskScore: int(),
+    financialExposure: decimal({
+      precision: 15,
+      scale: 2
+    }),
+    currency: varchar({ length: 10 }),
+    status: mysqlEnum([
+      "open",
+      "under_review",
+      "mitigating",
+      "resolved",
+      "accepted",
+      "closed"
+    ]),
+    ownerId: int(),
+    mitigationPlan: text(),
+    aiRecommendation: text(),
+    dueDate: timestamp({ mode: "string" }),
+    detectedAt: timestamp({ mode: "string" }),
+    resolvedAt: timestamp({ mode: "string" }),
+    createdAt: timestamp({ mode: "string" }).defaultNow(),
+    updatedAt: timestamp({ mode: "string" }).defaultNow().onUpdateNow()
+  },
+  (table) => ({
+    idxOrganization: index("idx_finance_financial_risks_org").on(table.organizationId),
+    idxOperatingUnit: index("idx_finance_financial_risks_ou").on(table.operatingUnitId),
+    idxProject: index("idx_finance_financial_risks_project").on(table.projectId),
+    idxStatus: index("idx_finance_financial_risks_status").on(table.status),
+    idxCategory: index("idx_finance_financial_risks_category").on(table.category),
+    idxCreatedAt: index("idx_finance_financial_risks_created").on(table.createdAt),
+    idxOrgStatus: index("idx_finance_financial_risks_org_status").on(table.organizationId, table.status),
+    idxOrgCategory: index("idx_finance_financial_risks_org_category").on(table.organizationId, table.category),
+    idxOrgSeverity: index("idx_finance_financial_risks_org_severity").on(table.organizationId, table.likelihood, table.impact)
+  })
+);
+
+// ============================================================================
+// Finance Compliance Findings Table
+// ============================================================================
+
+export const financeComplianceFindings = mysqlTable(
+  "finance_compliance_findings",
+  {
+    id: int().autoincrement().primaryKey().notNull(),
+    organizationId: int().notNull(),
+    operatingUnitId: int(),
+    projectId: int(),
+    findingType: mysqlEnum([
+      "audit",
+      "budget",
+      "bank",
+      "procurement",
+      "advance",
+      "journal",
+      "salary",
+      "asset",
+      "cash",
+      "donor"
+    ]),
+    severity: mysqlEnum([
+      "low",
+      "medium",
+      "high",
+      "critical"
+    ]),
+    title: varchar({ length: 255 }),
+    description: text(),
+    referenceTable: varchar({ length: 100 }),
+    referenceId: int(),
+    recommendation: text(),
+    aiRecommendation: text(),
+    status: mysqlEnum([
+      "new",
+      "reviewing",
+      "corrective_action",
+      "resolved",
+      "closed"
+    ]),
+    assignedTo: int(),
+    targetDate: timestamp({ mode: "string" }),
+    resolvedDate: timestamp({ mode: "string" }),
+    createdAt: timestamp({ mode: "string" }).defaultNow(),
+    updatedAt: timestamp({ mode: "string" }).defaultNow().onUpdateNow()
+  },
+  (table) => ({
+    idxOrganization: index("idx_finance_compliance_findings_org").on(table.organizationId),
+    idxOperatingUnit: index("idx_finance_compliance_findings_ou").on(table.operatingUnitId),
+    idxFindingType: index("idx_finance_compliance_findings_type").on(table.findingType),
+    idxSeverity: index("idx_finance_compliance_findings_severity").on(table.severity),
+    idxStatus: index("idx_finance_compliance_findings_status").on(table.status),
+    idxAssignedTo: index("idx_finance_compliance_findings_assigned").on(table.assignedTo),
+    idxCreatedAt: index("idx_finance_compliance_findings_created").on(table.createdAt),
+    idxOrgStatus: index("idx_finance_compliance_findings_org_status").on(table.organizationId, table.status),
+    idxOrgSeverity: index("idx_finance_compliance_findings_org_severity").on(table.organizationId, table.severity),
+    idxOrgType: index("idx_finance_compliance_findings_org_type").on(table.organizationId, table.findingType),
+    idxReference: index("idx_finance_compliance_findings_reference").on(table.referenceTable, table.referenceId)
+  })
+);
+
+// ============================================================================
+// Finance AI Recommendations Table
+// ============================================================================
+
+export const financeAiRecommendations = mysqlTable(
+  "finance_ai_recommendations",
+  {
+    id: int().autoincrement().primaryKey().notNull(),
+    organizationId: int().notNull(),
+    operatingUnitId: int(),
+    projectId: int(),
+    riskId: int(),
+    findingId: int(),
+    category: mysqlEnum([
+      "risk",
+      "budget",
+      "cashflow",
+      "forecast",
+      "compliance",
+      "treasury",
+      "procurement"
+    ]),
+    priority: mysqlEnum([
+      "low",
+      "medium",
+      "high",
+      "critical"
+    ]),
+    confidence: decimal({
+      precision: 5,
+      scale: 2
+    }),
+    title: varchar({ length: 255 }),
+    recommendation: text(),
+    reasoning: text(),
+    expectedImpact: text(),
+    estimatedSavings: decimal({
+      precision: 15,
+      scale: 2
+    }),
+    status: mysqlEnum([
+      "new",
+      "accepted",
+      "implemented",
+      "dismissed"
+    ]),
+    createdAt: timestamp({ mode: "string" }).defaultNow()
+  },
+  (table) => ({
+    idxOrganization: index("idx_finance_ai_recommendations_org").on(table.organizationId),
+    idxOperatingUnit: index("idx_finance_ai_recommendations_ou").on(table.operatingUnitId),
+    idxCategory: index("idx_finance_ai_recommendations_category").on(table.category),
+    idxPriority: index("idx_finance_ai_recommendations_priority").on(table.priority),
+    idxStatus: index("idx_finance_ai_recommendations_status").on(table.status),
+    idxRisk: index("idx_finance_ai_recommendations_risk").on(table.riskId),
+    idxFinding: index("idx_finance_ai_recommendations_finding").on(table.findingId),
+    idxCreatedAt: index("idx_finance_ai_recommendations_created").on(table.createdAt),
+    idxOrgStatus: index("idx_finance_ai_recommendations_org_status").on(table.organizationId, table.status),
+    idxOrgPriority: index("idx_finance_ai_recommendations_org_priority").on(table.organizationId, table.priority),
+    idxOrgCategory: index("idx_finance_ai_recommendations_org_category").on(table.organizationId, table.category),
+    idxConfidence: index("idx_finance_ai_recommendations_confidence").on(table.organizationId, table.confidence, table.status)
+  })
 );

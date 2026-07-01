@@ -1,6 +1,6 @@
 {
-  "include": ["client/src/**/*", "shared/**/*", "server/**/*", "client/src/types/**/*"],
-  "exclude": ["node_modules", "build", "dist", "**/*.test.ts"],
+  "include": ["client/src/**/*", "shared/**/*", "server/**/*", "client/src/types/**/*", "docs/finance-new/AdvancedFinanceDashboard.tsx", "docs/finance-new/ExecutiveFinanceDashboard.tsx", "docs/finance-new/ProjectFinanceDetail.tsx", "docs/finance-new/ReportingCenter.tsx"],
+  "exclude": ["node_modules", "build", "dist", "**/*.test.ts", "src/imports/pasted_text"],
   "compilerOptions": {
     "baseUrl": ".",
     "types": ["node", "vite/client"],

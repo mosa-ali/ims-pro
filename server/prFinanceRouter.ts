@@ -4,6 +4,8 @@
  */
 
 import { z } from "zod";
+import { financeEventBus } from "./services/finance/initFinanceEngine";
+import { PurchaseRequestApprovedEvent, PurchaseOrderSentEvent, ExpenditureApprovedEvent, JournalEntryPostedEvent, PurchaseOrderCancelledEvent } from "@shared/events/FinanceEventTypes";
 import { protectedProcedure, scopedProcedure, router } from "./_core/trpc";
 import { TRPCError } from "@trpc/server";
 import { sendPayableNotification } from "./payableNotificationService";
@@ -28,11 +30,14 @@ import {
   payableApprovalHistory,
   payments,
   paymentLines,
+  purchaseOrders,
   // TEMP UNBLOCK: invoiceAuditTrail missing export
   // invoiceAuditTrail,
   users,
   organizations,
   userOrganizations,
+  budgets,
+  grants,
 } from "../drizzle/schema";
 import { desc } from "drizzle-orm";
 
@@ -73,12 +78,33 @@ export const prFinanceRouter = router({
       })
     )
     .mutation(async ({ input, ctx }) => {
-      return await createBudgetReservation({
+      const db = await getDb();
+      const result = await createBudgetReservation({
         ...input,
         organizationId: ctx.scope.organizationId,
         operatingUnitId: ctx.scope.operatingUnitId,
         userId: ctx.user.id,
       });
+
+      const event: PurchaseRequestApprovedEvent = {
+        type: 'PurchaseRequestApproved',
+        timestamp: new Date(),
+        organizationId: ctx.scope.organizationId,
+        operatingUnitId: ctx.scope.operatingUnitId,
+        userId: ctx.user.id,
+        payload: {
+            purchaseRequestId: input.purchaseRequestId,
+            budgetLineId: input.budgetLineId,
+            organizationId: ctx.scope.organizationId,
+            operatingUnitId: ctx.scope.operatingUnitId,
+            totalAmount: input.reservedAmount,
+            currency: input.currency,
+            exchangeRate: input.exchangeRate ?? 1,
+        },
+      };
+      await financeEventBus.publish("PurchaseRequestApproved", event, { organizationId: ctx.scope.organizationId, operatingUnitId: ctx.scope.operatingUnitId, userId: ctx.user.id }, db);
+
+      return result;
     }),
 
   /**
@@ -152,10 +178,80 @@ export const prFinanceRouter = router({
       if (!reservation) {
         throw new TRPCError({ code: 'NOT_FOUND', message: 'Reservation not found in this organization' });
       }
-      return await createEncumbranceFromReservation({
+      const result = await createEncumbranceFromReservation({
         ...input,
         userId: ctx.user.id,
       });
+
+      const event: PurchaseOrderSentEvent = {
+        type: 'PurchaseOrderSent',
+        timestamp: new Date(),
+        organizationId: ctx.scope.organizationId,
+        operatingUnitId: ctx.scope.operatingUnitId,
+        userId: ctx.user.id,
+        payload: {
+            purchaseOrderId: input.purchaseOrderId ?? 0,
+            encumbranceId: result.encumbranceId ?? 0,
+            organizationId: reservation.organizationId,
+            operatingUnitId: Number(reservation.operatingUnitId),
+            totalAmount: Number(reservation.reservedAmount),
+            currency: reservation.currency ?? "",
+            exchangeRate: Number(reservation.exchangeRate ?? 1),
+        },
+      };
+      await financeEventBus.publish('PurchaseOrderSent', event, { organizationId: ctx.scope.organizationId, operatingUnitId: ctx.scope.operatingUnitId, userId: ctx.user.id }, db);
+
+      return result;
+    }),
+
+  /**
+   * Cancel a purchase order and emit PurchaseOrderCancelledEvent.
+   */
+  cancelPurchaseOrder: scopedProcedure
+    .input(
+      z.object({
+        purchaseOrderId: z.number(),
+      })
+    )
+    .mutation(async ({ input, ctx }) => {
+      const db = await getDb();
+
+      // Fetch purchase order to get purchaseRequestId and verify ownership
+      const [purchaseOrder] = await db.select().from(purchaseOrders)
+        .where(and(
+          eq(purchaseOrders.id, input.purchaseOrderId),
+          eq(purchaseOrders.organizationId, ctx.scope.organizationId)
+        )).limit(1);
+
+      if (!purchaseOrder) {
+        throw new TRPCError({ code: 'NOT_FOUND', message: 'Purchase Order not found in this organization' });
+      }
+
+      // Update purchase order status to cancelled
+      await db.update(purchaseOrders)
+        .set({
+          status: 'cancelled',
+          updatedAt: new Date().toISOString(),
+          updatedBy: ctx.user.id,
+        })
+        .where(eq(purchaseOrders.id, input.purchaseOrderId));
+
+      const event: PurchaseOrderCancelledEvent = {
+        type: 'PurchaseOrderCancelled',
+        timestamp: new Date(),
+        organizationId: ctx.scope.organizationId,
+        operatingUnitId: ctx.scope.operatingUnitId,
+        userId: ctx.user.id,
+        payload: {
+          purchaseOrderId: input.purchaseOrderId,
+          purchaseRequestId: Number(purchaseOrder.purchaseRequestId), // Assuming purchaseRequestId exists on purchaseOrders
+          organizationId: Number(purchaseOrder.organizationId),
+          operatingUnitId: Number(purchaseOrder.operatingUnitId),
+        },
+      };
+      await financeEventBus.publish('PurchaseOrderCancelled', event, { organizationId: ctx.scope.organizationId, operatingUnitId: ctx.scope.operatingUnitId, userId: ctx.user.id }, db);
+
+      return { success: true, message: `Purchase Order ${input.purchaseOrderId} cancelled successfully.` };
     }),
 
   /**
@@ -287,8 +383,13 @@ export const prFinanceRouter = router({
       })
     )
     .mutation(async ({ input, ctx }) => {
+      const invoiceDateObj =
+        input.invoiceDate instanceof Date
+            ? input.invoiceDate
+            : new Date(input.invoiceDate);
       return await createInvoiceWith3WayMatching({
         ...input,
+        invoiceDate: invoiceDateObj,
         organizationId: ctx.scope.organizationId,
         operatingUnitId: ctx.scope.operatingUnitId,
         userId: ctx.user.id,
@@ -375,6 +476,30 @@ export const prFinanceRouter = router({
           .where(eq(procurementPayables.id, invoice.payableId));
       }
 
+        const payable = invoice.payableId
+          ? await db.query.procurementPayables.findFirst({
+              where: eq(procurementPayables.id, invoice.payableId),
+            })
+          : null;
+
+        const event: ExpenditureApprovedEvent = {
+          type: "ExpenditureApproved",
+          timestamp: new Date(),
+          organizationId: ctx.scope.organizationId,
+          operatingUnitId: ctx.scope.operatingUnitId,
+          userId: ctx.user.id,
+          payload: {
+            invoiceId: invoice.id,
+            vendorName: "",
+            totalAmount: Number(invoice.invoiceAmount ?? 0),
+            currency: invoice.currency ?? "USD",
+            encumbranceId: payable?.encumbranceId ?? undefined,
+            organizationId: ctx.scope.organizationId,
+            operatingUnitId: ctx.scope.operatingUnitId,
+          },
+        };
+      await financeEventBus.publish('ExpenditureApproved', event, { organizationId: ctx.scope.organizationId, operatingUnitId: ctx.scope.operatingUnitId, userId: ctx.user.id }, db);
+
       return { success: true, message: "Invoice approved successfully (3-way matching + approval threshold enforced)" };
     }),
 
@@ -434,10 +559,36 @@ export const prFinanceRouter = router({
       if (!invoice) {
         throw new TRPCError({ code: 'NOT_FOUND', message: 'Invoice not found' });
       }
-      return await processPaymentAndClose({
+      const result = await processPaymentAndClose({
         ...input,
         userId: ctx.user.id,
       });
+
+      // Emit JournalEntryPostedEvent
+      const event: JournalEntryPostedEvent = {
+        type: "JournalEntryPosted",
+        timestamp: new Date(),
+        organizationId: ctx.scope.organizationId,
+        operatingUnitId: ctx.scope.operatingUnitId,
+        userId: ctx.user.id,
+
+        payload: {
+          journalEntryId: input.paymentId,
+          entryDate: new Date().toISOString(),
+          sourceDocumentId: input.paymentId,
+          sourceDocumentType: "Payment",
+          description: `Payment #${input.paymentId}`,
+          totalDebit: Number(input.paidAmount),
+          totalCredit: Number(input.paidAmount),
+          postedBy: ctx.user.id,
+          organizationId: ctx.scope.organizationId,
+          operatingUnitId: ctx.scope.operatingUnitId,
+          lines: [],
+        },
+      };
+      await financeEventBus.publish('JournalEntryPosted', event, { organizationId: ctx.scope.organizationId, operatingUnitId: ctx.scope.operatingUnitId, userId: ctx.user.id }, db);
+
+      return result;
     }),
 
   // ============================================================================
@@ -1055,7 +1206,7 @@ export const prFinanceRouter = router({
           invoiceNumber: input.invoiceNumber,
           invoiceDate: input.invoiceDate instanceof Date ? input.invoiceDate.toISOString().split('T')[0] : String(input.invoiceDate).split('T')[0],
           invoiceAmount: input.invoiceAmount,
-          matchingStatus,
+          matchingStatus: "matched" as const,
           approvalStatus: invoiceStatus === "approved" ? "approved" : "pending",
           prAmount: payable.totalAmount || "0",
           poAmount: poAmountVal.toFixed(2),
@@ -1131,31 +1282,59 @@ export const prFinanceRouter = router({
           .filter((e) => e.status === "active" || e.status === "partially_liquidated")
           .reduce((sum, e) => sum + parseFloat(e.remainingAmount || "0"), 0);
 
-        // Get project/donor name
-        let projectName = null;
-        let donorName = null;
+        // Get project and donor names
+          let projectName: string | null = null;
+          let donorName: string | null = null;
 
-        if (bl.projectId) {
-          const [project] = await db
-            .select()
-            .from(projects)
-            .where(eq(projects.id, bl.projectId))
-            .limit(1);
-          projectName = project?.title;
-        }
+          // Project
+          if (bl.projectId) {
+            const [project] = await db
+              .select({
+                title: projects.title,
+              })
+              .from(projects)
+              .where(eq(projects.id, bl.projectId))
+              .limit(1);
 
-        if (bl.donorId) {
-          const [donor] = await db
-            .select()
-            .from(donors)
-            .where(eq(donors.id, bl.donorId))
-            .limit(1);
-          donorName = donor?.name;
-        }
+            projectName = project?.title ?? null;
+          }
+
+          // Donor (Budget Line -> Budget -> Grant -> Donor)
+          if (bl.budgetId) {
+            const [budget] = await db
+              .select({
+                grantId: budgets.grantId,
+              })
+              .from(budgets)
+              .where(eq(budgets.id, bl.budgetId))
+              .limit(1);
+
+            if (budget?.grantId) {
+              const [grant] = await db
+                .select({
+                  donorId: grants.donorId,
+                })
+                .from(grants)
+                .where(eq(grants.id, budget.grantId))
+                .limit(1);
+
+              if (grant?.donorId) {
+                const [donor] = await db
+                  .select({
+                    name: donors.name,
+                  })
+                  .from(donors)
+                  .where(eq(donors.id, grant.donorId))
+                  .limit(1);
+
+                donorName = donor?.name ?? null;
+              }
+            }
+          }
 
         return {
           id: bl.id,
-          code: bl.code,
+          code: bl.lineCode,
           description: bl.description,
           totalAmount: bl.totalAmount,
           totalReserved: totalReserved.toString(),
@@ -1268,16 +1447,32 @@ export const prFinanceRouter = router({
           isNull(procurementPayables.deletedAt)
         ));
       
-      if (ctx.scope.operatingUnitId) {
-        query = query.where(eq(procurementPayables.operatingUnitId, ctx.scope.operatingUnitId));
-      }
+      const conditions = [];
+        if (ctx.scope.organizationId) {
+          conditions.push(
+            eq(procurementPayables.organizationId, ctx.scope.organizationId)
+          );
+        }
 
-      // Apply status filter
-      if (input.status) {
-        query = query.where(eq(procurementPayables.status, input.status)) as any;
-      }
+        if (ctx.scope.operatingUnitId) {
+          conditions.push(
+            eq(procurementPayables.operatingUnitId, ctx.scope.operatingUnitId)
+          );
+        }
 
-      const allPayables = await query;
+        if (input.status) {
+          conditions.push(
+            eq(
+              procurementPayables.status,
+              input.status as typeof procurementPayables.$inferSelect.status
+            )
+          );
+        }
+
+        const allPayables = await db
+          .select()
+          .from(procurementPayables)
+          .where(and(...conditions));
 
       // Enrich with PR/PO/GRN/Contract/SAC/Vendor data and apply additional filters
       const enrichedPayables = await Promise.all(
@@ -1962,7 +2157,7 @@ export const prFinanceRouter = router({
           payableId: input.id,
           organizationId: ctx.scope.organizationId,
           action: "rejected",
-          actionByName: ctx.user.name || ctx.user.email,
+          rejectedBy: ctx.user.name || ctx.user.email,
           reason: input.reason,
         });
       } catch (error) {

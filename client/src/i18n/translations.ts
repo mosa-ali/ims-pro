@@ -14414,7 +14414,7 @@ NewDashboardTranslations: {
   ownedBy: string;
   compliancePosture: string;
   openIncidents: string;
-};
+  };
   };
 
 // ========== ENGLISH TRANSLATIONS ==========

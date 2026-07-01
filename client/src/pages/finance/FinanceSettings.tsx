@@ -89,13 +89,13 @@ export default function FinanceSettings() {
  const [permissionDialog, setPermissionDialog] = useState<{ open: boolean; mode:"create" |"edit"; data?: any }>({ open: false, mode:"create" });
  
  // Queries
- const { data: statistics, refetch: refetchStats } = trpc.financeSettings.getSettingsStatistics.useQuery({ organizationId });
+ const { data: statistics, refetch: refetchStats } = trpc.financeSettings.getSettingsStatistics.useQuery({});
  const { data: currencies = [], refetch: refetchCurrencies } = trpc.financeSettings.listCurrencies.useQuery({  search: searchTerm });
- const { data: fiscalYears = [], refetch: refetchFiscalYears } = trpc.financeSettings.listFiscalYears.useQuery({ organizationId });
- const { data: thresholds = [], refetch: refetchThresholds } = trpc.financeSettings.listApprovalThresholds.useQuery({ organizationId });
+ const { data: fiscalYears = [], refetch: refetchFiscalYears } = trpc.financeSettings.listFiscalYears.useQuery({});
+ const { data: thresholds = [], refetch: refetchThresholds } = trpc.financeSettings.listApprovalThresholds.useQuery({});
  const { data: categories = [], refetch: refetchCategories } = trpc.financeSettings.listBudgetCategories.useQuery({  search: searchTerm });
- const { data: roles = [], refetch: refetchRoles } = trpc.financeSettings.listFinanceRoles.useQuery({ organizationId });
- const { data: permissions = [], refetch: refetchPermissions } = trpc.financeSettings.listFinancePermissions.useQuery({ organizationId });
+ const { data: roles = [], refetch: refetchRoles } = trpc.financeSettings.listFinanceRoles.useQuery({});
+ const { data: permissions = [], refetch: refetchPermissions } = trpc.financeSettings.listFinancePermissions.useQuery({});
  
  // Mutations
  const createCurrency = trpc.financeSettings.createCurrency.useMutation({

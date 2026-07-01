@@ -1,7 +1,10 @@
 import { z } from "zod";
+import { financeEventBus } from "./services/finance/initFinanceEngine";
+import { PurchaseRequestApprovedEvent, PurchaseOrderSentEvent } from "@shared/events/FinanceEventTypes";
+
 import { publicProcedure, protectedProcedure, scopedProcedure, router } from "./_core/trpc";
 import { getDb } from "./db";
-import { procurementPlan, projects, budgetItems, activities } from "../drizzle/schema";
+import { procurementPlan, projects, budgetItems, activities, purchaseRequests as purchaseRequestsSchema } from "../drizzle/schema";
 import { eq, and, desc, isNull } from "drizzle-orm";
 
 /**
@@ -144,8 +147,29 @@ export const procurementRouter = router({
         createdBy: ctx.user?.id,
         updatedBy: ctx.user?.id,
       });
+
+      const newProcurementItemId = Number(result[0].insertId);
+
+      // Emit PurchaseRequestApprovedEvent if status is APPROVED
+      if (input.status === 'APPROVED') {
+        const event: PurchaseRequestApprovedEvent = {
+          type: 'PurchaseRequestApproved',
+          timestamp: new Date(),
+          organizationId: organizationId,
+          operatingUnitId: operatingUnitId,
+          userId: ctx.user?.id,
+          payload: {
+            purchaseRequestId: newProcurementItemId, // Assuming procurementPlan item is a PR
+            totalAmount: parseFloat(input.estimatedCost), // Using estimatedCost as totalAmount for PR
+            currency: input.currency,
+            organizationId: organizationId,
+            operatingUnitId: operatingUnitId,
+          },
+        };
+        await financeEventBus.publish(event, { organizationId, operatingUnitId, userId: ctx.user?.id });
+      }
       
-      return { success: true, id: result[0].insertId };
+      return { success: true, id: newProcurementItemId };
     }),
 
   // Update procurement item
@@ -199,12 +223,58 @@ export const procurementRouter = router({
         throw new Error("Procurement item not found");
       }
       
+      // Fetch the old item to compare status changes
+      const oldItem = await db.query.procurementPlan.findFirst({
+        where: and(
+          eq(procurementPlan.id, id),
+          eq(procurementPlan.organizationId, organizationId),
+          eq(procurementPlan.operatingUnitId, operatingUnitId)
+        ),
+      });
+
       await db.update(procurementPlan).set({ ...updateData, updatedBy: ctx.user?.id })
         .where(and(
           eq(procurementPlan.id, id),
           eq(procurementPlan.organizationId, organizationId),
           eq(procurementPlan.operatingUnitId, operatingUnitId)
         ));
+
+      // Emit PurchaseOrderSentEvent if status changes to 'ORDERED'
+      if (oldItem?.status !== 'ORDERED' && updateData.status === 'ORDERED') {
+        const event: PurchaseOrderSentEvent = {
+          type: 'PurchaseOrderSent',
+          timestamp: new Date(),
+          organizationId: organizationId,
+          operatingUnitId: operatingUnitId,
+          userId: ctx.user?.id,
+          payload: {
+            purchaseOrderId: id,
+            totalAmount: parseFloat(updateData.estimatedCost || oldItem?.estimatedCost || '0'),
+            currency: updateData.currency || oldItem?.currency || 'USD',
+            organizationId: organizationId,
+            operatingUnitId: operatingUnitId,
+          },
+        };
+        await financeEventBus.publish(event, { organizationId, operatingUnitId, userId: ctx.user?.id });
+      }
+
+      // Emit PurchaseOrderCancelledEvent if status changes to 'CANCELLED'
+      if (oldItem?.status !== 'CANCELLED' && updateData.status === 'CANCELLED') {
+        const event: PurchaseOrderCancelledEvent = {
+          type: 'PurchaseOrderCancelled',
+          timestamp: new Date(),
+          organizationId: organizationId,
+          operatingUnitId: operatingUnitId,
+          userId: ctx.user?.id,
+          payload: {
+            purchaseOrderId: id,
+            organizationId: organizationId,
+            operatingUnitId: operatingUnitId,
+          },
+        };
+        await financeEventBus.publish(event, { organizationId, operatingUnitId, userId: ctx.user?.id });
+      }
+
       return { success: true };
     }),
 

@@ -178,21 +178,23 @@ export const treasuryRouter = router({
       const db = await getDb();
       if (!db) throw new Error("Database not available");
       
-      const { id, ...updateData } = input;
+      const { id, isActive, ...updateData } = input;
       
+      const setData: any = { ...updateData, updatedBy: ctx.user?.id || null };
+      if (isActive !== undefined) {
+        setData.isActive = isActive ? 1 : 0;
+      }
+
       await db.update(financeBankAccounts)
-        .set({
-          ...updateData,
-          updatedBy: ctx.user?.id || null,
-        })
-        .where(and(
-          eq(financeBankAccounts.id, id),
-          eq(financeBankAccounts.organizationId, organizationId),
-          eq(financeBankAccounts.operatingUnitId, operatingUnitId),
-        ));
-      
-      return { success: true };
-    }),
+          .set(setData)
+          .where(and(
+            eq(financeBankAccounts.id, id),
+            eq(financeBankAccounts.organizationId, organizationId),
+            eq(financeBankAccounts.operatingUnitId, operatingUnitId),
+          ));
+        
+        return { success: true };
+      }),
 
   // Delete bank account (soft delete)
   deleteBankAccount: scopedProcedure
@@ -441,7 +443,7 @@ export const treasuryRouter = router({
         organizationId,
         bankAccountId: input.bankAccountId,
         transactionNumber: input.transactionNumber,
-        transactionDate: new Date(input.transactionDate),
+        transactionDate: new Date(input.transactionDate).toISOString(),
         transactionType: input.transactionType,
         amount: String(input.amount),
         currency: input.currency,
@@ -625,7 +627,7 @@ export const treasuryRouter = router({
         totalBudget: String(input.openingBalance),
         currentBalance: String(input.openingBalance),
         notes: input.description || null,
-        startDate: input.expirationDate ? new Date(input.expirationDate) : null,
+        startDate: input.expirationDate ? new Date(input.expirationDate).toISOString() : null,
         isActive: 1,
         createdBy: ctx.user?.id || null,
       });

@@ -127,6 +127,13 @@ import { executiveDashboardRouter } from "./routers/executiveDashboardRouter";
 import { projectIntelligenceRouter } from "./services/executive/projectIntelligenceRouter";
 import { procurementAnalyticsRouter } from "./routers/procurementAnalyticsRouter";
 import { budgetSyncRouterDirect as budgetSyncRouter } from './routers/budgetSyncRouter';
+import { financeDashboardRouter } from "./routers/finance/financeDashboardRouter";
+import { financialReportsRouter } from "./routers/finance/financialReportsRouter";
+import { userProfileRouter } from "./routers/finance/userProfileRouter";
+import { riskRouter } from './routers/finance/riskRouter';
+import { complianceRouter } from './routers/finance/complianceRouter';
+import { observabilityRouter } from "./routers/observabilityRouter";
+
 
 // import { autoProgramsReportRouter } from './routers/autoProgramsReportRouter'; // File does not exist
 
@@ -443,6 +450,12 @@ export const appRouter = router({
 
   // PR-Finance Integration
   prFinance: prFinanceRouter,
+  financeDashboard: financeDashboardRouter,
+  financialReports: financialReportsRouter,
+  userProfile: userProfileRouter,
+  risk: riskRouter,
+  compliance: complianceRouter,
+  observability: observabilityRouter,
 
   // Finance Deletion Governance (Hard Delete for Draft, Soft Delete for Approved)
   financeDeletionGovernance: financeDeletionGovernanceRouter,
