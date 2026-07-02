@@ -19,7 +19,7 @@
  * Overall score: weighted average → 0-100 → A/B/C/D/F grade
  */
 
-import type { ILogger, IConfigService, RepositoryScope } from '../PHASE3_HARDENED/PlatformInterfaces';
+import type { ILogger, IConfigService, RepositoryScope } from '../../engines/finance/PlatformInterfaces';
 
 // ────────────────────────────────────────────────────────────────────────────
 // TYPES

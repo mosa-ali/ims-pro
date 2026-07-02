@@ -24,7 +24,7 @@
  *  - FinancialRulesEngine (as a validation check)
  */
 
-import type { ILogger, IConfigService, RepositoryScope } from '../../newFinance/finance/PlatformInterfaces';
+import type { ILogger, IConfigService, RepositoryScope } from '../../engines/finance/PlatformInterfaces';
 
 // ────────────────────────────────────────────────────────────────────────────
 // TYPES

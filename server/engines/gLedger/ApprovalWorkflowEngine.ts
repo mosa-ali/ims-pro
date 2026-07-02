@@ -19,7 +19,7 @@
  */
 
 import { v4 as uuidv4 } from 'uuid';
-import type { ILogger, RepositoryScope } from '../PHASE3_HARDENED/PlatformInterfaces';
+import type { ILogger, RepositoryScope } from '../../engines/finance/PlatformInterfaces';
 
 // ────────────────────────────────────────────────────────────────────────────
 // TYPES

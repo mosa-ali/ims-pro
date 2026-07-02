@@ -23,7 +23,7 @@
  * no replay needed.
  */
 
-import type { ILogger } from './PlatformInterfaces';
+import type { ILogger } from '../../engines/finance/PlatformInterfaces';
 import type { EventBus } from './EventBus';
 import { FinancialEventType } from './FinancialEventTypes';
 

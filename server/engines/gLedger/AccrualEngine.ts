@@ -21,7 +21,7 @@
  */
 
 import { v4 as uuidv4 } from 'uuid';
-import type { ILogger, IConfigService, RepositoryScope } from '../PHASE3_HARDENED/PlatformInterfaces';
+import type { ILogger, IConfigService, RepositoryScope } from '../../engines/finance/PlatformInterfaces';
 import type { JournalEntryInput, JournalLineInput } from './GeneralLedgerEngine';
 
 // ────────────────────────────────────────────────────────────────────────────

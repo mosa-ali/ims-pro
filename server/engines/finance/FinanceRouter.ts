@@ -21,9 +21,9 @@
  */
 
 import { z } from 'zod';
-import { router, scopedProcedure } from '../_core/trpc';
+import { router, scopedProcedure } from '../../_core/trpc';
 import { TRPCError } from '@trpc/server';
-import { getDb } from '../db';
+import { getDb } from '../../db';
 import { FinanceOrchestratorService } from './FinanceService';
 
 import {

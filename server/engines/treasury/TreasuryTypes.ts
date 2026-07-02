@@ -2,6 +2,7 @@ export type RiskLevel = "low" | "medium" | "high" | "critical";
 export type AccountRole = "master" | "pool_header" | "operating" | "restricted" | "petty_cash";
 export type ForecastScenario = "best" | "expected" | "worst";
 export type PaymentPriority = "critical" | "high" | "medium" | "low";
+export type PolicySeverity = "info" | "warning" | "critical";
 
 export interface TreasuryScope {
   organizationId: number;
@@ -27,6 +28,12 @@ export interface TreasuryBankAccount {
   interestRate?: number;
   transferCost?: number;
   bankPriority?: number;
+  countryCode?: string;
+  creditRating?: "AAA" | "AA" | "A" | "BBB" | "BB" | "B" | "CCC" | "UNKNOWN";
+  sanctionsFlag?: boolean;
+  politicalExposure?: "low" | "medium" | "high";
+  liquidityRating?: "strong" | "adequate" | "weak";
+  organizationId?: number;
 }
 
 export interface TreasuryCashFlow {
@@ -40,6 +47,8 @@ export interface TreasuryCashFlow {
   bankAccountId?: number;
   operatingUnitId?: number | null;
   isCommitted?: boolean;
+  scenarioTags?: string[];
+  organizationId?: number;
 }
 
 export interface TreasuryPayable {
@@ -59,6 +68,8 @@ export interface TreasuryPayable {
   penaltyAmount?: number;
   penaltyStartsOn?: string;
   isCriticalVendor?: boolean;
+  organizationId?: number;
+  operatingUnitId?: number | null;
 }
 
 export interface ExchangeRate {
@@ -81,6 +92,34 @@ export interface TreasuryInput {
   cashFlows?: TreasuryCashFlow[];
   payables?: TreasuryPayable[];
   exchangeRates?: ExchangeRate[];
+  policy?: Partial<TreasuryPolicy>;
+  countryRisks?: CountryRisk[];
+}
+
+export interface TreasuryPolicy {
+  minimumCashCoverageDays: number;
+  minimumLiquidityRatio: number;
+  minimumCashReserve: number;
+  maximumFXExposurePercent: number;
+  maximumBankExposurePercent: number;
+  maximumCountryExposurePercent: number;
+  staleExchangeRateDays: number;
+  restrictedCashUsable: boolean;
+  requireDualApprovalAboveAmount: number;
+}
+
+export interface CountryRisk {
+  countryCode: string;
+  riskLevel: RiskLevel;
+  sanctionsFlag?: boolean;
+}
+
+export interface TreasuryPolicyViolation {
+  policyKey: keyof TreasuryPolicy | "bank_concentration" | "country_concentration" | "stale_exchange_rate";
+  severity: PolicySeverity;
+  message: string;
+  actualValue: number | string;
+  limitValue: number | string;
 }
 
 export interface DailyCashForecast {
@@ -120,6 +159,46 @@ export interface LiquidityAnalysis {
   liquidityBuffer: number;
   riskLevel: RiskLevel;
   recommendations: string[];
+}
+
+export interface CashPositionSnapshot {
+  date: string;
+  openingCash: number;
+  receipts: number;
+  payments: number;
+  availableCash: number;
+  blockedCash: number;
+  usableCash: number;
+  committedCash: number;
+  freeCash: number;
+}
+
+export interface BankRiskAssessment {
+  bankName: string;
+  countryCode?: string;
+  exposureAmount: number;
+  exposurePercentage: number;
+  creditRating: string;
+  concentrationRisk: RiskLevel;
+  countryRisk: RiskLevel;
+  sanctionsRisk: RiskLevel;
+  liquidityRisk: RiskLevel;
+  overallRisk: RiskLevel;
+  recommendations: string[];
+}
+
+export interface TreasuryLimitAssessment {
+  violations: TreasuryPolicyViolation[];
+  passed: boolean;
+}
+
+export interface TreasuryComplianceResult {
+  passed: boolean;
+  findings: Array<{
+    code: string;
+    severity: PolicySeverity;
+    message: string;
+  }>;
 }
 
 export interface CashPoolSweep {
@@ -189,6 +268,9 @@ export interface TreasuryDashboardSnapshot {
   cashPooling: CashPoolingPlan;
   fxExposure: FXExposureReport;
   paymentOptimization: PaymentOptimizationPlan;
+  cashPosition?: CashPositionSnapshot;
+  policyViolations?: TreasuryPolicyViolation[];
+  bankRisks?: BankRiskAssessment[];
   kpis: Array<{
     key: string;
     label: string;
@@ -201,6 +283,81 @@ export interface TreasuryDashboardSnapshot {
     message: string;
   }>;
 }
+
+export interface TreasuryScenario {
+  id: string;
+  name: string;
+  description?: string;
+  inflowMultiplier?: number;
+  outflowMultiplier?: number;
+  currencyShock?: Record<string, number>;
+  additionalFlows?: TreasuryCashFlow[];
+  tags?: string[];
+}
+
+export interface TreasuryScenarioResult {
+  scenario: TreasuryScenario;
+  forecast: CashForecastSummary;
+  liquidity: LiquidityAnalysis;
+  policyViolations: TreasuryPolicyViolation[];
+}
+
+export interface TreasuryAdvisorInsight {
+  severity: PolicySeverity;
+  title: string;
+  narrative: string;
+  recommendedActions: string[];
+}
+
+export interface IntercompanyTreasuryPosition {
+  organizationId: number;
+  operatingUnitId?: number | null;
+  currency: string;
+  fundingNeed: number;
+  settlementAmount: number;
+  recommendation: string;
+}
+
+export interface TreasuryWorkflowStep {
+  key: "forecast" | "review" | "approve" | "publish" | "execute" | "reconcile";
+  status: "pending" | "ready" | "completed" | "blocked";
+  ownerRole: string;
+  message: string;
+}
+
+export interface TreasuryWorkflowState {
+  currentStep: TreasuryWorkflowStep["key"];
+  steps: TreasuryWorkflowStep[];
+}
+
+export interface EnterpriseTreasuryAnalysis {
+  policy: TreasuryPolicy;
+  liquidity: LiquidityAnalysis;
+  cashForecast: CashForecastSummary;
+  cashPosition: CashPositionSnapshot;
+  cashPooling: CashPoolingPlan;
+  fxExposure: FXExposureReport;
+  paymentOptimization: PaymentOptimizationPlan;
+  bankRisks: BankRiskAssessment[];
+  limits: TreasuryLimitAssessment;
+  compliance: TreasuryComplianceResult;
+  advisorInsight: TreasuryAdvisorInsight;
+  workflow: TreasuryWorkflowState;
+  intercompanyPositions: IntercompanyTreasuryPosition[];
+  dashboard: TreasuryDashboardSnapshot;
+}
+
+export const defaultTreasuryPolicy: TreasuryPolicy = {
+  minimumCashCoverageDays: 30,
+  minimumLiquidityRatio: 1.5,
+  minimumCashReserve: 100000,
+  maximumFXExposurePercent: 20,
+  maximumBankExposurePercent: 35,
+  maximumCountryExposurePercent: 40,
+  staleExchangeRateDays: 7,
+  restrictedCashUsable: false,
+  requireDualApprovalAboveAmount: 50000,
+};
 
 export function toNumber(value: number | string | null | undefined): number {
   const parsed = Number(value ?? 0);

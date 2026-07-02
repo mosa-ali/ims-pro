@@ -19,7 +19,7 @@
  * This engine adds intelligence AROUND that flow.
  */
 
-import type { ILogger, IConfigService, RepositoryScope } from '../PHASE3_HARDENED/PlatformInterfaces';
+import type { ILogger, IConfigService, RepositoryScope } from '../../engines/finance/PlatformInterfaces';
 
 // ────────────────────────────────────────────────────────────────────────────
 // TYPES

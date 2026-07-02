@@ -33,7 +33,50 @@ export interface CashFlowForecast {
   cumulativeCashFlow: number;
 }
 
+export interface PredictiveSeriesPoint {
+  date: string;
+  value: number;
+}
+
+export interface PredictiveForecastResult {
+  forecast: ForecastData[];
+  trend: "increasing" | "decreasing" | "stable";
+  confidence: number;
+  predictedTotal: number;
+  methodBlend: Array<ForecastData["method"]>;
+}
+
 export class ForecastingEngine {
+  forecastSeries(input: {
+    history: PredictiveSeriesPoint[];
+    horizonDays: number;
+  }): PredictiveForecastResult {
+    const history = input.history
+      .map((point) => ({ date: new Date(point.date), amount: point.value }))
+      .sort((a, b) => a.date.getTime() - b.date.getTime());
+    const linear = this.linearRegression(history, input.horizonDays);
+    const exponential = this.exponentialSmoothing(history, input.horizonDays);
+    const seasonal = this.seasonalDecomposition(history, input.horizonDays);
+    const combined = this.combineForecasts(
+      [
+        { data: linear, weight: 0.45 },
+        { data: exponential, weight: 0.35 },
+        { data: seasonal, weight: 0.2 },
+      ],
+      input.horizonDays,
+    );
+
+    return {
+      forecast: combined,
+      trend: this.detectTrend(history),
+      confidence: this.calculateForecastConfidence(linear, exponential, seasonal),
+      predictedTotal: combined.reduce((sum, item) => sum + item.value, 0),
+      methodBlend: ["linear", "exponential", "seasonal"].filter((method) => {
+        return { linear, exponential, seasonal }[method as ForecastData["method"]].length > 0;
+      }) as Array<ForecastData["method"]>,
+    };
+  }
+
   /**
    * Forecast budget utilization using multiple methods
    */
@@ -366,8 +409,8 @@ export class ForecastingEngine {
 
       combined.push({
         date: new Date(new Date().getTime() + (i + 1) * 24 * 60 * 60 * 1000),
-        value: totalValue / totalWeight,
-        confidence: totalConfidence / totalWeight,
+        value: totalWeight > 0 ? totalValue / totalWeight : 0,
+        confidence: totalWeight > 0 ? totalConfidence / totalWeight : 0,
         method: "linear",
       });
     }
@@ -402,6 +445,19 @@ export class ForecastingEngine {
     const confidence = Math.max(30, Math.min(95, 100 - avgVariance / 100));
 
     return Math.round(confidence);
+  }
+
+  private detectTrend(data: Array<{ date: Date; amount: number }>): "increasing" | "decreasing" | "stable" {
+    if (data.length < 2) return "stable";
+    const midpoint = Math.floor(data.length / 2);
+    const first = data.slice(0, midpoint);
+    const second = data.slice(midpoint);
+    const firstAverage = first.reduce((sum, item) => sum + item.amount, 0) / Math.max(first.length, 1);
+    const secondAverage = second.reduce((sum, item) => sum + item.amount, 0) / Math.max(second.length, 1);
+    const change = firstAverage > 0 ? ((secondAverage - firstAverage) / firstAverage) * 100 : 0;
+    if (change > 10) return "increasing";
+    if (change < -10) return "decreasing";
+    return "stable";
   }
 }
 

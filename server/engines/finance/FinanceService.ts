@@ -18,7 +18,7 @@
 
 import { TRPCError } from '@trpc/server';
 import { FinanceOrchestratorEngine } from './FinanceEngine';
-import type { DB } from './db';
+import type { DB } from '../../db';
 
 import {
   GLPostingPayload,

@@ -35,7 +35,42 @@ export interface AggregatedRiskMetrics {
   averageRiskScore: number;
 }
 
+export interface EnterpriseRiskSignal {
+  domain: "treasury" | "budget" | "general_ledger" | "grants" | "procurement" | "cash_flow";
+  score: number;
+  exposureAmount: number;
+  description: string;
+}
+
+export interface EnterpriseRiskForecast {
+  overallRiskScore: number;
+  riskLevel: "low" | "medium" | "high" | "critical";
+  topRisks: EnterpriseRiskSignal[];
+  forecastedRiskLevel: "low" | "medium" | "high" | "critical";
+  rootCauses: string[];
+  mitigationActions: string[];
+}
+
 export class FinancialRiskEngine {
+  assessEnterpriseRisk(signals: EnterpriseRiskSignal[]): EnterpriseRiskForecast {
+    const totalExposure = signals.reduce((sum, signal) => sum + signal.exposureAmount, 0);
+    const weightedRisk = signals.reduce((sum, signal) => {
+      const exposureWeight = totalExposure > 0 ? signal.exposureAmount / totalExposure : 1 / Math.max(signals.length, 1);
+      return sum + signal.score * exposureWeight;
+    }, 0);
+    const overallRiskScore = Math.round(weightedRisk || 0);
+    const topRisks = [...signals].sort((a, b) => b.score - a.score).slice(0, 5);
+
+    return {
+      overallRiskScore,
+      riskLevel: this.determineRiskLevel(overallRiskScore),
+      topRisks,
+      forecastedRiskLevel: this.determineRiskLevel(Math.min(100, overallRiskScore + this.riskMomentum(topRisks))),
+      rootCauses: topRisks.map((risk) => `${risk.domain}: ${risk.description}`),
+      mitigationActions: this.generateEnterpriseMitigations(topRisks),
+    };
+  }
+
   /**
    * Comprehensive project risk assessment
    */
@@ -456,6 +491,18 @@ export class FinancialRiskEngine {
     });
 
     return actions.length > 0 ? actions : ["Continue regular monitoring and reporting"];
+  }
+
+  private riskMomentum(topRisks: EnterpriseRiskSignal[]): number {
+    return topRisks.filter((risk) => risk.score >= 70).length * 5;
+  }
+
+  private generateEnterpriseMitigations(risks: EnterpriseRiskSignal[]): string[] {
+    const actions = risks
+      .filter((risk) => risk.score >= 50)
+      .map((risk) => `Reduce ${risk.domain.replace("_", " ")} exposure: ${risk.description}`);
+
+    return actions.length ? actions : ["Continue routine monitoring and refresh financial intelligence weekly."];
   }
 
   /**

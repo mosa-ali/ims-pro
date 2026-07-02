@@ -4,6 +4,7 @@ import { FXExposureEngine } from "./FXExposureEngine";
 import { LiquidityAnalysisEngine } from "./LiquidityAnalysisEngine";
 import { PaymentOptimizationEngine } from "./PaymentOptimizationEngine";
 import {
+  defaultTreasuryPolicy,
   TreasuryDashboardSnapshot,
   TreasuryInput,
 } from "./TreasuryTypes";
@@ -23,6 +24,10 @@ export class TreasuryDashboardEngine {
   }): TreasuryDashboardSnapshot {
     const cashFlows = input.cashFlows ?? [];
     const payables = input.payables ?? [];
+    const policy = {
+      ...defaultTreasuryPolicy,
+      ...Object.fromEntries(Object.entries(input.policy ?? {}).filter(([, value]) => value !== undefined)),
+    };
     const liquidity = this.liquidityAnalysis.analyze({
       scope: input.scope,
       bankAccounts: input.bankAccounts,
@@ -35,7 +40,7 @@ export class TreasuryDashboardEngine {
       cashFlows,
       horizonDays: input.horizonDays ?? 90,
       scenario: "expected",
-      minimumCashReserve: input.minimumCashReserve,
+      minimumCashReserve: input.minimumCashReserve ?? policy.minimumCashReserve,
     });
     const cashPooling = this.cashPooling.buildPoolingPlan({
       scope: input.scope,
@@ -51,7 +56,7 @@ export class TreasuryDashboardEngine {
       scope: input.scope,
       bankAccounts: input.bankAccounts,
       payables,
-      minimumCashReserve: input.minimumCashReserve,
+      minimumCashReserve: input.minimumCashReserve ?? policy.minimumCashReserve,
     });
 
     return {
@@ -73,13 +78,13 @@ export class TreasuryDashboardEngine {
           key: "current_ratio",
           label: "Current ratio",
           value: liquidity.currentRatio,
-          status: liquidity.currentRatio >= 1.5 ? "good" : liquidity.currentRatio >= 1 ? "watch" : "risk",
+          status: liquidity.currentRatio >= policy.minimumLiquidityRatio ? "good" : liquidity.currentRatio >= 1 ? "watch" : "risk",
         },
         {
           key: "cash_coverage_days",
           label: "Cash coverage days",
           value: liquidity.cashCoverageDays,
-          status: liquidity.cashCoverageDays >= 30 ? "good" : liquidity.cashCoverageDays >= 14 ? "watch" : "risk",
+          status: liquidity.cashCoverageDays >= policy.minimumCashCoverageDays ? "good" : liquidity.cashCoverageDays >= 14 ? "watch" : "risk",
         },
         {
           key: "fx_exposure",

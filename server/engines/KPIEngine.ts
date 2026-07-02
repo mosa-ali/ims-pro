@@ -88,6 +88,25 @@ export interface KPIAlert {
   resolvedAt?: string;
 }
 
+export interface ExecutiveKPIInput {
+  id: string;
+  name: string;
+  value: number;
+  target: number;
+  weight?: number;
+  direction?: "higher_is_better" | "lower_is_better";
+}
+
+export interface ExecutiveKPIScorecard {
+  score: number;
+  rating: "excellent" | "good" | "watch" | "critical";
+  kpis: Array<ExecutiveKPIInput & {
+    score: number;
+    status: "on-track" | "at-risk" | "off-track";
+  }>;
+  narrative: string;
+}
+
 // ── KPI Engine ───────────────────────────────────────────────────────────────
 
 export class KPIEngine {
@@ -96,6 +115,30 @@ export class KPIEngine {
   constructor(db: DB) {
     this.db = db;
   }
+
+  scoreExecutiveKPIs(input: ExecutiveKPIInput[]): ExecutiveKPIScorecard {
+    const totalWeight = input.reduce((sum, kpi) => sum + (kpi.weight ?? 1), 0) || 1;
+    const kpis = input.map((kpi) => {
+      const direction = kpi.direction ?? "higher_is_better";
+      const ratio = kpi.target === 0 ? 1 : kpi.value / kpi.target;
+      const normalized = direction === "higher_is_better" ? ratio : 1 / Math.max(ratio, 0.01);
+      const score = Math.max(0, Math.min(100, Math.round(normalized * 100)));
+      return {
+        ...kpi,
+        score,
+        status: score >= 90 ? "on-track" as const : score >= 70 ? "at-risk" as const : "off-track" as const,
+      };
+    });
+    const score = Math.round(kpis.reduce((sum, kpi) => sum + kpi.score * (kpi.weight ?? 1), 0) / totalWeight);
+
+    return {
+      score,
+      rating: score >= 90 ? "excellent" : score >= 75 ? "good" : score >= 60 ? "watch" : "critical",
+      kpis,
+      narrative: this.buildExecutiveKPINarrative(score, kpis),
+    };
+  }
+
 
   /**
    * Calculate cash conversion cycle KPI.
@@ -122,6 +165,14 @@ export class KPIEngine {
       lastUpdated: asOfDate,
       historicalValues: [],
     };
+  }
+
+  private buildExecutiveKPINarrative(score: number, kpis: ExecutiveKPIScorecard["kpis"]): string {
+    const weakest = [...kpis].sort((a, b) => a.score - b.score)[0];
+    if (score >= 90) return "Executive KPIs are performing strongly against target.";
+    if (score >= 75) return `Executive KPIs are broadly healthy, with ${weakest.name} requiring continued attention.`;
+    if (score >= 60) return `Executive KPI performance is under watch. ${weakest.name} is the lowest-scoring indicator.`;
+    return `Executive KPI performance is critical. Immediate action is needed on ${weakest.name}.`;
   }
 
   /**

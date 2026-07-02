@@ -31,7 +31,54 @@ export interface HealthTrendData {
   timelineProgress: number;
 }
 
+export interface OrganizationalHealthInput {
+  treasuryScore: number;
+  budgetExecutionScore: number;
+  grantComplianceScore: number;
+  glQualityScore: number;
+  riskScore: number;
+}
+
+export interface OrganizationalHealthAssessment {
+  healthScore: number;
+  executiveScore: "excellent" | "healthy" | "watch" | "stressed";
+  trend: "improving" | "stable" | "declining";
+  drivers: Array<{
+    area: "treasury" | "budget" | "grants" | "general_ledger" | "risk";
+    score: number;
+    impact: "positive" | "neutral" | "negative";
+    explanation: string;
+  }>;
+  narrative: string;
+}
+
 export class FinancialHealthEngine {
+  analyzeOrganizationalHealth(input: OrganizationalHealthInput): OrganizationalHealthAssessment {
+    const weightedScore = Math.round(
+      input.treasuryScore * 0.25 +
+      input.budgetExecutionScore * 0.25 +
+      input.grantComplianceScore * 0.2 +
+      input.glQualityScore * 0.15 +
+      (100 - input.riskScore) * 0.15,
+    );
+
+    const drivers: OrganizationalHealthAssessment["drivers"] = [
+      this.healthDriver("treasury", input.treasuryScore, "Treasury cash coverage and liquidity position."),
+      this.healthDriver("budget", input.budgetExecutionScore, "Budget execution and utilization discipline."),
+      this.healthDriver("grants", input.grantComplianceScore, "Grant compliance and donor restriction performance."),
+      this.healthDriver("general_ledger", input.glQualityScore, "General ledger posting quality and reconciliation confidence."),
+      this.healthDriver("risk", 100 - input.riskScore, "Enterprise financial risk exposure."),
+    ];
+
+    return {
+      healthScore: weightedScore,
+      executiveScore: weightedScore >= 85 ? "excellent" : weightedScore >= 70 ? "healthy" : weightedScore >= 50 ? "watch" : "stressed",
+      trend: this.deriveHealthTrend(drivers),
+      drivers,
+      narrative: this.buildHealthNarrative(weightedScore, drivers),
+    };
+  }
+
   /**
    * Calculate comprehensive health metrics for a project
    */
@@ -312,6 +359,41 @@ export class FinancialHealthEngine {
     }
 
     return trendData;
+  }
+
+  private healthDriver(
+    area: OrganizationalHealthAssessment["drivers"][number]["area"],
+    score: number,
+    explanation: string,
+  ): OrganizationalHealthAssessment["drivers"][number] {
+    return {
+      area,
+      score,
+      impact: score >= 75 ? "positive" : score >= 50 ? "neutral" : "negative",
+      explanation,
+    };
+  }
+
+  private deriveHealthTrend(drivers: OrganizationalHealthAssessment["drivers"]): "improving" | "stable" | "declining" {
+    const positive = drivers.filter((driver) => driver.impact === "positive").length;
+    const negative = drivers.filter((driver) => driver.impact === "negative").length;
+    if (positive > negative + 1) return "improving";
+    if (negative > positive) return "declining";
+    return "stable";
+  }
+
+  private buildHealthNarrative(score: number, drivers: OrganizationalHealthAssessment["drivers"]): string {
+    const weakest = [...drivers].sort((a, b) => a.score - b.score)[0];
+    if (score >= 85) {
+      return "Organizational financial health is strong across treasury, budget execution, compliance, and accounting quality.";
+    }
+    if (score >= 70) {
+      return `Financial health is sound, with ${weakest.area.replace("_", " ")} the main area to continue monitoring.`;
+    }
+    if (score >= 50) {
+      return `Financial health requires management attention. The weakest driver is ${weakest.area.replace("_", " ")} at ${weakest.score}.`;
+    }
+    return `Financial health is stressed and needs executive action, especially around ${weakest.area.replace("_", " ")}.`;
   }
 }
 

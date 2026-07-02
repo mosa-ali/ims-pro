@@ -24,7 +24,7 @@
 
 import { TRPCError } from '@trpc/server';
 import { v4 as uuidv4 } from 'uuid';
-import type { DB } from './db';
+import type { DB } from '../../db';
 
 import {
   OrchestratorScope,
@@ -585,7 +585,7 @@ export class FinanceOrchestratorEngine {
       if (budgetResult.status !== 'ok' || !budgetResult.data?.budgetId) {
         throw new Error(`Budget allocation failed: ${budgetResult.error?.message}`);
       }
-      saga.entityReferences.budgetId = budgetResult.data.budgetId;
+      saga.entityReferences.budgetAllocationId = budgetResult.data.budgetId;
       await this.completeSagaStep(saga, SagaStep.BUDGET_ALLOCATION, budgetResult.data);
 
       // STEP 3: ADVANCE ISSUANCE

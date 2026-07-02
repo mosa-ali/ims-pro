@@ -34,7 +34,7 @@ export const paymentsRouter = router({
       }
       
       // Mark current version as not latest
-      await db.update(payments).set({ isLatestVersion: false }).where(eq(payments.id, input.id));
+      await db.update(payments).set({ isLatestVersion: 0 }).where(eq(payments.id, input.id));
       
       // Create new version
       const newVersion = {
@@ -228,7 +228,7 @@ export const paymentsRouter = router({
       const db = await getDb();
       
       // Generate payment number using atomic sequence (prevents duplicates under concurrency)
-      const { getNextFinanceSequence } = await import('./services/sequenceService');
+      const { getNextFinanceSequence } = await import('./services/finance/sequenceService');
       const paymentNumber = await getNextFinanceSequence(organizationId, 'PAY');
       
       const { lines, ...paymentData } = input;

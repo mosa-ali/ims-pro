@@ -17,7 +17,7 @@
  * All forecasts are read-only computations — no mutations.
  */
 
-import type { ILogger, IConfigService, RepositoryScope } from '../PHASE3_HARDENED/PlatformInterfaces';
+import type { ILogger, IConfigService, RepositoryScope } from '../../engines/finance/PlatformInterfaces';
 
 // ────────────────────────────────────────────────────────────────────────────
 // TYPES
