@@ -81,7 +81,6 @@ export default function FinanceChartOfAccounts() {
  const { currentOrganization } = useOrganization();
  const { currentOperatingUnit } = useOperatingUnit();
  
- 
  const organizationId = currentOrganization?.id || 0;
  const operatingUnitId = currentOperatingUnit?.id;
 

@@ -273,10 +273,25 @@ export interface RiskRegisterStats {
   currency: string;
 }
 
+export const RISK_SORT_FIELDS = [
+  "riskId",
+  "title",
+  "category",
+  "likelihood",
+  "impact",
+  "overallRiskScore",
+  "financialExposure",
+  "status",
+  "detectedAt",
+  "dueDate",
+] as const;
+
+export type RiskSortField = typeof RISK_SORT_FIELDS[number];
+
 // ─── Procedure: getRiskRegisterPaginated ─────────────────────────────────────
 
 export interface RiskRegisterRecord {
-  id: string;
+  id: number;
   riskId: string;
   title: string;
   description: string;
@@ -297,6 +312,10 @@ export interface RiskRegisterRecord {
   mitigationPlan?: string;
   hasAiRecommendation: boolean;
   operatingUnit?: string;
+  overallRiskScore?: number;
+  ownerName?: string;
+  detectedAt?: string;
+  aiRecommendation?: string;
 }
 
 export interface PaginatedResponse<T> {
@@ -362,6 +381,24 @@ export interface FullAIRecommendation {
   status: "pending" | "accepted" | "dismissed" | "implemented";
   createdAt?: string;
 }
+
+// ─── Router Response Envelope ────────────────────────────────────────────────
+
+export interface RouterResponse<T> {
+  status: 'ok' | 'error' | 'not_found' | 'empty';
+  data?: T;
+  message?: string;
+  timestamp: Date;
+}
+
+export interface PaginatedRouterResponse<T> {
+  status: 'ok' | 'error' | 'empty';
+  data: PaginatedResponse<T>;
+  timestamp: Date;
+  message?: string;
+}
+
+// ─── Finance Reporting ────────────────────────────────────────────────────────
 
 export interface FinanceReporting {
 
@@ -513,6 +550,62 @@ export interface FinanceReporting {
 
 }
 
+// ─── Component Props ──────────────────────────────────────────────────────────
+
+export interface FinancePageHeaderProps {
+  title: string;
+  subtitle?: string;
+  icon?: React.ReactNode;
+  timestamp?: string;
+  actions?: React.ReactNode;
+  isRTL?: boolean;
+}
+
+export interface FinanceKpiCardProps {
+  label: string;
+  value: string | number;
+  meta?: string;
+  trend?: number;
+  upIsGood?: boolean;
+  icon?: React.ReactNode;
+  valueColor?: string;
+  progressValue?: number;
+  accent?: string;
+  className?: string;
+  numericDir?: 'ltr' | 'rtl';
+}
+
+// ─── Input Types for Router Procedures ────────────────────────────────────────
+
+export interface GetRisksInput {
+  organizationId: number;
+  operatingUnitId?: number | undefined;
+  page?: number;
+  pageSize?: number;
+  search?: string;
+  category?: string;
+  riskLevel?: 'critical' | 'high' | 'medium' | 'low';
+  status?: string;
+  likelihood?: string;
+  impact?: string;
+  ownerId?: number;
+  projectId?: number;
+  donorId?: number;
+  startDate?: string;
+  endDate?: string;
+}
+
+export interface ExportRegisterInput {
+  organizationId: number;
+  operatingUnitId?: number;
+  search?: string;
+  category?: string;
+  likelihood?: 'low' | 'medium' | 'high' | 'critical';
+  impact?: 'low' | 'medium' | 'high' | 'critical';
+  status?: string;
+  ids?: number[];
+}
+
 // ─── Zero-value fallbacks (used while loading / on error) ─────────────────────
 
 export const EMPTY_KPI: KPICardsData = {
@@ -548,6 +641,7 @@ export const EMPTY_COMPLIANCE_SCORE: ComplianceScoreData = {
   overallScore: 0, auditReadiness: 0, openFindings: 0, remediationRate: 0,
   trend: "stable", auditTrend: "stable", findingsTrend: "stable", remediationTrend: "stable",
 };
+
 export const EMPTY_RISK_REGISTER_STATS: RiskRegisterStats = {
   total: 0, critical: 0, high: 0, medium: 0, low: 0,
   open: 0, underReview: 0, resolved: 0, totalExposure: 0, currency: "USD",

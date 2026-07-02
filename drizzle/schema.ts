@@ -9254,7 +9254,11 @@ export const financeFinancialRisks = mysqlTable(
     detectedAt: timestamp({ mode: "string" }),
     resolvedAt: timestamp({ mode: "string" }),
     createdAt: timestamp({ mode: "string" }).defaultNow(),
-    updatedAt: timestamp({ mode: "string" }).defaultNow().onUpdateNow()
+    updatedAt: timestamp({ mode: "string" }).defaultNow().onUpdateNow(),
+	isDeleted: tinyint().default(0).notNull(),
+    deletedAt: timestamp({ mode: "string" }),
+    createdBy: int(),
+    updatedBy: int()
   },
   (table) => ({
     idxOrganization: index("idx_finance_financial_risks_org").on(table.organizationId),
@@ -9315,7 +9319,11 @@ export const financeComplianceFindings = mysqlTable(
     targetDate: timestamp({ mode: "string" }),
     resolvedDate: timestamp({ mode: "string" }),
     createdAt: timestamp({ mode: "string" }).defaultNow(),
-    updatedAt: timestamp({ mode: "string" }).defaultNow().onUpdateNow()
+    updatedAt: timestamp({ mode: "string" }).defaultNow().onUpdateNow(),
+	isDeleted: tinyint().default(0).notNull(),
+    deletedAt: timestamp({ mode: "string" }),
+    createdBy: int(),
+    updatedBy: int()
   },
   (table) => ({
     idxOrganization: index("idx_finance_compliance_findings_org").on(table.organizationId),
@@ -9378,7 +9386,12 @@ export const financeAiRecommendations = mysqlTable(
       "implemented",
       "dismissed"
     ]),
-    createdAt: timestamp({ mode: "string" }).defaultNow()
+    createdAt: timestamp({ mode: "string" }).defaultNow(),
+	isDeleted: tinyint().default(0).notNull(),
+    deletedAt: timestamp({ mode: "string" }),
+    updatedAt: timestamp({ mode: "string" }).defaultNow().onUpdateNow(),
+    createdBy: int(),
+    updatedBy: int()
   },
   (table) => ({
     idxOrganization: index("idx_finance_ai_recommendations_org").on(table.organizationId),

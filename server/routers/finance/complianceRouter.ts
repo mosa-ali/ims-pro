@@ -1,170 +1,113 @@
 /**
  * server/routers/finance/complianceRouter.ts
  *
- * Finance Compliance Subrouter
+ * Finance Compliance Subrouter — REFACTORED
  * Handles compliance tracking, reporting, and compliance findings management.
  *
- * Dashboard Procedures (Executive Summary):
- * - getComplianceStatus() - Overall compliance status
- * - getComplianceIssues() - Active compliance issues
- * - getAuditTrail() - Audit trail for compliance
- * - getComplianceReports() - Compliance reports
+ * Integration:
+ * - ComplianceFindingsRepository: Unified findings queries with pagination, search, filtering
+ * - AIRecommendationsRepository: AI recommendations with confidence thresholds and sorting
+ * - Constructor injection of DB instance (consistent with other routers)
+ * - Type-safe Zod validation on all inputs
+ * - Multi-tenancy enforcement (organizationId + operatingUnitId)
  *
- * Compliance Findings Procedures (Operational Management):
- * - getFindings() - Get findings with filtering, searching, pagination
- * - getFindingById() - Get single finding with relations
- * - getComplianceStats() - Dashboard statistics
- * - getFindingsByType() - Findings grouped by type
- * - getFindingsBySeverity() - Findings grouped by severity
- * - getTopCriticalFindings() - Top critical findings
- * - getAverageResolutionTime() - Resolution metrics
+ * Procedures:
+ * - getFindings() — Paginated findings with search, filtering, sorting
+ * - getFindingById() — Single finding with all relations
+ * - getComplianceStats() — SQL-based statistics for dashboard
+ * - getCriticalFindings() — Critical severity findings
+ * - getOpenFindings() — Open status findings
+ * - getAverageResolutionTime() — Resolution metrics
+ * - getRecommendations() — AI recommendations with filtering
+ * - getRecommendationById() — Single recommendation with relations
  */
 
-import { router, scopedProcedure } from '../../_core/trpc';
+import { router, protectedProcedure } from '../../_core/trpc';
 import { z } from 'zod';
 import { getDb } from '../../db';
-import { ComplianceRepository } from '../../repositories/finance/ComplianceRepository';
-import type { ComplianceFindingsStats, ComplianceFindingRecord, PaginatedResponse, FullAIRecommendation } from '../../../shared/types/financeRouterTypes';
+import { ComplianceFindingsRepository, AIRecommendationsRepository } from '../../repositories/finance';
+import type { ComplianceFindingRecord, ComplianceFindingDetail, PaginatedFindingsResponse, ComplianceStatistics, AIRecommendationRecord, AIRecommendationDetail, PaginatedRecommendationsResponse, RecommendationStatistics } from '../../repositories/finance';
 
 // ─── Type Mappers ───────────────────────────────────────────────────────────
 // Transform repository types to router contract types
 
-function mapToComplianceFindingsStats(stats: any): ComplianceFindingsStats {
+function mapComplianceFindingForRouter(finding: ComplianceFindingRecord): any {
   return {
-    open: stats.open ?? 0,
-    critical: stats.critical ?? 0,
-    high: stats.high ?? 0,
-    medium: stats.medium ?? 0,
-    low: stats.low ?? 0,
-    resolved: stats.resolved ?? 0,
-    overdue: stats.overdue ?? 0,
-    avgResolutionDays: stats.avgResolutionDays ?? 0,
-    auditReadiness: stats.auditReadiness ?? 0,
-    complianceScore: stats.complianceScore ?? 0,
+    id: finding.id,
+    organizationId: finding.organizationId,
+    operatingUnitId: finding.operatingUnitId,
+    projectId: finding.projectId,
+    projectCode: finding.projectCode,
+    projectTitle: finding.projectTitle,
+    findingType: finding.findingType,
+    severity: finding.severity,
+    title: finding.title,
+    description: finding.description,
+    referenceTable: finding.referenceTable,
+    referenceId: finding.referenceId,
+    recommendation: finding.recommendation,
+    status: finding.status,
+    assignedTo: finding.assignedTo,
+    assignedUserName: finding.assignedUserName,
+    assignedUserEmail: finding.assignedUserEmail,
+    targetDate: finding.targetDate,
+    resolvedDate: finding.resolvedDate,
+    createdAt: finding.createdAt,
+    updatedAt: finding.updatedAt,
+    createdBy: finding.createdBy,
+    updatedBy: finding.updatedBy,
+    daysOpen: finding.daysOpen,
+    isOverdue: finding.isOverdue,
+    riskLevel: finding.riskLevel,
+    hasAIRecommendation: finding.hasAIRecommendation,
   };
 }
 
-function mapToComplianceFindingRecord(finding: any): ComplianceFindingRecord {
+function mapAIRecommendationForRouter(rec: AIRecommendationRecord): any {
   return {
-    id: finding.id?.toString() ?? '',
-    findingId: finding.findingId?.toString() ?? '',
-    title: finding.title ?? '',
-    description: finding.description,
-    findingType: finding.findingType ?? '',
-    severity: finding.severity ?? 'medium',
-    projectCode: finding.projectCode,
-    projectName: finding.projectName,
-    referenceTable: finding.referenceTable,
-    referenceRecord: finding.referenceRecord,
-    assignedTo: finding.assignedTo,
-    targetDate: finding.targetDate,
-    status: finding.status ?? 'open',
-    createdDate: finding.createdDate,
-    resolvedDate: finding.resolvedDate,
-    recommendation: finding.recommendation,
-    hasAiRecommendation: finding.hasAiRecommendation ?? false,
-    operatingUnit: finding.operatingUnit,
+    id: rec.id,
+    organizationId: rec.organizationId,
+    operatingUnitId: rec.operatingUnitId,
+    findingId: rec.findingId,
+    riskId: rec.riskId,
+    projectId: rec.projectId,
+    findingTitle: rec.findingTitle,
+    riskTitle: rec.riskTitle,
+    projectCode: rec.projectCode,
+    projectName: rec.projectName,
+    title: rec.title,
+    recommendation: rec.recommendation,
+    category: rec.category,
+    priority: rec.priority,
+    confidence: rec.confidence,
+    confidencePercent: rec.confidencePercent,
+    estimatedSavings: rec.estimatedSavings,
+    estimatedSavingsFormatted: rec.estimatedSavingsFormatted,
+    currency: rec.currency,
+    status: rec.status,
+    reasoning: rec.reasoning,
+    expectedImpact: rec.expectedImpact,
+    createdAt: rec.createdAt,
+    updatedAt: rec.updatedAt,
+    createdBy: rec.createdBy,
+    updatedBy: rec.updatedBy,
   };
 }
 
 export const complianceRouter = router({
   // ========================================
-  // DASHBOARD PROCEDURES (Executive Summary)
-  // ========================================
-
-  /**
-   * Get overall compliance status.
-   */
-  getComplianceStatus: scopedProcedure
-    .input(
-      z.object({
-        organizationId: z.number(),
-        operatingUnitId: z.number().optional(),
-      })
-    )
-    .query(async ({ input, ctx }) => {
-      const db = await getDb();
-      const repository = new ComplianceRepository(db);
-
-      const stats = await repository.getComplianceStats(input.organizationId, input.operatingUnitId);
-
-      return mapToComplianceFindingsStats(stats);
-    }),
-
-  /**
-   * Get active compliance issues.
-   */
-  getComplianceIssues: scopedProcedure
-    .input(
-      z.object({
-        organizationId: z.number(),
-        operatingUnitId: z.number().optional(),
-        severity: z.enum(['critical', 'high', 'medium', 'low']).optional(),
-      })
-    )
-    .query(async ({ input, ctx }) => {
-      const db = await getDb();
-      const repository = new ComplianceRepository(db);
-
-      const topFindings = await repository.getTopCriticalFindings(
-        input.organizationId,
-        input.operatingUnitId,
-        10
-      );
-
-      return topFindings.map(mapToComplianceFindingRecord);
-    }),
-
-  /**
-   * Get audit trail.
-   */
-  getAuditTrail: scopedProcedure
-    .input(
-      z.object({
-        organizationId: z.number(),
-        operatingUnitId: z.number().optional(),
-      })
-    )
-    .query(async ({ input, ctx }) => {
-      const db = await getDb();
-      const repository = new ComplianceRepository(db);
-
-      const topFindings = await repository.getTopCriticalFindings(
-        input.organizationId,
-        input.operatingUnitId,
-        5
-      );
-
-      return topFindings.map(mapToComplianceFindingRecord);
-    }),
-
-  /**
-   * Get compliance reports.
-   */
-  getComplianceReports: scopedProcedure
-    .input(
-      z.object({
-        organizationId: z.number(),
-        operatingUnitId: z.number().optional(),
-      })
-    )
-    .query(async ({ input, ctx }) => {
-      const db = await getDb();
-      const repository = new ComplianceRepository(db);
-
-      const stats = await repository.getComplianceStats(input.organizationId, input.operatingUnitId);
-
-      return mapToComplianceFindingsStats(stats);
-    }),
-
-  // ========================================
-  // COMPLIANCE FINDINGS PROCEDURES (Operational)
+  // COMPLIANCE FINDINGS PROCEDURES
   // ========================================
 
   /**
    * Get findings with filtering, searching, and pagination.
+   * Supports:
+   * - Multi-field search (title, description, recommendation, referenceTable)
+   * - Filtering by findingType, severity, status, operatingUnitId, date range
+   * - Pagination with configurable page size
+   * - Sorting by createdAt, targetDate, severity
    */
-  getFindings: scopedProcedure
+  getFindings: protectedProcedure
     .input(
       z.object({
         organizationId: z.number(),
@@ -173,15 +116,17 @@ export const complianceRouter = router({
         search: z.string().optional(),
         findingType: z.string().optional(),
         severity: z.enum(['critical', 'high', 'medium', 'low']).optional(),
-        status: z.enum(['open', 'in_progress', 'resolved', 'closed']).optional(),
+        status: z.string().optional(),
         operatingUnitId: z.number().optional(),
         startDate: z.string().optional(),
         endDate: z.string().optional(),
+        sortBy: z.enum(['createdAt', 'targetDate', 'severity']).optional(),
+        sortOrder: z.enum(['asc', 'desc']).optional(),
       })
     )
     .query(async ({ input, ctx }) => {
       const db = await getDb();
-      const repository = new ComplianceRepository(db);
+      const repository = new ComplianceFindingsRepository(db);
 
       const result = await repository.getFindings(input.organizationId, {
         page: input.page,
@@ -193,44 +138,51 @@ export const complianceRouter = router({
         operatingUnitId: input.operatingUnitId,
         startDate: input.startDate,
         endDate: input.endDate,
+        sortBy: input.sortBy,
+        sortOrder: input.sortOrder,
       });
 
       return {
-        data: result.data.map(mapToComplianceFindingRecord),
+        data: result.data.map(mapComplianceFindingForRouter),
         total: result.total,
         page: result.page,
         pageSize: result.pageSize,
         totalPages: result.totalPages,
-      } as PaginatedResponse<ComplianceFindingRecord>;
+      };
     }),
 
   /**
    * Get single finding by ID with all relations.
+   * Returns complete finding details with project, user, and AI recommendation information.
    */
-  getFindingById: scopedProcedure
+  getFindingById: protectedProcedure
     .input(
       z.object({
         organizationId: z.number(),
-        findingId: z.string(),
+        findingId: z.number(),
       })
     )
     .query(async ({ input, ctx }) => {
       const db = await getDb();
-      const repository = new ComplianceRepository(db);
+      const repository = new ComplianceFindingsRepository(db);
 
-      const finding = await repository.getFindingById(input.organizationId, parseInt(input.findingId));
+      const finding = await repository.getFindingById(input.organizationId, input.findingId);
 
       if (!finding) {
-        throw new Error('Finding not found');
+        throw new Error('Finding not found or not accessible');
       }
 
-      return mapToComplianceFindingRecord(finding);
+      return mapComplianceFindingForRouter(finding);
     }),
 
   /**
    * Get compliance statistics for dashboard.
+   * Returns SQL-based aggregations:
+   * - Total, open, critical, high, medium, low, resolved, overdue findings
+   * - Findings grouped by type, severity, status
+   * - Average resolution time
    */
-  getComplianceStats: scopedProcedure
+  getComplianceStats: protectedProcedure
     .input(
       z.object({
         organizationId: z.number(),
@@ -239,87 +191,134 @@ export const complianceRouter = router({
     )
     .query(async ({ input, ctx }) => {
       const db = await getDb();
-      const repository = new ComplianceRepository(db);
+      const repository = new ComplianceFindingsRepository(db);
 
-      const stats = await repository.getComplianceStats(input.organizationId, input.operatingUnitId);
+      const stats = await repository.getComplianceStatistics(input.organizationId, input.operatingUnitId);
 
-      return mapToComplianceFindingsStats(stats);
+      return {
+        totalFindings: stats.totalFindings,
+        openFindings: stats.openFindings,
+        criticalFindings: stats.criticalFindings,
+        highFindings: stats.highFindings,
+        mediumFindings: stats.mediumFindings,
+        lowFindings: stats.lowFindings,
+        resolvedFindings: stats.resolvedFindings,
+        overdueFindings: stats.overdueFindings,
+        averageResolutionDays: stats.averageResolutionDays,
+        byType: stats.byType,
+        bySeverity: stats.bySeverity,
+        byStatus: stats.byStatus,
+      };
     }),
 
   /**
-   * Get findings grouped by type.
+   * Get critical findings (severity = critical).
+   * Paginated with sorting by daysOpen DESC (oldest first).
    */
-  getFindingsByType: scopedProcedure
+  getCriticalFindings: protectedProcedure
     .input(
       z.object({
         organizationId: z.number(),
         operatingUnitId: z.number().optional(),
+        page: z.number().default(1),
+        pageSize: z.number().default(10),
       })
     )
     .query(async ({ input, ctx }) => {
       const db = await getDb();
-      const repository = new ComplianceRepository(db);
+      const repository = new ComplianceFindingsRepository(db);
 
       const result = await repository.getFindings(input.organizationId, {
-        page: 1,
-        pageSize: 10000,
+        page: input.page,
+        pageSize: input.pageSize,
+        severity: 'critical',
         operatingUnitId: input.operatingUnitId,
+        sortBy: 'severity',
+        sortOrder: 'desc',
       });
 
-      return result.data.map(mapToComplianceFindingRecord);
+      return {
+        data: result.data.map(mapComplianceFindingForRouter),
+        total: result.total,
+        page: result.page,
+        pageSize: result.pageSize,
+        totalPages: result.totalPages,
+      };
     }),
 
   /**
-   * Get findings grouped by severity.
+   * Get open findings (status = open, reviewing, corrective_action).
+   * Paginated with sorting by targetDate ASC (due soon first).
    */
-  getFindingsBySeverity: scopedProcedure
+  getOpenFindings: protectedProcedure
     .input(
       z.object({
         organizationId: z.number(),
         operatingUnitId: z.number().optional(),
+        page: z.number().default(1),
+        pageSize: z.number().default(10),
       })
     )
     .query(async ({ input, ctx }) => {
       const db = await getDb();
-      const repository = new ComplianceRepository(db);
+      const repository = new ComplianceFindingsRepository(db);
 
-      const result = await repository.getFindings(input.organizationId, {
-        page: 1,
-        pageSize: 10000,
-        operatingUnitId: input.operatingUnitId,
-      });
-
-      return result.data.map(mapToComplianceFindingRecord);
-    }),
-
-  /**
-   * Get top critical findings.
-   */
-  getTopCriticalFindings: scopedProcedure
-    .input(
-      z.object({
-        organizationId: z.number(),
-        operatingUnitId: z.number().optional(),
-        limit: z.number().default(5),
-      })
-    )
-    .query(async ({ input, ctx }) => {
-      const db = await getDb();
-      const repository = new ComplianceRepository(db);
-
-      const topFindings = await repository.getTopCriticalFindings(
+      const result = await repository.getOpenFindings(
         input.organizationId,
         input.operatingUnitId,
-        input.limit
+        input.page,
+        input.pageSize
       );
 
-      return topFindings.map(mapToComplianceFindingRecord);
+      return {
+        data: result.data.map(mapComplianceFindingForRouter),
+        total: result.total,
+        page: result.page,
+        pageSize: result.pageSize,
+        totalPages: result.totalPages,
+      };
+    }),
+
+  /**
+   * Get findings by type.
+   * Paginated with sorting by createdAt DESC (newest first).
+   */
+  getFindingsByType: protectedProcedure
+    .input(
+      z.object({
+        organizationId: z.number(),
+        findingType: z.string(),
+        operatingUnitId: z.number().optional(),
+        page: z.number().default(1),
+        pageSize: z.number().default(10),
+      })
+    )
+    .query(async ({ input, ctx }) => {
+      const db = await getDb();
+      const repository = new ComplianceFindingsRepository(db);
+
+      const result = await repository.getFindingsByType(
+        input.organizationId,
+        input.findingType,
+        input.operatingUnitId,
+        input.page,
+        input.pageSize
+      );
+
+      return {
+        data: result.data.map(mapComplianceFindingForRouter),
+        total: result.total,
+        page: result.page,
+        pageSize: result.pageSize,
+        totalPages: result.totalPages,
+      };
     }),
 
   /**
    * Get average resolution time metrics.
+   * Returns average days from creation to resolution for resolved/closed findings.
    */
-  getAverageResolutionTime: scopedProcedure
+  getAverageResolutionTime: protectedProcedure
     .input(
       z.object({
         organizationId: z.number(),
@@ -328,82 +327,352 @@ export const complianceRouter = router({
     )
     .query(async ({ input, ctx }) => {
       const db = await getDb();
-      const repository = new ComplianceRepository(db);
+      const repository = new ComplianceFindingsRepository(db);
 
-      const metrics = await repository.getAverageResolutionTime(input.organizationId, input.operatingUnitId);
+      const avgDays = await repository.getAverageResolutionTime(input.organizationId, input.operatingUnitId);
 
-      return metrics;
+      return {
+        averageResolutionDays: avgDays,
+      };
     }),
 
+  // ========================================
+  // AI RECOMMENDATIONS PROCEDURES
+  // ========================================
+
   /**
-   * Get AI recommendations for a specific finding.
+   * Get AI recommendations with filtering, searching, and pagination.
+   * Supports:
+   * - Multi-field search (title, recommendation, category)
+   * - Filtering by status, priority, category, operatingUnitId, confidence threshold
+   * - Pagination with configurable page size
+   * - Sorting by savings, priority, confidence, createdAt
+   * - Confidence threshold filtering (80%, 90%, 95%)
    */
-  getAIRecommendationsByFinding: scopedProcedure
+  getRecommendations: protectedProcedure
     .input(
       z.object({
         organizationId: z.number(),
-        findingId: z.string(),
+        page: z.number().default(1),
+        pageSize: z.number().default(10),
+        search: z.string().optional(),
+        status: z.string().optional(),
+        priority: z.string().optional(),
+        category: z.string().optional(),
+        operatingUnitId: z.number().optional(),
+        minConfidence: z.number().optional(),
+        sortBy: z.enum(['savings', 'priority', 'confidence', 'createdAt']).optional(),
+        sortOrder: z.enum(['asc', 'desc']).optional(),
       })
     )
     .query(async ({ input, ctx }) => {
-      // TODO: Integrate with AIExecutiveEngine to generate recommendations
-      // For now, return placeholder recommendations
-      const recommendations: FullAIRecommendation[] = [
-        {
-          id: '1',
-          priority: 'high',
-          category: 'compliance',
-          confidence: 0.95,
-          title: 'Immediate Action Required',
-          reasoning: 'Based on historical compliance data and industry standards',
-          recommendation: 'Address this finding within 30 days',
-          expectedImpact: 'High',
-          estimatedSavings: 50000,
-          currency: 'USD',
-          status: 'pending',
-        },
-      ];
+      const db = await getDb();
+      const repository = new AIRecommendationsRepository(db);
 
-      return recommendations;
+      const result = await repository.getRecommendations(input.organizationId, {
+        page: input.page,
+        pageSize: input.pageSize,
+        search: input.search,
+        status: input.status,
+        priority: input.priority,
+        category: input.category,
+        operatingUnitId: input.operatingUnitId,
+        minConfidence: input.minConfidence,
+        sortBy: input.sortBy,
+        sortOrder: input.sortOrder,
+      });
+
+      return {
+        data: result.data.map(mapAIRecommendationForRouter),
+        total: result.total,
+        page: result.page,
+        pageSize: result.pageSize,
+        totalPages: result.totalPages,
+      };
     }),
 
   /**
-   * Export findings in specified format.
+   * Get single AI recommendation by ID with all relations.
+   * Returns complete recommendation details with finding, risk, and project information.
    */
-  exportFindings: scopedProcedure
+  getRecommendationById: protectedProcedure
     .input(
       z.object({
         organizationId: z.number(),
-        operatingUnitId: z.number().optional(),
-        findingIds: z.array(z.string()).optional(),
-        format: z.enum(['excel', 'csv', 'pdf']),
+        recommendationId: z.number(),
       })
     )
-    .mutation(async ({ input, ctx }) => {
+    .query(async ({ input, ctx }) => {
       const db = await getDb();
-      const repository = new ComplianceRepository(db);
+      const repository = new AIRecommendationsRepository(db);
 
-      let findings;
-      if (input.findingIds && input.findingIds.length > 0) {
-        findings = [];
-        for (const id of input.findingIds) {
-          const finding = await repository.getFindingById(input.organizationId, parseInt(id));
-          if (finding) findings.push(finding);
-        }
-      } else {
-        const result = await repository.getFindings(input.organizationId, {
-          page: 1,
-          pageSize: 10000,
-          operatingUnitId: input.operatingUnitId,
-        });
-        findings = result.data;
+      const recommendation = await repository.getRecommendationById(input.organizationId, input.recommendationId);
+
+      if (!recommendation) {
+        throw new Error('Recommendation not found or not accessible');
       }
 
-      // TODO: Implement actual export logic based on format
+      return mapAIRecommendationForRouter(recommendation);
+    }),
+
+  /**
+   * Get AI recommendations statistics for dashboard.
+   * Returns SQL-based aggregations:
+   * - Total, new, accepted, implemented, dismissed recommendations
+   * - Total and average estimated savings
+   * - Average confidence
+   * - Recommendations grouped by category, priority, status
+   */
+  getRecommendationStats: protectedProcedure
+    .input(
+      z.object({
+        organizationId: z.number(),
+        operatingUnitId: z.number().optional(),
+      })
+    )
+    .query(async ({ input, ctx }) => {
+      const db = await getDb();
+      const repository = new AIRecommendationsRepository(db);
+
+      const stats = await repository.getRecommendationStatistics(input.organizationId, input.operatingUnitId);
+
       return {
-        format: input.format,
-        recordCount: findings.length,
-        downloadUrl: `/api/exports/findings-${Date.now()}.${input.format === 'excel' ? 'xlsx' : input.format}`,
+        totalRecommendations: stats.totalRecommendations,
+        newRecommendations: stats.newRecommendations,
+        acceptedRecommendations: stats.acceptedRecommendations,
+        implementedRecommendations: stats.implementedRecommendations,
+        dismissedRecommendations: stats.dismissedRecommendations,
+        totalEstimatedSavings: stats.totalEstimatedSavings,
+        averageConfidence: stats.averageConfidence,
+        averageSavingsPerRecommendation: stats.averageSavingsPerRecommendation,
+        byCategory: stats.byCategory,
+        byPriority: stats.byPriority,
+        byStatus: stats.byStatus,
       };
+    }),
+
+  /**
+   * Get new recommendations (status = new).
+   * Paginated with sorting by priority DESC (high priority first).
+   */
+  getNewRecommendations: protectedProcedure
+    .input(
+      z.object({
+        organizationId: z.number(),
+        operatingUnitId: z.number().optional(),
+        page: z.number().default(1),
+        pageSize: z.number().default(10),
+      })
+    )
+    .query(async ({ input, ctx }) => {
+      const db = await getDb();
+      const repository = new AIRecommendationsRepository(db);
+
+      const result = await repository.getNewRecommendations(
+        input.organizationId,
+        input.operatingUnitId,
+        input.page,
+        input.pageSize
+      );
+
+      return {
+        data: result.data.map(mapAIRecommendationForRouter),
+        total: result.total,
+        page: result.page,
+        pageSize: result.pageSize,
+        totalPages: result.totalPages,
+      };
+    }),
+
+  /**
+   * Get high-priority recommendations (priority = high).
+   * Paginated with sorting by confidence DESC (most confident first).
+   */
+  getHighPriorityRecommendations: protectedProcedure
+    .input(
+      z.object({
+        organizationId: z.number(),
+        operatingUnitId: z.number().optional(),
+        page: z.number().default(1),
+        pageSize: z.number().default(10),
+      })
+    )
+    .query(async ({ input, ctx }) => {
+      const db = await getDb();
+      const repository = new AIRecommendationsRepository(db);
+
+      const result = await repository.getHighPriorityRecommendations(
+        input.organizationId,
+        input.operatingUnitId,
+        input.page,
+        input.pageSize
+      );
+
+      return {
+        data: result.data.map(mapAIRecommendationForRouter),
+        total: result.total,
+        page: result.page,
+        pageSize: result.pageSize,
+        totalPages: result.totalPages,
+      };
+    }),
+
+  /**
+   * Get high-confidence recommendations (confidence >= minConfidence).
+   * Paginated with sorting by confidence DESC (most confident first).
+   */
+  getHighConfidenceRecommendations: protectedProcedure
+    .input(
+      z.object({
+        organizationId: z.number(),
+        minConfidence: z.number().default(80),
+        operatingUnitId: z.number().optional(),
+        page: z.number().default(1),
+        pageSize: z.number().default(10),
+      })
+    )
+    .query(async ({ input, ctx }) => {
+      const db = await getDb();
+      const repository = new AIRecommendationsRepository(db);
+
+      const result = await repository.getHighConfidenceRecommendations(
+        input.organizationId,
+        input.minConfidence,
+        input.operatingUnitId,
+        input.page,
+        input.pageSize
+      );
+
+      return {
+        data: result.data.map(mapAIRecommendationForRouter),
+        total: result.total,
+        page: result.page,
+        pageSize: result.pageSize,
+        totalPages: result.totalPages,
+      };
+    }),
+
+  /**
+   * Get high-savings recommendations (estimatedSavings >= minSavings).
+   * Paginated with sorting by savings DESC (highest savings first).
+   */
+  getHighSavingsRecommendations: protectedProcedure
+    .input(
+      z.object({
+        organizationId: z.number(),
+        minSavings: z.number().default(10000),
+        operatingUnitId: z.number().optional(),
+        page: z.number().default(1),
+        pageSize: z.number().default(10),
+      })
+    )
+    .query(async ({ input, ctx }) => {
+      const db = await getDb();
+      const repository = new AIRecommendationsRepository(db);
+
+      const result = await repository.getHighSavingsRecommendations(
+        input.organizationId,
+        input.minSavings,
+        input.operatingUnitId,
+        input.page,
+        input.pageSize
+      );
+
+      return {
+        data: result.data.map(mapAIRecommendationForRouter),
+        total: result.total,
+        page: result.page,
+        pageSize: result.pageSize,
+        totalPages: result.totalPages,
+      };
+    }),
+
+  /**
+   * Get recommendations by category.
+   * Paginated with sorting by createdAt DESC (newest first).
+   */
+  getRecommendationsByCategory: protectedProcedure
+    .input(
+      z.object({
+        organizationId: z.number(),
+        category: z.string(),
+        operatingUnitId: z.number().optional(),
+        page: z.number().default(1),
+        pageSize: z.number().default(10),
+      })
+    )
+    .query(async ({ input, ctx }) => {
+      const db = await getDb();
+      const repository = new AIRecommendationsRepository(db);
+
+      const result = await repository.getRecommendationsByCategory(
+        input.organizationId,
+        input.category,
+        input.operatingUnitId,
+        input.page,
+        input.pageSize
+      );
+
+      return {
+        data: result.data.map(mapAIRecommendationForRouter),
+        total: result.total,
+        page: result.page,
+        pageSize: result.pageSize,
+        totalPages: result.totalPages,
+      };
+    }),
+
+  /**
+   * Get latest recommendation for a specific finding.
+   * Returns the most recent recommendation for a finding (not all recommendations).
+   */
+  getLatestRecommendationForFinding: protectedProcedure
+    .input(
+      z.object({
+        organizationId: z.number(),
+        findingId: z.number(),
+      })
+    )
+    .query(async ({ input, ctx }) => {
+      const db = await getDb();
+      const repository = new AIRecommendationsRepository(db);
+
+      const recommendation = await repository.getLatestRecommendationForFinding(
+        input.organizationId,
+        input.findingId
+      );
+
+      if (!recommendation) {
+        return null;
+      }
+
+      return mapAIRecommendationForRouter(recommendation);
+    }),
+
+  /**
+   * Get latest recommendation for a specific risk.
+   * Returns the most recent recommendation for a risk (not all recommendations).
+   */
+  getLatestRecommendationForRisk: protectedProcedure
+    .input(
+      z.object({
+        organizationId: z.number(),
+        riskId: z.number(),
+      })
+    )
+    .query(async ({ input, ctx }) => {
+      const db = await getDb();
+      const repository = new AIRecommendationsRepository(db);
+
+      const recommendation = await repository.getLatestRecommendationForRisk(
+        input.organizationId,
+        input.riskId
+      );
+
+      if (!recommendation) {
+        return null;
+      }
+
+      return mapAIRecommendationForRouter(recommendation);
     }),
 });

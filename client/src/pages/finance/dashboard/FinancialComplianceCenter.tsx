@@ -242,10 +242,11 @@ export function FinancialComplianceCenter() {
   const meta        = filterMeta.data;
 
   // Map indicators to IndicatorRow
+  // ✅ FIX #5: Use real trend from data if available, fallback to "stable"
   const indicatorRows: IndicatorRow[] = indicators.map((ind) => ({
     label: ind.name,
     score: ind.score,
-    trend: "stable" as const,
+    trend: (ind.trend || "stable") as const,  // Use real trend if available
   }));
 
   // Map findings for table
